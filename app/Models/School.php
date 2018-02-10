@@ -440,7 +440,13 @@ class School extends Model {
 
     }
 
-    static function getClass($gradeId,$gradeClass){
+    /**
+     * 根据年级获取对应的班级和对应的学生
+     * @param $gradeId
+     * @param $gradeClass
+     * @return array
+     */
+    static function getClass( $gradeId, $gradeClass){
         $classes = $students = [];
         foreach ($gradeClass as $k=>$g){
             if($k == $gradeId){
@@ -454,9 +460,7 @@ class School extends Model {
                         ->pluck('student_number', 'id');
                     break;
                 }
-
             }
-
         }
         return [$classes , $students];
     }

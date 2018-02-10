@@ -52,6 +52,7 @@ class StudentController extends Controller {
      * @throws Throwable
      */
     public function create() {
+
         $groupId = Auth::user()->group->id;
         if (Request::method() === 'POST') {
             $field = Request::query('field');
@@ -118,6 +119,7 @@ class StudentController extends Controller {
      */
     public function edit($id) {
 
+        $users = Auth::user();
         $groupId = Auth::user()->group->id;
         if (Request::method() === 'POST') {
             $field = Request::get('field');
@@ -134,8 +136,6 @@ class StudentController extends Controller {
         # 查询学生信息
         $student = Student::find($id);
         if (!$student) { return $this->notFound(); }
-        $users = Auth::user();
-        $groupId =  $users->group->id;
         $user = $student->user;
         if($groupId > 5){
             $educatorId = $users->educator->id;
