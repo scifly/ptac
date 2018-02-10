@@ -64,7 +64,11 @@
 	
 	<div class="row">
 		<div class="subtitle">
-			徐邹昊各科班级排名变化
+			<?php if(count($student) != 0): ?>
+				<?php echo e($student->user->realname); ?>各科班级排名变化
+			<?php else: ?>
+				各科班级排名变化
+			<?php endif; ?>
 		</div>
 		<div id="classranke">
 			
@@ -73,7 +77,11 @@
 	
 	<div class="row">
 		<div class="subtitle">
-			徐邹昊各科年级排名变化
+			<?php if(count($student) != 0): ?>
+				<?php echo e($student->user->realname); ?>各科班级排名变化
+			<?php else: ?>
+				各科年级排名变化
+			<?php endif; ?>
 		</div>
 		<div id="graderanke">
 			
