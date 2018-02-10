@@ -697,31 +697,51 @@ class Student extends Model {
      * @return array
      */
     static function getClassStudent($id){
-        $classIds = $studentIds = [];
-        // 查询该教职员工是否为年级主任
-        $grades = Grade::where('educator_ids','like','%'.$id.'%')
-            ->where('enabled',1)
+        $classIds  = $studentIds = [];
+        $schoolId = School::schoolId();
+        // 查询该教职员工是否是年级主任
+        $grade = Grade::whereEnabled(1)
+            ->where('school_id',$schoolId)
             ->get();
-        // 查询该教职员工是否是班主任
-        $classes = Squad::where('educator_ids','like','%'.$id.'%')
-            ->where('enabled',1)
-            ->get();
-        if(sizeof($grades) !== 0)
-        {
-            foreach ($grades as $g){
-                $classes = $g->classes;
-                $classIds = self::getStudentIds($classes)[0];
-                $studentIds = self::getStudentIds($classes)[1];
+        foreach ($grade as $g) {
+            //  说明是年级主任
+            if (in_array($id, explode(',', $g->educator_ids))) {
+                $class = Squad::whereGradeId($g->id)->get();
+                foreach ($class as $c){
+                    # 把年级主任所有的班级id存入数组
+                    $classIds[] = $c->id;
+                }
             }
-        }elseif(sizeof($grades)==0 && sizeof($classes) !==0){
-            $classIds = self::getStudentIds($classes)[0];
-            $studentIds = self::getStudentIds($classes)[1];
-        }else{
-            $classes = Educator::whereId($id)->first()->classes;
-            $classIds = self::getStudentIds($classes)[0];
-            $studentIds = self::getStudentIds($classes)[1];
         }
 
+        // 查询该教职员工是否是班主任
+        $master = Squad::whereEnabled(1)->get();
+        foreach ($master as $m) {
+            // 说明是班主任
+            if (in_array($id, explode(',', $m->educator_ids))) {
+                # 把班主任所在班级id存入数组
+                $classIds[] = $m->id;
+                $classIds = array_unique($classIds);
+            }
+        }
+
+        // 查询该教职员工是否是科任老师
+        $teacher = Educator::whereId($id)->first()->classes;
+        if (sizeof($teacher) != 0) {
+            foreach ($teacher as $t) {
+                # 把科任老师所在的班级id存入数组
+                # 把年级id和班级id放入数组
+                $classIds[] = $t->id;
+                $classIds = array_unique($classIds);
+            }
+        }
+
+        // 查询所有班级的信息
+        $allClass = Squad::whereEnabled(1)
+            ->whereIn('id',$classIds)
+            ->get();
+        // 获取所有学生的id
+        $studentIds = self::getStudentIds($allClass)[1];
         $data = [$classIds,$studentIds];
         return $data;
 
@@ -770,53 +790,61 @@ class Student extends Model {
     static function getGrade($id)
     {
         $schoolId = School::schoolId();
-        $grades = $classes = $data = [];
+        $gradeIds = $classIds = $grades = $classes = $data = [];
+
         // 查询该教职员工是否是年级主任
-        $grades = Grade::whereEnabled(1)
+        $grade = Grade::whereEnabled(1)
             ->where('school_id',$schoolId)
-            ->where('educator_ids','like','%'.$id.'%')
-            ->pluck('name', 'id')
-            ->toArray();
-        // 查询该教职员工是否是班主任
-        $class = Squad::where('educator_ids','like','%'.$id.'%')
-            ->where('enabled',1)
             ->get();
-        if(sizeof($grades) !== 0){
-            foreach ($grades as $k=>$g){
-                $classes = Squad::whereGradeId($k)->where('enabled',1)->first();
-                $classIds[] = $classes->id;
+
+        if(sizeof($grade) != 0){
+            foreach ($grade as $g) {
+                //  说明是年级主任
+                if (in_array($id, explode(',', $g->educator_ids))) {
+                    $class = Squad::whereGradeId($g->id)->get();
+                    foreach ($class as $c){
+                        $gradeClass[$g->id][] = $c->id;
+                        $gradeIds[] = $g->id;
+                        $gradeIds = array_unique($gradeIds);
+                    }
+                }
             }
-            array_unique($classIds);
-            sort($classIds);
-            $classes = Squad::whereEnabled(1)
-                ->whereIn('id',$classIds)
-                ->pluck('name', 'id')
-                ->toArray();
-        }elseif(sizeof($grades)==0 && sizeof($class) !==0){
-            $gradeIds = self::getStudentIds($class)[2];
-            $classIds = self::getStudentIds($class)[0];
-            $grades = Grade::whereEnabled(1)
-                ->whereIn('id',$gradeIds)
-                ->pluck('name', 'id')
-                ->toArray();
-            $classes = Squad::whereEnabled(1)
-                ->whereIn('id',$classIds)
-                ->pluck('name', 'id')
-                ->toArray();
-        }else{
-            $class = Educator::whereId($id)->first()->classes;
-            $gradeIds = self::getStudentIds($class)[2];
-            $classIds = self::getStudentIds($class)[0];
-            $grades = Grade::whereEnabled(1)
-                ->whereIn('id',$gradeIds)
-                ->pluck('name', 'id')
-                ->toArray();
-            $classes = Squad::whereEnabled(1)
-                ->whereIn('id',$classIds)
-                ->pluck('name', 'id')
-                ->toArray();
         }
-        $data = [$grades,$classes];
+
+        // 查询该教职员工是否是班主任
+        $master = Squad::whereEnabled(1)->get();
+        if(sizeof($master) != 0){
+            foreach ($master as $m) {
+                // 说明是班主任
+                if (in_array($id, explode(',', $m->educator_ids))) {
+                    # 查询该班主任所在年级
+                    $gradeId = Squad::whereId($m->id)->first()->grade_id;
+                    # 如果该班主任不在之前的年级id中 则把该年级的id和班级id存入数组
+                    # 如果该班主任所在年级在之前的年级id中，班级id肯定也在
+                    if(!in_array($gradeId,$gradeIds)){
+                        # 把年级id和班级id放入数组
+                        $gradeClass[$gradeId][] = $m->id;
+                        $gradeIds[] = $gradeId;
+                        $gradeIds = array_unique($gradeIds);
+                    }
+                }
+            }
+        }
+
+        // 查询该教职员工是否是科任老师
+        $teacher = Educator::whereId($id)->first()->classes;
+        if(sizeof($teacher)!= 0){
+            foreach ($teacher as $t){
+                # 如果该科任老师所在年级不在之前的年级id中，则把该年级的id和班级id存入数组
+                if(!in_array($t->grade_id,$gradeIds)){
+                    # 把年级id和班级id放入数组
+                    $gradeClass[$t->grade_id][] = $t->id;
+                    $gradeIds[] = $t->grade_id;
+                    $gradeIds = array_unique($gradeIds);
+                }
+            }
+        }
+        $data = [$gradeIds ,$gradeClass];
         return $data;
     }
 
