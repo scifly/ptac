@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -381,6 +382,14 @@ class Custodian extends Model {
         ];
         // todo: 根据角色显示监护人列表，[运营/企业/学校]角色显示隶属当前学校的所有监护人，其他角色显示所属所有部门下的监护人
         $condition = 'Grade.school_id = ' . School::schoolId();
+        $groupId = Auth::user()->group->id;
+
+        if($groupId > 5){
+            $educatorId = Auth::user()->educator->id;
+            $studentIds = Student::getClassStudent($educatorId)[1];
+            $studentIds = implode(',',$studentIds);
+            $condition .= " and Student.id in ($studentIds)";
+        }
 
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 

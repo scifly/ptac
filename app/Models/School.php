@@ -373,9 +373,10 @@ class School extends Model {
      *
      * @param $field
      * @param $id
+     * @param null $gradeClass
      * @return array
      */
-    static function getFieldList($field, $id) {
+    static function getFieldList($field, $id ,$gradeClass = null) {
 
         $grades = [];
         $classes = [];
@@ -393,12 +394,18 @@ class School extends Model {
                     ->pluck('student_number', 'id');
                 break;
             case 'grade':
-                $classes = Squad::whereGradeId($id)
-                    ->where('enabled', 1)
-                    ->pluck('name', 'id');
-                $students = Student::whereClassId($classes->keys()->first())
-                    ->where('enabled', 1)
-                    ->pluck('student_number', 'id');
+                if(isset($gradeClass)){
+                    $classes = self::getClass($id,$gradeClass)[0];
+                    $students = self::getClass($id,$gradeClass)[1];
+                }else{
+                    $classes = Squad::whereGradeId($id)
+                        ->where('enabled', 1)
+                        ->pluck('name', 'id');
+                    $students = Student::whereClassId($classes->keys()->first())
+                        ->where('enabled', 1)
+                        ->pluck('student_number', 'id');
+                }
+
                 break;
             case 'class':
                 $list = Student::whereClassId($id)
@@ -431,6 +438,27 @@ class School extends Model {
             'students' => sprintf($htmls[2], 'studentId', 'studentId')
         ];
 
+    }
+
+    static function getClass($gradeId,$gradeClass){
+        $classes = $students = [];
+        foreach ($gradeClass as $k=>$g){
+            if($k == $gradeId){
+                $classes = Squad::whereEnabled(1)
+                    ->whereIn('id',$g)
+                    ->pluck('name', 'id')
+                    ->toArray();
+                foreach ($g as $v){
+                    $students = Student::whereClassId($v)
+                        ->where('enabled', 1)
+                        ->pluck('student_number', 'id');
+                    break;
+                }
+
+            }
+
+        }
+        return [$classes , $students];
     }
 
 }
