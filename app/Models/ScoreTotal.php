@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -174,7 +175,16 @@ class ScoreTotal extends Model {
         ];
 
         // todo: 增加过滤条件
-        return Datatable::simple(self::getModel(), $columns, $joins);
+        $condition = null;
+        $groupId = Auth::user()->group->id;
+        if($groupId > 5){
+            $educatorId = Auth::user()->educator->id;
+            $studentIds = Student::getClassStudent($educatorId)[1];
+            $studentIds = implode(',',$studentIds);
+            $condition = "Student.id in ($studentIds)";
+        }
+
+        return Datatable::simple(self::getModel(), $columns, $joins ,$condition);
         
     }
 
