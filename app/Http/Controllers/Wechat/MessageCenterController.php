@@ -61,7 +61,6 @@ class MessageCenterController extends Controller {
              $userId = $userInfo['UserId'];
              Session::put('userId',$userId);
          }
-         // $userId = 'user_5a73f795232e4';
          Session::put('userId',$userId);
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
