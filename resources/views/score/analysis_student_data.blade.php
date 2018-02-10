@@ -64,7 +64,11 @@
 	
 	<div class="row">
 		<div class="subtitle">
-			徐邹昊各科班级排名变化
+			@if(count($student) != 0)
+				{{ $student->user->realname }}各科班级排名变化
+			@else
+				各科班级排名变化
+			@endif
 		</div>
 		<div id="classranke">
 			
@@ -73,7 +77,11 @@
 	
 	<div class="row">
 		<div class="subtitle">
-			徐邹昊各科年级排名变化
+			@if(count($student) != 0)
+				{{ $student->user->realname }}各科班级排名变化
+			@else
+				各科年级排名变化
+			@endif
 		</div>
 		<div id="graderanke">
 			
