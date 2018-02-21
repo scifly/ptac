@@ -165,16 +165,10 @@ class Controller extends BaseController {
 
     protected function notFound($message = null) {
 
-        $statusCode = self::NOT_FOUND;
-        $message = $message ?? __('messages.not_found');
-        if (Request::ajax()) {
-            return response()->json([
-                'statusCode' => $statusCode,
-                'message'    => $message,
-            ]);
-        }
-
-        return abort($statusCode, $message);
+        return abort(
+            self::NOT_FOUND,
+            $message ?? __('messages.not_found')
+        );
 
     }
     
@@ -201,16 +195,10 @@ class Controller extends BaseController {
 
     protected function fail($message = null) {
 
-        $statusCode = self::INTERNAL_SERVER_ERROR;
-        $message = $message ?? __('messages.fail');
-        if (Request::ajax()) {
-            return response()->json([
-                'statusCode' => $statusCode,
-                'message'    => $message,
-            ]);
-        }
-
-        return abort($statusCode, $message);
+        return abort(
+            self::INTERNAL_SERVER_ERROR,
+            $message ?? __('messages.fail')
+        );
 
     }
 
@@ -229,12 +217,17 @@ class Controller extends BaseController {
             ? ($success ?? __('messages.ok'))
             : ($failure ?? __('messages.fail'));
         if (Request::ajax()) {
-            return response()->json([
-                'statusCode' => $statusCode,
-                'message' => $message
-            ]);
+            return $result
+                ? response()->json([
+                        'statusCode' => $statusCode,
+                        'message' => $message
+                    ])
+                : abort($statusCode, $message);
         }
-        return $statusCode . ' : ' . $message;
+
+        return $result
+            ? $statusCode . ' : ' . $message
+            : abort($statusCode, $message);
         
     }
     

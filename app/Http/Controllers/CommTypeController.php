@@ -78,7 +78,7 @@ class CommTypeController extends Controller {
      */
     public function edit($id) {
         
-        $ct = CommType::find($id);
+        $ct = $this->ct->find($id);
         abort_if(!$ct, self::NOT_FOUND);
 
         return $this->output([
@@ -96,7 +96,7 @@ class CommTypeController extends Controller {
      */
     public function update(CommTypeRequest $request, $id) {
         
-        $ct = CommType::find($id);
+        $ct = $this->ct->find($id);
         abort_if(!$ct, self::NOT_FOUND);
 
         return $this->result(
@@ -114,7 +114,7 @@ class CommTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $ct = CommType::find($id);
+        $ct = $this->ct->find($id);
         abort_if(!$ct, self::NOT_FOUND);
 
         return $this->result(

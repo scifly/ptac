@@ -104,9 +104,7 @@ class Score extends Model {
     public function modify(array $data, $id) {
         
         $score = self::find($id);
-        if (!$score) {
-            return false;
-        }
+        if (!$score) { return false; }
         
         return $score->update($data) ? true : false;
         
@@ -122,9 +120,7 @@ class Score extends Model {
     public function remove($id) {
         
         $score = self::find($id);
-        if (!$score) {
-            return false;
-        }
+        if (!$score) { return false; }
         
         return $score->delete() ? true : false;
         

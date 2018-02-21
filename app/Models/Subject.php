@@ -107,9 +107,9 @@ class Subject extends Model {
         $ids = explode(',', $ids);
         $selectedSubjects = [];
         foreach ($ids as $id) {
-            if($id == 0 ){
+            if ($id == 0 ){
                 $selectedSubjects[$id] = '总分';
-            }else{
+            } else {
                 $selectedSubjects[$id] = self::find($id)->name;
             }
         }

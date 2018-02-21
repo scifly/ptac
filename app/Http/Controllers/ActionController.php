@@ -54,7 +54,7 @@ class ActionController extends Controller {
      */
     public function edit($id) {
 
-        $action = Action::find($id);
+        $action = $this->action->find($id);
         abort_if(!$action, self::NOT_FOUND);
 
         return $this->output([
@@ -72,7 +72,7 @@ class ActionController extends Controller {
      */
     public function update(ActionRequest $request, $id) {
 
-        $action = Action::find($id);
+        $action = $this->action->find($id);
         abort_if(!$action, self::NOT_FOUND);
 
         return $this->result(

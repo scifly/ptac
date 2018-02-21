@@ -19,13 +19,13 @@ use Throwable;
  */
 class ScoreRangeController extends Controller {
     
-    protected $scoreRange;
+    protected $sr;
     protected $subject;
     
-    function __construct(ScoreRange $scoreRange, Subject $subject) {
+    function __construct(ScoreRange $sr, Subject $subject) {
     
         $this->middleware(['auth']);
-        $this->scoreRange = $scoreRange;
+        $this->sr = $sr;
         $this->subject = $subject;
         
     }
@@ -39,7 +39,9 @@ class ScoreRangeController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->scoreRange->datatable());
+            return response()->json(
+                $this->sr->datatable()
+            );
         }
         
         return $this->output();
@@ -65,14 +67,11 @@ class ScoreRangeController extends Controller {
      * @return JsonResponse|Response|string
      */
     public function store(ScoreRangeRequest $request) {
-        $input = $request->all();
-        if($input['start_score'] > $input['end_score'] || $input['start_score'] == $input['end_score']){
-            return $this->fail('截止分数应该小于起始分数！');
-        }
-        //添加新数据
-        return $this->scoreRange->store($request->all())
-            ? $this->succeed() : $this->fail();
-        
+
+        return $this->result(
+            $this->sr->store($request->all())
+        );
+
     }
     
     /**
@@ -84,11 +83,12 @@ class ScoreRangeController extends Controller {
      */
     public function edit($id) {
         
-        $scoreRange = $this->scoreRange->find($id);
-        if (!$scoreRange) { return $this->notFound(); }
+        $sr = $this->sr->find($id);
+        abort_if(!$sr, self::NOT_FOUND);
+
         return $this->output([
-            'scoreRange'       => $scoreRange,
-            'selectedSubjects' => $this->subject->selectedSubjects($scoreRange->subject_ids),
+            'sr' => $sr,
+            'selectedSubjects' => $this->subject->selectedSubjects($sr->subject_ids),
         ]);
         
     }
@@ -101,14 +101,13 @@ class ScoreRangeController extends Controller {
      * @return JsonResponse
      */
     public function update(ScoreRangeRequest $request, $id) {
-        $input = $request->all();
-        $scoreRange = $this->scoreRange->find($id);
-        if (!$scoreRange) { return $this->notFound(); }
-        if($input['start_score'] > $input['end_score'] || $input['start_score'] == $input['end_score']){
-            return $this->fail('截止分数应该小于起始分数！');
-        }
-        
-        return $scoreRange->update($request->all()) ? $this->succeed() : $this->fail();
+
+        $sr = $this->sr->find($id);
+        abort_if(!$sr, self::NOT_FOUND);
+
+        return $this->result(
+            $sr->update($request->all())
+        );
         
     }
     
@@ -121,10 +120,12 @@ class ScoreRangeController extends Controller {
      */
     public function destroy($id) {
         
-        $scoreRange = $this->scoreRange->find($id);
-        if (!$scoreRange) { return $this->notFound(); }
-        
-        return $scoreRange->delete() ? $this->succeed() : $this->fail();
+        $sr = $this->sr->find($id);
+        abort_if(!$sr, self::NOT_FOUND);
+
+        return $this->result(
+            $sr->delete()
+        );
         
     }
     
@@ -148,7 +149,7 @@ class ScoreRangeController extends Controller {
      */
     public function statistics(HttpRequest $request) {
         
-        return $this->scoreRange->statistics($request->all());
+        return $this->sr->statistics($request->all());
         
     }
     

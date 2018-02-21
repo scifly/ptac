@@ -72,11 +72,13 @@ class ConferenceParticipantController extends Controller {
      */
     public function show($id) {
         
-        $cp = ConferenceParticipant::find($id);
+        $cp = $this->cp->find($id);
         abort_if(!$cp, self::NOT_FOUND);
         $this->authorize('show', $cp);
         
-        return $this->output(['cp' => $cp]);
+        return $this->output([
+            'cp' => $cp,
+        ]);
         
     }
     

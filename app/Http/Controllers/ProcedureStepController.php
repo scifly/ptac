@@ -116,9 +116,11 @@ class ProcedureStepController extends Controller {
     public function destroy($id) {
         
         $ps = ProcedureStep::find($id);
-        if (!$ps) { return $this->notFound(); }
-        
-        return $this->result($ps->remove($id));
+        abort_if(!$ps, self::NOT_FOUND);
+
+        return $this->result(
+            $ps->remove($id)
+        );
         
     }
     

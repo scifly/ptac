@@ -78,7 +78,7 @@ class DepartmentTypeController extends Controller {
      */
     public function edit($id) {
 
-        $dt = DepartmentType::find($id);
+        $dt = $this->dt->find($id);
         abort_if(!$dt, self::NOT_FOUND);
 
         return $this->output([
@@ -96,7 +96,7 @@ class DepartmentTypeController extends Controller {
      */
     public function update(DepartmentTypeRequest $request, $id) {
 
-        $dt = DepartmentType::find($id);
+        $dt = $this->dt->find($id);
         abort_if(!$dt, self::NOT_FOUND);
         
         return $this->result(
@@ -114,7 +114,7 @@ class DepartmentTypeController extends Controller {
      */
     public function destroy($id) {
 
-        $dt = DepartmentType::find($id);
+        $dt = $this->dt->find($id);
         abort_if(!$dt, self::NOT_FOUND);
         
         return $this->result(

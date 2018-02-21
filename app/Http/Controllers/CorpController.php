@@ -88,7 +88,7 @@ class CorpController extends Controller {
      */
     public function edit($id) {
         
-        $corp = Corp::find($id);
+        $corp = $this->corp->find($id);
         abort_if(!$corp, self::NOT_FOUND);
         $this->authorize('veud', $corp);
 
@@ -108,7 +108,7 @@ class CorpController extends Controller {
      */
     public function update(CorpRequest $request, $id) {
         
-        $corp = Corp::find($id);
+        $corp = $this->corp->find($id);
         abort_if(!$corp, self::NOT_FOUND);
         $this->authorize('veud', $corp);
 
@@ -127,7 +127,7 @@ class CorpController extends Controller {
      */
     public function destroy($id) {
         
-        $corp = Corp::find($id);
+        $corp = $this->corp->find($id);
         abort_if(!$corp, self::NOT_FOUND);
         $this->authorize('veud', $corp);
 

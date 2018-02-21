@@ -34,6 +34,7 @@ class EventController extends Controller {
      * @throws Throwable
      */
     public function index() {
+
         $user = Auth::user();
         $isAdmin = $this->event->getRole($user) ? 1 : 0;
         $events = $this->event
