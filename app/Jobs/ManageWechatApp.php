@@ -3,6 +3,7 @@ namespace App\Jobs;
 
 use App\Facades\Wechat;
 use App\Models\App;
+use App\Models\Corp;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -38,7 +39,7 @@ class ManageWechatApp implements ShouldQueue {
             'isreportenter' => $this->app->isreportenter,
             'home_url' => $this->app->home_url,
         ];
-        $accessToken = Wechat::getAccessToken($this->app->corp_id, $this->app->secret, $this->app->agentid);
+        $accessToken = Wechat::getAccessToken(Corp::whereId($this->app->corp_id)->corpid, $this->app->secret);
         return Wechat::configApp($accessToken, $app);
         
     }
