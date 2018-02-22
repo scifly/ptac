@@ -276,7 +276,7 @@ class ScoreController extends Controller {
      * 成绩分析表格数据填充
      * @throws Throwable
      */
-    public function analysisData(){
+    public function analydata(){
         $input = Request::all();
         $view = Score::analysis($input);
       return $view ? $this->succeed($view) : $this->fail('未录入或未统计成绩！');
@@ -287,7 +287,7 @@ class ScoreController extends Controller {
      * @param $examId
      * @return JsonResponse
      */
-    public function getDatas($examId){
+    public function listdatas($examId){
         $exam = Exam::whereId($examId)->first();
         $squadIds = explode(',', $exam->class_ids);
         $subjectIds = explode(',', $exam->subject_ids);
@@ -372,7 +372,7 @@ class ScoreController extends Controller {
      * @param $suquad_id
      * @return JsonResponse|string
      */
-    public function claStudents($suquad_id) {
+    public function clastudents($suquad_id) {
         $squad = Squad::whereId($suquad_id)->first();
         $students = [];
         if ($squad) {
