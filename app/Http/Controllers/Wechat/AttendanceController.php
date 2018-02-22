@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Wechat;
 
 use App\Facades\Wechat;
 use App\Http\Controllers\Controller;
+use App\Models\Grade;
 use App\Models\Semester;
 use App\Models\Squad;
 use App\Models\Student;
@@ -211,21 +212,50 @@ class AttendanceController extends Controller {
             return response()->json(['data' => '暂未找到您教师的身份！', 'statusCode' => 500]);
         }
         #班级列表 可能存在多个年级
-        $squadLists = $educator->classes;
+        #为年级主任的年级ids
+        $gradeIds = [];
+        $grades = Grade::whereEnabled(1)->where('school_id',$educator->school_id)->get();
+        foreach ($grades as $gra){
+            if(in_array($educator->id, explode(',', $gra->educator_ids))){
+                $gradeIds[] = $gra->id;
+            }
+        }
+        $squads = [];
+        $squadId = [];
+        $classId = [];
+        #找出年级主任对应的班级
+        foreach ($gradeIds as $gradeId){
+            $squads[] = Grade::whereId($gradeId)->first()->classes;
+        }
+        foreach ($squads as $squad){
+            foreach ($squad as $sq){
+                $squadId[] = $sq->id;
+            }
+        }
+        #找出直接对应的班级且不属于对应该班级的年级的年级主任
+        foreach ($educator->classes as $squad) {
+            $grade = $squad->grade;
+            if (!in_array($educator->id, explode(',', $grade->educator_ids))) {
+                $classId[] = $squad->id;
+            }
+        }
+        #合并与教职员工相关的所有班级id
+        $classIds = array_merge($squadId, $classId);
+        $squadLists = Squad::whereIn('id', $classIds)->get();
         if(count($squadLists) == 0){
             return response()->json(['data' => '老师，您还未绑定班级关系！', 'statusCode' => 500]);
         }
         $data['squadnames'] = [];
-        $gradeIds = [];
+        $graIds = [];
         foreach ($squadLists as $s) {
-            $gradeIds[] = $s->grade->id;
+            $graIds[] = $s->grade->id;
             $data['squadnames'][] = [
                 'title' => $s->name, 'value' => $s->id,
             ];
         }
         $data['squadnames'] = array_unique($data['squadnames'], SORT_REGULAR);
         #根据年级分组规则
-        $rules = StudentAttendanceSetting::whereIn('grade_id', array_unique($gradeIds))->get();
+        $rules = StudentAttendanceSetting::whereIn('grade_id', array_unique($graIds))->get();
         $data['rulenames'] = [];
         foreach ($rules as $r) {
             $data['rulenames'][] = [
@@ -287,9 +317,36 @@ class AttendanceController extends Controller {
             ->where('semester_id', $semester)
             ->where('day', $weekDay)
             ->first();
-        #这个星期没有设置对应的规则
+        #这个星期这个年级没有设置对应的规则
         if (!$rule){
-            return false;
+            $gradeIds = [];
+            $rules = [];
+            $studentIds = [];
+            #找出教师是年级主任的年级
+            $grades = Grade::whereEnabled(1)->where('school_id',$educator->school_id)->get();
+            foreach ($grades as $gra){
+                if(in_array($educator->id, explode(',', $gra->educator_ids))){
+                    $gradeIds[] = $gra->id;
+                }
+            }
+            foreach ($gradeIds as $gradeId){
+                $rules[] = StudentAttendanceSetting::where('grade_id', $gradeId)
+                    ->where('semester_id', $semester)
+                    ->where('day', $weekDay)
+                    ->first();
+            }
+            if (count($rules) != 0) {
+                $rule = array_unique($rules)[0];
+                #再重新找到对应规则的年级对象
+                $gradestu = Grade::whereId($rule->grade_id)->first();
+                #再根据年级找到一个改年级下对应班级对应学生ids
+                $squadstus = $gradestu->classes->first();
+                foreach ($squadstus->students as $stus){
+                    $studentIds[] = $stus->id;
+                }
+            } else {
+                return false;
+            }
         }
         #同一个学生这段时间打了多次记录 取这段时间最晚的一条记录
         $attendances = StudentAttendance::where('sas_id', $rule->id)
@@ -301,7 +358,7 @@ class AttendanceController extends Controller {
             ->unique('student_id');
         $normalRecords = $attendances->where('status', 1)->count();
         $abnormalRecords = $attendances->where('status', 0)->count();
-        $noRecords = $squad->students->count() - $normalRecords - $abnormalRecords;
+        $noRecords = count($studentIds) - $normalRecords - $abnormalRecords;
         $data['charts'] = [
             ['name' => '打卡', 'value' => $normalRecords],
             ['name' => '异常', 'value' => $abnormalRecords],
