@@ -15,7 +15,7 @@ class ExamRequest extends FormRequest {
     public function rules() {
         
         return [
-            'name'         => 'required|string|max:255|unique:exams,name,' .
+            'name'         => 'required|string|between:4,40|unique:exams,name,' .
                 $this->input('id') . ',id',
             'remark'       => 'required|string|max:255',
             'exam_type_id' => 'required|integer',
