@@ -84,7 +84,7 @@ class ConferenceQueueController extends Controller {
      */
     public function show($id) {
         
-        $cq = ConferenceQueue::find($id);
+        $cq = $this->cq->find($id);
         abort_if(!$cq, self::NOT_FOUND);
         $this->authorize('eud', $cq);
         
@@ -103,7 +103,7 @@ class ConferenceQueueController extends Controller {
      */
     public function edit($id) {
         
-        $cq = ConferenceQueue::find($id);
+        $cq = $this->cq->find($id);
         abort_if(!$cq, self::NOT_FOUND);
         $this->authorize('rud', $cq);
         
@@ -121,7 +121,7 @@ class ConferenceQueueController extends Controller {
      */
     public function update(ConferenceQueueRequest $request, $id) {
         
-        $cq = ConferenceQueue::find($id);
+        $cq = $this->cq->find($id);
         abort_if(!$cq, self::NOT_FOUND);
         $this->authorize('eud', $cq);
         
@@ -140,7 +140,7 @@ class ConferenceQueueController extends Controller {
      */
     public function destroy($id) {
         
-        $cq = ConferenceQueue::find($id);
+        $cq = $this->cq->find($id);
         abort_if(!$cq, self::NOT_FOUND);
         $this->authorize('eud', $cq);
         

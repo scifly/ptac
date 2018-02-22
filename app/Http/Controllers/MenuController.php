@@ -34,7 +34,9 @@ class MenuController extends Controller {
     public function index() {
         
         if (Request::method() === 'POST') {
-            return Menu::tree(Menu::rootMenuId(true));
+            return Menu::tree(
+                Menu::rootMenuId(true)
+            );
         }
 
         return $this->output();
@@ -146,9 +148,11 @@ class MenuController extends Controller {
     public function destroy($id) {
 
         $menu = Menu::find($id);
-        if (!$menu) { return $this->notFound(); }
+        abort_if(!$menu, self::NOT_FOUND);
 
-        return $this->result($menu->remove($id));
+        return $this->result(
+            $menu->remove($id)
+        );
 
     }
 
@@ -176,7 +180,7 @@ class MenuController extends Controller {
     public function menuTabs($id) {
 
         $menu = Menu::find($id);
-        if (!$menu) { return $this->notFound(); }
+        abort_if(!$menu, self::NOT_FOUND);
         $tabRanks = MenuTab::whereMenuId($id)
             ->get()
             ->sortBy('tab_order')
@@ -203,12 +207,12 @@ class MenuController extends Controller {
      */
     public function rankTabs($id) {
 
-        $menu = Menu::find($id);
-        if (!$menu) { return $this->notFound(); }
+        abort_if(!Menu::find($id), self::NOT_FOUND);
         $ranks = Request::get('data');
 
-        return MenuTab::storeTabRanks($id, $ranks)
-            ? $this->succeed() : $this->fail();
+        return $this->result(
+            MenuTab::storeTabRanks($id, $ranks)
+        );
 
     }
     

@@ -16,10 +16,13 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class DepartmentController extends Controller {
-    
-    function __construct() {
+
+    protected $department;
+
+    function __construct(Department $department) {
     
         $this->middleware(['auth', 'checkrole']);
+        $this->department = $department;
         
     }
     
@@ -78,9 +81,12 @@ class DepartmentController extends Controller {
      */
     public function show($id) {
         
-        $department = Department::find($id);
+        $department = $this->department->find($id);
+        abort_if(!$department, self::NOT_FOUND);
 
-        return $this->output(['department' => $department]);
+        return $this->output([
+            'department' => $department,
+        ]);
         
     }
     
@@ -93,9 +99,12 @@ class DepartmentController extends Controller {
      */
     public function edit($id) {
         
-        $department = Department::find($id);
+        $department = $this->department->find($id);
+        abort_if(!$department, self::NOT_FOUND);
 
-        return $this->output(['department' => $department]);
+        return $this->output([
+            'department' => $department,
+        ]);
         
     }
     
@@ -108,7 +117,8 @@ class DepartmentController extends Controller {
      */
     public function update(DepartmentRequest $request, $id) {
         
-        $department = Department::find($id);
+        $department = $this->department->find($id);
+        abort_if(!$department, self::NOT_FOUND);
 
         return $this->result(
             $department::modify($request->all(), $id, true)
@@ -126,7 +136,8 @@ class DepartmentController extends Controller {
      */
     public function destroy($id) {
         
-        $department = Department::find($id);
+        $department = $this->department->find($id);
+        abort_if(!$department, self::NOT_FOUND);
 
         return $this->result($department::remove($id));
         
@@ -142,11 +153,9 @@ class DepartmentController extends Controller {
     public function move($id, $parentId = null) {
         
         if (!$parentId) { return $this->fail('非法操作'); }
-        $department = Department::find($id);
-        $parentDepartment = Department::find($parentId);
-        if (!$department || !$parentDepartment) {
-            return $this->notFound();
-        }
+        $department = $this->department->find($id);
+        $parentDepartment = $this->department->find($parentId);
+        abort_if(!$department || !$parentDepartment, self::NOT_FOUND);
         if ($department::movable($id, $parentId)) {
             return $this->result(
                 $department::move($id, $parentId, true)
@@ -164,7 +173,7 @@ class DepartmentController extends Controller {
         
         $orders = Request::get('data');
         foreach ($orders as $id => $order) {
-            $department = Department::find($id);
+            $department = $this->department->find($id);
             if (isset($department)) {
                 $department->order = $order;
                 $department->save();
@@ -173,27 +182,4 @@ class DepartmentController extends Controller {
         
     }
 
-
-    /**
-     * 获取该部门下所有部门id
-     * @param $id
-     * @return array
-     */
-    private static function departmentChildrenIds($id) {
-        
-        static $childrenIds = [];
-        $firstIds = Department::whereParentId($id)
-            ->pluck('id')
-            ->toArray();
-        if ($firstIds) {
-            foreach ($firstIds as $id) {
-                $childrenIds[] = $id['id'];
-                self::departmentChildrenIds($id['id']);
-            }
-        }
-
-        return $childrenIds;
-        
-    }
-    
 }

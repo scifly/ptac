@@ -177,5 +177,7 @@ class SchoolController extends Controller {
             'uri'        => Request::path(),
             'title'      => '学校设置',
         ]);
+
     }
+
 }

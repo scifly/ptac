@@ -6,12 +6,12 @@ use App\Http\Requests\EducatorRequest;
 use App\Models\Department;
 use App\Models\Educator;
 use App\Models\School;
-use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use PHPExcel_Exception;
+use ReflectionException;
 use Throwable;
 
 /**
@@ -22,9 +22,12 @@ use Throwable;
  */
 class EducatorController extends Controller {
 
-    public function __construct() {
+    protected $educator;
+
+    public function __construct(Educator $educator) {
 
         $this->middleware(['auth', 'checkrole']);
+        $this->educator = $educator;
 
     }
 
@@ -37,7 +40,9 @@ class EducatorController extends Controller {
     public function index() {
 
         if (Request::get('draw')) {
-            return response()->json(Educator::datatable());
+            return response()->json(
+                $this->educator->datatable()
+            );
         }
 
         return $this->output();
@@ -73,9 +78,13 @@ class EducatorController extends Controller {
      */
     public function store(EducatorRequest $request) {
 
-        $this->authorize('c', Educator::class);
+        $this->authorize(
+            'c', Educator::class
+        );
 
-        return $this->result(Educator::store($request));
+        return $this->result(
+            $this->educator->store($request)
+        );
 
     }
 
@@ -89,6 +98,7 @@ class EducatorController extends Controller {
     public function show($id) {
 
         $educator = Educator::find($id);
+        abort_if(!$educator, self::NOT_FOUND);
         $this->authorize('rud', $educator);
 
         return $this->output(['educator' => $educator]);
@@ -105,7 +115,7 @@ class EducatorController extends Controller {
     public function edit($id) {
 
         $educator = Educator::find($id);
-     
+        abort_if(!$educator, self::NOT_FOUND);
         $this->authorize('rud', $educator);
         if (Request::method() === 'POST') {
             return response()->json(Department::tree());
@@ -139,6 +149,7 @@ class EducatorController extends Controller {
     public function recharge($id) {
 
         $educator = Educator::find($id);
+        abort_if(!$educator, self::NOT_FOUND);
         $this->authorize('rud', $educator);
 
         return $this->output(['educator' => $educator]);
@@ -157,9 +168,12 @@ class EducatorController extends Controller {
     public function update(EducatorRequest $request, $id) {
 
         $educator = Educator::find($id);
+        abort_if(!$educator, self::NOT_FOUND);
         $this->authorize('rud', $educator);
 
-        return $this->result($educator->modify($request));
+        return $this->result(
+            $educator->modify($request)
+        );
 
     }
 
@@ -173,12 +187,15 @@ class EducatorController extends Controller {
     public function rechargeStore($id) {
 
         $educator = Educator::find($id);
+        abort_if(!$educator, self::NOT_FOUND);
         $this->authorize('rud', $educator);
 
         $recharge = Request::get('recharge');
         $educator->sms_quote += $recharge;
 
-        return $educator->save() ? $this->succeed() : $this->fail();
+        return $this->result(
+            $educator->save()
+        );
 
     }
 
@@ -187,14 +204,19 @@ class EducatorController extends Controller {
      *
      * @param $id
      * @return JsonResponse
-     * @throws Exception
+     * @throws AuthorizationException
+     * @throws Throwable
+     * @throws ReflectionException
      */
     public function destroy($id) {
 
         $educator = Educator::find($id);
+        abort_if(!$educator, self::NOT_FOUND);
         $this->authorize('rud', $educator);
 
-        return $this->result($educator->remove($id, true));
+        return $this->result(
+            $educator->remove($id, true)
+        );
 
     }
 
@@ -217,7 +239,7 @@ class EducatorController extends Controller {
             }
             // 文件是否上传成功
             if ($file->isValid()) {
-                $result = Educator::upload($file);
+                $result = $this->educator->upload($file);
                 return response()->json($result);
             }
         }
@@ -241,7 +263,7 @@ class EducatorController extends Controller {
         }
         $id = Request::query('id');
         if ($id) {
-            $data = Educator::export($id);
+            $data = $this->educator->export($id);
             /** @noinspection PhpMethodParametersCountMismatchInspection */
             /** @noinspection PhpUndefinedMethodInspection */
             Excel::create(iconv('UTF-8', 'GBK', '教职员工列表'), function ($excel) use ($data) {
@@ -266,6 +288,5 @@ class EducatorController extends Controller {
         return $this->result(false);
 
     }
-
 
 }

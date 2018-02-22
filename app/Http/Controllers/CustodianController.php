@@ -101,7 +101,7 @@ class CustodianController extends Controller {
      */
     public function show($id){
         
-        $custodian = Custodian::find($id);
+        $custodian = $this->custodian->find($id);
         abort_if(!$custodian, self::NOT_FOUND);
         
         return $this->output([
@@ -129,7 +129,7 @@ class CustodianController extends Controller {
                 return response()->json(Department::tree());
             }
         }
-        $custodian = Custodian::find($id);
+        $custodian = $this->custodian->find($id);
         abort_if(!$custodian, self::NOT_FOUND);
         $pupils = CustodianStudent::whereCustodianId($id)->get();
         return $this->output([
@@ -150,7 +150,7 @@ class CustodianController extends Controller {
      */
     public function update(CustodianRequest $request, $id) {
 
-        $custodian = Custodian::find($id);
+        $custodian = $this->custodian->find($id);
         abort_if(!$custodian, self::NOT_FOUND);
         
         return $this->result(
@@ -169,7 +169,7 @@ class CustodianController extends Controller {
      */
     public function destroy($id) {
         
-        $custodian = Custodian::find($id);
+        $custodian = $this->custodian->find($id);
         abort_if(!$custodian, self::NOT_FOUND);
         
         return $this->result(
