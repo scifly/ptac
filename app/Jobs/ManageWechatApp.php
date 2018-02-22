@@ -39,7 +39,7 @@ class ManageWechatApp implements ShouldQueue {
             'isreportenter' => $this->app->isreportenter,
             'home_url' => $this->app->home_url,
         ];
-        $accessToken = Wechat::getAccessToken(Corp::whereId($this->app->corp_id)->corpid, $this->app->secret);
+        $accessToken = Wechat::getAccessToken(Corp::whereId($this->app->corp_id)->first()->corpid, $this->app->secret);
         return Wechat::configApp($accessToken, $app);
         
     }
