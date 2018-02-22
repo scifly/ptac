@@ -470,7 +470,7 @@ class AttendanceController extends Controller {
             ->unique('student_id');
         $normalRecords = $attendances->where('status', 1)->count();
         $abnormalRecords = $attendances->where('status', 0)->count();
-        $noRecords = $squad->students->count() - $normalRecords - $abnormalRecords;
+        $noRecords = count($studentIds) - $normalRecords - $abnormalRecords;
         $data['charts'] = [
             ['name' => '打卡', 'value' => $normalRecords],
             ['name' => '异常', 'value' => $abnormalRecords],
