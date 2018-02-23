@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers\Wechat;
 
-use App\Facades\Wechat;
 use App\Http\Controllers\Controller;
 use App\Models\Grade;
 use App\Models\Semester;
@@ -140,7 +139,7 @@ class AttendanceController extends Controller {
             ->orderBy('punch_time', 'ASC')
             ->get();
         $data = $this->getDays($id, $beginTime, $endTime);
-
+        
         return view('wechat.attendance_records.attendance_records', [
             'id'   => $id,
             'data' => $data,
@@ -171,7 +170,7 @@ class AttendanceController extends Controller {
         foreach ($abnormal as $a) {
             # 查询考勤异常当天的所有数据
             $sAttendance = StudentAttendance::whereDate('punch_time', substr($a->punch_time, 0, 10))
-                ->where('student_id',$id)
+                ->where('student_id', $id)
                 ->where('punch_time', '>', $beginTime)
                 ->where('punch_time', '<', $endTime)
                 ->get();
@@ -184,7 +183,7 @@ class AttendanceController extends Controller {
         }
         # 查询考勤正常天数的数据
         $normal = StudentAttendance::whereNotIn('id', $ids)
-            ->where('student_id',$id)
+            ->where('student_id', $id)
             ->where('punch_time', '>', $beginTime)
             ->where('punch_time', '<', $endTime)
             ->get();
@@ -208,43 +207,15 @@ class AttendanceController extends Controller {
         $input = Request::all();
         $user = User::whereUserid(Session::get('userId'))->first();
         $educator = $user->educator;
-        if(!$educator){
+        if (!$educator) {
             return response()->json(['data' => '暂未找到您教师的身份！', 'statusCode' => 500]);
         }
-        #班级列表 可能存在多个年级
-        #为年级主任的年级ids
-        $gradeIds = [];
-        $grades = Grade::whereEnabled(1)->where('school_id',$educator->school_id)->get();
-        foreach ($grades as $gra){
-            if(in_array($educator->id, explode(',', $gra->educator_ids))){
-                $gradeIds[] = $gra->id;
-            }
-        }
-        $squads = [];
-        $squadId = [];
-        $classId = [];
-        #找出年级主任对应的班级
-        foreach ($gradeIds as $gradeId){
-            $squads[] = Grade::whereId($gradeId)->first()->classes;
-        }
-        foreach ($squads as $squad){
-            foreach ($squad as $sq){
-                $squadId[] = $sq->id;
-            }
-        }
-        #找出直接对应的班级且不属于对应该班级的年级的年级主任
-        foreach ($educator->classes as $squad) {
-            $grade = $squad->grade;
-            if (!in_array($educator->id, explode(',', $grade->educator_ids))) {
-                $classId[] = $squad->id;
-            }
-        }
-        #合并与教职员工相关的所有班级id
-        $classIds = array_merge($squadId, $classId);
-        $squadLists = Squad::whereIn('id', $classIds)->get();
-        if(count($squadLists) == 0){
+        #找到与教职员工相关的所有班级ids
+        $classIds = $this->geteduClass($educator);
+        if (empty($classIds)) {
             return response()->json(['data' => '老师，您还未绑定班级关系！', 'statusCode' => 500]);
         }
+        $squadLists = Squad::whereIn('id', $classIds)->get();
         $data['squadnames'] = [];
         $graIds = [];
         foreach ($squadLists as $s) {
@@ -259,21 +230,23 @@ class AttendanceController extends Controller {
         $data['rulenames'] = [];
         foreach ($rules as $r) {
             $data['rulenames'][] = [
-                'title' => $r->name, 'value' => $r->id
+                'title' => $r->name, 'value' => $r->id,
             ];
         }
         #饼图数据填充
         if (!isset($input['squad']) && !isset($input['time']) && !isset($input['rule'])) {
-            $datas = $this->defcharts($educator, $data);
-            if(!$datas){
+            $datas = $this->defcharts($classIds, $data);
+            if (!$datas) {
                 return response()->json(['data' => '请加入相应的考勤规则！', 'statusCode' => 500]);
             }
+            
             return response()->json(['data' => $datas, 'statusCode' => 200]);
         } else {
             $datas = $this->fltcharts($input, $data);
-            if(!$data){
+            if (!$data) {
                 return response()->json(['data' => '请加入相应的考勤规则！', 'statusCode' => 500]);
             }
+            
             return response()->json(['data' => $datas, 'statusCode' => 200]);
         }
     }
@@ -281,16 +254,15 @@ class AttendanceController extends Controller {
     /**
      * 饼图默认数据填入
      *
-     * @param $educator
+     * @param $classIds
      * @param $data
      * @return bool|\Illuminate\Http\JsonResponse
      * @throws \Throwable
      */
-    private function defcharts($educator, $data) {
-        
+    private function defcharts($classIds, $data) {
         #如果条件为空 默认当天 该老师对应的第一个班级，第一个规则图
         #班级存在多个 默认取一个
-        $squad = $educator->classes->first();
+        $squad = Squad::whereId($classIds[0])->first();
         $grade = $squad->grade;
         $school = $grade->school;
         $schoolSemesters = Semester::where('school_id', $school->id)->whereEnabled(1)->get();
@@ -318,35 +290,8 @@ class AttendanceController extends Controller {
             ->where('day', $weekDay)
             ->first();
         #这个星期这个年级没有设置对应的规则
-        if (!$rule){
-            $gradeIds = [];
-            $rules = [];
-            $studentIds = [];
-            #找出教师是年级主任的年级
-            $grades = Grade::whereEnabled(1)->where('school_id',$educator->school_id)->get();
-            foreach ($grades as $gra){
-                if(in_array($educator->id, explode(',', $gra->educator_ids))){
-                    $gradeIds[] = $gra->id;
-                }
-            }
-            foreach ($gradeIds as $gradeId){
-                $rules[] = StudentAttendanceSetting::where('grade_id', $gradeId)
-                    ->where('semester_id', $semester)
-                    ->where('day', $weekDay)
-                    ->first();
-            }
-            if (count($rules) != 0) {
-                $rule = array_unique($rules)[0];
-                #再重新找到对应规则的年级对象
-                $gradestu = Grade::whereId($rule->grade_id)->first();
-                #再根据年级找到一个改年级下对应班级对应学生ids
-                $squadstus = $gradestu->classes->first();
-                foreach ($squadstus->students as $stus){
-                    $studentIds[] = $stus->id;
-                }
-            } else {
-                return false;
-            }
+        if (!$rule) {
+            return false;
         }
         #同一个学生这段时间打了多次记录 取这段时间最晚的一条记录
         $attendances = StudentAttendance::where('sas_id', $rule->id)
@@ -552,7 +497,7 @@ class AttendanceController extends Controller {
             'abnormallist' => $abnormalList,
             'nostulist'    => $noStuList,
         ])->render();
-    
+        
         return !empty($data) ? $data : false;
     }
     
@@ -568,28 +513,82 @@ class AttendanceController extends Controller {
         $data = [];
         foreach ($rules as $r) {
             $data[] = [
-                'title' => $r->name, 'value' => $r->id
+                'title' => $r->name, 'value' => $r->id,
             ];
         }
         if (empty($data)) {
             return response()->json(['data' => '该年级下未设置考勤规则！', 'statusCode' => 500]);
         }
+        
         return response()->json(['data' => $data, 'statusCode' => 200]);
     }
     
     /**
      * 判断日期和规则是否匹配
      */
-    public function dateRules(){
+    public function dateRules() {
         $input = Request::all();
-        if($input['date'] != null && $input['rule'] != null){
+        if ($input['date'] != null && $input['rule'] != null) {
             #获取规则的星期
             $ruleDay = StudentAttendanceSetting::whereId($input['rule'])->first()->day;
             $weekArray = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
             $weekDay = $weekArray[date("w", strtotime($input['date']))];
+            
             return $ruleDay == $weekDay ? response()->json(['message' => '', 'statusCode' => 200]) :
-            response()->json(['message' => '请选择和规则对应的星期！', 'statusCode' => 500]);
+                response()->json(['message' => '请选择和规则对应的星期！', 'statusCode' => 500]);
         }
+        
         return response()->json(['message' => '', 'statusCode' => 200]);
+    }
+    
+    /**
+     * 获取与教职员工关联的所有班级ids
+     * @param $educator
+     * @return array
+     */
+    private function geteduClass($educator) {
+        #找出改教职员工对应的所有班级的集合
+        $gradeIds = [];
+        $squadIds = [];
+        $classIds = [];
+        $graclassIds = [];
+        #年级主任对应的年级id
+        $grades = Grade::whereEnabled(1)->where('school_id', $educator->school_id)->get();
+        foreach ($grades as $gra) {
+            if (in_array($educator->id, explode(',', $gra->educator_ids))) {
+                $gradeIds[] = $gra->id;
+            }
+        }
+        #找出年级对应的班级
+        $graclasses = [];
+        foreach ($gradeIds as $gradeId) {
+            $graclasses[] = Grade::whereId($gradeId)->first()->classes;
+        }
+        foreach ($graclasses as $squad) {
+            foreach ($squad as $sq) {
+                $graclassIds[] = $sq->id;
+            }
+        }
+        #班级主任对应的班级id, 需要排除年级下的班级
+        $squads = Squad::whereEnabled(1)->get();
+        foreach ($squads as $squad) {
+            $grade = $squad->grade;
+            if (!in_array($educator->id, explode(',', $grade->educator_ids))
+                && in_array($educator->id, explode(',', $squad->educator_ids))) {
+                $squadIds[] = $squad->id;
+            }
+        }
+        #找出科任老师对应的班级ids 排除属于班主任对应的班级和属于年级主任对应的班级
+        foreach ($educator->classes as $sq) {
+            $grade = $sq->grade;
+            if (!in_array($educator->id, explode(',', $grade->educator_ids))
+                && !in_array($educator->id, explode(',', $sq->educator_ids))) {
+                $classIds[] = $sq->id;
+            }
+        }
+        #与该教职工关联的全部班级
+        $eduClass = array_merge($graclassIds, $squadIds, $classIds);
+        
+        return $eduClass;
     }
 }
