@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Wechat;
 
+use App\Facades\Wechat;
 use App\Http\Controllers\Controller;
 use App\Models\Grade;
 use App\Models\Semester;
