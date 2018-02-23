@@ -14,6 +14,7 @@ use App\Models\Message;
 use App\Models\MessageReply;
 use App\Models\MessageSendingLog;
 use App\Models\MessageType;
+use App\Models\Squad;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -638,16 +639,29 @@ class MessageCenterController extends Controller {
         $classes = $educator->classes;
         #找出教师关联的年级 且判断是否为年级主任
         $gradeId = [];
+        $squadId = [];
         $classId = [];
+        #年级主任对应的年级
         $grades = Grade::whereEnabled(1)->where('school_id',$school->id)->get();
         foreach ($grades as $gra){
             if(in_array($educator->id, explode(',', $gra->educator_ids))){
                 $gradeId[] = $gra->department_id;
             }
         }
+        #班级主任对应的班级id, 需要排除年级下的班级
+        $squads = Squad::whereEnabled(1)->get();
+        foreach ($squads as $sq) {
+            $grade = $sq->grade;
+            if (!in_array($educator->id, explode(',', $grade->educator_ids))
+                &&in_array($educator->id, explode(',', $sq->educator_ids))) {
+                $squadId[] = $sq->department_id;
+            }
+        }
+        #找出科任老师对应的班级ids 排除属于班主任对应的班级和属于年级主任对应的班级
         foreach ($classes as $squad) {
             $grade = $squad->grade;
-            if (!in_array($educator->id, explode(',', $grade->educator_ids))) {
+            if (!in_array($educator->id, explode(',', $grade->educator_ids))
+            &&!in_array($educator->id, explode(',', $squad->educator_ids))) {
                 $classId[] = $squad->department_id;
             }
         }
@@ -655,7 +669,7 @@ class MessageCenterController extends Controller {
             #年级列表
             'graLists' => Department::whereIn('id', $gradeId)->get(),
             #班级列表
-            'claLists' => Department::whereIn('id', $classId)->get(),
+            'claLists' => Department::whereIn('id', array_merge($squadId, $classId))->get(),
             #初始人员列表
             'users'    => false,
             #学校对应的部门
