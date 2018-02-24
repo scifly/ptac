@@ -693,7 +693,8 @@ class Student extends Model {
 
     /**
      * 根据教职员工id获取对应的班级ID和学生id
-     * @param $id||教职员工id
+     * @param $schoolId
+     * @param $id ||教职员工id
      * @return array
      */
     static function getClassStudent($schoolId,$id){
