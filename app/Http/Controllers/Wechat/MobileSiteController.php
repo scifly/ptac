@@ -93,15 +93,15 @@ class MobileSiteController extends Controller
      */
     public function wapSiteModuleHome() {
         $id = Request::input('id');
-        $articles = WsmArticle::whereWsmId($id)->orderByDesc("created_at")->get();
+        $articles = WsmArticle::whereWsmId($id)
+            ->orderByDesc("created_at")->get();
         $module = WapSiteModule::whereId($id)->first();
 
         return view('wechat.wapsite.module_index', [
             'articles' => $articles,
-            'module' => $module,
+            'module'   => $module,
             'ws'       => true,
         ]);
-
     }
 
     /**
