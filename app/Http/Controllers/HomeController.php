@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Models\Corp;
 use App\Models\Menu;
 use App\Models\MenuTab;
@@ -73,7 +74,7 @@ class HomeController extends Controller {
             }
             if (Request::ajax()) {
                 return response()->json([
-                    'statusCode' => self::OK,
+                    'statusCode' => HttpStatusCode::OK,
                     'title' => '首页',
                     'uri' => Request::path(),
                     'html' => view('home.' . $view)->render()
@@ -148,12 +149,12 @@ class HomeController extends Controller {
                 $tabArray[0]['active'] = true;
             }
         } else {
-            abort(self::NOT_FOUND);
+            abort(HttpStatusCode::NOT_FOUND);
         }
         # 获取并返回wrapper-content层中的html内容
         if (Request::ajax()) {
             return response()->json([
-                'statusCode' => self::OK,
+                'statusCode' => HttpStatusCode::OK,
                 'html' => view('partials.site_content', ['tabs' => $tabArray])->render()
             ]);
         }

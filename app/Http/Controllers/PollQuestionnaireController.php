@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\PqRequest;
 use App\Models\PollQuestionnaire;
 use Exception;
@@ -89,7 +90,7 @@ class PollQuestionnaireController extends Controller {
     public function show($id) {
         
         $pq = PollQuestionnaire::find($id);
-        abort_if(!$pq, self::NOT_FOUND);
+        abort_if(!$pq, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $pq);
         
         return $this->output([
@@ -107,7 +108,7 @@ class PollQuestionnaireController extends Controller {
     public function edit($id) {
         
         $pq = PollQuestionnaire::find($id);
-        abort_if(!$pq, self::NOT_FOUND);
+        abort_if(!$pq, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $pq);
         
         return $this->output(['pq' => $pq]);
@@ -125,7 +126,7 @@ class PollQuestionnaireController extends Controller {
     public function update(PqRequest $request, $id) {
         
         $pq = PollQuestionnaire::find($id);
-        abort_if(!$pq, self::NOT_FOUND);
+        abort_if(!$pq, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $pq);
         
         return $this->result(
@@ -144,7 +145,7 @@ class PollQuestionnaireController extends Controller {
     public function destroy($id) {
         
         $pq = PollQuestionnaire::find($id);
-        abort_if(!$pq, self::NOT_FOUND);
+        abort_if(!$pq, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $pq);
         
         return $this->result($pq->remove($id));

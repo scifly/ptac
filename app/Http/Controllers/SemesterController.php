@@ -1,11 +1,11 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\SemesterRequest;
 use App\Models\Semester;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -90,7 +90,7 @@ class SemesterController extends Controller {
     public function edit($id) {
         
         $semester = Semester::find($id);
-        abort_if(!$semester, self::NOT_FOUND);
+        abort_if(!$semester, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $semester);
         
         return $this->output(['semester' => $semester]);
@@ -108,7 +108,7 @@ class SemesterController extends Controller {
     public function update(SemesterRequest $request, $id) {
         
         $semester = Semester::find($id);
-        abort_if(!$semester, self::NOT_FOUND);
+        abort_if(!$semester, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $semester);
         
         return $this->result(
@@ -127,7 +127,7 @@ class SemesterController extends Controller {
     public function destroy($id) {
         
         $semester = Semester::find($id);
-        abort_if(!$semester, self::NOT_FOUND);
+        abort_if(!$semester, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $semester);
         
         return $this->result(

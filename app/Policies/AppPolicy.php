@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Helpers\HttpStatusCode;
 use App\Models\App;
 use App\Models\Corp;
 use App\Models\User;
@@ -27,7 +28,7 @@ class AppPolicy {
      */
     public function eum(User $user, App $app) {
 
-        if (!$app) { abort(404); }
+        if (!$app) { abort(HttpStatusCode::NOT_FOUND); }
         $role = $user->group->name;
         switch ($role) {
             case '运营': return true;

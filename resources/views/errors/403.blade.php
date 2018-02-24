@@ -9,7 +9,7 @@
 </head>
 <body>
     <div>
-        <h1>403</h1>
+        <h1>403 Unauthorized</h1>
         <a href="javascript:history.back();">Back</a>
     </div>
 </body>

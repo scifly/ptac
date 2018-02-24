@@ -6,6 +6,7 @@ use App\Events\ContactImportTrigger;
 use App\Events\StudentImported;
 use App\Events\StudentUpdated;
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\StudentRequest;
 use App\Rules\Mobiles;
 use Carbon\Carbon;
@@ -125,7 +126,7 @@ class Student extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function store(StudentRequest $request) {
+    public function store(StudentRequest $request) {
         
         try {
             DB::transaction(function () use ($request) {
@@ -190,35 +191,7 @@ class Student extends Model {
         
     }
     
-    /**
-     * 获取年级/班级的部门id
-     *
-     * @param $school
-     * @param $grade
-     * @param $class
-     * @return int|mixed
-     */
-    private static function deptId($school, $grade, $class) {
-        
-        $deptSchool = Department::whereName($school)->first();
-        if ($deptSchool) {
-            $deptGrade = Department::whereName($grade)
-                ->where('parent_id', $deptSchool->id)
-                ->first();
-            if ($deptGrade) {
-                $deptClass = Department::whereName($class)
-                    ->where('parent_id', $deptGrade->id)
-                    ->first();
-                if($deptClass)
-                    return $deptClass->id;
-                else
-                    return 0;
-            }
-            return 0;
-        }
-        return 0;
-        
-    }
+    
 
     /**
      * 返回表单 年级和班级的下拉框数据
@@ -351,10 +324,10 @@ class Student extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function remove($studentId) {
+    public function remove($studentId) {
 
         $student = self::find($studentId);
-        #if (!isset($custodian)) { return false; }
+        if (!isset($student)) { return false; }
         try {
             DB::transaction(function () use ($studentId, $student) {
                 $userId = $student->user_id;
@@ -389,7 +362,7 @@ class Student extends Model {
      * @return array
      * @throws PHPExcel_Exception
      */
-    static function upload(UploadedFile $file) {
+    public function upload(UploadedFile $file) {
 
         $ext = $file->getClientOriginalExtension();     // 扩展名//xls
         $realPath = $file->getRealPath();   //临时文件的绝对路径
@@ -430,11 +403,13 @@ class Student extends Model {
             $data['type'] = 'student';
             event(new ContactImportTrigger($data));
             return [
-                'statusCode' => 200,
+                'statusCode' => HttpStatusCode::OK,
                 'message' => '上传成功'
             ];
         }
+        
         return abort(500, '上传失败');
+        
     }
 
     /**
@@ -453,6 +428,7 @@ class Student extends Model {
      * @param array $data
      */
     private static function checkData(array $data) {
+        
         $rules = [
             'name' => 'required|string|between:2,6',
             'gender' => [
@@ -559,7 +535,7 @@ class Student extends Model {
      * @param $classId
      * @return array
      */
-    static function export($classId) {
+    public function export($classId) {
         
         $students = self::whereClassId($classId)->get();
         $data = array(self::EXCEL_EXPORT_TITLE);
@@ -599,7 +575,7 @@ class Student extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
 
         $columns = [
             ['db' => 'Student.id', 'dt' => 0],
@@ -681,12 +657,13 @@ class Student extends Model {
         $user = Auth::user();
 
         $role = $user->group->id;
-        if($role > 5){
+        if ($role > 5){
             $educatorId = $user->educator->id;
             $studentIds = self::getClassStudent($educatorId)[1];
             $studentIds = implode(',',$studentIds);
             $condition .= " and Student.id in ($studentIds)";
         }
+        
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }
@@ -697,6 +674,7 @@ class Student extends Model {
      * @return array
      */
     static function getClassStudent($id){
+        
         $classIds  = $studentIds = [];
         $schoolId = School::schoolId();
         // 查询该教职员工是否是年级主任
@@ -745,11 +723,12 @@ class Student extends Model {
 
     /**
      * 根据班级对象查询班级下面对应的所有学生id
+     *
      * @param $classes
      * @return array
      */
-    static function getStudentIds($classes)
-    {
+    static function getStudentIds($classes) {
+        
         $gradeIds = $classIds = $studentIds = [];
         if(sizeof($classes) != 0){
             foreach ($classes as $c){
@@ -783,8 +762,8 @@ class Student extends Model {
      * @param $id ||教职员工id
      * @return array
      */
-    static function getGrade($id)
-    {
+    static function getGrade($id) {
+        
         $schoolId = School::schoolId();
         $gradeIds = $classIds = $grades = $classes = $data = [];
 
@@ -839,6 +818,36 @@ class Student extends Model {
         }
         $data = [$gradeIds ,$gradeClass];
         return $data;
+    }
+    
+    /**
+     * 获取年级/班级的部门id
+     *
+     * @param $school
+     * @param $grade
+     * @param $class
+     * @return int|mixed
+     */
+    private static function deptId($school, $grade, $class) {
+        
+        $deptSchool = Department::whereName($school)->first();
+        if ($deptSchool) {
+            $deptGrade = Department::whereName($grade)
+                ->where('parent_id', $deptSchool->id)
+                ->first();
+            if ($deptGrade) {
+                $deptClass = Department::whereName($class)
+                    ->where('parent_id', $deptGrade->id)
+                    ->first();
+                if($deptClass)
+                    return $deptClass->id;
+                else
+                    return 0;
+            }
+            return 0;
+        }
+        return 0;
+        
     }
 
 }

@@ -5,6 +5,7 @@ use App\Events\ScoreImported;
 use App\Events\ScoreUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Facades\Wechat;
+use App\Helpers\HttpStatusCode;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -17,6 +18,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Readers\LaravelExcelReader;
+use PHPExcel_Exception;
 
 /**
  * App\Models\Score 分数
@@ -221,6 +223,7 @@ class Score extends Model {
             $studentIds = implode(',',$studentIds);
             $condition .= " and Student.id in ($studentIds)";
         }
+        
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         
     }
@@ -228,11 +231,13 @@ class Score extends Model {
     /**
      * 排名统计
      *
-     * @param $exam_id
+     * @param $examId
      * @return boolean
      */
-    static function statistics($exam_id) {
-        $exam = Exam::whereId($exam_id)->first();
+    public function statistics($examId) {
+        
+        $exam = Exam::find($examId);
+        abort_if(!$exam, HttpStatusCode::NOT_FOUND);
         #找到考试对应的科目存到数组 ids
         $examSub = explode(',', $exam->subject_ids);
         #找到考试对应的班级存到数组 ids
@@ -264,7 +269,7 @@ class Score extends Model {
             #一次处理一个科目  查出这个科目下 班级下所有学生的成绩
             foreach ($claStuIds as $claStuId) {
                 # 若该学生id没有对应的score则不会在结果数组中
-                $scores = Score::whereExamId($exam_id)
+                $scores = Score::whereExamId($examId)
                     ->whereSubjectId($sub)
                     ->whereIn('student_id', $claStuId)
                     ->whereEnabled(1)
@@ -287,7 +292,7 @@ class Score extends Model {
             }
             #年级排名
             foreach ($graStuIds as $graStuId) {
-                $scoresAll = Score::whereExamId($exam_id)
+                $scoresAll = Score::whereExamId($examId)
                     ->whereSubjectId($sub)
                     ->whereIn('student_id', $graStuId)
                     ->whereEnabled(1)
@@ -309,7 +314,7 @@ class Score extends Model {
         }
         #总分统计
         #按学生id对本次考试成绩 分组
-        $studentScore = Score::whereExamId($exam_id)
+        $studentScore = Score::whereExamId($examId)
             ->whereEnabled(1)
             ->whereIn('subject_id', $examSub)
             ->get()
@@ -326,7 +331,7 @@ class Score extends Model {
             $noSub = array_diff($examSub, $studentSub);
             $scoreTotalData = [
                 'student_id'     => $studentId,
-                'exam_id'        => $exam_id,
+                'exam_id'        => $examId,
                 'score'          => $total,
                 'subject_ids'    => implode(',', $studentSub),
                 'na_subject_ids' => implode(',', $noSub),
@@ -337,7 +342,7 @@ class Score extends Model {
             #判断记录是否已经存在，存在则更新
             $scoreTotal = ScoreTotal::whereEnabled(1)
                 ->whereStudentId($studentId)
-                ->whereExamId($exam_id)
+                ->whereExamId($examId)
                 ->first();
             if ($scoreTotal) {
                 $scoreTotal->update($scoreTotalData);
@@ -349,7 +354,7 @@ class Score extends Model {
         #班级排名
         foreach ($claStuIds as $claStuId) {
             $scoreTotalCla = ScoreTotal::whereEnabled(1)
-                ->whereExamId($exam_id)
+                ->whereExamId($examId)
                 ->whereIn('student_id', $claStuId)
                 ->orderBy('score', 'desc')
                 ->get();
@@ -369,7 +374,7 @@ class Score extends Model {
         #年级排名
         foreach ($graStuIds as $graStuId) {
             $scoreTotalGra = ScoreTotal::whereEnabled(1)
-                ->whereExamId($exam_id)
+                ->whereExamId($examId)
                 ->whereIn('student_id', $graStuId)
                 ->orderBy('score', 'desc')
                 ->get();
@@ -388,6 +393,7 @@ class Score extends Model {
         }
         
         return true;
+        
     }
     
     /**
@@ -398,14 +404,14 @@ class Score extends Model {
      * @return array
      */
     public function scores($exam, $squad, $subject, $project) {
+        
         $student = $this->where('exam_id', $exam)
             ->get()->pluck('student_id');
         # 当前班级下的所有参加考试的学生
         $students = Student::whereClassId($squad)->whereIn('id', $student)->get();
         # 当前选择班级的所属年级下 的所有班级 id
         $classes = Squad::where('grade_id', Squad::whereId($squad)->first()->grade_id)
-            ->get()
-            ->pluck('id');
+            ->get()->pluck('id');
         # 统计当前学生年级 的所有参加考试的学生
         $gradeStudents = Student::whereIn('class_id', $classes)
             ->whereIn('id', $student)
@@ -652,10 +658,9 @@ class Score extends Model {
     /**
      * @param UploadedFile $file
      * @param $input
-     * @return array
-     * @throws \PHPExcel_Exception
+     * @throws PHPExcel_Exception
      */
-    static function upload(UploadedFile $file, $input) {
+    public function upload(UploadedFile $file, $input) {
         
         $ext = $file->getClientOriginalExtension();     // 扩展名//xls
         $realPath = $file->getRealPath();   //临时文件的绝对路径
@@ -677,15 +682,12 @@ class Score extends Model {
             $sheet = $reader->getExcel()->getSheet(0);
             $scores = $sheet->toArray();
             #考虑删除读取过后的xml文件
-            if (is_file($filePath)) {
-                unlink($filePath);
-            }
-            if (self::checkFileFormat($scores[0])) {
-                return [
-                    'error'   => 1,
-                    'message' => '文件格式错误',
-                ];
-            }
+            if (is_file($filePath)) { unlink($filePath); }
+            abort_if(
+                self::checkFileFormat($scores[0]),
+                HttpStatusCode::NOT_ACCEPTABLE,
+                '文件格式错误'
+            );
             $schoolId = School::schoolId();
             #这次考试对应的科目id
             $exam = Exam::whereId($input['exam_id'])->first();
@@ -722,9 +724,11 @@ class Score extends Model {
                             ];
             
                         }
-                        if (!self::checkData($data, $input)) {
-                            return ['statusCode' => 500, 'message' => '数据有误!',];
-                        }
+                        abort_if(
+                            !self::checkData($data, $input),
+                            HttpStatusCode::NOT_ACCEPTABLE,
+                            '数据有误'
+                        );
                     } else {
                         unset($sub);
                     }
@@ -732,11 +736,10 @@ class Score extends Model {
             }
             unset($scores);
             unset($scoreArr);
-            
-            return ['statusCode' => 200, 'message' => '上传成功'];
         }
         
-        return ['statusCode' => 500, 'message' => '上传失败'];
+        abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '上传失败！');
+        
     }
     
     /**

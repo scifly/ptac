@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\ProcedureRequest;
 use App\Models\Procedure;
 use Exception;
@@ -87,7 +88,7 @@ class ProcedureController extends Controller {
     public function show($id) {
         
         $procedure = Procedure::find($id);
-        abort_if(!$procedure, self::NOT_FOUND);
+        abort_if(!$procedure, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $procedure);
         
         return $this->output([
@@ -106,7 +107,7 @@ class ProcedureController extends Controller {
     public function edit($id) {
         
         $procedure = Procedure::find($id);
-        abort_if(!$procedure, self::NOT_FOUND);
+        abort_if(!$procedure, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $procedure);
         
         return $this->output([
@@ -126,7 +127,7 @@ class ProcedureController extends Controller {
     public function update(ProcedureRequest $request, $id) {
         
         $procedure = Procedure::find($id);
-        abort_if(!$procedure, self::NOT_FOUND);
+        abort_if(!$procedure, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $procedure);
         
         return $this->result(
@@ -145,7 +146,7 @@ class ProcedureController extends Controller {
     public function destroy($id) {
         
         $procedure = Procedure::find($id);
-        abort_if(!$procedure, self::NOT_FOUND);
+        abort_if(!$procedure, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $procedure);
         
         return $this->result(

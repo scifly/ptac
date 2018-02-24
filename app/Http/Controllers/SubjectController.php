@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\SubjectRequest;
 use App\Models\Grade;
 use App\Models\Major;
@@ -18,9 +19,12 @@ use Throwable;
  */
 class SubjectController extends Controller {
     
-    function __construct() {
+    protected $subject;
+    
+    function __construct(Subject $subject) {
         
         $this->middleware(['auth', 'checkrole']);
+        $this->subject = $subject;
         
     }
     
@@ -33,7 +37,9 @@ class SubjectController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(Subject::datatable());
+            return response()->json(
+                $this->subject->datatable()
+            );
         }
         
         return $this->output();
@@ -69,7 +75,9 @@ class SubjectController extends Controller {
         
         $this->authorize('c', Subject::class);
         
-        return $this->result(Subject::store($request));
+        return $this->result(
+            $this->subject->store($request)
+        );
         
     }
     
@@ -83,6 +91,7 @@ class SubjectController extends Controller {
     public function edit($id) {
         
         $subject = Subject::find($id);
+        abort_if(!$subject, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $subject);
         
         $gradeIds = explode(',', $subject['grade_ids']);
@@ -118,9 +127,12 @@ class SubjectController extends Controller {
     public function update(SubjectRequest $request, $id) {
         
         $subject = Subject::find($id);
+        abort_if(!$subject, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $subject);
         
-        return $this->result($subject->modify($request, $id));
+        return $this->result(
+            $subject->modify($request, $id)
+        );
         
     }
     
@@ -135,9 +147,12 @@ class SubjectController extends Controller {
     public function destroy($id) {
         
         $subject = Subject::find($id);
+        abort_if(!$subject, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $subject);
         
-        return $this->result($subject->remove($id));
+        return $this->result(
+            $subject->remove($id)
+        );
         
     }
     

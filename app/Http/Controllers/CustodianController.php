@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\CustodianRequest;
 use App\Models\Custodian;
 use App\Models\CustodianStudent;
@@ -102,7 +103,7 @@ class CustodianController extends Controller {
     public function show($id){
         
         $custodian = $this->custodian->find($id);
-        abort_if(!$custodian, self::NOT_FOUND);
+        abort_if(!$custodian, HttpStatusCode::NOT_FOUND);
         
         return $this->output([
             'custodian'  => $custodian,
@@ -130,7 +131,7 @@ class CustodianController extends Controller {
             }
         }
         $custodian = $this->custodian->find($id);
-        abort_if(!$custodian, self::NOT_FOUND);
+        abort_if(!$custodian, HttpStatusCode::NOT_FOUND);
         $pupils = CustodianStudent::whereCustodianId($id)->get();
         return $this->output([
             'mobiles'   => $custodian->user->mobiles,
@@ -151,7 +152,7 @@ class CustodianController extends Controller {
     public function update(CustodianRequest $request, $id) {
 
         $custodian = $this->custodian->find($id);
-        abort_if(!$custodian, self::NOT_FOUND);
+        abort_if(!$custodian, HttpStatusCode::NOT_FOUND);
         
         return $this->result(
             $custodian->modify($request, $id)
@@ -170,7 +171,7 @@ class CustodianController extends Controller {
     public function destroy($id) {
         
         $custodian = $this->custodian->find($id);
-        abort_if(!$custodian, self::NOT_FOUND);
+        abort_if(!$custodian, HttpStatusCode::NOT_FOUND);
         
         return $this->result(
             $custodian->remove($id)
