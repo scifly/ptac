@@ -692,7 +692,6 @@ class Student extends Model {
                 }
             }
         }
-
         // 查询该教职员工是否是班主任
         $master = Squad::whereEnabled(1)->get();
         foreach ($master as $m) {
@@ -703,18 +702,15 @@ class Student extends Model {
                 $classIds = array_unique($classIds);
             }
         }
-
         // 查询该教职员工是否是科任老师
         $teacher = Educator::whereId($id)->first()->classes;
         if (sizeof($teacher) != 0) {
             foreach ($teacher as $t) {
                 # 把科任老师所在的班级id存入数组
-                # 把年级id和班级id放入数组
                 $classIds[] = $t->id;
                 $classIds = array_unique($classIds);
             }
         }
-
         // 查询所有班级的信息
         $allClass = Squad::whereEnabled(1)
             ->whereIn('id',$classIds)
@@ -776,7 +772,6 @@ class Student extends Model {
         $grade = Grade::whereEnabled(1)
             ->where('school_id',$schoolId)
             ->get();
-
         if(sizeof($grade) != 0){
             foreach ($grade as $g) {
                 //  说明是年级主任
@@ -790,7 +785,6 @@ class Student extends Model {
                 }
             }
         }
-
         // 查询该教职员工是否是班主任
         $master = Squad::whereEnabled(1)->get();
         if(sizeof($master) != 0){
@@ -810,7 +804,6 @@ class Student extends Model {
                 }
             }
         }
-
         // 查询该教职员工是否是科任老师
         $teacher = Educator::whereId($id)->first()->classes;
         if(sizeof($teacher)!= 0){
