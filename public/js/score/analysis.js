@@ -39,7 +39,7 @@ $show_data.off('click').click(function () {
     var student = '';
     var data = {};
     var $type = $(".iradio_minimal-blue.checked").find('input').val();
-    if ($type == 0) {
+    if ($type === 0) {
         examId = $exam.val();
         squad = $squad.val();
         data = {'_token': $token.attr('content'), 'exam_id': examId, 'squad_id': squad, 'type': $type};
@@ -112,7 +112,7 @@ function getdata() {
     var legendData = new Array();
     var sum = $data.eq(1).text();
     $data.each(function (i, vo) {
-        if (i == 0 || i == 1) {
+        if (i === 0 || i === 1) {
 
         } else {
             var val = $(vo).text();
