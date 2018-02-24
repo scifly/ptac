@@ -15,6 +15,7 @@ use App\Models\MessageReply;
 use App\Models\MessageSendingLog;
 use App\Models\MessageType;
 use App\Models\Squad;
+use App\Models\Student;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -48,21 +49,22 @@ class MessageCenterController extends Controller {
      */
     public function index() {
          #获取用户信息
-         $corpId = 'wxe75227cead6b8aec';
-         $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
-         $agentId = 3;
-         $userId = Session::get('userId') ? Session::get('userId') : null;
-         $code = Request::input('code');
-         if (empty($code) && empty($userId)) {
-             $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
-             return redirect($codeUrl);
-         }elseif(!empty($code) && empty($userId)){
-             $accessToken = Wechat::getAccessToken($corpId, $secret);
-             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-             $userId = $userInfo['UserId'];
-             Session::put('userId',$userId);
-         }
-         Session::put('userId',$userId);
+         // $corpId = 'wxe75227cead6b8aec';
+         // $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
+         // $agentId = 3;
+         // $userId = Session::get('userId') ? Session::get('userId') : null;
+         // $code = Request::input('code');
+         // if (empty($code) && empty($userId)) {
+         //     $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
+         //     return redirect($codeUrl);
+         // }elseif(!empty($code) && empty($userId)){
+         //     $accessToken = Wechat::getAccessToken($corpId, $secret);
+         //     $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
+         //     $userId = $userInfo['UserId'];
+         //     Session::put('userId',$userId);
+         // }
+         // Session::put('userId',$userId);
+        $userId = 'user_5a74048b6a218';
         $user = User::whereUserid($userId)->first();
         if (Request::isMethod('post')) {
             $keywords = Request::get('keywords');
@@ -133,9 +135,10 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function create() {
-
-        $userId = Session::get('userId');
+        $userId = 'user_5a74048b6a218';
+        // $userId = Session::get('userId');
         if(Request::isMethod('post')){
+            $groupId = User::whereUserid($userId)->first()->group->id;
             $keywords = Request::get('keywords');
             if (empty($keywords)){
                 $lists = $this->initLists($userId);
@@ -146,7 +149,12 @@ class MessageCenterController extends Controller {
                     'users' => $lists['users']
                 ]);
             }
-
+            if($groupId > 5){
+                $educatorId = User::whereUserid($userId)->first()->educator->id;
+                $schoolId = User::whereUserid($userId)->first()->educator->school_id;
+                $studentIds = Student::getClassStudent($schoolId,$educatorId)[1];
+                $students = Student::whereIn('id',$studentIds)->get();
+            }
             $users = User::where('realname', 'like', '%' . $keywords . '%')->get();
             if($users){
                 return response()->json(['statusCode'=> self::OK, 'user'=> $users]);
