@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\SchoolRequest;
 use App\Models\Menu;
 use App\Models\School as School;
@@ -83,7 +84,7 @@ class SchoolController extends Controller {
     public function show($id) {
         
         $school = School::find($id);
-        abort_if(!$school, self::NOT_FOUND);
+        abort_if(!$school, HttpStatusCode::NOT_FOUND);
     
         return $this->output([
             'school' => $school,
@@ -101,7 +102,7 @@ class SchoolController extends Controller {
     public function edit($id) {
         
         $school = School::find($id);
-        abort_if(!$school, self::NOT_FOUND);
+        abort_if(!$school, HttpStatusCode::NOT_FOUND);
     
         return $this->output([
             'school' => $school,
@@ -119,7 +120,7 @@ class SchoolController extends Controller {
     public function update(SchoolRequest $request, $id) {
         
         $school = School::find($id);
-        abort_if(!$school, self::NOT_FOUND);
+        abort_if(!$school, HttpStatusCode::NOT_FOUND);
         
         return $this->result(
             $school->modify($request->all(), $id, true)
@@ -137,7 +138,7 @@ class SchoolController extends Controller {
     public function destroy($id) {
         
         $school = School::find($id);
-        abort_if(!$school, self::NOT_FOUND);
+        abort_if(!$school, HttpStatusCode::NOT_FOUND);
         
         return $this->result(
             $school->remove($id, true)
@@ -151,6 +152,7 @@ class SchoolController extends Controller {
      * @throws Throwable
      */
     public function showInfo(){
+        
         $menuId = Request::input('menuId');
         $menu = Menu::find($menuId);
         if (!$menu) {
@@ -168,7 +170,7 @@ class SchoolController extends Controller {
         $school = School::find(School::schoolId());
 
         return response()->json([
-            'statusCode' => self::OK,
+            'statusCode' => HttpStatusCode::OK,
             'html'       => view('school.show_info', [
                 'school' => $school,
                 'js' => 'js/school/show_info.js',

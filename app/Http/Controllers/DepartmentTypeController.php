@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\DepartmentTypeRequest;
 use App\Models\DepartmentType;
 use Exception;
@@ -79,7 +80,7 @@ class DepartmentTypeController extends Controller {
     public function edit($id) {
 
         $dt = $this->dt->find($id);
-        abort_if(!$dt, self::NOT_FOUND);
+        abort_if(!$dt, HttpStatusCode::NOT_FOUND);
 
         return $this->output([
             'departmentType' => $dt,
@@ -97,7 +98,7 @@ class DepartmentTypeController extends Controller {
     public function update(DepartmentTypeRequest $request, $id) {
 
         $dt = $this->dt->find($id);
-        abort_if(!$dt, self::NOT_FOUND);
+        abort_if(!$dt, HttpStatusCode::NOT_FOUND);
         
         return $this->result(
             $dt->modify($request->all(), $id)
@@ -115,7 +116,7 @@ class DepartmentTypeController extends Controller {
     public function destroy($id) {
 
         $dt = $this->dt->find($id);
-        abort_if(!$dt, self::NOT_FOUND);
+        abort_if(!$dt, HttpStatusCode::NOT_FOUND);
         
         return $this->result(
             $dt->remove($id)

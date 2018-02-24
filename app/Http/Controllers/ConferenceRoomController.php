@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\ConferenceRoomRequest;
 use App\Models\ConferenceQueue;
 use App\Models\ConferenceRoom;
@@ -90,7 +91,7 @@ class ConferenceRoomController extends Controller {
     public function show($id) {
         
         $cr = $this->cr->find($id);
-        abort_if(!$cr, self::NOT_FOUND);
+        abort_if(!$cr, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $cr);
         
         return $this->output(['cr' => $cr]);
@@ -107,7 +108,7 @@ class ConferenceRoomController extends Controller {
     public function edit($id) {
         
         $cr = $this->cr->find($id);
-        abort_if(!$cr, self::NOT_FOUND);
+        abort_if(!$cr, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $cr);
         
         return $this->output(['cr' => $cr]);
@@ -125,7 +126,7 @@ class ConferenceRoomController extends Controller {
     public function update(ConferenceRoomRequest $request, $id) {
         
         $cr = $this->cr->find($id);
-        abort_if(!$cr, self::NOT_FOUND);
+        abort_if(!$cr, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $cr);
         
         return $this->result($cr->modify($request->all(), $id));
@@ -142,7 +143,7 @@ class ConferenceRoomController extends Controller {
     public function destroy($id) {
         
         $cr = $this->cr->find($id);
-        abort_if(!$cr, self::NOT_FOUND);
+        abort_if(!$cr, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $cr);
         
         return $this->result($cr->remove($id));

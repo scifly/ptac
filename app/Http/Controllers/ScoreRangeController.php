@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\ScoreRangeRequest;
 use App\Models\ScoreRange;
 use App\Models\Subject;
@@ -84,7 +85,7 @@ class ScoreRangeController extends Controller {
     public function edit($id) {
         
         $sr = $this->sr->find($id);
-        abort_if(!$sr, self::NOT_FOUND);
+        abort_if(!$sr, HttpStatusCode::NOT_FOUND);
 
         return $this->output([
             'sr' => $sr,
@@ -103,7 +104,7 @@ class ScoreRangeController extends Controller {
     public function update(ScoreRangeRequest $request, $id) {
 
         $sr = $this->sr->find($id);
-        abort_if(!$sr, self::NOT_FOUND);
+        abort_if(!$sr, HttpStatusCode::NOT_FOUND);
 
         return $this->result(
             $sr->update($request->all())
@@ -121,7 +122,7 @@ class ScoreRangeController extends Controller {
     public function destroy($id) {
         
         $sr = $this->sr->find($id);
-        abort_if(!$sr, self::NOT_FOUND);
+        abort_if(!$sr, HttpStatusCode::NOT_FOUND);
 
         return $this->result(
             $sr->delete()

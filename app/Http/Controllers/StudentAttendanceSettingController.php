@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\StudentAttendanceSettingRequest;
 use App\Models\StudentAttendanceSetting;
 use Exception;
@@ -16,9 +17,12 @@ use Throwable;
  */
 class StudentAttendanceSettingController extends Controller {
     
-    function __construct() {
+    protected $sas;
+    
+    function __construct(StudentAttendanceSetting $sas) {
     
         $this->middleware(['auth', 'checkrole']);
+        $this->sas = $sas;
         
     }
     
@@ -31,7 +35,9 @@ class StudentAttendanceSettingController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(StudentAttendanceSetting::datatable());
+            return response()->json(
+                $this->sas->datatable()
+            );
         }
         
         return $this->output();
@@ -73,10 +79,12 @@ class StudentAttendanceSettingController extends Controller {
      */
     public function edit($id) {
         
-        $sas = StudentAttendanceSetting::find($id);
-        if (!$sas) { return $this->notFound(); }
+        $sas = $this->sas->find($id);
+        abort_if(!$sas, HttpStatusCode::NOT_FOUND);
         
-        return $this->output(['sas' => $sas]);
+        return $this->output([
+            'sas' => $sas,
+        ]);
         
     }
     
@@ -89,10 +97,12 @@ class StudentAttendanceSettingController extends Controller {
      */
     public function update(StudentAttendanceSettingRequest $request, $id) {
         
-        $sas = StudentAttendanceSetting::find($id);
-        if (!$sas) { return $this->notFound(); }
+        $sas = $this->sas->find($id);
+        abort_if(!$sas, HttpStatusCode::NOT_FOUND);
         
-        return $this->result($sas->update($request->all()));
+        return $this->result(
+            $sas->update($request->all())
+        );
         
     }
     
@@ -106,9 +116,10 @@ class StudentAttendanceSettingController extends Controller {
     public function destroy($id) {
         
         $sas = StudentAttendanceSetting::find($id);
-        if (!$sas) { return $this->notFound(); }
+        abort_if(!$sas, HttpStatusCode::NOT_FOUND);
         
         return $this->result($sas->delete());
+        
     }
     
 }

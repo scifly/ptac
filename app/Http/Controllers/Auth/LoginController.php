@@ -1,13 +1,13 @@
 <?php
 namespace App\Http\Controllers\Auth;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Controllers\Controller;
 use App\Models\Mobile;
 use App\Models\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller {
@@ -59,7 +59,7 @@ class LoginController extends Controller {
         }
         if (Auth::id()) {
             return response()->json([
-                'statusCode' => self::OK,
+                'statusCode' => HttpStatusCode::OK,
                 'url' => $returnUrl ? $returnUrl : '/'
             ]);
         }
@@ -81,7 +81,7 @@ class LoginController extends Controller {
                 ->where('isdefault', 1)->first();
             if (!$mobile || !$mobile->user_id) {
                 return response()->json([
-                    'statusCode' => self::INTERNAL_SERVER_ERROR
+                    'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR
                 ]);
             }
             # 通过默认手机号码查询对应的用户名
@@ -94,12 +94,12 @@ class LoginController extends Controller {
             )) {
                 Session::put('user', $user);
                 return response()->json([
-                    'statusCode' => self::OK,
+                    'statusCode' => HttpStatusCode::OK,
                     'url'        => $returnUrl ? $returnUrl : '/',
                 ]);
             } else {
                 return response()->json([
-                    'statusCode' => self::INTERNAL_SERVER_ERROR
+                    'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR
                 ]);
             }
         }
@@ -110,13 +110,13 @@ class LoginController extends Controller {
         )) {
             Session::put('user', $user);
             return response()->json([
-                'statusCode' => self::OK,
+                'statusCode' => HttpStatusCode::OK,
                 'url'        => $returnUrl ? $returnUrl : '/',
             ]);
         }
         
         return response()->json([
-            'statusCode' => self::INTERNAL_SERVER_ERROR
+            'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR
         ]);
         
     }

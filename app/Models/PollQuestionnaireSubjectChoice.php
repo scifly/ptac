@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-
 /**
  * App\Models\PollQuestionnaireSubjectChoice 调查问卷题目选项
  *
@@ -48,7 +47,7 @@ class PollQuestionnaireSubjectChoice extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
         
         $columns = [
             ['db' => 'PollQuestionnaireChoice.id', 'dt' => 0],

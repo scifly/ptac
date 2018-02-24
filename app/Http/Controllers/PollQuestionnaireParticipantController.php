@@ -1,12 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Models\PollQuestionnaire;
 use App\Models\PollQuestionnaireAnswer;
-use App\Models\PollQuestionnaireSubjectChoice;
 use App\Models\PollQuestionnaireParticipant;
 use App\Models\PollQuestionnaireSubject;
-use App\Models\User;
+use App\Models\PollQuestionnaireSubjectChoice;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
@@ -20,35 +20,29 @@ use Illuminate\View\View;
  */
 class PollQuestionnaireParticipantController extends Controller {
     
-    protected $pollQuestionnaires;
-    protected $pollQuestionnaireParticipant;
-    protected $pollQuestionnaireAnswer;
-    protected $pollQuestionnaireChoice;
-    protected $pollQuestionnaireSubject;
-    protected $user, $school, $tempChoice = [], $result = [], $count;
+    protected $pq, $pqp, $pqa, $pqsc, $pqs;
+    protected $tempChoice = [], $result = [], $count;
     
     function __construct(
-        PollQuestionnaire $pollQuestionnaires,
-        PollQuestionnaireAnswer $pollQuestionnaireAnswer,
-        PollQuestionnaireSubjectChoice $pollQuestionnaireChoice,
-        pollQuestionnaireSubject $pollQuestionnaireSubject,
-        PollQuestionnaireParticipant $pollQuestionnaireParticipant,
-        User $user
+        PollQuestionnaire $pq,
+        PollQuestionnaireAnswer $pqa,
+        PollQuestionnaireSubjectChoice $pqsc,
+        pollQuestionnaireSubject $pqs,
+        PollQuestionnaireParticipant $pqp
     ) {
         
         $this->middleware(['auth']);
         #投票问卷
-        $this->pollQuestionnaires = $pollQuestionnaires;
+        $this->pq = $pq;
         #投票问卷参与者
-        $this->pollQuestionnaireParticipant = $pollQuestionnaireParticipant;
+        $this->pqp = $pqp;
         #投票问卷列表
-        $this->pollQuestionnaireChoice = $pollQuestionnaireChoice;
+        $this->pqsc = $pqsc;
         #投票问卷选项
-        $this->pollQuestionnaireSubject = $pollQuestionnaireSubject;
+        $this->pqs = $pqs;
         #投票问卷参与者
-        $this->pollQuestionnaireAnswer = $pollQuestionnaireAnswer;
+        $this->pqa = $pqa;
         #用户
-        $this->user = $user;
         
     }
     
@@ -60,7 +54,7 @@ class PollQuestionnaireParticipantController extends Controller {
     public function index() {
         
         #根据登录的角色ID筛选参与的调查问卷
-        $result = $this->pollQuestionnaires
+        $result = $this->pq
             ->join('poll_questionnaire_participants as A', 'poll_questionnaires.id', 'A.pq_id')
             #这里获取用户ID
             ->where('A.user_id', 1)
@@ -101,7 +95,7 @@ class PollQuestionnaireParticipantController extends Controller {
                     break;
             }
             #存储答案
-            $Answer = $this->pollQuestionnaireAnswer
+            $Answer = $this->pqa
                 ->where('pqs_id', $item->id)->first();
             #判断是否存在，如果存在
             $hasObject = true;
@@ -118,7 +112,7 @@ class PollQuestionnaireParticipantController extends Controller {
             else $Answer->update();
         }
         
-        return response()->json(['msg' => '提交成功', '' => self::OK]);
+        return response()->json(['msg' => '提交成功', '' => HttpStatusCode::OK]);
         
     }
     
@@ -129,7 +123,7 @@ class PollQuestionnaireParticipantController extends Controller {
     public function show($id) {
         
         # 先获取投票问卷列
-        $this->pollQuestionnaireSubject
+        $this->pqs
             ->where('pq_id', $id)
             ->orderBy('id', 'asc')
             ->each(

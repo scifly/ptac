@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Events\AppMenuUpdated;
 use App\Events\AppUpdated;
 use App\Facades\Wechat;
 use Carbon\Carbon;

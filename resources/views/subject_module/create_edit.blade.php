@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($subjectModules['id']))
-                {!! Form::hidden('id', $subjectModules['id'], ['id' => 'id']) !!}
+            @if (!empty($sm['id']))
+                {!! Form::hidden('id', $sm['id'], ['id' => 'id']) !!}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [
@@ -41,7 +41,7 @@
             </div>
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $subjectModules['enabled'] ?? null
+                'value' => $sm['enabled'] ?? null
             ])
         </div>
     </div>

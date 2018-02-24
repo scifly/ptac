@@ -87,7 +87,7 @@ class Tab extends Model {
      * @throws Exception
      * @throws Throwable
      */
-    static function scan() {
+    public function scan() {
 
         $action = new Action();
         $controllers = self::controllerPaths($action->getSiteRoot() . self::CONTROLLER_DIR);
@@ -144,7 +144,7 @@ class Tab extends Model {
      * @return bool|mixed
      * @throws Throwable
      */
-    static function store(array $data) {
+    public function store(array $data) {
         
         try {
             DB::transaction(function () use ($data) {
@@ -162,13 +162,42 @@ class Tab extends Model {
     }
     
     /**
+     * 更新指定的卡片
+     *
+     * @param array $data
+     * @param $id
+     * @return bool|mixed
+     * @throws Exception
+     * @throws Throwable
+     */
+    public function modify(array $data, $id) {
+        
+        $tab = self::find($id);
+        if (!isset($tab)) { return false; }
+        try {
+            DB::transaction(function () use ($data, $id, $tab) {
+                $tab->update($data);
+                $menuIds = $data['menu_ids'];
+                $menuTab = new MenuTab();
+                $menuTab::whereTabId($id)->delete();
+                $menuTab->storeByTabId($id, $menuIds);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
+    /**
      * 移除指定的卡片
      *
      * @param $id
      * @return bool|mixed
      * @throws Throwable
      */
-    static function remove($id) {
+    public function remove($id) {
 
         $tab = self::find($id);
         if (!isset($tab)) { return false; }
@@ -192,7 +221,7 @@ class Tab extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
 
         $columns = [
             ['db' => 'Tab.id', 'dt' => 0],
@@ -241,41 +270,13 @@ class Tab extends Model {
 
     }
     
-    /**
-     * 更新指定的卡片
-     *
-     * @param array $data
-     * @param $id
-     * @return bool|mixed
-     * @throws Exception
-     * @throws Throwable
-     */
-    static function modify(array $data, $id) {
-
-        $tab = self::find($id);
-        if (!isset($tab)) { return false; }
-        try {
-            DB::transaction(function () use ($data, $id, $tab) {
-                $tab->update($data);
-                $menuIds = $data['menu_ids'];
-                $menuTab = new MenuTab();
-                $menuTab::whereTabId($id)->delete();
-                $menuTab->storeByTabId($id, $menuIds);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-
-    }
     
     /**
      * 根据角色返回可访问的卡片ids
      *
      * @return array
      */
-    function allowedTabIds() {
+    public function allowedTabIds() {
     
         $user = Auth::user();
         $role = $user->group->name;

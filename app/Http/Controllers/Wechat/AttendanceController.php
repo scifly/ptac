@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Wechat;
 
 use App\Facades\Wechat;
+use App\Helpers\HttpStatusCode;
 use App\Http\Controllers\Controller;
 use App\Models\Grade;
 use App\Models\Semester;
@@ -10,6 +11,8 @@ use App\Models\Student;
 use App\Models\StudentAttendance;
 use App\Models\StudentAttendanceSetting;
 use App\Models\User;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -63,7 +66,6 @@ class AttendanceController extends Controller {
         $endTime = date('Y-m-d', strtotime("$beginTime +1 month -1 day"));
         $endTime = $endTime . ' 23:59:59';
         $students = User::whereUserid($userId)->first()->custodian->students;
-        $ids = $adays = $ndays = [];
         foreach ($students as $k => $s) {
             $data = $this->getDays($s->id, $beginTime, $endTime);
             $s->abnormal = count($data['adays']);
@@ -82,7 +84,7 @@ class AttendanceController extends Controller {
      * 考勤记录
      *
      * @param null $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View|\think\response\View
+     * @return Factory|JsonResponse
      */
     public function records($id = null) {
         if (Request::isMethod('post')) {
@@ -128,7 +130,6 @@ class AttendanceController extends Controller {
         $endTime = $endTime . ' 23:59:59';
         # 当天时间
         $time = date('Y-m-d', time());
-        $into = $out = [];
         $into = StudentAttendance::whereDate('punch_time', $time)
             ->where('student_id', $id)
             ->where('inorout', 1)
@@ -208,14 +209,14 @@ class AttendanceController extends Controller {
         $input = Request::all();
         $user = User::whereUserid(Session::get('userId'))->first();
         $educator = $user->educator;
-        if (!$educator) {
-            return response()->json(['data' => '暂未找到您教师的身份！', 'statusCode' => 500]);
-        }
+        abort_if(!$educator, HttpStatusCode::INTERNAL_SERVER_ERROR, '暂未找到您教师的身份！');
         #找到与教职员工相关的所有班级ids
         $classIds = $this->geteduClass($educator);
-        if (empty($classIds)) {
-            return response()->json(['data' => '老师，您还未绑定班级关系！', 'statusCode' => 500]);
-        }
+        abort_if(
+            empty($classIds),
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            '老师，您还未绑定班级关系！'
+        );
         $squadLists = Squad::whereIn('id', $classIds)->get();
         $data['squadnames'] = [];
         $graIds = [];
@@ -237,11 +238,9 @@ class AttendanceController extends Controller {
         #饼图数据填充
         if (!isset($input['squad']) && !isset($input['time']) && !isset($input['rule'])) {
             $datas = $this->defcharts($classIds, $data);
-            if (!$datas) {
-                return response()->json(['data' => '请加入相应的考勤规则！', 'statusCode' => 500]);
-            }
-            
-            return response()->json(['data' => $datas, 'statusCode' => 200]);
+            abort_if(!$datas, HttpStatusCode::INTERNAL_SERVER_ERROR, '请加入相应的考勤规则！');
+            $this->result['data'] = $datas;
+            return response()->json($this->result);
         } else {
             $datas = $this->fltcharts($input, $data);
             if (!$data) {
@@ -527,5 +526,7 @@ class AttendanceController extends Controller {
         ])->render();
         
         return $data;
+        
     }
+    
 }

@@ -175,7 +175,7 @@ var page = {
         return '?menuId=' + this.getActiveMenuId() + '&tabId=' + this.getActiveTabId();
     },
     errorHandler: function (e) {
-         var obj = JSON.parse(e.responseText);
+        var obj = JSON.parse(e.responseText);
         $('.overlay').hide();
         switch (obj['statusCode']) {
             case 400:
