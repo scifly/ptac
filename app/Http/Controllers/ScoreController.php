@@ -67,9 +67,10 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function store(ScoreRequest $request) {
+
         $input = $request->all();
         $subject = Subject::whereId($input['subject_id'])->first();
-        if($input['score'] > $subject->max_score){
+        if ($input['score'] > $subject->max_score){
             return $this->fail('该科目最高分为'. $subject->max_score);
         }
         
@@ -139,7 +140,7 @@ class ScoreController extends Controller {
     }
     
     /**
-     * 成绩发送
+     * 发送成绩
      *
      * @return JsonResponse
      */
@@ -161,10 +162,8 @@ class ScoreController extends Controller {
                 $score = new Score();
                 $result = $score->scores($exam, $squad, explode(',', $subject), explode(',', $project));
                 return response()->json($result);
-            }else{
-
+            } else {
                 $ids = Exam::whereId($exam)->first();
-
                 $classes = Squad::whereIn('id', explode(',', $ids['class_ids']))
                     ->get()
                     ->toArray();
@@ -175,11 +174,12 @@ class ScoreController extends Controller {
                     'classes' => $classes,
                     'subjects' => $subjects,
                 ];
+
                 return response()->json($result);
             }
-            
-            
+
         }
+
     }
     
     /**
@@ -187,13 +187,13 @@ class ScoreController extends Controller {
      *
      */
     public function send_message() {
+
         if (Request::method() === 'POST') {
             $data = Request::input('data');
             $score = new Score();
             return response()->json($score->sendMessage(json_decode($data)));
-            
-            
         }
+
     }
     
     
@@ -203,25 +203,24 @@ class ScoreController extends Controller {
      * @throws \PHPExcel_Exception
      */
     public function import() {
+
         $input = Request::all();
-  
         $file = Request::file('file');
         if (empty($file)) {
             $result = [
                 'statusCode' => 500,
                 'message'    => '您还没选择文件！',
             ];
-        
             return response()->json($result);
         }
         // 文件是否上传成功
         if ($file->isValid()) {
             $result = Score::upload($file, $input);
-        
             return response()->json($result);
         }
     
         return response()->json(['statusCode' => 500, 'message' => '上传失败！']);
+
     }
     
     /**
@@ -277,7 +276,7 @@ class ScoreController extends Controller {
      * 成绩分析表格数据填充
      * @throws Throwable
      */
-    public function analysisData(){
+    public function analydata(){
         $input = Request::all();
         $view = Score::analysis($input);
       return $view ? $this->succeed($view) : $this->fail('未录入或未统计成绩！');
@@ -288,7 +287,7 @@ class ScoreController extends Controller {
      * @param $examId
      * @return JsonResponse
      */
-    public function getDatas($examId){
+    public function listdatas($examId){
         $exam = Exam::whereId($examId)->first();
         $squadIds = explode(',', $exam->class_ids);
         $subjectIds = explode(',', $exam->subject_ids);
@@ -334,8 +333,8 @@ class ScoreController extends Controller {
         }
         $data[] = $title;
         $classId = Request::get('classId');
-        $class = Squad::whereId($classId)->first();
-        $students = Squad::whereId($classId)->first()->students;
+        $class = Squad::find($classId);
+        $students = $class->students;
         foreach ($students as $s) {
             $exams = [
                 $class->name,
@@ -373,7 +372,7 @@ class ScoreController extends Controller {
      * @param $suquad_id
      * @return JsonResponse|string
      */
-    public function claStudents($suquad_id) {
+    public function clastudents($suquad_id) {
         $squad = Squad::whereId($suquad_id)->first();
         $students = [];
         if ($squad) {

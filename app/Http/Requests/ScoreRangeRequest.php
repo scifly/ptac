@@ -27,7 +27,7 @@ class ScoreRangeRequest extends FormRequest {
             'school_id'   => 'required|integer|max:11',
             'subject_ids' => 'required|max:11',
             'start_score' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/',
-            'end_score'   => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/',
+            'end_score'   => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/|greater_than:start_score',
             'enabled'     => 'required|boolean',
         ];
 

@@ -5,7 +5,7 @@ function getData($examId) {
     $.ajax({
         type: 'GET',
         data: {'_token': $('#csrf_token').attr('content')},
-        url: '../get_datas/' + $examId,
+        url: '../listdatas/' + $examId,
         success: function (result) {
             if (result.statusCode === 200) {
                 $('#subject_id').html(result.subjects);

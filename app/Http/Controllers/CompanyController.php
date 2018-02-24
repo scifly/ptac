@@ -78,7 +78,7 @@ class CompanyController extends Controller {
      */
     public function edit($id) {
         
-        $company = Company::find($id);
+        $company = $this->company->find($id);
         abort_if(!$company, self::NOT_FOUND);
 
         return $this->output([
@@ -96,7 +96,7 @@ class CompanyController extends Controller {
      */
     public function update(CompanyRequest $request, $id) {
         
-        $company = Company::find($id);
+        $company = $this->company->find($id);
         abort_if(!$company, self::NOT_FOUND);
 
         return $this->result(
@@ -114,7 +114,7 @@ class CompanyController extends Controller {
      */
     public function destroy($id) {
     
-        $company = Company::find($id);
+        $company = $this->company->find($id);
         abort_if(!$company, self::NOT_FOUND);
 
         return $this->result(

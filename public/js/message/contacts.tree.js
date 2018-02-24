@@ -111,7 +111,7 @@ var contacts = {
                 },
                 plugins: ['types', 'search', 'checkbox', 'wholerow'],
                 types: {
-                    '#': {"icon": 'fa fa-tree'},
+                    '#': {"icon": 'fa fa-folder'},
                     'dept': {"icon": 'fa fa-folder'},
                     'user': {"icon": 'fa fa-user'},
                     'root': {"icon": 'fa fa-sitemap'},

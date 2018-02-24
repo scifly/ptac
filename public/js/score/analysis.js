@@ -47,7 +47,7 @@ $show_data.off('click').click(function () {
         $.ajax({
             type: 'POST',
             data: data,
-            url: '../scores/analysis_data',
+            url: '../scores/analydata',
             success: function (result) {
                 if (result.statusCode === 200) {
                     $datas.html(result.message);
@@ -69,7 +69,7 @@ $show_data.off('click').click(function () {
         $.ajax({
             type: 'POST',
             data: data,
-            url: '../scores/analysis_data',
+            url: '../scores/analydata',
             success: function (result) {
                 if (result.statusCode === 200) {
                     $datas.html(result.message);

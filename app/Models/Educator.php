@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Events\EducatorImported;
-use App\Events\UserDeleted;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use App\Http\Requests\CustodianRequest;
@@ -21,13 +20,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Readers\LaravelExcelReader;
 use PHPExcel_Exception;
+use ReflectionException;
+use Throwable;
 
 /**
  * App\Models\Educator 教职员工
@@ -100,17 +100,6 @@ class Educator extends Model {
         );
 
     }
-
-    public function relationClasses(){
-        #获取当前教职员工任教班级及科目
-        $relation=[];
-        foreach ($this->educatorClasses as $cls){
-            $relation[]=
-                ["class_id"=>$cls->id,"subject_id"=>$cls->subject_id];
-        }
-        return $relation;
-    }
-
 
     /**
      * 获取指定教职员工所属的所管理班级科目对象
@@ -206,7 +195,7 @@ class Educator extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function store(EducatorRequest $request) {
+    public function store(EducatorRequest $request) {
         
         try {
             DB::transaction(function () use ($request) {
@@ -323,7 +312,7 @@ class Educator extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function modify(EducatorRequest $request) {
+    public function modify(EducatorRequest $request) {
         try {
             DB::transaction(function () use ($request) {
                 $user = $request->input('user');
@@ -436,19 +425,15 @@ class Educator extends Model {
      * @param $id
      * @param bool $fireEvent
      * @return bool
-     * @throws Exception
-     * @throws \ReflectionException
-     * @throws \Throwable
+     * @throws ReflectionException
+     * @throws Throwable
      */
-    static function remove($id, $fireEvent = false) {
+    public function remove($id, $fireEvent = false) {
 
         $educator = self::find($id);
         $userId = $educator->user_id;
-        /** @var Educator $educator */
         $removed = self::removable($educator) ? $educator->delete() : false;
         if ($removed && $fireEvent) {
-            /** @var School $school */
-    
             # 删除User数据
             User::remove($userId);
             return true;
@@ -465,7 +450,7 @@ class Educator extends Model {
      * @return array
      * @throws PHPExcel_Exception
      */
-    static function upload(UploadedFile $file) {
+    public function upload(UploadedFile $file) {
         
         $ext = $file->getClientOriginalExtension();     // 扩展名//xls
         $realPath = $file->getRealPath();   //临时文件的绝对路径
@@ -531,7 +516,7 @@ class Educator extends Model {
      * @param $id
      * @return array
      */
-    static function export($id) {
+    public function export($id) {
         
         $educators = self::whereSchoolId($id)->get();
         $data = [self::EXCEL_EXPORT_TITLE];
@@ -559,7 +544,7 @@ class Educator extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
         
         $columns = [
             ['db' => 'Educator.id', 'dt' => 0],

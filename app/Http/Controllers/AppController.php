@@ -49,7 +49,7 @@ class AppController extends Controller {
      */
     public function edit($id) {
         
-        $app = App::find($id);
+        $app = $this->app->find($id);
         abort_if(!$app, self::NOT_FOUND);
         $this->authorize('eum', $app);
 
@@ -67,7 +67,7 @@ class AppController extends Controller {
      */
     public function update(AppRequest $request, $id) {
         
-        $app = App::find($id);
+        $app = $this->app->find($id);
         abort_if(!$app, self::NOT_FOUND);
         $this->authorize('eum', $app);
 
@@ -86,7 +86,7 @@ class AppController extends Controller {
      */
     public function menu($id) {
         
-        $app = App::find($id);
+        $app = $this->app->find($id);
         abort_if(!$app, self::NOT_FOUND);
         $this->authorize('eum', $app);
 

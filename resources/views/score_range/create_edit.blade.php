@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (isset($scoreRange)&&!empty($scoreRange['id']))
-                {{ Form::hidden('id', $scoreRange['id'], ['id' => 'id']) }}
+            @if (isset($sr)&&!empty($sr['id']))
+                {{ Form::hidden('id', $sr['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [

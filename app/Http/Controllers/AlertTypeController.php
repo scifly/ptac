@@ -50,7 +50,7 @@ class AlertTypeController extends Controller {
      * @throws Throwable
      */
     public function create() {
-        
+
         return $this->output();
         
     }
@@ -78,7 +78,7 @@ class AlertTypeController extends Controller {
      */
     public function edit($id) {
         
-        $at = AlertType::find($id);
+        $at = $this->at->find($id);
         abort_if(!$at, self::NOT_FOUND);
 
         return $this->output([
@@ -96,7 +96,7 @@ class AlertTypeController extends Controller {
      */
     public function update(AlertTypeRequest $request, $id) {
         
-        $at = AlertType::find($id);
+        $at = $this->at->find($id);
         abort_if(!$at, self::NOT_FOUND);
 
         return $this->result(
@@ -114,7 +114,7 @@ class AlertTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $at = AlertType::find($id);
+        $at = $this->at->find($id);
         abort_if(!$at, self::NOT_FOUND);
 
         return $this->result(

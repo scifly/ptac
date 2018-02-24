@@ -81,13 +81,13 @@ Route::group(['prefix' => 'scores'], function () {
     Route::get('clalists/{examId}', $c . '@claLists');
     Route::post('analysis', $c . '@analysis');
     Route::get('analysis', $c . '@analysis');
-    Route::post('analysis_data', $c . '@analysisData');
+    Route::post('analydata', $c . '@analydata');
     Route::post('import', $c . '@import');
     Route::get('exports', $c . '@exports');
     Route::post('send', $c . '@send');
     Route::post('send_message', $c . '@send_message');
-    Route::get('get_datas/{examId}', $c . '@getDatas');
-    Route::get('clastudents/{classId}', $c . '@claStudents');
+    Route::get('listdatas/{examId}', $c . '@listdatas');
+    Route::get('clastudents/{classId}', $c . '@clastudents');
     
 });
 Route::group(['prefix' => 'score_totals'], function () {
