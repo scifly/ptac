@@ -1,9 +1,9 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\ProcedureStepRequest;
 use App\Models\ProcedureStep;
-use App\Models\ProcedureType;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -80,7 +80,7 @@ class ProcedureStepController extends Controller {
     public function edit($id) {
         
         $ps = ProcedureStep::find($id);
-        abort_if(!$ps, self::NOT_FOUND);
+        abort_if(!$ps, HttpStatusCode::NOT_FOUND);
         
         return $this->output([
             'ps' => $ps
@@ -98,7 +98,7 @@ class ProcedureStepController extends Controller {
     public function update(ProcedureStepRequest $request, $id) {
         
         $ps = ProcedureStep::find($id);
-        abort_if(!$ps, self::NOT_FOUND);
+        abort_if(!$ps, HttpStatusCode::NOT_FOUND);
         
         return $this->result(
             $ps->modify($request->all(), $id)
@@ -116,7 +116,7 @@ class ProcedureStepController extends Controller {
     public function destroy($id) {
         
         $ps = ProcedureStep::find($id);
-        abort_if(!$ps, self::NOT_FOUND);
+        abort_if(!$ps, HttpStatusCode::NOT_FOUND);
 
         return $this->result(
             $ps->remove($id)

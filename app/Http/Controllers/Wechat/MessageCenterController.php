@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Wechat;
 
 use App\Facades\Wechat;
+use App\Helpers\HttpStatusCode;
 use App\Http\Controllers\Controller;
 use App\Models\App;
 use App\Models\CommType;
@@ -159,8 +160,10 @@ class MessageCenterController extends Controller {
                 $users = User::whereIn('id', $userIds)
                     ->where('realname', 'like', '%' . $keywords . '%')->get();
             }
-            if ($users) {
-                return response()->json(['statusCode' => self::OK, 'user' => $users]);
+
+            if($users){
+                return response()->json(['statusCode'=> HttpStatusCode::OK, 'user'=> $users]);
+
             }
         }
         #教师可发送消息

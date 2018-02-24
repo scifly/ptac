@@ -1,6 +1,7 @@
 <?php
 namespace App\Policies;
 
+use App\Helpers\HttpStatusCode;
 use App\Models\Corp;
 use App\Models\School;
 use App\Models\User;
@@ -47,7 +48,7 @@ class SchoolPolicy {
      */
     public function rud(User $user, Model $model) {
     
-        if (!$model) { abort(404); }
+        if (!$model) { abort(HttpStatusCode::NOT_FOUND); }
         $role = $user->group->name;
         if ($role == '运营') { return true; }
         $schoolId = $model->{'school_id'} ?? null;

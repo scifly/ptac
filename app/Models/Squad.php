@@ -90,7 +90,7 @@ class Squad extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    static function store(array $data, $fireEvent = false) {
+    public function store(array $data, $fireEvent = false) {
         
         $class = self::create($data);
         if ($class && $fireEvent) {
@@ -110,7 +110,7 @@ class Squad extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    static function modify(array $data, $id, $fireEvent = false) {
+    public function modify(array $data, $id, $fireEvent = false) {
         
         $class = self::find($id);
         $updated = $class->update($data);

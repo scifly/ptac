@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\EducatorAttendanceSettingRequest;
 use App\Models\EducatorAttendanceSetting;
 use Exception;
@@ -87,7 +88,7 @@ class EducatorAttendanceSettingController extends Controller {
     public function show($id) {
         
         $eas = $this->eas->find($id);
-        abort_if(!$eas, self::NOT_FOUND);
+        abort_if(!$eas, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $eas);
         
         return $this->output(['eas' => $eas]);
@@ -103,7 +104,7 @@ class EducatorAttendanceSettingController extends Controller {
     public function edit($id) {
         
         $eas = $this->eas->find($id);
-        abort_if(!$eas, self::NOT_FOUND);
+        abort_if(!$eas, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $eas);
         
         return $this->output(['eas' => $eas]);
@@ -121,7 +122,7 @@ class EducatorAttendanceSettingController extends Controller {
     public function update(EducatorAttendanceSettingRequest $request, $id) {
         
         $eas = $this->eas->find($id);
-        abort_if(!$eas, self::NOT_FOUND);
+        abort_if(!$eas, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $eas);
         
         return $this->result($eas->update($request->all()));
@@ -138,7 +139,7 @@ class EducatorAttendanceSettingController extends Controller {
     public function destroy($id) {
         
         $eas = $this->eas->find($id);
-        abort_if(!$eas, self::NOT_FOUND);
+        abort_if(!$eas, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $eas);
         
         return $this->result($eas->delete());

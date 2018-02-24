@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\ScoreRequest;
 use App\Models\Exam;
 use App\Models\Score;
@@ -90,7 +91,7 @@ class ScoreController extends Controller {
     public function edit($id) {
         
         $score = Score::find($id);
-        abort_if(!$score, self::NOT_FOUND);
+        abort_if(!$score, HttpStatusCode::NOT_FOUND);
         
         return $this->output([
             'score'       => $score,
@@ -107,9 +108,10 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function update(ScoreRequest $request, $id) {
+        
         $input = $request->all();
         $score = Score::find($id);
-        abort_if(!$score, self::NOT_FOUND);
+        abort_if(!$score, HttpStatusCode::NOT_FOUND);
         $subject = Subject::whereId($input['subject_id'])->first();
         if($input['score'] > $subject->max_score){
             return $this->fail('该科目最高分为'. $subject->max_score);
@@ -131,7 +133,7 @@ class ScoreController extends Controller {
     public function destroy($id) {
         
         $score = Score::find($id);
-        abort_if(!$score, self::NOT_FOUND);
+        abort_if(!$score, HttpStatusCode::NOT_FOUND);
         
         return $this->result(
             $score->remove($id)
@@ -177,8 +179,9 @@ class ScoreController extends Controller {
 
                 return response()->json($result);
             }
-
         }
+        
+        return abort(HttpStatusCode::METHOD_NOT_ALLOWED);
 
     }
     
@@ -193,6 +196,8 @@ class ScoreController extends Controller {
             $score = new Score();
             return response()->json($score->sendMessage(json_decode($data)));
         }
+        
+        return abort(HttpStatusCode::METHOD_NOT_ALLOWED);
 
     }
     
@@ -206,61 +211,69 @@ class ScoreController extends Controller {
 
         $input = Request::all();
         $file = Request::file('file');
-        if (empty($file)) {
-            $result = [
-                'statusCode' => 500,
-                'message'    => '您还没选择文件！',
-            ];
-            return response()->json($result);
-        }
+        abort_if(
+            empty($file),
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            '您还没有选择文件!'
+        );
         // 文件是否上传成功
         if ($file->isValid()) {
-            $result = Score::upload($file, $input);
-            return response()->json($result);
+            $this->score->upload($file, $input);
+            $this->result['message'] = '上传成功!';
+            return response()->json($this->result);
         }
     
-        return response()->json(['statusCode' => 500, 'message' => '上传失败！']);
+        return abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '上传失败！');
 
     }
     
     /**
      * 分数统计
      *
-     * @param $id
+     * @param $examId
      * @return mixed
      */
-    public function statistics($id){
+    public function statistics($examId){
+        
         #先判断这个考试录入分数没有
-        if(!Score::whereExamId($id)->first()){
-            return response()->json(['message' => '本次考试还未录入成绩！', 'statusCode' => 500]);
-        }
-       return Score::statistics($id) ? $this->succeed() : $this->fail();
-       
+        abort_if(
+            !Score::whereExamId($examId)->first(),
+            HttpStatusCode::NOT_FOUND,
+            '本次考试的成绩尚未录入！'
+        );
+        
+        return $this->result(
+            $this->score->statistics($examId)
+        );
+        
     }
     
     /**
      * 根据考试异步加载班级列表
      *
-     * @param $exam_id
+     * @param $examId
      * @return JsonResponse|string
      */
-    public function claLists($exam_id) {
-        $exam = Exam::whereId($exam_id)->first();
+    public function claLists($examId) {
+        
+        $exam = Exam::find($examId);
+        
         if (!$exam) {
-            $lists = [];
+            $list = [];
         } else {
-            $lists = Squad::whereIn('id', explode(',', $exam->class_ids))
+            $list = Squad::whereIn('id', explode(',', $exam->class_ids))
                 ->whereEnabled(1)
                 ->pluck('name', 'id')
                 ->toArray();
         }
         #返回下拉列表的字符串
         $html = '';
-        foreach ($lists as $key => $value) {
+        foreach ($list as $key => $value) {
             $html .= '<option value="' . $key . '">' . $value . '</option>';
         }
         
-        return $lists ? $this->succeed($html) : $this->fail();
+        return $list ? $this->succeed($html) : $this->fail();
+        
     }
     
     /**
@@ -269,7 +282,9 @@ class ScoreController extends Controller {
      * @throws Throwable
      */
     public function analysis(){
+        
         return $this->output();
+        
     }
     
     /**
@@ -277,9 +292,12 @@ class ScoreController extends Controller {
      * @throws Throwable
      */
     public function analydata(){
+        
         $input = Request::all();
         $view = Score::analysis($input);
-      return $view ? $this->succeed($view) : $this->fail('未录入或未统计成绩！');
+        
+        return $view ? $this->succeed($view) : $this->fail('未录入或未统计成绩！');
+        
     }
     
     /**
@@ -288,6 +306,7 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function listdatas($examId){
+        
         $exam = Exam::whereId($examId)->first();
         $squadIds = explode(',', $exam->class_ids);
         $subjectIds = explode(',', $exam->subject_ids);
@@ -314,7 +333,13 @@ class ScoreController extends Controller {
         foreach ($subjects as $key => $value) {
             $subjectHtml .= '<option value="' . $key . '">' . $value . '</option>';
         }
-        return response()->json(['students' => $studentHtml, 'subjects' => $subjectHtml, 'statusCode' => 200]);
+        
+        return response()->json([
+            'students' => $studentHtml,
+            'subjects' => $subjectHtml,
+            'statusCode' => 200,
+        ]);
+        
     }
 
     /**
@@ -322,11 +347,11 @@ class ScoreController extends Controller {
      *
      * @return void
      */
-    public function exports() {
-        $examId = Request::get('examId');
-        $exam = Exam::whereId($examId)->first();
-        $subjectIds = explode(',',$exam->subject_ids);
-        $subjects = Subject::whereIn('id',$subjectIds)->get();
+    public function export() {
+        
+        $exam = Exam::find(Request::get('examId'));
+        $subjectIds = explode(',', $exam->subject_ids);
+        $subjects = Subject::whereIn('id', $subjectIds)->get();
         $title = ['班级', '学号', '姓名'];
         foreach ($subjects as $s) {
             $title[] = $s->name;
@@ -387,7 +412,8 @@ class ScoreController extends Controller {
             $html .= '<option value="' . $key . '">' . $value . '</option>';
         }
         
-        return $students ? $this->succeed($html) : $this->fail();
+        return $this->result($students, $html);
+
     }
 
 }

@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
 use Exception;
@@ -79,7 +80,7 @@ class CompanyController extends Controller {
     public function edit($id) {
         
         $company = $this->company->find($id);
-        abort_if(!$company, self::NOT_FOUND);
+        abort_if(!$company, HttpStatusCode::NOT_FOUND);
 
         return $this->output([
             'company' => $company,
@@ -97,7 +98,7 @@ class CompanyController extends Controller {
     public function update(CompanyRequest $request, $id) {
         
         $company = $this->company->find($id);
-        abort_if(!$company, self::NOT_FOUND);
+        abort_if(!$company, HttpStatusCode::NOT_FOUND);
 
         return $this->result(
             $company->modify($request->all(), $id, true)
@@ -115,7 +116,7 @@ class CompanyController extends Controller {
     public function destroy($id) {
     
         $company = $this->company->find($id);
-        abort_if(!$company, self::NOT_FOUND);
+        abort_if(!$company, HttpStatusCode::NOT_FOUND);
 
         return $this->result(
             $company->remove($id, true)

@@ -1,4 +1,4 @@
-{!! Form::model($pqChoice, [
+{!! Form::model($pqsc, [
     'method' => 'put',
     'id' => 'formPqChoice',
     'data-parsley-validate' => 'true'

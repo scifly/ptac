@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\SubjectModuleRequest;
 use App\Models\SubjectModule;
 use Exception;
@@ -16,12 +17,12 @@ use Throwable;
  */
 class SubjectModuleController extends Controller {
     
-    protected $subjectModule;
+    protected $sm;
     
-    function __construct(SubjectModule $subjectModule) {
+    function __construct(SubjectModule $sm) {
     
-        $this->middleware(['auth']);
-        $this->subjectModule = $subjectModule;
+        $this->middleware(['auth', 'checkrole']);
+        $this->sm = $sm;
         
     }
     
@@ -34,7 +35,9 @@ class SubjectModuleController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(SubjectModule::datatable());
+            return response()->json(
+                $this->sm->datatable()
+            );
         }
         
         return $this->output();
@@ -61,7 +64,9 @@ class SubjectModuleController extends Controller {
      */
     public function store(SubjectModuleRequest $request) {
         
-        return $this->result(SubjectModule::create($request->all()));
+        return $this->result(
+            $this->sm->create($request->all())
+        );
         
     }
     
@@ -75,9 +80,11 @@ class SubjectModuleController extends Controller {
     public function edit($id) {
         
         $sm = SubjectModule::find($id);
-        if (!$sm) { return $this->notFound(); }
+        abort_if(!$sm, HttpStatusCode::NOT_FOUND);
         
-        return $this->output(['subjectModules' => $sm]);
+        return $this->output([
+            'sm' => $sm,
+        ]);
         
     }
     
@@ -91,9 +98,11 @@ class SubjectModuleController extends Controller {
     public function update(SubjectModuleRequest $request, $id) {
         
         $sm = SubjectModule::find($id);
-        if (!$sm) { return $this->notFound(); }
+        abort_if(!$sm, HttpStatusCode::NOT_FOUND);
         
-        return $this->result($sm->update($request->all()));
+        return $this->result(
+            $sm->update($request->all())
+        );
         
     }
     
@@ -106,7 +115,7 @@ class SubjectModuleController extends Controller {
      */
     public function destroy($id) {
         
-        $sm = $this->subjectModule->find($id);
+        $sm = $this->sm->find($id);
         if (!$sm) { return $this->notFound(); }
         
         return $this->result($sm->delete());

@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\MenuRequest;
 use App\Models\Menu;
 use App\Models\MenuTab;
@@ -148,7 +149,7 @@ class MenuController extends Controller {
     public function destroy($id) {
 
         $menu = Menu::find($id);
-        abort_if(!$menu, self::NOT_FOUND);
+        abort_if(!$menu, HttpStatusCode::NOT_FOUND);
 
         return $this->result(
             $menu->remove($id)
@@ -180,7 +181,7 @@ class MenuController extends Controller {
     public function menuTabs($id) {
 
         $menu = Menu::find($id);
-        abort_if(!$menu, self::NOT_FOUND);
+        abort_if(!$menu, HttpStatusCode::NOT_FOUND);
         $tabRanks = MenuTab::whereMenuId($id)
             ->get()
             ->sortBy('tab_order')
@@ -207,7 +208,7 @@ class MenuController extends Controller {
      */
     public function rankTabs($id) {
 
-        abort_if(!Menu::find($id), self::NOT_FOUND);
+        abort_if(!Menu::find($id), HttpStatusCode::NOT_FOUND);
         $ranks = Request::get('data');
 
         return $this->result(

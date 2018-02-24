@@ -3,11 +3,9 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -134,8 +132,14 @@ class ProcedureLog extends Model {
         }
         return $medias;
     }
-
-    static function datatable($where) {
+    
+    /**
+     * 审批流程列表
+     *
+     * @param $where
+     * @return array
+     */
+    public function datatable($where) {
 
         $columns = [
             ['db' => 'ProcedureLog.first_log_id', 'dt' => 0],
@@ -177,6 +181,7 @@ class ProcedureLog extends Model {
         ];
 
         return Datatable::simple(self::getModel(), $columns, self::JOINS, $where);
+        
     }
 
 }

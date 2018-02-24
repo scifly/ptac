@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\ComboTypeRequest;
 use App\Models\ComboType;
 use Exception;
@@ -89,6 +90,7 @@ class ComboTypeController extends Controller {
     public function edit($id) {
         
         $ct = $this->ct->find($id);
+        abort_if(!$ct, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $ct);
         
         return $this->output(['ct' => $ct]);

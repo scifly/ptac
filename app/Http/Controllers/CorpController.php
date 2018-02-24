@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\CorpRequest;
 use App\Models\Corp;
 use Exception;
@@ -89,7 +90,7 @@ class CorpController extends Controller {
     public function edit($id) {
         
         $corp = $this->corp->find($id);
-        abort_if(!$corp, self::NOT_FOUND);
+        abort_if(!$corp, HttpStatusCode::NOT_FOUND);
         $this->authorize('veud', $corp);
 
         return $this->output([
@@ -109,7 +110,7 @@ class CorpController extends Controller {
     public function update(CorpRequest $request, $id) {
         
         $corp = $this->corp->find($id);
-        abort_if(!$corp, self::NOT_FOUND);
+        abort_if(!$corp, HttpStatusCode::NOT_FOUND);
         $this->authorize('veud', $corp);
 
         return $this->result(
@@ -128,7 +129,7 @@ class CorpController extends Controller {
     public function destroy($id) {
         
         $corp = $this->corp->find($id);
-        abort_if(!$corp, self::NOT_FOUND);
+        abort_if(!$corp, HttpStatusCode::NOT_FOUND);
         $this->authorize('veud', $corp);
 
         return $this->result(

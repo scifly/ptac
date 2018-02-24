@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\ConferenceQueueRequest;
 use App\Models\ConferenceQueue;
 use Exception;
@@ -85,7 +86,7 @@ class ConferenceQueueController extends Controller {
     public function show($id) {
         
         $cq = $this->cq->find($id);
-        abort_if(!$cq, self::NOT_FOUND);
+        abort_if(!$cq, HttpStatusCode::NOT_FOUND);
         $this->authorize('eud', $cq);
         
         return $this->output([
@@ -104,7 +105,7 @@ class ConferenceQueueController extends Controller {
     public function edit($id) {
         
         $cq = $this->cq->find($id);
-        abort_if(!$cq, self::NOT_FOUND);
+        abort_if(!$cq, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $cq);
         
         return $this->output(['cq' => $cq]);
@@ -122,7 +123,7 @@ class ConferenceQueueController extends Controller {
     public function update(ConferenceQueueRequest $request, $id) {
         
         $cq = $this->cq->find($id);
-        abort_if(!$cq, self::NOT_FOUND);
+        abort_if(!$cq, HttpStatusCode::NOT_FOUND);
         $this->authorize('eud', $cq);
         
         return $this->result(
@@ -141,7 +142,7 @@ class ConferenceQueueController extends Controller {
     public function destroy($id) {
         
         $cq = $this->cq->find($id);
-        abort_if(!$cq, self::NOT_FOUND);
+        abort_if(!$cq, HttpStatusCode::NOT_FOUND);
         $this->authorize('eud', $cq);
         
         return $this->result($cq->remove($id));
