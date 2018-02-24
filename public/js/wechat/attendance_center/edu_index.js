@@ -52,7 +52,6 @@ function getdata(data) {
             console.log(result.data);
             if (result.statusCode === 200) {
                 //返回数据 渲染饼图
-                console.log(result);
                 getclasses(result.data.squadnames);
                 getrules(result.data.rulenames);
                 showtable_pie(result.data.charts, ['打卡', '异常', '未打卡']);
@@ -64,8 +63,8 @@ function getdata(data) {
                 $.alert(result.data);
             }
         },
-        error: function () {
-            $.alert('当前规则有误，请检查！');
+        error: function (e) {
+            $.alert('请加入相应的考勤规则！');
         }
     });
 }
@@ -125,6 +124,9 @@ function classchange() {
                     $.alert(result.data);
                     $rule.select("update", {items: [{}]});
                 }
+            },
+            error: function (e) {
+                $.alert('该年级下未设置考勤规则！');
             }
         });
     });
@@ -159,6 +161,9 @@ function date_rule() {
             if (result.statusCode !== 200) {
                 $.alert(result.message);
             }
+        },
+        error: function () {
+            $.alert('请选择和规则对应的星期！');
         }
     });
 }
