@@ -369,7 +369,6 @@ class Student extends Model {
         // 上传文件
         $filename = date('His') . uniqid() . '.' . $ext;
         $stored = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
-
         if ($stored) {
             $filePath =
                 'public/uploads/'
@@ -385,9 +384,11 @@ class Student extends Model {
             $reader = Excel::load($filePath);
             $sheet = $reader->getExcel()->getSheet(0);
             $students = $sheet->toArray();
-            if (self::checkFileFormat($students[0])) {
-                return abort(406, '文件格式错误');
-            }
+            abort_if(
+                self::checkFileFormat($students[0]),
+                HttpStatusCode::NOT_ACCEPTABLE,
+                '文件格式错误'
+            );
             unset($students[0]);
             $students = array_values($students);
             if (count($students) != 0) {
@@ -408,7 +409,7 @@ class Student extends Model {
             ];
         }
         
-        return abort(500, '上传失败');
+        return abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '上传失败');
         
     }
 

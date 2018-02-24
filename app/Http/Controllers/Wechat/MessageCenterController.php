@@ -148,19 +148,22 @@ class MessageCenterController extends Controller {
             }
 
             $users = User::where('realname', 'like', '%' . $keywords . '%')->get();
-            if($users){
-                return response()->json(['statusCode'=> HttpStatusCode::OK, 'user'=> $users]);
+            if ($users) {
+                $this->result['user'] = $users;
+                return response()->json($this->result);
             }
         }
         #教师可发送消息
         #取的和教师关联的学校的部门id
         $lists = $this->initLists($userId);
+        
         return view('wechat.message_center.create', [
             'department' => $lists['department'],
             'graLists' => $lists['graLists'],
             'claLists' => $lists['claLists'],
             'users' => $lists['users']
         ]);
+        
     }
     
     /**
@@ -317,23 +320,17 @@ class MessageCenterController extends Controller {
         $type = Request::input('type');
         if (empty($type)) {
             $data = Media::upload(Request::file('file'), '前端消息中心');
-            return $data ? $this->succeed($data) : $this->fail();
+            return $this->result($data, $data);
         }
-        if ($type == 'mpnews') {
-            $type = 'image';
-        }
+        if ($type == 'mpnews') { $type = 'image'; }
         $file = Request::file('file');
         if (empty($file)) {
-            $result['statusCode'] = 0;
-            $result['message'] = '您还未选择文件！';
-            
-            return $result;
+            abort(HttpStatusCode::NOT_ACCEPTABLE, '您还未选择文件！');
         } else {
             $result['data'] = [];
             $mes = Media::upload($file, ' 前端消息中心');
             if ($mes) {
-                $result['statusCode'] = 1;
-                $result['message'] = '上传成功！';
+                $this->result['message'] = '上传成功！';
                 $path = $mes['path'];
                 $data = ["media" => curl_file_create($path)];
                 $crop = Corp::whereName('万浪软件')->first();
@@ -343,18 +340,17 @@ class MessageCenterController extends Controller {
                 $message = json_decode($status);
                 if ($message->errcode == 0) {
                     $mes['media_id'] = $message->media_id;
-                    $result['data'] = $mes;
+                    $this->result['data'] = $mes;
                 } else {
-                    $result['statusCode'] = 0;
-                    $result['message'] = '微信服务器上传失败！';
+                    abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '微信服务器上传失败！');
                 }
             } else {
-                $result['statusCode'] = 0;
-                $result['message'] = '文件上传失败！';
+                abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '文件上传失败！');
             }
         }
         
-        return response()->json($result);
+        return response()->json($this->result);
+        
     }
     
     /**

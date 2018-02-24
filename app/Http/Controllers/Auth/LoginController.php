@@ -58,10 +58,8 @@ class LoginController extends Controller {
             $returnUrl = urldecode($request->get('returnUrl'));
         }
         if (Auth::id()) {
-            return response()->json([
-                'statusCode' => HttpStatusCode::OK,
-                'url' => $returnUrl ? $returnUrl : '/'
-            ]);
+            $this->result['url'] = $returnUrl ? $returnUrl : '/';
+            return response()->json($this->result);
         }
         $input = $request->input('input');
         $password = $request->input('password');
@@ -80,9 +78,7 @@ class LoginController extends Controller {
             $mobile = Mobile::whereMobile($input)
                 ->where('isdefault', 1)->first();
             if (!$mobile || !$mobile->user_id) {
-                return response()->json([
-                    'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR
-                ]);
+                return abort(HttpStatusCode::INTERNAL_SERVER_ERROR);
             }
             # 通过默认手机号码查询对应的用户名
             $username = User::find($mobile->user_id)->username;
@@ -93,14 +89,10 @@ class LoginController extends Controller {
                 $rememberMe
             )) {
                 Session::put('user', $user);
-                return response()->json([
-                    'statusCode' => HttpStatusCode::OK,
-                    'url'        => $returnUrl ? $returnUrl : '/',
-                ]);
+                $this->result['url'] = $returnUrl ? $returnUrl : '/';
+                return response()->json($this->result);
             } else {
-                return response()->json([
-                    'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR
-                ]);
+                return abort(HttpStatusCode::INTERNAL_SERVER_ERROR);
             }
         }
         # 登录(用户名或邮箱)
@@ -109,15 +101,11 @@ class LoginController extends Controller {
             $rememberMe
         )) {
             Session::put('user', $user);
-            return response()->json([
-                'statusCode' => HttpStatusCode::OK,
-                'url'        => $returnUrl ? $returnUrl : '/',
-            ]);
+            $this->result['url'] = $returnUrl ? $returnUrl : '/';
+            return response()->json($this->result);
         }
         
-        return response()->json([
-            'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR
-        ]);
+        return abort(HttpStatusCode::INTERNAL_SERVER_ERROR);
         
     }
     

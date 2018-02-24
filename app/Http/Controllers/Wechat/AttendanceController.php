@@ -15,6 +15,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
+use Throwable;
 
 /**
  *  微信考勤
@@ -202,14 +203,19 @@ class AttendanceController extends Controller {
     /**
      * 学生饼图数据
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function stuChart() {
+        
         #判断是否有条件
         $input = Request::all();
         $user = User::whereUserid(Session::get('userId'))->first();
         $educator = $user->educator;
-        abort_if(!$educator, HttpStatusCode::INTERNAL_SERVER_ERROR, '暂未找到您教师的身份！');
+        abort_if(
+            !$educator,
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            '暂未找到您教师的身份！'
+        );
         #找到与教职员工相关的所有班级ids
         $classIds = $this->geteduClass($educator);
         abort_if(
@@ -238,16 +244,22 @@ class AttendanceController extends Controller {
         #饼图数据填充
         if (!isset($input['squad']) && !isset($input['time']) && !isset($input['rule'])) {
             $datas = $this->defcharts($classIds, $data);
-            abort_if(!$datas, HttpStatusCode::INTERNAL_SERVER_ERROR, '请加入相应的考勤规则！');
+            abort_if(
+                !$datas,
+                HttpStatusCode::INTERNAL_SERVER_ERROR,
+                '请加入相应的考勤规则！'
+            );
             $this->result['data'] = $datas;
             return response()->json($this->result);
         } else {
             $datas = $this->fltcharts($input, $data);
-            if (!$data) {
-                return response()->json(['data' => '请加入相应的考勤规则！', 'statusCode' => 500]);
-            }
-            
-            return response()->json(['data' => $datas, 'statusCode' => 200]);
+            abort_if(
+                !$datas,
+                HttpStatusCode::INTERNAL_SERVER_ERROR,
+                '请加入相应的考勤规则！'
+            );
+            $this->result['data'] = $datas;
+            return response()->json($this->result);
         }
     }
     
@@ -260,6 +272,7 @@ class AttendanceController extends Controller {
      * @throws \Throwable
      */
     private function defcharts($classIds, $data) {
+        
         #如果条件为空 默认当天 该老师对应的第一个班级，第一个规则
         $squad = Squad::whereId($classIds[0])->first();
         $grade = $squad->grade;
@@ -275,7 +288,6 @@ class AttendanceController extends Controller {
         $weekDay = $weekArray[date("w", time())];
         #找出对应的学期 根据当前时间
         foreach ($schoolSemesters as $se) {
-            
             if ($se->start_date <= $date && $se->end_date >= $date) {
                 $semester = $se->id;
             }
@@ -289,9 +301,7 @@ class AttendanceController extends Controller {
             ->where('day', $weekDay)
             ->first();
         #这个星期这个年级没有设置对应的规则
-        if (!$rule) {
-            return false;
-        }
+        if (!$rule) { return false; }
         #同一个学生这段时间打了多次记录 取这段时间最晚的一条记录
         $attendances = StudentAttendance::where('sas_id', $rule->id)
             ->whereIn('student_id', $studentIds)
@@ -312,6 +322,7 @@ class AttendanceController extends Controller {
         $data['view'] = $this->attendList($studentIds, $attendances);
 
         return !empty($data) ? $data : false;
+        
     }
     
     /**
@@ -356,38 +367,48 @@ class AttendanceController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function getRules($id) {
+        
         #当前年级所有考勤规则，不分学期
         $gradeId = Squad::whereId($id)->first()->grade_id;
         $rules = StudentAttendanceSetting::whereGradeId($gradeId)->get();
         $data = [];
         foreach ($rules as $r) {
             $data[] = [
-                'title' => $r->name, 'value' => $r->id,
+                'title' => $r->name,
+                'value' => $r->id,
             ];
         }
-        if (empty($data)) {
-            return response()->json(['data' => '该年级下未设置考勤规则！', 'statusCode' => 500]);
-        }
+        abort_if(
+            empty($data),
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            '该年级下未设置考勤规则！'
+        );
+        $this->result['data'] = $data;
         
-        return response()->json(['data' => $data, 'statusCode' => 200]);
+        return response()->json($this->result);
+        
     }
     
     /**
      * 判断日期和规则是否匹配
      */
     public function dateRules() {
+        
         $input = Request::all();
         if ($input['date'] != null && $input['rule'] != null) {
             #获取规则的星期
             $ruleDay = StudentAttendanceSetting::whereId($input['rule'])->first()->day;
             $weekArray = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
             $weekDay = $weekArray[date("w", strtotime($input['date']))];
+            $this->result['message'] = '';
             
-            return $ruleDay == $weekDay ? response()->json(['message' => '', 'statusCode' => 200]) :
-                response()->json(['message' => '请选择和规则对应的星期！', 'statusCode' => 500]);
+            return $ruleDay == $weekDay ? response()->json($this->result) :
+                abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '请选择和规则对应的星期！');
         }
+        $this->result['message'] = '';
         
-        return response()->json(['message' => '', 'statusCode' => 200]);
+        return response()->json($this->result);
+        
     }
     
     /**
@@ -396,6 +417,7 @@ class AttendanceController extends Controller {
      * @return array
      */
     private function geteduClass($educator) {
+        
         #找出改教职员工对应的所有班级的集合
         $gradeIds = [];
         $squadIds = [];
@@ -422,8 +444,10 @@ class AttendanceController extends Controller {
         $squads = Squad::whereEnabled(1)->get();
         foreach ($squads as $squad) {
             $grade = $squad->grade;
-            if (!in_array($educator->id, explode(',', $grade->educator_ids))
-                && in_array($educator->id, explode(',', $squad->educator_ids))) {
+            if (
+                !in_array($educator->id, explode(',', $grade->educator_ids))
+                && in_array($educator->id, explode(',', $squad->educator_ids))
+            ) {
                 $squadIds[] = $squad->id;
             }
         }
@@ -439,6 +463,7 @@ class AttendanceController extends Controller {
         $eduClass = array_merge($graclassIds, $squadIds, $classIds);
         
         return $eduClass;
+        
     }
     
     /**
@@ -446,9 +471,10 @@ class AttendanceController extends Controller {
      * @param $studentIds
      * @param $attendances
      * @return mixed
-     * @throws \Throwable
+     * @throws Throwable
      */
-    private function attendList($studentIds, $attendances) {
+    private function attendList($studentIds, StudentAttendance $attendances) {
+        
         //正常的学生列表
         $normalList = [];
         foreach ($attendances->where('status', 1) as $normal) {

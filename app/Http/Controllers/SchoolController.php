@@ -172,10 +172,10 @@ class SchoolController extends Controller {
         return response()->json([
             'statusCode' => HttpStatusCode::OK,
             'html'       => view('school.show_info', [
-                'school' => $school,
-                'js' => 'js/school/show_info.js',
-                'breadcrumb' => '学校设置'
-            ])->render(),
+                                'school' => $school,
+                                'js' => 'js/school/show_info.js',
+                                'breadcrumb' => '学校设置'
+                            ])->render(),
             'uri'        => Request::path(),
             'title'      => '学校设置',
         ]);

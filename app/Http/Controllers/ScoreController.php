@@ -335,9 +335,9 @@ class ScoreController extends Controller {
         }
         
         return response()->json([
+            'statusCode' => HttpStatusCode::OK,
             'students' => $studentHtml,
             'subjects' => $subjectHtml,
-            'statusCode' => 200,
         ]);
         
     }

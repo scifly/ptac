@@ -7,8 +7,8 @@
             @if (!empty($schoolId['id']))
                 {{ Form::hidden('id', $schoolId['id'], ['id' => 'id']) }}
             @endif
-            @if (!empty($wapSite['id']))
-                {{ Form::hidden('id', $wapSite['id'], ['id' => 'id']) }}
+            @if (!empty($ws['id']))
+                {{ Form::hidden('id', $ws['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
                 {!! Form::label('site_title', '首页抬头', [
@@ -48,7 +48,7 @@
             </div>
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $wapSite['enabled'] ?? null
+                'value' => $ws['enabled'] ?? null
             ])
 
         </div>
