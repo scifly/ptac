@@ -7,6 +7,10 @@
             <?php if(!empty($score['id'])): ?>
                 <?php echo e(Form::hidden('id', $score['id'], ['id' => 'id'])); ?>
 
+                <?php echo e(Form::hidden('subject', $score['subject_id'], ['id' => 'subject'])); ?>
+
+                <?php echo e(Form::hidden('student', $score['student_id'], ['id' => 'student'])); ?>
+
             <?php endif; ?>
             <?php echo $__env->make('partials.single_select', [
                     'label' => '考试名称',

@@ -62,8 +62,7 @@ class ScoreTotalController extends Controller {
         );
         
     }
-    
-    
+
     /**
      * 总成绩统计
      *
@@ -73,7 +72,9 @@ class ScoreTotalController extends Controller {
      */
     public function statistics($examId) {
     
-         return $this->result(ScoreTotal::statistics($examId));
+         return $this->result(
+             ScoreTotal::statistics($examId)
+         );
     
     }
     

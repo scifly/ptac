@@ -88,7 +88,7 @@ class ComboTypeController extends Controller {
      */
     public function edit($id) {
         
-        $ct = ComboType::find($id);
+        $ct = $this->ct->find($id);
         $this->authorize('rud', $ct);
         
         return $this->output(['ct' => $ct]);
@@ -105,7 +105,7 @@ class ComboTypeController extends Controller {
      */
     public function update(ComboTypeRequest $request, $id) {
         
-        $ct = ComboType::find($id);
+        $ct = $this->ct->find($id);
         $this->authorize('rud', $ct);
         
         return $this->result(
@@ -123,7 +123,7 @@ class ComboTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $ct = ComboType::find($id);
+        $ct = $this->ct->find($id);
         $this->authorize('rud', $ct);
         
         return $this->result($ct->delete());

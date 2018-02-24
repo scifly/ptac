@@ -88,6 +88,7 @@ return [
     'uploaded'             => ':attribute 上传失败',
     'url'                  => ':attribute 格式不正确',
     'grade_id'             => ':attribute 必须的',
+    'greater_than'         => ':attribute 必须大于 :other',
 
     /*
     |--------------------------------------------------------------------------
@@ -175,5 +176,7 @@ return [
         'student_id'            => '该学生本次考试该科目成绩',
         'start_date'            => '开始日期',
         'end_date'              => '结束日期',
+        'start_score'           => '起始分数',
+        'end_score'             => '截止分数'
     ],
 ];

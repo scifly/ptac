@@ -29,13 +29,26 @@ class CustodianComposer {
         $groupId = Auth::user()->group->id;
         if($groupId > 5){
             $educatorId = Auth::user()->educator->id;
-            $grades = Student::getGrade($educatorId)[0];
-            $classes = Student::getGrade($educatorId)[1];
+            $gradeIds = Student::getGrade($educatorId)[0];
+            $gradeClass = Student::getGrade($educatorId)[1];
+            foreach ($gradeClass as $k=>$g){
+                $grades = Grade::whereEnabled(1)
+                    ->whereIn('id',$gradeIds)
+                    ->pluck('name', 'id')
+                    ->toArray();
+                $classes = Squad::whereEnabled(1)
+                    ->whereIn('id',$g)
+                    ->pluck('name', 'id')
+                    ->toArray();
+                break;
+            }
             foreach($classes as $k=>$c){
                 $list = Student::whereClassId($k)
                     ->where('enabled', 1)
                     ->get();
+                break;
             }
+
 
         }else{
             if ($schools) {

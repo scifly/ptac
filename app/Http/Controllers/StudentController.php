@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StudentRequest;
 
 use App\Models\Department;
-
+use App\Models\Grade;
 use App\Models\School;
-
+use App\Models\Squad;
 use App\Models\Student;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -52,12 +52,19 @@ class StudentController extends Controller {
      * @throws Throwable
      */
     public function create() {
-        
+
+        $groupId = Auth::user()->group->id;
         if (Request::method() === 'POST') {
             $field = Request::query('field');
             $id = Request::query('id');
             if($field && $id) {
-                $this->result['html'] = School::getFieldList($field, $id);
+                if($groupId > 5){
+                    $educatorId = Auth::user()->educator->id;
+                    $gradeClass = Student::getGrade($educatorId)[1];
+                    $this->result['html'] = School::getFieldList($field, $id ,$gradeClass);
+                }else{
+                    $this->result['html'] = School::getFieldList($field, $id);
+                }
                 return response()->json($this->result);
             }else{
                 return response()->json(Department::tree());
@@ -111,22 +118,40 @@ class StudentController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
+
+        $users = Auth::user();
+        $groupId = Auth::user()->group->id;
         if (Request::method() === 'POST') {
             $field = Request::get('field');
             $id = Request::get('id');
-            $this->result['html'] = School::getFieldList($field, $id);
+            if($groupId > 5){
+                $educatorId = Auth::user()->educator->id;
+                $gradeClass = Student::getGrade($educatorId)[1];
+                $this->result['html'] = School::getFieldList($field, $id ,$gradeClass);
+            }else{
+                $this->result['html'] = School::getFieldList($field, $id);
+            }
             return response()->json($this->result);
         }
         # 查询学生信息
         $student = Student::find($id);
         if (!$student) { return $this->notFound(); }
-        $users = Auth::user();
-        $groupId =  $users->group->id;
         $user = $student->user;
         if($groupId > 5){
             $educatorId = $users->educator->id;
-            $grades = Student::getGrade($educatorId)[0];
-            $classes = Student::getGrade($educatorId)[1];
+            $gradeIds = Student::getGrade($educatorId)[0];
+            $gradeClass = Student::getGrade($educatorId)[1];
+            foreach ($gradeClass as $k=>$g){
+                $grades = Grade::whereEnabled(1)
+                    ->whereIn('id',$gradeIds)
+                    ->pluck('name', 'id')
+                    ->toArray();
+                $classes = Squad::whereEnabled(1)
+                    ->whereIn('id',$g)
+                    ->pluck('name', 'id')
+                    ->toArray();
+                break;
+            }
         }else{
             $items = Student::gradeClasses(
                 $student->squad->grade_id

@@ -73,7 +73,7 @@ class AttendanceMachineController extends Controller {
         );
 
         return $this->result(
-            AttendanceMachine::create($request->all())
+            $this->am->create($request->all())
         );
         
     }
@@ -87,7 +87,7 @@ class AttendanceMachineController extends Controller {
      */
     public function edit($id) {
         
-        $am = AttendanceMachine::find($id);
+        $am = $this->am->find($id);
         abort_if(!$am, self::NOT_FOUND);
         $this->authorize('rud', $am);
         
@@ -105,7 +105,7 @@ class AttendanceMachineController extends Controller {
      */
     public function update(AttendanceMachineRequest $request, $id) {
         
-        $am = AttendanceMachine::find($id);
+        $am = $this->am->find($id);
         abort_if(!$am, self::NOT_FOUND);
         $this->authorize('rud', $am);
         
@@ -124,7 +124,7 @@ class AttendanceMachineController extends Controller {
      */
     public function destroy($id) {
         
-        $am = AttendanceMachine::find($id);
+        $am = $this->am->find($id);
         abort_if(!$am, self::NOT_FOUND);
         $this->authorize('rud', $am);
         

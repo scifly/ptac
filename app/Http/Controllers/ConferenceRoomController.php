@@ -89,7 +89,7 @@ class ConferenceRoomController extends Controller {
      */
     public function show($id) {
         
-        $cr = ConferenceRoom::find($id);
+        $cr = $this->cr->find($id);
         abort_if(!$cr, self::NOT_FOUND);
         $this->authorize('rud', $cr);
         
@@ -106,7 +106,7 @@ class ConferenceRoomController extends Controller {
      */
     public function edit($id) {
         
-        $cr = ConferenceRoom::find($id);
+        $cr = $this->cr->find($id);
         abort_if(!$cr, self::NOT_FOUND);
         $this->authorize('rud', $cr);
         
@@ -124,7 +124,7 @@ class ConferenceRoomController extends Controller {
      */
     public function update(ConferenceRoomRequest $request, $id) {
         
-        $cr = ConferenceRoom::find($id);
+        $cr = $this->cr->find($id);
         abort_if(!$cr, self::NOT_FOUND);
         $this->authorize('rud', $cr);
         
@@ -141,7 +141,7 @@ class ConferenceRoomController extends Controller {
      */
     public function destroy($id) {
         
-        $cr = ConferenceRoom::find($id);
+        $cr = $this->cr->find($id);
         abort_if(!$cr, self::NOT_FOUND);
         $this->authorize('rud', $cr);
         

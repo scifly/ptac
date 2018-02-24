@@ -7,8 +7,10 @@ use App\Models\Custodian;
 use App\Models\CustodianStudent;
 use App\Models\Department;
 use App\Models\School;
+use App\Models\Student;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
@@ -56,10 +58,17 @@ class CustodianController extends Controller {
      */
     public function create() {
 
+        $groupId = Auth::user()->group->id;
         if (Request::method() === 'POST') {
             $field = Request::query('field');
             $id = Request::query('id');
-            $this->result['html'] = School::getFieldList($field, $id);
+            if($groupId > 5){
+                $educatorId = Auth::user()->educator->id;
+                $gradeClass = Student::getGrade($educatorId)[1];
+                $this->result['html'] = School::getFieldList($field, $id ,$gradeClass);
+            }else{
+                $this->result['html'] = School::getFieldList($field, $id);
+            }
             return response()->json($this->result);
         }
 
@@ -92,7 +101,7 @@ class CustodianController extends Controller {
      */
     public function show($id){
         
-        $custodian = Custodian::find($id);
+        $custodian = $this->custodian->find($id);
         abort_if(!$custodian, self::NOT_FOUND);
         
         return $this->output([
@@ -120,7 +129,7 @@ class CustodianController extends Controller {
                 return response()->json(Department::tree());
             }
         }
-        $custodian = Custodian::find($id);
+        $custodian = $this->custodian->find($id);
         abort_if(!$custodian, self::NOT_FOUND);
         $pupils = CustodianStudent::whereCustodianId($id)->get();
         return $this->output([
@@ -141,7 +150,7 @@ class CustodianController extends Controller {
      */
     public function update(CustodianRequest $request, $id) {
 
-        $custodian = Custodian::find($id);
+        $custodian = $this->custodian->find($id);
         abort_if(!$custodian, self::NOT_FOUND);
         
         return $this->result(
@@ -160,7 +169,7 @@ class CustodianController extends Controller {
      */
     public function destroy($id) {
         
-        $custodian = Custodian::find($id);
+        $custodian = $this->custodian->find($id);
         abort_if(!$custodian, self::NOT_FOUND);
         
         return $this->result(

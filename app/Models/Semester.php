@@ -62,7 +62,7 @@ class Semester extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
         
         $columns = [
             ['db' => 'Semester.id', 'dt' => 0],

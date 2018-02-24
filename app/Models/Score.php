@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -103,9 +104,7 @@ class Score extends Model {
     public function modify(array $data, $id) {
         
         $score = self::find($id);
-        if (!$score) {
-            return false;
-        }
+        if (!$score) { return false; }
         
         return $score->update($data) ? true : false;
         
@@ -121,9 +120,7 @@ class Score extends Model {
     public function remove($id) {
         
         $score = self::find($id);
-        if (!$score) {
-            return false;
-        }
+        if (!$score) { return false; }
         
         return $score->delete() ? true : false;
         
@@ -217,6 +214,13 @@ class Score extends Model {
         
         // todo: 增加过滤条件
         $condition = 'Subject.school_id = ' . School::schoolId();
+        $groupId = Auth::user()->group->id;
+        if($groupId > 5){
+            $educatorId = Auth::user()->educator->id;
+            $studentIds = Student::getClassStudent($educatorId)[1];
+            $studentIds = implode(',',$studentIds);
+            $condition .= " and Student.id in ($studentIds)";
+        }
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         
     }
