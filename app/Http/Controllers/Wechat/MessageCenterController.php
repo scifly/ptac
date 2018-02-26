@@ -159,12 +159,12 @@ class MessageCenterController extends Controller {
                 }
                 $users = User::whereIn('id', $userIds)
                     ->where('realname', 'like', '%' . $keywords . '%')->get();
+                if($users){
+                    return response()->json(['statusCode'=> HttpStatusCode::OK, 'user'=> $users]);
+
+                }
             }
 
-            if($users){
-                return response()->json(['statusCode'=> HttpStatusCode::OK, 'user'=> $users]);
-
-            }
         }
         #教师可发送消息
         #取的和教师关联的学校的部门id
