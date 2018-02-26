@@ -1379,7 +1379,6 @@ class Score extends Model {
         $schoolId = $user->educator->school_id;
         // 取出该教职员工对应的所有班级
         $classIds = Student::getClassStudent($schoolId,$educatorId)[0];
-
         if (!$classIds) {
             return false;
         }
