@@ -1373,11 +1373,17 @@ class Score extends Model {
      * @return array|bool
      */
     public function getEducatorScore($userId) {
-        $score = $data = $className = [];
-        $class = User::whereUserid($userId)->first()->educator->classes;
-        if (!$class) {
+        $score = $data = $className = $classIds = [];
+        $user = User::whereUserid($userId)->first();
+        $educatorId = $user->educator->id;
+        $schoolId = $user->educator->school_id;
+        // 取出该教职员工对应的所有班级
+        $classIds = Student::getClassStudent($schoolId,$educatorId)[0];
+
+        if (!$classIds) {
             return false;
         }
+        $class = Squad::whereEnabled(1)->whereIn('id',$classIds)->get();
         foreach ($class as $k => $c) {
             $exams = Exam::whereEnabled(1)->get();
             // $exams = Exam::where('class_ids', 'like', '%' . $c->id . '%')
