@@ -205,45 +205,34 @@ class MessageController extends Controller {
         
     }
     
+    /**
+     * 上传媒体文件
+     *
+     * @return JsonResponse
+     */
     public function uploadFile() {
         
         $file = Request::file('uploadFile');
+        abort_if(empty($file), HttpStatusCode::NOT_ACCEPTABLE, '您还未选择文件！');
         $type = Request::input('type');
-        if (empty($file)) {
-            $result['statusCode'] = 0;
-            $result['message'] = '您还未选择文件！';
-            
-            return $result;
-        } else {
-            $result['data'] = [];
-            $mes = Media::upload($file, '消息中心');
-            if ($mes) {
-                $result['statusCode'] = 1;
-                $result['message'] = '上传成功！';
-                #window env 2018-02-06 by wenw
-//                $path =public_path().'\\'.str_replace('/','\\',$mes['path']) ;
-                #linux env 2018-02-06 by wenw
-                $path =$mes['path'];
-                $data = ["media" => curl_file_create($path)];
-                $crop = Corp::whereName('万浪软件')->first();
-                $app = App::whereAgentid('999')->first();
-                $token = Wechat::getAccessToken($crop->corpid, $app->secret);
-                $status = Wechat::uploadMedia($token, $type, $data);
-                $message = json_decode($status);
-                if ($message->errcode == 0) {
-                    $mes['media_id'] = $message->media_id;
-                    $result['data'] = $mes;
-                } else {
-                    $result['statusCode'] = 0;
-                    $result['message'] = '微信服务器上传失败！';
-                }
-            } else {
-                $result['statusCode'] = 0;
-                $result['message'] = '文件上传失败！';
-            }
-        }
+        $result['data'] = [];
+        $mes = Media::upload($file, '消息中心');
+        abort_if(!$mes, HttpStatusCode::INTERNAL_SERVER_ERROR, '文件上传失败');
+        $this->result['message'] = '上传成功！';
+        $path = $mes['path'];
+        $data = [
+            "media" => curl_file_create($path)
+        ];
+        $crop = Corp::whereName('万浪软件')->first();
+        $app = App::whereAgentid('999')->first();
+        $token = Wechat::getAccessToken($crop->corpid, $app->secret);
+        $status = Wechat::uploadMedia($token, $type, $data);
+        $message = json_decode($status);
+        abort_if($message->errcode != 0, HttpStatusCode::INTERNAL_SERVER_ERROR, '微信服务器上传失败！');
+        $mes['media_id'] = $message->media_id;
+        $this->result['data'] = $mes;
         
-        return response()->json($result);
+        return response()->json($this->result);
         
     }
     

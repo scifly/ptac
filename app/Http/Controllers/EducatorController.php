@@ -231,21 +231,21 @@ class EducatorController extends Controller {
 
         if (Request::isMethod('post')) {
             $file = Request::file('file');
-            if (empty($file)) {
-                $result = [
-                    'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
-                    'message' => '您还没选择文件！',
-                ];
-                return response()->json($result);
-            }
+            abort_if(
+                empty($file),
+                HttpStatusCode::INTERNAL_SERVER_ERROR,
+                '您还没选择文件！'
+            );
+            
             // 文件是否上传成功
             if ($file->isValid()) {
-                $result = $this->educator->upload($file);
-                return response()->json($result);
+                return response()->json(
+                    $this->educator->upload($file)
+                );
             }
         }
 
-        return null;
+        return abort(HttpStatusCode::METHOD_NOT_ALLOWED);
 
     }
 

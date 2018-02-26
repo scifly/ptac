@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use PHPExcel_Exception;
 use Throwable;
 
 /**
@@ -217,32 +218,34 @@ class StudentController extends Controller {
     
     /**
      * 导入学籍
-     * @throws \PHPExcel_Exception
+     *
+     * @throws PHPExcel_Exception
      */
     public function import() {
         
         if (Request::isMethod('post')) {
             $file = Request::file('file');
-            if (empty($file)) {
-                $result = [
-                    'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
-                    'message'    => '您还没选择文件！',
-                ];
-                return response()->json($result);
-            }
+            abort_if(
+                empty($file),
+                HttpStatusCode::INTERNAL_SERVER_ERROR,
+                '您还没选择文件！'
+            );
             // 文件是否上传成功
             if ($file->isValid()) {
-                $result = $this->student->upload($file);
-                return response()->json($result);
+                return response()->json(
+                    $this->student->upload($file)
+                );
             }
         }
         
-        return null;
+        return $this->fail('上传失败');
         
     }
     
     /**
      * 导出学籍
+     *
+     * @return JsonResponse
      */
     public function export() {
 
@@ -286,7 +289,7 @@ class StudentController extends Controller {
             }, 'UTF-8')->export('xls');
         }
         
-        return false;
+        return abort(HttpStatusCode::BAD_REQUEST, '导出失败');
         
     }
 

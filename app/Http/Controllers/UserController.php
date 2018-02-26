@@ -50,13 +50,12 @@ class UserController extends Controller {
             $password = Request::input('password');
             $pwd = bcrypt(Request::input('pwd'));
             $user = User::find(Auth::id());
-
-            if (!Hash::check($password,$user->password)) {
-                return response()->json(['statusCode' => HttpStatusCode::BAD_REQUEST]);
-            }
-            $res = $user->update(['password' => $pwd]);
-            if ($res) {
-                return response()->json(['statusCode' => HttpStatusCode::OK]);
+            abort_if(
+                !Hash::check($password,$user->password),
+                HttpStatusCode::BAD_REQUEST
+            );
+            if ($user->update(['password' => $pwd])) {
+                return response()->json($this->result);
             }
         }
 
@@ -123,9 +122,7 @@ class UserController extends Controller {
         //如果是create操作，图片路径不能直接存储数据库
         //TODO:需要处理默认头像、图片缓存问题
         if ($id < 1) {
-            $this->result['statusCode'] = HttpStatusCode::OK;
             $this->result['fileName'] = $fileName;
-
             return response()->json($this->result);
         }
 
@@ -188,11 +185,9 @@ class UserController extends Controller {
             }
             $user->avatar_url = $imgName;
             if ($user->save()) {
-                $this->result['statusCode'] = HttpStatusCode::OK;
                 $this->result['fileName'] = $imgName;
             } else {
-                $this->result['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-                $this->result['message'] = '头像保存失败';
+                abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '头像保存失败');
             }
         }
         

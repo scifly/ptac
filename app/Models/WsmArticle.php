@@ -76,7 +76,7 @@ class WsmArticle extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function store(WsmArticleRequest $request) {
+    public function store(WsmArticleRequest $request) {
 
         try {
             //删除原有的图片
@@ -126,7 +126,7 @@ class WsmArticle extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function modify(WsmArticleRequest $request, $id) {
+    public function modify(WsmArticleRequest $request, $id) {
         
         $wsma = self::find($id);
         if (!$wsma) { return false; }
@@ -148,7 +148,7 @@ class WsmArticle extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
 
         $columns = [
             ['db' => 'WsmArticle.id', 'dt' => 0],

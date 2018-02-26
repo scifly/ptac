@@ -227,14 +227,8 @@ class MessageCenterController extends Controller {
      */
     public function show( $id ) {
         $userId = Session::get('userId');
-//      $userId = "yuanhongbin";
         $user = $this->user->where('userid', $userId)->first();
         $message = $this->message->find($id);
-        // if(count($message->content) == 0){
-        //     if(!empty($message->media_ids)){
-        //         $message->content = $_SERVER['HTTP_HOST'] . '/' . Media::whereId($message->media_ids)->first()->path;
-        //     }
-        // }
         if (json_decode($message->content) != null) {
             $content = json_decode($message->content, true);
             if (array_key_exists("content", $content)) {
