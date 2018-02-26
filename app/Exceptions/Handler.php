@@ -6,6 +6,8 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -32,7 +34,7 @@ class Handler extends ExceptionHandler {
      *
      * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
      *
-     * @param  \Exception $exception
+     * @param  Exception $exception
      * @return void
      */
     public function report(Exception $exception) {
@@ -51,8 +53,8 @@ class Handler extends ExceptionHandler {
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  \Exception $exception
+     * @param  Request $request
+     * @param  Exception $exception
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function render($request, Exception $exception) {
@@ -107,9 +109,9 @@ class Handler extends ExceptionHandler {
     /**
      * Convert an authentication exception into an unauthenticated response.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  Request $request
      * @param  AuthenticationException $exception
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     protected function unauthenticated($request, AuthenticationException $exception) {
         
@@ -118,6 +120,7 @@ class Handler extends ExceptionHandler {
         }
         
         return redirect()->guest(route('login'));
+        
     }
     
 }

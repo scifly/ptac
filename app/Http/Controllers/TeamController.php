@@ -130,9 +130,7 @@ class TeamController extends Controller {
         $this->authorize('rud', $team);
         $educators = EducatorTeam::whereTeamId($id);
         if ($educators) {
-            return $this->result(
-                false, '', '该组下包含教职员工，无法删除！'
-            );
+            return $this->fail('该组下包含教职员工，无法删除！');
         }
         
         return $this->result(

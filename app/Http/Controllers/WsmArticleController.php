@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\WsmArticleRequest;
 use App\Models\Media;
 use App\Models\WsmArticle;
@@ -17,9 +18,12 @@ use Throwable;
  */
 class WsmArticleController extends Controller {
     
-    public function __construct() {
+    protected $wsma;
+    
+    public function __construct(WsmArticle $wsma) {
         
         $this->middleware(['auth', 'checkrole']);
+        $this->wsma = $wsma;
         
     }
     
@@ -32,7 +36,9 @@ class WsmArticleController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(WsmArticle::datatable());
+            return response()->json(
+                $this->wsma->datatable()
+            );
         }
         
         return $this->output();
@@ -61,7 +67,9 @@ class WsmArticleController extends Controller {
      */
     public function store(WsmArticleRequest $request) {
         
-        return $this->result(WsmArticle::store($request));
+        return $this->result(
+            $this->wsma->store($request)
+        );
         
     }
     
@@ -75,7 +83,7 @@ class WsmArticleController extends Controller {
     public function show($id) {
         
         $article = WsmArticle::find($id);
-        if (!$article) { return parent::notFound(); }
+        abort_if(!$article, HttpStatusCode::NOT_FOUND);
         
         return $this->output([
             'article' => $article,
@@ -94,7 +102,7 @@ class WsmArticleController extends Controller {
     public function edit($id) {
         
         $article = WsmArticle::find($id);
-        if (!$article) { return parent::notFound(); }
+        abort_if(!$article, HttpStatusCode::NOT_FOUND);
         
         return $this->output([
             'article' => $article,
@@ -109,14 +117,16 @@ class WsmArticleController extends Controller {
      * @param WsmArticleRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws Exception
      * @throws Throwable
      */
     public function update(WsmArticleRequest $request, $id) {
         
         $article = WsmArticle::find($id);
+        abort_if(!$article, HttpStatusCode::NOT_FOUND);
         
-        return $this->result($article->modify($request, $id));
+        return $this->result(
+            $article->modify($request, $id)
+        );
         
     }
     
@@ -130,9 +140,11 @@ class WsmArticleController extends Controller {
     public function destroy($id) {
         
         $article = WsmArticle::find($id);
-        if (!$article) { return parent::notFound(); }
+        abort_if(!$article, HttpStatusCode::NOT_FOUND);
         
-        return $this->result($article->delete());
+        return $this->result(
+            $article->delete()
+        );
         
     }
 

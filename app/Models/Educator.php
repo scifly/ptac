@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Events\EducatorImported;
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Http\Requests\CustodianRequest;
 use App\Http\Requests\EducatorRequest;
@@ -476,12 +477,11 @@ class Educator extends Model {
                 throw $e;
             }
             $educators = $sheet->toArray();
-            if (self::checkFileFormat($educators[0])) {
-                return [
-                    'error' => 1,
-                    'message' => '文件格式错误',
-                ];
-            }
+            abort_if(
+                self::checkFileFormat($educators[0]),
+                HttpStatusCode::NOT_ACCEPTABLE,
+                '文件格式错误'
+            );
             unset($educators[0]);
             $educators = array_values($educators);
             if (count($educators) != 0) {
@@ -498,15 +498,13 @@ class Educator extends Model {
             }
             Storage::disk('uploads')->delete($filename);
             return [
-                'error' => 0,
+                'statusCode' => HttpStatusCode::OK,
                 'message' => '上传成功'
             ];
             
         }
-        return [
-            'error' => 2,
-            'message' => '上传失败',
-        ];
+        
+        return abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '上传失败');
         
     }
     
