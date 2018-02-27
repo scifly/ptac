@@ -1,7 +1,9 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Models\Corp;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class CorpRequest extends FormRequest {
 
@@ -38,6 +40,11 @@ class CorpRequest extends FormRequest {
         }
         if (!isset($input['menu_id'])) {
             $input['menu_id'] = 0;
+        }
+        if (!isset($input['company_id'])) {
+            $corpId = Corp::whereDepartmentId(Auth::user()
+                ->topDeptId())->first()->id;
+            $input['company_id'] = Corp::find($corpId)->company_id;
         }
         $this->replace($input);
 

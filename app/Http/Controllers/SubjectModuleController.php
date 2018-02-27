@@ -116,9 +116,11 @@ class SubjectModuleController extends Controller {
     public function destroy($id) {
         
         $sm = $this->sm->find($id);
-        if (!$sm) { return $this->notFound(); }
+        abort_if(!$sm, HttpStatusCode::NOT_FOUND);
         
-        return $this->result($sm->delete());
+        return $this->result(
+            $sm->delete()
+        );
         
     }
     

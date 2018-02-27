@@ -3,13 +3,16 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use ReflectionException;
 
 /**
  * App\Models\Team 教职员工组
@@ -33,6 +36,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @mixin Eloquent
  */
 class Team extends Model {
+    
+    use ModelTrait;
 
     protected $fillable = ['name', 'school_id', 'remark', 'enabled'];
 
@@ -66,6 +71,24 @@ class Team extends Model {
 
         return $teams;
 
+    }
+    
+    /**
+     * 删除教职员工组
+     *
+     * @param $id
+     * @return bool|null
+     * @throws Exception
+     * @throws ReflectionException
+     */
+    public function remove($id) {
+        
+        $team = $this->find($id);
+        if (!$team) { return false; }
+        $removed = $team->removable($team) ? $team->delete() : false;
+        
+        return $removed ?? false;
+        
     }
     
     /**

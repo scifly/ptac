@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Snippet;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Exception;
@@ -163,12 +164,12 @@ class ConferenceQueue extends Model {
                             break;
                         default: break;
                     }
-                    $showLink = str_repeat(Datatable::DT_SPACE, 3) .
-                        sprintf(Datatable::DT_LINK_SHOW, 'show_' . $id);
-                    $editLink = str_repeat(Datatable::DT_SPACE, 3) .
-                        sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
-                    $delLink = str_repeat(Datatable::DT_SPACE, 2) .
-                        sprintf(Datatable::DT_LINK_DEL, $id);
+                    $showLink = str_repeat(Snippet::DT_SPACE, 3) .
+                        sprintf(Snippet::DT_LINK_SHOW, 'show_' . $id);
+                    $editLink = str_repeat(Snippet::DT_SPACE, 3) .
+                        sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
+                    $delLink = str_repeat(Snippet::DT_SPACE, 2) .
+                        sprintf(Snippet::DT_LINK_DEL, $id);
 
                     return
                         $status .

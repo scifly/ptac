@@ -51,7 +51,6 @@ class AppController extends Controller {
     public function edit($id) {
         
         $app = $this->app->find($id);
-        abort_if(!$app, HttpStatusCode::NOT_FOUND);
         $this->authorize('eum', $app);
 
         return $this->output(['app' => $app]);
@@ -69,7 +68,6 @@ class AppController extends Controller {
     public function update(AppRequest $request, $id) {
         
         $app = $this->app->find($id);
-        abort_if(!$app, HttpStatusCode::NOT_FOUND);
         $this->authorize('eum', $app);
 
         return $this->result(
@@ -88,7 +86,6 @@ class AppController extends Controller {
     public function menu($id) {
         
         $app = $this->app->find($id);
-        abort_if(!$app, HttpStatusCode::NOT_FOUND);
         $this->authorize('eum', $app);
 
         $menu = "[

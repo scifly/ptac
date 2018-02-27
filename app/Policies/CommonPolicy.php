@@ -8,7 +8,7 @@ use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Database\Eloquent\Model;
 
-class SchoolPolicy {
+class CommonPolicy {
     
     use HandlesAuthorization;
     
@@ -48,7 +48,11 @@ class SchoolPolicy {
      */
     public function rud(User $user, Model $model) {
     
-        if (!$model) { abort(HttpStatusCode::NOT_FOUND); }
+        abort_if(
+            !$model,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
         $role = $user->group->name;
         if ($role == '运营') { return true; }
         $schoolId = $model->{'school_id'} ?? null;

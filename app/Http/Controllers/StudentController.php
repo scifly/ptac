@@ -238,7 +238,7 @@ class StudentController extends Controller {
             }
         }
         
-        return $this->fail('上传失败');
+        return abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '上传失败');
         
     }
     

@@ -41,6 +41,7 @@ class HttpStatusCode {
     const REQUESTED_RANGE_NOT_SATISFIABLE = 416;
     const EXPECTATION_FAILED = 417;
     const IM_A_TEAPOT = 418;
+    const TOKEN_MISMATCH = 498;
     # Server Error 5xx
     const INTERNAL_SERVER_ERROR = 500;
     const NOT_IMPLEMENTED = 501;

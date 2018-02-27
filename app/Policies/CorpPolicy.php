@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Helpers\HttpStatusCode;
 use App\Models\User;
 use App\Models\Corp;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -31,7 +32,7 @@ class CorpPolicy {
      */
     public function veud(User $user, Corp $corp) {
 
-        if (!$corp) { abort(404); }
+        abort_if(!$corp, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
         $role = $user->group->name;
         switch ($role) {
             case '运营': return true;

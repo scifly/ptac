@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\MajorRequest;
 use App\Models\Major;
 use Exception;
@@ -82,8 +81,7 @@ class MajorController extends Controller {
     public function edit($id) {
         
         $major = Major::find($id);
-        abort_if(!$major, HttpStatusCode::NOT_FOUND);
-
+        $this->authorize('rud', $major);
         $majorSubjects = $major->subjects;
         $selectedSubjects = [];
         foreach ($majorSubjects as $subject) {
@@ -109,7 +107,7 @@ class MajorController extends Controller {
     public function update(MajorRequest $request, $id) {
         
         $major = Major::find($id);
-        abort_if(!$major, HttpStatusCode::NOT_FOUND);
+        $this->authorize('rud', $major);
         
         return $this->result(
             $major->modify($request, $id)
@@ -128,8 +126,8 @@ class MajorController extends Controller {
     public function destroy($id) {
         
         $major = Major::find($id);
-        abort_if(!$major, HttpStatusCode::NOT_FOUND);
-
+        $this->authorize('rud', $major);
+        
         return $this->result(
             $major->remove($id)
         );

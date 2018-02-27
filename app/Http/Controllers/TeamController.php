@@ -1,9 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\TeamRequest;
-use App\Models\EducatorTeam;
 use App\Models\Team;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -87,7 +85,6 @@ class TeamController extends Controller {
     public function edit($id) {
         
         $team = Team::find($id);
-        abort_if(!$team, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $team);
         
         return $this->output([
@@ -107,7 +104,6 @@ class TeamController extends Controller {
     public function update(TeamRequest $request, $id) {
         
         $team = Team::find($id);
-        abort_if(!$team, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $team);
         
         return $this->result(
@@ -126,15 +122,10 @@ class TeamController extends Controller {
     public function destroy($id) {
         
         $team = Team::find($id);
-        abort_if(!$team, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $team);
-        $educators = EducatorTeam::whereTeamId($id);
-        if ($educators) {
-            return $this->fail('该组下包含教职员工，无法删除！');
-        }
         
         return $this->result(
-            $team->delete()
+            $team->remove($id)
         );
         
     }

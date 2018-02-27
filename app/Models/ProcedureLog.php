@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\ProcedureLog 审批流程日志
@@ -134,6 +136,18 @@ class ProcedureLog extends Model {
     }
     
     /**
+     * 保存审批结果
+     * 
+     * @param array $data
+     * @return bool
+     */
+    public function store(array $data) {
+
+        return true;
+        
+    }
+    
+    /**
      * 审批流程列表
      *
      * @param $where
@@ -156,26 +170,23 @@ class ProcedureLog extends Model {
             [
                 'db' => 'ProcedureLog.step_status', 'dt' => 6,
                 'formatter' => function ($d, $row) {
-
                     switch ($d) {
-
                         case 0:
-                            $status = Datatable::DT_ON;
+                            $status = Snippet::DT_ON;
                             break;
                         case 1:
-                            $status = Datatable::DT_OFF;
+                            $status = Snippet::DT_OFF;
                             break;
                         case 2:
                             $status = sprintf(self::DT_PEND, '待定');
                             break;
                         default:
-                            $status = Datatable::DT_OFF;
+                            $status = Snippet::DT_OFF;
                             break;
                     }
                     $id = $row['first_log_id'];
-                    $showLink = '<a id = ' . $id . ' href="show/' . $id . '" class="btn btn-primary btn-icon btn-circle btn-xs" data-toggle="modal"><i class="fa fa-eye"></i></a>';
-                    return $status . Datatable::DT_SPACE . $showLink;
-
+                    $showLink = sprintf(Snippet::DT_LINK_SHOW, $id);
+                    return $status . Snippet::DT_SPACE . $showLink;
                 },
             ],
         ];

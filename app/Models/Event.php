@@ -207,6 +207,7 @@ class Event extends Model {
      * @return bool
      */
     public function isValidateTime($userId, $educator_id, $start, $end, $id = null) {
+        
         if (!$this->getRole($userId)) {
             return $this->isRepeatTimeUser($userId, $start, $end, $id);
         } else {
