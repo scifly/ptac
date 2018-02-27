@@ -49,6 +49,8 @@ use Illuminate\Support\Facades\Auth;
  * @property int $educator_id 发起人教职员工ID
  * @property-read \App\Models\User $user
  * @method static Builder|ConferenceQueue whereEducatorId($value)
+ * @property int $status 会议状态
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ConferenceQueue whereStatus($value)
  */
 class ConferenceQueue extends Model {
 

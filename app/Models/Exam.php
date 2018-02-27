@@ -42,6 +42,7 @@ use ReflectionException;
  * @method static Builder|Exam whereUpdatedAt($value)
  * @mixin Eloquent
  * @property-read ExamType $examType
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Score[] $score
  */
 class Exam extends Model {
 

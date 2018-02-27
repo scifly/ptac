@@ -148,6 +148,7 @@ class SchoolController extends Controller {
     
     /**
      * 学校设置详情
+     *
      * @return Factory|JsonResponse|View
      * @throws Throwable
      */

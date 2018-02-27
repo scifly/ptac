@@ -53,6 +53,7 @@ use Throwable;
  * @method static Builder|Educator whereUpdatedAt($value)
  * @method static Builder|Educator whereUserId($value)
  * @mixin Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EducatorClass[] $educatorClasses
  */
 class Educator extends Model {
     
