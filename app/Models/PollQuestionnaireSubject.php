@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Snippet;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Exception;
@@ -81,12 +82,12 @@ class PollQuestionnaireSubject extends Model {
      * @return bool|null
      * @throws Exception
      */
-    public function remove($id) {
+    static function remove($id) {
 
-        $pqs = self::find($id);
-        if (!$pqs) { return false; }
+        $pqSubject = self::find($id);
+        if (!$pqSubject) { return false; }
         
-        return self::removable($pqs) ? $pqs->delete() : false;
+        return self::removable($pqSubject) ? $pqSubject->delete() : false;
 
     }
     
@@ -95,7 +96,7 @@ class PollQuestionnaireSubject extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    static function dataTable() {
 
         $columns = [
             ['db' => 'PollQuestionnaireSubject.id', 'dt' => 0],
@@ -110,11 +111,11 @@ class PollQuestionnaireSubject extends Model {
             [
                 'db' => 'PollQuestionnaireSubject.id as subject_id', 'dt' => 4,
                 'formatter' => function ($d) {
-                    $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $d);
-                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $d);
-                    $delLink = sprintf(Datatable::DT_LINK_DEL, $d);
-                    return $showLink . Datatable::DT_SPACE .
-                        $editLink . Datatable::DT_SPACE . $delLink;
+                    $showLink = sprintf(Snippet::DT_LINK_SHOW, 'show_' . $d);
+                    $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $d);
+                    $delLink = sprintf(Snippet::DT_LINK_DEL, $d);
+                    return $showLink . Snippet::DT_SPACE .
+                        $editLink . Snippet::DT_SPACE . $delLink;
                 },
             ],
         ];

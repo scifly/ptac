@@ -239,7 +239,6 @@
 
     }
 
-
     $('#searchInput').bind("input propertychange change",function(event){
         var keywords = $(this).val();
         var student_id = $('input').attr('data-values');
@@ -275,7 +274,6 @@
             });
         }
     });
-
 </script>
 </body>
 </html>

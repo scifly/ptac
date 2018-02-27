@@ -83,7 +83,7 @@ class StudentAttendanceSetting extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    static function datatable() {
         
         $columns = [
             ['db' => 'StudentAttendanceSetting.id', 'dt' => 0],

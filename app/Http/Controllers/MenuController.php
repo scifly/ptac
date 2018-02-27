@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\MenuRequest;
 use App\Models\Menu;
 use App\Models\MenuTab;
@@ -84,7 +83,7 @@ class MenuController extends Controller {
     public function edit($id) {
 
         $menu = Menu::find($id);
-        if (!$menu) { return $this->notFound(); }
+        abort_if(!$menu, HttpStatusCode::NOT_FOUND);
         # 获取已选定的卡片
         $menuTabs = $menu->tabs;
         $selectedTabs = [];
@@ -111,9 +110,11 @@ class MenuController extends Controller {
     public function update(MenuRequest $request, $id) {
 
         $menu = Menu::find($id);
-        if (!$menu) { return $this->notFound(); }
+        abort_if(!$menu, HttpStatusCode::NOT_FOUND);
 
-        return $this->result($menu->modify($request, $id));
+        return $this->result(
+            $menu->modify($request, $id)
+        );
 
     }
 
@@ -126,15 +127,14 @@ class MenuController extends Controller {
      */
     public function move($id, $parentId = null) {
 
-        if (!$parentId) { return $this->fail('非法操作'); }
         $menu = Menu::find($id);
         $parentMenu = Menu::find($parentId);
-        if (!$menu || !$parentMenu) { return $this->notFound(); }
+        abort_if(!$menu || !$parentMenu, HttpStatusCode::NOT_FOUND);
         if (Menu::movable($id, $parentId)) {
             return $this->result($menu::move($id, $parentId, true));
         }
 
-        return $this->fail('非法操作');
+        return abort(HttpStatusCode::NOT_ACCEPTABLE, '非法操作');
 
     }
     
@@ -149,7 +149,7 @@ class MenuController extends Controller {
     public function destroy($id) {
 
         $menu = Menu::find($id);
-        abort_if(!$menu, HttpStatusCode::NOT_FOUND);
+        abort_if(!$menu, self::NOT_FOUND);
 
         return $this->result(
             $menu->remove($id)
@@ -181,7 +181,7 @@ class MenuController extends Controller {
     public function menuTabs($id) {
 
         $menu = Menu::find($id);
-        abort_if(!$menu, HttpStatusCode::NOT_FOUND);
+        abort_if(!$menu, self::NOT_FOUND);
         $tabRanks = MenuTab::whereMenuId($id)
             ->get()
             ->sortBy('tab_order')
@@ -208,7 +208,7 @@ class MenuController extends Controller {
      */
     public function rankTabs($id) {
 
-        abort_if(!Menu::find($id), HttpStatusCode::NOT_FOUND);
+        abort_if(!Menu::find($id), self::NOT_FOUND);
         $ranks = Request::get('data');
 
         return $this->result(

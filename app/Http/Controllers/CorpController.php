@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\CorpRequest;
 use App\Models\Corp;
 use Exception;
@@ -90,7 +89,10 @@ class CorpController extends Controller {
     public function edit($id) {
         
         $corp = $this->corp->find($id);
-        abort_if(!$corp, HttpStatusCode::NOT_FOUND);
+<<<<<<< HEAD
+        abort_if(!$corp, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('veud', $corp);
 
         return $this->output([
@@ -110,7 +112,10 @@ class CorpController extends Controller {
     public function update(CorpRequest $request, $id) {
         
         $corp = $this->corp->find($id);
-        abort_if(!$corp, HttpStatusCode::NOT_FOUND);
+<<<<<<< HEAD
+        abort_if(!$corp, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('veud', $corp);
 
         return $this->result(
@@ -129,7 +134,10 @@ class CorpController extends Controller {
     public function destroy($id) {
         
         $corp = $this->corp->find($id);
-        abort_if(!$corp, HttpStatusCode::NOT_FOUND);
+<<<<<<< HEAD
+        abort_if(!$corp, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('veud', $corp);
 
         return $this->result(

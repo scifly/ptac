@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 
 /**
  * App\Models\PollQuestionnaireSubjectChoice 调查问卷题目选项
@@ -47,7 +49,7 @@ class PollQuestionnaireSubjectChoice extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    static function datatable() {
         
         $columns = [
             ['db' => 'PollQuestionnaireChoice.id', 'dt' => 0],
@@ -57,12 +59,12 @@ class PollQuestionnaireSubjectChoice extends Model {
             [
                 'db' => 'PollQuestionnaireChoice.id as choice_id', 'dt' => 4,
                 'formatter' => function ($d) {
-                    $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $d);
-                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $d);
-                    $delLink = sprintf(Datatable::DT_LINK_DEL, $d);
+                    $showLink = sprintf(Snippet::DT_LINK_SHOW, 'show_' . $d);
+                    $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $d);
+                    $delLink = sprintf(Snippet::DT_LINK_DEL, $d);
 
-                    return $showLink . Datatable::DT_SPACE .
-                        $editLink . Datatable::DT_SPACE . $delLink;
+                    return $showLink . Snippet::DT_SPACE .
+                        $editLink . Snippet::DT_SPACE . $delLink;
                 },
             ],
         ];

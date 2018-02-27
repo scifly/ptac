@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Constant;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -44,7 +46,7 @@ use Throwable;
  * @method static Builder|Tab whereUpdatedAt($value)
  * @mixin Eloquent
  * @property int|null $new_column
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tab whereNewColumn($value)
+ * @method static Builder|Tab whereNewColumn($value)
  */
 class Tab extends Model {
 
@@ -87,7 +89,7 @@ class Tab extends Model {
      * @throws Exception
      * @throws Throwable
      */
-    public function scan() {
+    static function scan() {
 
         $action = new Action();
         $controllers = self::controllerPaths($action->getSiteRoot() . self::CONTROLLER_DIR);
@@ -144,7 +146,7 @@ class Tab extends Model {
      * @return bool|mixed
      * @throws Throwable
      */
-    public function store(array $data) {
+    static function store(array $data) {
         
         try {
             DB::transaction(function () use ($data) {
@@ -162,42 +164,13 @@ class Tab extends Model {
     }
     
     /**
-     * 更新指定的卡片
-     *
-     * @param array $data
-     * @param $id
-     * @return bool|mixed
-     * @throws Exception
-     * @throws Throwable
-     */
-    public function modify(array $data, $id) {
-        
-        $tab = self::find($id);
-        if (!isset($tab)) { return false; }
-        try {
-            DB::transaction(function () use ($data, $id, $tab) {
-                $tab->update($data);
-                $menuIds = $data['menu_ids'];
-                $menuTab = new MenuTab();
-                $menuTab::whereTabId($id)->delete();
-                $menuTab->storeByTabId($id, $menuIds);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    
-    /**
      * 移除指定的卡片
      *
      * @param $id
      * @return bool|mixed
      * @throws Throwable
      */
-    public function remove($id) {
+    static function remove($id) {
 
         $tab = self::find($id);
         if (!isset($tab)) { return false; }
@@ -221,7 +194,7 @@ class Tab extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    static function datatable() {
 
         $columns = [
             ['db' => 'Tab.id', 'dt' => 0],
@@ -247,8 +220,8 @@ class Tab extends Model {
                 'db' => 'Tab.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
-                    $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
-                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
+                    $status = $d ? Snippet::DT_ON : Snippet::DT_OFF;
+                    $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
                     return
                         $status . str_repeat('&nbsp;', 3) .
                         $editLink;
@@ -270,37 +243,59 @@ class Tab extends Model {
 
     }
     
+    /**
+     * 更新指定的卡片
+     *
+     * @param array $data
+     * @param $id
+     * @return bool|mixed
+     * @throws Exception
+     * @throws Throwable
+     */
+    static function modify(array $data, $id) {
+
+        $tab = self::find($id);
+        if (!isset($tab)) { return false; }
+        try {
+            DB::transaction(function () use ($data, $id, $tab) {
+                $tab->update($data);
+                $menuIds = $data['menu_ids'];
+                $menuTab = new MenuTab();
+                $menuTab::whereTabId($id)->delete();
+                $menuTab->storeByTabId($id, $menuIds);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+
+    }
     
     /**
      * 根据角色返回可访问的卡片ids
      *
      * @return array
      */
-    public function allowedTabIds() {
+    function allowedTabIds() {
     
         $user = Auth::user();
         $role = $user->group->name;
         switch ($role) {
             case '运营':
-                return self::whereEnabled(1)
+                return self::whereEnabled(Constant::ENABLED)
                     ->pluck('id')
                     ->toArray();
             case '企业':
-                return self::whereEnabled(1)
-                    ->whereIn('group_id', [0, 2, 3])
+                return self::whereEnabled(Constant::ENABLED)
+                    ->whereIn('group_id', [Constant::SHARED, Constant::CORP, Constant::SCHOOL])
                     ->pluck('id')
                     ->toArray();
             case '学校':
-                return self::whereEnabled(1)
-                    ->whereIn('group_id', [0, 3])
+                return self::whereEnabled(Constant::ENABLED)
+                    ->whereIn('group_id', [Constant::SHARED, Constant::SCHOOL])
                     ->pluck('id')
                     ->toArray();
-
-//            case '教职员工':
-//                return self::whereEnabled(1)
-//                    ->whereIn('group_id', [0, 3])
-//                    ->pluck('id')
-//                    ->toArray();
             default:
                 return GroupTab::whereGroupId($user->group_id)
                     ->pluck('tab_id')

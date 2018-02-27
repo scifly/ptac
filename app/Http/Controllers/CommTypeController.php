@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\CommTypeRequest;
 use App\Models\CommType;
 use Exception;
@@ -80,7 +79,7 @@ class CommTypeController extends Controller {
     public function edit($id) {
         
         $ct = $this->ct->find($id);
-        abort_if(!$ct, HttpStatusCode::NOT_FOUND);
+        abort_if(!$ct, self::NOT_FOUND);
 
         return $this->output([
             'ct' => $ct
@@ -98,7 +97,7 @@ class CommTypeController extends Controller {
     public function update(CommTypeRequest $request, $id) {
         
         $ct = $this->ct->find($id);
-        abort_if(!$ct, HttpStatusCode::NOT_FOUND);
+        abort_if(!$ct, self::NOT_FOUND);
 
         return $this->result(
             $ct->update($request->all())
@@ -116,7 +115,7 @@ class CommTypeController extends Controller {
     public function destroy($id) {
         
         $ct = $this->ct->find($id);
-        abort_if(!$ct, HttpStatusCode::NOT_FOUND);
+        abort_if(!$ct, self::NOT_FOUND);
 
         return $this->result(
             $ct->delete()

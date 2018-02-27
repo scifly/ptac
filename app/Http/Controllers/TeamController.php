@@ -1,9 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\TeamRequest;
-use App\Models\EducatorTeam;
 use App\Models\Team;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -19,12 +17,9 @@ use Throwable;
  */
 class TeamController extends Controller {
     
-    protected $team;
-    
-    public function __construct(Team $team) {
+    public function __construct() {
     
         $this->middleware(['auth', 'checkrole']);
-        $this->team = $team;
     
     }
     
@@ -37,9 +32,7 @@ class TeamController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(
-                $this->team->datatable()
-            );
+            return response()->json(Team::datatable());
         }
         
         return $this->output();
@@ -71,9 +64,7 @@ class TeamController extends Controller {
         
         $this->authorize('c', Team::class);
         
-        return $this->result(
-            Team::create($request->all())
-        );
+        return $this->result(Team::create($request->all()));
         
     }
     
@@ -87,12 +78,9 @@ class TeamController extends Controller {
     public function edit($id) {
         
         $team = Team::find($id);
-        abort_if(!$team, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $team);
         
-        return $this->output([
-            'team' => $team,
-        ]);
+        return $this->output(['team' => $team]);
         
     }
     
@@ -107,12 +95,9 @@ class TeamController extends Controller {
     public function update(TeamRequest $request, $id) {
         
         $team = Team::find($id);
-        abort_if(!$team, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $team);
         
-        return $this->result(
-            $team->update($request->all())
-        );
+        return $this->result($team->update($request->all()));
         
     }
     
@@ -126,16 +111,19 @@ class TeamController extends Controller {
     public function destroy($id) {
         
         $team = Team::find($id);
-        abort_if(!$team, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $team);
+<<<<<<< HEAD
         $educators = EducatorTeam::whereTeamId($id);
         if ($educators) {
-            return $this->fail('该组下包含教职员工，无法删除！');
+            return $this->result(false, '', '该组下包含教师，无法删除！');
         }
+        return $this->result($team->delete());
+=======
         
         return $this->result(
-            $team->delete()
+            $team->remove($id)
         );
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         
     }
     

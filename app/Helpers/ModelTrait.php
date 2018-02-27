@@ -14,7 +14,6 @@ trait ModelTrait {
      *
      * @param Model $model
      * @return bool
-     * @throws \ReflectionException
      */
     static function removable(Model $model) {
         

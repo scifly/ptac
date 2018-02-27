@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\UserRequest;
 use App\Models\Event;
 use App\Models\Message;
@@ -9,7 +8,6 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
@@ -21,9 +19,12 @@ use Throwable;
  */
 class UserController extends Controller {
     
-    function __construct() {
+    protected $user;
+    
+    function __construct(User $user) {
         
         $this->middleware(['auth', 'checkrole']);
+        $this->user = $user;
         
     }
 
@@ -50,12 +51,22 @@ class UserController extends Controller {
             $password = Request::input('password');
             $pwd = bcrypt(Request::input('pwd'));
             $user = User::find(Auth::id());
+<<<<<<< HEAD
+
+            if (!\Hash::check($password,$user->password)) {
+                return response()->json(['statusCode' => self::BAD_REQUEST]);
+            }
+            $res = $user->update(['password' => $pwd]);
+            if ($res) {
+                return response()->json(['statusCode' => self::OK]);
+=======
             abort_if(
                 !Hash::check($password,$user->password),
                 HttpStatusCode::BAD_REQUEST
             );
             if ($user->update(['password' => $pwd])) {
                 return response()->json($this->result);
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
             }
         }
 
@@ -101,9 +112,11 @@ class UserController extends Controller {
 
         $file = Request::file('avatar');
         $check = $this->checkFile($file);
-        if (!$check['status']) {
-            return $this->fail($check['msg']);
-        }
+        abort_if(
+            !$check['status'],
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            $check['msg']
+        );
         // 存项目路径
         $ymd = date("Ymd");
         $path = storage_path('app/avauploads/') . $ymd . "/";
@@ -116,12 +129,18 @@ class UserController extends Controller {
             mkdir($path, 0777, true);
         }
         // 移动
-        if (!$file->move($path, $fileName)) {
-            return $this->fail('头像保存失败');
-        }
+        abort_if(
+            !$file->move($path, $fileName),
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            '头像保存失败'
+        );
         //如果是create操作，图片路径不能直接存储数据库
         //TODO:需要处理默认头像、图片缓存问题
         if ($id < 1) {
+<<<<<<< HEAD
+            $this->result['statusCode'] = self::OK;
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
             $this->result['fileName'] = $fileName;
             return response()->json($this->result);
         }
@@ -137,11 +156,12 @@ class UserController extends Controller {
      * @return JsonResponse|string
      */
     public function update(UserRequest $request, $id){
+        
         $user = User::find($id);
-        if (!$user) { return $this->notFound(); }
+        abort_if(!$user, HttpStatusCode::NOT_FOUND);
 
         return $this->result(
-            User::modify($request->all(), $id, false)
+            $this->user->modify($request->all(), $id, false)
         );
     }
 
@@ -185,9 +205,17 @@ class UserController extends Controller {
             }
             $user->avatar_url = $imgName;
             if ($user->save()) {
+<<<<<<< HEAD
+                $this->result['statusCode'] = self::OK;
+                $this->result['fileName'] = $imgName;
+            } else {
+                $this->result['statusCode'] = self::INTERNAL_SERVER_ERROR;
+                $this->result['message'] = '头像保存失败';
+=======
                 $this->result['fileName'] = $imgName;
             } else {
                 abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '头像保存失败');
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
             }
         }
         

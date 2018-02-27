@@ -25,12 +25,14 @@
                     </div>
                 </div>
             </div>
-            @include('partials.single_select', [
-                'label' => '所属运营者',
-                'id' => 'company_id',
-                'items' => $companies,
-                'icon' => 'fa fa-building'
-            ])
+            @if (Auth::user()->group->name == '运营')
+                @include('partials.single_select', [
+                    'label' => '所属运营者',
+                    'id' => 'company_id',
+                    'items' => $companies,
+                    'icon' => 'fa fa-building'
+                ])
+            @endif
             <div class="form-group">
                 {!! Form::label('corpid', '企业号ID', [
                     'class' => 'col-sm-3 control-label'

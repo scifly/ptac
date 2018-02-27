@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\DepartmentRequest;
 use App\Models\Department;
 use App\Models\DepartmentType;
@@ -83,7 +82,7 @@ class DepartmentController extends Controller {
     public function show($id) {
         
         $department = $this->department->find($id);
-        abort_if(!$department, HttpStatusCode::NOT_FOUND);
+        abort_if(!$department, self::NOT_FOUND);
 
         return $this->output([
             'department' => $department,
@@ -101,7 +100,7 @@ class DepartmentController extends Controller {
     public function edit($id) {
         
         $department = $this->department->find($id);
-        abort_if(!$department, HttpStatusCode::NOT_FOUND);
+        abort_if(!$department, self::NOT_FOUND);
 
         return $this->output([
             'department' => $department,
@@ -119,7 +118,7 @@ class DepartmentController extends Controller {
     public function update(DepartmentRequest $request, $id) {
         
         $department = $this->department->find($id);
-        abort_if(!$department, HttpStatusCode::NOT_FOUND);
+        abort_if(!$department, self::NOT_FOUND);
 
         return $this->result(
             $department::modify($request->all(), $id, true)
@@ -138,7 +137,7 @@ class DepartmentController extends Controller {
     public function destroy($id) {
         
         $department = $this->department->find($id);
-        abort_if(!$department, HttpStatusCode::NOT_FOUND);
+        abort_if(!$department, self::NOT_FOUND);
 
         return $this->result($department::remove($id));
         
@@ -153,17 +152,16 @@ class DepartmentController extends Controller {
      */
     public function move($id, $parentId = null) {
         
-        if (!$parentId) { return $this->fail('非法操作'); }
         $department = $this->department->find($id);
         $parentDepartment = $this->department->find($parentId);
-        abort_if(!$department || !$parentDepartment, HttpStatusCode::NOT_FOUND);
+        abort_if(!$department || !$parentDepartment, self::NOT_FOUND);
         if ($department::movable($id, $parentId)) {
             return $this->result(
-                $department::move($id, $parentId, true)
+                $department->move($id, $parentId, true)
             );
         }
 
-        return $this->fail('非法操作');
+        return abort(HttpStatusCode::NOT_ACCEPTABLE);
         
     }
     

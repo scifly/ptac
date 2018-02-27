@@ -1,6 +1,7 @@
 <?php
 namespace App\Exceptions;
 
+use App\Helpers\HttpStatusCode;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
@@ -60,7 +61,7 @@ class Handler extends ExceptionHandler {
     public function render($request, Exception $exception) {
 
         if ($request->ajax() || $request->wantsJson()) {
-            $status = 400;
+            $status = HttpStatusCode::BAD_REQUEST;
             $paths = explode('\\', get_class($exception));
             $response['message'] = $exception->getMessage();
             $response['file'] = $exception->getFile();
@@ -68,7 +69,7 @@ class Handler extends ExceptionHandler {
             $eName = $paths[sizeof($paths) -1];
             switch ($eName) {
                 case 'AuthenticationException':
-                    $status = 401;
+                    $status = HttpStatusCode::UNAUTHORIZED;
                     if ($request->method() == 'GET') {
                         if ($request->query('draw')) {
                             $response['returnUrl'] = $request->url() .
@@ -80,10 +81,10 @@ class Handler extends ExceptionHandler {
                     }
                     break;
                 case 'TokenMismatchException':
-                    $status = 498;
+                    $status = HttpStatusCode::TOKEN_MISMATCH;
                     break;
                 case 'ErrorException':
-                    $status = 500;
+                    $status = HttpStatusCode::INTERNAL_SERVER_ERROR;
                     break;
                 default:
                     break;

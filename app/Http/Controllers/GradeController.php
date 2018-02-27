@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\GradeRequest;
 use App\Models\Educator;
 use App\Models\Grade;
@@ -86,7 +85,10 @@ class GradeController extends Controller {
     public function edit($id) {
         
         $grade = Grade::find($id);
-        abort_if(!$grade, HttpStatusCode::NOT_FOUND);
+<<<<<<< HEAD
+        abort_if(!$grade, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $grade);
         
         $selectedEducators = [];
@@ -114,7 +116,10 @@ class GradeController extends Controller {
     public function update(GradeRequest $request, $id) {
         
         $grade = Grade::find($id);
-        abort_if(!$grade, HttpStatusCode::NOT_FOUND);
+<<<<<<< HEAD
+        abort_if(!$grade, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $grade);
         
         return $this->result(
@@ -133,7 +138,10 @@ class GradeController extends Controller {
     public function destroy($id) {
        
         $grade = Grade::find($id);
-        abort_if(!$grade, HttpStatusCode::NOT_FOUND);
+<<<<<<< HEAD
+        abort_if(!$grade, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $grade);
         
         return $this->result(

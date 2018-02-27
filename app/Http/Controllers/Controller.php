@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Models\Action;
 use App\Models\Menu;
 use App\Models\Tab;
@@ -18,8 +17,54 @@ class Controller extends BaseController {
     
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
     
+    # Informational 1xx
+    const CONTINUE = 100;
+    const SWITCHING_PROTOCOLS = 101;
+    # Success 2xx
+    const OK = 200;
+    const CREATED = 201;
+    const ACCEPTED = 202;
+    const NONAUTHORITATIVE_INFORMATION = 203;
+    const NO_CONTENT = 204;
+    const RESET_CONTENT = 205;
+    const PARTIAL_CONTENT = 206;
+    # Redirection 3xx
+    const MULTIPLE_CHOICES = 300;
+    const MOVED_PERMANENTLY = 301;
+    const MOVED_TEMPORARILY = 302;
+    const SEE_OTHER = 303;
+    const NOT_MODIFIED = 304;
+    const USE_PROXY = 305;
+    # Client Error 4xx
+    const BAD_REQUEST = 400;
+    const UNAUTHORIZED = 401;
+    const PAYMENT_REQUIRED = 402;
+    const FORBIDDEN = 403;
+    const NOT_FOUND = 404;
+    const METHOD_NOT_ALLOWED = 405;
+    const NOT_ACCEPTABLE = 406;
+    const PROXY_AUTHENTICATION_REQUIRED = 407;
+    const REQUEST_TIMEOUT = 408;
+    const CONFLICT = 409;
+    const GONE = 410;
+    const LENGTH_REQUIRED = 411;
+    const PRECONDITION_FAILED = 412;
+    const REQUEST_ENTITY_TOO_LARGE = 413;
+    const REQUESTURI_TOO_LARGE = 414;
+    const UNSUPPORTED_MEDIA_TYPE = 415;
+    const REQUESTED_RANGE_NOT_SATISFIABLE = 416;
+    const EXPECTATION_FAILED = 417;
+    const IM_A_TEAPOT = 418;
+    # Server Error 5xx
+    const INTERNAL_SERVER_ERROR = 500;
+    const NOT_IMPLEMENTED = 501;
+    const BAD_GATEWAY = 502;
+    const SERVICE_UNAVAILABLE = 503;
+    const GATEWAY_TIMEOUT = 504;
+    const HTTP_VERSION_NOT_SUPPORTED = 505;
+    
     protected $result = [
-        'statusCode' => HttpStatusCode::OK,
+        'statusCode' => self::OK,
         'message'    => '操作成功',
     ];
     
@@ -36,11 +81,19 @@ class Controller extends BaseController {
         $method = Request::route()->getActionMethod();
         $controller = class_basename(Request::route()->controller);
         $action = Action::whereMethod($method)->where('controller', $controller)->first();
-        if (!$action) { return $this->fail(__('messages.nonexistent_action')); }
+        abort_if(
+            !$action,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.nonexistent_action')
+        );
 
         # 获取功能对应的View
         $view = $action->view;
-        if (!$view) { return $this->fail(__('messages.misconfigured_action')); }
+        abort_if(
+            !$view,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.misconfigured_action')
+        );
 
         # 获取功能对应的菜单/卡片对象
         $menu = Menu::find(session('menuId'));
@@ -62,17 +115,18 @@ class Controller extends BaseController {
                     $params['breadcrumb'] = $menu->name . ' / ' . $tab->name . ' / ' . $action->name;
                 } else {
                     return response()->json([
-                        'statusCode' => HttpStatusCode::UNAUTHORIZED,
+                        'statusCode' => self::UNAUTHORIZED,
                         'mId' => Request::get('menuId'),
                         'tId' => Request::get('tabId')
                     ]);
                 }
                 return response()->json([
-                    'statusCode' => HttpStatusCode::OK,
+                    'statusCode' => self::OK,
                     'html'       => view($view, $params)->render(),
                     'js'         => $action->js,
                     'breadcrumb' => $params['breadcrumb'],
                 ]);
+<<<<<<< HEAD
             # 如果Http请求的内容需要直接在Wrapper层（不包含卡片）中显示
             } else {
                 session(['menuId' => Request::query('menuId')]);
@@ -80,13 +134,27 @@ class Controller extends BaseController {
                 $menu = Menu::find(session('menuId'));
                 $params['breadcrumb'] = $menu->name . ' / ' . $action->name;
                 return response()->json([
-                    'statusCode' => HttpStatusCode::OK,
+                    'statusCode' => self::OK,
                     'title' => $params['breadcrumb'],
                     'uri' => Request::path(),
                     'html' => view($view, $params)->render(),
                     'js' => $action->js
                 ]);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
             }
+            # 如果Http请求的内容需要直接在Wrapper层（不包含卡片）中显示
+            session(['menuId' => Request::query('menuId')]);
+            Session::forget('tabId');
+            $menu = Menu::find(session('menuId'));
+            $params['breadcrumb'] = $menu->name . ' / ' . $action->name;
+            return response()->json([
+                'statusCode' => HttpStatusCode::OK,
+                'title' => $params['breadcrumb'],
+                'uri' => Request::path(),
+                'html' => view($view, $params)->render(),
+                'js' => $action->js
+            ]);
         }
         # 如果是非Ajax请求，且用户已登录
         if (session('menuId')) {
@@ -118,10 +186,11 @@ class Controller extends BaseController {
         
     }
 
+<<<<<<< HEAD
     protected function notFound($message = null) {
 
         return abort(
-            HttpStatusCode::NOT_FOUND,
+            self::NOT_FOUND,
             $message ?? __('messages.not_found')
         );
 
@@ -135,7 +204,7 @@ class Controller extends BaseController {
      */
     protected function succeed($message = null) {
 
-        $statusCode = HttpStatusCode::OK;
+        $statusCode = self::OK;
         $message = $message ?? __('messages.ok');
         if (Request::ajax()) {
             return response()->json([
@@ -151,12 +220,14 @@ class Controller extends BaseController {
     protected function fail($message = null) {
 
         return abort(
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            self::INTERNAL_SERVER_ERROR,
             $message ?? __('messages.fail')
         );
 
     }
 
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
     /**
      * 返回操作结果提示信息
      *
@@ -167,7 +238,7 @@ class Controller extends BaseController {
      */
     protected function result($result, String $success = null, String $failure = null) {
         
-        $statusCode = $result ? HttpStatusCode::OK : HttpStatusCode::INTERNAL_SERVER_ERROR;
+        $statusCode = $result ? self::OK : self::INTERNAL_SERVER_ERROR;
         $message = $result
             ? ($success ?? __('messages.ok'))
             : ($failure ?? __('messages.fail'));

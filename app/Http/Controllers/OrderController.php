@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\OrderRequest;
 use App\Models\Order;
 use Exception;
@@ -35,9 +34,7 @@ class OrderController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(
-                $this->order->datatable()
-            );
+            return response()->json($this->order->datatable());
         }
         
         return $this->output();
@@ -52,9 +49,7 @@ class OrderController extends Controller {
      */
     public function store(OrderRequest $request) {
         
-        return $this->result(
-            $this->order->create($request->all())
-        );
+        return $this->order->create($request->all()) ? $this->succeed() : $this->fail();
         
     }
     
@@ -68,9 +63,13 @@ class OrderController extends Controller {
     public function show($id) {
         
         $order = $this->order->find($id);
-        abort_if(!$order, HttpStatusCode::NOT_FOUND);
+        if (!$order) {
+            return $this->notFound();
+        }
         
-        return $this->output(['order' => $order]);
+        return $this->output([
+            'order' => $order,
+        ]);
         
     }
     
@@ -84,9 +83,13 @@ class OrderController extends Controller {
     public function update(OrderRequest $request, $id) {
         
         $order = $this->order->find($id);
-        abort_if(!$order, HttpStatusCode::NOT_FOUND);
+        if (!$order) {
+            return $this->notFound();
+        }
         
-        return $order->update($request->all());
+        return $order->update(
+            $request->all()
+        );
         
     }
     
@@ -100,9 +103,11 @@ class OrderController extends Controller {
     public function destroy($id) {
         
         $order = $this->order->find($id);
-        abort_if(!$order, HttpStatusCode::NOT_FOUND);
+        if (!$order) { return $this->notFound(); }
         
-        return $order->delete() ? $this->succeed() : $this->fail();
+        return $this->result(
+            $order->delete()
+        );
         
     }
     

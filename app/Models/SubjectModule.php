@@ -46,7 +46,7 @@ class SubjectModule extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    static function datatable() {
         
         $columns = [
             ['db' => 'SubjectModule.id', 'dt' => 0],

@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\SquadRequest;
 use App\Models\Educator;
 use App\Models\Squad;
@@ -18,12 +17,9 @@ use Throwable;
  */
 class SquadController extends Controller {
     
-    protected $class;
-    
-    public function __construct(Squad $class) {
+    public function __construct() {
     
         $this->middleware(['auth', 'checkrole']);
-        $this->class = $class;
         
     }
     
@@ -36,9 +32,7 @@ class SquadController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(
-                $this->class->datatable()
-            );
+            return response()->json(Squad::datatable());
         }
         
         return $this->output();
@@ -65,9 +59,7 @@ class SquadController extends Controller {
      */
     public function store(SquadRequest $request) {
         
-        return $this->result(
-            $this->class->store($request->all(), true)
-        );
+        return $this->result(Squad::store($request->all(), true));
         
     }
     
@@ -81,8 +73,8 @@ class SquadController extends Controller {
     public function edit($id) {
         
         $class = Squad::find($id);
-        abort_if(!$class, HttpStatusCode::NOT_FOUND);
         $selectedEducators = [];
+        if (!$class) { return $this->notFound(); }
         if ($class->educator_ids != '0') {
             $selectedEducators = Educator::educatorList(
                 explode(",", rtrim($class->educator_ids,","))
@@ -106,11 +98,9 @@ class SquadController extends Controller {
     public function update(SquadRequest $request, $id) {
         
         $class = Squad::find($id);
-        abort_if(!$class, HttpStatusCode::NOT_FOUND);
+        if (!$class) { return $this->notFound(); }
         
-        return $this->result(
-            $this->class->modify($request->all(), $id, true)
-        );
+        return $this->result(Squad::modify($request->all(), $id, true));
         
     }
     
@@ -124,11 +114,9 @@ class SquadController extends Controller {
     public function destroy($id) {
         
         $class = Squad::find($id);
-        abort_if(!$class, HttpStatusCode::NOT_FOUND);
+        if (!$class) { return $this->notFound(); }
         
-        return $this->result(
-            $class->remove($id, true)
-        );
+        return $this->result($class->remove($id, true));
         
     }
     

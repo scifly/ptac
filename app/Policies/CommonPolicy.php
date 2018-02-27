@@ -1,14 +1,13 @@
 <?php
 namespace App\Policies;
 
-use App\Helpers\HttpStatusCode;
 use App\Models\Corp;
 use App\Models\School;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Database\Eloquent\Model;
 
-class SchoolPolicy {
+class CommonPolicy {
     
     use HandlesAuthorization;
     
@@ -48,7 +47,15 @@ class SchoolPolicy {
      */
     public function rud(User $user, Model $model) {
     
-        if (!$model) { abort(HttpStatusCode::NOT_FOUND); }
+<<<<<<< HEAD:app/Policies/SchoolPolicy.php
+        if (!$model) { abort(404); }
+=======
+        abort_if(
+            !$model,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12:app/Policies/CommonPolicy.php
         $role = $user->group->name;
         if ($role == '运营') { return true; }
         $schoolId = $model->{'school_id'} ?? null;

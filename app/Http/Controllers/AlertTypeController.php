@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\AlertTypeRequest;
 use App\Models\AlertType;
 use Exception;
@@ -65,7 +64,7 @@ class AlertTypeController extends Controller {
     public function store(AlertTypeRequest $request) {
         
         return $this->result(
-            AlertType::create($request->all())
+            $this->at->create($request->all())
         );
 
     }
@@ -80,7 +79,7 @@ class AlertTypeController extends Controller {
     public function edit($id) {
         
         $at = $this->at->find($id);
-        abort_if(!$at, HttpStatusCode::NOT_FOUND);
+        abort_if(!$at, self::NOT_FOUND);
 
         return $this->output([
             'at' => $at,
@@ -98,7 +97,7 @@ class AlertTypeController extends Controller {
     public function update(AlertTypeRequest $request, $id) {
         
         $at = $this->at->find($id);
-        abort_if(!$at, HttpStatusCode::NOT_FOUND);
+        abort_if(!$at, self::NOT_FOUND);
 
         return $this->result(
             $at->update($request->all())
@@ -116,7 +115,7 @@ class AlertTypeController extends Controller {
     public function destroy($id) {
         
         $at = $this->at->find($id);
-        abort_if(!$at, HttpStatusCode::NOT_FOUND);
+        abort_if(!$at, self::NOT_FOUND);
 
         return $this->result(
             $at->delete()

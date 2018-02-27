@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (isset($pqsc) && !empty($pqsc['id']))
-                {{ Form::hidden('id', $pqsc['id'], ['id' => 'id']) }}
+            @if (isset($pqChoice) && !empty($pqChoice['id']))
+                {{ Form::hidden('id', $pqChoice['id'], ['id' => 'id']) }}
             @endif
             @include('partials.single_select', [
                 'label' => '所属题目',

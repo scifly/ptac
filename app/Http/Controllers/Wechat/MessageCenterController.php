@@ -2,7 +2,6 @@
 namespace App\Http\Controllers\Wechat;
 
 use App\Facades\Wechat;
-use App\Helpers\HttpStatusCode;
 use App\Http\Controllers\Controller;
 use App\Models\App;
 use App\Models\CommType;
@@ -20,6 +19,7 @@ use App\Models\Student;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -162,7 +162,13 @@ class MessageCenterController extends Controller {
                 if($users){
                     return response()->json(['statusCode'=> HttpStatusCode::OK, 'user'=> $users]);
 
+<<<<<<< HEAD
+            $users = User::where('realname', 'like', '%' . $keywords . '%')->get();
+            if($users){
+                return response()->json(['statusCode'=> self::OK, 'user'=> $users]);
+=======
                 }
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
             }
 
         }
@@ -186,8 +192,11 @@ class MessageCenterController extends Controller {
      * @throws \Throwable
      */
     public function store() {
-
-        return $this->frontStore() ? $this->succeed() : $this->fail();
+     
+        return $this->result(
+            $this->frontStore()
+        );
+        
     }
 
     /**
@@ -196,14 +205,15 @@ class MessageCenterController extends Controller {
      * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function edit( $id ) {
-
+    public function edit($id) {
+        
         $message = $this->message->find($id);
-        if (!$message) {
-            return $this->notFound();
-        }
-
-        return view('wechat.message_center.create', ['message' => $message]);
+        abort_if(!$message, HttpStatusCode::NOT_FOUND);
+        
+        return view('wechat.message_center.create', [
+            'message' => $message,
+        ]);
+        
     }
 
     /**
@@ -214,9 +224,13 @@ class MessageCenterController extends Controller {
      * @throws \Exception
      * @throws \Throwable
      */
-    public function updateStatus( $id ) {
+    public function updateStatus($id) {
+        
         //操作 msl表 和 message表 暂时放在控制器
-        return $this->modifyReaded($id) ? $this->succeed() : $this->fail();
+        return $this->result(
+            $this->modifyReaded($id)
+        );
+        
     }
 
     /**
@@ -241,7 +255,11 @@ class MessageCenterController extends Controller {
         }
         $edit = ($user->id == $message->s_user_id ? true : false);
 
-        return view('wechat.message_center.show', ['message' => $message, 'edit' => $edit, 'show' => true]);
+        return view('wechat.message_center.show', [
+            'message' => $message,
+            'edit' => $edit,
+            'show' => true
+        ]);
     }
 
     /**
@@ -251,27 +269,33 @@ class MessageCenterController extends Controller {
      * @return bool|\Illuminate\Http\JsonResponse|null
      * @throws \Exception
      */
-    public function destroy( $id ) {
+    public function destroy($id) {
+        
         $message = $this->message->find($id);
-        if (!$message) {
-            return $this->notFound();
-        }
-
+        abort_if(!$message, HttpStatusCode::NOT_FOUND);
+        
         //只能删除查看的记录 不能删除多媒体文件 多媒体文件路径被多个记录存入
-        return $message->delete() ? $this->succeed() : $this->fail();
+        return $this->result(
+            $message->delete()
+        );
+        
     }
 
     /**
      * 消息回复
      *
      */
-    public function replay() {
+    public function replay(){
+        
         $userId = Session::get('userId');
         $user = $this->user->where('userid', $userId)->first();
         $input = Request::all();
         $input['user_id'] = $user->id;
-
-        return MessageReply::store($input) ? $this->succeed() : $this->fail();
+        
+        return $this->result(
+            MessageReply::store($input)
+        );
+        
     }
 
     /**
@@ -279,24 +303,26 @@ class MessageCenterController extends Controller {
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function replayList() {
+    public function replayList(){
+        
         $userId = Session::get('userId');
         $user = $this->user->where('userid', $userId)->first();
         $input = Request::all();
         $message = $this->message->find($input['id']);
         $lists = MessageReply::where('msl_id', $input['msl_id'])->get();
-        if ($user->id == $message->s_user_id) {
-            foreach ($lists as $list) {
+        if ($user->id == $message->s_user_id){
+            foreach ($lists as $list){
                 $list->name = $list->user->realname;
             }
         } else {
             $lists = MessageReply::where('msl_id', $input['msl_id'])->where('user_id', $user->id)->get();
-            foreach ($lists as $list) {
+            foreach ($lists as $list){
                 $list->name = $list->user->realname;
             }
         }
-
-        return $lists ? $this->succeed($lists) : $this->fail();
+        
+        return $this->result($lists, $lists);
+        
     }
 
     /**
@@ -306,14 +332,15 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      * @throws Exception
      */
-    public function replayDestroy( $id ) {
+    public function replayDestroy($id){
+        
+        $mr = MessageReply::find($id);
+        abort_if(!$mr, HttpStatusCode::NOT_FOUND);
 
-        $messageReply = MessageReply::find($id);
-        if (!$messageReply) {
-            return $this->notFound();
-        }
-
-        return $messageReply->delete() ? $this->succeed() : $this->fail();
+        return $this->result(
+            $mr->delete()
+        );
+        
     }
 
     /**
@@ -326,24 +353,17 @@ class MessageCenterController extends Controller {
         $type = Request::input('type');
         if (empty($type)) {
             $data = Media::upload(Request::file('file'), '前端消息中心');
-
-            return $data ? $this->succeed($data) : $this->fail();
+            return $this->result($data, $data);
         }
-        if ($type == 'mpnews') {
-            $type = 'image';
-        }
+        if ($type == 'mpnews') { $type = 'image'; }
         $file = Request::file('file');
         if (empty($file)) {
-            $result['statusCode'] = 0;
-            $result['message'] = '您还未选择文件！';
-
-            return $result;
+            abort(HttpStatusCode::NOT_ACCEPTABLE, '您还未选择文件！');
         } else {
             $result['data'] = [];
             $mes = Media::upload($file, ' 前端消息中心');
             if ($mes) {
-                $result['statusCode'] = 1;
-                $result['message'] = '上传成功！';
+                $this->result['message'] = '上传成功！';
                 $path = $mes['path'];
                 $data = ["media" => curl_file_create($path)];
                 $crop = Corp::whereName('万浪软件')->first();
@@ -353,18 +373,17 @@ class MessageCenterController extends Controller {
                 $message = json_decode($status);
                 if ($message->errcode == 0) {
                     $mes['media_id'] = $message->media_id;
-                    $result['data'] = $mes;
+                    $this->result['data'] = $mes;
                 } else {
-                    $result['statusCode'] = 0;
-                    $result['message'] = '微信服务器上传失败！';
+                    abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '微信服务器上传失败！');
                 }
             } else {
-                $result['statusCode'] = 0;
-                $result['message'] = '文件上传失败！';
+                abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '文件上传失败！');
             }
         }
-
-        return response()->json($result);
+        
+        return response()->json($this->result);
+        
     }
 
     /**
@@ -374,7 +393,8 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      * @throws \Throwable
      */
-    public function getNextDept( $id ) {
+    public function getNextDept($id) {
+        
         $userId = Session::get('userId');
         #判断传过来的id是否为学校id
         $department = Department::whereId($id)->first();
@@ -391,9 +411,9 @@ class MessageCenterController extends Controller {
             $nextDepts = Department::where('parent_id', $id)->get();
             $data = view('wechat.message_center.select', ['departments' => $nextDepts, 'users' => $users])->render();
         }
-
-        return $data ? $this->succeed($data) : $this->fail();
-
+    
+        return $this->result($data, $data);
+        
     }
 
     /**
@@ -404,18 +424,17 @@ class MessageCenterController extends Controller {
      * @throws Exception
      * @throws \Throwable
      */
-    private function modifyReaded( $id ) {
+    private function modifyReaded($id) {
+        
         $message = $this->message->find($id);
-        if (!$message) {
-            return false;
-        }
+        abort_if(!$message, HttpStatusCode::NOT_FOUND);
         try {
-            DB::transaction(function () use ( $message, $id ) {
+            DB::transaction(function () use ($message, $id) {
                 $message->read = 1;
                 $message->save();
                 $msl = MessageSendingLog::whereId($message->msl_id)->first();
                 $msl->read_count = $msl->read_count + 1;
-
+                
                 return $msl->save() ? true : false;
             });
         } catch (Exception $e) {
@@ -446,6 +465,7 @@ class MessageCenterController extends Controller {
         if ($input['content'] == '0') {
             $input['content'] = '';
         }
+    
         if (!empty($input['department_ids'])) {
             #获取该部门下包括子部门的user
             $users = $this->department->getPartyUser($input['department_ids']);
@@ -457,7 +477,7 @@ class MessageCenterController extends Controller {
         #判断是否是短信，调用接口不一样
         if ($input['type'] == 'sms') {
             try {
-                DB::transaction(function () use ( $receiveUserIds, $input, $user ) {
+                DB::transaction(function () use ($receiveUserIds, $input, $user) {
                     $messageSendingLog = new MessageSendingLog();
                     #新增一条日志记录（指定批次）
                     $sendLogData = [
@@ -499,7 +519,7 @@ class MessageCenterController extends Controller {
             }
         } else {
             try {
-                DB::transaction(function () use ( $receiveUserIds, $input, $user ) {
+                DB::transaction(function () use ($receiveUserIds, $input, $user) {
                     $messageSendingLog = new MessageSendingLog();
                     #新增一条日志记录（指定批次）
                     $sendLogData = [
@@ -528,7 +548,7 @@ class MessageCenterController extends Controller {
                             's_user_id'       => $user->id,
                             'r_user_id'       => $receiveUserId,
                             'message_type_id' => MessageType::whereName('消息通知')->first()->id,
-                            'read'            => 0,
+                            'read'          => 0,
                             'sent'            => 0,
                         ];
                         $message = $this->message->create($messageData);
@@ -542,7 +562,7 @@ class MessageCenterController extends Controller {
                     #推送微信服务器且显示详情页
                     $msg = $this->message->where('msl_id', $input['msl_id'])->first();
                     $url = 'http://weixin.028lk.com/message_show/' . $msg->id;
-
+                    
                     return $this->frontSendMessage($input, $url);
                 });
             } catch (Exception $e) {
@@ -560,7 +580,8 @@ class MessageCenterController extends Controller {
      * @param null $url
      * @return bool
      */
-    private function frontSendMessage( $input, $url = null ) {
+    private function frontSendMessage($input, $url = null) {
+        
         $corpId = 'wxe75227cead6b8aec';
         $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
         $token = Wechat::getAccessToken($corpId, $secret);
@@ -616,8 +637,9 @@ class MessageCenterController extends Controller {
         }
         $message['msgtype'] = $input['type'];
         $status = json_decode(Wechat::sendMessage($token, $message));
-
-        return $status->errcode == 0 ? true : false;
+        
+        return $status->errcode == 0;
+        
     }
 
     /**
@@ -626,19 +648,22 @@ class MessageCenterController extends Controller {
      * @param $input
      * @return bool
      */
-    private function frontSendSms( $input ) {
+    private function frontSendSms($input) {
+        
         #调用短信接口
         $code = $this->message->sendSms($input['user_ids'], $input['department_ids'], $input['content']);
-
-        return $code > 0 ? true : false;
+        
+        return $code > 0;
+        
     }
-
+    
     /**
      * 初始化发送对象列表
      * @param $userId
      * @return array
      */
-    private function initLists( $userId ) {
+    private function initLists($userId){
+        
         $user = User::where('userid', $userId)->first();
         $educator = Educator::where('user_id', $user->id)->first();
         $school = $educator->school;
@@ -687,4 +712,5 @@ class MessageCenterController extends Controller {
 
         return $data;
     }
+    
 }

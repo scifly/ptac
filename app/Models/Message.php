@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -255,10 +256,24 @@ class Message extends Model {
         ];
         $condition = null;
         $role = Auth::user()->group->name;
+        if ($role == '运营' ||$role == '企业' || $role == '学校') {
+            $schoolId = School::schoolId();
+            $educators = Educator::whereSchoolId($schoolId)->whereEnabled(1)->get();
+            $eduUserIds = [];
+            $userIds = [];
+            foreach ($educators as $educator){
+                $eduUserIds[] = $educator->user_id;
+            }
+            $users = User::whereIn('group_id', ['1','2'])->get();
+            foreach ($users as $user){
+                $userIds[] = $user->id;
+            }
+            $ids = array_merge($eduUserIds,$userIds);
+            $condition = 'Message.s_user_id IN' . '(' . implode(',', $ids) . ')';
+        }
         if ($role == '教职员工') {
             $condition = 'Message.r_user_id=' . Auth::id();
         }
-        
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         
     }
