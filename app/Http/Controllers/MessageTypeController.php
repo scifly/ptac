@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\MessageTypeRequest;
 use App\Models\MessageType;
 use Exception;
@@ -79,7 +78,7 @@ class MessageTypeController extends Controller {
     public function edit($id) {
         
         $mt = MessageType::find($id);
-        abort_if(!$mt, HttpStatusCode::NOT_FOUND);
+        abort_if(!$mt, self::NOT_FOUND);
         
         return $this->output([
             'mt' => $mt
@@ -97,7 +96,7 @@ class MessageTypeController extends Controller {
     public function update(MessageTypeRequest $request, $id) {
         
         $mt = MessageType::find($id);
-        abort_if(!$mt, HttpStatusCode::NOT_FOUND);
+        abort_if(!$mt, self::NOT_FOUND);
         
         return $this->result(
             $mt->modify($request->all(), $id)
@@ -115,7 +114,7 @@ class MessageTypeController extends Controller {
     public function destroy($id) {
         
         $mt = MessageType::find($id);
-        abort_if(!$mt, HttpStatusCode::NOT_FOUND);
+        abort_if(!$mt, self::NOT_FOUND);
         
         return $this->result(
             $mt->remove($id)

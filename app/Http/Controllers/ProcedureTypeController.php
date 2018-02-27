@@ -1,8 +1,8 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\ProcedureTypeRequest;
+use App\Models\Procedure;
 use App\Models\ProcedureType;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -80,7 +80,7 @@ class ProcedureTypeController extends Controller {
     public function edit($id) {
         
         $pt = ProcedureType::find($id);
-        abort_if(!$pt, HttpStatusCode::NOT_FOUND);
+        abort_if(!$pt, self::NOT_FOUND);
         
         return $this->output(['pt' => $pt]);
         
@@ -96,7 +96,7 @@ class ProcedureTypeController extends Controller {
     public function update(ProcedureTypeRequest $request, $id) {
         
         $pt = ProcedureType::find($id);
-        abort_if(!$pt, HttpStatusCode::NOT_FOUND);
+        abort_if(!$pt, self::NOT_FOUND);
         
         return $this->result(
             $pt->modify($request->all(), $id)
@@ -114,7 +114,7 @@ class ProcedureTypeController extends Controller {
     public function destroy($id) {
         
         $pt = ProcedureType::find($id);
-        abort_if(!$pt, HttpStatusCode::NOT_FOUND);
+        abort_if(!$pt, self::NOT_FOUND);
         
         return $this->result(
             $pt->remove($id)

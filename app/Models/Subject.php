@@ -86,12 +86,24 @@ class Subject extends Model {
     }
 
     /**
+     * 获取指定学校的科目列表
+     *
+     * @param $schoolId
+     * @return Collection
+     */
+    static function subjects($schoolId) {
+        
+        return self::whereSchoolId($schoolId)->get()->pluck('id', 'name');
+
+    }
+
+    /**
      * 获取指定成绩统计项包含的科目列表
      *
      * @param $ids
      * @return array
      */
-    public function selectedSubjects($ids) {
+    static function selectedSubjects($ids) {
         
         $ids = explode(',', $ids);
         $selectedSubjects = [];
@@ -115,7 +127,7 @@ class Subject extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function store(SubjectRequest $request) {
+    static function store(SubjectRequest $request) {
         
         try {
             DB::transaction(function () use ($request) {
@@ -153,7 +165,7 @@ class Subject extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function modify(SubjectRequest $request, $id) {
+    static function modify(SubjectRequest $request, $id) {
         
         $subject = self::find($id);
         if (!isset($subject)) { return false; }
@@ -211,11 +223,28 @@ class Subject extends Model {
     }
     
     /**
+     * 获取科目ids
+     *
+     * @param array $subjects
+     * @return array
+     */
+    static function ids(array $subjects) {
+        
+        $result = [];
+        foreach ($subjects as $v) {
+            $result[$v] = self::whereName($v)->value('id');
+        }
+
+        return $result;
+        
+    }
+    
+    /**
      * 科目列表
      *
      * @return array
      */
-    public function datatable() {
+    static function datatable() {
         
         $columns = [
             ['db' => 'Subject.id', 'dt' => 0],

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\EducatorRequest;
 use App\Models\Department;
 use App\Models\Educator;
@@ -99,6 +98,10 @@ class EducatorController extends Controller {
     public function show($id) {
 
         $educator = Educator::find($id);
+<<<<<<< HEAD
+        abort_if(!$educator, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $educator);
 
         return $this->output(['educator' => $educator]);
@@ -115,6 +118,10 @@ class EducatorController extends Controller {
     public function edit($id) {
 
         $educator = Educator::find($id);
+<<<<<<< HEAD
+        abort_if(!$educator, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $educator);
         if (Request::method() === 'POST') {
             return response()->json(Department::tree());
@@ -148,6 +155,10 @@ class EducatorController extends Controller {
     public function recharge($id) {
 
         $educator = Educator::find($id);
+<<<<<<< HEAD
+        abort_if(!$educator, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $educator);
 
         return $this->output(['educator' => $educator]);
@@ -166,6 +177,10 @@ class EducatorController extends Controller {
     public function update(EducatorRequest $request, $id) {
 
         $educator = Educator::find($id);
+<<<<<<< HEAD
+        abort_if(!$educator, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $educator);
 
         return $this->result(
@@ -184,6 +199,10 @@ class EducatorController extends Controller {
     public function rechargeStore($id) {
 
         $educator = Educator::find($id);
+<<<<<<< HEAD
+        abort_if(!$educator, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $educator);
 
         $recharge = Request::get('recharge');
@@ -207,6 +226,10 @@ class EducatorController extends Controller {
     public function destroy($id) {
 
         $educator = Educator::find($id);
+<<<<<<< HEAD
+        abort_if(!$educator, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $educator);
 
         return $this->result(
@@ -225,12 +248,22 @@ class EducatorController extends Controller {
 
         if (Request::isMethod('post')) {
             $file = Request::file('file');
+<<<<<<< HEAD
+            if (empty($file)) {
+                $result = [
+                    'statusCode' => self::INTERNAL_SERVER_ERROR,
+                    'message' => '您还没选择文件！',
+                ];
+                return response()->json($result);
+            }
+=======
             abort_if(
                 empty($file),
                 HttpStatusCode::INTERNAL_SERVER_ERROR,
                 '您还没选择文件！'
             );
             
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
             // 文件是否上传成功
             if ($file->isValid()) {
                 return response()->json(

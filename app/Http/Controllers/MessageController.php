@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Facades\Wechat;
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\MessageRequest;
 use App\Models\App;
 use App\Models\Corp;
@@ -12,6 +11,7 @@ use App\Models\Message;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
@@ -99,7 +99,7 @@ class MessageController extends Controller {
     public function show($id) {
         
         $message = Message::find($id);
-        abort_if(!$message, HttpStatusCode::NOT_FOUND);
+        if (!$message) { return $this->notFound(); }
         
         return $this->output([
             'message' => $message,
@@ -119,7 +119,7 @@ class MessageController extends Controller {
     public function edit($id) {
         
         $message = Message::find($id);
-        abort_if(!$message, HttpStatusCode::NOT_FOUND);
+        if (!$message) { return $this->notFound(); }
         
         return $this->output([
             'message'       => $message,
@@ -154,11 +154,9 @@ class MessageController extends Controller {
     public function destroy($id) {
         
         $message = Message::find($id);
-        abort_if(!$message, HttpStatusCode::NOT_FOUND);
+        if (!$message) { return $this->notFound(); }
         
-        return $this->result(
-            $message->delete()
-        );
+        return $this->result($message->delete());
         
     }
     

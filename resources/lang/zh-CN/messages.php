@@ -16,7 +16,5 @@ return [
     'method_not_allowed' => '不支持该请求方法',
     'internal_server_error' => '内部服务器错误',
     'nonexistent_action' => '功能不存在',
-    'misconfigured_action' => '功能配置错误',
-    'student_error' => '学生信息有误！',
-    'attendance_rule_error' => '考勤规则有误！',
+    'misconfigured_action' => '功能配置错误'
 ];

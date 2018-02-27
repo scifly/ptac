@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\ConferenceParticipantRequest;
 use App\Models\ConferenceParticipant;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -74,6 +73,10 @@ class ConferenceParticipantController extends Controller {
     public function show($id) {
         
         $cp = $this->cp->find($id);
+<<<<<<< HEAD
+        abort_if(!$cp, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('show', $cp);
         
         return $this->output([

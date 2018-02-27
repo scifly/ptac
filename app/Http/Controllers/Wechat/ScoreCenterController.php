@@ -169,6 +169,7 @@ class ScoreCenterController extends Controller {
             ];
         }
         if(Request::isMethod('post')){
+            $data =$scores = $allScores =$total = [];
             $subjectId = Request::get('subject_id');
             $scores = $this->score->getScores($examId, $subjectId, $studentId);
             $allScores = $this->score->getAllScores($subjectId, $studentId);

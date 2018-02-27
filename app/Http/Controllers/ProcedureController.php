@@ -87,6 +87,10 @@ class ProcedureController extends Controller {
     public function show($id) {
         
         $procedure = Procedure::find($id);
+<<<<<<< HEAD
+        abort_if(!$procedure, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $procedure);
         
         return $this->output([
@@ -105,6 +109,10 @@ class ProcedureController extends Controller {
     public function edit($id) {
         
         $procedure = Procedure::find($id);
+<<<<<<< HEAD
+        abort_if(!$procedure, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $procedure);
         
         return $this->output([
@@ -124,6 +132,10 @@ class ProcedureController extends Controller {
     public function update(ProcedureRequest $request, $id) {
         
         $procedure = Procedure::find($id);
+<<<<<<< HEAD
+        abort_if(!$procedure, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $procedure);
         
         return $this->result(
@@ -142,6 +154,10 @@ class ProcedureController extends Controller {
     public function destroy($id) {
         
         $procedure = Procedure::find($id);
+<<<<<<< HEAD
+        abort_if(!$procedure, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $procedure);
         
         return $this->result(
