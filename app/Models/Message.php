@@ -258,11 +258,17 @@ class Message extends Model {
         if ($role == '运营' ||$role == '企业' || $role == '学校') {
             $schoolId = School::schoolId();
             $educators = Educator::whereSchoolId($schoolId)->whereEnabled(1)->get();
-            $educatorIds = [];
+            $eduUserIds = [];
+            $userIds = [];
             foreach ($educators as $educator){
-                $educatorIds[] = $educator->id;
+                $eduUserIds[] = $educator->user_id;
             }
-            $condition = 'Message.s_user_id IN' . '(' . implode(',', $educatorIds) . ')';
+            $users = User::whereIn('group_id', ['1','2'])->get();
+            foreach ($users as $user){
+                $userIds[] = $user->id;
+            }
+            $ids = array_merge($eduUserIds,$userIds);
+            $condition = 'Message.s_user_id IN' . '(' . implode(',', $ids) . ')';
         }
         if ($role == '教职员工') {
             $condition = 'Message.r_user_id=' . Auth::id();
