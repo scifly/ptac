@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Snippet;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Exception;
@@ -110,11 +111,11 @@ class PollQuestionnaireSubject extends Model {
             [
                 'db' => 'PollQuestionnaireSubject.id as subject_id', 'dt' => 4,
                 'formatter' => function ($d) {
-                    $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $d);
-                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $d);
-                    $delLink = sprintf(Datatable::DT_LINK_DEL, $d);
-                    return $showLink . Datatable::DT_SPACE .
-                        $editLink . Datatable::DT_SPACE . $delLink;
+                    $showLink = sprintf(Snippet::DT_LINK_SHOW, 'show_' . $d);
+                    $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $d);
+                    $delLink = sprintf(Snippet::DT_LINK_DEL, $d);
+                    return $showLink . Snippet::DT_SPACE .
+                        $editLink . Snippet::DT_SPACE . $delLink;
                 },
             ],
         ];

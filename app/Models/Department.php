@@ -302,7 +302,7 @@ class Department extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    static function move($id, $parentId, $fireEvent = false) {
+    public function move($id, $parentId, $fireEvent = false) {
 
         $deparment = self::find($id);
         if (!isset($deparment)) { return false; }
@@ -781,11 +781,13 @@ class Department extends Model {
      * @return int|mixed
      */
     static function schoolDeptId($dept) {
+        
         $de = Department::whereId($dept)->first();
         if ($de->department_type_id != 4) {
             return self::schoolDeptId($de->parent_id);
         }
         return $de->id;
+        
     }
 
     /**

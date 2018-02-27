@@ -58,10 +58,15 @@ class LoginController extends Controller {
             $returnUrl = urldecode($request->get('returnUrl'));
         }
         if (Auth::id()) {
+<<<<<<< HEAD
             return response()->json([
                 'statusCode' => self::OK,
                 'url' => $returnUrl ? $returnUrl : '/'
             ]);
+=======
+            $this->result['url'] = $returnUrl ? $returnUrl : '/';
+            return response()->json($this->result);
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         }
         $input = $request->input('input');
         $password = $request->input('password');
@@ -80,9 +85,13 @@ class LoginController extends Controller {
             $mobile = Mobile::whereMobile($input)
                 ->where('isdefault', 1)->first();
             if (!$mobile || !$mobile->user_id) {
+<<<<<<< HEAD
                 return response()->json([
                     'statusCode' => self::INTERNAL_SERVER_ERROR
                 ]);
+=======
+                return abort(HttpStatusCode::INTERNAL_SERVER_ERROR);
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
             }
             # 通过默认手机号码查询对应的用户名
             $username = User::find($mobile->user_id)->username;
@@ -93,6 +102,7 @@ class LoginController extends Controller {
                 $rememberMe
             )) {
                 Session::put('user', $user);
+<<<<<<< HEAD
                 return response()->json([
                     'statusCode' => self::OK,
                     'url'        => $returnUrl ? $returnUrl : '/',
@@ -101,6 +111,12 @@ class LoginController extends Controller {
                 return response()->json([
                     'statusCode' => self::INTERNAL_SERVER_ERROR
                 ]);
+=======
+                $this->result['url'] = $returnUrl ? $returnUrl : '/';
+                return response()->json($this->result);
+            } else {
+                return abort(HttpStatusCode::INTERNAL_SERVER_ERROR);
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
             }
         }
         # 登录(用户名或邮箱)
@@ -109,6 +125,7 @@ class LoginController extends Controller {
             $rememberMe
         )) {
             Session::put('user', $user);
+<<<<<<< HEAD
             return response()->json([
                 'statusCode' => self::OK,
                 'url'        => $returnUrl ? $returnUrl : '/',
@@ -118,6 +135,13 @@ class LoginController extends Controller {
         return response()->json([
             'statusCode' => self::INTERNAL_SERVER_ERROR
         ]);
+=======
+            $this->result['url'] = $returnUrl ? $returnUrl : '/';
+            return response()->json($this->result);
+        }
+        
+        return abort(HttpStatusCode::INTERNAL_SERVER_ERROR);
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         
     }
     

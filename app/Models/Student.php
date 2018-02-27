@@ -396,7 +396,6 @@ class Student extends Model {
         // 上传文件
         $filename = date('His') . uniqid() . '.' . $ext;
         $stored = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
-
         if ($stored) {
             $filePath =
                 'public/uploads/'
@@ -412,9 +411,11 @@ class Student extends Model {
             $reader = Excel::load($filePath);
             $sheet = $reader->getExcel()->getSheet(0);
             $students = $sheet->toArray();
-            if (self::checkFileFormat($students[0])) {
-                return abort(406, '文件格式错误');
-            }
+            abort_if(
+                self::checkFileFormat($students[0]),
+                HttpStatusCode::NOT_ACCEPTABLE,
+                '文件格式错误'
+            );
             unset($students[0]);
             $students = array_values($students);
             if (count($students) != 0) {
@@ -434,7 +435,13 @@ class Student extends Model {
                 'message' => '上传成功'
             ];
         }
+<<<<<<< HEAD
         return abort(500, '上传失败');
+=======
+        
+        return abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '上传失败');
+        
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
     }
 
     /**
@@ -683,7 +690,7 @@ class Student extends Model {
         $role = $user->group->id;
         if($role > 5){
             $educatorId = $user->educator->id;
-            $studentIds = self::getClassStudent($educatorId)[1];
+            $studentIds = self::getClassStudent(School::schoolId(),$educatorId)[1];
             $studentIds = implode(',',$studentIds);
             $condition .= " and Student.id in ($studentIds)";
         }
@@ -693,12 +700,16 @@ class Student extends Model {
 
     /**
      * 根据教职员工id获取对应的班级ID和学生id
-     * @param $id||教职员工id
+     * @param $schoolId
+     * @param $id ||教职员工id
      * @return array
      */
+<<<<<<< HEAD
     static function getClassStudent($id){
+=======
+    static function getClassStudent($schoolId,$id){
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $classIds  = $studentIds = [];
-        $schoolId = School::schoolId();
         // 查询该教职员工是否是年级主任
         $grade = Grade::whereEnabled(1)
             ->where('school_id',$schoolId)

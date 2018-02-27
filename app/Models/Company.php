@@ -86,12 +86,12 @@ class Company extends Model {
 
     }
 
-    /**
-     * 获取指定运营者公司内部的所有管理/操作员对象
-     *
-     * @return HasMany
-     */
-    public function operators() { return $this->hasMany('App\Models\Operator'); }
+//    /**
+//     * 获取指定运营者公司内部的所有管理/操作员对象
+//     *
+//     * @return HasMany
+//     */
+//    public function operators() { return $this->hasMany('App\Models\Operator'); }
 
     /**
      * 保存运营者

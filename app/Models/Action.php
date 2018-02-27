@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Snippet;
 use App\Models\ActionType as ActionType;
 use Carbon\Carbon;
 use Doctrine\Common\Inflector\Inflector;
@@ -125,31 +126,31 @@ class Action extends Model {
             [
                 'db' => 'Action.method', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(Datatable::BADGE_GREEN, $d) : '-';
+                    return !empty($d) ? sprintf(Snippet::BADGE_GREEN, $d) : '-';
                 },
             ],
             [
                 'db' => 'Action.route', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(Datatable::BADGE_YELLOW, $d) : '-';
+                    return !empty($d) ? sprintf(Snippet::BADGE_YELLOW, $d) : '-';
                 },
             ],
             [
                 'db' => 'Action.controller', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(Datatable::BADGE_RED, $d) : '-';
+                    return !empty($d) ? sprintf(Snippet::BADGE_RED, $d) : '-';
                 },
             ],
             [
                 'db' => 'Action.view', 'dt' => 5,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(Datatable::BADGE_LIGHT_BLUE, $d) : '-';
+                    return !empty($d) ? sprintf(Snippet::BADGE_LIGHT_BLUE, $d) : '-';
                 },
             ],
             [
                 'db' => 'Action.js', 'dt' => 6,
                 'formatter' => function ($d) {
-                    return !empty($d) ? sprintf(Datatable::BADGE_MAROON, $d) : '-';
+                    return !empty($d) ? sprintf(Snippet::BADGE_MAROON, $d) : '-';
                 },
             ],
             [
@@ -162,8 +163,8 @@ class Action extends Model {
                 'db' => 'Action.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
-                    $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
-                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
+                    $status = $d ? Snippet::DT_ON : Snippet::DT_OFF;
+                    $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
                     return $status . str_repeat('&nbsp;', 3) . $editLink;
                 },
             ],

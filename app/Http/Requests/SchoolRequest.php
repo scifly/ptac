@@ -1,7 +1,11 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Models\Corp;
+use App\Models\School;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 
 class SchoolRequest extends FormRequest {
 
@@ -36,11 +40,25 @@ class SchoolRequest extends FormRequest {
     protected function prepareForValidation() {
 
         $input = $this->all();
-        if (!isset($input['department_id'])) {
-            $input['department_id'] = 0;
+        if (Request::method() == 'POST') {
+            if (!isset($input['department_id'])) {
+                $input['department_id'] = 0;
+            }
+            if (!isset($input['menu_id'])) {
+                $input['menu_id'] = 0;
+            }
+        } else {
+            $school = School::find(Request::input('id'));
+            $input['department_id'] = $school->department_id;
+            $input['menu_id'] = $school->menu_id;
         }
-        if (!isset($input['menu_id'])) {
-            $input['menu_id'] = 0;
+        
+        if (!isset($input['school_type_id'])) {
+            $input['school_type_id'] = School::find(School::schoolId())->school_type_id;
+        }
+        if (!isset($input['corp_id'])) {
+            $input['corp_id'] = Corp::whereDepartmentId(Auth::user()
+                ->topDeptId())->first()->id;
         }
         $this->replace($input);
 

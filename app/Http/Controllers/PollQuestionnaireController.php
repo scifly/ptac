@@ -89,7 +89,10 @@ class PollQuestionnaireController extends Controller {
     public function show($id) {
         
         $pq = PollQuestionnaire::find($id);
+<<<<<<< HEAD
         abort_if(!$pq, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $pq);
         
         return $this->output([
@@ -107,7 +110,10 @@ class PollQuestionnaireController extends Controller {
     public function edit($id) {
         
         $pq = PollQuestionnaire::find($id);
+<<<<<<< HEAD
         abort_if(!$pq, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $pq);
         
         return $this->output(['pq' => $pq]);
@@ -125,7 +131,10 @@ class PollQuestionnaireController extends Controller {
     public function update(PqRequest $request, $id) {
         
         $pq = PollQuestionnaire::find($id);
+<<<<<<< HEAD
         abort_if(!$pq, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $pq);
         
         return $this->result(
@@ -144,7 +153,10 @@ class PollQuestionnaireController extends Controller {
     public function destroy($id) {
         
         $pq = PollQuestionnaire::find($id);
+<<<<<<< HEAD
         abort_if(!$pq, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $pq);
         
         return $this->result($pq->remove($id));

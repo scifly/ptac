@@ -65,7 +65,7 @@ class WapSite extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
 
         $columns = [
             ['db' => 'WapSite.id', 'dt' => 0],
@@ -102,7 +102,7 @@ class WapSite extends Model {
      * @throws Exception
      * @throws Throwable
      */
-    static function store(WapSiteRequest $request) {
+    public function store(WapSiteRequest $request) {
         
         try {
             DB::transaction(function () use ($request) {
@@ -127,7 +127,7 @@ class WapSite extends Model {
      * @throws Exception
      * @throws Throwable
      */
-    static function modify(WapSiteRequest $request, $id) {
+    public function modify(WapSiteRequest $request, $id) {
         
         $wapSite = self::find($id);
         if (!$wapSite) { return false; }

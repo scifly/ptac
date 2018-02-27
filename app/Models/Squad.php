@@ -226,7 +226,7 @@ class Squad extends Model {
 
         if($role > 5){
             $educatorId = $user->educator->id;
-            $classIds = Student::getClassStudent($educatorId)[0];
+            $classIds = Student::getClassStudent(School::schoolId(),$educatorId)[0];
             $classIds = implode(',',$classIds);
             $condition .= " and Squad.id in ($classIds)";
         }

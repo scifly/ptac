@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 
 /**
@@ -41,8 +42,7 @@ class WapSiteModule extends Model {
 
     protected $fillable = [
         'id', 'wap_site_id', 'name',
-        'media_id', 'created_at', 'updated_at',
-        'enabled',
+        'media_id', 'enabled',
     ];
     
     public function wsmArticles() {
@@ -56,12 +56,14 @@ class WapSiteModule extends Model {
     public function wapsite() { return $this->belongsTo('App\Models\WapSite'); }
     
     /**
+     * 保存网站栏目
+     *
      * @param WapSiteModuleRequest $request
      * @return bool|mixed
      * @throws Exception
      * @throws \Throwable
      */
-    static function store(WapSiteModuleRequest $request) {
+    public function store(WapSiteModuleRequest $request) {
         
         try {
             //删除原有的图片
@@ -78,6 +80,8 @@ class WapSiteModule extends Model {
     }
     
     /**
+     * 更新网站栏目
+     *
      * @param $request
      * @throws Exception
      */
@@ -104,9 +108,9 @@ class WapSiteModule extends Model {
      * @param $id
      * @return bool
      * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
-    static function modify(WapSiteModuleRequest $request, $id) {
+    public function modify(WapSiteModuleRequest $request, $id) {
         
         $wapSite = self::find($id);
         if (!$wapSite) { return false; }
@@ -126,7 +130,7 @@ class WapSiteModule extends Model {
     /**
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
 
         $columns = [
             ['db' => 'WapSiteModule.id', 'dt' => 0],

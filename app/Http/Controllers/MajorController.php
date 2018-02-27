@@ -82,8 +82,12 @@ class MajorController extends Controller {
     public function edit($id) {
         
         $major = Major::find($id);
+<<<<<<< HEAD
         abort_if(!$major, self::NOT_FOUND);
 
+=======
+        $this->authorize('rud', $major);
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $majorSubjects = $major->subjects;
         $selectedSubjects = [];
         foreach ($majorSubjects as $subject) {
@@ -109,7 +113,11 @@ class MajorController extends Controller {
     public function update(MajorRequest $request, $id) {
         
         $major = Major::find($id);
+<<<<<<< HEAD
         abort_if(!$major, self::NOT_FOUND);
+=======
+        $this->authorize('rud', $major);
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         
         return $this->result(
             $major->modify($request, $id)
@@ -128,8 +136,13 @@ class MajorController extends Controller {
     public function destroy($id) {
         
         $major = Major::find($id);
+<<<<<<< HEAD
         abort_if(!$major, self::NOT_FOUND);
 
+=======
+        $this->authorize('rud', $major);
+        
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         return $this->result(
             $major->remove($id)
         );

@@ -70,10 +70,12 @@ class ScoreController extends Controller {
 
         $input = $request->all();
         $subject = Subject::whereId($input['subject_id'])->first();
-        if ($input['score'] > $subject->max_score){
-            return $this->fail('该科目最高分为'. $subject->max_score);
-        }
-        
+        abort_if(
+            $input['score'] > $subject->max_score,
+            HttpStatusCode::NOT_ACCEPTABLE,
+            '该科目最高分为' . $subject->max_score
+        );
+    
         return $this->result(
             $this->score->store($request->all())
         );
@@ -111,9 +113,11 @@ class ScoreController extends Controller {
         $score = Score::find($id);
         abort_if(!$score, self::NOT_FOUND);
         $subject = Subject::whereId($input['subject_id'])->first();
-        if($input['score'] > $subject->max_score){
-            return $this->fail('该科目最高分为'. $subject->max_score);
-        }
+        abort_if(
+            $input['score'] > $subject->max_score,
+            HttpStatusCode::NOT_ACCEPTABLE,
+            '该科目最高分为'. $subject->max_score
+        );
         
         return $this->result(
             $score->modify($request->all(), $id)
@@ -260,7 +264,12 @@ class ScoreController extends Controller {
             $html .= '<option value="' . $key . '">' . $value . '</option>';
         }
         
+<<<<<<< HEAD
         return $lists ? $this->succeed($html) : $this->fail();
+=======
+        return $this->result($list, $html);
+        
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
     }
     
     /**
@@ -279,7 +288,13 @@ class ScoreController extends Controller {
     public function analydata(){
         $input = Request::all();
         $view = Score::analysis($input);
+<<<<<<< HEAD
       return $view ? $this->succeed($view) : $this->fail('未录入或未统计成绩！');
+=======
+        
+        return $this->result($view, $view, '未录入或未统计成绩！');
+        
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
     }
     
     /**
@@ -314,7 +329,17 @@ class ScoreController extends Controller {
         foreach ($subjects as $key => $value) {
             $subjectHtml .= '<option value="' . $key . '">' . $value . '</option>';
         }
+<<<<<<< HEAD
         return response()->json(['students' => $studentHtml, 'subjects' => $subjectHtml, 'statusCode' => 200]);
+=======
+        
+        return response()->json([
+            'statusCode' => HttpStatusCode::OK,
+            'students' => $studentHtml,
+            'subjects' => $subjectHtml,
+        ]);
+        
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
     }
 
     /**

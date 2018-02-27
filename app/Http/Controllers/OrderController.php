@@ -67,7 +67,9 @@ class OrderController extends Controller {
             return $this->notFound();
         }
         
-        return $this->output(['order' => $order]);
+        return $this->output([
+            'order' => $order,
+        ]);
         
     }
     
@@ -85,7 +87,9 @@ class OrderController extends Controller {
             return $this->notFound();
         }
         
-        return $order->update($request->all());
+        return $order->update(
+            $request->all()
+        );
         
     }
     
@@ -101,7 +105,9 @@ class OrderController extends Controller {
         $order = $this->order->find($id);
         if (!$order) { return $this->notFound(); }
         
-        return $order->delete() ? $this->succeed() : $this->fail();
+        return $this->result(
+            $order->delete()
+        );
         
     }
     

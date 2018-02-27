@@ -88,7 +88,10 @@ class AttendanceMachineController extends Controller {
     public function edit($id) {
         
         $am = $this->am->find($id);
+<<<<<<< HEAD
         abort_if(!$am, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $am);
         
         return $this->output(['am' => $am]);
@@ -106,7 +109,10 @@ class AttendanceMachineController extends Controller {
     public function update(AttendanceMachineRequest $request, $id) {
         
         $am = $this->am->find($id);
+<<<<<<< HEAD
         abort_if(!$am, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $am);
         
         return $this->result(
@@ -125,7 +131,10 @@ class AttendanceMachineController extends Controller {
     public function destroy($id) {
         
         $am = $this->am->find($id);
+<<<<<<< HEAD
         abort_if(!$am, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $am);
         
         return $this->result($am->delete());

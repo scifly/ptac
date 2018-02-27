@@ -1,6 +1,8 @@
 <?php
 namespace App\Http\Middleware;
 
+use App\Helpers\Constant;
+use App\Helpers\HttpStatusCode;
 use App\Models\Action;
 use App\Models\ActionGroup;
 use App\Models\Corp;
@@ -14,8 +16,6 @@ use App\Models\Tab;
 use App\Models\WapSite;
 use Closure;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class CheckRole {
     
@@ -29,9 +29,6 @@ class CheckRole {
     public function handle($request, Closure $next) {
         
         $route = trim($request->route()->uri());
-//        if (!Session::exists('menuId') && $route != '/' && $route != 'home') {
-//            $this->abort();
-//        };
         $user = Auth::user();
         $groupId = $user->group_id;
         $role = $user->group->name;
@@ -58,15 +55,14 @@ class CheckRole {
                     $abort = !in_array($menuId, $menuIds) ?? false;
                     break;
                 case '教职员工':
-                    $school_id = Group::whereId($user->group_id)->first()->school_id;
-                    if (!$school_id) {
-                        $dept_id = DepartmentUser::whereUserId($user->id)->first()->department_id;
-                        $schoolDept = Department::schoolDeptId($dept_id);
-                        $school_id = School::whereDepartmentId($schoolDept)->first()->id;
+                    $schoolId = Group::find($user->group_id)->school_id;
+                    if (!$schoolId) {
+                        $deptId = DepartmentUser::whereUserId($user->id)->first()->department_id;
+                        $schoolDept = Department::schoolDeptId($deptId);
+                        $schoolId = School::whereDepartmentId($schoolDept)->first()->id;
                     }
                     $menuIds = Menu::subMenuIds(
-                        School::find($school_id)
-                            ->menu_id
+                        School::find($schoolId)->menu_id
                     );
                     $abort = !in_array($menuId, $menuIds) ?? false;
                     break;
@@ -77,14 +73,11 @@ class CheckRole {
                     $abort = !$groupMenu ?? false;
                     break;
             }
-            if ($abort) { $this->abort(); }
+            abort_if($abort, HttpStatusCode::FORBIDDEN, __('messages.forbidden'));
             
             return $next($request);
         }
         # 功能权限判断
-//        if (strpos($route, '?')) {
-//            $route = explode('?', $route);
-//        }
         $controller = Action::whereRoute($route)->first()->controller;
         switch ($role) {
             case '企业':
@@ -114,42 +107,42 @@ class CheckRole {
                 $abort = !$groupAction ?? false;
                 break;
         }
-        # 企业本身 企业管理模块权限
+        # 企业级管理员可访问的运营类功能
         if ($role == '企业') {
             $corpId = Corp::whereDepartmentId($user->topDeptId())->first()->id;
-            $allowedCorpActions = [
-                '/corps/edit/' . $corpId,
-                '/corps/update/' . $corpId,
-            ];
+            $allowedCorpActions = $this->allowedActions(
+                Constant::ALLOWED_CORP_ACTIONS, $corpId
+            );
             if (in_array($request->path(), $allowedCorpActions)) {
                 return $next($request);
             }
         }
-        # 学校级角色  学校模块、微网站模块权限
+        # 校级管理员可访问的企业类功能
         if ($role == '学校') {
             $schoolId = School::whereDepartmentId($user->topDeptId())->first()->id;
             $wapsiteId = WapSite::whereSchoolId($schoolId)->first()->id;
-            $allowedSchoolActions = [
-                '/schools/show/' . $schoolId,
-                '/schools/edit/' . $schoolId,
-                '/schools/update/' . $schoolId,
-                '/wap_sites/show/' . $wapsiteId,
-                '/wap_sites/edit/' . $wapsiteId,
-                '/wap_sites/update/' . $wapsiteId,
-            ];
+            $allowedSchoolActions = array_merge(
+                $this->allowedActions(Constant::ALLOWED_SCHOOL_ACTIONS, $schoolId),
+                $this->allowedActions(Constant::ALLOWED_WAPSITE_ACTIONS, $wapsiteId)
+            );
             if (in_array($request->path(), $allowedSchoolActions)) {
                 return $next($request);
             }
         }
-        if ($abort) { $this->abort(); }
+        abort_if($abort, HttpStatusCode::FORBIDDEN, __('messages.forbidden'));
         
         return $next($request);
         
     }
     
-    private function abort() {
+    private function allowedActions(array $actions, $id) {
         
-        throw new HttpException(403);
+        return array_map(
+            function($str) use($id) {
+                return sprintf($str, $id);
+            },
+            $actions
+        );
         
     }
     

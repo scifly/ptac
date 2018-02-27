@@ -44,22 +44,26 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.single_select', [
-                'label' => '学校类型',
-                'id' => 'school_type_id',
-                'items' => $schoolTypes
-            ])
-            @include('partials.single_select', [
-                'label' => '所属企业',
-                'id' => 'corp_id',
-                'items' => $corps
-            ])
-            @if (isset($school['department_id']))
-                {!! Form::hidden('department_id', $school['department_id']) !!}
+            @if (in_array(Auth::user()->group->name, ['运营', '企业']))
+                @include('partials.single_select', [
+                    'label' => '学校类型',
+                    'id' => 'school_type_id',
+                    'items' => $schoolTypes
+                ])
             @endif
-            @if (isset($school['menu_id']))
-                {!! Form::hidden('menu_id', $school['menu_id']) !!}
+            @if (Auth::user()->group->name == '运营')
+                @include('partials.single_select', [
+                    'label' => '所属企业',
+                    'id' => 'corp_id',
+                    'items' => $corps
+                ])
             @endif
+            {{--@if (isset($school['department_id']))--}}
+                {{--{!! Form::hidden('department_id', $school['department_id']) !!}--}}
+            {{--@endif--}}
+            {{--@if (isset($school['menu_id']))--}}
+                {{--{!! Form::hidden('menu_id', $school['menu_id']) !!}--}}
+            {{--@endif--}}
             @include('partials.enabled', [
                 'id' => 'enabled',
                 'value' => $school['enabled'] ?? null

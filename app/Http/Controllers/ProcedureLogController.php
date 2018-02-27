@@ -6,6 +6,7 @@ use App\Models\Media;
 use App\Models\ProcedureLog;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
@@ -101,7 +102,6 @@ class ProcedureLogController extends Controller {
      */
     public function show($firstLogId) {
         
-        $userId = 7;
         //根据IDs查询数据
         $data = ProcedureLog::with('procedure', 'procedure_step', 'initiator_user', 'operator_user')
             ->where('first_log_id', $firstLogId)
@@ -111,7 +111,7 @@ class ProcedureLogController extends Controller {
         return $this->output([
             'js'      => 'js/procedure_log/show.js',
             'data'    => $data,
-            'user_id' => $userId,
+            'user_id' => Auth::id(),
         ]);
         
     }
@@ -126,7 +126,9 @@ class ProcedureLogController extends Controller {
         
         $procedureId = DB::table('procedures')->pluck('name', 'id');
         
-        return $this->output(['procedure_id' => $procedureId]);
+        return $this->output([
+            'procedure_id' => $procedureId,
+        ]);
         
     }
     
@@ -138,31 +140,9 @@ class ProcedureLogController extends Controller {
      */
     public function store(ProcedureLogRequest $request) {
         
-        $userId = 6;
-        $mediaIds = $request->input('media_ids');
-        $procedureStep = DB::table('procedure_steps')
-            ->where('procedure_id', $request->input('procedure_id'))
-            ->orderBy('id', 'asc')
-            ->first();
-        $data = [
-            'procedure_id'        => $request->input('procedure_id'),
-            'initiator_user_id'   => $userId,
-            'procedure_step_id'   => $procedureStep->id,
-            'operator_user_id'    => 0,
-            'operator_msg'        => 0,
-            'operator_media_ids'  => 0,
-            'step_status'         => 2,
-            'first_log_id'        => 0,
-            'initiator_msg'       => $request->input('initiator_msg'),
-            'initiator_media_ids' => empty($mediaIds) ? 0 : implode(',', $mediaIds),
-        ];
-        if ($id = ProcedureLog::insertGetId($data)) {
-            ProcedureLog::find($id)->update(['first_log_id' => $id]);
-            
-            return $this->succeed();
-        }
-        
-        return $this->fail();
+        return $this->result(
+            $this->pl->store($request->all())
+        );
         
     }
     
@@ -173,38 +153,7 @@ class ProcedureLogController extends Controller {
      */
     public function decision() {
         
-        $userId = 3;
-        $request = Request::all();
-        $updated = ProcedureLog::find($request['id'])->update([
-            'step_status'        => $request['step_status'],
-            'operator_user_id'   => $userId,
-            'operator_msg'       => $request['operator_msg'],
-            'operator_media_ids' => empty($request['media_ids']) ? 0 : implode(',', $request['media_ids']),
-        ]);
-        if (!$updated) { return $this->fail(); }
-        if ($request['step_status'] == 0) {
-            $procedureStep = DB::table('procedure_steps')->where([
-                ['procedure_id', '=', $request['procedure_id']],
-                ['id', '>', $request['procedure_step_id']],
-            ])->orderBy('id', 'asc')->first();
-            if (!empty($procedureStep)) {
-                $data = [
-                    'procedure_id'        => $request['procedure_id'],
-                    'initiator_user_id'   => $request['initiator_user_id'],
-                    'procedure_step_id'   => $procedureStep->id,
-                    'operator_user_id'    => 0,
-                    'operator_msg'        => 0,
-                    'operator_media_ids'  => 0,
-                    'step_status'         => 2,
-                    'first_log_id'        => $request['first_log_id'],
-                    'initiator_msg'       => $request['initiator_msg'],
-                    'initiator_media_ids' => $request['initiator_media_ids'] ?? 0,
-                ];
-                ProcedureLog::insertGetId($data);
-            }
-        }
-        
-        return $this->succeed();
+        return $this->result(true);
         
     }
     

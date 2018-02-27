@@ -1,11 +1,14 @@
 <?php
 namespace App\Exceptions;
 
+use App\Helpers\HttpStatusCode;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -32,7 +35,7 @@ class Handler extends ExceptionHandler {
      *
      * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
      *
-     * @param  \Exception $exception
+     * @param  Exception $exception
      * @return void
      */
     public function report(Exception $exception) {
@@ -51,14 +54,14 @@ class Handler extends ExceptionHandler {
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  \Exception $exception
+     * @param  Request $request
+     * @param  Exception $exception
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function render($request, Exception $exception) {
 
         if ($request->ajax() || $request->wantsJson()) {
-            $status = 400;
+            $status = HttpStatusCode::BAD_REQUEST;
             $paths = explode('\\', get_class($exception));
             $response['message'] = $exception->getMessage();
             $response['file'] = $exception->getFile();
@@ -66,7 +69,7 @@ class Handler extends ExceptionHandler {
             $eName = $paths[sizeof($paths) -1];
             switch ($eName) {
                 case 'AuthenticationException':
-                    $status = 401;
+                    $status = HttpStatusCode::UNAUTHORIZED;
                     if ($request->method() == 'GET') {
                         if ($request->query('draw')) {
                             $response['returnUrl'] = $request->url() .
@@ -78,10 +81,10 @@ class Handler extends ExceptionHandler {
                     }
                     break;
                 case 'TokenMismatchException':
-                    $status = 498;
+                    $status = HttpStatusCode::TOKEN_MISMATCH;
                     break;
                 case 'ErrorException':
-                    $status = 500;
+                    $status = HttpStatusCode::INTERNAL_SERVER_ERROR;
                     break;
                 default:
                     break;
@@ -107,9 +110,9 @@ class Handler extends ExceptionHandler {
     /**
      * Convert an authentication exception into an unauthenticated response.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  Request $request
      * @param  AuthenticationException $exception
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     protected function unauthenticated($request, AuthenticationException $exception) {
         
@@ -118,6 +121,7 @@ class Handler extends ExceptionHandler {
         }
         
         return redirect()->guest(route('login'));
+        
     }
     
 }

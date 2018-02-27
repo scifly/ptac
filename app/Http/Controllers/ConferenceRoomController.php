@@ -90,7 +90,10 @@ class ConferenceRoomController extends Controller {
     public function show($id) {
         
         $cr = $this->cr->find($id);
+<<<<<<< HEAD
         abort_if(!$cr, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $cr);
         
         return $this->output(['cr' => $cr]);
@@ -107,7 +110,10 @@ class ConferenceRoomController extends Controller {
     public function edit($id) {
         
         $cr = $this->cr->find($id);
+<<<<<<< HEAD
         abort_if(!$cr, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $cr);
         
         return $this->output(['cr' => $cr]);
@@ -125,7 +131,10 @@ class ConferenceRoomController extends Controller {
     public function update(ConferenceRoomRequest $request, $id) {
         
         $cr = $this->cr->find($id);
+<<<<<<< HEAD
         abort_if(!$cr, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $cr);
         
         return $this->result($cr->modify($request->all(), $id));
@@ -142,7 +151,10 @@ class ConferenceRoomController extends Controller {
     public function destroy($id) {
         
         $cr = $this->cr->find($id);
+<<<<<<< HEAD
         abort_if(!$cr, self::NOT_FOUND);
+=======
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $cr);
         
         return $this->result($cr->remove($id));

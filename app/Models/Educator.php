@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Events\EducatorImported;
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Snippet;
+use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Http\Requests\CustodianRequest;
 use App\Http\Requests\EducatorRequest;
@@ -476,12 +478,11 @@ class Educator extends Model {
                 throw $e;
             }
             $educators = $sheet->toArray();
-            if (self::checkFileFormat($educators[0])) {
-                return [
-                    'error' => 1,
-                    'message' => '文件格式错误',
-                ];
-            }
+            abort_if(
+                self::checkFileFormat($educators[0]),
+                HttpStatusCode::NOT_ACCEPTABLE,
+                '文件格式错误'
+            );
             unset($educators[0]);
             $educators = array_values($educators);
             if (count($educators) != 0) {
@@ -498,15 +499,13 @@ class Educator extends Model {
             }
             Storage::disk('uploads')->delete($filename);
             return [
-                'error' => 0,
+                'statusCode' => HttpStatusCode::OK,
                 'message' => '上传成功'
             ];
             
         }
-        return [
-            'error' => 2,
-            'message' => '上传失败',
-        ];
+        
+        return abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '上传失败');
         
     }
     
@@ -557,17 +556,17 @@ class Educator extends Model {
                 'db' => 'Educator.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
-                    $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
+                    $status = $d ? Snippet::DT_ON : Snippet::DT_OFF;
                     $user = Auth::user();
-                    // $showLink = sprintf(Datatable::DT_LINK_SHOW, 'show_' . $id) .
-                    //     str_repeat(Datatable::DT_SPACE, 3);
-                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id) .
-                        str_repeat(Datatable::DT_SPACE, 2);
-                    $delLink = sprintf(Datatable::DT_LINK_DEL, $id) .
-                        str_repeat(Datatable::DT_SPACE, 2);
-                    $rechargeLink = sprintf(Datatable::DT_LINK_RECHARGE, 'recharge_' . $id);
+                    // $showLink = sprintf(HtmlSnippet::DT_LINK_SHOW, 'show_' . $id) .
+                    //     str_repeat(HtmlSnippet::DT_SPACE, 3);
+                    $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id) .
+                        str_repeat(Snippet::DT_SPACE, 2);
+                    $delLink = sprintf(Snippet::DT_LINK_DEL, $id) .
+                        str_repeat(Snippet::DT_SPACE, 2);
+                    $rechargeLink = sprintf(Snippet::DT_LINK_RECHARGE, 'recharge_' . $id);
                     return
-                        $status . str_repeat(Datatable::DT_SPACE, 3) .
+                        $status . str_repeat(Snippet::DT_SPACE, 3) .
                         // ($user->can('act', self::uris()['show']) ? $showLink : '') .
                         ($user->can('act', self::uris()['edit']) ? $editLink : '') .
                         ($user->can('act', self::uris()['destroy']) ? $delLink : '') .

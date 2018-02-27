@@ -5,7 +5,6 @@ use App\Http\Requests\EventRequest;
 use App\Models\Event;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -128,15 +127,17 @@ class EventController extends Controller {
      * 删除事件包括日历事件和列表事件
      *
      * @param $id
-     * @return Response
-     * @internal param Event $event
+     * @return JsonResponse|string
      * @throws Exception
      */
     public function destroy($id) {
-        $event = $this->event->find($id);
-        if (!$event) { return $this->notFound(); }
         
-        return $event->delete() ? $this->succeed() : $this->fail();
+        $event = $this->event->find($id);
+        abort_if(!$event, HttpStatusCode::NOT_FOUND);
+        
+        return $this->result(
+            $event->delete()
+        );
     }
     
     /**
@@ -148,15 +149,21 @@ class EventController extends Controller {
         $event['start'] = $listJson['start'];
         $event['end'] = $listJson['end'];
         $event['enabled'] = 1;
-        if ($event['end'] <= $event['start']) {
-            return $this->fail('结束时间必须大于开始时间！');
-        }
-        //根据角色验证重复冲突
+        abort_if(
+            $event['end'] <= $event['start'],
+            HttpStatusCode::NOT_ACCEPTABLE,
+            '结束时间必须大于开始时间！'
+        );
+        // 根据角色验证重复冲突
+        
         if ($this->event->isValidateTime($event['user_id'], $event['educator_id'], $event['start'], $event['end'])) {
-            return $this->fail('时间有冲突！');
+            abort(HttpStatusCode::NOT_ACCEPTABLE, '时间有冲突！');
         }
         
-        return $this->event->create($event) ? $this->succeed() : $this->fail();
+        return $this->result(
+            $this->event->create($event)
+        );
+        
     }
     
     /**
@@ -176,10 +183,17 @@ class EventController extends Controller {
         $event->end = date("Y-m-d H:i:s", strtotime($event->end) + $diffTime);
         //根据角色验证重复冲突
         if ($this->event->isValidateTime($event->user_id, $event->educator_id, $event->start, $event->end, $event->id)) {
-            return $this->fail('时间有冲突！');
+            abort(HttpStatusCode::NOT_ACCEPTABLE, '时间有冲突！');
         }
         
+<<<<<<< HEAD
         return $event->save() ? $this->succeed() : $this->fail();
+=======
+        return $this->result(
+            $event->save()
+        );
+        
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
     }
     
 }

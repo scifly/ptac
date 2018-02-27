@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\WapSiteModuleRequest;
 use App\Models\Media;
 use App\Models\WapSiteModule;
@@ -20,9 +21,12 @@ use Throwable;
  */
 class WapSiteModuleController extends Controller {
     
-    public function __construct(WapSiteModule $wapSiteModule, Media $media) {
+    protected $wsm;
+    
+    public function __construct(WapSiteModule $wsm) {
         
-        $this->middleware(['auth']);
+        $this->middleware(['auth', 'checkRole']);
+        $this->wsm = $wsm;
         
     }
     
@@ -35,7 +39,9 @@ class WapSiteModuleController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(WapSiteModule::datatable());
+            return response()->json(
+                $this->wsm->datatable()
+            );
         }
         
         return $this->output();
@@ -63,7 +69,9 @@ class WapSiteModuleController extends Controller {
      */
     public function store(WapSiteModuleRequest $request) {
         
-        return $this->result(WapSiteModule::store($request));
+        return $this->result(
+            $this->wsm->store($request)
+        );
     
     }
     
@@ -76,8 +84,8 @@ class WapSiteModuleController extends Controller {
      */
     public function show($id) {
         
-        $wsm = WapSiteModule::find($id);
-        if (!$wsm) { return $this->notFound(); }
+        $wsm = $this->wsm->find($id);
+        abort_if(!$wsm, HttpStatusCode::NOT_FOUND);
         
         return $this->output([
             'wsm' => $wsm,
@@ -95,8 +103,8 @@ class WapSiteModuleController extends Controller {
      */
     public function edit($id) {
         
-        $wsm = WapSiteModule::find($id);
-        if (!$wsm) { return $this->notFound(); }
+        $wsm = $this->wsm->find($id);
+        abort_if(!$wsm, HttpStatusCode::NOT_FOUND);
         
         return $this->output([
             'wapSiteModule' => $wsm,
@@ -116,10 +124,12 @@ class WapSiteModuleController extends Controller {
      */
     public function update(WapSiteModuleRequest $request, $id) {
         
-        $wsm = WapSiteModule::find($id);
-        if (!$wsm) { return $this->notFound(); }
+        $wsm = $this->wsm->find($id);
+        abort_if(!$wsm, HttpStatusCode::NOT_FOUND);
         
-        return $this->result($wsm->modify($request, $id));
+        return $this->result(
+            $wsm->modify($request, $id)
+        );
         
     }
     
@@ -132,12 +142,13 @@ class WapSiteModuleController extends Controller {
      */
     public function destroy($id) {
         
-        $wsm = WapSiteModule::find($id);
-        if (!$wsm) { return $this->notFound(); }
+        $wsm = $this->wsm->find($id);
+        abort_if(!$wsm, HttpStatusCode::NOT_FOUND);
         
-        return $this->result($wsm->delete());
+        return $this->result(
+            $wsm->delete()
+        );
         
     }
-
     
 }

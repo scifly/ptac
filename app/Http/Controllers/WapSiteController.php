@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Facades\Wechat;
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\WapSiteRequest;
 use App\Models\App;
 use App\Models\Corp;
@@ -23,9 +24,12 @@ use Throwable;
  */
 class WapSiteController extends Controller {
     
-    public function __construct() {
+    protected $ws;
+    
+    public function __construct(WapSite $ws) {
         
         $this->middleware(['auth', 'checkrole']);
+        $this->ws = $ws;
 
     }
     
@@ -37,15 +41,12 @@ class WapSiteController extends Controller {
      */
     public function index() {
 
-        $schoolId = School::schoolId();
-        $wapSite = WapSite::whereSchoolId($schoolId)->where('enabled',1)->first();
-        if (empty($wapSite)) {
-            return parent::notFound();
-        }
-        $mediaIds = explode(",", $wapSite->media_ids);
+        $ws = WapSite::whereSchoolId(School::schoolId())->where('enabled', 1)->first();
+        abort_if(!$ws, HttpStatusCode::NOT_FOUND);
+        $mediaIds = explode(",", $ws->media_ids);
     
         return $this->output([
-            'wapSite' => $wapSite,
+            'ws' => $ws,
             'medias'  => Media::medias($mediaIds),
             'show'    => true,
         ]);
@@ -62,7 +63,9 @@ class WapSiteController extends Controller {
      */
     public function store(WapSiteRequest $request) {
         
-        return $this->result(WapSite::store($request));
+        return $this->result(
+            $this->ws->store($request)
+        );
 
     }
     
@@ -75,12 +78,12 @@ class WapSiteController extends Controller {
      */
     public function edit($id) {
 
-        $wapSite = WapSite::find($id);
-        if (!$wapSite) { return parent::notFound(); }
+        $ws = WapSite::find($id);
+        abort_if(!$ws, HttpStatusCode::NOT_FOUND);
         
         return $this->output([
-            'wapSite' => $wapSite,
-            'medias'  => Media::medias(explode(',',$wapSite->media_ids)),
+            'ws' => $ws,
+            'medias'  => Media::medias(explode(',',$ws->media_ids)),
         ]);
         
     }
@@ -96,7 +99,12 @@ class WapSiteController extends Controller {
      */
     public function update(WapSiteRequest $request, $id) {
         
-        return $this->result(WapSite::modify($request, $id));
+        $ws = WapSite::find($id);
+        abort_if(!$ws, HttpStatusCode::NOT_FOUND);
+        
+        return $this->result(
+            $ws->modify($request, $id)
+        );
 
     }
     
@@ -109,12 +117,10 @@ class WapSiteController extends Controller {
      */
     public function destroy($id) {
         
-        $wapsite = WapSite::find($id);
-        if (!$wapsite) {
-            return parent::notFound();
-        }
+        $ws = WapSite::find($id);
+        abort_if(!$ws, HttpStatusCode::NOT_FOUND);
         
-        return $this->result($wapsite->delete());
+        return $this->result($ws->delete());
         
     }
     
@@ -126,6 +132,7 @@ class WapSiteController extends Controller {
     public function uploadImages() {
         
         $files = Request::file('img');
+<<<<<<< HEAD
         $type = Request::query('type');
         if (empty($files)) {
             $result['statusCode'] = 0;
@@ -150,9 +157,27 @@ class WapSiteController extends Controller {
                     Wechat::uploadMedia($token, 'image', $data);
             }
 
+=======
+        abort_if(empty($files), HttpStatusCode::NOT_ACCEPTABLE, '您还未选择图片！');
+        
+        $this->result['data'] = [];
+        $mes = [];
+        foreach ($files as $key => $file) {
+            $this->validateFile($file, $mes);
+        }
+        $this->result['message'] = '上传成功！';
+        $this->result['data'] = $mes;
+        $token = '';
+        if ($mes) {
+            $path = '';
+            foreach ($mes AS $m)
+                $path = dirname(public_path()) . '/' . $m['path'];
+                $data = ["media" => curl_file_create($path)];
+                Wechat::uploadMedia($token, 'image', $data);
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         }
         
-        return response()->json($result);
+        return response()->json($this->result);
         
     }
     

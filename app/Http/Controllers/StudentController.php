@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use PHPExcel_Exception;
 use Throwable;
 
 /**
@@ -203,12 +204,14 @@ class StudentController extends Controller {
     
     /**
      * 导入学籍
-     * @throws \PHPExcel_Exception
+     *
+     * @throws PHPExcel_Exception
      */
     public function import() {
         
         if (Request::isMethod('post')) {
             $file = Request::file('file');
+<<<<<<< HEAD
             if (empty($file)) {
                 $result = [
                     'statusCode' => self::INTERNAL_SERVER_ERROR,
@@ -220,15 +223,29 @@ class StudentController extends Controller {
             if ($file->isValid()) {
                 $result = Student::upload($file);
                 return response()->json($result);
+=======
+            abort_if(
+                empty($file),
+                HttpStatusCode::INTERNAL_SERVER_ERROR,
+                '您还没选择文件！'
+            );
+            // 文件是否上传成功
+            if ($file->isValid()) {
+                return response()->json(
+                    $this->student->upload($file)
+                );
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
             }
         }
         
-        return null;
+        return abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '上传失败');
         
     }
     
     /**
      * 导出学籍
+     *
+     * @return JsonResponse
      */
     public function export() {
 
@@ -272,6 +289,11 @@ class StudentController extends Controller {
             }, 'UTF-8')->export('xls');
         }
         
+<<<<<<< HEAD
+=======
+        return abort(HttpStatusCode::BAD_REQUEST, '导出失败');
+        
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
     }
 
 

@@ -3,13 +3,18 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+<<<<<<< HEAD
 use App\Helpers\ModelTrait;
+=======
+use App\Helpers\Snippet;
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\ProcedureLog 审批流程日志
@@ -134,8 +139,31 @@ class ProcedureLog extends Model {
         }
         return $medias;
     }
+<<<<<<< HEAD
 
     static function datatable($where) {
+=======
+    
+    /**
+     * 保存审批结果
+     * 
+     * @param array $data
+     * @return bool
+     */
+    public function store(array $data) {
+
+        return true;
+        
+    }
+    
+    /**
+     * 审批流程列表
+     *
+     * @param $where
+     * @return array
+     */
+    public function datatable($where) {
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
 
         $columns = [
             ['db' => 'ProcedureLog.first_log_id', 'dt' => 0],
@@ -152,26 +180,23 @@ class ProcedureLog extends Model {
             [
                 'db' => 'ProcedureLog.step_status', 'dt' => 6,
                 'formatter' => function ($d, $row) {
-
                     switch ($d) {
-
                         case 0:
-                            $status = Datatable::DT_ON;
+                            $status = Snippet::DT_ON;
                             break;
                         case 1:
-                            $status = Datatable::DT_OFF;
+                            $status = Snippet::DT_OFF;
                             break;
                         case 2:
                             $status = sprintf(self::DT_PEND, '待定');
                             break;
                         default:
-                            $status = Datatable::DT_OFF;
+                            $status = Snippet::DT_OFF;
                             break;
                     }
                     $id = $row['first_log_id'];
-                    $showLink = '<a id = ' . $id . ' href="show/' . $id . '" class="btn btn-primary btn-icon btn-circle btn-xs" data-toggle="modal"><i class="fa fa-eye"></i></a>';
-                    return $status . Datatable::DT_SPACE . $showLink;
-
+                    $showLink = sprintf(Snippet::DT_LINK_SHOW, $id);
+                    return $status . Snippet::DT_SPACE . $showLink;
                 },
             ],
         ];

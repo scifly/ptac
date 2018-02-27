@@ -118,5 +118,20 @@ class MenuTab extends Model {
         return true;
 
     }
-
+    
+    /**
+     * 根据指定菜单包含的卡片Id数组
+     *
+     * @param $menuId
+     * @return array
+     */
+    static function tabIdsByMenuId($menuId) {
+    
+        return self::whereMenuId($menuId)
+            ->orderBy('tab_order')
+            ->pluck('tab_id')
+            ->toArray();
+        
+    }
+    
 }
