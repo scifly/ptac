@@ -219,7 +219,7 @@ class Score extends Model {
         $groupId = Auth::user()->group->id;
         if($groupId > 5){
             $educatorId = Auth::user()->educator->id;
-            $studentIds = Student::getClassStudent($educatorId)[1];
+            $studentIds = Student::getClassStudent(School::schoolId(),$educatorId)[1];
             $studentIds = implode(',',$studentIds);
             $condition .= " and Student.id in ($studentIds)";
         }
@@ -1343,16 +1343,17 @@ class Score extends Model {
         $students = User::whereUserid($userId)->first()->custodian->students;
         $score = $data = $studentName = [];
         foreach ($students as $k => $s) {
-            $exams = Exam::where('class_ids', 'like', '%' . $s->class_id . '%')
-                ->get();
+            $exams = Exam::whereEnabled(1)->get();
             foreach ($exams as $key => $e) {
-                $score[$k][$key]['id'] = $e->id;
-                $score[$k][$key]['student_id'] = $s->id;
-                $score[$k][$key]['name'] = $e->name;
-                $score[$k][$key]['start_date'] = $e->start_date;
-                $score[$k][$key]['realname'] = $s->user->realname;
-                $score[$k][$key]['class_id'] = $s->class_id;
-                $score[$k][$key]['subject_ids'] = $e->subject_ids;
+                if(in_array($s->class_id , explode(',', $e->class_ids))){
+                    $score[$k][$key]['id'] = $e->id;
+                    $score[$k][$key]['student_id'] = $s->id;
+                    $score[$k][$key]['name'] = $e->name;
+                    $score[$k][$key]['start_date'] = $e->start_date;
+                    $score[$k][$key]['realname'] = $s->user->realname;
+                    $score[$k][$key]['class_id'] = $s->class_id;
+                    $score[$k][$key]['subject_ids'] = $e->subject_ids;
+                }
             }
             $studentName[] = [
                 'title' => $s->user->realname,
@@ -1377,17 +1378,20 @@ class Score extends Model {
         if (!$class) {
             return false;
         }
-        // $class = Squad::where('educator_ids','like','%' . $educatorId . '%')->get();
         foreach ($class as $k => $c) {
-            $exams = Exam::where('class_ids', 'like', '%' . $c->id . '%')
-                ->get();
+            $exams = Exam::whereEnabled(1)->get();
+            // $exams = Exam::where('class_ids', 'like', '%' . $c->id . '%')
+            //     ->get();
             foreach ($exams as $key => $e) {
-                $score[$k][$key]['id'] = $e->id;
-                $score[$k][$key]['name'] = $e->name;
-                $score[$k][$key]['classname'] = $c->name;
-                $score[$k][$key]['start_date'] = $e->start_date;
-                $score[$k][$key]['class_id'] = $c->id;
-                $score[$k][$key]['subject_ids'] = $e->subject_ids;
+                if(in_array($c->id,explode(',', $e->class_ids))){
+                    $score[$k][$key]['id'] = $e->id;
+                    $score[$k][$key]['name'] = $e->name;
+                    $score[$k][$key]['classname'] = $c->name;
+                    $score[$k][$key]['start_date'] = $e->start_date;
+                    $score[$k][$key]['class_id'] = $c->id;
+                    $score[$k][$key]['subject_ids'] = $e->subject_ids;
+                }
+
             }
             $className[] = [
                 'title' => $c->name,

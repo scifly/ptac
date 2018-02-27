@@ -386,7 +386,7 @@ class Custodian extends Model {
 
         if($groupId > 5){
             $educatorId = Auth::user()->educator->id;
-            $studentIds = Student::getClassStudent($educatorId)[1];
+            $studentIds = Student::getClassStudent(School::schoolId(),$educatorId)[1];
             $studentIds = implode(',',$studentIds);
             $condition .= " and Student.id in ($studentIds)";
         }

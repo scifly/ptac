@@ -319,7 +319,9 @@ class AttendanceController extends Controller {
             ['name' => '未打卡', 'value' => $noRecords],
         ];
         #处理列表页
-        $data['view'] = $this->attendList($studentIds, $attendances);
+        $data['view'] = $this->attendList(
+            $studentIds, $attendances->where('status', 1),
+            $attendances->where('status', 0), $attendances);
 
         return !empty($data) ? $data : false;
         
@@ -357,7 +359,9 @@ class AttendanceController extends Controller {
             ['name' => '未打卡', 'value' => $noRecords],
         ];
         #处理列表页
-        $data['view'] = $this->attendList($studentIds, $attendances);
+        $data['view'] = $this->attendList(
+            $studentIds, $attendances->where('status', 1),
+            $attendances->where('status', 0), $attendances);
         return !empty($data) ? $data : false;
     }
     
@@ -469,15 +473,17 @@ class AttendanceController extends Controller {
     /**
      * 微信 教师端学生考勤列表
      * @param $studentIds
+     * @param $normalAttend
+     * @param $abnormalAttend
      * @param $attendances
      * @return mixed
      * @throws Throwable
      */
-    private function attendList($studentIds, StudentAttendance $attendances) {
+    private function attendList($studentIds, $normalAttend, $abnormalAttend, $attendances) {
         
         //正常的学生列表
         $normalList = [];
-        foreach ($attendances->where('status', 1) as $normal) {
+        foreach ($normalAttend as $normal) {
             $student = $normal->student;
             $username = $student->user->realname;
             #对应的监护人
@@ -500,7 +506,7 @@ class AttendanceController extends Controller {
         }
         //异常的学生列表
         $abnormalList = [];
-        foreach ($attendances->where('status', 0) as $normal) {
+        foreach ($abnormalAttend as $normal) {
             $student = $normal->student;
             $username = $student->user->realname;
             #对应的监护人

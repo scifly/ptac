@@ -180,7 +180,7 @@ class ScoreTotal extends Model {
         $groupId = Auth::user()->group->id;
         if($groupId > 5){
             $educatorId = Auth::user()->educator->id;
-            $studentIds = Student::getClassStudent($educatorId)[1];
+            $studentIds = Student::getClassStudent(School::schoolId(),$educatorId)[1];
             $studentIds = implode(',',$studentIds);
             $condition = "Student.id in ($studentIds)";
         }

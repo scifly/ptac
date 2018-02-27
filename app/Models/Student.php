@@ -660,7 +660,7 @@ class Student extends Model {
         $role = $user->group->id;
         if ($role > 5){
             $educatorId = $user->educator->id;
-            $studentIds = self::getClassStudent($educatorId)[1];
+            $studentIds = self::getClassStudent(School::schoolId(),$educatorId)[1];
             $studentIds = implode(',',$studentIds);
             $condition .= " and Student.id in ($studentIds)";
         }
@@ -671,13 +671,12 @@ class Student extends Model {
 
     /**
      * 根据教职员工id获取对应的班级ID和学生id
-     * @param $id||教职员工id
+     * @param $schoolId
+     * @param $id ||教职员工id
      * @return array
      */
-    static function getClassStudent($id){
-        
+    static function getClassStudent($schoolId,$id){
         $classIds  = $studentIds = [];
-        $schoolId = School::schoolId();
         // 查询该教职员工是否是年级主任
         $grade = Grade::whereEnabled(1)
             ->where('school_id',$schoolId)
