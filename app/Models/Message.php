@@ -260,15 +260,14 @@ class Message extends Model {
             $educators = Educator::whereSchoolId($schoolId)->whereEnabled(1)->get();
             $eduUserIds = [];
             $userIds = [];
-            foreach ($educators as $educator){
+            foreach ($educators as $educator) {
                 $eduUserIds[] = $educator->user_id;
             }
-            $users = User::whereIn('group_id', ['1','2'])->get();
-            foreach ($users as $user){
-                $userIds[] = $user->id;
-            }
-            $ids = array_merge($eduUserIds,$userIds);
-            $condition = 'Message.s_user_id IN' . '(' . implode(',', $ids) . ')';
+            #当前用户自己的发送的信息
+            $userIds[] = Auth::id();
+            $ids = array_merge($eduUserIds, $userIds);
+            #获取当前用户自己发送的信息和该学校下教职员工的信息
+            $condition = 'Message.s_user_id IN' . '(' . implode(',', array_unique($ids)) . ')';
         }
         if ($role == '教职员工') {
             $condition = 'Message.r_user_id=' . Auth::id();
