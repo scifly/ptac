@@ -256,10 +256,18 @@ class Message extends Model {
         ];
         $condition = null;
         $role = Auth::user()->group->name;
+        if ($role == '运营' ||$role == '企业' || $role == '学校') {
+            $schoolId = School::schoolId();
+            $educators = Educator::whereSchoolId($schoolId)->whereEnabled(1)->get();
+            $educatorIds = [];
+            foreach ($educators as $educator){
+                $educatorIds[] = $educator->id;
+            }
+            $condition = 'Message.s_user_id IN' . '(' . implode(',', $educatorIds) . ')';
+        }
         if ($role == '教职员工') {
             $condition = 'Message.r_user_id=' . Auth::id();
         }
-        
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         
     }
