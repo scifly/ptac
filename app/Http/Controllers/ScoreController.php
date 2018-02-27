@@ -71,10 +71,12 @@ class ScoreController extends Controller {
 
         $input = $request->all();
         $subject = Subject::whereId($input['subject_id'])->first();
-        if ($input['score'] > $subject->max_score){
-            return $this->fail('该科目最高分为'. $subject->max_score);
-        }
-        
+        abort_if(
+            $input['score'] > $subject->max_score,
+            HttpStatusCode::NOT_ACCEPTABLE,
+            '该科目最高分为' . $subject->max_score
+        );
+    
         return $this->result(
             $this->score->store($request->all())
         );
@@ -113,9 +115,11 @@ class ScoreController extends Controller {
         $score = Score::find($id);
         abort_if(!$score, HttpStatusCode::NOT_FOUND);
         $subject = Subject::whereId($input['subject_id'])->first();
-        if($input['score'] > $subject->max_score){
-            return $this->fail('该科目最高分为'. $subject->max_score);
-        }
+        abort_if(
+            $input['score'] > $subject->max_score,
+            HttpStatusCode::NOT_ACCEPTABLE,
+            '该科目最高分为'. $subject->max_score
+        );
         
         return $this->result(
             $score->modify($request->all(), $id)
@@ -272,7 +276,7 @@ class ScoreController extends Controller {
             $html .= '<option value="' . $key . '">' . $value . '</option>';
         }
         
-        return $list ? $this->succeed($html) : $this->fail();
+        return $this->result($list, $html);
         
     }
     
@@ -296,7 +300,7 @@ class ScoreController extends Controller {
         $input = Request::all();
         $view = Score::analysis($input);
         
-        return $view ? $this->succeed($view) : $this->fail('未录入或未统计成绩！');
+        return $this->result($view, $view, '未录入或未统计成绩！');
         
     }
     

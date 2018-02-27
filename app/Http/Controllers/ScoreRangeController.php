@@ -1,11 +1,11 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\ScoreRangeRequest;
 use App\Models\ScoreRange;
 use App\Models\Subject;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request as HttpRequest;
 use Illuminate\Http\Response;
@@ -85,7 +85,7 @@ class ScoreRangeController extends Controller {
     public function edit($id) {
         
         $sr = $this->sr->find($id);
-        abort_if(!$sr, HttpStatusCode::NOT_FOUND);
+        $this->authorize('rud', $sr);
 
         return $this->output([
             'sr' => $sr,
@@ -100,11 +100,12 @@ class ScoreRangeController extends Controller {
      * @param ScoreRangeRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(ScoreRangeRequest $request, $id) {
 
         $sr = $this->sr->find($id);
-        abort_if(!$sr, HttpStatusCode::NOT_FOUND);
+        $this->authorize('rud', $sr);
 
         return $this->result(
             $sr->update($request->all())
@@ -122,7 +123,7 @@ class ScoreRangeController extends Controller {
     public function destroy($id) {
         
         $sr = $this->sr->find($id);
-        abort_if(!$sr, HttpStatusCode::NOT_FOUND);
+        $this->authorize('rud', $sr);
 
         return $this->result(
             $sr->delete()
@@ -150,7 +151,9 @@ class ScoreRangeController extends Controller {
      */
     public function statistics(HttpRequest $request) {
         
-        return $this->sr->statistics($request->all());
+        return $this->sr->statistics(
+            $request->all()
+        );
         
     }
     

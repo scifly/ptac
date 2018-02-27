@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Constant;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -44,7 +46,7 @@ use Throwable;
  * @method static Builder|Tab whereUpdatedAt($value)
  * @mixin Eloquent
  * @property int|null $new_column
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Tab whereNewColumn($value)
+ * @method static Builder|Tab whereNewColumn($value)
  */
 class Tab extends Model {
 
@@ -247,8 +249,8 @@ class Tab extends Model {
                 'db' => 'Tab.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
-                    $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
-                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
+                    $status = $d ? Snippet::DT_ON : Snippet::DT_OFF;
+                    $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
                     return
                         $status . str_repeat('&nbsp;', 3) .
                         $editLink;
@@ -282,25 +284,19 @@ class Tab extends Model {
         $role = $user->group->name;
         switch ($role) {
             case '运营':
-                return self::whereEnabled(1)
+                return self::whereEnabled(Constant::ENABLED)
                     ->pluck('id')
                     ->toArray();
             case '企业':
-                return self::whereEnabled(1)
-                    ->whereIn('group_id', [0, 2, 3])
+                return self::whereEnabled(Constant::ENABLED)
+                    ->whereIn('group_id', [Constant::SHARED, Constant::CORP, Constant::SCHOOL])
                     ->pluck('id')
                     ->toArray();
             case '学校':
-                return self::whereEnabled(1)
-                    ->whereIn('group_id', [0, 3])
+                return self::whereEnabled(Constant::ENABLED)
+                    ->whereIn('group_id', [Constant::SHARED, Constant::SCHOOL])
                     ->pluck('id')
                     ->toArray();
-
-//            case '教职员工':
-//                return self::whereEnabled(1)
-//                    ->whereIn('group_id', [0, 3])
-//                    ->pluck('id')
-//                    ->toArray();
             default:
                 return GroupTab::whereGroupId($user->group_id)
                     ->pluck('tab_id')

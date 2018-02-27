@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Helpers\HttpStatusCode;
 use App\Models\ConferenceParticipant;
 use App\Models\ConferenceQueue;
 use App\Models\ConferenceRoom;
@@ -53,7 +54,7 @@ class ConferenceParticipantPolicy {
      */
     public function show(User $user, ConferenceParticipant $cp) {
 
-        if (!$cp) { abort(404); }
+        abort_if(!$cp, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
         $role = $user->group->name;
         if (in_array($role, self::SUPER_ROLES)) {
             switch ($role) {

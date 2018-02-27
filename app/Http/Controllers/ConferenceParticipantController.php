@@ -74,7 +74,6 @@ class ConferenceParticipantController extends Controller {
     public function show($id) {
         
         $cp = $this->cp->find($id);
-        abort_if(!$cp, HttpStatusCode::NOT_FOUND);
         $this->authorize('show', $cp);
         
         return $this->output([

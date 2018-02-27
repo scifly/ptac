@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\SubjectRequest;
 use App\Models\Grade;
 use App\Models\Major;
@@ -91,7 +90,6 @@ class SubjectController extends Controller {
     public function edit($id) {
         
         $subject = Subject::find($id);
-        abort_if(!$subject, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $subject);
         
         $gradeIds = explode(',', $subject['grade_ids']);
@@ -127,7 +125,6 @@ class SubjectController extends Controller {
     public function update(SubjectRequest $request, $id) {
         
         $subject = Subject::find($id);
-        abort_if(!$subject, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $subject);
         
         return $this->result(
@@ -147,7 +144,6 @@ class SubjectController extends Controller {
     public function destroy($id) {
         
         $subject = Subject::find($id);
-        abort_if(!$subject, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $subject);
         
         return $this->result(

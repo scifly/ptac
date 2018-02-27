@@ -36,11 +36,19 @@ class Controller extends BaseController {
         $method = Request::route()->getActionMethod();
         $controller = class_basename(Request::route()->controller);
         $action = Action::whereMethod($method)->where('controller', $controller)->first();
-        if (!$action) { return $this->fail(__('messages.nonexistent_action')); }
+        abort_if(
+            !$action,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.nonexistent_action')
+        );
 
         # 获取功能对应的View
         $view = $action->view;
-        if (!$view) { return $this->fail(__('messages.misconfigured_action')); }
+        abort_if(
+            !$view,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.misconfigured_action')
+        );
 
         # 获取功能对应的菜单/卡片对象
         $menu = Menu::find(session('menuId'));
@@ -73,20 +81,19 @@ class Controller extends BaseController {
                     'js'         => $action->js,
                     'breadcrumb' => $params['breadcrumb'],
                 ]);
-            # 如果Http请求的内容需要直接在Wrapper层（不包含卡片）中显示
-            } else {
-                session(['menuId' => Request::query('menuId')]);
-                Session::forget('tabId');
-                $menu = Menu::find(session('menuId'));
-                $params['breadcrumb'] = $menu->name . ' / ' . $action->name;
-                return response()->json([
-                    'statusCode' => HttpStatusCode::OK,
-                    'title' => $params['breadcrumb'],
-                    'uri' => Request::path(),
-                    'html' => view($view, $params)->render(),
-                    'js' => $action->js
-                ]);
             }
+            # 如果Http请求的内容需要直接在Wrapper层（不包含卡片）中显示
+            session(['menuId' => Request::query('menuId')]);
+            Session::forget('tabId');
+            $menu = Menu::find(session('menuId'));
+            $params['breadcrumb'] = $menu->name . ' / ' . $action->name;
+            return response()->json([
+                'statusCode' => HttpStatusCode::OK,
+                'title' => $params['breadcrumb'],
+                'uri' => Request::path(),
+                'html' => view($view, $params)->render(),
+                'js' => $action->js
+            ]);
         }
         # 如果是非Ajax请求，且用户已登录
         if (session('menuId')) {
@@ -116,45 +123,6 @@ class Controller extends BaseController {
         # 如果用户没有登录
         return Response()->redirectToRoute('login');
         
-    }
-
-    protected function notFound($message = null) {
-
-        return abort(
-            HttpStatusCode::NOT_FOUND,
-            $message ?? __('messages.not_found')
-        );
-
-    }
-    
-    /**
-     * 返回"操作成功"消息
-     *
-     * @param string $message
-     * @return JsonResponse|string
-     */
-    protected function succeed($message = null) {
-
-        $statusCode = HttpStatusCode::OK;
-        $message = $message ?? __('messages.ok');
-        if (Request::ajax()) {
-            return response()->json([
-                'statusCode' => $statusCode,
-                'message' => $message,
-            ]);
-        }
-
-        return $statusCode . ' : ' . $message;
-
-    }
-
-    protected function fail($message = null) {
-
-        return abort(
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            $message ?? __('messages.fail')
-        );
-
     }
 
     /**

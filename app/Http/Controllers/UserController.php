@@ -21,9 +21,12 @@ use Throwable;
  */
 class UserController extends Controller {
     
-    function __construct() {
+    protected $user;
+    
+    function __construct(User $user) {
         
         $this->middleware(['auth', 'checkrole']);
+        $this->user = $user;
         
     }
 
@@ -101,9 +104,11 @@ class UserController extends Controller {
 
         $file = Request::file('avatar');
         $check = $this->checkFile($file);
-        if (!$check['status']) {
-            return $this->fail($check['msg']);
-        }
+        abort_if(
+            !$check['status'],
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            $check['msg']
+        );
         // 存项目路径
         $ymd = date("Ymd");
         $path = storage_path('app/avauploads/') . $ymd . "/";
@@ -116,9 +121,11 @@ class UserController extends Controller {
             mkdir($path, 0777, true);
         }
         // 移动
-        if (!$file->move($path, $fileName)) {
-            return $this->fail('头像保存失败');
-        }
+        abort_if(
+            !$file->move($path, $fileName),
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            '头像保存失败'
+        );
         //如果是create操作，图片路径不能直接存储数据库
         //TODO:需要处理默认头像、图片缓存问题
         if ($id < 1) {
@@ -137,11 +144,12 @@ class UserController extends Controller {
      * @return JsonResponse|string
      */
     public function update(UserRequest $request, $id){
+        
         $user = User::find($id);
-        if (!$user) { return $this->notFound(); }
+        abort_if(!$user, HttpStatusCode::NOT_FOUND);
 
         return $this->result(
-            User::modify($request->all(), $id, false)
+            $this->user->modify($request->all(), $id, false)
         );
     }
 

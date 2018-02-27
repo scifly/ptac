@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Helpers\HttpStatusCode;
 use App\Models\ConferenceQueue;
 use App\Models\ConferenceRoom;
 use App\Models\Corp;
@@ -46,7 +47,7 @@ class ConferenceQueuePolicy {
      */
     public function eud(User $user, ConferenceQueue $cq) {
 
-        if (!$cq) { abort(404); }
+        abort_if(!$cq, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
         $role = $user->group->name;
         if ($role == '运营') { return true; }
         switch ($role) {

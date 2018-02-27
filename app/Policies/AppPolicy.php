@@ -28,7 +28,7 @@ class AppPolicy {
      */
     public function eum(User $user, App $app) {
 
-        if (!$app) { abort(HttpStatusCode::NOT_FOUND); }
+        abort_if(!$app, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
         $role = $user->group->name;
         switch ($role) {
             case '运营': return true;
