@@ -56,7 +56,6 @@ class ScoreCenterController extends Controller {
             $userId = $userInfo['UserId'];
             Session::put('userId',$userId);
         }
-        // $userId = 'user_5a74048b6a218';
         $role = User::whereUserid($userId)->first()->group->name;
         $pageSize = 4;
         $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
@@ -170,6 +169,7 @@ class ScoreCenterController extends Controller {
             ];
         }
         if(Request::isMethod('post')){
+            $data =$scores = $allScores =$total = [];
             $subjectId = Request::get('subject_id');
             $scores = $this->score->getScores($examId, $subjectId, $studentId);
             $allScores = $this->score->getAllScores($subjectId, $studentId);

@@ -1,8 +1,8 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\StudentRequest;
+
 use App\Models\Department;
 use App\Models\Grade;
 use App\Models\School;
@@ -24,12 +24,9 @@ use Throwable;
  */
 class StudentController extends Controller {
     
-    protected $student;
-    
-    function __construct(Student $student) {
+    function __construct() {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->student = $student;
         
     }
     
@@ -42,9 +39,7 @@ class StudentController extends Controller {
     public function index() {
 
         if (Request::get('draw')) {
-            return response()->json(
-                $this->student->datatable()
-            );
+            return response()->json(Student::datatable());
         }
         
         return $this->output();
@@ -63,16 +58,16 @@ class StudentController extends Controller {
         if (Request::method() === 'POST') {
             $field = Request::query('field');
             $id = Request::query('id');
-            if ($field && $id) {
+            if($field && $id) {
                 if($groupId > 5){
                     $educatorId = Auth::user()->educator->id;
                     $gradeClass = Student::getGrade($educatorId)[1];
                     $this->result['html'] = School::getFieldList($field, $id ,$gradeClass);
-                } else {
+                }else{
                     $this->result['html'] = School::getFieldList($field, $id);
                 }
                 return response()->json($this->result);
-            } else {
+            }else{
                 return response()->json(Department::tree());
             }
         }
@@ -96,9 +91,7 @@ class StudentController extends Controller {
      */
     public function store(StudentRequest $request) {
         
-        return $this->result(
-            $this->student->store($request)
-        );
+        return $this->result(Student::store($request));
         
     }
     
@@ -112,11 +105,9 @@ class StudentController extends Controller {
     public function show($id) {
         
         $student = Student::find($id);
-        abort_if(!$student, HttpStatusCode::NOT_FOUND);
+        if (!$student) { return $this->notFound(); }
         
-        return $this->output([
-            'student' => $student,
-        ]);
+        return $this->output(['student' => $student]);
         
     }
     
@@ -138,22 +129,20 @@ class StudentController extends Controller {
                 $educatorId = Auth::user()->educator->id;
                 $gradeClass = Student::getGrade($educatorId)[1];
                 $this->result['html'] = School::getFieldList($field, $id ,$gradeClass);
-            } else {
+            }else{
                 $this->result['html'] = School::getFieldList($field, $id);
             }
-            
             return response()->json($this->result);
         }
         # 查询学生信息
         $student = Student::find($id);
-        abort_if(!$student, HttpStatusCode::NOT_FOUND);
-        $grades = $classes = [];
+        if (!$student) { return $this->notFound(); }
         $user = $student->user;
-        if ($groupId > 5) {
+        if($groupId > 5){
             $educatorId = $users->educator->id;
             $gradeIds = Student::getGrade($educatorId)[0];
             $gradeClass = Student::getGrade($educatorId)[1];
-            foreach ($gradeClass as $k => $g) {
+            foreach ($gradeClass as $k=>$g){
                 $grades = Grade::whereEnabled(1)
                     ->whereIn('id',$gradeIds)
                     ->pluck('name', 'id')
@@ -164,7 +153,7 @@ class StudentController extends Controller {
                     ->toArray();
                 break;
             }
-        } else {
+        }else{
             $items = Student::gradeClasses(
                 $student->squad->grade_id
             );
@@ -172,7 +161,6 @@ class StudentController extends Controller {
             $grades = $items['grades'];
             $classes = $items['classes'];
         }
-        
         return $this->output([
             'student' => $student,
             'mobiles' => $user->mobiles,
@@ -208,11 +196,9 @@ class StudentController extends Controller {
     public function destroy($id) {
         
         $student = Student::find($id);
-        abort_if(!$student, HttpStatusCode::NOT_FOUND);
+        if (!$student) { return $this->notFound(); }
         
-        return $this->result(
-            $this->student->remove($id)
-        );
+        return $this->result(Student::remove($id));
         
     }
     
@@ -225,6 +211,19 @@ class StudentController extends Controller {
         
         if (Request::isMethod('post')) {
             $file = Request::file('file');
+<<<<<<< HEAD
+            if (empty($file)) {
+                $result = [
+                    'statusCode' => self::INTERNAL_SERVER_ERROR,
+                    'message'    => '您还没选择文件！',
+                ];
+                return response()->json($result);
+            }
+            // 文件是否上传成功
+            if ($file->isValid()) {
+                $result = Student::upload($file);
+                return response()->json($result);
+=======
             abort_if(
                 empty($file),
                 HttpStatusCode::INTERNAL_SERVER_ERROR,
@@ -235,6 +234,7 @@ class StudentController extends Controller {
                 return response()->json(
                     $this->student->upload($file)
                 );
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
             }
         }
         
@@ -257,7 +257,7 @@ class StudentController extends Controller {
         }
         $id = Request::query('id');
         if ($id) {
-            $data = $this->student->export($id);
+            $data = Student::export($id);
             /** @noinspection PhpMethodParametersCountMismatchInspection */
             /** @noinspection PhpUndefinedMethodInspection */
             Excel::create(iconv('UTF-8', 'GBK', '学生列表'), function ($excel) use ($data) {
@@ -289,8 +289,14 @@ class StudentController extends Controller {
             }, 'UTF-8')->export('xls');
         }
         
+<<<<<<< HEAD
+=======
         return abort(HttpStatusCode::BAD_REQUEST, '导出失败');
         
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
     }
+
+
+
 
 }

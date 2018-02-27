@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\OperatorRequest;
 use App\Models\Department;
 use App\Models\Operator;
@@ -58,11 +57,8 @@ class OperatorController extends Controller {
     public function create() {
         
         if (Request::method() === 'POST') {
-            return response()->json(
-                $this->department->tree(Request::query('rootId'))
-            );
+            return response()->json($this->department->tree(Request::query('rootId')));
         }
-        
         return $this->output([
             'role' => Auth::user()->group->name
         ]);
@@ -79,9 +75,8 @@ class OperatorController extends Controller {
      */
     public function store(OperatorRequest $request) {
         
-        return $this->result(
-            $this->operator->store($request)
-        );
+        return $this->operator->store($request)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -95,7 +90,7 @@ class OperatorController extends Controller {
     public function show($id) {
         
         $operator = $this->operator->find($id);
-        abort_if(!$operator, HttpStatusCode::NOT_FOUND);
+        if (!$operator) { return $this->notFound();}
         
         return $this->output([
             'operator' => $operator,
@@ -117,7 +112,8 @@ class OperatorController extends Controller {
             return response()->json($this->department->tree());
         }
         $operator = $this->operator->find($id);
-        abort_if(!$operator, HttpStatusCode::NOT_FOUND);
+
+        if (!$operator) { return $this->notFound(); }
         
         return $this->output(['operator' => $operator]);
         
@@ -135,11 +131,10 @@ class OperatorController extends Controller {
     public function update(OperatorRequest $request, $id) {
         
         $operator = $this->operator->find($id);
-        abort_if(!$operator, HttpStatusCode::NOT_FOUND);
+        if (!$operator) { return $this->notFound(); }
         
-        return $this->result(
-            $operator->modify($request, $id)
-        );
+        return $this->operator->modify($request, $id)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -153,11 +148,10 @@ class OperatorController extends Controller {
     public function destroy($id) {
         
         $operator = $this->operator->find($id);
-        abort_if(!$operator, HttpStatusCode::NOT_FOUND);
+        if (!$operator) { return $this->notFound(); }
         
-        return $this->result(
-            $operator->remove($id)
-        );
+        return $this->operator->remove($id)
+            ? $this->succeed('删除成功') : $this->fail('无法删除');
         
     }
     

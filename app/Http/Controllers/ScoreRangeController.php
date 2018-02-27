@@ -85,7 +85,11 @@ class ScoreRangeController extends Controller {
     public function edit($id) {
         
         $sr = $this->sr->find($id);
+<<<<<<< HEAD
+        abort_if(!$sr, self::NOT_FOUND);
+=======
         $this->authorize('rud', $sr);
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
 
         return $this->output([
             'sr' => $sr,
@@ -105,7 +109,11 @@ class ScoreRangeController extends Controller {
     public function update(ScoreRangeRequest $request, $id) {
 
         $sr = $this->sr->find($id);
+<<<<<<< HEAD
+        abort_if(!$sr, self::NOT_FOUND);
+=======
         $this->authorize('rud', $sr);
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
 
         return $this->result(
             $sr->update($request->all())
@@ -123,7 +131,11 @@ class ScoreRangeController extends Controller {
     public function destroy($id) {
         
         $sr = $this->sr->find($id);
+<<<<<<< HEAD
+        abort_if(!$sr, self::NOT_FOUND);
+=======
         $this->authorize('rud', $sr);
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
 
         return $this->result(
             $sr->delete()

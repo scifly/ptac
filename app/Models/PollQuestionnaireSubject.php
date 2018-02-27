@@ -82,12 +82,12 @@ class PollQuestionnaireSubject extends Model {
      * @return bool|null
      * @throws Exception
      */
-    public function remove($id) {
+    static function remove($id) {
 
-        $pqs = self::find($id);
-        if (!$pqs) { return false; }
+        $pqSubject = self::find($id);
+        if (!$pqSubject) { return false; }
         
-        return self::removable($pqs) ? $pqs->delete() : false;
+        return self::removable($pqSubject) ? $pqSubject->delete() : false;
 
     }
     
@@ -96,7 +96,7 @@ class PollQuestionnaireSubject extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    static function dataTable() {
 
         $columns = [
             ['db' => 'PollQuestionnaireSubject.id', 'dt' => 0],

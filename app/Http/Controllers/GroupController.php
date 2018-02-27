@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\GroupRequest;
 use App\Models\Group;
 use App\Models\Menu;
@@ -90,7 +89,7 @@ class GroupController extends Controller {
     public function edit($id) {
         
         $group = Group::find($id);
-        abort_if(!$group, HttpStatusCode::NOT_FOUND);
+        abort_if(!$group, self::NOT_FOUND);
         if (Request::method() === 'POST') {
             $schoolId = Request::query('schoolId');
             $menuId = School::find($schoolId)->menu_id;
@@ -113,7 +112,7 @@ class GroupController extends Controller {
     public function update(GroupRequest $request, $id) {
         
         $group = Group::find($id);
-        abort_if(!$group, HttpStatusCode::NOT_FOUND);
+        abort_if(!$group, self::NOT_FOUND);
         
         return $this->result(
             $group->modify($request->all(), $id)
@@ -131,7 +130,7 @@ class GroupController extends Controller {
     public function destroy($id) {
         
         $group = Group::find($id);
-        abort_if(!$group, HttpStatusCode::NOT_FOUND);
+        abort_if(!$group, self::NOT_FOUND);
         
         return $this->result(
             $group->remove($id)

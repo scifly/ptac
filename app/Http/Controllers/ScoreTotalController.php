@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Models\ScoreTotal;
 use App\Models\Subject;
 use Exception;
@@ -56,7 +55,7 @@ class ScoreTotalController extends Controller {
     public function destroy($id) {
         
         $st = ScoreTotal::find($id);
-        abort_if(!$st, HttpStatusCode::NOT_FOUND);
+        abort_if(!$st, self::NOT_FOUND);
 
         return $this->result(
             $st->remove($id)

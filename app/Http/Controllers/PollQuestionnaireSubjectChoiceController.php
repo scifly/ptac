@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\PqChoiceRequest;
 use App\Models\PollQuestionnaireSubjectChoice;
 use Exception;
@@ -17,17 +16,14 @@ use Throwable;
  */
 class PollQuestionnaireSubjectChoiceController extends Controller {
     
-    protected $pqsc;
-    
-    function __construct(PollQuestionnaireSubjectChoice $pqsc) {
+    function __construct() {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->pqsc = $pqsc;
         
     }
     
     /**
-     * 调查问卷选项列表
+     * 选项列表
      *
      * @return bool|JsonResponse
      * @throws Throwable
@@ -35,9 +31,7 @@ class PollQuestionnaireSubjectChoiceController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(
-                $this->pqsc->datatable()
-            );
+            return response()->json(PollQuestionnaireSubjectChoice::datatable());
         }
         
         return $this->output();
@@ -45,7 +39,7 @@ class PollQuestionnaireSubjectChoiceController extends Controller {
     }
     
     /**
-     * 创建调查问卷选项
+     * 创建选项
      *
      * @return bool|\Illuminate\Http\JsonResponse
      * @throws \Throwable
@@ -57,36 +51,50 @@ class PollQuestionnaireSubjectChoiceController extends Controller {
     }
     
     /**
-     * 保存调查问卷选项
+     * 保存选项
      *
      * @param PqChoiceRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(PqChoiceRequest $request) {
         
-        return $this->result(
-            $this->pqsc->create($request->all())
-        );
+        return $this->result(PollQuestionnaireSubjectChoice::create($request->all()));
         
     }
     
     /**
-     * 编辑调查问卷选项
+     * 选项详情
+     *
+     * @param $id
+     * @return bool|\Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
+    public function show($id) {
+        
+        $pqChoice = PollQuestionnaireSubjectChoice::find($id);
+        if (!$pqChoice) { return $this->notFound(); }
+        
+        return $this->output(['pqChoice' => $pqChoice]);
+        
+    }
+    
+    /**
+     * 编辑选项
      * @param $id
      * @return bool|\Illuminate\Http\JsonResponse
      * @throws \Throwable
      */
     public function edit($id) {
         
-        $pqsc = $this->pqsc->find($id);
-        abort_if(!$pqsc, HttpStatusCode::NOT_FOUND);
+        $pqChoice = PollQuestionnaireSubjectChoice::find($id);
+        if (!$pqChoice) { return $this->notFound(); }
         
-        return $this->output(['pqsc' => $pqsc]);
+        return $this->output(['pqChoice' => $pqChoice]);
         
     }
     
     /**
-     * 更新调查问卷选项
+     * 更新选项
      *
      * @param PqChoiceRequest $request
      * @param $id
@@ -94,17 +102,15 @@ class PollQuestionnaireSubjectChoiceController extends Controller {
      */
     public function update(PqChoiceRequest $request, $id) {
     
-        $pqsc = $this->pqsc->find($id);
-        abort_if(!$pqsc, HttpStatusCode::NOT_FOUND);
+        $pqChoice = PollQuestionnaireSubjectChoice::find($id);
+        if (!$pqChoice) { return $this->notFound(); }
     
-        return $this->result(
-            $pqsc->update($request->all())
-        );
+        return $this->result($pqChoice->update($request->all()));
         
     }
     
     /**
-     * 删除调查问卷选项
+     * 删除选项
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
@@ -112,12 +118,10 @@ class PollQuestionnaireSubjectChoiceController extends Controller {
      */
     public function destroy($id) {
         
-        $pqsc = $this->pqsc->find($id);
-        abort_if(!$pqsc, HttpStatusCode::NOT_FOUND);
+        $pqChoice = PollQuestionnaireSubjectChoice::find($id);
+        if (!$pqChoice) { return $this->notFound(); }
         
-        return $this->result(
-            $pqsc->delete()
-        );
+        return $this->result($pqChoice->delete());
         
     }
     

@@ -1,8 +1,8 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\IconTypeRequest;
+use App\Models\Icon;
 use App\Models\IconType;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -80,7 +80,7 @@ class IconTypeController extends Controller {
     public function edit($id) {
         
         $it = IconType::find($id);
-        abort_if(!$it, HttpStatusCode::NOT_FOUND);
+        abort_if(!$it, self::NOT_FOUND);
         
         return $this->output(['it' => $it]);
         
@@ -96,7 +96,7 @@ class IconTypeController extends Controller {
     public function update(IconTypeRequest $request, $id) {
         
         $it = IconType::find($id);
-        abort_if(!$it, HttpStatusCode::NOT_FOUND);
+        abort_if(!$it, self::NOT_FOUND);
         
         return $this->result(
             $it->modify($request->all(), $id)
@@ -114,7 +114,7 @@ class IconTypeController extends Controller {
     public function destroy($id) {
         
         $it = IconType::find($id);
-        abort_if(!$it, HttpStatusCode::NOT_FOUND);
+        abort_if(!$it, self::NOT_FOUND);
         
         return $this->result(
             $it->remove($id)

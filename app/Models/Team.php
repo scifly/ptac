@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use ReflectionException;
 
+
 /**
  * App\Models\Team 教职员工组
  *
@@ -96,7 +97,7 @@ class Team extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    static function datatable() {
         
         $columns = [
             ['db' => 'Team.id', 'dt' => 0],

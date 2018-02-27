@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\ActionRequest;
 use App\Models\Action;
 use Exception;
@@ -40,7 +39,7 @@ class ActionController extends Controller {
                 $this->action->datatable()
             );
         }
-        abort_if(!$this->action->scan(), HttpStatusCode::NOT_FOUND);
+        abort_if(!$this->action->scan(), self::NOT_FOUND);
 
         return $this->output();
 
@@ -56,7 +55,7 @@ class ActionController extends Controller {
     public function edit($id) {
 
         $action = $this->action->find($id);
-        abort_if(!$action, HttpStatusCode::NOT_FOUND);
+        abort_if(!$action, self::NOT_FOUND);
 
         return $this->output([
             'action' => $action,
@@ -74,7 +73,7 @@ class ActionController extends Controller {
     public function update(ActionRequest $request, $id) {
 
         $action = $this->action->find($id);
-        abort_if(!$action, HttpStatusCode::NOT_FOUND);
+        abort_if(!$action, self::NOT_FOUND);
 
         return $this->result(
             $action->update($request->all())

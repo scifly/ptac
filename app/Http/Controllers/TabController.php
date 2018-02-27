@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\TabRequest;
 use App\Models\Menu;
 use App\Models\Tab;
@@ -18,12 +17,9 @@ use Throwable;
  */
 class TabController extends Controller {
     
-    protected $tab;
+    function __construct() {
     
-    function __construct(Tab $tab) {
-    
-        $this->middleware(['auth', 'checkrole']);
-        $this->tab = $tab;
+        $this->middleware(['auth']);
         
     }
     
@@ -37,11 +33,9 @@ class TabController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(
-                $this->tab->datatable()
-            );
+            return response()->json(Tab::datatable());
         }
-        abort_if(!$this->tab->scan(), HttpStatusCode::NOT_FOUND);
+        if (!Tab::scan()) { return $this->notFound(); }
         
         return $this->output();
         
@@ -55,9 +49,7 @@ class TabController extends Controller {
      */
     public function create() {
         
-        return $this->output([
-            'menus' => Menu::leaves(1)
-        ]);
+        return $this->output(['menus' => Menu::leaves(1)]);
         
     }
     
@@ -71,9 +63,8 @@ class TabController extends Controller {
      */
     public function store(TabRequest $request) {
         
-        return $this->result(
-            $this->tab->store($request->all())
-        );
+        return Tab::store($request->all())
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -87,13 +78,12 @@ class TabController extends Controller {
     public function edit($id) {
         
         $tab = Tab::find($id);
-        abort_if(!$tab, HttpStatusCode::NOT_FOUND);
+        if (!$tab) { return $this->notFound(); }
         $tabMenus = $tab->menus;
         $selectedMenus = [];
         foreach ($tabMenus as $menu) {
             $selectedMenus[$menu->id] = $menu->name;
         }
-        
         return $this->output([
             'tab'           => $tab,
             'menus'         => Menu::leaves(1),
@@ -114,11 +104,10 @@ class TabController extends Controller {
     public function update(TabRequest $request, $id) {
         
         $tab = Tab::find($id);
-        abort_if(!$tab, HttpStatusCode::NOT_FOUND);
+        if (!$tab) { return $this->notFound(); }
         
-        return $this->result(
-            $this->tab->modify($request->all(), $id)
-        );
+        return Tab::modify($request->all(), $id)
+            ? $this->succeed() : $this->fail();
         
     }
     
@@ -133,12 +122,9 @@ class TabController extends Controller {
     public function destroy($id) {
         
         $tab = Tab::find($id);
-        abort_if(!$tab, HttpStatusCode::NOT_FOUND);
+        if (!$tab) { return $this->notFound(); }
         
-        return $this->result(
-            $this->tab->remove($id)
-        );
-        
+        return Tab::remove($id) ? $this->succeed() : $this->fail(); 
     }
     
 }

@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\StudentAttendanceRequest;
 use App\Models\AttendanceMachine;
 use App\Models\Media;
@@ -20,17 +19,16 @@ use Illuminate\Support\Facades\Request;
  */
 class StudentAttendanceController extends Controller {
     
-    protected $sa, $student, $media;
+    protected $studentAttendance, $student, $media;
     
-    function __construct(StudentAttendance $sa, Student $student, Media $media) {
+    function __construct(StudentAttendance $studentAttendance, Student $student, Media $media) {
         
-        $this->middleware(['auth', 'checkrole']);
-        $this->sa = $sa;
+        // $this->middleware(['auth']);
+        $this->studentAttendance = $studentAttendance;
         $this->student = $student;
         $this->media = $media;
         
     }
-    
     
     /**
      * 学生考勤记录列表
@@ -43,7 +41,7 @@ class StudentAttendanceController extends Controller {
         $this->middleware(['auth']);
         if (Request::get('draw')) {
             return response()->json(
-                $this->sa->datatable()
+                StudentAttendance::datatable()
             );
         }
         
@@ -69,20 +67,15 @@ class StudentAttendanceController extends Controller {
             if ($field && $id) {
                 $this->result['html'] = School::getFieldList($field, $id);
                 return response()->json($this->result);
-            } else {
-                return response()->json(
-                    $this->sa->getData(
-                        $classId ,
-                        $startTime ,
-                        date("Y-m-d", (strtotime($endTime) + 86400)),
-                        $days
-                    )
-                );
+            }else{
+                return response()->json($this->studentAttendance->getData($classId , $startTime , date("Y-m-d", (strtotime($endTime) + 86400)), $days));
             }
+
         }
 
         return $this->output([
             'addBtn' => true,
+//            'item' => $this->studentAttendance->getData(),
         ]);
 
     }
@@ -98,19 +91,21 @@ class StudentAttendanceController extends Controller {
             $date = Request::input('date');
             $type = Request::input('type');
             $classId = Request::input('class_id');
+
             if ($date && $type && $classId) {
-                return response()->json(
-                    $this->sa->getStudentData($date , $type, $classId)
-                );
+
+                return response()->json($this->studentAttendance->getStudentData($date , $type, $classId));
+
             }
+
         }
 
         return $this->output([
             'addBtn' => true,
+//            'item' => $this->studentAttendance->getData(),
         ]);
 
     }
-    
     /**
      * 写入学生考勤记录接口
      *
@@ -120,13 +115,16 @@ class StudentAttendanceController extends Controller {
      * @throws \Throwable
      */
     public function createStuAttendance(StudentAttendanceRequest $request) {
-        
         $input = $request->all();
         #处理返回错误信息
         $student = Student::where('card_number', $input['card_number'])->first();
-        self::abortif(!$student);
+        if (!$student) {
+            return response()->json(['message' => '学生信息有误！', 'statusCode' => self::INTERNAL_SERVER_ERROR]);
+        }
         $squad = $student->squad;
-        self::abortif(!$squad);
+        if (!$squad) {
+            return response()->json(['message' => '学生信息有误！', 'statusCode' => self::INTERNAL_SERVER_ERROR]);
+        }
         $grade = $squad->grade;
         $school = $grade->school;
         $weekArray = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
@@ -136,44 +134,33 @@ class StudentAttendanceController extends Controller {
         $date_time = date("Y-m-d", $time);
         $schoolSemesters = Semester::where('school_id', $school->id)->get();
         //找出对应的学期 根据打卡时间
-        $semester = null;
         foreach ($schoolSemesters as $se) {
             if ($se->start_date <= $date_time && $se->end_date >= $date_time) {
                 $semester = $se->id;
             }
         }
-        self::abortif(!$semester);
+        if (!isset($semester)) {
+            #没有找到打卡对应的学期
+            return response()->json(['message' => '学期信息有误！', 'statusCode' => self::INTERNAL_SERVER_ERROR]);
+        }
         //找出对应的考勤机id
         $attendance = AttendanceMachine::whereMachineid($input['attendId'])
             ->where('school_id', $school->id)->first();
-        self::abortif(empty($attendance));
+        if (empty($attendance)) {
+            return response()->json(['message' => '考勤机信息有误！', 'statusCode' => self::INTERNAL_SERVER_ERROR]);
+        }
         //根据时间找出对应的 规则
         $rules = StudentAttendanceSetting::where('grade_id', $grade->id)
             ->where('semester_id', $semester)
             ->where('day', $weekDay)
             ->get();
-        abort_if(
-            count($rules) == 0,
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            __('messages.attendance_rule_error')
-        );
+        if (count($rules) == 0) {
+            return response()->json(['message' => '考勤规则有误！', 'statusCode' => self::INTERNAL_SERVER_ERROR]);
+        }
         
-        return $this->result($this->sa->storeByFace($input));
-        
+        return $this->studentAttendance->storeByFace($input)
+            ? response()->json(['message' => 'success', 'statusCode' => self::OK])
+            : response()->json(['message' => 'failed', 'statusCode' => self::INTERNAL_SERVER_ERROR]);
     }
-    
-    /**
-     * @param boolean $condition
-     */
-    private static function abortif($condition): void {
-        
-        abort_if(
-            $condition,
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            __('messages.student_error')
-        );
-        
-    }
-    
     
 }

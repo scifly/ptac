@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use App\Facades\Wechat;
 use App\Helpers\HttpStatusCode;
 use App\Http\Requests\WapSiteRequest;
+use App\Models\App;
+use App\Models\Corp;
 use App\Models\Media;
 use App\Models\School;
 use App\Models\WapSite;
@@ -130,6 +132,32 @@ class WapSiteController extends Controller {
     public function uploadImages() {
         
         $files = Request::file('img');
+<<<<<<< HEAD
+        $type = Request::query('type');
+        if (empty($files)) {
+            $result['statusCode'] = 0;
+            $result['message'] = '您还未选择图片！';
+            return $result;
+        } else {
+            $result['data'] = [];
+            $mes = [];
+            foreach ($files as $key => $file) {
+                $this->validateFile($file, $mes);
+            }
+            $result['statusCode'] = 1;
+            $result['message'] = '上传成功！';
+            $result['data'] = $mes;
+            $token = '';
+            if ($mes) {
+                $path = '';
+                foreach ($mes AS $m)
+                    $path = dirname(public_path()) . '/' . $m['path'];
+                    $data = ["media" => curl_file_create($path)];
+
+                    Wechat::uploadMedia($token, 'image', $data);
+            }
+
+=======
         abort_if(empty($files), HttpStatusCode::NOT_ACCEPTABLE, '您还未选择图片！');
         
         $this->result['data'] = [];
@@ -146,6 +174,7 @@ class WapSiteController extends Controller {
                 $path = dirname(public_path()) . '/' . $m['path'];
                 $data = ["media" => curl_file_create($path)];
                 Wechat::uploadMedia($token, 'image', $data);
+>>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         }
         
         return response()->json($this->result);
