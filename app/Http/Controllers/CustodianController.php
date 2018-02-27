@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Helpers\HttpStatusCode;
@@ -23,14 +22,14 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class CustodianController extends Controller {
-
-    protected $custodian;   
+    
+    protected $custodian;
     
     function __construct(Custodian $custodian) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->custodian = $custodian;
-
+        
     }
     
     /**
@@ -46,7 +45,7 @@ class CustodianController extends Controller {
                 $this->custodian->datatable()
             );
         }
-
+        
         return $this->output();
         
     }
@@ -58,23 +57,24 @@ class CustodianController extends Controller {
      * @throws Throwable
      */
     public function create() {
-
+        
         $groupId = Auth::user()->group->id;
         if (Request::method() === 'POST') {
             $field = Request::query('field');
             $id = Request::query('id');
-            if($groupId > 5){
+            if ($groupId > 5) {
                 $educatorId = Auth::user()->educator->id;
                 $gradeClass = Student::getGrade($educatorId)[1];
-                $this->result['html'] = School::getFieldList($field, $id ,$gradeClass);
-            }else{
+                $this->result['html'] = School::getFieldList($field, $id, $gradeClass);
+            } else {
                 $this->result['html'] = School::getFieldList($field, $id);
             }
+            
             return response()->json($this->result);
         }
-
+        
         return $this->output();
-
+        
     }
     
     /**
@@ -86,11 +86,11 @@ class CustodianController extends Controller {
      * @throws Throwable
      */
     public function store(CustodianRequest $request) {
-
+        
         return $this->result(
             $this->custodian->store($request)
         );
-
+        
     }
     
     /**
@@ -100,13 +100,13 @@ class CustodianController extends Controller {
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function show($id){
+    public function show($id) {
         
         $custodian = $this->custodian->find($id);
         abort_if(!$custodian, HttpStatusCode::NOT_FOUND);
         
         return $this->output([
-            'custodian'  => $custodian,
+            'custodian' => $custodian,
         ]);
         
     }
@@ -119,12 +119,13 @@ class CustodianController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-
+        
         if (Request::method() === 'POST') {
             $field = Request::query('field');
             $id = Request::query('id');
-            if($field && $id) {
+            if ($field && $id) {
                 $this->result['html'] = School::getFieldList($field, $id);
+                
                 return response()->json($this->result);
             } else {
                 return response()->json(Department::tree());
@@ -133,31 +134,32 @@ class CustodianController extends Controller {
         $custodian = $this->custodian->find($id);
         abort_if(!$custodian, HttpStatusCode::NOT_FOUND);
         $pupils = CustodianStudent::whereCustodianId($id)->get();
+        
         return $this->output([
             'mobiles'   => $custodian->user->mobiles,
             'custodian' => $custodian,
             'pupils'    => $pupils,
         ]);
-
+        
     }
     
     /**
      * 更新监护人
-     * 
+     *
      * @param CustodianRequest $request
      * @param $id
      * @return JsonResponse
      * @throws Throwable
      */
     public function update(CustodianRequest $request, $id) {
-
+        
         $custodian = $this->custodian->find($id);
         abort_if(!$custodian, HttpStatusCode::NOT_FOUND);
         
         return $this->result(
             $custodian->modify($request, $id)
         );
-
+        
     }
     
     /**
@@ -191,21 +193,21 @@ class CustodianController extends Controller {
         /** @noinspection PhpUndefinedMethodInspection */
         Excel::create(iconv('UTF-8', 'GBK', '监护人列表'), function ($excel) use ($data) {
             /** @noinspection PhpUndefinedMethodInspection */
-            $excel->sheet('score', function($sheet) use ($data) {
+            $excel->sheet('score', function ($sheet) use ($data) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 $sheet->rows($data);
                 /** @noinspection PhpUndefinedMethodInspection */
-                $sheet->setWidth(array(
-                    'A'     =>  30,
-                    'B'     =>  30,
-                    'C'     =>  30,
-                    'D'     =>  30,
-                    'E'     =>  30,
-                    'F'     =>  30,
-                ));
+                $sheet->setWidth([
+                    'A' => 30,
+                    'B' => 30,
+                    'C' => 30,
+                    'D' => 30,
+                    'E' => 30,
+                    'F' => 30,
+                ]);
                 
             });
-        },'UTF-8')->export('xls');
+        }, 'UTF-8')->export('xls');
         
     }
     

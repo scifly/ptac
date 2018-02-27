@@ -328,7 +328,7 @@ class User extends Authenticatable {
      * @param bool $fireEvent
      * @return bool
      */
-    static function modify(array $data, $id, $fireEvent = false) {
+    public function modify(array $data, $id, $fireEvent = false) {
 
         $user = self::find($id);
         $user->username=$data["username"];
@@ -421,10 +421,9 @@ class User extends Authenticatable {
      * @throws \Throwable
      */
     static function remove($userId){
+        
         $user = self::find($userId);
-        if (!isset($user)) {
-            return false;
-        }
+        if (!isset($user)) { return false; }
         try {
             DB::transaction(function () use ($userId, $user) {
                 # custodian删除指定user绑定的部门记录

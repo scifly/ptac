@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\SemesterRequest;
 use App\Models\Semester;
 use Exception;
@@ -90,7 +89,6 @@ class SemesterController extends Controller {
     public function edit($id) {
         
         $semester = Semester::find($id);
-        abort_if(!$semester, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $semester);
         
         return $this->output(['semester' => $semester]);
@@ -108,7 +106,6 @@ class SemesterController extends Controller {
     public function update(SemesterRequest $request, $id) {
         
         $semester = Semester::find($id);
-        abort_if(!$semester, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $semester);
         
         return $this->result(
@@ -127,7 +124,6 @@ class SemesterController extends Controller {
     public function destroy($id) {
         
         $semester = Semester::find($id);
-        abort_if(!$semester, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $semester);
         
         return $this->result(

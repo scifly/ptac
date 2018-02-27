@@ -26,6 +26,7 @@ use Throwable;
 class HomeController extends Controller {
 
     const PAGEJS = 'js/home/page.js';
+    const ROOT_MENU_ID = 1;
     
     protected $tab;
     
@@ -110,14 +111,12 @@ class HomeController extends Controller {
         }
 
         # 获取卡片列表
-        $tabArray = [];
-        $isTabLegit = true;
-        $tabIds = MenuTab::whereMenuId($id)
-            ->orderBy('tab_order')
-            ->pluck('tab_id')
-            ->toArray();
+        $tabIds = MenuTab::tabIdsByMenuId($id);
+        $isTabLegit = !empty($tabIds) ?? false;
+        # 获取当前用户可以访问的卡片（控制器）id
         $allowedTabIds = $this->tab->allowedTabIds();
-        if (empty($tabIds)) { $isTabLegit = false; };
+        # 封装当前用户可以访问的卡片数组
+        $tabArray = [];
         foreach ($tabIds as $tabId) {
             if (!in_array($tabId, $allowedTabIds)) { continue; }
             $tab = Tab::find($tabId);
@@ -134,29 +133,24 @@ class HomeController extends Controller {
                 break;
             }
         }
-        if ($isTabLegit) {
-            # 刷新页面时打开当前卡片, 不一定是第一个卡片
-            if (session('tabId')) {
-                $key = array_search(
-                    'tab_' . session('tabId'),
-                    array_column($tabArray, 'id')
-                );
-                $tabArray[$key]['active'] = true;
-                if (!session('tabChanged') && !session('menuChanged')) {
-                    $tabArray[$key]['url'] = session('tabUrl');
-                }
-            } else {
-                $tabArray[0]['active'] = true;
+        abort_if(!$isTabLegit, HttpStatusCode::NOT_FOUND);
+        # 刷新页面时打开当前卡片, 不一定是第一个卡片
+        if (session('tabId')) {
+            $key = array_search(
+                'tab_' . session('tabId'),
+                array_column($tabArray, 'id')
+            );
+            $tabArray[$key]['active'] = true;
+            if (!session('tabChanged') && !session('menuChanged')) {
+                $tabArray[$key]['url'] = session('tabUrl');
             }
         } else {
-            abort(HttpStatusCode::NOT_FOUND);
+            $tabArray[0]['active'] = true;
         }
         # 获取并返回wrapper-content层中的html内容
         if (Request::ajax()) {
-            return response()->json([
-                'statusCode' => HttpStatusCode::OK,
-                'html' => view('partials.site_content', ['tabs' => $tabArray])->render()
-            ]);
+            $this->result['html'] = view('partials.site_content', ['tabs' => $tabArray])->render();
+            return response()->json($this->result);
         }
         # 获取菜单列表
         $menu = Menu::menuHtml(Menu::rootMenuId());
@@ -167,6 +161,7 @@ class HomeController extends Controller {
             'menuId' => $id,
             'js'     => self::PAGEJS,
         ]);
+        
     }
 
     /**
@@ -178,7 +173,7 @@ class HomeController extends Controller {
         switch ($user->group->name) {
             case '运营':
                 $view = 'company';
-                $parentMenuId = 1;
+                $parentMenuId = self::ROOT_MENU_ID;
                 break;
             case '企业':
                 $view = 'corp';

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Snippet;
 use App\Http\Requests\SubjectRequest;
 use Carbon\Carbon;
 use Eloquent;
@@ -244,12 +245,12 @@ class Subject extends Model {
                 'db' => 'Subject.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
-                    $status = $d ? Datatable::DT_ON : Datatable::DT_OFF;
-                    $editLink = sprintf(Datatable::DT_LINK_EDIT, 'edit_' . $id);
-                    $delLink = sprintf(Datatable::DT_LINK_DEL, $id);
+                    $status = $d ? Snippet::DT_ON : Snippet::DT_OFF;
+                    $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
+                    $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
                     return
-                        $status . str_repeat(Datatable::DT_SPACE, 3) .
-                        $editLink . str_repeat(Datatable::DT_SPACE, 2) .
+                        $status . str_repeat(Snippet::DT_SPACE, 3) .
+                        $editLink . str_repeat(Snippet::DT_SPACE, 2) .
                         $delLink;
                 },
             ],

@@ -99,7 +99,6 @@ class EducatorController extends Controller {
     public function show($id) {
 
         $educator = Educator::find($id);
-        abort_if(!$educator, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $educator);
 
         return $this->output(['educator' => $educator]);
@@ -116,7 +115,6 @@ class EducatorController extends Controller {
     public function edit($id) {
 
         $educator = Educator::find($id);
-        abort_if(!$educator, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $educator);
         if (Request::method() === 'POST') {
             return response()->json(Department::tree());
@@ -150,7 +148,6 @@ class EducatorController extends Controller {
     public function recharge($id) {
 
         $educator = Educator::find($id);
-        abort_if(!$educator, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $educator);
 
         return $this->output(['educator' => $educator]);
@@ -169,7 +166,6 @@ class EducatorController extends Controller {
     public function update(EducatorRequest $request, $id) {
 
         $educator = Educator::find($id);
-        abort_if(!$educator, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $educator);
 
         return $this->result(
@@ -188,7 +184,6 @@ class EducatorController extends Controller {
     public function rechargeStore($id) {
 
         $educator = Educator::find($id);
-        abort_if(!$educator, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $educator);
 
         $recharge = Request::get('recharge');
@@ -212,7 +207,6 @@ class EducatorController extends Controller {
     public function destroy($id) {
 
         $educator = Educator::find($id);
-        abort_if(!$educator, HttpStatusCode::NOT_FOUND);
         $this->authorize('rud', $educator);
 
         return $this->result(

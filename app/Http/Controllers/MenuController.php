@@ -84,7 +84,7 @@ class MenuController extends Controller {
     public function edit($id) {
 
         $menu = Menu::find($id);
-        if (!$menu) { return $this->notFound(); }
+        abort_if(!$menu, HttpStatusCode::NOT_FOUND);
         # 获取已选定的卡片
         $menuTabs = $menu->tabs;
         $selectedTabs = [];
@@ -111,9 +111,11 @@ class MenuController extends Controller {
     public function update(MenuRequest $request, $id) {
 
         $menu = Menu::find($id);
-        if (!$menu) { return $this->notFound(); }
+        abort_if(!$menu, HttpStatusCode::NOT_FOUND);
 
-        return $this->result($menu->modify($request, $id));
+        return $this->result(
+            $menu->modify($request, $id)
+        );
 
     }
 
@@ -126,15 +128,14 @@ class MenuController extends Controller {
      */
     public function move($id, $parentId = null) {
 
-        if (!$parentId) { return $this->fail('非法操作'); }
         $menu = Menu::find($id);
         $parentMenu = Menu::find($parentId);
-        if (!$menu || !$parentMenu) { return $this->notFound(); }
+        abort_if(!$menu || !$parentMenu, HttpStatusCode::NOT_FOUND);
         if (Menu::movable($id, $parentId)) {
             return $this->result($menu::move($id, $parentId, true));
         }
 
-        return $this->fail('非法操作');
+        return abort(HttpStatusCode::NOT_ACCEPTABLE, '非法操作');
 
     }
     

@@ -65,7 +65,7 @@ class AlertTypeController extends Controller {
     public function store(AlertTypeRequest $request) {
         
         return $this->result(
-            AlertType::create($request->all())
+            $this->at->create($request->all())
         );
 
     }
