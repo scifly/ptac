@@ -669,11 +669,11 @@ class Department extends Model {
         } else {
             $departmentId = self::topDeptId();
             $nodes = self::nodes($departmentId);
-            
             $data = [];
             $belongedDeptIds = $user->departments
                 ->pluck('id')
                 ->toArray();
+
             for ($i = 0; $i < sizeof($nodes); $i++) {
                 $parentId = $i == 0 ? '#' : $nodes[$i]['parent_id'];
                 $type = $i == 0 ? '#' : 'dept';
