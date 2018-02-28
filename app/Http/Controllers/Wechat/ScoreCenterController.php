@@ -208,7 +208,7 @@ class ScoreCenterController extends Controller {
         }
         $scores = $this->score->getScores($examId, $subjectIds[0], $studentId);
         if (!empty($scores)) {
-            $scores->start_date = $exam['start_date'];
+            $scores['start_date'] = $exam['start_date'];
         }
         if (empty($scores)) {
             $scores = [];
