@@ -4,7 +4,6 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use App\Models\Exam;
-use App\Models\Grade;
 use App\Models\School;
 use App\Models\ScoreTotal;
 use App\Models\Squad;
@@ -18,7 +17,7 @@ class ScoreIndexComposer {
     public function compose(View $view) {
 //        $exams = Exam::get()->pluck('name', 'id')->toArray();
 
-        $schoolId = School::schoolId();
+        $schoolId = $this->schoolId();
         $school = School::whereId($schoolId)->first();
         #获取学校下所有班级 和 考试
         $squadIds = [];

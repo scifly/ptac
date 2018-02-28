@@ -14,7 +14,11 @@ use Illuminate\Support\Facades\Auth;
 class CustodianComposer {
 
     use ModelTrait;
-
+    
+    protected $student;
+    
+    function __construct(Student $student) { $this->student = $student; }
+    
     public function compose(View $view) {
 
         $schools = null;
@@ -22,15 +26,15 @@ class CustodianComposer {
         $classes = null;
         $students = null;
 
-        $schoolId = School::schoolId();
+        $schoolId = $this->schoolId();
         $schools = School::whereId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id');
         $groupId = Auth::user()->group->id;
         if($groupId > 5){
             $educatorId = Auth::user()->educator->id;
-            $gradeIds = Student::getGrade($educatorId)[0];
-            $gradeClass = Student::getGrade($educatorId)[1];
+            $gradeIds = $this->student->getGrade($educatorId)[0];
+            $gradeClass = $this->student->getGrade($educatorId)[1];
             foreach ($gradeClass as $k=>$g){
                 $grades = Grade::whereEnabled(1)
                     ->whereIn('id',$gradeIds)

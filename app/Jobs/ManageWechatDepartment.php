@@ -2,6 +2,7 @@
 namespace App\Jobs;
 
 use App\Facades\Wechat;
+use App\Helpers\ModelTrait;
 use App\Models\App;
 use App\Models\Corp;
 use App\Models\School;
@@ -10,8 +11,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
-use Mockery\Exception;
 
 /**
  * 企业号部门管理
@@ -21,9 +20,9 @@ use Mockery\Exception;
  */
 class ManageWechatDepartment implements ShouldQueue {
     
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait;
     
-    protected $department, $action, $school;
+    protected $department, $action;
     
     /**
      * Create a new job instance.
@@ -32,8 +31,10 @@ class ManageWechatDepartment implements ShouldQueue {
      * @param $action
      */
     public function __construct($department, $action) {
+        
         $this->department = $department;
         $this->action = $action;
+        
     }
     
     /**
@@ -43,7 +44,7 @@ class ManageWechatDepartment implements ShouldQueue {
      */
     public function handle() {
 
-        $schoolId = School::schoolId();
+        $schoolId = $this->schoolId();
         if ($schoolId != 0) {
             $school = School::find($schoolId);
             $corpMenuId = $school->menu->parent_id;

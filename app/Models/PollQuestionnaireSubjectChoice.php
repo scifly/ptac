@@ -49,7 +49,7 @@ class PollQuestionnaireSubjectChoice extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'PollQuestionnaireChoice.id', 'dt' => 0],

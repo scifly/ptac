@@ -84,11 +84,11 @@ class Media extends Model {
      * @param array $ids
      * @return array
      */
-    static function medias(array $ids) {
+    function medias(array $ids) {
 
         $medias = [];
         foreach ($ids as $id) {
-            $medias[] = self::find($id);
+            $medias[] = $this->find($id);
         }
 
         return $medias;
@@ -101,7 +101,7 @@ class Media extends Model {
      * @param array $data
      * @return bool
      */
-    static function store(array $data) {
+    function store(array $data) {
 
         $media = self::create($data);
 
@@ -116,7 +116,7 @@ class Media extends Model {
      * @param $id
      * @return bool
      */
-    static function modify(array $data, $id) {
+    function modify(array $data, $id) {
 
         $media = self::find($id);
         if (!$media) { return false; }
@@ -132,7 +132,7 @@ class Media extends Model {
      * @return bool|null
      * @throws Exception
      */
-    static function remove($id) {
+    function remove($id) {
 
         $media = self::find($id);
         if (!$media) { return false; }
@@ -148,7 +148,7 @@ class Media extends Model {
      * @param int $remark
      * @return array|bool
      */
-    static function upload($file, $remark = 0) {
+    function upload($file, $remark = 0) {
 
         if ($file->isValid()) {
             // 获取文件相关信息
@@ -169,7 +169,7 @@ class Media extends Model {
                     date('m') . '/' .
                     date('d') . '/' .
                     $filename;
-                $mediaId = Media::insertGetId([
+                $mediaId = self::insertGetId([
                     'path'          => $filePath,
                     'remark'        => $remark,
                     'media_type_id' => $type,
@@ -195,7 +195,7 @@ class Media extends Model {
      * @param $type
      * @return int
      */
-    private static function mediaTypeId($type) {
+    private function mediaTypeId($type) {
 
         switch (explode('/', $type)[0]) {
             case 'image': return 1;

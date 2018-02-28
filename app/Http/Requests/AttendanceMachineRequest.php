@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Requests;
 
-use App\Models\School;
+
 use Illuminate\Foundation\Http\FormRequest;
 
 class AttendanceMachineRequest extends FormRequest {
@@ -36,7 +36,7 @@ class AttendanceMachineRequest extends FormRequest {
     protected function prepareForValidation() {
 
         $input = $this->all();
-        $input['school_id'] = School::schoolId();
+        $input['school_id'] = 
 
         $this->replace($input);
 

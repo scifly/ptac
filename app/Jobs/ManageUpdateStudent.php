@@ -108,7 +108,7 @@ class ManageUpdateStudent implements ShouldQueue {
                                         'enabled'       => 1,
                                     ]);
                                     # 创建企业号成员
-                                    User::createWechatUser($user['id']);
+                                    $user->createWechatUser($user['id']);
                                 } else {
                                     # 手机号码存在 反查用户表
                                     $user = User::find($m->user_id);
@@ -153,7 +153,7 @@ class ManageUpdateStudent implements ShouldQueue {
                                         'enabled'       => 1,
                                     ]);
                                     # 更新企业号监护人成员
-                                    User::updateWechatUser($m->user_id);
+                                    $user->updateWechatUser($m->user_id);
                                 }
                             }
                         }
@@ -166,7 +166,7 @@ class ManageUpdateStudent implements ShouldQueue {
                         'enabled'       => 1,
                     ]);
                     # 更新企业号监护人成员
-                    User::updateWechatUser($student->user_id);
+                    $student->user->updateWechatUser($student->user_id);
                 }
             });
         } catch (Exception $e) {

@@ -85,7 +85,7 @@ class Action extends Model {
      *
      * @return array
      */
-    static function actions() {
+    function actions() {
 
         $data = self::whereEnabled(1)->get([
             'controller', 'name', 'id',
@@ -181,7 +181,7 @@ class Action extends Model {
      * @return bool|mixed
      * @throws Exception|Throwable
      */
-    static function remove($actionId) {
+    function remove($actionId) {
         
         $action = self::find($actionId);
         if (!isset($action)) { return false; }
@@ -299,7 +299,7 @@ class Action extends Model {
      *
      * @return bool|string
      */
-    static function getSiteRoot() {
+    function getSiteRoot() {
         
         return substr(__DIR__, 0, stripos(__DIR__, 'app/Models'));
         
@@ -310,9 +310,9 @@ class Action extends Model {
      *
      * @param $controllers
      */
-    static function getControllerNamespaces(&$controllers) {
+    function getControllerNamespaces(&$controllers) {
         
-        $siteRoot = str_replace('/', '\\', self::getSiteRoot());
+        $siteRoot = str_replace('/', '\\', $this->getSiteRoot());
         for ($i = 0; $i < sizeof($controllers); $i++) {
             $controllers[$i] = str_replace('/', '\\', $controllers[$i]);
             $controllers[$i] = str_replace($siteRoot, '', $controllers[$i]);
@@ -327,7 +327,7 @@ class Action extends Model {
      * @param $controllers
      * @return array
      */
-    static function getControllerNames($controllers) {
+    function getControllerNames($controllers) {
         
         $controllerNames = [];
         foreach ($controllers as $controller) {
@@ -347,7 +347,7 @@ class Action extends Model {
      * @param array $allData
      * @return array
      */
-    private static function scanDirectories($rootDir, $allData = []) {
+    private function scanDirectories($rootDir, $allData = []) {
 
         // set filenames invisible if you want
         $invisibleFileNames = [".", "..", ".htaccess", ".htpasswd"];
@@ -364,7 +364,7 @@ class Action extends Model {
                     // if content is a directory and readable, add path and name
                 } elseif (is_dir($path) && is_readable($path)) {
                     // recursive callback to open new directory
-                    $allData = self::scanDirectories($path, $allData);
+                    $allData = $this->scanDirectories($path, $allData);
                 }
             }
         }
@@ -381,7 +381,7 @@ class Action extends Model {
      * @throws Exception
      * @throws Throwable
      */
-    private static function delNonExistingMethods($methods, $className) {
+    private function delNonExistingMethods($methods, $className) {
 
         // remove non-existing methods of current controller
         $currentMethods = self::getMethodNames($methods);
@@ -414,7 +414,7 @@ class Action extends Model {
      * @param $methods
      * @return array
      */
-    private static function getMethodNames($methods) {
+    private function getMethodNames($methods) {
 
         $methodNames = [];
         /** @var ReflectionMethod $method */
@@ -432,7 +432,7 @@ class Action extends Model {
      * @param $controller
      * @return mixed
      */
-    private static function getControllerName($controller) {
+    private function getControllerName($controller) {
 
         $nameSpacePaths = explode('\\', $controller);
 
@@ -447,7 +447,7 @@ class Action extends Model {
      * @param ReflectionMethod $method
      * @return mixed|string
      */
-    private static function getMethodComment(ReflectionClass $controllerObj, ReflectionMethod $method) {
+    private function getMethodComment(ReflectionClass $controllerObj, ReflectionMethod $method) {
        
         $comment = $controllerObj->getMethod($method->getName())->getDocComment();
         $name = 'n/a';
@@ -507,7 +507,7 @@ class Action extends Model {
      * @param $controller string 控制器类名
      * @return string 数据表名称
      */
-    private static function getTableName($controller) {
+    private function getTableName($controller) {
 
         $modelName = substr(
             $controller, 0,
@@ -604,7 +604,7 @@ class Action extends Model {
      * @param $action_type_ids
      * @return string
      */
-    private static function actionTypes($action_type_ids) {
+    private function actionTypes($action_type_ids) {
         
         $actionTypes = [];
         $actionTypeIds = explode(',', $action_type_ids);

@@ -1,10 +1,12 @@
 <?php
 namespace App\Http\Requests;
 
-use App\Models\School;
+use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
 
 class WapSiteRequest extends FormRequest {
+    
+    use ModelTrait;
     
     /**
      * Determine if the user is authorized to make this request.
@@ -29,9 +31,10 @@ class WapSiteRequest extends FormRequest {
         if (isset($input['media_ids'])) {
             $input['media_ids'] = implode(',', $input['media_ids']);
         }
-        $input['school_id'] = School::schoolId();
+        $input['school_id'] = $this->schoolId();
 
         $this->replace($input);
         
     }
+    
 }

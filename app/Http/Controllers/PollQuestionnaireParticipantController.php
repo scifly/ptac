@@ -1,11 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Models\PollQuestionnaire;
 use App\Models\PollQuestionnaireAnswer;
-use App\Models\PollQuestionnaireSubjectChoice;
 use App\Models\PollQuestionnaireParticipant;
 use App\Models\PollQuestionnaireSubject;
+use App\Models\PollQuestionnaireSubjectChoice;
 use App\Models\User;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
@@ -118,7 +119,7 @@ class PollQuestionnaireParticipantController extends Controller {
             else $Answer->update();
         }
         
-        return response()->json(['msg' => '提交成功', '' => self::OK]);
+        return response()->json(['msg' => '提交成功', '' => HttpStatusCode::OK]);
         
     }
     

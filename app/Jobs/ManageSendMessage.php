@@ -1,30 +1,11 @@
 <?php
 namespace App\Jobs;
 
-use App\Events\ContactImportTrigger;
-use App\Models\App;
-use App\Models\Corp;
-use App\Models\Department;
-use App\Models\DepartmentUser;
-use App\Models\Educator;
-use App\Models\EducatorClass;
-use App\Models\Grade;
-use App\Models\Group;
-use App\Models\Message;
-use App\Models\MessageSendingLog;
-use App\Models\Mobile;
-use App\Models\Squad;
-use App\Models\Subject;
-use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Exception;
 
 class ManageSendMessage implements ShouldQueue {
     

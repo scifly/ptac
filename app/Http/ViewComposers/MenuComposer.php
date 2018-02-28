@@ -11,7 +11,11 @@ use Illuminate\Support\Facades\Auth;
 class MenuComposer {
 
     use ModelTrait;
-
+    
+    protected $icon;
+    
+    function __construct(Icon $icon) { $this->icon = $icon; }
+    
     public function compose(View $view) {
 
         $role = Auth::user()->group->name;
@@ -36,7 +40,7 @@ class MenuComposer {
         }
         $view->with([
             'tabs' => $tabs,
-            'icons' => Icon::icons(),
+            'icons' => $this->icon->icons(),
             'uris' => $this->uris()
         ]);
 

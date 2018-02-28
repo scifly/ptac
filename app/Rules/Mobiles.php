@@ -3,7 +3,6 @@ namespace App\Rules;
 
 use App\Models\Mobile;
 use Illuminate\Contracts\Validation\Rule;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 class Mobiles implements Rule {

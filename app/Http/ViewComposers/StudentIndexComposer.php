@@ -18,7 +18,7 @@ class StudentIndexComposer {
         $grades = null;
         $classes = null;
 
-        $schoolId = School::schoolId();
+        $schoolId = $this->schoolId();
         $schools = School::whereId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id');

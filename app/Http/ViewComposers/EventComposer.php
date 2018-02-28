@@ -4,7 +4,6 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use App\Models\Educator;
-use App\Models\School;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 
@@ -14,7 +13,7 @@ class EventComposer {
 
     public function compose(View $view) {
 
-        $schoolId = School::schoolId();
+        $schoolId = $this->schoolId();
         $educators = Educator::whereSchoolId($schoolId)
             ->where('enabled', 1)
             ->get();

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -37,6 +38,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @mixin Eloquent
  */
 class Semester extends Model {
+    
+    use ModelTrait;
 
     protected $fillable = [
         'school_id', 'name', 'remark',
@@ -89,7 +92,7 @@ class Semester extends Model {
                 ],
             ],
         ];
-        $condition = 'Semester.school_id = ' . School::schoolId();
+        $condition = 'Semester.school_id = ' . $this->schoolId();
     
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 

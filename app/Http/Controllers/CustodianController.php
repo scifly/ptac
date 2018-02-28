@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\CustodianRequest;
 use App\Models\Custodian;
 use App\Models\CustodianStudent;
@@ -22,12 +23,15 @@ use Throwable;
  */
 class CustodianController extends Controller {
     
-    protected $custodian;
+    protected $custodian, $student, $department, $school;
     
-    function __construct(Custodian $custodian) {
+    function __construct(Custodian $custodian, Student $student, Department $department, School $school) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->custodian = $custodian;
+        $this->student = $student;
+        $this->department = $department;
+        $this->school = $school;
         
     }
     
@@ -63,10 +67,10 @@ class CustodianController extends Controller {
             $id = Request::query('id');
             if ($groupId > 5) {
                 $educatorId = Auth::user()->educator->id;
-                $gradeClass = Student::getGrade($educatorId)[1];
-                $this->result['html'] = School::getFieldList($field, $id, $gradeClass);
+                $gradeClass = $this->student->getGrade($educatorId)[1];
+                $this->result['html'] = $this->school->getFieldList($field, $id, $gradeClass);
             } else {
-                $this->result['html'] = School::getFieldList($field, $id);
+                $this->result['html'] = $this->school->getFieldList($field, $id);
             }
             
             return response()->json($this->result);
@@ -102,7 +106,7 @@ class CustodianController extends Controller {
     public function show($id) {
         
         $custodian = $this->custodian->find($id);
-        abort_if(!$custodian, self::NOT_FOUND);
+        abort_if(!$custodian, HttpStatusCode::NOT_FOUND);
         
         return $this->output([
             'custodian' => $custodian,
@@ -123,15 +127,15 @@ class CustodianController extends Controller {
             $field = Request::query('field');
             $id = Request::query('id');
             if ($field && $id) {
-                $this->result['html'] = School::getFieldList($field, $id);
+                $this->result['html'] = $this->school->getFieldList($field, $id);
                 
                 return response()->json($this->result);
             } else {
-                return response()->json(Department::tree());
+                return response()->json($this->department->tree());
             }
         }
         $custodian = $this->custodian->find($id);
-        abort_if(!$custodian, self::NOT_FOUND);
+        abort_if(!$custodian, HttpStatusCode::NOT_FOUND);
         $pupils = CustodianStudent::whereCustodianId($id)->get();
         
         return $this->output([
@@ -153,7 +157,7 @@ class CustodianController extends Controller {
     public function update(CustodianRequest $request, $id) {
         
         $custodian = $this->custodian->find($id);
-        abort_if(!$custodian, self::NOT_FOUND);
+        abort_if(!$custodian, HttpStatusCode::NOT_FOUND);
         
         return $this->result(
             $custodian->modify($request, $id)
@@ -172,7 +176,7 @@ class CustodianController extends Controller {
     public function destroy($id) {
         
         $custodian = $this->custodian->find($id);
-        abort_if(!$custodian, self::NOT_FOUND);
+        abort_if(!$custodian, HttpStatusCode::NOT_FOUND);
         
         return $this->result(
             $custodian->remove($id)

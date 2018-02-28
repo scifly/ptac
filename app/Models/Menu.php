@@ -6,6 +6,7 @@ use App\Events\MenuCreated;
 use App\Events\MenuDeleted;
 use App\Events\MenuMoved;
 use App\Events\MenuUpdated;
+use App\Helpers\Constant;
 use App\Http\Requests\MenuRequest;
 use App\Models\MenuTab as MenuTab;
 use Carbon\Carbon;
@@ -65,21 +66,6 @@ use Throwable;
 class Menu extends Model {
 
     // todo: needs to be optimized
-
-    const SUPER_ROLES = ['运营', '企业', '学校'];
-    # 不含子菜单的HTML模板
-    const SIMPLE = '<li%s><a id="%s" href="%s" class="leaf"><i class="%s"></i> %s</a></li>';
-    # 包含子菜单的HTML模板
-    const TREE = <<<HTML
-            <li class="treeview%s">
-                <a href="#">
-                    <i class="%s"></i> <span>%s</span>
-                    <span class="pull-right-container">
-                        <i class="fa fa-angle-left pull-right"></i>
-                    </span>
-                </a>
-                <ul class="treeview-menu">
-HTML;
 
     protected $fillable = [
         'parent_id', 'name', 'remark', 'uri',
@@ -179,7 +165,7 @@ HTML;
      * @param null $rootMenuId
      * @return Collection|static[]
      */
-    static function leaves($rootMenuId = null) {
+    function leaves($rootMenuId = null) {
 
         $leaves = [];
         $leafPath = [];
@@ -207,7 +193,7 @@ HTML;
      * @param $menuId
      * @return array
      */
-    static function subMenuIds($menuId) {
+    function subMenuIds($menuId) {
 
         static $childrenIds;
         $firstIds = Menu::whereParentId($menuId)->get(['id'])->toArray();
@@ -229,7 +215,7 @@ HTML;
      * @param array $path
      * @return string
      */
-    private static function leafPath($id, array &$path) {
+    private function leafPath($id, array &$path) {
 
         $menu = self::find($id);
         if (!$menu) { return ''; }
@@ -251,7 +237,7 @@ HTML;
      * @throws Exception
      * @throws Throwable
      */
-    static function store(MenuRequest $request) {
+    function store(MenuRequest $request) {
 
         # 创建新的Menu记录及卡片绑定记录
         try {
@@ -279,7 +265,7 @@ HTML;
      * @param bool $fireEvent
      * @return bool
      */
-    static function preserve(array $data, $fireEvent = false) {
+    function preserve(array $data, $fireEvent = false) {
 
         $menu = self::create($data);
         if ($menu && $fireEvent) {
@@ -300,7 +286,7 @@ HTML;
      * @param bool $fireEvent
      * @return bool
      */
-    static function alter(array $data, $id, $fireEvent = false) {
+    function alter(array $data, $id, $fireEvent = false) {
 
         $menu = self::find($id);
         if ($menu) {
@@ -324,7 +310,7 @@ HTML;
      * @return bool
      * @throws Throwable
      */
-    static function purge($id, $fireEvent = false) {
+    function purge($id, $fireEvent = false) {
 
         $menu = self::find($id);
         if ($menu) {
@@ -352,7 +338,7 @@ HTML;
      * @return bool|mixed
      * @throws Throwable
      */
-    static function remove($menuId) {
+    function remove($menuId) {
 
         $menu = self::find($menuId);
         if (!isset($menu)) { return false; }
@@ -384,7 +370,7 @@ HTML;
      * @return bool|mixed
      * @throws Throwable
      */
-    static function modify(MenuRequest $request, $menuId) {
+    function modify(MenuRequest $request, $menuId) {
 
         $menu = self::find($menuId);
         if (!isset($menu)) { return false; }
@@ -423,14 +409,14 @@ HTML;
      * @param bool $fireEvent
      * @return bool
      */
-    static function move($id, $parentId, $fireEvent = false) {
+    function move($id, $parentId, $fireEvent = false) {
 
-        $menu = self::find($id);
+        $menu = $this->find($id);
         if (!isset($menu)) { return false; }
         $menu->parent_id = $parentId === '#' ? null : intval($parentId);
         $moved = $menu->save();
         if ($moved && $fireEvent) {
-            event(new MenuMoved(self::find($id)));
+            event(new MenuMoved($this->find($id)));
             return true;
         }
 
@@ -444,13 +430,13 @@ HTML;
      * @param null $id
      * @return \Illuminate\Http\JsonResponse
      */
-    static function tree($id) {
+    public function tree($id) {
 
-        $root = self::find($id);
+        $root = $this->find($id);
         $menuColor = '<span style="color: %s;">%s</span>';
         $htmlDefaultIcon = '<i class="fa fa-circle-o"></i>';
         $htmlIcon = '<i class="%s"></i>';
-        $menus = self::subMenus($id, self::subMenuIds($id), true);
+        $menus = $this->subMenus($id, self::subMenuIds($id), true);
         $menus[$id] = [
             'parent_id' => null,
             'name' => $root->name,
@@ -508,7 +494,7 @@ HTML;
      * @param bool $disabled 是否获取未启用的菜单对象
      * @return Collection|static[]
      */
-    private static function subMenus($rootId, $childrenIds = null, $disabled = false) {
+    private function subMenus($rootId, $childrenIds = null, $disabled = false) {
 
         $menus = [];
         $user = Auth::user();
@@ -519,7 +505,7 @@ HTML;
                 ->orderBy('position')
                 ->get()->toArray();
         } else {
-            if (!in_array($role, self::SUPER_ROLES)) {
+            if (!in_array($role, Constant::SUPER_ROLES)) {
                 $data = GroupMenu::with('menu')
                     ->where('group_id', $user->group_id)
                     ->get()->pluck('menu')
@@ -563,7 +549,7 @@ HTML;
      *      true  返回当前菜单的上级菜单中类型为“学校”、“企业”的id
      * @return int|mixed
      */
-    static function rootMenuId($subRoot = false) {
+    function rootMenuId($subRoot = false) {
 
         $user = Auth::user();
         $menuId = session('menuId');
@@ -601,7 +587,7 @@ HTML;
      * @param integer $id 指定学校的菜单ID
      * @return \Illuminate\Http\JsonResponse
      */
-    static function schoolTree($id) {
+    function schoolTree($id) {
 
         $data = [];
         $menu = self::find($id);
@@ -622,7 +608,7 @@ HTML;
      * @param array $menus
      * @return array
      */
-    private static function menus($id, &$menus = []) {
+    private function menus($id, &$menus = []) {
 
         $htmlDefaultIcon = '<i class="fa fa-circle-o"></i>';
         $htmlIcon = '<i class="%s"></i>';
@@ -655,7 +641,7 @@ HTML;
      * @param $parentId
      * @return bool
      */
-    static function movable($id, $parentId) {
+    function movable($id, $parentId) {
 
         if (!isset($parentId)) { return false; }
         $type = self::find($id)->menuType->name;
@@ -676,7 +662,7 @@ HTML;
      * @param $rootId
      * @return string
      */
-    static function menuHtml($rootId) {
+    function menuHtml($rootId) {
 
         $menus = self::subMenus($rootId, self::subMenuIds($rootId));
         $menu = self::buildTree($menus, $rootId);
@@ -694,7 +680,7 @@ HTML;
      * @param int $prevLevel
      * @return string
      */
-    private static function buildTree($menus, $currentParent, $currLevel = 0, $prevLevel = -1) {
+    private function buildTree($menus, $currentParent, $currLevel = 0, $prevLevel = -1) {
 
         static $menuHtml;
         $activeId = session('menuId');
@@ -708,12 +694,12 @@ HTML;
             if ($currentParent == $menu['parent_id']) {
                 if ($hasChildren) {
                     $menuHtml .= sprintf(
-                        self::TREE,
+                        Constant::TREE,
                         $mId == $activeId ? ' active' : '', $mIcon, $mName
                     );
                 } else {
                     $menuHtml .= sprintf(
-                        self::SIMPLE,
+                        Constant::SIMPLE,
                         $mId == $activeId ? ' class="active"' : '', $mId, $mUrl, $mIcon, $mName
                     );
                 }
@@ -741,7 +727,7 @@ HTML;
      * @param string $type
      * @return int|mixed
      */
-    static function menuId($id, $type = '学校') {
+    function menuId($id, $type = '学校') {
 
         $menu = self::find($id);
         $menuType = $menu->menuType->name;
@@ -761,7 +747,7 @@ HTML;
      * @param $menuId
      * @param array $parents
      */
-    private static function getParent($menuId, array &$parents) {
+    private function getParent($menuId, array &$parents) {
 
         $menu = self::find($menuId);
         if ($menu->parent) {

@@ -17,7 +17,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\School 学校
@@ -347,28 +346,6 @@ class School extends Model {
     }
 
     /**
-     * 根据角色/菜单id获取school_id
-     *
-     * @return int|mixed
-     */
-    static function schoolId() {
-    
-        $user = Auth::user();
-        switch ($user->group->name) {
-            case '运营':
-            case '企业':
-                $schoolMenuId = Menu::menuId(session('menuId'));
-                return $schoolMenuId ? self::whereMenuId($schoolMenuId)->first()->id : 0;
-            case '学校':
-                $departmentId = $user->topDeptId();
-                return School::whereDepartmentId($departmentId)->first()->id;
-            default:
-                return $user->educator->school_id;
-        }
-
-    }
-
-    /**
      * 获取字段列表
      *
      * @param $field
@@ -376,7 +353,7 @@ class School extends Model {
      * @param null $gradeClass
      * @return array
      */
-    static function getFieldList($field, $id ,$gradeClass = null) {
+    function getFieldList($field, $id ,$gradeClass = null) {
 
         $grades = [];
         $classes = [];
@@ -440,13 +417,19 @@ class School extends Model {
 
     }
 
+    function getSchoolById() {
+        
+        return $this->find($this->schoolId());
+        
+    }
+    
     /**
      * 根据年级获取对应的班级和对应的学生
      * @param $gradeId
      * @param $gradeClass
      * @return array
      */
-    static function getClass( $gradeId, $gradeClass){
+    function getClass( $gradeId, $gradeClass){
         $classes = $students = [];
         foreach ($gradeClass as $k=>$g){
             if($k == $gradeId){

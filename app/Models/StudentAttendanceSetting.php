@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -42,6 +43,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read \App\Models\StudentAttendance $studentAttendance
  */
 class StudentAttendanceSetting extends Model {
+    
+    use ModelTrait;
 
     protected $table = 'student_attendance_settings';
     
@@ -83,7 +86,7 @@ class StudentAttendanceSetting extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'StudentAttendanceSetting.id', 'dt' => 0],
@@ -130,7 +133,7 @@ class StudentAttendanceSetting extends Model {
                 ],
             ],
         ];
-        $condition = 'Semester.school_id = ' . School::schoolId();
+        $condition = 'Semester.school_id = ' . $this->schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 

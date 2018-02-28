@@ -3,18 +3,12 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
-<<<<<<< HEAD
-use App\Helpers\ModelTrait;
-=======
 use App\Helpers\Snippet;
->>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\ProcedureLog 审批流程日志
@@ -139,10 +133,6 @@ class ProcedureLog extends Model {
         }
         return $medias;
     }
-<<<<<<< HEAD
-
-    static function datatable($where) {
-=======
     
     /**
      * 保存审批结果
@@ -163,7 +153,6 @@ class ProcedureLog extends Model {
      * @return array
      */
     public function datatable($where) {
->>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
 
         $columns = [
             ['db' => 'ProcedureLog.first_log_id', 'dt' => 0],

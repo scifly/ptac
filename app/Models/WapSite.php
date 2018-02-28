@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use App\Http\Requests\WapSiteRequest;
 use Carbon\Carbon;
 use Eloquent;
@@ -13,7 +14,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
@@ -39,6 +39,8 @@ use Throwable;
  * @mixin Eloquent
  */
 class WapSite extends Model {
+    
+    use ModelTrait;
 
     protected $fillable = [
         'id', 'school_id', 'site_title',
@@ -90,7 +92,7 @@ class WapSite extends Model {
                 ],
             ],
         ];
-        $condition = 'WapSite.school_id = ' . School::schoolId();
+        $condition = 'WapSite.school_id = ' . $this->schoolId();
     
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         
@@ -148,7 +150,7 @@ class WapSite extends Model {
      * @param $request
      * @throws Exception
      */
-    private static function removeMedias(WapSiteRequest $request) {
+    private function removeMedias(WapSiteRequest $request) {
         
         //删除原有的图片
         $mediaIds = $request->input('del_ids');

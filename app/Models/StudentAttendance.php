@@ -3,12 +3,12 @@ namespace App\Models;
 
 use App\Events\StudentAttendanceCreate;
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 
 /**
@@ -46,6 +46,8 @@ use Illuminate\Support\Facades\Log;
  */
 class StudentAttendance extends Model {
     
+    use ModelTrait;
+    
     protected $table = 'student_attendances';
     protected $fillable = [
         'id', 'student_id', 'punch_time', 'sas_id',
@@ -79,7 +81,7 @@ class StudentAttendance extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'StudentAttendance.id', 'dt' => 0],
@@ -138,7 +140,7 @@ class StudentAttendance extends Model {
             ],
         ];
         // todo: 增加角色过滤条件
-        $condition = 'AttendanceMachine.school_id = ' . School::schoolId();
+        $condition = 'AttendanceMachine.school_id = ' . $this->schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         
@@ -198,10 +200,9 @@ class StudentAttendance extends Model {
         }
         return $item;
     }
+    
     public function getStudentData($date , $type, $classId) {
-//        $date = '2018-01-07';
-//        $type = 'surplus';
-//        $classId = '1';
+        
         $startTime = date('Y-m-d H:i:s', strtotime($date));
         $endTime = date('Y-m-d H:i:s', strtotime($date)+24*3600-1);
         $all = Student::whereClassId($classId)->get()->pluck('id')->toArray();
@@ -251,7 +252,7 @@ class StudentAttendance extends Model {
                             $n[] = $d->id;
                         }
                     }
-                    $items = $this::whereIn('id', $n)->get();
+                    $items = $this->whereIn('id', $n)->get();
                     foreach ($items as $datum) {
                         $result[] = [
                             'name' => $datum->student->user->realname,
@@ -272,7 +273,7 @@ class StudentAttendance extends Model {
                             $a[] = $d->id;
                         }
                     }
-                    $items = $this::whereIn('id', $a)->get();
+                    $items = $this->whereIn('id', $a)->get();
                     foreach ($items as $datum) {
                         $result[] = [
                             'name' => $datum->student->user->realname,
@@ -309,12 +310,17 @@ class StudentAttendance extends Model {
         );
         return $data;
     }
+    
+    /**
+     * @return mixed
+     */
     private function getClass() {
+        
         $schools = null;
         $grades = null;
         $classes = null;
 
-        $schoolId = School::schoolId();
+        $schoolId = $this->schoolId();
         $schools = School::whereId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id');
@@ -329,13 +335,16 @@ class StudentAttendance extends Model {
                 ->pluck('name', 'id');
             return $classes->keys()->first();
         }
-
+        
+        return false;
+        
     }
+    
     /**
      * @param $input
      * @return bool
      */
-    static function storeByFace($input) {
+    function storeByFace($input) {
 
         #触发事件调用队列，这个是异步处理的因此错误信息不能返回
         event(new StudentAttendanceCreate($input));

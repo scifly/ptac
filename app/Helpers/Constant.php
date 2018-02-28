@@ -31,5 +31,16 @@ class Constant {
         'wap_sites/edit/%s',
         'wap_sites/update/%s',
     ];
-    
+    const SIMPLE = '<li%s><a id="%s" href="%s" class="leaf"><i class="%s"></i> %s</a></li>';
+    # 包含子菜单的HTML模板
+    const TREE = <<<HTML
+            <li class="treeview%s">
+                <a href="#">
+                    <i class="%s"></i> <span>%s</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+HTML;
 }

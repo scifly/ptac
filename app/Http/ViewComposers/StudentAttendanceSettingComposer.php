@@ -4,7 +4,6 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use App\Models\Grade;
-use App\Models\School;
 use App\Models\Semester;
 use Illuminate\Contracts\View\View;
 
@@ -23,7 +22,7 @@ class StudentAttendanceSettingComposer {
             '星期六' => '星期六',
             '星期天' => '星期日',
         ];
-        $schoolId = School::schoolId();
+        $schoolId = $this->schoolId();
         $grades = Grade::whereEnabled(1)
             ->where('school_id', $schoolId)
             ->pluck('name', 'id')

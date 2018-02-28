@@ -49,7 +49,7 @@ class Group extends Model {
     protected $fillable = [
         'name', 'school_id', 'remark', 'enabled',
     ];
-
+    
     /**
      * 获取指定角色下的所有用户对象
      *
@@ -103,13 +103,16 @@ class Group extends Model {
                     'enabled' => $data['enabled'],
                     'school_id' => $data['school_id'],
                 ]);
-                $tabIds = [];
                 # 功能与角色的对应关系
-                ActionGroup::storeByGroupId($group->id, $data['actionId']);
+                $ag = new ActionGroup();
+                $gm = new GroupMenu();
+                $gt = new GroupTab();
+                $ag->storeByGroupId($group->id, $data['actionId']);
                 # 功能与菜单的对应关系
-                GroupMenu::storeByGroupId($group->id, explode(',', $data['menu_ids']));
+                $gm->storeByGroupId($group->id, explode(',', $data['menu_ids']));
                 # 功能与卡片的对应关系
-                GroupTab::storeByGroupId($group->id, $data['tabId']);
+                $gt->storeByGroupId($group->id, $data['tabId']);
+                unset($ag, $gm, $gt);
             });
         } catch (Exception $e) {
             throw $e;
@@ -140,11 +143,15 @@ class Group extends Model {
                     'enabled' => $data['enabled'],
                 ]);
                 # 功能与角色的对应关系
-                ActionGroup::storeByGroupId($id, $data['actionId']);
+                $ag = new ActionGroup();
+                $gm = new GroupMenu();
+                $gt = new GroupTab();
+                $ag->storeByGroupId($id, $data['actionId']);
                 # 功能与菜单的对应关系
-                GroupMenu::storeByGroupId($id, explode(',', $data['menu_ids']));
+                $gm->storeByGroupId($id, explode(',', $data['menu_ids']));
                 # 功能与卡片的对应关系
-                GroupTab::storeByGroupId($id, $data['tabId']);
+                $gt->storeByGroupId($id, $data['tabId']);
+                unset($ag, $gm, $gt);
             });
         } catch (Exception $e) {
             throw $e;

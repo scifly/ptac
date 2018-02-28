@@ -6,6 +6,7 @@ use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -60,7 +61,7 @@ class ScoreRange extends Model {
      * @param array $data
      * @return bool
      */
-    static function store(array $data) {
+    function store(array $data) {
         
         $scoreRange = self::create($data);
 
@@ -75,7 +76,7 @@ class ScoreRange extends Model {
      * @param $id
      * @return bool
      */
-    static function modify(array $data, $id) {
+    function modify(array $data, $id) {
         
         $scoreRange = self::find($id);
         if (!$scoreRange) { return false; }
@@ -89,9 +90,9 @@ class ScoreRange extends Model {
      *
      * @param $id
      * @return bool|null
-     * @throws \Exception
+     * @throws Exception
      */
-    static function remove($id) {
+    function remove($id) {
         
         $scoreRange = self::find($id);
         if (!$scoreRange) { return false; }
@@ -105,7 +106,7 @@ class ScoreRange extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'ScoreRange.id', 'dt' => 0],
@@ -132,7 +133,7 @@ class ScoreRange extends Model {
                 ],
             ],
         ];
-        $condition = 'ScoreRange.school_id = ' . School::schoolId();
+        $condition = 'ScoreRange.school_id = ' . $this->schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
@@ -144,7 +145,7 @@ class ScoreRange extends Model {
      * @param $request
      * @return \Illuminate\Http\JsonResponse
      */
-    static function statistics($request) {
+    function statistics($request) {
         
         //查询班级
         if ($request['type'] == 'grade') {

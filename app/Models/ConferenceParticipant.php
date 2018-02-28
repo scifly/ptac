@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -33,6 +34,8 @@ use Illuminate\Support\Facades\Auth;
  * @property-read ConferenceQueue $conferenceQueue
  */
 class ConferenceParticipant extends Model {
+    
+    use ModelTrait;
 
     protected $fillable = [
         'educator_id', 'attendance_time',
@@ -101,7 +104,7 @@ class ConferenceParticipant extends Model {
                 ],
             ]
         ];
-        $condition = 'Educator.school_id = ' . School::schoolId();
+        $condition = 'Educator.school_id = ' . $this->schoolId();
         $user = Auth::user();
         # 普通角色用户只能查看自己发起会议的与会者列表
         if (!in_array($user->group->name, ['运营', '企业', '学校'])) {

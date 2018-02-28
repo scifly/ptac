@@ -49,6 +49,8 @@ use Illuminate\Support\Facades\Auth;
  * @property int $educator_id 发起人教职员工ID
  * @property-read \App\Models\User $user
  * @method static Builder|ConferenceQueue whereEducatorId($value)
+ * @property int $status 会议状态
+ * @method static Builder|ConferenceQueue whereStatus($value)
  */
 class ConferenceQueue extends Model {
 
@@ -197,7 +199,7 @@ class ConferenceQueue extends Model {
                 ],
             ],
         ];
-        $condition = 'ConferenceRoom.school_id = ' . School::schoolId();
+        $condition = 'ConferenceRoom.school_id = ' . $this->schoolId();
         if (!in_array(Auth::user()->group->name, ['运营', '企业', '学校'])) {
             $condition .= ' AND ConferenceQueue.user_id = ' . Auth::id();
         }

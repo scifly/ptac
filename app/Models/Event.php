@@ -87,7 +87,7 @@ class Event extends Model {
      */
     public function subject() { return $this->belongsTo('App\Models\Subject'); }
 
-    static function datatable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'Event.id', 'dt' => 0],
@@ -98,7 +98,7 @@ class Event extends Model {
             ['db' => 'Event.end', 'dt' => 5],
             [
                 'db' => 'Event.ispublic', 'dt' => 6,
-                'formatter' => function ( $d, $row ) {
+                'formatter' => function ( $d) {
                     if (!empty($d)) {
                        return  $d ? '是' : '否';
                     }
@@ -108,7 +108,7 @@ class Event extends Model {
             ['db' => 'Subject.name', 'dt' => 7],
             [
                 'db' => 'Event.alertable', 'dt' => 8,
-                'formatter' => function ($d,$row){
+                'formatter' => function ($d){
                  return $d ? '是' : '否';
                 }
             ],

@@ -89,7 +89,7 @@ class Tab extends Model {
      * @throws Exception
      * @throws Throwable
      */
-    static function scan() {
+    public function scan() {
 
         $action = new Action();
         $controllers = self::controllerPaths($action->getSiteRoot() . self::CONTROLLER_DIR);
@@ -146,7 +146,7 @@ class Tab extends Model {
      * @return bool|mixed
      * @throws Throwable
      */
-    static function store(array $data) {
+    function store(array $data) {
         
         try {
             DB::transaction(function () use ($data) {
@@ -154,6 +154,7 @@ class Tab extends Model {
                 $menuTab = new MenuTab();
                 $menuIds = $data['menu_ids'];
                 $menuTab->storeByTabId($t->id, $menuIds);
+                unset($menuTab);
             });
         } catch (Exception $e) {
             throw $e;
@@ -170,7 +171,7 @@ class Tab extends Model {
      * @return bool|mixed
      * @throws Throwable
      */
-    static function remove($id) {
+    public function remove($id) {
 
         $tab = self::find($id);
         if (!isset($tab)) { return false; }
@@ -194,7 +195,7 @@ class Tab extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    public function datatable() {
 
         $columns = [
             ['db' => 'Tab.id', 'dt' => 0],
@@ -252,7 +253,7 @@ class Tab extends Model {
      * @throws Exception
      * @throws Throwable
      */
-    static function modify(array $data, $id) {
+    public function modify(array $data, $id) {
 
         $tab = self::find($id);
         if (!isset($tab)) { return false; }
@@ -310,7 +311,7 @@ class Tab extends Model {
      * @param ReflectionClass $controller
      * @return mixed|string
      */
-    private static function controllerComments(ReflectionClass $controller) {
+    private function controllerComments(ReflectionClass $controller) {
         
         $comment = $controller->getDocComment();
         $name = 'n/a';
@@ -334,7 +335,7 @@ class Tab extends Model {
      * @param $ctlrName
      * @return int|mixed
      */
-    private static function indexActionId($ctlrName) {
+    private function indexActionId($ctlrName) {
         
         $action = new Action();
         $a = $actionId = $action::whereEnabled(1)
@@ -356,7 +357,7 @@ class Tab extends Model {
      * @param array $allData
      * @return array
      */
-    private static function controllerPaths($rootDir, $allData = []) {
+    private function controllerPaths($rootDir, $allData = []) {
         
         // set filenames invisible if you want
         $invisibleFileNames = [".", "..", ".htaccess", ".htpasswd"];

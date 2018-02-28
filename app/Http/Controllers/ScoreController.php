@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\ScoreRequest;
 use App\Models\Exam;
 use App\Models\Score;
@@ -92,7 +93,7 @@ class ScoreController extends Controller {
     public function edit($id) {
         
         $score = Score::find($id);
-        abort_if(!$score, self::NOT_FOUND);
+        abort_if(!$score, HttpStatusCode::NOT_FOUND);
         
         return $this->output([
             'score'       => $score,
@@ -111,7 +112,7 @@ class ScoreController extends Controller {
     public function update(ScoreRequest $request, $id) {
         $input = $request->all();
         $score = Score::find($id);
-        abort_if(!$score, self::NOT_FOUND);
+        abort_if(!$score, HttpStatusCode::NOT_FOUND);
         $subject = Subject::whereId($input['subject_id'])->first();
         abort_if(
             $input['score'] > $subject->max_score,
@@ -135,7 +136,7 @@ class ScoreController extends Controller {
     public function destroy($id) {
         
         $score = Score::find($id);
-        abort_if(!$score, self::NOT_FOUND);
+        abort_if(!$score, HttpStatusCode::NOT_FOUND);
         
         return $this->result(
             $score->remove($id)
@@ -183,6 +184,8 @@ class ScoreController extends Controller {
             }
 
         }
+        
+        return abort(HttpStatusCode::METHOD_NOT_ALLOWED);
 
     }
     
@@ -197,6 +200,8 @@ class ScoreController extends Controller {
             $score = new Score();
             return response()->json($score->sendMessage(json_decode($data)));
         }
+        
+        return abort(HttpStatusCode::METHOD_NOT_ALLOWED);
 
     }
     
@@ -219,7 +224,7 @@ class ScoreController extends Controller {
         }
         // 文件是否上传成功
         if ($file->isValid()) {
-            $result = Score::upload($file, $input);
+            $result = $this->score->upload($file, $input);
             return response()->json($result);
         }
     
@@ -234,11 +239,14 @@ class ScoreController extends Controller {
      * @return mixed
      */
     public function statistics($id){
+        
         #先判断这个考试录入分数没有
         if(!Score::whereExamId($id)->first()){
             return response()->json(['message' => '本次考试还未录入成绩！', 'statusCode' => 500]);
         }
-       return Score::statistics($id) ? $this->succeed() : $this->fail();
+        return $this->result(
+            $this->score->statistics($id)
+        );
        
     }
     
@@ -249,6 +257,7 @@ class ScoreController extends Controller {
      * @return JsonResponse|string
      */
     public function claLists($exam_id) {
+        
         $exam = Exam::whereId($exam_id)->first();
         if (!$exam) {
             $lists = [];
@@ -264,12 +273,8 @@ class ScoreController extends Controller {
             $html .= '<option value="' . $key . '">' . $value . '</option>';
         }
         
-<<<<<<< HEAD
-        return $lists ? $this->succeed($html) : $this->fail();
-=======
-        return $this->result($list, $html);
+        return $this->result($lists, $html);
         
->>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
     }
     
     /**
@@ -286,15 +291,12 @@ class ScoreController extends Controller {
      * @throws Throwable
      */
     public function analydata(){
+        
         $input = Request::all();
         $view = Score::analysis($input);
-<<<<<<< HEAD
-      return $view ? $this->succeed($view) : $this->fail('未录入或未统计成绩！');
-=======
         
         return $this->result($view, $view, '未录入或未统计成绩！');
         
->>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
     }
     
     /**
@@ -303,6 +305,7 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function listdatas($examId){
+        
         $exam = Exam::whereId($examId)->first();
         $squadIds = explode(',', $exam->class_ids);
         $subjectIds = explode(',', $exam->subject_ids);
@@ -329,17 +332,13 @@ class ScoreController extends Controller {
         foreach ($subjects as $key => $value) {
             $subjectHtml .= '<option value="' . $key . '">' . $value . '</option>';
         }
-<<<<<<< HEAD
-        return response()->json(['students' => $studentHtml, 'subjects' => $subjectHtml, 'statusCode' => 200]);
-=======
-        
+
         return response()->json([
             'statusCode' => HttpStatusCode::OK,
             'students' => $studentHtml,
             'subjects' => $subjectHtml,
         ]);
         
->>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
     }
 
     /**
@@ -412,7 +411,8 @@ class ScoreController extends Controller {
             $html .= '<option value="' . $key . '">' . $value . '</option>';
         }
         
-        return $students ? $this->succeed($html) : $this->fail();
+        return $this->result($students, $html);
+    
     }
 
 }

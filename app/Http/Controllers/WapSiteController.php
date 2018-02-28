@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 use App\Facades\Wechat;
 use App\Helpers\HttpStatusCode;
 use App\Http\Requests\WapSiteRequest;
-use App\Models\App;
-use App\Models\Corp;
 use App\Models\Media;
 use App\Models\School;
 use App\Models\WapSite;
@@ -24,12 +22,14 @@ use Throwable;
  */
 class WapSiteController extends Controller {
     
-    protected $ws;
+    protected $ws, $media, $school;
     
-    public function __construct(WapSite $ws) {
+    public function __construct(WapSite $ws, Media $media, School $school) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->ws = $ws;
+        $this->media = $media;
+        $this->school = $school;
 
     }
     
@@ -41,13 +41,14 @@ class WapSiteController extends Controller {
      */
     public function index() {
 
-        $ws = WapSite::whereSchoolId(School::schoolId())->where('enabled', 1)->first();
+        $ws = WapSite::whereSchoolId($this->school->getSchoolById())
+            ->where('enabled', 1)->first();
         abort_if(!$ws, HttpStatusCode::NOT_FOUND);
         $mediaIds = explode(",", $ws->media_ids);
     
         return $this->output([
             'ws' => $ws,
-            'medias'  => Media::medias($mediaIds),
+            'medias'  => $this->media->medias($mediaIds),
             'show'    => true,
         ]);
     
@@ -83,7 +84,7 @@ class WapSiteController extends Controller {
         
         return $this->output([
             'ws' => $ws,
-            'medias'  => Media::medias(explode(',',$ws->media_ids)),
+            'medias'  => $this->media->medias(explode(',',$ws->media_ids)),
         ]);
         
     }
@@ -132,32 +133,6 @@ class WapSiteController extends Controller {
     public function uploadImages() {
         
         $files = Request::file('img');
-<<<<<<< HEAD
-        $type = Request::query('type');
-        if (empty($files)) {
-            $result['statusCode'] = 0;
-            $result['message'] = '您还未选择图片！';
-            return $result;
-        } else {
-            $result['data'] = [];
-            $mes = [];
-            foreach ($files as $key => $file) {
-                $this->validateFile($file, $mes);
-            }
-            $result['statusCode'] = 1;
-            $result['message'] = '上传成功！';
-            $result['data'] = $mes;
-            $token = '';
-            if ($mes) {
-                $path = '';
-                foreach ($mes AS $m)
-                    $path = dirname(public_path()) . '/' . $m['path'];
-                    $data = ["media" => curl_file_create($path)];
-
-                    Wechat::uploadMedia($token, 'image', $data);
-            }
-
-=======
         abort_if(empty($files), HttpStatusCode::NOT_ACCEPTABLE, '您还未选择图片！');
         
         $this->result['data'] = [];
@@ -174,7 +149,6 @@ class WapSiteController extends Controller {
                 $path = dirname(public_path()) . '/' . $m['path'];
                 $data = ["media" => curl_file_create($path)];
                 Wechat::uploadMedia($token, 'image', $data);
->>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         }
         
         return response()->json($this->result);

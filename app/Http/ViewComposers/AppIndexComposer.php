@@ -7,16 +7,18 @@ use App\Models\App;
 use App\Models\Corp;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Log;
-
 
 class AppIndexComposer {
 
     use ModelTrait;
-
+    
+    protected $corp;
+    
+    function __construct(Corp $corp) { $this->corp = $corp; }
+    
     public function compose(View $view) {
 
-        $corpId = Corp::corpId();
+        $corpId = $this->corp->corpId();
         $corp = Corp::find($corpId);
         $apps = App::whereCorpId($corpId)->get()->toArray();
         $this->formatDateTime($apps);

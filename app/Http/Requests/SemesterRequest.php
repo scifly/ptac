@@ -1,12 +1,14 @@
 <?php
 namespace App\Http\Requests;
 
-use App\Models\School;
+use App\Helpers\ModelTrait;
 use App\Rules\Overlaid;
 use App\Rules\StartEnd;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SemesterRequest extends FormRequest {
+    
+    use ModelTrait;
     
     /**
      * Determine if the user is authorized to make this request.
@@ -42,7 +44,7 @@ class SemesterRequest extends FormRequest {
 
         $start = substr($input['start_date'],0,10);
         $end = substr($input['end_date'],0,10);
-        $input['school_id'] = School::schoolId();
+        $input['school_id'] = $this->schoolId();
         $input['startend'] = [
             $start, $end, 'semester', $input['id'] ?? null
         ];

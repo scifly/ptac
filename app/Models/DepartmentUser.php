@@ -41,7 +41,7 @@ class DepartmentUser extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function storeByUserId($userId, array $departmentIds) {
+    function storeByUserId($userId, array $departmentIds) {
         
         try {
             DB::transaction(function () use ($userId, $departmentIds) {
@@ -70,7 +70,7 @@ class DepartmentUser extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function storeByDepartmentId($departmentId, array $userIds) {
+    function storeByDepartmentId($departmentId, array $userIds) {
         
         try {
             DB::transaction(function () use ($departmentId, $userIds) {

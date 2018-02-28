@@ -17,9 +17,12 @@ use Throwable;
  */
 class TeamController extends Controller {
     
-    public function __construct() {
+    protected $team;
+    
+    public function __construct(Team $team) {
     
         $this->middleware(['auth', 'checkrole']);
+        $this->team = $team;
     
     }
     
@@ -32,7 +35,9 @@ class TeamController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(Team::datatable());
+            return response()->json(
+                $this->team->datatable()
+            );
         }
         
         return $this->output();
@@ -64,7 +69,9 @@ class TeamController extends Controller {
         
         $this->authorize('c', Team::class);
         
-        return $this->result(Team::create($request->all()));
+        return $this->result(
+            $this->team->create($request->all())
+        );
         
     }
     
@@ -80,7 +87,9 @@ class TeamController extends Controller {
         $team = Team::find($id);
         $this->authorize('rud', $team);
         
-        return $this->output(['team' => $team]);
+        return $this->output([
+            'team' => $team,
+        ]);
         
     }
     
@@ -97,7 +106,9 @@ class TeamController extends Controller {
         $team = Team::find($id);
         $this->authorize('rud', $team);
         
-        return $this->result($team->update($request->all()));
+        return $this->result(
+            $team->update($request->all())
+        );
         
     }
     
@@ -112,18 +123,10 @@ class TeamController extends Controller {
         
         $team = Team::find($id);
         $this->authorize('rud', $team);
-<<<<<<< HEAD
-        $educators = EducatorTeam::whereTeamId($id);
-        if ($educators) {
-            return $this->result(false, '', '该组下包含教师，无法删除！');
-        }
-        return $this->result($team->delete());
-=======
         
         return $this->result(
             $team->remove($id)
         );
->>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         
     }
     

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Events\GradeCreated;
@@ -45,42 +44,42 @@ use Illuminate\Support\Facades\Auth;
  * @mixin Eloquent
  */
 class Grade extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $fillable = [
         'name', 'school_id', 'department_id',
         'educator_ids', 'enabled',
     ];
-
+    
     /**
      * 返回对应的部门对象
      *
      * @return BelongsTo
      */
     public function department() { return $this->belongsTo('App\Models\Department'); }
-
+    
     /**
      * 返回指定年级所属的学校对象
      *
      * @return BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-
+    
     /**
      * 获取指定年级包含的所有班级对象
      *
      * @return HasMany
      */
     public function classes() { return $this->hasMany('App\Models\Squad'); }
-
+    
     /**
      * 获取指定年级包含的学生考勤设置对象
      *
      * @return HasMany
      */
     public function studentAttendanceSetting() { return $this->hasMany('App\Models\StudentAttendanceSetting'); }
-
+    
     /**
      * 通过Squad中间对象获取指定年级包含的所有学生对象
      *
@@ -93,7 +92,7 @@ class Grade extends Model {
             'App\Models\Squad',
             'id',
             'class_id');
-    
+        
     }
     
     /**
@@ -101,10 +100,10 @@ class Grade extends Model {
      *
      * @return Collection
      */
-    static function grades() {
+    function grades() {
         
-        return self::whereSchoolId(School::schoolId())->get()->pluck('name', 'id');
-
+        return self::whereSchoolId($this->schoolId())->get()->pluck('name', 'id');
+        
     }
     
     /**
@@ -119,13 +118,14 @@ class Grade extends Model {
         $grade = self::create($data);
         if ($grade && $fireEvent) {
             event(new GradeCreated($grade));
+            
             return true;
         }
-
+        
         return $grade ? true : false;
-
+        
     }
-
+    
     /**
      * 更新年级
      *
@@ -140,11 +140,12 @@ class Grade extends Model {
         $updated = $grade->update($data);
         if ($updated && $fireEvent) {
             event(new GradeUpdated($grade));
+            
             return true;
         }
-
+        
         return $updated ? true : false;
-
+        
     }
     
     /**
@@ -158,15 +159,18 @@ class Grade extends Model {
     public function remove($id, $fireEvent = false) {
         
         $grade = self::find($id);
-        if (!$grade) { return false; }
+        if (!$grade) {
+            return false;
+        }
         $removed = self::removable($grade) ? $grade->delete() : false;
         if ($removed && $fireEvent) {
             event(new GradeDeleted($grade));
+            
             return true;
         }
-
+        
         return $removed ? true : false;
-
+        
     }
     
     /**
@@ -179,19 +183,19 @@ class Grade extends Model {
         $columns = [
             ['db' => 'Grade.id', 'dt' => 0],
             [
-                'db' => 'Grade.name', 'dt' => 1,
+                'db'        => 'Grade.name', 'dt' => 1,
                 'formatter' => function ($d) {
                     return '<i class="fa fa-object-group"></i>&nbsp;' . $d;
-                }
+                },
             ],
             [
-                'db' => 'School.name as schoolname', 'dt' => 2,
+                'db'        => 'School.name as schoolname', 'dt' => 2,
                 'formatter' => function ($d) {
                     return '<i class="fa fa-university"></i>&nbsp;' . $d;
-                }
+                },
             ],
             [
-                'db' => 'Grade.educator_ids', 'dt' => 3,
+                'db'        => 'Grade.educator_ids', 'dt' => 3,
                 'formatter' => function ($d) {
                     if (empty($d)) {
                         return '';
@@ -204,13 +208,14 @@ class Grade extends Model {
                             $educators[] = $educator->user->realname;
                         }
                     }
+                    
                     return implode(', ', $educators);
                 },
             ],
             ['db' => 'Grade.created_at', 'dt' => 4],
             ['db' => 'Grade.updated_at', 'dt' => 5],
             [
-                'db' => 'Grade.enabled', 'dt' => 6,
+                'db'        => 'Grade.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
@@ -218,32 +223,34 @@ class Grade extends Model {
         ];
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
                     'School.id = Grade.school_id',
                 ],
             ],
         ];
-
         // todo: 增加角色过滤条件
-        $condition = 'Grade.school_id = ' . School::schoolId();
+        $school = new School();
+        $condition = 'Grade.school_id = ' . $this->schoolId();
+        unset($school);
         $user = Auth::user();
         $role = $user->group->name;
-
-        if($role == '教职员工'){
+        if ($role == '教职员工') {
+            $gradeIds = [];
             $educatorId = $user->educator->id;
-            $grades = Grade::where('educator_ids','like','%'.$educatorId.'%')
+            $grades = self::where('educator_ids', 'like', '%' . $educatorId . '%')
                 ->get();
-            foreach ($grades as $g){
+            foreach ($grades as $g) {
                 $gradeIds[] = $g->id;
             }
-            $gradeIds = implode(',',$gradeIds);
+            $gradeIds = implode(',', $gradeIds);
             $condition .= " and Grade.id in ($gradeIds)";
         }
+        
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
-
+        
     }
-
+    
 }

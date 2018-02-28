@@ -1,8 +1,8 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use App\Http\Requests\SubjectRequest;
 use Carbon\Carbon;
@@ -47,28 +47,30 @@ use Illuminate\Support\Facades\DB;
  * @property-read Collection|Major[] $majors
  */
 class Subject extends Model {
-
+    
+    use ModelTrait;
+    
     protected $table = 'subjects';
     protected $fillable = [
         'school_id', 'name', 'isaux',
         'max_score', 'pass_score', 'grade_ids',
         'enabled',
     ];
-
+    
     /**
      * 返回指定科目所属的学校对象
      *
      * @return BelongsTo
      */
     public function school() { return $this->belongsTo('App\Models\School'); }
-
+    
     /**
      * 获取指定科目包含的所有科目次分类对象
      *
      * @return HasMany
      */
     public function subjectModules() { return $this->hasMany('App\Models\SubjectModule'); }
-
+    
     /**
      * 获取指定科目包含的所有专业对象
      *
@@ -82,41 +84,41 @@ class Subject extends Model {
             'subject_id',
             'major_id'
         );
-
+        
     }
-
+    
     /**
      * 获取指定学校的科目列表
      *
      * @param $schoolId
      * @return Collection
      */
-    static function subjects($schoolId) {
+    function subjects($schoolId) {
         
         return self::whereSchoolId($schoolId)->get()->pluck('id', 'name');
-
+        
     }
-
+    
     /**
      * 获取指定成绩统计项包含的科目列表
      *
      * @param $ids
      * @return array
      */
-    static function selectedSubjects($ids) {
+    function selectedSubjects($ids) {
         
         $ids = explode(',', $ids);
         $selectedSubjects = [];
         foreach ($ids as $id) {
-            if ($id == 0 ){
+            if ($id == 0) {
                 $selectedSubjects[$id] = '总分';
             } else {
                 $selectedSubjects[$id] = self::find($id)->name;
             }
         }
-
+        
         return $selectedSubjects;
-
+        
     }
     
     /**
@@ -127,33 +129,34 @@ class Subject extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function store(SubjectRequest $request) {
+    public function store(SubjectRequest $request) {
         
         try {
             DB::transaction(function () use ($request) {
                 $subject = self::create([
-                    'name' => $request->input('name'),
-                    'school_id' => $request->input('school_id'),
-                    'max_score' => $request->input('max_score'),
+                    'name'       => $request->input('name'),
+                    'school_id'  => $request->input('school_id'),
+                    'max_score'  => $request->input('max_score'),
                     'pass_score' => $request->input('pass_score'),
-                    'grade_ids' => $request->input('grade_ids'),
-                    'isaux' => $request->input('isaux'),
-                    'enabled' => $request->input('enabled'),
+                    'grade_ids'  => $request->input('grade_ids'),
+                    'isaux'      => $request->input('isaux'),
+                    'enabled'    => $request->input('enabled'),
                 ]);
-                if( !empty($request->input('major_ids'))){
-                    MajorSubject::storeBySubjectId(
+                if (!empty($request->input('major_ids'))) {
+                    $ms = new MajorSubject();
+                    $this->ms->storeBySubjectId(
                         $subject->id, $request->input('major_ids')
                     );
+                    unset($ms);
                 }
-
+                
             });
-
         } catch (Exception $e) {
             throw $e;
         }
         
         return true;
-
+        
     }
     
     /**
@@ -165,33 +168,37 @@ class Subject extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function modify(SubjectRequest $request, $id) {
+    public function modify(SubjectRequest $request, $id) {
         
         $subject = self::find($id);
-        if (!isset($subject)) { return false; }
+        if (!isset($subject)) {
+            return false;
+        }
         try {
             DB::transaction(function () use ($request, $id, $subject) {
                 $subject->update([
-                    'name' => $request->input('name'),
-                    'school_id' => $request->input('school_id'),
-                    'max_score' => $request->input('max_score'),
+                    'name'       => $request->input('name'),
+                    'school_id'  => $request->input('school_id'),
+                    'max_score'  => $request->input('max_score'),
                     'pass_score' => $request->input('pass_score'),
-                    'grade_ids' => $request->input('grade_ids'),
-                    'isaux' => $request->input('isaux'),
-                    'enabled' => $request->input('enabled'),
+                    'grade_ids'  => $request->input('grade_ids'),
+                    'isaux'      => $request->input('isaux'),
+                    'enabled'    => $request->input('enabled'),
                 ]);
                 MajorSubject::whereSubjectId($id)->delete();
-                if(!empty($request->input('major_ids'))){
-                    MajorSubject::storeBySubjectId($id, $request->input('major_ids'));
+                if (!empty($request->input('major_ids'))) {
+                    $this->ms->storeBySubjectId(
+                        $id, $request->input('major_ids')
+                    );
                 }
             });
-
+            
         } catch (Exception $e) {
             throw $e;
         }
         
         return true;
-
+        
     }
     
     /**
@@ -202,10 +209,12 @@ class Subject extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function remove($id) {
+    function remove($id) {
         
         $subject = self::find($id);
-        if (!isset($subject)) { return false; }
+        if (!isset($subject)) {
+            return false;
+        }
         try {
             DB::transaction(function () use ($id, $subject) {
                 # 删除指定的科目记录
@@ -213,29 +222,12 @@ class Subject extends Model {
                 # 删除与科目绑定的专业记录
                 MajorSubject::whereSubjectId($id)->delete();
             });
-
+            
         } catch (Exception $e) {
             throw $e;
         }
         
         return true;
-
-    }
-    
-    /**
-     * 获取科目ids
-     *
-     * @param array $subjects
-     * @return array
-     */
-    static function ids(array $subjects) {
-        
-        $result = [];
-        foreach ($subjects as $v) {
-            $result[$v] = self::whereName($v)->value('id');
-        }
-
-        return $result;
         
     }
     
@@ -244,24 +236,24 @@ class Subject extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'Subject.id', 'dt' => 0],
             [
-                'db' => 'Subject.name', 'dt' => 1,
+                'db'        => 'Subject.name', 'dt' => 1,
                 'formatter' => function ($d) {
                     return '<i class="fa fa-book"></i>&nbsp;' . $d;
-                }
+                },
             ],
             [
-                'db' => 'School.name as schoolname', 'dt' => 2,
+                'db'        => 'School.name as schoolname', 'dt' => 2,
                 'formatter' => function ($d) {
                     return '<i class="fa fa-university"></i>&nbsp;' . $d;
-                }
+                },
             ],
             [
-                'db' => 'Subject.isaux', 'dt' => 3,
+                'db'        => 'Subject.isaux', 'dt' => 3,
                 'formatter' => function ($d) {
                     return $d == 1 ? '是' : '否';
                 },
@@ -271,12 +263,13 @@ class Subject extends Model {
             ['db' => 'Subject.created_at', 'dt' => 6],
             ['db' => 'Subject.updated_at', 'dt' => 7],
             [
-                'db' => 'Subject.enabled', 'dt' => 8,
+                'db'        => 'Subject.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $status = $d ? Snippet::DT_ON : Snippet::DT_OFF;
                     $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
                     $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
+                    
                     return
                         $status . str_repeat(Snippet::DT_SPACE, 3) .
                         $editLink . str_repeat(Snippet::DT_SPACE, 2) .
@@ -286,16 +279,16 @@ class Subject extends Model {
         ];
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => ['School.id = Subject.school_id'],
             ],
         ];
-        $condition = 'Subject.school_id = ' . School::schoolId();
+        $condition = 'Subject.school_id = ' . $this->schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
-
+        
     }
-
+    
 }

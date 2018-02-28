@@ -15,7 +15,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class ManageImportStudent implements ShouldQueue {
     
@@ -117,7 +116,7 @@ class ManageImportStudent implements ShouldQueue {
                                             'enabled'       => 1,
                                         ]);
                                         # 创建企业号成员
-                                        User::createWechatUser($user['id']);
+                                        $user->createWechatUser($user['id']);
                                     } else {
                                         # 手机号码存在时 更新user 再判断监护人是否存在 监护关系是否存在
                                         $user = User::find($m->user_id);
@@ -161,7 +160,7 @@ class ManageImportStudent implements ShouldQueue {
                                             'enabled'       => 1,
                                         ]);
                                         # 更新企业号监护人成员
-                                        User::updateWechatUser($m->user_id);
+                                        $user->updateWechatUser($m->user_id);
                                     }
                                 }
                             }
@@ -181,7 +180,7 @@ class ManageImportStudent implements ShouldQueue {
                             'enabled'       => 1,
                         ]);
                         # 创建企业号成员
-                        User::createWechatUser($u['id']);
+                        $s->user->createWechatUser($u['id']);
                     }
                 }
                 

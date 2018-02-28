@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -76,7 +75,7 @@ class Message extends Model {
         's_user_id', 'r_user_id', 'message_type_id',
         'read', 'sent','title'
     ];
-
+    
     /**
      * 返回指定消息所属的消息类型对象
      *
@@ -116,11 +115,13 @@ class Message extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function store(MessageRequest $request) {
+    function store(MessageRequest $request) {
         
         $input = $request->all();
         #新增一条日志记录（指定批次）
-        $logId = MessageSendingLog::store(count($input['r_user_id']));
+        $msl = new MessageSendingLog();
+        $logId = $msl->store(count($input['r_user_id']));
+        unset($msl);
         $input['msl_id'] = $logId;
         $updateUrl = [];
         try {
@@ -146,7 +147,7 @@ class Message extends Model {
      * @param $request
      * @throws Exception
      */
-    private static function removeMedias(MessageRequest $request) {
+    private function removeMedias(MessageRequest $request) {
 
         //删除原有的图片
         $mediaIds = $request->input('del_ids');
@@ -172,7 +173,7 @@ class Message extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function modify(MessageRequest $request, $id) {
+    function modify(MessageRequest $request, $id) {
         
         $message = self::find($id);
         if (!$message) { return false; }
@@ -195,7 +196,7 @@ class Message extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'Message.id', 'dt' => 0],
@@ -257,7 +258,7 @@ class Message extends Model {
         $condition = null;
         $role = Auth::user()->group->name;
         if ($role == '运营' ||$role == '企业' || $role == '学校') {
-            $schoolId = School::schoolId();
+            $schoolId = $this->schoolId();
             $educators = Educator::whereSchoolId($schoolId)->whereEnabled(1)->get();
             $eduUserIds = [];
             $userIds = [];
@@ -317,13 +318,11 @@ class Message extends Model {
                     $depts[] = $o;
                 }
             }
-            $userItems = implode('|', $us);
             $touser = implode('|', $users);
             $toparty = implode('|', $depts);
             # 推送的所有用户以及电话
             $userDatas = $this->getMobiles($us, $depts);
             $title = '';
-            $content = '';
 
             $msl = [
                 'read_count' => 0,

@@ -3,10 +3,8 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
-use App\Models\Corp;
 use App\Models\School;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Auth;
 
 class GroupCreateComposer {
 
@@ -32,7 +30,7 @@ class GroupCreateComposer {
 //            default:
 //                break;
 //        }
-        $schools = School::whereId(School::schoolId())->pluck('name', 'id');
+        $schools = School::whereId($this->schoolId())->pluck('name', 'id');
 
         $view->with([
             'schools' => $schools,

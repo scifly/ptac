@@ -20,7 +20,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class ManageImportEducator implements ShouldQueue {
     
@@ -91,7 +90,7 @@ class ManageImportEducator implements ShouldQueue {
                             ]);
                         }
                         # 创建企业号成员
-                        User::createWechatUser($user['id']);
+                        $user->createWechatUser($user['id']);
                     } else {
                         # 手机号码存在时 更新user
                         $u = User::find($m->user_id);
@@ -100,7 +99,7 @@ class ManageImportEducator implements ShouldQueue {
                             $u->gender = $row['gender'] == '男' ? '0' : '1';
                             $u->save();
                         }
-                        User::updateWechatUser($m->user_id);
+                        $u->updateWechatUser($m->user_id);
                         $e = Educator::whereUserId($m->user_id)->first();
                         # 教职工存在
                         if (!empty($e)) {
@@ -129,7 +128,7 @@ class ManageImportEducator implements ShouldQueue {
                             ]);
                         }
                         # 更新企业号成员
-                        User::updateWechatUser($m->user_id);
+                        $u->updateWechatUser($m->user_id);
                     }
                     # 年级数据 存在时更新年级主任数据
                     $gradeInput = str_replace(['，', '：'], [',', ':'], $row['grades']);

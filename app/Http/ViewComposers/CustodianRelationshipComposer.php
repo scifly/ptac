@@ -8,7 +8,6 @@ use App\Models\Grade;
 use App\Models\School;
 use App\Models\Squad;
 use App\Models\Student;
-use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,7 +25,7 @@ class CustodianRelationshipComposer {
                 ->where('enabled', 1)
                 ->pluck('name', 'id');
         } else {
-            $topDepartmentId = User::topDeptId();
+            $topDepartmentId = $user->topDeptId();
             $departmentType = Department::find($topDepartmentId)->departmentType;
             switch ($departmentType->name) {
                 case '根':

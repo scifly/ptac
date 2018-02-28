@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\PqSubjectRequest;
 use App\Models\PollQuestionnaireSubject;
 use Exception;
@@ -16,9 +17,12 @@ use Throwable;
  */
 class PollQuestionnaireSubjectController extends Controller {
     
-    function __construct() {
+    protected $pqs;
+    
+    function __construct(PollQuestionnaireSubject $pqs) {
     
         $this->middleware(['auth', 'checkrole']);
+        $this->pqs = $pqs;
         
     }
     
@@ -32,7 +36,7 @@ class PollQuestionnaireSubjectController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                PollQuestionnaireSubject::dataTable()
+                $this->pqs->dataTable()
             );
         }
         
@@ -61,7 +65,7 @@ class PollQuestionnaireSubjectController extends Controller {
     public function store(PqSubjectRequest $request) {
         
         return $this->result(
-            PollQuestionnaireSubject::create($request->all())
+            $this->pqs->create($request->all())
         );
         
     }
@@ -75,10 +79,12 @@ class PollQuestionnaireSubjectController extends Controller {
      */
     public function show($id) {
         
-        $pqs = PollQuestionnaireSubject::find($id);
-        if (!$pqs) { return $this->notFound(); }
+        $pqs = $this->pqs->find($id);
+        abort_if(!$pqs, HttpStatusCode::NOT_FOUND);
         
-        return $this->output(['pqSubject' => $pqs]);
+        return $this->output([
+            'pqs' => $pqs,
+        ]);
         
     }
     
@@ -90,10 +96,12 @@ class PollQuestionnaireSubjectController extends Controller {
      */
     public function edit($id) {
         
-        $pqs = PollQuestionnaireSubject::find($id);
-        if (!$pqs) { return $this->notFound(); }
+        $pqs = $this->pqs->find($id);
+        abort_if(!$pqs, HttpStatusCode::NOT_FOUND);
         
-        return $this->output(['pqSubject' => $pqs]);
+        return $this->output([
+            'pqs' => $pqs
+        ]);
         
     }
     
@@ -106,10 +114,12 @@ class PollQuestionnaireSubjectController extends Controller {
      */
     public function update(PqSubjectRequest $request, $id) {
     
-        $pqs = PollQuestionnaireSubject::find($id);
-        if (!$pqs) { return $this->notFound(); }
+        $pqs = $this->pqs->find($id);
+        abort_if(!$pqs, HttpStatusCode::NOT_FOUND);
     
-        return $this->result($pqs->update($request->all()));
+        return $this->result(
+            $pqs->update($request->all())
+        );
         
     }
     
@@ -122,10 +132,12 @@ class PollQuestionnaireSubjectController extends Controller {
      */
     public function destroy($id) {
         
-        $pqs = PollQuestionnaireSubject::find($id);
-        if (!$pqs) { return $this->notFound(); }
+        $pqs = $this->pqs->find($id);
+        abort_if(!$pqs, HttpStatusCode::NOT_FOUND);
         
-        return $this->result($pqs->remove($id));
+        return $this->result(
+            $pqs->remove($id)
+        );
         
     }
     

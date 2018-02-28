@@ -18,9 +18,14 @@ use Throwable;
  */
 class SubjectController extends Controller {
     
-    function __construct() {
+    protected $subject, $major, $grade;
+    
+    function __construct(Subject $subject, Major $major, Grade $grade) {
         
         $this->middleware(['auth', 'checkrole']);
+        $this->subject = $subject;
+        $this->major = $major;
+        $this->grade = $grade;
         
     }
     
@@ -33,7 +38,9 @@ class SubjectController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(Subject::datatable());
+            return response()->json(
+                $this->subject->datatable()
+            );
         }
         
         return $this->output();
@@ -51,8 +58,8 @@ class SubjectController extends Controller {
         $this->authorize('c', Subject::class);
         
         return $this->output([
-            'majors' => Major::majors(),
-            'grades' => Grade::grades(),
+            'majors' => $this->major->majors(),
+            'grades' => $this->grade->grades(),
         ]);
         
     }
@@ -69,7 +76,9 @@ class SubjectController extends Controller {
         
         $this->authorize('c', Subject::class);
         
-        return $this->result(Subject::store($request));
+        return $this->result(
+            $this->subject->store($request)
+        );
         
     }
     
@@ -100,8 +109,8 @@ class SubjectController extends Controller {
             'subject'        => $subject,
             'selectedGrades' => $selectedGrades,
             'selectedMajors' => $selectedMajors,
-            'majors'         => Major::majors(),
-            'grades'         => Grade::grades(),
+            'majors'         => $this->major->majors(),
+            'grades'         => $this->grade->grades(),
         ]);
         
     }

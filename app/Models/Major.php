@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use App\Http\Requests\MajorRequest;
 use Carbon\Carbon;
 use Eloquent;
@@ -38,6 +39,8 @@ use Throwable;
  * @property-read Collection|Subject[] $subjects
  */
 class Major extends Model {
+    
+    use ModelTrait;
 
     protected $table = 'majors';
 
@@ -73,9 +76,9 @@ class Major extends Model {
      *
      * @return Collection
      */
-    static function majors() {
+    function majors() {
 
-        return self::whereSchoolId(School::schoolId())->get()->pluck('name', 'id');
+        return self::whereSchoolId($this->schoolId())->get()->pluck('name', 'id');
 
     }
     
@@ -92,7 +95,9 @@ class Major extends Model {
             DB::transaction(function () use ($request) {
                 $m = self::create($request->all());
                 $subjectIds = $request->input('subject_ids', []);
-                MajorSubject::storeByMajorId($m->id, $subjectIds);
+                $ms = new MajorSubject();
+                $ms->storeByMajorId($m->id, $subjectIds);
+                unset($ms);
             });
         } catch (Exception $e) {
             throw $e;
@@ -195,7 +200,7 @@ class Major extends Model {
                 ],
             ],
         ];
-        $condition = 'Major.school_id = ' . School::schoolId();
+        $condition = 'Major.school_id = ' . $this->schoolId();
 
         return DataTable::simple(self::getModel(), $columns, $joins, $condition);
 
