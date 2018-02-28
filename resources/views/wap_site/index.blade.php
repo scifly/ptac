@@ -94,8 +94,8 @@
     }
 </style>
 <div class="box box-default box-solid">
-    @if (!empty($wapSite['id']))
-        {{ Form::hidden('id', $wapSite['id'], ['id' => 'id']) }}
+    @if (!empty($ws['id']))
+        {{ Form::hidden('id', $ws['id'], ['id' => 'id']) }}
     @endif
     @if(isset($breadcrumb))
         <div class="box-header with-border">
@@ -107,7 +107,7 @@
             <img class="avater" src='{{ asset("../img/window-icon.png") }}'>
 
             <div class="maininfo">
-                <h3 class="profile-username">{{$wapSite->site_title}}</h3>
+                <h3 class="profile-username">{{$ws->site_title}}</h3>
 
             </div>
 
@@ -125,7 +125,7 @@
             <div class="col-lg-6 otherinfo-con">
                 <strong class="title">所属学校</strong>
                 <p class="text-muted">
-                    {{ $wapSite->school->name }}
+                    {{ $ws->school->name }}
                 </p>
                 <hr>
             </div>
@@ -133,7 +133,7 @@
             <div class="col-lg-6 otherinfo-con">
                 <strong class="title">状态</strong>
 
-                <p class="text-muted">{{$wapSite->enabled == 1 ? '已启用' : '未启用'}}</p>
+                <p class="text-muted">{{$ws->enabled == 1 ? '已启用' : '未启用'}}</p>
 
                 <hr>
             </div>
