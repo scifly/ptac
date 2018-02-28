@@ -9,7 +9,7 @@
 </head>
 <body>
 <div>
-    <h1>404</h1>
+    <h1>404 {{ $exception->getMessage() }}</h1>
     <a href="javascript:history.back();">Back</a>
 </div>
 </body>

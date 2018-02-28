@@ -193,7 +193,9 @@ class Corp extends Model {
         switch ($user->group->name) {
             case '运营':
             case '企业':
-                $corpMenuId = $this->menu->menuId(session('menuId'), '企业');
+                $menu = new Menu();
+                $corpMenuId = $menu->menuId(session('menuId'), '企业');
+                unset($menu);
                 return $corpMenuId ? self::whereMenuId($corpMenuId)->first()->id : 1;
             case '学校':
                 $departmentId = $user->topDeptId();

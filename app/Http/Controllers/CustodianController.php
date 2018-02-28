@@ -25,7 +25,10 @@ class CustodianController extends Controller {
     
     protected $custodian, $student, $department, $school;
     
-    function __construct(Custodian $custodian, Student $student, Department $department, School $school) {
+    function __construct(
+        Custodian $custodian, Student $student,
+        Department $department, School $school
+    ) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->custodian = $custodian;

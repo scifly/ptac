@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use App\Http\Requests\CustodianRequest;
 use Carbon\Carbon;
@@ -385,12 +386,11 @@ class Custodian extends Model {
                 ],
             ],
         ];
-        // todo: 根据角色显示监护人列表，[运营/企业/学校]角色显示隶属当前学校的所有监护人，其他角色显示所属所有部门下的监护人
-        $schoolId = $this->schoolId();        
+        $schoolId = $this->schoolId();
         $condition = 'Grade.school_id = ' . $schoolId;
-        $groupId = Auth::user()->group->id;
+        $role = Auth::user()->group->name;
 
-        if ($groupId > 5) {
+        if (!in_array($role, Constant::SUPER_ROLES)) {
             $educatorId = Auth::user()->educator->id;
             $student = new Student();
             $studentIds = $student->getClassStudent($schoolId,$educatorId)[1];

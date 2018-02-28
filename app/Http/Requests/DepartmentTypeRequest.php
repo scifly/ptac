@@ -2,6 +2,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class DepartmentTypeRequest extends FormRequest {
 
@@ -10,7 +11,11 @@ class DepartmentTypeRequest extends FormRequest {
      *
      * @return bool
      */
-    public function authorize() { return true; }
+    public function authorize() {
+    
+        return Auth::user()->group->name == '运营';
+    
+    }
 
     /**
      * Get the validation rules that apply to the request.

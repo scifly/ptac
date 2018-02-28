@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Wechat;
 
 use App\Facades\Wechat;
+use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Http\Controllers\Controller;
 use App\Models\App;
@@ -22,6 +23,7 @@ use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
@@ -163,7 +165,7 @@ class MessageCenterController extends Controller {
                     'users'      => $lists['users'],
                 ]);
             }
-            if ($groupId > 5) {
+            if (!in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
                 $educatorId = User::whereUserid($userId)->first()->educator->id;
                 $schoolId = User::whereUserid($userId)->first()->educator->school_id;
                 $studentIds = $this->student->getClassStudent($schoolId, $educatorId)[1];
