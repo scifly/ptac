@@ -41,7 +41,7 @@ class WapSiteController extends Controller {
      */
     public function index() {
 
-        $ws = WapSite::whereSchoolId($this->school->getSchoolById())
+        $ws = WapSite::whereSchoolId($this->school->getSchoolById()->id)
             ->where('enabled', 1)->first();
         abort_if(!$ws, HttpStatusCode::NOT_FOUND);
         $mediaIds = explode(",", $ws->media_ids);

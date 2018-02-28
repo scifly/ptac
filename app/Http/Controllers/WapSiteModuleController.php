@@ -22,7 +22,7 @@ class WapSiteModuleController extends Controller {
     
     public function __construct(WapSiteModule $wsm) {
         
-        $this->middleware(['auth', 'checkRole']);
+        $this->middleware(['auth', 'checkrole']);
         $this->wsm = $wsm;
         
     }
