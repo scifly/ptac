@@ -6,7 +6,6 @@ use App\Helpers\ModelTrait;
 use App\Models\ConferenceRoom;
 use App\Models\DepartmentUser;
 use App\Models\Educator;
-use App\Models\School;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +16,7 @@ class ConferenceQueueComposer {
 
     public function compose(View $view) {
 
-        $schoolId = School::schoolId();
+        $schoolId = $this->schoolId();
         $conferenceRooms = ConferenceRoom::whereSchoolId($schoolId)
             ->pluck('name', 'id')
             ->toArray();
@@ -33,7 +32,7 @@ class ConferenceQueueComposer {
                     ->toArray();
                 break;
             default:
-                $departmentIds = User::departmentIds($user->id);
+                $departmentIds = $user->departmentIds($user->id);
                 $userIds = array_unique(
                     DepartmentUser::whereIn('department_id', $departmentIds)
                         ->get(['user_id'])

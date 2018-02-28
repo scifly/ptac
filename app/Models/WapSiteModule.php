@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use App\Http\Requests\WapSiteModuleRequest;
 use Carbon\Carbon;
 use Exception;
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
+
 
 /**
  * App\Models\WapSiteModule 微网站栏目
@@ -37,6 +39,8 @@ use Throwable;
  */
 class WapSiteModule extends Model {
 
+    use ModelTrait;
+    
     protected $table = 'wap_site_modules';
 
     protected $fillable = [
@@ -84,7 +88,7 @@ class WapSiteModule extends Model {
      * @param $request
      * @throws Exception
      */
-    private static function removeMedias(WapSiteModuleRequest $request) {
+    private function removeMedias(WapSiteModuleRequest $request) {
         
         //删除原有的图片
         $mediaIds = $request->input('del_id');
@@ -154,7 +158,7 @@ class WapSiteModule extends Model {
                 ],
             ],
         ];
-        $condition = 'WapSite.school_id = ' . School::schoolId();
+        $condition = 'WapSite.school_id = ' . $this->schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         

@@ -167,7 +167,7 @@ class Corp extends Model {
      * @return bool
      * @throws Exception
      */
-    static function remove($id, $fireEvent = false) {
+    function remove($id, $fireEvent = false) {
 
         $corp = self::find($id);
         if (!$corp) { return false; }
@@ -186,14 +186,14 @@ class Corp extends Model {
      *
      * @return int|mixed
      */
-    static function corpId() {
+    function corpId() {
 
         $user = Auth::user();
         if (!Session::exists('menuId')) { return null; }
         switch ($user->group->name) {
             case '运营':
             case '企业':
-                $corpMenuId = Menu::menuId(session('menuId'), '企业');
+                $corpMenuId = $this->menu->menuId(session('menuId'), '企业');
                 return $corpMenuId ? self::whereMenuId($corpMenuId)->first()->id : 1;
             case '学校':
                 $departmentId = $user->topDeptId();

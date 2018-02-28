@@ -33,7 +33,7 @@ class ActionPolicy {
             return $actionGroup ? true : false;
         }
     
-        if ($role == '企业') {
+        if ($role == '企业' && stripos($route->uri, 'corps') > -1) {
             $corpId = Corp::whereDepartmentId($user->topDeptId())->first()->id;
             $allowedActions = $this->allowedActions(
                 Constant::ALLOWED_CORP_ACTIONS, $corpId
@@ -41,7 +41,11 @@ class ActionPolicy {
             return in_array($route, $allowedActions);
         }
         
-        if ($role == '学校') {
+        if (
+            $role == '学校' &&
+            (stripos($route->uri, 'schools') > -1 ||
+            stripos($route->uri, 'wap_sites') > -1)
+        ) {
             $schoolId = School::whereDepartmentId($user->topDeptId())->first()->id;
             $wapsiteId = WapSite::whereSchoolId($schoolId)->first()->id;
             $allowedActions = array_merge(

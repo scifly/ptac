@@ -24,12 +24,14 @@ use Throwable;
  */
 class StudentController extends Controller {
     
-    protected $student;
+    protected $student, $department, $school;
     
-    function __construct(Student $student) {
+    function __construct(Student $student, Department $department, School $school) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->student = $student;
+        $this->department = $department;
+        $this->school = $school;
         
     }
     
@@ -40,7 +42,7 @@ class StudentController extends Controller {
      * @throws Throwable
      */
     public function index() {
-
+        
         if (Request::get('draw')) {
             return response()->json(
                 $this->student->datatable()
@@ -58,27 +60,27 @@ class StudentController extends Controller {
      * @throws Throwable
      */
     public function create() {
-
+        
         $groupId = Auth::user()->group->id;
         if (Request::method() === 'POST') {
             $field = Request::query('field');
             $id = Request::query('id');
             if ($field && $id) {
-                if($groupId > 5){
+                if ($groupId > 5) {
                     $educatorId = Auth::user()->educator->id;
-                    $gradeClass = Student::getGrade($educatorId)[1];
-                    $this->result['html'] = School::getFieldList($field, $id ,$gradeClass);
+                    $gradeClass = $this->student->getGrade($educatorId)[1];
+                    $this->result['html'] = $this->school->getFieldList($field, $id, $gradeClass);
                 } else {
-                    $this->result['html'] = School::getFieldList($field, $id);
+                    $this->result['html'] = $this->school->getFieldList($field, $id);
                 }
+                
                 return response()->json($this->result);
             } else {
-                return response()->json(Department::tree());
+                return response()->json($this->department->tree());
             }
         }
-
-        $items = Student::gradeClasses();
-
+        $items = $this->student->gradeClasses();
+        
         return $this->output([
             'grades'  => $items['grades'],
             'classes' => $items['classes'],
@@ -128,18 +130,18 @@ class StudentController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-
+        
         $users = Auth::user();
         $groupId = Auth::user()->group->id;
         if (Request::method() === 'POST') {
             $field = Request::get('field');
             $id = Request::get('id');
-            if($groupId > 5){
+            if ($groupId > 5) {
                 $educatorId = Auth::user()->educator->id;
-                $gradeClass = Student::getGrade($educatorId)[1];
-                $this->result['html'] = School::getFieldList($field, $id ,$gradeClass);
+                $gradeClass = $this->student->getGrade($educatorId)[1];
+                $this->result['html'] = $this->school->getFieldList($field, $id, $gradeClass);
             } else {
-                $this->result['html'] = School::getFieldList($field, $id);
+                $this->result['html'] = $this->school->getFieldList($field, $id);
             }
             
             return response()->json($this->result);
@@ -147,25 +149,25 @@ class StudentController extends Controller {
         # 查询学生信息
         $student = Student::find($id);
         abort_if(!$student, HttpStatusCode::NOT_FOUND);
-        $grades = $classes = [];
         $user = $student->user;
+        $grades = $classes = [];
         if ($groupId > 5) {
             $educatorId = $users->educator->id;
-            $gradeIds = Student::getGrade($educatorId)[0];
-            $gradeClass = Student::getGrade($educatorId)[1];
+            $gradeIds = $this->student->getGrade($educatorId)[0];
+            $gradeClass = $this->student->getGrade($educatorId)[1];
             foreach ($gradeClass as $k => $g) {
                 $grades = Grade::whereEnabled(1)
-                    ->whereIn('id',$gradeIds)
+                    ->whereIn('id', $gradeIds)
                     ->pluck('name', 'id')
                     ->toArray();
                 $classes = Squad::whereEnabled(1)
-                    ->whereIn('id',$g)
+                    ->whereIn('id', $g)
                     ->pluck('name', 'id')
                     ->toArray();
                 break;
             }
         } else {
-            $items = Student::gradeClasses(
+            $items = $this->student->gradeClasses(
                 $student->squad->grade_id
             );
             $student->{'grade_id'} = $student->squad->grade_id;
@@ -193,7 +195,9 @@ class StudentController extends Controller {
      */
     public function update(StudentRequest $request, $id) {
         
-        return $this->result(Student::modify($request, $id));
+        return $this->result(
+            $this->student->modify($request, $id)
+        );
         
     }
     
@@ -248,11 +252,12 @@ class StudentController extends Controller {
      * @return JsonResponse
      */
     public function export() {
-
+        
         if (Request::method() === 'POST') {
             $field = Request::query('field');
             $id = Request::query('id');
-            $this->result['html'] = School::getFieldList($field, $id);
+            $this->result['html'] = $this->school->getFieldList($field, $id);
+            
             return response()->json($this->result);
         }
         $id = Request::query('id');
@@ -292,5 +297,5 @@ class StudentController extends Controller {
         return abort(HttpStatusCode::BAD_REQUEST, '导出失败');
         
     }
-
+    
 }

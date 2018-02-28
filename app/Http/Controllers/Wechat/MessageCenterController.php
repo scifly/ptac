@@ -19,34 +19,49 @@ use App\Models\Squad;
 use App\Models\Student;
 use App\Models\User;
 use Exception;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\View\View;
 
 class MessageCenterController extends Controller {
 
-    protected $message, $user, $department;
-
+    protected $message, $user, $department, $media, $student, $mr;
+    
     /**
      * MessageCenterController constructor.
      * @param Message $message
      * @param User $user
      * @param Department $department
+     * @param Media $media
+     * @param Student $student
+     * @param MessageReply $mr
      */
-    public function __construct( Message $message, User $user, Department $department ) {
-        // $this->middleware();
+    public function __construct(
+        Message $message, User $user,
+        Department $department, Media $media,
+        Student $student, MessageReply $mr
+    ) {
+        
         $this->message = $message;
         $this->user = $user;
         $this->department = $department;
+        $this->media = $media;
+        $this->student = $student;
+        $this->mr = $mr;
 
     }
 
     /**
      * 消息列表
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View|string
+     * @return Factory|RedirectResponse|Redirector|View|string
      */
     public function index() {
+        
         #获取用户信息
         $corpId = 'wxe75227cead6b8aec';
         $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
@@ -151,7 +166,7 @@ class MessageCenterController extends Controller {
             if ($groupId > 5) {
                 $educatorId = User::whereUserid($userId)->first()->educator->id;
                 $schoolId = User::whereUserid($userId)->first()->educator->school_id;
-                $studentIds = Student::getClassStudent($schoolId, $educatorId)[1];
+                $studentIds = $this->student->getClassStudent($schoolId, $educatorId)[1];
                 $students = Student::whereIn('id', $studentIds)->get();
                 $userIds[] = User::whereUserid($userId)->first()->id;
                 foreach ($students as $s) {
@@ -161,7 +176,6 @@ class MessageCenterController extends Controller {
                     ->where('realname', 'like', '%' . $keywords . '%')->get();
                 if($users){
                     return response()->json(['statusCode'=> HttpStatusCode::OK, 'user'=> $users]);
-
                 }
             }
 
@@ -287,7 +301,7 @@ class MessageCenterController extends Controller {
         $input['user_id'] = $user->id;
         
         return $this->result(
-            MessageReply::store($input)
+            $this->mr->store($input)
         );
         
     }
@@ -346,7 +360,7 @@ class MessageCenterController extends Controller {
 
         $type = Request::input('type');
         if (empty($type)) {
-            $data = Media::upload(Request::file('file'), '前端消息中心');
+            $data = $this->media->upload(Request::file('file'), '前端消息中心');
             return $this->result($data, $data);
         }
         if ($type == 'mpnews') { $type = 'image'; }
@@ -355,7 +369,7 @@ class MessageCenterController extends Controller {
             abort(HttpStatusCode::NOT_ACCEPTABLE, '您还未选择文件！');
         } else {
             $result['data'] = [];
-            $mes = Media::upload($file, ' 前端消息中心');
+            $mes = $this->media->upload($file, ' 前端消息中心');
             if ($mes) {
                 $this->result['message'] = '上传成功！';
                 $path = $mes['path'];

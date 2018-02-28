@@ -21,7 +21,7 @@ class SubjectModuleController extends Controller {
     
     function __construct(SubjectModule $sm) {
     
-        $this->middleware(['auth', 'checkrole']);
+        $this->middleware(['auth']);
         $this->sm = $sm;
         
     }
@@ -79,12 +79,10 @@ class SubjectModuleController extends Controller {
      */
     public function edit($id) {
         
-        $sm = SubjectModule::find($id);
+        $sm = $this->sm->find($id);
         abort_if(!$sm, HttpStatusCode::NOT_FOUND);
         
-        return $this->output([
-            'sm' => $sm,
-        ]);
+        return $this->output(['sm' => $sm]);
         
     }
     

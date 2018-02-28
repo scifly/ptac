@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use App\Http\Requests\WsmArticleRequest;
 use Carbon\Carbon;
 use Eloquent;
@@ -42,6 +43,8 @@ use Illuminate\Support\Facades\Storage;
  */
 class WsmArticle extends Model {
 
+    use ModelTrait;
+    
     protected $table = 'wsm_articles';
 
     protected $fillable = [
@@ -98,7 +101,7 @@ class WsmArticle extends Model {
      * @param $request
      * @throws Exception
      */
-    private static function removeMedias(WsmArticleRequest $request) {
+    private function removeMedias(WsmArticleRequest $request) {
         
         //删除原有的图片
         $mediaIds = $request->input('del_ids');
@@ -182,7 +185,7 @@ class WsmArticle extends Model {
                 ],
             ],
         ];
-        $condition = 'WapSite.school_id = ' . School::schoolId();
+        $condition = 'WapSite.school_id = ' . $this->schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         

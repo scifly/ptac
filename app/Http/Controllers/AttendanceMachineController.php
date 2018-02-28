@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\AttendanceMachineRequest;
 use App\Models\AttendanceMachine;
 use Exception;

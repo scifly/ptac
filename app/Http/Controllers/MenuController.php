@@ -20,9 +20,13 @@ use Throwable;
  */
 class MenuController extends Controller {
     
-    function __construct() {
+    protected $menu, $mt;
+    
+    function __construct(Menu $menu, MenuTab $mt) {
 
         $this->middleware(['auth', 'checkrole']);
+        $this->menu = $menu;
+        $this->mt = $mt;
 
     }
     
@@ -35,8 +39,8 @@ class MenuController extends Controller {
     public function index() {
         
         if (Request::method() === 'POST') {
-            return Menu::tree(
-                Menu::rootMenuId(true)
+            return $this->menu->tree(
+                $this->menu->rootMenuId(true)
             );
         }
 
@@ -70,7 +74,7 @@ class MenuController extends Controller {
      */
     public function store(MenuRequest $request) {
 
-        return $this->result(Menu::store($request));
+        return $this->result($this->menu->store($request));
 
     }
     
@@ -83,7 +87,7 @@ class MenuController extends Controller {
      */
     public function edit($id) {
 
-        $menu = Menu::find($id);
+        $menu = $this->menu->find($id);
         abort_if(!$menu, HttpStatusCode::NOT_FOUND);
         # 获取已选定的卡片
         $menuTabs = $menu->tabs;
@@ -110,7 +114,7 @@ class MenuController extends Controller {
      */
     public function update(MenuRequest $request, $id) {
 
-        $menu = Menu::find($id);
+        $menu = $this->menu->find($id);
         abort_if(!$menu, HttpStatusCode::NOT_FOUND);
 
         return $this->result(
@@ -128,11 +132,11 @@ class MenuController extends Controller {
      */
     public function move($id, $parentId = null) {
 
-        $menu = Menu::find($id);
-        $parentMenu = Menu::find($parentId);
+        $menu = $this->menu->find($id);
+        $parentMenu = $this->menu->find($parentId);
         abort_if(!$menu || !$parentMenu, HttpStatusCode::NOT_FOUND);
-        if (Menu::movable($id, $parentId)) {
-            return $this->result($menu::move($id, $parentId, true));
+        if ($this->menu->movable($id, $parentId)) {
+            return $this->result($$this->menu->move($id, $parentId, true));
         }
 
         return abort(HttpStatusCode::NOT_ACCEPTABLE, '非法操作');
@@ -149,7 +153,7 @@ class MenuController extends Controller {
      */
     public function destroy($id) {
 
-        $menu = Menu::find($id);
+        $menu = $this->menu->find($id);
         abort_if(!$menu, HttpStatusCode::NOT_FOUND);
 
         return $this->result(
@@ -163,7 +167,7 @@ class MenuController extends Controller {
 
         $positions = Request::get('data');
         foreach ($positions as $id => $pos) {
-            $menu = Menu::find($id);
+            $menu = $this->menu->find($id);
             if (isset($menu)) {
                 $menu->position = $pos;
                 $menu->save();
@@ -181,7 +185,7 @@ class MenuController extends Controller {
      */
     public function menuTabs($id) {
 
-        $menu = Menu::find($id);
+        $menu = $this->menu->find($id);
         abort_if(!$menu, HttpStatusCode::NOT_FOUND);
         $tabRanks = MenuTab::whereMenuId($id)
             ->get()
@@ -209,11 +213,11 @@ class MenuController extends Controller {
      */
     public function rankTabs($id) {
 
-        abort_if(!Menu::find($id), HttpStatusCode::NOT_FOUND);
+        abort_if(!$this->menu->find($id), HttpStatusCode::NOT_FOUND);
         $ranks = Request::get('data');
 
         return $this->result(
-            MenuTab::storeTabRanks($id, $ranks)
+            $this->mt->storeTabRanks($id, $ranks)
         );
 
     }

@@ -2,9 +2,7 @@
 namespace App\Facades;
 
 use App\Models\App;
-use App\Models\Corp;
 use Illuminate\Support\Facades\Facade;
-use Illuminate\Support\Facades\Log;
 
 class Wechat extends Facade {
     

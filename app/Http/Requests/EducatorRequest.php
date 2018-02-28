@@ -1,11 +1,13 @@
 <?php
 namespace App\Http\Requests;
 
-use App\Models\School;
+use App\Helpers\ModelTrait;
 use App\Rules\Mobiles;
 use Illuminate\Foundation\Http\FormRequest;
 
 class EducatorRequest extends FormRequest {
+    
+    use ModelTrait;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -56,7 +58,7 @@ class EducatorRequest extends FormRequest {
                 }
             }
         }
-        $input['educator']['school_id'] = School::schoolId();
+        $input['educator']['school_id'] = $this->schoolId();
         
         $this->replace($input);
         

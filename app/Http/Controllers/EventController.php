@@ -58,6 +58,7 @@ class EventController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function calendarEvents($userId) {
+        
         return $this->event->showCalendar($userId);
         
     }
@@ -66,43 +67,37 @@ class EventController extends Controller {
      * 新增一个列表事件
      *
      * @param EventRequest $request
+     * @internal param Request $request
      * @return JsonResponse|string
      */
     public function store(EventRequest $request) {
-        
         $inputEvent = $request->all();
         $listDate = $this->event->create($inputEvent);
         
         return $this->result($listDate, $listDate);
-        
     }
     
     /**
      * 编辑日程事件的表单
      *
      * @param $id
+     * @internal param Event $event
      * @return JsonResponse|string
      * @throws Throwable
      */
     public function edit($id) {
-        
         //判断当前用户权限
         $row = Request::all();
         if ($row['ispublic'] == 1) {
-            if (!$this->event->getRole($row['userId'])) {
-                abort(
-                    HttpStatusCode::INTERNAL_SERVER_ERROR,
-                    '此事件只有管理员可编辑！'
-                );
-            }
+            abort_if(
+                !$this->event->getRole($row['userId']),
+                HttpStatusCode::NOT_ACCEPTABLE,
+                '此事件只有管理员可编辑！'
+            );
         }
-        $data = view(
-            'event.show',
-            ['events' => $this->event->find($id)]
-        )->render();
+        $data = view('event.show', ['events' => $this->event->find($id)])->render();
         
         return $this->result(!empty($data), $data);
-        
     }
     
     /**
@@ -115,22 +110,25 @@ class EventController extends Controller {
     public function update(EventRequest $request, $id) {
         $input = $request->all();
         $input['enabled'] = 1;
-        abort_if(
-            $input['end'] <= $input['start'],
-            HttpStatusCode::BAD_REQUEST,
-            '结束时间必须大于开始时间！'
-        );
+        abort_if($input['end'] <= $input['start'], HttpStatusCode::NOT_ACCEPTABLE, '结束时间必须大于开始时间！');
         //根据角色验证重复冲突
-        if ($this->event->isValidateTime($input['user_id'], $input['educator_id'], $input['start'], $input['end'], $id)) {
-            abort(HttpStatusCode::BAD_REQUEST, '时间有冲突！');
-        }
+        abort_if(
+            $this->event->isValidateTime(
+                $input['user_id'],
+                $input['educator_id'],
+                $input['start'],
+                $input['end'],
+                $id
+            ),
+            HttpStatusCode::NOT_ACCEPTABLE,
+            '时间有冲突！'
+        );
         $event = $this->event->find($id);
         abort_if(!$event, HttpStatusCode::NOT_FOUND);
         
         return $this->result(
             $event->update($input)
         );
-        
     }
     
     /**
@@ -154,9 +152,16 @@ class EventController extends Controller {
      * 拖动列表添加日历事件
      */
     public function dragEvents() {
-        
         $listJson = Request::all();
-        $event = $this->event->whereId($listJson['id'])->first(['title', 'remark', 'location', 'contact', 'url', 'start', 'end', 'ispublic', 'iscourse', 'educator_id', 'subject_id', 'alertable', 'alert_mins', 'user_id', 'enabled'])->toArray();
+        $event = $this->event->whereId($listJson['id'])
+            ->first([
+                'title', 'remark', 'location',
+                'contact', 'url', 'start',
+                'end', 'ispublic', 'iscourse',
+                'educator_id', 'subject_id', 'alertable',
+                'alert_mins', 'user_id', 'enabled'
+            ])
+            ->toArray();
         $event['start'] = $listJson['start'];
         $event['end'] = $listJson['end'];
         $event['enabled'] = 1;
@@ -197,7 +202,7 @@ class EventController extends Controller {
         if ($this->event->isValidateTime($event->user_id, $event->educator_id, $event->start, $event->end, $event->id)) {
             abort(HttpStatusCode::NOT_ACCEPTABLE, '时间有冲突！');
         }
-        
+
         return $this->result(
             $event->save()
         );

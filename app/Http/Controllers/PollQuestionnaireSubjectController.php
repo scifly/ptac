@@ -36,7 +36,7 @@ class PollQuestionnaireSubjectController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->pqs->datatable()
+                $this->pqs->dataTable()
             );
         }
         
@@ -71,6 +71,24 @@ class PollQuestionnaireSubjectController extends Controller {
     }
     
     /**
+     * 题目详情
+     *
+     * @param $id
+     * @return bool|JsonResponse
+     * @throws Throwable
+     */
+    public function show($id) {
+        
+        $pqs = $this->pqs->find($id);
+        abort_if(!$pqs, HttpStatusCode::NOT_FOUND);
+        
+        return $this->output([
+            'pqs' => $pqs,
+        ]);
+        
+    }
+    
+    /**
      * 编辑题目
      * @param $id
      * @return bool|JsonResponse
@@ -81,7 +99,9 @@ class PollQuestionnaireSubjectController extends Controller {
         $pqs = $this->pqs->find($id);
         abort_if(!$pqs, HttpStatusCode::NOT_FOUND);
         
-        return $this->output(['pqs' => $pqs]);
+        return $this->output([
+            'pqs' => $pqs
+        ]);
         
     }
     

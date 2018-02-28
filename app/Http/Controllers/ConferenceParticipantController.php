@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\ConferenceParticipantRequest;
 use App\Models\ConferenceParticipant;
 use Illuminate\Auth\Access\AuthorizationException;

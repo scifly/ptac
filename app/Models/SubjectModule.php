@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -30,6 +31,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @mixin Eloquent
  */
 class SubjectModule extends Model {
+    
+    use ModelTrait;
 
     protected $table = 'subject_modules';
     protected $fillable = ['subject_id', 'name', 'weight', 'enabled'];
@@ -72,7 +75,7 @@ class SubjectModule extends Model {
                 ],
             ],
         ];
-        $condition = 'Subject.school_id = ' . School::schoolId();
+        $condition = 'Subject.school_id = ' . $this->schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 

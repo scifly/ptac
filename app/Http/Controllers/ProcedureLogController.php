@@ -21,12 +21,13 @@ use Throwable;
  */
 class ProcedureLogController extends Controller {
     
-    protected $pl;
+    protected $pl, $media;
     
-    function __construct(ProcedureLog $pl) {
+    function __construct(ProcedureLog $pl, Media $media) {
     
         $this->middleware(['auth', 'checkrole']);
         $this->pl = $pl;
+        $this->media = $media;
         
     }
     
@@ -46,6 +47,7 @@ class ProcedureLogController extends Controller {
                 ->groupBy('first_log_id')
                 ->pluck('id')->toArray();
             $where = 'ProcedureLog.id in (' . implode(',', $ids) . ')';
+            
             return response()->json(
                 $this->pl->datatable($where)
             );
@@ -72,9 +74,7 @@ class ProcedureLogController extends Controller {
                 ->pluck('id')
                 ->toArray();
             $where = 'ProcedureLog.id in (' . implode(',', $ids) . ') and FIND_IN_SET(' . $userId . ',ProcedureStep.approver_user_ids)';
-            return response()->json(
-                $this->pl->datatable($where)
-            );
+            return response()->json($this->pl->datatable($where));
         }
 
         return $this->output();
@@ -93,9 +93,7 @@ class ProcedureLogController extends Controller {
             $userId = 3;
             $where = '(FIND_IN_SET(' . $userId . ',ProcedureStep.related_user_ids) or FIND_IN_SET(' . $userId . ',ProcedureStep.approver_user_ids))';
             
-            return response()->json(
-                $this->pl->datatable($where)
-            );
+            return response()->json($this->pl->datatable($where));
             
         }
         
@@ -182,7 +180,7 @@ class ProcedureLogController extends Controller {
             $result['data'] = [];
             $mes = [];
             foreach ($files as $file) {
-                $mes [] = Media::upload($file, '上传审批流程相关文件');
+                $mes [] = $this->media->upload($file, '上传审批流程相关文件');
             }
             $result['statusCode'] = HttpStatusCode::OK;
             $result['message'] = '上传成功！';
@@ -205,15 +203,14 @@ class ProcedureLogController extends Controller {
         $path_arr = explode("/", Media::find($id)->path);
         Storage::disk('uploads')->delete($path_arr[5]);
         if (Media::find($id)->delete()) {
-            $this->result['message'] = __('messages.del_ok');
+            $result['statusCode'] = HttpStatusCode::OK;
+            $result['message'] = __('messages.del_ok');
         } else {
-            abort(
-                HttpStatusCode::INTERNAL_SERVER_ERROR,
-                __('messages.internal_server_error')
-            );
+            $result['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+            $result['message'] = __('messages.bad_request');
         }
         
-        return response()->json($this->result);
+        return response()->json($result);
         
     }
     

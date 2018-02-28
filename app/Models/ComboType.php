@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -35,6 +36,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read School $school
  */
 class ComboType extends Model {
+    
+    use ModelTrait;
 
     protected $table = 'combo_types';
 
@@ -99,7 +102,7 @@ class ComboType extends Model {
                 ],
             ],
         ];
-        $condition = 'ComboType.school_id = ' . School::schoolId();
+        $condition = 'ComboType.school_id = ' . $this->schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 

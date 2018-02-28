@@ -18,12 +18,13 @@ use Throwable;
  */
 class TabController extends Controller {
     
-    protected $tab;
+    protected $tab, $menu;
     
-    function __construct(Tab $tab) {
+    function __construct(Tab $tab, Menu $menu) {
     
         $this->middleware(['auth', 'checkrole']);
         $this->tab = $tab;
+        $this->menu = $menu;
         
     }
     
@@ -37,9 +38,7 @@ class TabController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(
-                $this->tab->datatable()
-            );
+            return response()->json($this->tab->datatable());
         }
         abort_if(!$this->tab->scan(), HttpStatusCode::NOT_FOUND);
         
@@ -55,9 +54,7 @@ class TabController extends Controller {
      */
     public function create() {
         
-        return $this->output([
-            'menus' => Menu::leaves(1)
-        ]);
+        return $this->output(['menus' => $this->menu->leaves(1)]);
         
     }
     
@@ -93,10 +90,9 @@ class TabController extends Controller {
         foreach ($tabMenus as $menu) {
             $selectedMenus[$menu->id] = $menu->name;
         }
-        
         return $this->output([
             'tab'           => $tab,
-            'menus'         => Menu::leaves(1),
+            'menus'         => $this->menu->leaves(1),
             'selectedMenus' => $selectedMenus,
         ]);
         

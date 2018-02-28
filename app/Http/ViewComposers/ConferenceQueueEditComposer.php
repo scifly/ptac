@@ -11,11 +11,15 @@ use Illuminate\Support\Facades\Request;
 class ConferenceQueueEditComposer {
     
     use ModelTrait;
-
+    
+    protected $educator;
+    
+    function __construct(Educator $educator) { $this->educator = $educator; }
+    
     public function compose(View $view) {
 
         $view->with([
-            'selectedEducators' => Educator::educatorList(
+            'selectedEducators' => $this->educator->educatorList(
                 ConferenceQueue::find(Request::route('id'))->educator_ids),
             'uris' => $this->uris()
         ]);

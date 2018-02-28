@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
@@ -44,6 +45,8 @@ use Illuminate\Support\Facades\DB;
  * @mixin Eloquent
  */
 class ScoreTotal extends Model {
+    
+    use ModelTrait;
 
     protected $table = 'score_totals';
     protected $fillable = [
@@ -178,9 +181,14 @@ class ScoreTotal extends Model {
         // todo: 增加过滤条件
         $condition = null;
         $groupId = Auth::user()->group->id;
+        
         if($groupId > 5){
             $educatorId = Auth::user()->educator->id;
-            $studentIds = Student::getClassStudent(School::schoolId(),$educatorId)[1];
+            $student = new Student();
+            $studentIds = $student->getClassStudent(
+                $this->schoolId(),$educatorId
+            )[1];
+            unset($student);
             $studentIds = implode(',',$studentIds);
             $condition = "Student.id in ($studentIds)";
         }
@@ -196,7 +204,7 @@ class ScoreTotal extends Model {
      * @return bool
      * @throws Exception
      */
-    static function statistics($exam_id) {
+    function statistics($exam_id) {
         
         //删除之前这场考试的统计
         try {
@@ -289,7 +297,7 @@ class ScoreTotal extends Model {
                     unset($class_v['class_id']);
                     $inserts [] = $class_v;
                 }
-                self::insert($inserts);
+                $this->insert($inserts);
             }
         }
 

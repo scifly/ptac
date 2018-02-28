@@ -5,9 +5,9 @@ use App\Http\Requests\ScoreRangeRequest;
 use App\Models\ScoreRange;
 use App\Models\Subject;
 use Exception;
+use HttpRequest;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request as HttpRequest;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -151,9 +151,7 @@ class ScoreRangeController extends Controller {
      */
     public function statistics(HttpRequest $request) {
         
-        return $this->sr->statistics(
-            $request->all()
-        );
+        return $this->sr->statistics($request);
         
     }
     

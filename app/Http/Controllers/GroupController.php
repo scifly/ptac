@@ -19,12 +19,13 @@ use Throwable;
  */
 class GroupController extends Controller {
     
-    protected $group;
+    protected $group, $menu;
     
-    function __construct(Group $group) {
+    function __construct(Group $group, Menu $menu) {
     
         $this->middleware(['auth', 'checkrole']);
         $this->group = $group;
+        $this->menu = $menu;
         
     }
     
@@ -57,7 +58,7 @@ class GroupController extends Controller {
         if (Request::method() === 'POST') {
             $schoolId = Request::query('schoolId');
             $menuId = School::find($schoolId)->menu_id;
-            return Menu::schoolTree($menuId);
+            return $this->menu->schoolTree($menuId);
         }
 
         return $this->output();
@@ -94,7 +95,7 @@ class GroupController extends Controller {
         if (Request::method() === 'POST') {
             $schoolId = Request::query('schoolId');
             $menuId = School::find($schoolId)->menu_id;
-            return Menu::schoolTree($menuId);
+            return $this->menu->schoolTree($menuId);
         }
         
         return $this->output(['group' => $group]);

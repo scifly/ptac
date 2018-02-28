@@ -74,7 +74,7 @@ class ScoreTotalController extends Controller {
     public function statistics($examId) {
     
          return $this->result(
-             ScoreTotal::statistics($examId)
+             $this->st->statistics($examId)
          );
     
     }

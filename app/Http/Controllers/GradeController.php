@@ -17,12 +17,13 @@ use Illuminate\Support\Facades\Request;
  */
 class GradeController extends Controller {
     
-    protected $grade;
+    protected $grade, $educator;
     
-    function __construct(Grade $grade) {
+    function __construct(Grade $grade, Educator $educator) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->grade = $grade;
+        $this->educator = $educator;
         
     }
     
@@ -89,7 +90,7 @@ class GradeController extends Controller {
         
         $selectedEducators = [];
         if ($grade->educator_ids != '0') {
-            $selectedEducators = Educator::educatorList(
+            $selectedEducators = $this->educator->educatorList(
                 explode(",", rtrim($grade->educator_ids,","))
             );
         }

@@ -15,6 +15,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\View\View;
 use Throwable;
 
 /**
@@ -85,7 +86,7 @@ class AttendanceController extends Controller {
      * 考勤记录
      *
      * @param null $id
-     * @return Factory|JsonResponse
+     * @return Factory|JsonResponse|View
      */
     public function records($id = null) {
         if (Request::isMethod('post')) {
@@ -218,11 +219,9 @@ class AttendanceController extends Controller {
         );
         #找到与教职员工相关的所有班级ids
         $classIds = $this->geteduClass($educator);
-        abort_if(
-            empty($classIds),
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            '老师，您还未绑定班级关系！'
-        );
+        if (empty($classIds)) {
+            return response()->json(['data' => '老师，您还未绑定班级关系！', 'statusCode' => 500]);
+        }
         $squadLists = Squad::whereIn('id', $classIds)->get();
         $data['squadnames'] = [];
         $graIds = [];
@@ -558,7 +557,5 @@ class AttendanceController extends Controller {
         ])->render();
         
         return $data;
-        
     }
-    
 }

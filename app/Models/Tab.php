@@ -146,7 +146,7 @@ class Tab extends Model {
      * @return bool|mixed
      * @throws Throwable
      */
-    public function store(array $data) {
+    function store(array $data) {
         
         try {
             DB::transaction(function () use ($data) {
@@ -154,35 +154,7 @@ class Tab extends Model {
                 $menuTab = new MenuTab();
                 $menuIds = $data['menu_ids'];
                 $menuTab->storeByTabId($t->id, $menuIds);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    
-    /**
-     * 更新指定的卡片
-     *
-     * @param array $data
-     * @param $id
-     * @return bool|mixed
-     * @throws Exception
-     * @throws Throwable
-     */
-    public function modify(array $data, $id) {
-        
-        $tab = self::find($id);
-        if (!isset($tab)) { return false; }
-        try {
-            DB::transaction(function () use ($data, $id, $tab) {
-                $tab->update($data);
-                $menuIds = $data['menu_ids'];
-                $menuTab = new MenuTab();
-                $menuTab::whereTabId($id)->delete();
-                $menuTab->storeByTabId($id, $menuIds);
+                unset($menuTab);
             });
         } catch (Exception $e) {
             throw $e;
@@ -272,13 +244,41 @@ class Tab extends Model {
 
     }
     
+    /**
+     * 更新指定的卡片
+     *
+     * @param array $data
+     * @param $id
+     * @return bool|mixed
+     * @throws Exception
+     * @throws Throwable
+     */
+    public function modify(array $data, $id) {
+
+        $tab = self::find($id);
+        if (!isset($tab)) { return false; }
+        try {
+            DB::transaction(function () use ($data, $id, $tab) {
+                $tab->update($data);
+                $menuIds = $data['menu_ids'];
+                $menuTab = new MenuTab();
+                $menuTab::whereTabId($id)->delete();
+                $menuTab->storeByTabId($id, $menuIds);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+
+    }
     
     /**
      * 根据角色返回可访问的卡片ids
      *
      * @return array
      */
-    public function allowedTabIds() {
+    function allowedTabIds() {
     
         $user = Auth::user();
         $role = $user->group->name;
@@ -311,7 +311,7 @@ class Tab extends Model {
      * @param ReflectionClass $controller
      * @return mixed|string
      */
-    private static function controllerComments(ReflectionClass $controller) {
+    private function controllerComments(ReflectionClass $controller) {
         
         $comment = $controller->getDocComment();
         $name = 'n/a';
@@ -335,7 +335,7 @@ class Tab extends Model {
      * @param $ctlrName
      * @return int|mixed
      */
-    private static function indexActionId($ctlrName) {
+    private function indexActionId($ctlrName) {
         
         $action = new Action();
         $a = $actionId = $action::whereEnabled(1)
@@ -357,7 +357,7 @@ class Tab extends Model {
      * @param array $allData
      * @return array
      */
-    private static function controllerPaths($rootDir, $allData = []) {
+    private function controllerPaths($rootDir, $allData = []) {
         
         // set filenames invisible if you want
         $invisibleFileNames = [".", "..", ".htaccess", ".htpasswd"];

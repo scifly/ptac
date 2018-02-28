@@ -2,8 +2,11 @@
 namespace App\Helpers;
 
 use App\Models\Action;
+use App\Models\Menu;
+use App\Models\School;
 use App\Policies\Route;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use ReflectionClass;
 
@@ -14,6 +17,7 @@ trait ModelTrait {
      *
      * @param Model $model
      * @return bool
+     * @throws \ReflectionException
      */
     static function removable(Model $model) {
         
@@ -57,6 +61,25 @@ trait ModelTrait {
         
         return $uris;
 
+    }
+    
+    function schoolId() {
+    
+        $user = Auth::user();
+        switch ($user->group->name) {
+            case '运营':
+            case '企业':
+                $menu = new Menu();
+                $schoolMenuId = $menu->menuId(session('menuId'));
+                unset($menu);
+                return $schoolMenuId ? School::whereMenuId($schoolMenuId)->first()->id : 0;
+            case '学校':
+                $departmentId = $user->topDeptId();
+                return School::whereDepartmentId($departmentId)->first()->id;
+            default:
+                return $user->educator->school_id;
+        }
+        
     }
 
 }

@@ -104,7 +104,7 @@ class Controller extends BaseController {
             } else {
                 $params['breadcrumb'] = $menu->name . ' / ' . $action->name;
                 return view('home.page', [
-                    'menu' => Menu::menuHtml(Menu::rootMenuId()),
+                    'menu' => $menu->menuHtml($menu->rootMenuId()),
                     'tabs' => [],
                     'content' => view($view, $params)->render(),
                     'menuId' => session('menuId'),
@@ -124,6 +124,7 @@ class Controller extends BaseController {
         return Response()->redirectToRoute('login');
         
     }
+
 
     /**
      * 返回操作结果提示信息

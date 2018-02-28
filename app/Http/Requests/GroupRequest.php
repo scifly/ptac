@@ -30,6 +30,7 @@ class GroupRequest extends FormRequest {
         $input = $this->all();
 
         if (isset($input['tabs'])) {
+            $tabIds = null;
             foreach ($input['tabs'] as $k => $v) {
                 $tabIds[] = $k;
             }

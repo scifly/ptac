@@ -3,7 +3,6 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
-use App\Models\School;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 
@@ -13,7 +12,7 @@ class ScoreRangeComposer {
 
     public function compose(View $view) {
 
-        $schoolId = School::schoolId();
+        $schoolId = $this->schoolId();
         $subjects = Subject::whereSchoolId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id')

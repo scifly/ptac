@@ -110,7 +110,7 @@ class ConferenceRoom extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'ConferenceRoom.id', 'dt' => 0],
@@ -137,7 +137,7 @@ class ConferenceRoom extends Model {
                 ],
             ],
         ];
-        $condition = 'ConferenceRoom.school_id = ' . School::schoolId();
+        $condition = 'ConferenceRoom.school_id = ' . $this->schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins,$condition);
 

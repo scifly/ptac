@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -34,6 +35,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read StudentAttendance[] $studentAttendances
  */
 class AttendanceMachine extends Model {
+    
+    use ModelTrait;
 
     protected $table = 'attendance_machines';
 
@@ -93,7 +96,7 @@ class AttendanceMachine extends Model {
                 ],
             ],
         ];
-        $condition = 'School.id = ' . School::schoolId();
+        $condition = 'School.id = ' . $this->schoolId();
 
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         

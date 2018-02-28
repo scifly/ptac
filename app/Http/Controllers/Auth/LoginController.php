@@ -58,6 +58,7 @@ class LoginController extends Controller {
             $returnUrl = urldecode($request->get('returnUrl'));
         }
         if (Auth::id()) {
+
             $this->result['url'] = $returnUrl ? $returnUrl : '/';
             return response()->json($this->result);
         }
@@ -89,6 +90,7 @@ class LoginController extends Controller {
                 $rememberMe
             )) {
                 Session::put('user', $user);
+
                 $this->result['url'] = $returnUrl ? $returnUrl : '/';
                 return response()->json($this->result);
             } else {
@@ -101,6 +103,7 @@ class LoginController extends Controller {
             $rememberMe
         )) {
             Session::put('user', $user);
+
             $this->result['url'] = $returnUrl ? $returnUrl : '/';
             return response()->json($this->result);
         }

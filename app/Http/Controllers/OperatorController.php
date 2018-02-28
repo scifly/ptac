@@ -58,11 +58,8 @@ class OperatorController extends Controller {
     public function create() {
         
         if (Request::method() === 'POST') {
-            return response()->json(
-                $this->department->tree(Request::query('rootId'))
-            );
+            return response()->json($this->department->tree(Request::query('rootId')));
         }
-        
         return $this->output([
             'role' => Auth::user()->group->name
         ]);
@@ -138,7 +135,7 @@ class OperatorController extends Controller {
         abort_if(!$operator, HttpStatusCode::NOT_FOUND);
         
         return $this->result(
-            $operator->modify($request, $id)
+            $this->operator->modify($request, $id)
         );
         
     }
@@ -154,9 +151,9 @@ class OperatorController extends Controller {
         
         $operator = $this->operator->find($id);
         abort_if(!$operator, HttpStatusCode::NOT_FOUND);
-        
+    
         return $this->result(
-            $operator->remove($id)
+            $this->operator->remove($id)
         );
         
     }

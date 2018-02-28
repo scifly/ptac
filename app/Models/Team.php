@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use ReflectionException;
+
 
 /**
  * App\Models\Team 教职员工组
@@ -61,7 +61,7 @@ class Team extends Model {
      * @param array $teamIds
      * @return array
      */
-    static function teams(array $teamIds) {
+    function teams(array $teamIds) {
         
         $teams = [];
         foreach ($teamIds as $id) {
@@ -79,7 +79,6 @@ class Team extends Model {
      * @param $id
      * @return bool|null
      * @throws Exception
-     * @throws ReflectionException
      */
     public function remove($id) {
         
@@ -96,7 +95,7 @@ class Team extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'Team.id', 'dt' => 0],
@@ -123,7 +122,7 @@ class Team extends Model {
             ],
         ];
         // todo: 增加过滤条件
-        $condition = 'Team.school_id = ' . School::schoolId();
+        $condition = 'Team.school_id = ' . $this->schoolId();
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
     }

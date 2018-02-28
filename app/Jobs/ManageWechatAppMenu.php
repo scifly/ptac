@@ -2,7 +2,6 @@
 namespace App\Jobs;
 
 use App\Facades\Wechat;
-use App\Helpers\ControllerTrait;
 use App\Models\App;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

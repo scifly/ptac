@@ -60,7 +60,7 @@ class CustodianStudent extends Model {
      * @param $custodianId
      * @param array $studentIds
      */
-    static function storeByCustodianId($custodianId, array $studentIds) {
+    function storeByCustodianId($custodianId, array $studentIds) {
 
         foreach ($studentIds as $studentId => $relationship) {
             self::create([
@@ -79,7 +79,7 @@ class CustodianStudent extends Model {
      * @param $studentId
      * @param array $custodianIds
      */
-    static function storeByStudentId($studentId, array $custodianIds) {
+    function storeByStudentId($studentId, array $custodianIds) {
 
         foreach ($custodianIds as $custodianId => $relationship) {
             self::create([

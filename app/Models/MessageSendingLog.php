@@ -52,7 +52,7 @@ class MessageSendingLog extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function store($recipientCount) {
+    function store($recipientCount) {
         
         try {
             DB::transaction(function () use ($recipientCount) {

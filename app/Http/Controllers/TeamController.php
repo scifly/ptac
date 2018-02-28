@@ -70,7 +70,7 @@ class TeamController extends Controller {
         $this->authorize('c', Team::class);
         
         return $this->result(
-            Team::create($request->all())
+            $this->team->create($request->all())
         );
         
     }

@@ -19,6 +19,15 @@ use Illuminate\Support\Facades\Auth;
 
 class CheckRole {
     
+    protected $department, $menu;
+    
+    function __construct(Department $department, Menu $menu) {
+        
+        $this->department = $department;
+        $this->menu = $menu;
+        
+    }
+    
     /**
      * Handle an incoming request.
      *
@@ -41,14 +50,14 @@ class CheckRole {
         if (stripos($route, 'pages') > -1) {
             switch ($role) {
                 case '企业':
-                    $menuIds = Menu::subMenuIds(
+                    $menuIds = $this->menu->subMenuIds(
                         Corp::whereDepartmentId($user->topDeptId())
                             ->first()->menu_id
                     );
                     $abort = !in_array($menuId, $menuIds) ?? false;
                     break;
                 case '学校':
-                    $menuIds = Menu::subMenuIds(
+                    $menuIds = $this->menu->subMenuIds(
                         School::whereDepartmentId($user->topDeptId())
                             ->first()->menu_id
                     );
@@ -58,10 +67,10 @@ class CheckRole {
                     $schoolId = Group::find($user->group_id)->school_id;
                     if (!$schoolId) {
                         $deptId = DepartmentUser::whereUserId($user->id)->first()->department_id;
-                        $schoolDept = Department::schoolDeptId($deptId);
+                        $schoolDept = $this->department->schoolDeptId($deptId);
                         $schoolId = School::whereDepartmentId($schoolDept)->first()->id;
                     }
-                    $menuIds = Menu::subMenuIds(
+                    $menuIds = $this->menu->subMenuIds(
                         School::find($schoolId)->menu_id
                     );
                     $abort = !in_array($menuId, $menuIds) ?? false;

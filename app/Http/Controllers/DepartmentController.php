@@ -36,7 +36,7 @@ class DepartmentController extends Controller {
     public function index() {
         
         if (Request::method() === 'POST') {
-            return response()->json(Department::tree());
+            return response()->json($this->department->tree());
         }
 
         return $this->output();
@@ -68,7 +68,9 @@ class DepartmentController extends Controller {
     public function store(DepartmentRequest $request) {
         
         return $this->result(
-            Department::store($request->all(), true)
+            $this->department->store(
+                $request->all(), true
+            )
         );
         
     }
@@ -122,7 +124,7 @@ class DepartmentController extends Controller {
         abort_if(!$department, HttpStatusCode::NOT_FOUND);
 
         return $this->result(
-            $department::modify($request->all(), $id, true)
+            $department->modify($request->all(), $id, true)
         );
         
     }
@@ -140,7 +142,7 @@ class DepartmentController extends Controller {
         $department = $this->department->find($id);
         abort_if(!$department, HttpStatusCode::NOT_FOUND);
 
-        return $this->result($department::remove($id));
+        return $this->result($department->remove($id));
         
     }
     
@@ -156,7 +158,7 @@ class DepartmentController extends Controller {
         $department = $this->department->find($id);
         $parentDepartment = $this->department->find($parentId);
         abort_if(!$department || !$parentDepartment, HttpStatusCode::NOT_FOUND);
-        if ($department::movable($id, $parentId)) {
+        if ($department->movable($id, $parentId)) {
             return $this->result(
                 $department->move($id, $parentId, true)
             );

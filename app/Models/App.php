@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+
 use App\Events\AppUpdated;
 use App\Facades\Wechat;
 use Carbon\Carbon;
@@ -55,6 +56,7 @@ use Illuminate\Support\Facades\Request;
  * @method static Builder|App whereSquareLogoUrl($value)
  * @method static Builder|App whereUpdatedAt($value)
  * @mixin Eloquent
+ * @property-read \App\Models\Corp $corp
  */
 class App extends Model {
 
@@ -68,6 +70,17 @@ class App extends Model {
     ];
     
     /**
+     * 返回应用所属的企业对象
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function corp() {
+        
+        return $this->belongsTo('App\Models\Corp');
+        
+    }
+    
+    /**
      * 保存App
      *
      * @return \Illuminate\Http\JsonResponse
@@ -76,8 +89,8 @@ class App extends Model {
 
         $secret = Request::input('secret');
         $agentid = Request::input('agentid');
-        $corp_id = Corp::corpId();
-        $corpid = Corp::find($corp_id)->corpid;
+        $corp_id = $this->corp->corpId();
+        $corpid = $this->corp->find($corp_id)->corpid;
         $token = Wechat::getAccessToken($corpid, $secret);
         $corpApp = json_decode(Wechat::getApp($token, $agentid));
         if (isset($corpApp->name)) {
@@ -157,7 +170,7 @@ class App extends Model {
      *
      * @param $app
      */
-    private static function formatDateTime(&$app) {
+    private function formatDateTime(&$app) {
         
         Carbon::setLocale('zh');
         if ($app['created_at']) {

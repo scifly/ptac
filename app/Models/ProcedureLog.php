@@ -9,7 +9,6 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\ProcedureLog 审批流程日志
@@ -192,7 +191,6 @@ class ProcedureLog extends Model {
         ];
 
         return Datatable::simple(self::getModel(), $columns, self::JOINS, $where);
-        
     }
 
 }

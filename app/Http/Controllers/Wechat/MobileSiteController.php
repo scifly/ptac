@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Wechat;
 
 use App\Facades\Wechat;
+use App\Helpers\HttpStatusCode;
 use App\Http\Controllers\Controller;
 use App\Models\App;
 use App\Models\Corp;
@@ -18,6 +19,15 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
 class MobileSiteController extends Controller {
+    
+    protected $media, $department;
+    
+    function __construct(Media $media, Department $department) {
+        
+        $this->media = $media;
+        $this->department = $department;
+        
+    }
     
     /**
      * 微网站首页
@@ -42,41 +52,28 @@ class MobileSiteController extends Controller {
             $userId = $userInfo['UserId'];
             Session::put('userId', $userId);
         }
-//        $userId = 'user_5a699bf4827e9';
-        # 获取学校的部门类型
-        // $departmentType = new DepartmentType();
-        // $type = $departmentType::whereName('学校')->first();
         # 通过微信企业后台返回的userid  获取数据库user数据
         $user = User::where('userid', $userId)->first();
         if ($user) {
-//        $department = new Department();
-//        # 获取当前用户的最高顶级部门
-//        $level = $department->groupLevel($user->id);
-//        $group = User::whereId($user->id)->first()->group;
             if ($user->group_id != 1 && $user->group_id != 2) {
-                
                 $school_id = Group::whereId($user->group_id)->first()->school_id;
                 if (!$school_id) {
                     $dept_id = DepartmentUser::whereUserId($user->id)->first()->department_id;
-//                print_r($dept_id);
-                    $schoolDept = Department::schoolDeptId($dept_id);
+                    $schoolDept = $this->department->schoolDeptId($dept_id);
                     $school_id = School::whereDepartmentId($schoolDept)->first()->id;
-                    
                 }
                 $wapSite = WapSite::
                 where('school_id', $school_id)
                     ->first();
                 if ($wapSite) {
-                    // dd($wapSite->wapSiteModules->media);
                     return view('wechat.wapsite.home', [
                         'wapsite' => $wapSite,
-                        // 'code' => $code,
-                        'medias'  => Media::medias(explode(',', $wapSite->media_ids)),
+                        'medias'  => $this->media->medias(explode(',', $wapSite->media_ids)),
                     ]);
                 }
-                
             }
         }
+        return abort(HttpStatusCode::BAD_REQUEST, '请求无效');
         
     }
     
@@ -87,7 +84,8 @@ class MobileSiteController extends Controller {
      */
     public function wapSiteModuleHome() {
         $id = Request::input('id');
-        $articles = WsmArticle::whereWsmId($id)->orderByDesc("created_at")->get();
+        $articles = WsmArticle::whereWsmId($id)
+            ->orderByDesc("created_at")->get();
         $module = WapSiteModule::whereId($id)->first();
         
         return view('wechat.wapsite.module_index', [
@@ -95,7 +93,6 @@ class MobileSiteController extends Controller {
             'module'   => $module,
             'ws'       => true,
         ]);
-        
     }
     
     /**
@@ -109,7 +106,7 @@ class MobileSiteController extends Controller {
         
         return view('wechat.wapsite.article', [
             'article' => $article,
-            'medias'  => Media::medias(explode(',', $article->media_ids)),
+            'medias'  => $this->media->medias(explode(',', $article->media_ids)),
         ]);
         
     }

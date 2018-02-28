@@ -13,8 +13,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
 class OperatorEditComposer {
+    
     use ModelTrait;
-
+    
+    protected $department;
+    
+    function __construct(Department $department) { $this->department = $department; }
+    
     public function compose(View $view) {
 
         $operator = Operator::find(Request::route('id'));
@@ -23,9 +28,6 @@ class OperatorEditComposer {
             case '运营':
                 // $groups = Group::whereSchoolId(null)->pluck('name', 'id');
                 $groups = Group::whereSchoolId(null)->where('name','企业')->pluck('name', 'id');
-
-                $corps = Corp::pluck('name', 'department_id');
-                $schools = School::pluck('name', 'department_id');
                 $view->with(['groups' => $groups]);
                 break;
             case '企业':
@@ -47,7 +49,7 @@ class OperatorEditComposer {
         $selectedDepartmentIds = $operator->user->departments->pluck('id')->toArray();
         $view->with([
             'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
-            'selectedDepartments' => Department::selectedNodes($selectedDepartmentIds),
+            'selectedDepartments' => $this->department->selectedNodes($selectedDepartmentIds),
             'mobiles' => $operator->user->mobiles,
             'uris' => $this->uris()
         ]);

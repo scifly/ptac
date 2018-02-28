@@ -30,7 +30,7 @@ class MajorSubject extends Model {
 
     protected $fillable = ['major_id', 'subject_id'];
 
-    static function storeByMajorId($majorId, array $subjectIds) {
+    function storeByMajorId($majorId, array $subjectIds) {
 
         foreach ($subjectIds as $subjectId) {
             self::create([
@@ -41,7 +41,7 @@ class MajorSubject extends Model {
 
     }
 
-    static function storeBySubjectId($subjectId, $majorIds) {
+    function storeBySubjectId($subjectId, $majorIds) {
 
         foreach ($majorIds as $majorId) {
             self::create([

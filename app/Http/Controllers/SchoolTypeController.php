@@ -82,9 +82,7 @@ class SchoolTypeController extends Controller {
         $st = SchoolType::find($id);
         abort_if(!$st, HttpStatusCode::NOT_FOUND);
         
-        return $this->output([
-            'st' => $st,
-        ]);
+        return $this->output(['st' => $st]);
         
     }
     

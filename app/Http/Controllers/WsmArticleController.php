@@ -18,12 +18,13 @@ use Throwable;
  */
 class WsmArticleController extends Controller {
     
-    protected $wsma;
+    protected $wsma, $media;
     
-    public function __construct(WsmArticle $wsma) {
+    function __construct(WsmArticle $wsma, Media $media) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->wsma = $wsma;
+        $this->media = $media;
         
     }
     
@@ -87,7 +88,7 @@ class WsmArticleController extends Controller {
         
         return $this->output([
             'article' => $article,
-            'medias'  => Media::medias(explode(',', $article->media_ids)),
+            'medias'  => $this->media->medias(explode(',', $article->media_ids)),
         ]);
         
     }
@@ -106,7 +107,7 @@ class WsmArticleController extends Controller {
         
         return $this->output([
             'article' => $article,
-            'medias'  => Media::medias(explode(',', $article->media_ids)),
+            'medias'  => $this->media->medias(explode(',', $article->media_ids)),
         ]);
         
     }

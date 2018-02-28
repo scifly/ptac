@@ -22,12 +22,14 @@ use Throwable;
  */
 class WapSiteController extends Controller {
     
-    protected $ws;
+    protected $ws, $media, $school;
     
-    public function __construct(WapSite $ws) {
+    public function __construct(WapSite $ws, Media $media, School $school) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->ws = $ws;
+        $this->media = $media;
+        $this->school = $school;
 
     }
     
@@ -39,13 +41,14 @@ class WapSiteController extends Controller {
      */
     public function index() {
 
-        $ws = WapSite::whereSchoolId(School::schoolId())->where('enabled', 1)->first();
+        $ws = WapSite::whereSchoolId($this->school->getSchoolById())
+            ->where('enabled', 1)->first();
         abort_if(!$ws, HttpStatusCode::NOT_FOUND);
         $mediaIds = explode(",", $ws->media_ids);
     
         return $this->output([
             'ws' => $ws,
-            'medias'  => Media::medias($mediaIds),
+            'medias'  => $this->media->medias($mediaIds),
             'show'    => true,
         ]);
     
@@ -81,7 +84,7 @@ class WapSiteController extends Controller {
         
         return $this->output([
             'ws' => $ws,
-            'medias'  => Media::medias(explode(',',$ws->media_ids)),
+            'medias'  => $this->media->medias(explode(',',$ws->media_ids)),
         ]);
         
     }

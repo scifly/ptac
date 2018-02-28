@@ -18,12 +18,13 @@ use Throwable;
  */
 class SquadController extends Controller {
     
-    protected $class;
+    protected $class, $educator;
     
-    public function __construct(Squad $class) {
+    public function __construct(Squad $class, Educator $educator) {
     
         $this->middleware(['auth', 'checkrole']);
         $this->class = $class;
+        $this->educator = $educator;
         
     }
     
@@ -84,7 +85,7 @@ class SquadController extends Controller {
         abort_if(!$class, HttpStatusCode::NOT_FOUND);
         $selectedEducators = [];
         if ($class->educator_ids != '0') {
-            $selectedEducators = Educator::educatorList(
+            $selectedEducators = $this->educator->educatorList(
                 explode(",", rtrim($class->educator_ids,","))
             );
         }

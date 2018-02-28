@@ -1,10 +1,12 @@
 <?php
 namespace App\Http\Requests;
 
-use App\Models\School;
+use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ProcedureRequest extends FormRequest {
+    
+    use ModelTrait;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -28,7 +30,7 @@ class ProcedureRequest extends FormRequest {
     protected function prepareForValidation() {
 
         $input = $this->all();
-        $input['school_id'] = School::schoolId();
+        $input['school_id'] = $this->schoolId();
         
         $this->replace($input);
         

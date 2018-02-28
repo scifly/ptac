@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\ProcedureStep 审批流程步骤
@@ -61,7 +62,7 @@ class ProcedureStep extends Model {
      * @param array $data
      * @return bool
      */
-    static function store(array $data) {
+    function store(array $data) {
 
         $ps = self::create($data);
 
@@ -76,7 +77,7 @@ class ProcedureStep extends Model {
      * @param $id
      * @return bool
      */
-    static function modify(array $data, $id) {
+    function modify(array $data, $id) {
 
         $p = self::find($id);
         if (!$p) { return false; }
@@ -92,7 +93,7 @@ class ProcedureStep extends Model {
      * @return bool|null
      * @throws Exception
      */
-    static function remove($id) {
+    function remove($id) {
 
         $p = self::find($id);
         if (!$p) { return false; }
@@ -106,7 +107,7 @@ class ProcedureStep extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'ProcedureStep.id', 'dt' => 0],
@@ -155,7 +156,7 @@ class ProcedureStep extends Model {
      * @param $id
      * @return string
      */
-    private static function approverUsers($id) {
+    private function approverUsers($id) {
 
         return self::userList($id, 'approver_user_ids');
 
@@ -168,10 +169,11 @@ class ProcedureStep extends Model {
      * @param $field string (用户ID)字段名称
      * @return string
      */
-    private static function userList($id, $field) {
+    private function userList($id, $field) {
 
         $ps = self::find($id);
-        $userIds = User::users(explode(',', $ps->{$field}));
+        $user = Auth::user();
+        $userIds = $user->users(explode(',', $ps->{$field}));
         $userList = collect($userIds)->flatten()->toArray();
 
         return implode(',', $userList);
@@ -184,9 +186,9 @@ class ProcedureStep extends Model {
      * @param $id
      * @return string
      */
-    private static function relatedUsers($id) {
+    private function relatedUsers($id) {
 
-        return self::userList($id, 'related_user_ids');
+        return $this->userList($id, 'related_user_ids');
 
     }
 

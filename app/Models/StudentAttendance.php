@@ -3,11 +3,13 @@ namespace App\Models;
 
 use App\Events\StudentAttendanceCreate;
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+
 
 /**
  * App\Models\StudentAttendance 学生考勤记录
@@ -44,6 +46,8 @@ use Illuminate\Support\Facades\DB;
  */
 class StudentAttendance extends Model {
     
+    use ModelTrait;
+    
     protected $table = 'student_attendances';
     protected $fillable = [
         'id', 'student_id', 'punch_time', 'sas_id',
@@ -70,18 +74,14 @@ class StudentAttendance extends Model {
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function studentAttendancesetting() { 
-        
-        return $this->belongsTo('App\Models\StudentAttendanceSetting', 'sas_id', 'id'); 
-        
-    }
+    public function studentAttendancesetting() { return $this->belongsTo('App\Models\StudentAttendanceSetting', 'sas_id', 'id'); }
     
     /**
      * 学生考勤记录列表
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'StudentAttendance.id', 'dt' => 0],
@@ -140,12 +140,12 @@ class StudentAttendance extends Model {
             ],
         ];
         // todo: 增加角色过滤条件
-        $condition = 'AttendanceMachine.school_id = ' . School::schoolId();
+        $condition = 'AttendanceMachine.school_id = ' . $this->schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         
     }
-    
+
     /**
      * @param null $classId
      * @param null $startTime
@@ -154,67 +154,61 @@ class StudentAttendance extends Model {
      * @return array
      */
     public function getData($classId = null, $startTime = null, $endTime = null, $days = null) {
-        
-        if (!$classId) {
-            $classId = $this->getClass();
-        }
-        if (!$startTime) {
-            $startTime = date('Y-m-d', strtotime('-7 day'));
-        }
-        if (!$endTime) {
-            $endTime = date('Y-m-d');
-        }
+        if (!$classId) { $classId = $this->getClass(); }
+        if (!$startTime) { $startTime = date('Y-m-d',strtotime('-7 day')); }
+        if (!$endTime) { $endTime = date('Y-m-d'); }
         $item = [];
         if ($classId && $startTime && $endTime) {
             $all = Student::whereClassId($classId)->get()->pluck('id')->toArray();
             if (empty($all)) {
                 return $item;
             }
-            $data = $this->getSqlData(implode(',', $all), $startTime, $endTime);
+            $data =$this->getSqlData(implode(',',$all), $startTime, $endTime);
+
             $n = [];
             $a = [];
             if ($data) {
-                foreach ($data as $key => &$val) {
+                foreach ($data as $key => &$val)
+                {
                     if ($val->lastest) {
-                        if (isset($n[$val->day])) {
-                            $n[$val->day] = ($n[$val->day] + 1);
-                        } else {
+                        if(isset($n[$val->day])) {
+                            $n[$val->day] = ($n[$val->day]+1);
+                        }else{
                             $n[$val->day] = 1;
                         }
-                    } else {
-                        if (isset($a[$val->day])) {
-                            $a[$val->day] = ($a[$val->day] + 1);
-                        } else {
+                    }else{
+                        if(isset($a[$val->day])) {
+                            $a[$val->day] = ($a[$val->day]+1);
+                        }else{
                             $a[$val->day] = 1;
                         }
                     }
+
                 }
             }
-            for ($i = 0; $i < $days; $i++) {
+            for ($i = 0;$i < $days; $i++)
+            {
                 $date = strtotime($startTime);
-                $date = date("Y-m-d", $date + (86400 * $i));
+                $date = date("Y-m-d",$date+(86400*$i));
                 $item[$i]['date'] = $date;
                 $item[$i]['all'] = count($all);
                 $item[$i]['normal'] = isset($n[$date]) ? $n[$date] : 0;
                 $item[$i]['abnormal'] = isset($a[$date]) ? $a[$date] : 0;
-                $item[$i]['surplus'] = $item[$i]['all'] - $item[$i]['normal'] - $item[$i]['abnormal'];
+                $item[$i]['surplus'] = $item[$i]['all']-$item[$i]['normal']-$item[$i]['abnormal'];
             }
-            
             return $item;
         }
-        
         return $item;
     }
     
-    public function getStudentData($date, $type, $classId) {
-//        $date = '2018-01-07';
-//        $type = 'surplus';
-//        $classId = '1';
+    public function getStudentData($date , $type, $classId) {
+        
         $startTime = date('Y-m-d H:i:s', strtotime($date));
-        $endTime = date('Y-m-d H:i:s', strtotime($date) + 24 * 3600 - 1);
+        $endTime = date('Y-m-d H:i:s', strtotime($date)+24*3600-1);
         $all = Student::whereClassId($classId)->get()->pluck('id')->toArray();
         $result = [];
-        $data = $this->getSqlData(implode(',', $all), $startTime, $endTime);
+        $data =$this->getSqlData(implode(',',$all), $startTime, $endTime);
+
         if ($type == 'surplus') {
             $items = $this->whereIn('student_id', $all)
                 ->where('punch_time', '>=', $startTime)
@@ -230,24 +224,25 @@ class StudentAttendance extends Model {
                         $cu = User::whereIn('id', array_column(json_decode($datum->custodians), 'user_id'))
                             ->get()
                             ->pluck('realname');
-                    } else {
+                    }else{
                         $cu = [];
                     }
                     if (json_decode($datum->user['mobiles'])) {
                         $mo = array_column(json_decode($datum->user['mobiles']), 'mobile');
-                    } else {
+                    }else{
                         $mo = [];
                     }
                     $result[] = [
-                        'name'       => $datum->user['realname'],
-                        'custodian'  => $cu,
-                        'moblie'     => $mo,
+                        'name' => $datum->user['realname'],
+                        'custodian' => $cu,
+                        'moblie' => $mo,
                         'punch_time' => '',
-                        'inorout'    => '',
+                        'inorout' => '',
                     ];
                 }
             }
         }
+
         if ($data) {
             switch ($type) {
                 case 'normal':
@@ -257,18 +252,19 @@ class StudentAttendance extends Model {
                             $n[] = $d->id;
                         }
                     }
-                    $items = $this::whereIn('id', $n)->get();
+                    $items = $this->whereIn('id', $n)->get();
                     foreach ($items as $datum) {
                         $result[] = [
-                            'name'       => $datum->student->user->realname,
-                            'custodian'  => User::whereIn('id', array_column($datum->student->custodians->toArray(), 'user_id'))
+                            'name' => $datum->student->user->realname,
+                            'custodian' => User::whereIn('id', array_column($datum->student->custodians->toArray(), 'user_id'))
                                 ->get()
                                 ->pluck('realname'),
-                            'moblie'     => array_column($datum->student->user->mobiles->toArray(), 'mobile'),
+                            'moblie' => array_column($datum->student->user->mobiles->toArray(), 'mobile'),
                             'punch_time' => $datum->punch_time,
-                            'inorout'    => $datum->inorout == 1 ? '进' : '出',
+                            'inorout' => $datum->inorout == 1 ? '进' : '出',
                         ];
                     }
+
                     break;
                 case 'abnormal':
                     $a = [];
@@ -277,26 +273,26 @@ class StudentAttendance extends Model {
                             $a[] = $d->id;
                         }
                     }
-                    $items = $this::whereIn('id', $a)->get();
+                    $items = $this->whereIn('id', $a)->get();
                     foreach ($items as $datum) {
                         $result[] = [
-                            'name'       => $datum->student->user->realname,
-                            'custodian'  => User::whereIn('id', array_column($datum->student->custodians->toArray(), 'user_id'))
+                            'name' => $datum->student->user->realname,
+                            'custodian' => User::whereIn('id', array_column($datum->student->custodians->toArray(), 'user_id'))
                                 ->get()
                                 ->pluck('realname'),
-                            'moblie'     => array_column($datum->student->user->mobiles->toArray(), 'mobile'),
+                            'moblie' => array_column($datum->student->user->mobiles->toArray(), 'mobile'),
                             'punch_time' => $datum->punch_time,
-                            'inorout'    => $datum->inorout == 1 ? '进' : '出',
+                            'inorout' => $datum->inorout == 1 ? '进' : '出',
                         ];
                     }
                     break;
-                
+
             }
         }
-        
+
         return $result;
     }
-    
+
     /**
      * @param $studentIds
      * @param $start
@@ -304,25 +300,27 @@ class StudentAttendance extends Model {
      * @return array
      */
     private function getSqlData($studentIds, $start, $end) {
-        
         $data = DB::select("
-          SELECT max(t.id) id,t.student_id, substring_index(group_concat( t.status ORDER BY t.punch_time DESC),',',1) lastest, DATE(t.punch_time) day 
-          FROM (
-            SELECT ord.id,ord.student_id, ord.inorout,ord.status, ord.punch_time 
-              FROM student_attendances ord WHERE ord.punch_time >= '" . $start . "' AND ord.punch_time <= '" . $end . "' ORDER BY ord.student_id ASC , ord.punch_time DESC) t 
-              WHERE t.student_id IN (" . $studentIds . ") 
-          GROUP BY t.student_id,day"
+          select max(t.id) id,t.student_id, substring_index(group_concat( t.status order by t.punch_time DESC),',',1) lastest, DATE(t.punch_time) day 
+          from (
+            select ord.id,ord.student_id, ord.inorout,ord.status, ord.punch_time 
+              from student_attendances ord where ord.punch_time >= '". $start."' and ord.punch_time <= '". $end."' order by ord.student_id asc , ord.punch_time desc) t 
+              where t.student_id in (" . $studentIds . ") 
+          group by t.student_id,day"
         );
-        
         return $data;
     }
     
+    /**
+     * @return mixed
+     */
     private function getClass() {
         
         $schools = null;
         $grades = null;
         $classes = null;
-        $schoolId = School::schoolId();
+
+        $schoolId = $this->schoolId();
         $schools = School::whereId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id');
@@ -335,7 +333,6 @@ class StudentAttendance extends Model {
             $classes = Squad::whereGradeId($grades->keys()->first())
                 ->where('enabled', 1)
                 ->pluck('name', 'id');
-            
             return $classes->keys()->first();
         }
         
@@ -347,13 +344,13 @@ class StudentAttendance extends Model {
      * @param $input
      * @return bool
      */
-    static function storeByFace($input) {
-        
+    function storeByFace($input) {
+
         #触发事件调用队列，这个是异步处理的因此错误信息不能返回
         event(new StudentAttendanceCreate($input));
-        
         return true;
-        
     }
+
+
     
 }

@@ -137,10 +137,12 @@ class ConferenceQueuePolicy {
         # 发起者只能编辑/更新/删除自己发起的会议
         if (isset($userId) && $user->id != $userId) { return false; }
         # 会议发起者所属的所有部门id
-        $departmentIds = User::departmentIds($user->id);
+        $departmentIds = $user->departmentIds($user->id);
         foreach ($educatorIds as $id) {
             # 与会者所属的所有部门id
-            $participantDepartmentIds = User::departmentIds(Educator::find($id)->user->id);
+            $participantDepartmentIds = $user->departmentIds(
+                Educator::find($id)->user->id
+            );
             # 发起者和与会者共同属于的部门id
             $commonDepartmentIds = array_intersect($departmentIds, $participantDepartmentIds);
             # 如果发起者与与会者不属于同一部门

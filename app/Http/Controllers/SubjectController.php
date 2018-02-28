@@ -18,12 +18,14 @@ use Throwable;
  */
 class SubjectController extends Controller {
     
-    protected $subject;
+    protected $subject, $major, $grade;
     
-    function __construct(Subject $subject) {
+    function __construct(Subject $subject, Major $major, Grade $grade) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->subject = $subject;
+        $this->major = $major;
+        $this->grade = $grade;
         
     }
     
@@ -56,8 +58,8 @@ class SubjectController extends Controller {
         $this->authorize('c', Subject::class);
         
         return $this->output([
-            'majors' => Major::majors(),
-            'grades' => Grade::grades(),
+            'majors' => $this->major->majors(),
+            'grades' => $this->grade->grades(),
         ]);
         
     }
@@ -107,8 +109,8 @@ class SubjectController extends Controller {
             'subject'        => $subject,
             'selectedGrades' => $selectedGrades,
             'selectedMajors' => $selectedMajors,
-            'majors'         => Major::majors(),
-            'grades'         => Grade::grades(),
+            'majors'         => $this->major->majors(),
+            'grades'         => $this->grade->grades(),
         ]);
         
     }
@@ -127,9 +129,7 @@ class SubjectController extends Controller {
         $subject = Subject::find($id);
         $this->authorize('rud', $subject);
         
-        return $this->result(
-            $subject->modify($request, $id)
-        );
+        return $this->result($subject->modify($request, $id));
         
     }
     
@@ -146,9 +146,7 @@ class SubjectController extends Controller {
         $subject = Subject::find($id);
         $this->authorize('rud', $subject);
         
-        return $this->result(
-            $subject->remove($id)
-        );
+        return $this->result($subject->remove($id));
         
     }
     

@@ -65,7 +65,7 @@ class StudentAttendanceSettingController extends Controller {
     public function store(StudentAttendanceSettingRequest $request) {
         
         return $this->result(
-            StudentAttendanceSetting::create($request->all())
+            $this->sas->create($request->all())
         );
         
     }
@@ -115,10 +115,12 @@ class StudentAttendanceSettingController extends Controller {
      */
     public function destroy($id) {
         
-        $sas = StudentAttendanceSetting::find($id);
+        $sas = $this->sas->find($id);
         abort_if(!$sas, HttpStatusCode::NOT_FOUND);
         
-        return $this->result($sas->delete());
+        return $this->result(
+            $sas->delete()
+        );
         
     }
     

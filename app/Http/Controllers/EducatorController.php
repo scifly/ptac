@@ -7,12 +7,12 @@ use App\Http\Requests\EducatorRequest;
 use App\Models\Department;
 use App\Models\Educator;
 use App\Models\School;
+use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use PHPExcel_Exception;
-use ReflectionException;
 use Throwable;
 
 /**
@@ -22,13 +22,15 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class EducatorController extends Controller {
+    
+    protected $educator, $department, $school;
 
-    protected $educator;
-
-    public function __construct(Educator $educator) {
+    public function __construct(Educator $educator, Department $department, School $school) {
 
         $this->middleware(['auth', 'checkrole']);
         $this->educator = $educator;
+        $this->department = $department;
+        $this->school = $school;
 
     }
 
@@ -60,9 +62,10 @@ class EducatorController extends Controller {
 
         $this->authorize('c', Educator::class);
         if (Request::method() === 'POST') {
-            $school = School::find(School::schoolId());
             return response()->json(
-                Department::tree($school->department_id)
+                $this->department->tree(
+                    $this->school->getSchoolById()->department_id
+                )
             );
         }
 
@@ -117,7 +120,7 @@ class EducatorController extends Controller {
         $educator = Educator::find($id);
         $this->authorize('rud', $educator);
         if (Request::method() === 'POST') {
-            return response()->json(Department::tree());
+            return response()->json($this->department->tree());
         }
         $selectedTeams = [];
         foreach ($educator->teams as $v) {
@@ -127,7 +130,7 @@ class EducatorController extends Controller {
         foreach ($educator->user->departments as $department) {
             $selectedDepartmentIds[] = $department->id;
         }
-        $selectedDepartments = Department::selectedNodes($selectedDepartmentIds);
+        $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
         return $this->output([
             'mobiles' => $educator->user->mobiles,
             'educator' => $educator,
@@ -194,7 +197,7 @@ class EducatorController extends Controller {
         );
 
     }
-
+    
     /**
      * 删除教职员工
      *
@@ -202,7 +205,7 @@ class EducatorController extends Controller {
      * @return JsonResponse
      * @throws AuthorizationException
      * @throws Throwable
-     * @throws ReflectionException
+     * @throws Exception
      */
     public function destroy($id) {
 
@@ -253,7 +256,7 @@ class EducatorController extends Controller {
         if (Request::method() === 'POST') {
             $field = Request::query('field');
             $id = Request::query('id');
-            $this->result['html'] = School::getFieldList($field, $id);
+            $this->result['html'] = $this->educator->school->getFieldList($field, $id);
             return response()->json($this->result);
         }
         $id = Request::query('id');

@@ -3,9 +3,9 @@ namespace App\Http\Controllers;
 
 use App\Helpers\HttpStatusCode;
 use App\Http\Requests\UserRequest;
-use App\Models\Event;
 use App\Models\Message;
 use App\Models\User;
+use App\Models\Event;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
@@ -21,12 +21,14 @@ use Throwable;
  */
 class UserController extends Controller {
     
-    protected $user;
+    protected $user, $message, $event;
     
-    function __construct(User $user) {
+    function __construct(User $user, Message $message, Event $event) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->user = $user;
+        $this->message = $message;
+        $this->event = $event;
         
     }
 
@@ -73,7 +75,9 @@ class UserController extends Controller {
     public function messages(){
 
         if (Request::get('draw')) {
-            return response()->json(Message::datatable());
+            return response()->json(
+                $this->message->datatable()
+            );
         }
 
         return $this->output();
@@ -87,7 +91,9 @@ class UserController extends Controller {
     public function event(){
 
         if (Request::get('draw')) {
-            return response()->json(Event::datatable());
+            return response()->json(
+                $this->event->datatable()
+            );
         }
 
         return $this->output();

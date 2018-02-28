@@ -3,7 +3,6 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
-use App\Models\School;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 
@@ -13,7 +12,7 @@ class SubjectModuleComposer {
 
     public function compose(View $view) {
 
-        $subjects = Subject::whereSchoolId(School::schoolId())
+        $subjects = Subject::whereSchoolId($this->schoolId())
             ->where('enabled', 1)
             ->pluck('name', 'id');
 

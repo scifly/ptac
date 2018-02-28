@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -37,6 +38,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @mixin Eloquent
  */
 class EducatorAttendanceSetting extends Model {
+    
+    use ModelTrait;
 
     protected $table = 'educator_attendance_settings';
 
@@ -101,7 +104,7 @@ class EducatorAttendanceSetting extends Model {
                 ],
             ],
         ];
-        $condition = 'EducatorAttendanceSetting.school_id = ' . School::schoolId();
+        $condition = 'EducatorAttendanceSetting.school_id = ' . $this->schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 

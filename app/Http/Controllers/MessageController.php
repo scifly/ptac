@@ -23,9 +23,15 @@ use Throwable;
  */
 class MessageController extends Controller {
     
-    public function __construct() {
+    protected $message, $department, $user, $media;
+    
+    public function __construct(Message $message, Department $departement, User $user, Media $media) {
         
         $this->middleware(['auth', 'checkrole']);
+        $this->message = $message;
+        $this->department = $departement;
+        $this->user = $user;
+        $this->media = $media;
         
     }
     
@@ -38,10 +44,10 @@ class MessageController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json(Message::datatable());
+            return response()->json($this->message->datatable());
         }
         if (Request::method() == 'POST') {
-            return Department::contacts();
+            return $this->department->contacts();
         }
         return $this->output();
         
@@ -66,7 +72,9 @@ class MessageController extends Controller {
     public function create() {
         
         if (Request::method() === 'POST') {
-            return response()->json(Department::tree());
+            return response()->json(
+                $this->department->tree()
+            );
         }
         
         return $this->output();
@@ -98,13 +106,13 @@ class MessageController extends Controller {
      */
     public function show($id) {
         
-        $message = Message::find($id);
+        $message = $this->message->find($id);
         abort_if(!$message, HttpStatusCode::NOT_FOUND);
         
         return $this->output([
             'message' => $message,
-            'users'   => User::users($message->user_ids),
-            'medias'  => Media::medias(explode(',', $message->media_ids)),
+            'users'   => $this->user->users($message->user_ids),
+            'medias'  => $this->media->medias(explode(',', $message->media_ids)),
         ]);
         
     }
@@ -118,13 +126,13 @@ class MessageController extends Controller {
      */
     public function edit($id) {
         
-        $message = Message::find($id);
+        $message = $this->message->find($id);
         abort_if(!$message, HttpStatusCode::NOT_FOUND);
         
         return $this->output([
             'message'       => $message,
-            'selectedUsers' => User::users($message->user_ids),
-            'medias'        => Media::medias($message->media_ids),
+            'selectedUsers' => $this->user->users($message->user_ids),
+            'medias'        => $this->media->medias($message->media_ids),
         ]);
         
     }
@@ -140,7 +148,7 @@ class MessageController extends Controller {
      */
     public function update(MessageRequest $request, $id) {
         
-        return $this->result(Message::modify($request, $id));
+        return $this->result($this->message->modify($request, $id));
         
     }
     
@@ -153,24 +161,22 @@ class MessageController extends Controller {
      */
     public function destroy($id) {
         
-        $message = Message::find($id);
+        $message = $this->message->find($id);
         abort_if(!$message, HttpStatusCode::NOT_FOUND);
         
-        return $this->result(
-            $message->delete()
-        );
+        return $this->result($message->delete());
         
     }
     
     public function getDepartmentUsers() {
         
-        return Department::showDepartments($this->checkRole());
+        return $this->department->showDepartments($this->checkRole());
         
     }
     
     private function checkRole($userId = 1) {
         
-        $user = User::find($userId);
+        $user = $this->user->find($userId);
         $departments = [];
         $childDepartmentId = [];
         foreach ($user->departments as $department) {
@@ -193,7 +199,7 @@ class MessageController extends Controller {
     private function departmentChildIds($id) {
         
         static $childIds = [];
-        $firstIds = Department::whereParentId($id)->get(['id'])->toArray();
+        $firstIds = $this->department->whereParentId($id)->get(['id'])->toArray();
         if ($firstIds) {
             foreach ($firstIds as $firstId) {
                 $childIds[] = $firstId['id'];
@@ -216,7 +222,7 @@ class MessageController extends Controller {
         abort_if(empty($file), HttpStatusCode::NOT_ACCEPTABLE, '您还未选择文件！');
         $type = Request::input('type');
         $result['data'] = [];
-        $mes = Media::upload($file, '消息中心');
+        $mes = $this->media->upload($file, '消息中心');
         abort_if(!$mes, HttpStatusCode::INTERNAL_SERVER_ERROR, '文件上传失败');
         $this->result['message'] = '上传成功！';
         $path = $mes['path'];
