@@ -2,11 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Models\School;
+
 use App\Rules\Mobiles;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Validation\Rule;
 
 class StudentRequest extends FormRequest {
 

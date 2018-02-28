@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\IconRequest;
 use App\Models\Icon;
 use Exception;
@@ -79,7 +80,7 @@ class IconController extends Controller {
     public function edit($id) {
         
         $icon = Icon::find($id);
-        abort_if(!$icon, self::NOT_FOUND);
+        abort_if(!$icon, HttpStatusCode::NOT_FOUND);
         
         return $this->output([
             'icon' => $icon,
@@ -97,7 +98,7 @@ class IconController extends Controller {
     public function update(IconRequest $request, $id) {
         
         $icon = Icon::find($id);
-        abort_if(!$icon, self::NOT_FOUND);
+        abort_if(!$icon, HttpStatusCode::NOT_FOUND);
         
         return $this->result(
             $icon->modify($request->all(), $id)
@@ -115,7 +116,7 @@ class IconController extends Controller {
     public function destroy($id) {
         
         $icon = Icon::find($id);
-        abort_if(!$icon, self::NOT_FOUND);
+        abort_if(!$icon, HttpStatusCode::NOT_FOUND);
         
         return $this->result(
             $icon->remove($id)

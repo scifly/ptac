@@ -5,7 +5,6 @@ namespace App\Http\ViewComposers;
 use App\Helpers\ModelTrait;
 use App\Models\Exam;
 use App\Models\School;
-use App\Models\Student;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 
@@ -14,7 +13,7 @@ class ScoreComposer {
     use ModelTrait;
 
     public function compose(View $view) {
-        $schoolId = School::schoolId();
+        $schoolId = $this->schoolId();
         $school = School::whereId($schoolId)->first();
         #获取学校下所有班级 和 考试
         $squadIds = [];

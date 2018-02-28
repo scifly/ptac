@@ -50,10 +50,6 @@ class AppController extends Controller {
     public function edit($id) {
         
         $app = $this->app->find($id);
-<<<<<<< HEAD
-        abort_if(!$app, self::NOT_FOUND);
-=======
->>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('eum', $app);
 
         return $this->output(['app' => $app]);
@@ -71,10 +67,6 @@ class AppController extends Controller {
     public function update(AppRequest $request, $id) {
         
         $app = $this->app->find($id);
-<<<<<<< HEAD
-        abort_if(!$app, self::NOT_FOUND);
-=======
->>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('eum', $app);
 
         return $this->result(
@@ -93,10 +85,6 @@ class AppController extends Controller {
     public function menu($id) {
         
         $app = $this->app->find($id);
-<<<<<<< HEAD
-        abort_if(!$app, self::NOT_FOUND);
-=======
->>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('eum', $app);
 
         $menu = "[

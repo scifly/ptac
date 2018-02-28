@@ -5,9 +5,9 @@ use App\Http\Requests\ScoreRangeRequest;
 use App\Models\ScoreRange;
 use App\Models\Subject;
 use Exception;
+use HttpRequest;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request as HttpRequest;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -85,11 +85,7 @@ class ScoreRangeController extends Controller {
     public function edit($id) {
         
         $sr = $this->sr->find($id);
-<<<<<<< HEAD
-        abort_if(!$sr, self::NOT_FOUND);
-=======
         $this->authorize('rud', $sr);
->>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
 
         return $this->output([
             'sr' => $sr,
@@ -109,11 +105,7 @@ class ScoreRangeController extends Controller {
     public function update(ScoreRangeRequest $request, $id) {
 
         $sr = $this->sr->find($id);
-<<<<<<< HEAD
-        abort_if(!$sr, self::NOT_FOUND);
-=======
         $this->authorize('rud', $sr);
->>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
 
         return $this->result(
             $sr->update($request->all())
@@ -131,11 +123,7 @@ class ScoreRangeController extends Controller {
     public function destroy($id) {
         
         $sr = $this->sr->find($id);
-<<<<<<< HEAD
-        abort_if(!$sr, self::NOT_FOUND);
-=======
         $this->authorize('rud', $sr);
->>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
 
         return $this->result(
             $sr->delete()
@@ -163,9 +151,7 @@ class ScoreRangeController extends Controller {
      */
     public function statistics(HttpRequest $request) {
         
-        return $this->sr->statistics(
-            $request->all()
-        );
+        return $this->sr->statistics($request);
         
     }
     

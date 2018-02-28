@@ -14,13 +14,13 @@ class Maxscore implements Rule {
     public function __construct() {
         //
     }
-
+    
     /**
      * Determine if the validation rule passes.
      *
      * @param  string $attribute
      * @param  mixed $value
-     * @return bool
+     * @return void
      */
     public function passes($attribute, $value) {
 

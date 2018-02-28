@@ -4,7 +4,6 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use App\Models\Grade;
-use App\Models\School;
 use App\Models\Squad;
 use App\Models\Student;
 use Illuminate\Contracts\View\View;
@@ -13,16 +12,20 @@ use Illuminate\Support\Facades\Auth;
 class StudentComposer {
 
     use ModelTrait;
-
+    
+    protected $student;
+    
+    function __construct(Student $student) { $this->student = $student; }
+    
     public function compose(View $view) {
 
-        $schoolId = School::schoolId();
+        $schoolId = $this->schoolId();
         $user = Auth::user();
         $role = $user->group->id;
         if($role > 5){
             $educatorId = $user->educator->id;
-            $gradeIds = Student::getGrade($educatorId)[0];
-            $gradeClass = Student::getGrade($educatorId)[1];
+            $gradeIds = $this->student->getGrade($educatorId)[0];
+            $gradeClass = $this->student->getGrade($educatorId)[1];
             foreach ($gradeClass as $k=>$g){
                 $grades = Grade::whereEnabled(1)
                     ->whereIn('id',$gradeIds)

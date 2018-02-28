@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Models\Corp;
 use App\Models\Menu;
 use App\Models\MenuTab;
@@ -27,12 +28,13 @@ class HomeController extends Controller {
     const PAGEJS = 'js/home/page.js';
     const ROOT_MENU_ID = 1;
     
-    protected $tab;
+    protected $tab, $mt;
     
-    public function __construct(Tab $tab) {
+    public function __construct(Tab $tab, MenuTab $mt) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->tab = $tab;
+        $this->mt = $mt;
 
     }
 
@@ -52,8 +54,9 @@ class HomeController extends Controller {
                 ->first()
                 ->id;
             session(['menuId' => $menuId]);
+            $menu = new Menu();
             return view('home.home', [
-                'menu' => Menu::menuHtml(Menu::rootMenuId()),
+                'menu' => $menu->menuHtml($menu->rootMenuId()),
                 'content' => view('home.' . $view),
                 'js' => self::PAGEJS,
                 'user' => Auth::user()
@@ -74,7 +77,7 @@ class HomeController extends Controller {
             }
             if (Request::ajax()) {
                 return response()->json([
-                    'statusCode' => self::OK,
+                    'statusCode' => HttpStatusCode::OK,
                     'title' => '首页',
                     'uri' => Request::path(),
                     'html' => view('home.' . $view)->render()
@@ -82,7 +85,7 @@ class HomeController extends Controller {
             }
 
             return view('home.home', [
-                'menu' => Menu::menuHtml(Menu::rootMenuId()),
+                'menu' => $menu->menuHtml($menu->rootMenuId()),
                 'menuId' => $menuId,
                 'content' => view('home.' . $view),
                 'js' => self::PAGEJS,
@@ -110,7 +113,7 @@ class HomeController extends Controller {
         }
 
         # 获取卡片列表
-        $tabIds = MenuTab::tabIdsByMenuId($id);
+        $tabIds = $this->mt->tabIdsByMenuId($id);
         $isTabLegit = !empty($tabIds) ?? false;
         # 获取当前用户可以访问的卡片（控制器）id
         $allowedTabIds = $this->tab->allowedTabIds();
@@ -144,29 +147,17 @@ class HomeController extends Controller {
                 $tabArray[$key]['url'] = session('tabUrl');
             }
         } else {
-<<<<<<< HEAD
-            abort(self::NOT_FOUND);
-        }
-        # 获取并返回wrapper-content层中的html内容
-        if (Request::ajax()) {
-            return response()->json([
-                'statusCode' => self::OK,
-                'html' => view('partials.site_content', ['tabs' => $tabArray])->render()
-            ]);
-=======
             $tabArray[0]['active'] = true;
         }
         # 获取并返回wrapper-content层中的html内容
         if (Request::ajax()) {
             $this->result['html'] = view('partials.site_content', ['tabs' => $tabArray])->render();
             return response()->json($this->result);
->>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         }
         # 获取菜单列表
-        $menu = Menu::menuHtml(Menu::rootMenuId());
-
+        $menu = new Menu();
         return view('home.page', [
-            'menu'   => $menu,
+            'menu'   => $menu->menuHtml($menu->rootMenuId()),
             'tabs'   => $tabArray,
             'menuId' => $id,
             'js'     => self::PAGEJS,

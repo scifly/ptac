@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\SchoolRequest;
 use App\Models\Menu;
 use App\Models\School as School;
@@ -20,12 +21,13 @@ use Throwable;
  */
 class SchoolController extends Controller {
     
-    protected $school;
+    protected $school, $menu;
     
-    function __construct(School $school) {
+    function __construct(School $school, Menu $menu) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->school = $school;
+        $this->menu = $menu;
         
     }
     
@@ -42,9 +44,9 @@ class SchoolController extends Controller {
                 $this->school->datatable()
             );
         }
-    
+        
         return $this->output();
-    
+        
     }
     
     /**
@@ -83,8 +85,8 @@ class SchoolController extends Controller {
     public function show($id) {
         
         $school = School::find($id);
-        abort_if(!$school, self::NOT_FOUND);
-    
+        abort_if(!$school, HttpStatusCode::NOT_FOUND);
+        
         return $this->output([
             'school' => $school,
         ]);
@@ -101,8 +103,8 @@ class SchoolController extends Controller {
     public function edit($id) {
         
         $school = School::find($id);
-        abort_if(!$school, self::NOT_FOUND);
-    
+        abort_if(!$school, HttpStatusCode::NOT_FOUND);
+        
         return $this->output([
             'school' => $school,
         ]);
@@ -119,7 +121,7 @@ class SchoolController extends Controller {
     public function update(SchoolRequest $request, $id) {
         
         $school = School::find($id);
-        abort_if(!$school, self::NOT_FOUND);
+        abort_if(!$school, HttpStatusCode::NOT_FOUND);
         
         return $this->result(
             $school->modify($request->all(), $id, true)
@@ -137,7 +139,7 @@ class SchoolController extends Controller {
     public function destroy($id) {
         
         $school = School::find($id);
-        abort_if(!$school, self::NOT_FOUND);
+        abort_if(!$school, HttpStatusCode::NOT_FOUND);
         
         return $this->result(
             $school->remove($id, true)
@@ -151,34 +153,35 @@ class SchoolController extends Controller {
      * @return Factory|JsonResponse|View
      * @throws Throwable
      */
-    public function showInfo(){
-        $menuId = Request::input('menuId');
-        $menu = Menu::find($menuId);
-        if (!$menu) {
-            $menuId = Menu::whereUri('schools/showInfo')->first()->id;
-            session(['menuId' => $menuId]);
+    public function showInfo() {
         
+        $menuId = Request::input('menuId');
+        $menu = $this->menu->find($menuId);
+        if (!$menu) {
+            $menuId = $this->menu->whereUri('schools/showInfo')->first()->id;
+            session(['menuId' => $menuId]);
+            
             return view('home.home', [
-                'menu'    => Menu::menuHtml(Menu::rootMenuId()),
+                'menu'    => $this->menu->menuHtml($this->menu->rootMenuId()),
                 'content' => view('home.' . 'school'),
                 'js'      => 'js/home/page.js',
                 'user'    => Auth::user(),
             ]);
         }
         session(['menuId' => $menuId]);
-        $school = School::find(School::schoolId());
-
+        $school = $this->school->getSchoolById();
+        
         return response()->json([
-            'statusCode' => self::OK,
+            'statusCode' => HttpStatusCode::OK,
             'html'       => view('school.show_info', [
-                                'school' => $school,
-                                'js' => 'js/school/show_info.js',
-                                'breadcrumb' => '学校设置'
-                            ])->render(),
+                'school'     => $school,
+                'js'         => 'js/school/show_info.js',
+                'breadcrumb' => '学校设置',
+            ])->render(),
             'uri'        => Request::path(),
             'title'      => '学校设置',
         ]);
-
+        
     }
-
+    
 }

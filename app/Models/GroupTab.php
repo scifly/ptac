@@ -41,7 +41,7 @@ class GroupTab extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function storeByGroupId($groupId, array $ids = []) {
+    function storeByGroupId($groupId, array $ids = []) {
         
         try {
             DB::transaction(function () use ($groupId, $ids) {

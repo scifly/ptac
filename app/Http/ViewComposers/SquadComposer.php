@@ -5,7 +5,6 @@ namespace App\Http\ViewComposers;
 use App\Helpers\ModelTrait;
 use App\Models\Educator;
 use App\Models\Grade;
-use App\Models\School;
 use Illuminate\Contracts\View\View;
 
 class SquadComposer {
@@ -14,7 +13,7 @@ class SquadComposer {
 
     public function compose(View $view) {
 
-        $schoolId = School::schoolId();
+        $schoolId = $this->schoolId();
         $grades = Grade::whereSchoolId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id');

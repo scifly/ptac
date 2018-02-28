@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\EventRequest;
 use App\Models\Event;
 use Exception;
@@ -57,6 +58,7 @@ class EventController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function calendarEvents($userId) {
+        
         return $this->event->showCalendar($userId);
         
     }
@@ -65,35 +67,37 @@ class EventController extends Controller {
      * 新增一个列表事件
      *
      * @param EventRequest $request
-     * @return Response
      * @internal param Request $request
+     * @return JsonResponse|string
      */
     public function store(EventRequest $request) {
         $inputEvent = $request->all();
         $listDate = $this->event->create($inputEvent);
         
-        return $listDate ? $this->succeed($listDate) : $this->fail();
+        return $this->result($listDate, $listDate);
     }
     
     /**
      * 编辑日程事件的表单
      *
      * @param $id
-     * @return Response
      * @internal param Event $event
+     * @return JsonResponse|string
      * @throws Throwable
      */
     public function edit($id) {
         //判断当前用户权限
         $row = Request::all();
         if ($row['ispublic'] == 1) {
-            if (!$this->event->getRole($row['userId'])) {
-                return $this->fail('此事件只有管理员可编辑！');
-            }
+            abort_if(
+                !$this->event->getRole($row['userId']),
+                HttpStatusCode::NOT_ACCEPTABLE,
+                '此事件只有管理员可编辑！'
+            );
         }
         $data = view('event.show', ['events' => $this->event->find($id)])->render();
         
-        return !empty($data) ? $this->succeed($data) : $this->fail();
+        return $this->result(!empty($data), $data);
     }
     
     /**
@@ -101,26 +105,30 @@ class EventController extends Controller {
      *
      * @param EventRequest $request
      * @param $id
-     * @return Response
-     * @internal param Request $request
-     * @internal param Event $event
+     * @return JsonResponse|string
      */
     public function update(EventRequest $request, $id) {
         $input = $request->all();
         $input['enabled'] = 1;
-        if ($input['end'] <= $input['start']) {
-            return $this->fail('结束时间必须大于开始时间！');
-        }
+        abort_if($input['end'] <= $input['start'], HttpStatusCode::NOT_ACCEPTABLE, '结束时间必须大于开始时间！');
         //根据角色验证重复冲突
-        if ($this->event->isValidateTime($input['user_id'], $input['educator_id'], $input['start'], $input['end'], $id)) {
-            return $this->fail('时间有冲突！');
-        }
+        abort_if(
+            $this->event->isValidateTime(
+                $input['user_id'],
+                $input['educator_id'],
+                $input['start'],
+                $input['end'],
+                $id
+            ),
+            HttpStatusCode::NOT_ACCEPTABLE,
+            '时间有冲突！'
+        );
         $event = $this->event->find($id);
-        if (!$event) {
-            return $this->notFound();
-        }
+        abort_if(!$event, HttpStatusCode::NOT_FOUND);
         
-        return $event->update($input) ? $this->succeed() : $this->fail();
+        return $this->result(
+            $event->update($input)
+        );
     }
     
     /**
@@ -145,7 +153,15 @@ class EventController extends Controller {
      */
     public function dragEvents() {
         $listJson = Request::all();
-        $event = $this->event->whereId($listJson['id'])->first(['title', 'remark', 'location', 'contact', 'url', 'start', 'end', 'ispublic', 'iscourse', 'educator_id', 'subject_id', 'alertable', 'alert_mins', 'user_id', 'enabled'])->toArray();
+        $event = $this->event->whereId($listJson['id'])
+            ->first([
+                'title', 'remark', 'location',
+                'contact', 'url', 'start',
+                'end', 'ispublic', 'iscourse',
+                'educator_id', 'subject_id', 'alertable',
+                'alert_mins', 'user_id', 'enabled'
+            ])
+            ->toArray();
         $event['start'] = $listJson['start'];
         $event['end'] = $listJson['end'];
         $event['enabled'] = 1;
@@ -172,6 +188,7 @@ class EventController extends Controller {
      * @return JsonResponse
      */
     public function updateTime() {
+        
         $data = Request::all();
         $event = $this->event->whereId($data['id'])->first();
         //计算多少秒
@@ -185,15 +202,11 @@ class EventController extends Controller {
         if ($this->event->isValidateTime($event->user_id, $event->educator_id, $event->start, $event->end, $event->id)) {
             abort(HttpStatusCode::NOT_ACCEPTABLE, '时间有冲突！');
         }
-        
-<<<<<<< HEAD
-        return $event->save() ? $this->succeed() : $this->fail();
-=======
+
         return $this->result(
             $event->save()
         );
         
->>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
     }
     
 }

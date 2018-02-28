@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\ExamRequest;
 use App\Models\Exam;
 use Exception;
@@ -85,7 +86,7 @@ class ExamController extends Controller {
     public function show($id) {
         
         $exam = Exam::find($id);
-        abort_if(!$exam, self::NOT_FOUND);
+        abort_if(!$exam, HttpStatusCode::NOT_FOUND);
         
         return $this->output([
             'exam'     => $exam,
@@ -105,7 +106,7 @@ class ExamController extends Controller {
     public function edit($id) {
         
         $exam = Exam::find($id);
-        abort_if(!$exam, self::NOT_FOUND);
+        abort_if(!$exam, HttpStatusCode::NOT_FOUND);
         
         return $this->output([
             'exam'             => $exam,
@@ -124,7 +125,7 @@ class ExamController extends Controller {
     public function update(ExamRequest $request, $id) {
         
         $exam = Exam::find($id);
-        abort_if(!$exam, self::NOT_FOUND);
+        abort_if(!$exam, HttpStatusCode::NOT_FOUND);
         
         return $this->result(
             $exam->modify($request->all(), $id)
@@ -142,7 +143,7 @@ class ExamController extends Controller {
     public function destroy($id) {
         
         $exam = Exam::find($id);
-        abort_if(!$exam, self::NOT_FOUND);
+        abort_if(!$exam, HttpStatusCode::NOT_FOUND);
         
         return $this->result($exam->delete());
         

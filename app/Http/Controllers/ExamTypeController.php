@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ExamTypeRequest;
-use App\Models\Exam;
 use App\Models\ExamType;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -85,10 +84,6 @@ class ExamTypeController extends Controller {
     public function edit($id) {
         
         $et = ExamType::find($id);
-<<<<<<< HEAD
-        abort_if(!$et, self::NOT_FOUND);
-=======
->>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $et);
         
         return $this->output(['et' => $et]);
@@ -106,10 +101,6 @@ class ExamTypeController extends Controller {
     public function update(ExamTypeRequest $request, $id) {
         
         $et = ExamType::find($id);
-<<<<<<< HEAD
-        abort_if(!$et, self::NOT_FOUND);
-=======
->>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $et);
         
         return $this->result(
@@ -128,10 +119,6 @@ class ExamTypeController extends Controller {
     public function destroy($id) {
         
         $et = ExamType::find($id);
-<<<<<<< HEAD
-        abort_if(!$et, self::NOT_FOUND);
-=======
->>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $et);
         
         return $this->result($et->remove($id));

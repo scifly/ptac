@@ -69,7 +69,7 @@ class PollQuestionnaireSubject extends Model {
     /**
      * @return BelongsTo
      */
-    public function pollQuestionnaire() {
+    function pollQuestionnaire() {
         
         return $this->belongsTo('App\Models\PollQuestionnaire', 'pq_id');
         
@@ -82,7 +82,7 @@ class PollQuestionnaireSubject extends Model {
      * @return bool|null
      * @throws Exception
      */
-    static function remove($id) {
+    function remove($id) {
 
         $pqSubject = self::find($id);
         if (!$pqSubject) { return false; }
@@ -96,7 +96,7 @@ class PollQuestionnaireSubject extends Model {
      *
      * @return array
      */
-    static function dataTable() {
+    function dataTable() {
 
         $columns = [
             ['db' => 'PollQuestionnaireSubject.id', 'dt' => 0],
@@ -141,7 +141,7 @@ class PollQuestionnaireSubject extends Model {
      * @param $type
      * @return string
      */
-    private static function subjectType($type) {
+    private function subjectType($type) {
 
         switch ($type) {
             case 0: return '单选';

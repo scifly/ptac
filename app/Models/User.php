@@ -106,7 +106,7 @@ class User extends Authenticatable {
      */
 
     protected $hidden = ['password', 'remember_token'];
-
+    
     /**
      * 返回指定用户所属的角色对象
      *
@@ -213,7 +213,7 @@ class User extends Authenticatable {
      * @param array $ids
      * @return array
      */
-    static function users(array $ids) {
+    function users(array $ids) {
 
         $list = [];
         foreach ($ids as $id) {
@@ -230,14 +230,16 @@ class User extends Authenticatable {
      *
      * @return mixed
      */
-    static function topDeptId() {
+    function topDeptId() {
         
         $departmentIds = Auth::user()->departments
             ->pluck('id')->toArray();
         $levels = [];
         foreach ($departmentIds as $id) {
             $level = 0;
-            $levels[$id] = Department::level($id, $level);
+            $department = new Department();
+            $levels[$id] = $department->level($id, $level);
+            unset($department);
         }
         asort($levels);
         reset($levels);
@@ -252,7 +254,7 @@ class User extends Authenticatable {
      * @param $deptId
      * @return int|mixed
      */
-    static function schoolDeptId(&$deptId) {
+    function schoolDeptId(&$deptId) {
 
         $dept = Department::find($deptId);
         $typeId = DepartmentType::whereName('学校')->first()->id;
@@ -270,7 +272,7 @@ class User extends Authenticatable {
      *
      * @param $id
      */
-    static function createWechatUser($id) {
+    function createWechatUser($id) {
 
         $user = self::find($id);
         $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
@@ -291,7 +293,7 @@ class User extends Authenticatable {
      *
      * @param $id
      */
-    static function updateWechatUser($id) {
+    function updateWechatUser($id) {
 
         $user = self::find($id);
         $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
@@ -313,7 +315,7 @@ class User extends Authenticatable {
      *
      * @param $id
      */
-    static function deleteWechatUser($id) {
+    function deleteWechatUser($id) {
 
         event(new UserDeleted(self::find($id)->userid));
 
@@ -353,14 +355,14 @@ class User extends Authenticatable {
      * @param integer $id 用户id
      * @return array
      */
-    static function departmentIds($id) {
+    function departmentIds($id) {
 
         $departments = self::find($id)->departments;
         $departmentIds = [];
         foreach ($departments as $d) {
             $departmentIds[] = $d->id;
             $departmentIds = array_merge(
-                $departmentIds, Department::subDepartmentIds($d->id)
+                $departmentIds, $d->subDepartmentIds($d->id)
             );
         }
 
@@ -373,7 +375,7 @@ class User extends Authenticatable {
      *
      * @return array
      */
-    static function datatable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'User.id', 'dt' => 0],
@@ -420,7 +422,7 @@ class User extends Authenticatable {
      * @throws \Exception
      * @throws \Throwable
      */
-    static function remove($userId){
+    function remove($userId){
         
         $user = self::find($userId);
         if (!isset($user)) { return false; }

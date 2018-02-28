@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\DepartmentRequest;
 use App\Models\Department;
 use App\Models\DepartmentType;
@@ -35,7 +36,7 @@ class DepartmentController extends Controller {
     public function index() {
         
         if (Request::method() === 'POST') {
-            return response()->json(Department::tree());
+            return response()->json($this->department->tree());
         }
 
         return $this->output();
@@ -67,7 +68,9 @@ class DepartmentController extends Controller {
     public function store(DepartmentRequest $request) {
         
         return $this->result(
-            Department::store($request->all(), true)
+            $this->department->store(
+                $request->all(), true
+            )
         );
         
     }
@@ -82,7 +85,7 @@ class DepartmentController extends Controller {
     public function show($id) {
         
         $department = $this->department->find($id);
-        abort_if(!$department, self::NOT_FOUND);
+        abort_if(!$department, HttpStatusCode::NOT_FOUND);
 
         return $this->output([
             'department' => $department,
@@ -100,7 +103,7 @@ class DepartmentController extends Controller {
     public function edit($id) {
         
         $department = $this->department->find($id);
-        abort_if(!$department, self::NOT_FOUND);
+        abort_if(!$department, HttpStatusCode::NOT_FOUND);
 
         return $this->output([
             'department' => $department,
@@ -118,10 +121,10 @@ class DepartmentController extends Controller {
     public function update(DepartmentRequest $request, $id) {
         
         $department = $this->department->find($id);
-        abort_if(!$department, self::NOT_FOUND);
+        abort_if(!$department, HttpStatusCode::NOT_FOUND);
 
         return $this->result(
-            $department::modify($request->all(), $id, true)
+            $department->modify($request->all(), $id, true)
         );
         
     }
@@ -137,9 +140,9 @@ class DepartmentController extends Controller {
     public function destroy($id) {
         
         $department = $this->department->find($id);
-        abort_if(!$department, self::NOT_FOUND);
+        abort_if(!$department, HttpStatusCode::NOT_FOUND);
 
-        return $this->result($department::remove($id));
+        return $this->result($department->remove($id));
         
     }
     
@@ -154,8 +157,8 @@ class DepartmentController extends Controller {
         
         $department = $this->department->find($id);
         $parentDepartment = $this->department->find($parentId);
-        abort_if(!$department || !$parentDepartment, self::NOT_FOUND);
-        if ($department::movable($id, $parentId)) {
+        abort_if(!$department || !$parentDepartment, HttpStatusCode::NOT_FOUND);
+        if ($department->movable($id, $parentId)) {
             return $this->result(
                 $department->move($id, $parentId, true)
             );

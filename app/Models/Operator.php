@@ -8,7 +8,7 @@ use App\Http\Requests\OperatorRequest;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
@@ -57,7 +57,7 @@ class Operator extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function store(OperatorRequest $request) {
+    function store(OperatorRequest $request) {
 
         try {
             DB::transaction(function () use ($request) {
@@ -130,7 +130,7 @@ class Operator extends Model {
      * @param User $user 已创建的用户对象
      * @return array|bool
      */
-    private static function filterDepartments(array $departments, User $user) {
+    private function filterDepartments(array $departments, User $user) {
 
         $companyDepartmentIds = Company::pluck('department_id')->toArray();
         $corpDepartmentIds = Corp::pluck('department_id')->toArray();
@@ -212,7 +212,7 @@ class Operator extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function modify(OperatorRequest $request, $id) {
+    function modify(OperatorRequest $request, $id) {
 
         $operator = self::find($id);
         if (!$operator) { return false; }
@@ -290,7 +290,7 @@ class Operator extends Model {
      * @return bool
      * @throws Exception
      */
-    static function remove($id) {
+    function remove($id) {
 
         $operator = self::find($id);
         if (!$operator) { return false; }
@@ -304,7 +304,7 @@ class Operator extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'Operator.id', 'dt' => 0],

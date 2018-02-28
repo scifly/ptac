@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\GroupRequest;
 use App\Models\Group;
 use App\Models\Menu;
@@ -18,12 +19,13 @@ use Throwable;
  */
 class GroupController extends Controller {
     
-    protected $group;
+    protected $group, $menu;
     
-    function __construct(Group $group) {
+    function __construct(Group $group, Menu $menu) {
     
         $this->middleware(['auth', 'checkrole']);
         $this->group = $group;
+        $this->menu = $menu;
         
     }
     
@@ -56,7 +58,7 @@ class GroupController extends Controller {
         if (Request::method() === 'POST') {
             $schoolId = Request::query('schoolId');
             $menuId = School::find($schoolId)->menu_id;
-            return Menu::schoolTree($menuId);
+            return $this->menu->schoolTree($menuId);
         }
 
         return $this->output();
@@ -89,11 +91,11 @@ class GroupController extends Controller {
     public function edit($id) {
         
         $group = Group::find($id);
-        abort_if(!$group, self::NOT_FOUND);
+        abort_if(!$group, HttpStatusCode::NOT_FOUND);
         if (Request::method() === 'POST') {
             $schoolId = Request::query('schoolId');
             $menuId = School::find($schoolId)->menu_id;
-            return Menu::schoolTree($menuId);
+            return $this->menu->schoolTree($menuId);
         }
         
         return $this->output(['group' => $group]);
@@ -112,7 +114,7 @@ class GroupController extends Controller {
     public function update(GroupRequest $request, $id) {
         
         $group = Group::find($id);
-        abort_if(!$group, self::NOT_FOUND);
+        abort_if(!$group, HttpStatusCode::NOT_FOUND);
         
         return $this->result(
             $group->modify($request->all(), $id)
@@ -130,7 +132,7 @@ class GroupController extends Controller {
     public function destroy($id) {
         
         $group = Group::find($id);
-        abort_if(!$group, self::NOT_FOUND);
+        abort_if(!$group, HttpStatusCode::NOT_FOUND);
         
         return $this->result(
             $group->remove($id)

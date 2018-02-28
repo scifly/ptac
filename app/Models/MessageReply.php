@@ -44,7 +44,7 @@ class MessageReply extends Model {
      * @param $data
      * @return bool
      */
-    static function store($data) {
+    function store($data) {
 
         $messageReply = self::create($data);
         

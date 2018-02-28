@@ -67,7 +67,7 @@ class Icon extends Model {
      *
      * @return array
      */
-    static function icons() {
+    function icons() {
 
         $data = self::whereEnabled(1)->get();
         $icons = [];

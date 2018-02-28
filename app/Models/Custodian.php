@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use App\Http\Requests\CustodianRequest;
 use Carbon\Carbon;
 use Eloquent;
@@ -32,13 +33,15 @@ use Throwable;
  * @mixin Eloquent
  */
 class Custodian extends Model {
+    
+    use ModelTrait;
 
     const EXCEL_EXPORT_TITLE = [
         '监护人姓名', '性别', '电子邮箱',
         '手机号码', '创建于', '更新于',
     ];
     protected $fillable = ['user_id'];
-
+    
     /**
      * 返回对应的用户对象
      *
@@ -133,10 +136,12 @@ class Custodian extends Model {
                 $c = self::create(['user_id' => $u->id]);
                 # 向监护人学生表中添加数据
                 if (isset($studentId_relationship)) {
-                    CustodianStudent::storeByCustodianId($c->id, $studentId_relationship);
+                    $cs = new CustodianStudent();
+                    $cs->storeByCustodianId($c->id, $studentId_relationship);
+                    unset($cs);
                 }
                 # 创建企业号成员
-                User::createWechatUser($u->id);
+                $u->createWechatUser($u->id);
             });
         } catch (Exception $e) {
             throw $e;
@@ -157,9 +162,7 @@ class Custodian extends Model {
     public function modify(CustodianRequest $request, $custodianId) {
 
         $custodian = self::find($custodianId);
-        if (!isset($custodian)) {
-            return false;
-        }
+        if (!isset($custodian)) { return false; }
         try {
             DB::transaction(function () use ($request, $custodianId, $custodian) {
                 $userId = $request->input('user_id');
@@ -219,8 +222,10 @@ class Custodian extends Model {
                 }
                 # 向监护人学生表中添加数据
                 CustodianStudent::whereCustodianId($custodianId)->delete();
-                CustodianStudent::storeByCustodianId($custodianId, $studentId_Relationship);
-                User::UpdateWechatUser($userId);
+                $cs = new CustodianStudent();
+                $cs->storeByCustodianId($custodianId, $studentId_Relationship);
+                unset($cs);
+                $custodian->user->UpdateWechatUser($userId);
             });
         } catch (Exception $e) {
             throw $e;
@@ -238,7 +243,7 @@ class Custodian extends Model {
      * @throws Exception
      * @throws Throwable
      */
-    static function remove($custodianId) {
+    function remove($custodianId) {
 
         $custodian = self::find($custodianId);
         if (!isset($custodian)) { return false; }
@@ -250,7 +255,7 @@ class Custodian extends Model {
                 # 删除指定的监护人记录
                 $custodian->delete();
                 # 删除user数据
-                User::remove($userId);
+                $custodian->user->remove($userId);
             });
         } catch (Exception $e) {
             throw $e;
@@ -319,7 +324,7 @@ class Custodian extends Model {
             ],
             ['db' => 'Custodian.id as mobile', 'dt' => 5,
                 'formatter' => function ($d) {
-                    $custodian = Custodian::find($d);
+                    $custodian = $this->find($d);
                     $mobiles = Mobile::whereUserId($custodian->user_id)->get();
                     $mobile = [];
                     foreach ($mobiles as $key => $value) {
@@ -381,12 +386,15 @@ class Custodian extends Model {
             ],
         ];
         // todo: 根据角色显示监护人列表，[运营/企业/学校]角色显示隶属当前学校的所有监护人，其他角色显示所属所有部门下的监护人
-        $condition = 'Grade.school_id = ' . School::schoolId();
+        $schoolId = $this->schoolId();        
+        $condition = 'Grade.school_id = ' . $schoolId;
         $groupId = Auth::user()->group->id;
 
-        if($groupId > 5){
+        if ($groupId > 5) {
             $educatorId = Auth::user()->educator->id;
-            $studentIds = Student::getClassStudent(School::schoolId(),$educatorId)[1];
+            $student = new Student();
+            $studentIds = $student->getClassStudent($schoolId,$educatorId)[1];
+            unset($student);
             $studentIds = implode(',',$studentIds);
             $condition .= " and Student.id in ($studentIds)";
         }

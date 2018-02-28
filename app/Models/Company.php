@@ -143,7 +143,7 @@ class Company extends Model {
      */
     public function remove($id, $fireEvent = false) {
 
-        $company = Company::find($id);
+        $company = $this->find($id);
         if (!$company) { return false; }
         $removed = Company::removable($company) ? $company->delete() : false;
         if ($removed && $fireEvent) {

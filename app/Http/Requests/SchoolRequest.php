@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Helpers\ModelTrait;
 use App\Models\Corp;
 use App\Models\School;
 use Illuminate\Foundation\Http\FormRequest;
@@ -8,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
 class SchoolRequest extends FormRequest {
+    
+    use ModelTrait;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -54,7 +57,7 @@ class SchoolRequest extends FormRequest {
         }
         
         if (!isset($input['school_type_id'])) {
-            $input['school_type_id'] = School::find(School::schoolId())->school_type_id;
+            $input['school_type_id'] = School::find($this->schoolId())->school_type_id;
         }
         if (!isset($input['corp_id'])) {
             $input['corp_id'] = Corp::whereDepartmentId(Auth::user()

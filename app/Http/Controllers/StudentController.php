@@ -1,8 +1,8 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\StudentRequest;
-
 use App\Models\Department;
 use App\Models\Grade;
 use App\Models\School;
@@ -24,9 +24,14 @@ use Throwable;
  */
 class StudentController extends Controller {
     
-    function __construct() {
+    protected $student, $department, $school;
+    
+    function __construct(Student $student, Department $department, School $school) {
         
         $this->middleware(['auth', 'checkrole']);
+        $this->student = $student;
+        $this->department = $department;
+        $this->school = $school;
         
     }
     
@@ -37,9 +42,11 @@ class StudentController extends Controller {
      * @throws Throwable
      */
     public function index() {
-
+        
         if (Request::get('draw')) {
-            return response()->json(Student::datatable());
+            return response()->json(
+                $this->student->datatable()
+            );
         }
         
         return $this->output();
@@ -53,27 +60,27 @@ class StudentController extends Controller {
      * @throws Throwable
      */
     public function create() {
-
+        
         $groupId = Auth::user()->group->id;
         if (Request::method() === 'POST') {
             $field = Request::query('field');
             $id = Request::query('id');
-            if($field && $id) {
-                if($groupId > 5){
+            if ($field && $id) {
+                if ($groupId > 5) {
                     $educatorId = Auth::user()->educator->id;
-                    $gradeClass = Student::getGrade($educatorId)[1];
-                    $this->result['html'] = School::getFieldList($field, $id ,$gradeClass);
-                }else{
-                    $this->result['html'] = School::getFieldList($field, $id);
+                    $gradeClass = $this->student->getGrade($educatorId)[1];
+                    $this->result['html'] = $this->school->getFieldList($field, $id, $gradeClass);
+                } else {
+                    $this->result['html'] = $this->school->getFieldList($field, $id);
                 }
+                
                 return response()->json($this->result);
-            }else{
-                return response()->json(Department::tree());
+            } else {
+                return response()->json($this->department->tree());
             }
         }
-
-        $items = Student::gradeClasses();
-
+        $items = $this->student->gradeClasses();
+        
         return $this->output([
             'grades'  => $items['grades'],
             'classes' => $items['classes'],
@@ -91,7 +98,9 @@ class StudentController extends Controller {
      */
     public function store(StudentRequest $request) {
         
-        return $this->result(Student::store($request));
+        return $this->result(
+            $this->student->store($request)
+        );
         
     }
     
@@ -105,9 +114,11 @@ class StudentController extends Controller {
     public function show($id) {
         
         $student = Student::find($id);
-        if (!$student) { return $this->notFound(); }
+        abort_if(!$student, HttpStatusCode::NOT_FOUND);
         
-        return $this->output(['student' => $student]);
+        return $this->output([
+            'student' => $student,
+        ]);
         
     }
     
@@ -119,48 +130,51 @@ class StudentController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-
+        
         $users = Auth::user();
         $groupId = Auth::user()->group->id;
         if (Request::method() === 'POST') {
             $field = Request::get('field');
             $id = Request::get('id');
-            if($groupId > 5){
+            if ($groupId > 5) {
                 $educatorId = Auth::user()->educator->id;
-                $gradeClass = Student::getGrade($educatorId)[1];
-                $this->result['html'] = School::getFieldList($field, $id ,$gradeClass);
-            }else{
-                $this->result['html'] = School::getFieldList($field, $id);
+                $gradeClass = $this->student->getGrade($educatorId)[1];
+                $this->result['html'] = $this->school->getFieldList($field, $id, $gradeClass);
+            } else {
+                $this->result['html'] = $this->school->getFieldList($field, $id);
             }
+            
             return response()->json($this->result);
         }
         # 查询学生信息
         $student = Student::find($id);
-        if (!$student) { return $this->notFound(); }
+        abort_if(!$student, HttpStatusCode::NOT_FOUND);
         $user = $student->user;
-        if($groupId > 5){
+        $grades = $classes = [];
+        if ($groupId > 5) {
             $educatorId = $users->educator->id;
-            $gradeIds = Student::getGrade($educatorId)[0];
-            $gradeClass = Student::getGrade($educatorId)[1];
-            foreach ($gradeClass as $k=>$g){
+            $gradeIds = $this->student->getGrade($educatorId)[0];
+            $gradeClass = $this->student->getGrade($educatorId)[1];
+            foreach ($gradeClass as $k => $g) {
                 $grades = Grade::whereEnabled(1)
-                    ->whereIn('id',$gradeIds)
+                    ->whereIn('id', $gradeIds)
                     ->pluck('name', 'id')
                     ->toArray();
                 $classes = Squad::whereEnabled(1)
-                    ->whereIn('id',$g)
+                    ->whereIn('id', $g)
                     ->pluck('name', 'id')
                     ->toArray();
                 break;
             }
-        }else{
-            $items = Student::gradeClasses(
+        } else {
+            $items = $this->student->gradeClasses(
                 $student->squad->grade_id
             );
             $student->{'grade_id'} = $student->squad->grade_id;
             $grades = $items['grades'];
             $classes = $items['classes'];
         }
+        
         return $this->output([
             'student' => $student,
             'mobiles' => $user->mobiles,
@@ -181,7 +195,9 @@ class StudentController extends Controller {
      */
     public function update(StudentRequest $request, $id) {
         
-        return $this->result(Student::modify($request, $id));
+        return $this->result(
+            $this->student->modify($request, $id)
+        );
         
     }
     
@@ -196,9 +212,11 @@ class StudentController extends Controller {
     public function destroy($id) {
         
         $student = Student::find($id);
-        if (!$student) { return $this->notFound(); }
+        abort_if(!$student, HttpStatusCode::NOT_FOUND);
         
-        return $this->result(Student::remove($id));
+        return $this->result(
+            $this->student->remove($id)
+        );
         
     }
     
@@ -211,19 +229,6 @@ class StudentController extends Controller {
         
         if (Request::isMethod('post')) {
             $file = Request::file('file');
-<<<<<<< HEAD
-            if (empty($file)) {
-                $result = [
-                    'statusCode' => self::INTERNAL_SERVER_ERROR,
-                    'message'    => '您还没选择文件！',
-                ];
-                return response()->json($result);
-            }
-            // 文件是否上传成功
-            if ($file->isValid()) {
-                $result = Student::upload($file);
-                return response()->json($result);
-=======
             abort_if(
                 empty($file),
                 HttpStatusCode::INTERNAL_SERVER_ERROR,
@@ -234,7 +239,6 @@ class StudentController extends Controller {
                 return response()->json(
                     $this->student->upload($file)
                 );
->>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
             }
         }
         
@@ -248,16 +252,17 @@ class StudentController extends Controller {
      * @return JsonResponse
      */
     public function export() {
-
+        
         if (Request::method() === 'POST') {
             $field = Request::query('field');
             $id = Request::query('id');
-            $this->result['html'] = School::getFieldList($field, $id);
+            $this->result['html'] = $this->school->getFieldList($field, $id);
+            
             return response()->json($this->result);
         }
         $id = Request::query('id');
         if ($id) {
-            $data = Student::export($id);
+            $data = $this->student->export($id);
             /** @noinspection PhpMethodParametersCountMismatchInspection */
             /** @noinspection PhpUndefinedMethodInspection */
             Excel::create(iconv('UTF-8', 'GBK', '学生列表'), function ($excel) use ($data) {
@@ -289,14 +294,8 @@ class StudentController extends Controller {
             }, 'UTF-8')->export('xls');
         }
         
-<<<<<<< HEAD
-=======
         return abort(HttpStatusCode::BAD_REQUEST, '导出失败');
         
->>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
     }
-
-
-
-
+    
 }

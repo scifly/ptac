@@ -70,6 +70,7 @@ class Exam extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function score() { return $this->hasMany('App\Models\Score'); }
+    
     /**
      * 获取参与指定考试的所有班级列表
      *
@@ -189,7 +190,7 @@ class Exam extends Model {
             ],
         ];
         // todo: 增加角色过滤条件
-        $condition = 'ExamType.school_id = ' . School::schoolId();
+        $condition = 'ExamType.school_id = ' . $this->schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 

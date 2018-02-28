@@ -15,7 +15,7 @@ class EducatorComposer {
 
     public function compose(View $view) {
 
-        $schoolId = School::schoolId();
+        $schoolId = $this->schoolId();
         $school = School::find($schoolId);
 
         $squads = $school->classes->where('enabled', 1)

@@ -1,8 +1,8 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\SchoolTypeRequest;
-use App\Models\School;
 use App\Models\SchoolType;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -80,7 +80,7 @@ class SchoolTypeController extends Controller {
     public function edit($id) {
         
         $st = SchoolType::find($id);
-        abort_if(!$st, self::NOT_FOUND);
+        abort_if(!$st, HttpStatusCode::NOT_FOUND);
         
         return $this->output(['st' => $st]);
         
@@ -96,7 +96,7 @@ class SchoolTypeController extends Controller {
     public function update(SchoolTypeRequest $request, $id) {
         
         $st = SchoolType::find($id);
-        abort_if(!$st, self::NOT_FOUND);
+        abort_if(!$st, HttpStatusCode::NOT_FOUND);
         
         return $this->result(
             $st->modify($request->all(), $id)
@@ -114,7 +114,7 @@ class SchoolTypeController extends Controller {
     public function destroy($id) {
         
         $st = SchoolType::find($id);
-        abort_if(!$st, self::NOT_FOUND);
+        abort_if(!$st, HttpStatusCode::NOT_FOUND);
         
         return $this->result(
             $st->remove($id)

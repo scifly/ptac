@@ -3,13 +3,10 @@ namespace App\Listeners;
 
 use App\Events\MenuCreated;
 use App\Jobs\ManageCreateMenu;
-use App\Models\Company;
-use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Icon;
 use App\Models\Menu;
 use App\Models\MenuType;
-use App\Models\School;
 use Illuminate\Events\Dispatcher;
 use Throwable;
 

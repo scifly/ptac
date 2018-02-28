@@ -141,7 +141,7 @@ class Department extends Model {
      *
      * @return array
      */
-    static function leaves() {
+    function leaves() {
         
         $leaves = [];
         $leafPath = [];
@@ -165,7 +165,7 @@ class Department extends Model {
      * @param null $rootId
      * @return Collection|static[]
      */
-    static function nodes($rootId = null) {
+    function nodes($rootId = null) {
 
         $nodes = new Collection();
         if (!isset($rootId)) {
@@ -187,7 +187,7 @@ class Department extends Model {
      * @param array $path
      * @return string
      */
-    static function leafPath($id, array &$path) {
+    function leafPath($id, array &$path) {
 
         $department = self::find($id);
         if (!isset($department)) {
@@ -208,7 +208,7 @@ class Department extends Model {
      *
      * @return array
      */
-    static function departments() {
+    function departments() {
 
         $departments = self::nodes();
         $departmentList = [];
@@ -227,7 +227,7 @@ class Department extends Model {
      * @param bool $fireEvent
      * @return $this|bool|Model
      */
-    static function store(array $data, $fireEvent = false) {
+    function store(array $data, $fireEvent = false) {
 
         $department = self::create($data);
         if ($department && $fireEvent) {
@@ -247,7 +247,7 @@ class Department extends Model {
      * @param bool $fireEvent
      * @return bool|Collection|Model|null|static|static[]
      */
-    static function modify(array $data, $id, $fireEvent = false) {
+    function modify(array $data, $id, $fireEvent = false) {
 
         $department = self::find($id);
         $updated = $department->update($data);
@@ -268,7 +268,7 @@ class Department extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function remove($id) {
+    function remove($id) {
 
         $department = self::find($id);
         if (!$department) { return false; }
@@ -323,7 +323,7 @@ class Department extends Model {
      * @param null $rootId
      * @return array
      */
-    static function tree($rootId = null) {
+    function tree($rootId = null) {
 
         $departments = self::nodes();
         if (isset($rootId)) {
@@ -366,7 +366,7 @@ class Department extends Model {
      * @param $ids
      * @return array
      */
-    static function selectedNodes($ids) {
+    function selectedNodes($ids) {
 
         $departments = self::whereIn('id', $ids)->get()->toArray();
         $data = [];
@@ -396,7 +396,7 @@ class Department extends Model {
 
     }
 
-    static function showDepartments($ids) {
+    function showDepartments($ids) {
 
         $departments = self::whereIn('id', $ids)->get()->toArray();
         $departmentParentIds = [];
@@ -405,7 +405,7 @@ class Department extends Model {
             $departmentParentIds[] = $department['id'];
         }
         foreach ($departmentParentIds as $departmentId) {
-            $department = Department::find($departmentId);
+            $department = $this->find($departmentId);
             foreach ($department->users as $user) {
                 $departmentUsers[] = [
                     'id' => $departmentId . 'UserId_' . $user['id'],
@@ -454,7 +454,7 @@ class Department extends Model {
      * @param $parentId
      * @return bool
      */
-    static function movable($id, $parentId) {
+    function movable($id, $parentId) {
 
         if (!isset($parentId)) { return false; }
         $type = self::find($id)->departmentType->name;
@@ -477,7 +477,7 @@ class Department extends Model {
      * @param $ids
      * @return array
      */
-    static function getDepartment($ids) {
+    function getDepartment($ids) {
 
         $departments = self::whereIn('id', $ids)->get()->toArray();
         $departmentParentIds = [];
@@ -519,7 +519,7 @@ class Department extends Model {
      * @param $id
      * @return int|mixed
      */
-    static function getSchoolId($id) {
+    function getSchoolId($id) {
 
         $parent = self::find($id)->parent;
         if ($parent->departmentType->name == '学校') {
@@ -537,7 +537,7 @@ class Department extends Model {
      * @param $id
      * @return int|mixed
      */
-    static function getGradeId($id) {
+    function getGradeId($id) {
 
         $parent = self::find($id)->parent;
         if ($parent->departmentType->name == '年级') {
@@ -556,7 +556,7 @@ class Department extends Model {
      * @param integer $level 部门所处级别
      * @return int|null
      */
-    static function level($id, &$level) {
+    function level($id, &$level) {
         
         $department = self::find($id);
         if (!$department) { return null; }
@@ -576,7 +576,7 @@ class Department extends Model {
      * @param $userId
      * @return null|string
      */
-    static function groupLevel($userId) {
+    function groupLevel($userId) {
 
         $user = User::find($userId);
         if (!$user) { return null; }
@@ -599,7 +599,7 @@ class Department extends Model {
      * @param $topDepartmentId
      * @return array|null
      */
-    static function topDepartment($topDepartmentId) {
+    function topDepartment($topDepartmentId) {
 
         $type = self::find($topDepartmentId)->departmentType->name;
         if (in_array($type, ['运营', '企业'])) {
@@ -638,13 +638,11 @@ class Department extends Model {
 
     }
     
-    static function contacts() {
+    function contacts() {
         
         $user = Auth::user();
         $role = $user->group->name;
-        $school = new School();
-
-        $departmentId = $school::find(School::schoolId())->department_id;
+        $departmentId = School::find($this->schoolId())->department_id;
         $contacts = [];
         if (in_array($role, self::ROLES)) {
             $tree = self::tree($departmentId);
@@ -730,7 +728,7 @@ class Department extends Model {
      * @param $toparty
      * @return array
      */
-    static function getPartyUser ($toparty) {
+    function getPartyUser ($toparty) {
 
         $users = [];
         $depts = new Collection();
@@ -759,7 +757,7 @@ class Department extends Model {
      * @param $id
      * @return array
      */
-    static function subDepartmentIds($id) {
+    function subDepartmentIds($id) {
 
         static $childrenIds;
         $firstIds = Department::whereParentId($id)->get(['id'])->toArray();
@@ -780,7 +778,7 @@ class Department extends Model {
      * @param $dept
      * @return int|mixed
      */
-    static function schoolDeptId($dept) {
+    function schoolDeptId($dept) {
         
         $de = Department::whereId($dept)->first();
         if ($de->department_type_id != 4) {
@@ -795,7 +793,7 @@ class Department extends Model {
      *
      * @return int
      */
-    private static function topDeptId() {
+    private function topDeptId() {
         
         $ids = Auth::user()->departments->pluck('id')->toArray();
         $levels = [];
@@ -817,7 +815,7 @@ class Department extends Model {
      * @param $id
      * @param Collection $nodes
      */
-    private static function getChildren($id, Collection &$nodes) {
+    private function getChildren($id, Collection &$nodes) {
 
         $node = self::find($id);
         foreach ($node->children as $child) {
@@ -833,7 +831,7 @@ class Department extends Model {
      * @param $id
      * @param Collection $nodes
      */
-    private static function getChildrenNode($id, Collection &$nodes) {
+    private function getChildrenNode($id, Collection &$nodes) {
 
         $node = self::find($id);
         $nodes->push($node);

@@ -3,7 +3,6 @@ namespace App\Listeners;
 
 use App\Jobs\ManageStudentAttendance;
 use Illuminate\Events\Dispatcher;
-use Illuminate\Support\Facades\Log;
 
 class AttendanceEventSubscriber {
     

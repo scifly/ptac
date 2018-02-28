@@ -131,7 +131,7 @@ class ExamType extends Model {
                 ],
             ],
         ];
-        $condition = 'ExamType.school_id = ' . School::schoolId();
+        $condition = 'ExamType.school_id = ' . $this->schoolId();
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         

@@ -44,7 +44,7 @@ class MenuTab extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function storeByMenuId($menuId, array $tabIds) {
+    function storeByMenuId($menuId, array $tabIds) {
         
         try {
             DB::transaction(function () use ($menuId, $tabIds) {
@@ -73,7 +73,7 @@ class MenuTab extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    static function storeByTabId($tabId, array $menuIds) {
+    function storeByTabId($tabId, array $menuIds) {
         
         try {
             DB::transaction(function () use ($tabId, $menuIds) {
@@ -101,7 +101,7 @@ class MenuTab extends Model {
      * @return bool
      * @throws Throwable
      */
-    static function storeTabRanks($menuId, array $ranks) {
+    function storeTabRanks($menuId, array $ranks) {
         
         try {
             DB::transaction(function () use ($menuId, $ranks) {
@@ -125,7 +125,7 @@ class MenuTab extends Model {
      * @param $menuId
      * @return array
      */
-    static function tabIdsByMenuId($menuId) {
+    function tabIdsByMenuId($menuId) {
     
         return self::whereMenuId($menuId)
             ->orderBy('tab_order')

@@ -17,12 +17,13 @@ use Illuminate\Support\Facades\Request;
  */
 class GradeController extends Controller {
     
-    protected $grade;
+    protected $grade, $educator;
     
-    function __construct(Grade $grade) {
+    function __construct(Grade $grade, Educator $educator) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->grade = $grade;
+        $this->educator = $educator;
         
     }
     
@@ -85,15 +86,11 @@ class GradeController extends Controller {
     public function edit($id) {
         
         $grade = Grade::find($id);
-<<<<<<< HEAD
-        abort_if(!$grade, self::NOT_FOUND);
-=======
->>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $grade);
         
         $selectedEducators = [];
         if ($grade->educator_ids != '0') {
-            $selectedEducators = Educator::educatorList(
+            $selectedEducators = $this->educator->educatorList(
                 explode(",", rtrim($grade->educator_ids,","))
             );
         }
@@ -116,10 +113,6 @@ class GradeController extends Controller {
     public function update(GradeRequest $request, $id) {
         
         $grade = Grade::find($id);
-<<<<<<< HEAD
-        abort_if(!$grade, self::NOT_FOUND);
-=======
->>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $grade);
         
         return $this->result(
@@ -138,10 +131,6 @@ class GradeController extends Controller {
     public function destroy($id) {
        
         $grade = Grade::find($id);
-<<<<<<< HEAD
-        abort_if(!$grade, self::NOT_FOUND);
-=======
->>>>>>> a8b77c532a4d09f2fe4f9feaadd84ba5d5a4fd12
         $this->authorize('rud', $grade);
         
         return $this->result(

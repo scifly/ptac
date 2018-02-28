@@ -4,7 +4,6 @@ namespace App\Listeners;
 use App\Jobs\ManageImportStudent;
 use App\Jobs\ManageUpdateStudent;
 use Illuminate\Events\Dispatcher;
-use Illuminate\Support\Facades\Log;
 
 class StudentEventSubscriber {
     

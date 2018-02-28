@@ -28,7 +28,6 @@ use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Readers\LaravelExcelReader;
 use PHPExcel_Exception;
-use ReflectionException;
 use Throwable;
 
 /**
@@ -140,7 +139,7 @@ class Educator extends Model {
      * @param $gradeId
      * @return Collection|static[]
      */
-    static function gradeDeans($gradeId) {
+    function gradeDeans($gradeId) {
 
         $educatorIds = Grade::whereEnabled(1)
             ->where('id', $gradeId)
@@ -159,7 +158,7 @@ class Educator extends Model {
      * @param $classId
      * @return Collection|static[]
      */
-    static function classDeans($classId) {
+    public function classDeans($classId) {
 
         $educatorIds = Squad::whereEnabled(1)
             ->where('id', $classId)
@@ -178,7 +177,7 @@ class Educator extends Model {
      * @param array $ids
      * @return array
      */
-    static function educatorList(array $ids) {
+    function educatorList(array $ids) {
 
         $educators = [];
         foreach ($ids as $id) {
@@ -274,14 +273,14 @@ class Educator extends Model {
                     }
                 }
                 # 当选择了学校角色没有选择 学校部门时
-                $deptUser = DepartmentUser::whereDepartmentId(School::find(School::schoolId())->department_id)
+                $schoolId = $this->schoolId();
+                $deptUser = DepartmentUser::whereDepartmentId(School::find($schoolId)->department_id)
                     ->where('user_id', $u->id)
                     ->first();
                 if ($u->group_id == Group::whereName('学校')->first()->id && empty($deptUser)) {
-
                     DepartmentUser::create([
                         'user_id' => $u->id,
-                        'department_id' => School::find(School::schoolId())->department_id,
+                        'department_id' => School::find($schoolId)->department_id,
                         'enabled' => $user['enabled'],
                     ]);
                 }
@@ -297,7 +296,7 @@ class Educator extends Model {
                     }
                 }
                 // # 创建企业号成员
-                User::createWechatUser($u->id);
+                $u->createWechatUser($u->id);
             });
         } catch (Exception $e) {
             throw $e;
@@ -345,13 +344,14 @@ class Educator extends Model {
                     }
                 }
                 # 当选择了学校角色没有选择学校部门时
-                $deptUser = DepartmentUser::whereDepartmentId(School::find(School::schoolId())->department_id)
+                $schoolId = $this->schoolId();
+                $deptUser = DepartmentUser::whereDepartmentId(School::find($schoolId)->department_id)
                     ->where('user_id', $request->input('user_id'))
                     ->first();
                 if ($user['group_id'] == Group::whereName('学校')->first()->id && empty($deptUser)) {
                     DepartmentUser::create([
                         'user_id' => $request->input('user_id'),
-                        'department_id' => School::find(School::schoolId())->department_id,
+                        'department_id' => School::find($schoolId)->department_id,
                         'enabled' => $user['enabled'],
                     ]);
                 }
@@ -412,7 +412,9 @@ class Educator extends Model {
                     }
                 }
                 # 更新企业号成员
-                User::UpdateWechatUser($request->input('user_id'));
+                $user = new User();
+                $user->UpdateWechatUser($request->input('user_id'));
+                unset($user);
             });
         } catch (Exception $e) {
             throw $e;
@@ -428,7 +430,7 @@ class Educator extends Model {
      * @param $id
      * @param bool $fireEvent
      * @return bool
-     * @throws ReflectionException
+     * @throws Exception
      * @throws Throwable
      */
     public function remove($id, $fireEvent = false) {
@@ -438,7 +440,7 @@ class Educator extends Model {
         $removed = self::removable($educator) ? $educator->delete() : false;
         if ($removed && $fireEvent) {
             # 删除User数据
-            User::remove($userId);
+            $this->user->remove($userId);
             return true;
         }
 
@@ -594,7 +596,7 @@ class Educator extends Model {
             ],
         ];
         // todo: 根据角色显示教职员工列表，[运营/企业/学校]角色显示当前学校的所有教职员工，其他角色显示所属所有部门的教职员工
-        $condition = 'Educator.school_id = ' . School::schoolId().' or User.group_id=3';
+        $condition = 'Educator.school_id = ' . $this->schoolId() . ' or User.group_id=3';
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 
@@ -606,7 +608,7 @@ class Educator extends Model {
      * @param $array2D
      * @return array
      */
-    private static function array_unique_fb($array2D) {
+    private function array_unique_fb($array2D) {
         
         $temp = [];
         foreach ($array2D as $v) {
@@ -634,13 +636,13 @@ class Educator extends Model {
      * @param array $fileTitle
      * @return bool
      */
-    private static function checkFileFormat(array $fileTitle) {
+    private function checkFileFormat(array $fileTitle) {
 
         return count(array_diff(self::EXCEL_FILE_TITLE, $fileTitle)) != 0;
 
     }
 
-    private static function checkData(array $data) {
+    private function checkData(array $data) {
         
         $rules = [
             'name' => 'required|string|between:2,20',

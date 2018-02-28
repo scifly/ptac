@@ -3,18 +3,17 @@
 namespace App\Policies;
 
 use App\Helpers\HttpStatusCode;
+use App\Helpers\ModelTrait;
 use App\Models\ConferenceParticipant;
 use App\Models\ConferenceQueue;
 use App\Models\ConferenceRoom;
-use App\Models\Corp;
-use App\Models\School;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
 class ConferenceParticipantPolicy {
 
-    use HandlesAuthorization;
+    use HandlesAuthorization, ModelTrait;
 
     const SUPER_ROLES = ['运营', '企业', '学校'];
 
@@ -63,7 +62,7 @@ class ConferenceParticipantPolicy {
                 case '学校':
                     $conferenceRoomId = ConferenceQueue::find($cp->conference_queue_id)->conference_room_id;
                     $schoolId = ConferenceRoom::find($conferenceRoomId)->school->id;
-                    return $schoolId == School::schoolId();
+                    return $schoolId == $this->schoolId();
                 default: return false;
             }
         }

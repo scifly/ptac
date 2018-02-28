@@ -38,7 +38,8 @@ class AppRequest extends FormRequest {
     protected function prepareForValidation() {
     
         $input = $this->all();
-        $input['corp_id'] = Corp::corpId();
+        $corp = new Corp();
+        $input['corp_id'] = $corp->corpId();
 
         $this->replace($input);
 

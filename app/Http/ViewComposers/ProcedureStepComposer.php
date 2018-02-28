@@ -4,7 +4,6 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use App\Models\Procedure;
-use App\Models\School;
 use Illuminate\Contracts\View\View;
 
 class ProcedureStepComposer {
@@ -14,7 +13,7 @@ class ProcedureStepComposer {
     public function compose(View $view) {
 
         $view->with([
-            'procedures' => Procedure::whereSchoolId(School::schoolId())
+            'procedures' => Procedure::whereSchoolId($this->schoolId())
                 ->get()->pluck('name', 'id'),
             'uris' => $this->uris()
         ]);

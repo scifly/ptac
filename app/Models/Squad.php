@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Events\ClassCreated;
@@ -44,45 +43,44 @@ use Illuminate\Support\Facades\Auth;
  * @mixin Eloquent
  */
 class Squad extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $table = 'classes';
-
+    
     protected $fillable = [
         'id', 'grade_id', 'name', 'department_id',
         'educator_ids', 'enabled',
     ];
-
-
+    
     /**
      * 返回对应的部门对象
      *
      * @return BelongsTo
      */
     public function department() { return $this->belongsTo('App\Models\Department'); }
-
+    
     /**
      * 返回指定班级所属的年级对象
      *
      * @return BelongsTo
      */
     public function grade() { return $this->belongsTo('App\Models\Grade'); }
-
+    
     /**
      * 获取指定班级包含的所有学生对象
      *
      * @return HasMany
      */
     public function students() { return $this->hasMany('App\Models\Student', 'class_id'); }
-
+    
     /**
      * 获取指定班级包含的所有教职员工对象
      *
      * @return BelongsToMany
      */
     public function educators() { return $this->belongsToMany('App\Models\Educator', 'educators_classes'); }
-
+    
     /**
      * 保存班级
      *
@@ -90,18 +88,19 @@ class Squad extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    static function store(array $data, $fireEvent = false) {
+    function store(array $data, $fireEvent = false) {
         
         $class = self::create($data);
         if ($class && $fireEvent) {
             event(new ClassCreated($class));
+            
             return true;
         }
-
+        
         return $class ? true : false;
-
+        
     }
-
+    
     /**
      * 更新班级
      *
@@ -110,17 +109,18 @@ class Squad extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    static function modify(array $data, $id, $fireEvent = false) {
+    function modify(array $data, $id, $fireEvent = false) {
         
         $class = self::find($id);
         $updated = $class->update($data);
         if ($updated && $fireEvent) {
             event(new ClassUpdated($class));
+            
             return true;
         }
-
+        
         return $updated ? true : false;
-
+        
     }
     
     /**
@@ -134,15 +134,18 @@ class Squad extends Model {
     public function remove($id, $fireEvent = false) {
         
         $class = self::find($id);
-        if (!$class) { return false; }
+        if (!$class) {
+            return false;
+        }
         $removed = $this->removable($class) ? $class->delete() : false;
         if ($removed && $fireEvent) {
             event(new ClassDeleted($class));
+            
             return true;
         }
-
+        
         return $removed ? true : false;
-
+        
     }
     
     /**
@@ -150,30 +153,30 @@ class Squad extends Model {
      *
      * @return array
      */
-    static function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'Squad.id', 'dt' => 0],
             [
-                'db' => 'Squad.name', 'dt' => 1,
+                'db'        => 'Squad.name', 'dt' => 1,
                 'formatter' => function ($d) {
                     return '<i class="fa fa-users"></i>&nbsp;' . $d;
-                }
+                },
             ],
             [
-                'db' => 'Grade.name as gradename', 'dt' => 2,
+                'db'        => 'Grade.name as gradename', 'dt' => 2,
                 'formatter' => function ($d) {
                     return '<i class="fa fa-object-group"></i>&nbsp;' . $d;
-                }
+                },
             ],
             [
-                'db' => 'School.name as schoolname', 'dt' => 3,
+                'db'        => 'School.name as schoolname', 'dt' => 3,
                 'formatter' => function ($d) {
                     return '<i class="fa fa-university"></i>&nbsp;' . $d;
-                }
+                },
             ],
             [
-                'db' => 'Squad.educator_ids', 'dt' => 4,
+                'db'        => 'Squad.educator_ids', 'dt' => 4,
                 'formatter' => function ($d) {
                     if (empty($d)) {
                         return '';
@@ -187,15 +190,16 @@ class Squad extends Model {
                                 $educators[] = $educator->user->realname;
                             }
                         }
-
+                        
                     }
+                    
                     return implode(', ', $educators);
                 },
             ],
             ['db' => 'Squad.created_at', 'dt' => 5],
             ['db' => 'Squad.updated_at', 'dt' => 6],
             [
-                'db' => 'Squad.enabled', 'dt' => 7,
+                'db'        => 'Squad.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
@@ -203,36 +207,38 @@ class Squad extends Model {
         ];
         $joins = [
             [
-                'table' => 'grades',
-                'alias' => 'Grade',
-                'type' => 'INNER',
+                'table'      => 'grades',
+                'alias'      => 'Grade',
+                'type'       => 'INNER',
                 'conditions' => [
                     'Grade.id = Squad.grade_id',
                 ],
             ],
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
                     'School.id = Grade.school_id',
                 ],
             ],
         ];
         // todo: 增加角色过滤条件
-        $condition = 'Grade.school_id = ' . School::schoolId();
+        $schoolId = $this->schoolId();
+        $condition = 'Grade.school_id = ' . $schoolId;
         $user = Auth::user();
         $role = $user->group->id;
-
-        if($role > 5){
+        if ($role > 5) {
             $educatorId = $user->educator->id;
-            $classIds = Student::getClassStudent(School::schoolId(),$educatorId)[0];
-            $classIds = implode(',',$classIds);
+            $student = new Student();
+            $classIds = $student->getClassStudent($schoolId, $educatorId)[0];
+            unset($student);
+            $classIds = implode(',', $classIds);
             $condition .= " and Squad.id in ($classIds)";
         }
-
+        
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
-
+        
     }
-
+    
 }

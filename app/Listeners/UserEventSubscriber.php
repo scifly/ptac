@@ -4,7 +4,6 @@ namespace App\Listeners;
 use App\Jobs\ManageWechatMember;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Support\Facades\Log;
 
 class UserEventSubscriber {
     
