@@ -97,45 +97,45 @@ class MessageController extends Controller {
         
     }
     
-    /**
-     * 消息详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function show($id) {
-        
-        $message = $this->message->find($id);
-        abort_if(!$message, HttpStatusCode::NOT_FOUND);
-        
-        return $this->output([
-            'message' => $message,
-            'users'   => $this->user->users($message->user_ids),
-            'medias'  => $this->media->medias(explode(',', $message->media_ids)),
-        ]);
-        
-    }
+    // /**
+    //  * 消息详情
+    //  *
+    //  * @param $id
+    //  * @return bool|JsonResponse
+    //  * @throws Throwable
+    //  */
+    // public function show($id) {
+    //
+    //     $message = $this->message->find($id);
+    //     abort_if(!$message, HttpStatusCode::NOT_FOUND);
+    //
+    //     return $this->output([
+    //         'message' => $message,
+    //         'users'   => $this->user->users($message->user_ids),
+    //         'medias'  => $this->media->medias(explode(',', $message->media_ids)),
+    //     ]);
+    //
+    // }
     
-    /**
-     * 编辑消息
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function edit($id) {
-        
-        $message = $this->message->find($id);
-        abort_if(!$message, HttpStatusCode::NOT_FOUND);
-        
-        return $this->output([
-            'message'       => $message,
-            'selectedUsers' => $this->user->users($message->user_ids),
-            'medias'        => $this->media->medias($message->media_ids),
-        ]);
-        
-    }
+    // /**
+    //  * 编辑消息
+    //  *
+    //  * @param $id
+    //  * @return bool|JsonResponse
+    //  * @throws Throwable
+    //  */
+    // public function edit($id) {
+    //
+    //     $message = $this->message->find($id);
+    //     abort_if(!$message, HttpStatusCode::NOT_FOUND);
+    //
+    //     return $this->output([
+    //         'message'       => $message,
+    //         'selectedUsers' => $this->user->users($message->user_ids),
+    //         'medias'        => $this->media->medias($message->media_ids),
+    //     ]);
+    //
+    // }
     
     /**
      * 更新消息
