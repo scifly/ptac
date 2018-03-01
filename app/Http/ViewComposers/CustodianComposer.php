@@ -9,6 +9,7 @@ use App\Models\Squad;
 use App\Models\Student;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CustodianComposer {
     
@@ -44,6 +45,7 @@ class CustodianComposer {
                     ->toArray();
                 break;
             }
+
             foreach ($classes as $k => $c) {
                 $list = Student::whereClassId($k)
                     ->where('enabled', 1)
@@ -81,6 +83,8 @@ class CustodianComposer {
         if (empty($grades)) {
             $grades[] = '';
         }
+        Log::debug($grades);
+        Log::debug($schools);
         $view->with([
             'schools'  => $schools,
             'grades'   => $grades,
