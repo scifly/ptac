@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\CustodianRequest;
 use App\Models\Custodian;
 use App\Models\CustodianStudent;

@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
+
 use App\Http\Requests\CommTypeRequest;
 use App\Models\CommType;
 use Exception;

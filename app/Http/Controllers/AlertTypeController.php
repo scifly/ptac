@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
+
 use App\Http\Requests\AlertTypeRequest;
 use App\Models\AlertType;
 use Exception;
