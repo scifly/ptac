@@ -5,6 +5,7 @@ use App\Helpers\HttpStatusCode;
 use App\Http\Requests\AlertTypeRequest;
 use App\Models\AlertType;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -51,7 +52,10 @@ class AlertTypeController extends Controller {
      * @throws Throwable
      */
     public function create() {
-
+    
+        $this->authorize(
+            'cs', AlertType::class
+        );
         return $this->output();
         
     }
@@ -61,9 +65,14 @@ class AlertTypeController extends Controller {
      *
      * @param AlertTypeRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(AlertTypeRequest $request) {
-        
+    
+        $this->authorize(
+            'cs', AlertType::class
+        );
+    
         return $this->result(
             $this->at->create($request->all())
         );
@@ -80,7 +89,7 @@ class AlertTypeController extends Controller {
     public function edit($id) {
         
         $at = $this->at->find($id);
-        abort_if(!$at, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $at);
 
         return $this->output([
             'at' => $at,
@@ -94,11 +103,12 @@ class AlertTypeController extends Controller {
      * @param AlertTypeRequest $request
      * @param $id
      * @return bool|JsonResponse
+     * @throws AuthorizationException
      */
     public function update(AlertTypeRequest $request, $id) {
         
         $at = $this->at->find($id);
-        abort_if(!$at, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $at);
 
         return $this->result(
             $at->update($request->all())
@@ -116,8 +126,8 @@ class AlertTypeController extends Controller {
     public function destroy($id) {
         
         $at = $this->at->find($id);
-        abort_if(!$at, HttpStatusCode::NOT_FOUND);
-
+        $this->authorize('eud', $at);
+        
         return $this->result(
             $at->delete()
         );

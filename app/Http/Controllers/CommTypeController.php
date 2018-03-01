@@ -5,6 +5,7 @@ use App\Helpers\HttpStatusCode;
 use App\Http\Requests\CommTypeRequest;
 use App\Models\CommType;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -52,6 +53,10 @@ class CommTypeController extends Controller {
      */
     public function create() {
         
+        $this->authorize(
+            'cs', CommType::class
+        );
+        
         return $this->output();
         
     }
@@ -61,8 +66,13 @@ class CommTypeController extends Controller {
      *
      * @param CommTypeRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(CommTypeRequest $request) {
+        
+        $this->authorize(
+            'cs', CommType::class
+        );
         
         return $this->result(
             CommType::create($request->all())
@@ -80,7 +90,7 @@ class CommTypeController extends Controller {
     public function edit($id) {
         
         $ct = $this->ct->find($id);
-        abort_if(!$ct, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $ct);
 
         return $this->output([
             'ct' => $ct
@@ -94,11 +104,12 @@ class CommTypeController extends Controller {
      * @param CommTypeRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(CommTypeRequest $request, $id) {
         
         $ct = $this->ct->find($id);
-        abort_if(!$ct, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $ct);
 
         return $this->result(
             $ct->update($request->all())
@@ -116,7 +127,7 @@ class CommTypeController extends Controller {
     public function destroy($id) {
         
         $ct = $this->ct->find($id);
-        abort_if(!$ct, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $ct);
 
         return $this->result(
             $ct->delete()

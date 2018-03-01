@@ -79,11 +79,11 @@ class StudentController extends Controller {
                 return response()->json($this->department->tree());
             }
         }
-        $items = $this->student->gradeClasses();
+        list($grades, $classes) = $this->student->gcList();
         
         return $this->output([
-            'grades'  => $items['grades'],
-            'classes' => $items['classes'],
+            'grades'  => $grades,
+            'classes' => $classes,
         ]);
         
     }
@@ -167,12 +167,10 @@ class StudentController extends Controller {
                 break;
             }
         } else {
-            $items = $this->student->gradeClasses(
+            list($grades, $classes) = $this->student->gcList(
                 $student->squad->grade_id
             );
             $student->{'grade_id'} = $student->squad->grade_id;
-            $grades = $items['grades'];
-            $classes = $items['classes'];
         }
         
         return $this->output([

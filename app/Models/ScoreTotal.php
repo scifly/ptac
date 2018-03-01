@@ -11,7 +11,6 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -60,14 +59,14 @@ class ScoreTotal extends Model {
      *
      * @return BelongsTo
      */
-    public function student() { return $this->belongsTo('App\Models\Student'); }
+    function student() { return $this->belongsTo('App\Models\Student'); }
     
     /**
      * 返回总分记录所属的考试对象
      *
      * @return BelongsTo
      */
-    public function exam() { return $this->belongsTo('App\Models\Exam'); }
+    function exam() { return $this->belongsTo('App\Models\Exam'); }
     
     /**
      * 返回总分记录所属的科目对象
@@ -82,7 +81,7 @@ class ScoreTotal extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    function store(array $data) {
         
         $st = self::create($data);
         
@@ -97,7 +96,7 @@ class ScoreTotal extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    function modify(array $data, $id) {
         
         $st = self::find($id);
         if (!$st) { return false; }
@@ -113,7 +112,7 @@ class ScoreTotal extends Model {
      * @return bool
      * @throws Exception
      */
-    public function remove($id) {
+    function remove($id) {
     
         $st = self::find($id);
         if (!$st) { return false; }
@@ -127,7 +126,7 @@ class ScoreTotal extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'ScoreTotal.id', 'dt' => 0],
@@ -177,23 +176,11 @@ class ScoreTotal extends Model {
                 ],
             ],
         ];
-
-        // todo: 增加过滤条件
-        $condition = null;
-        $groupId = Auth::user()->group->id;
+        $condition = 'Student.id IN (' . implode(',', $this->contactIds('student')) . ')';
         
-        if($groupId > 5){
-            $educatorId = Auth::user()->educator->id;
-            $student = new Student();
-            $studentIds = $student->getClassStudent(
-                $this->schoolId(),$educatorId
-            )[1];
-            unset($student);
-            $studentIds = implode(',',$studentIds);
-            $condition = "Student.id in ($studentIds)";
-        }
-
-        return Datatable::simple(self::getModel(), $columns, $joins ,$condition);
+        return Datatable::simple(
+            self::getModel(), $columns, $joins ,$condition
+        );
         
     }
 

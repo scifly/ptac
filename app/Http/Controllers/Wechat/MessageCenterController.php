@@ -9,6 +9,7 @@ use App\Models\App;
 use App\Models\CommType;
 use App\Models\Corp;
 use App\Models\Department;
+use App\Models\DepartmentUser;
 use App\Models\Educator;
 use App\Models\Grade;
 use App\Models\Media;
@@ -31,7 +32,7 @@ use Illuminate\View\View;
 
 class MessageCenterController extends Controller {
 
-    protected $message, $user, $department, $media, $student, $mr;
+    protected $message, $user, $department, $media, $student, $mr, $du;
     
     /**
      * MessageCenterController constructor.
@@ -41,11 +42,13 @@ class MessageCenterController extends Controller {
      * @param Media $media
      * @param Student $student
      * @param MessageReply $mr
+     * @param DepartmentUser $du
      */
     public function __construct(
         Message $message, User $user,
         Department $department, Media $media,
-        Student $student, MessageReply $mr
+        Student $student, MessageReply $mr,
+        DepartmentUser $du
     ) {
         
         $this->message = $message;
@@ -54,6 +57,7 @@ class MessageCenterController extends Controller {
         $this->media = $media;
         $this->student = $student;
         $this->mr = $mr;
+        $this->du = $du;
 
     }
 
@@ -98,7 +102,6 @@ class MessageCenterController extends Controller {
                                 $s['r_user_id'] = User::whereId($s['r_user_id'])->first()->realname;
                             }
                         }
-
                         return response(['sendMessages' => $sendMessages, 'type' => $type]);
                         break;
                     case 'receive':
@@ -153,7 +156,6 @@ class MessageCenterController extends Controller {
     public function create() {
         $userId = Session::get('userId');
         if (Request::isMethod('post')) {
-            $groupId = User::whereUserid($userId)->first()->group->id;
             $keywords = Request::get('keywords');
             if (empty($keywords)) {
                 $lists = $this->initLists($userId);
@@ -166,9 +168,7 @@ class MessageCenterController extends Controller {
                 ]);
             }
             if (!in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
-                $educatorId = User::whereUserid($userId)->first()->educator->id;
-                $schoolId = User::whereUserid($userId)->first()->educator->school_id;
-                $studentIds = $this->student->getClassStudent($schoolId, $educatorId)[1];
+                $studentIds = $this->du->contactIds('student');
                 $students = Student::whereIn('id', $studentIds)->get();
                 $userIds[] = User::whereUserid($userId)->first()->id;
                 foreach ($students as $s) {

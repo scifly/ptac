@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Http\Requests\CustodianRequest;
 use App\Models\Custodian;
@@ -9,6 +10,7 @@ use App\Models\Department;
 use App\Models\School;
 use App\Models\Student;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
@@ -64,12 +66,15 @@ class CustodianController extends Controller {
      */
     public function create() {
         
-        $groupId = Auth::user()->group->id;
+        $this->authorize(
+            'cse', Custodian::class
+        );
         if (Request::method() === 'POST') {
+            $user = Auth::user();
             $field = Request::query('field');
             $id = Request::query('id');
-            if ($groupId > 5) {
-                $educatorId = Auth::user()->educator->id;
+            if (!in_array($user->group->name, Constant::SUPER_ROLES)) {
+                $educatorId = $user->educator->id;
                 $gradeClass = $this->student->getGrade($educatorId)[1];
                 $this->result['html'] = $this->school->getFieldList($field, $id, $gradeClass);
             } else {
@@ -93,6 +98,10 @@ class CustodianController extends Controller {
      */
     public function store(CustodianRequest $request) {
         
+        $this->authorize(
+            'cse', Custodian::class
+        );
+        
         return $this->result(
             $this->custodian->store($request)
         );
@@ -109,7 +118,7 @@ class CustodianController extends Controller {
     public function show($id) {
         
         $custodian = $this->custodian->find($id);
-        abort_if(!$custodian, HttpStatusCode::NOT_FOUND);
+        $this->authorize('seud', $custodian);
         
         return $this->output([
             'custodian' => $custodian,
@@ -125,20 +134,19 @@ class CustodianController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-        
+    
+        $custodian = $this->custodian->find($id);
+        $this->authorize('seud', $custodian);
         if (Request::method() === 'POST') {
             $field = Request::query('field');
             $id = Request::query('id');
             if ($field && $id) {
                 $this->result['html'] = $this->school->getFieldList($field, $id);
-                
                 return response()->json($this->result);
             } else {
                 return response()->json($this->department->tree());
             }
         }
-        $custodian = $this->custodian->find($id);
-        abort_if(!$custodian, HttpStatusCode::NOT_FOUND);
         $pupils = CustodianStudent::whereCustodianId($id)->get();
         
         return $this->output([
@@ -160,7 +168,7 @@ class CustodianController extends Controller {
     public function update(CustodianRequest $request, $id) {
         
         $custodian = $this->custodian->find($id);
-        abort_if(!$custodian, HttpStatusCode::NOT_FOUND);
+        $this->authorize('seud', $custodian);
         
         return $this->result(
             $custodian->modify($request, $id)
@@ -179,7 +187,7 @@ class CustodianController extends Controller {
     public function destroy($id) {
         
         $custodian = $this->custodian->find($id);
-        abort_if(!$custodian, HttpStatusCode::NOT_FOUND);
+        $this->authorize('seud', $custodian);
         
         return $this->result(
             $custodian->remove($id)
@@ -191,9 +199,13 @@ class CustodianController extends Controller {
      * 导出监护人
      *
      * @return void
+     * @throws AuthorizationException
      */
     public function export() {
-        
+
+        $this->authorize(
+            'cse', Custodian::class
+        );
         $data = $this->custodian->export();
         /** @noinspection PhpMethodParametersCountMismatchInspection */
         /** @noinspection PhpUndefinedMethodInspection */

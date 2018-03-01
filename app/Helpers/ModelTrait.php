@@ -2,8 +2,11 @@
 namespace App\Helpers;
 
 use App\Models\Action;
+use App\Models\Department;
+use App\Models\DepartmentUser;
 use App\Models\Menu;
 use App\Models\School;
+use App\Models\User;
 use App\Policies\Route;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -19,7 +22,7 @@ trait ModelTrait {
      * @return bool
      * @throws \ReflectionException
      */
-    static function removable(Model $model) {
+    function removable(Model $model) {
         
         $relations = [];
         $class = get_class($model);
@@ -63,6 +66,11 @@ trait ModelTrait {
 
     }
     
+    /**
+     * 根据当前菜单Id及用户角色返回学校Id
+     *
+     * @return int|mixed
+     */
     function schoolId() {
     
         $user = Auth::user();
@@ -81,6 +89,149 @@ trait ModelTrait {
         }
         
     }
+    
+    /**
+     * 获取对当前用户可见的联系人id
+     *
+     * @param string $type - 联系人类型: custodian, student, educator
+     * @return array
+     */
+    function contactIds($type) {
+        
+        $user = Auth::user();
+        $role = $user->group->name;
+        $method = $type . 'Ids';
+        if (method_exists($this, $method)) {
+            if (in_array($role, Constant::SUPER_ROLES)) {
+                $contactIds = $this->$method(
+                    School::find($schoolId = $this->schoolId())->department_id
+                );
+            } else {
+                $departments = $user->departments;
+                $contactIds = [];
+                foreach ($departments as $d) {
+                    $contactIds = array_merge(
+                        $this->$method($d->id), $contactIds
+                    );
+                }
+                $contactIds = array_unique($contactIds);
+            }
+        } else {
+            return [0];
+        }
+        
+        return empty($contactIds) ? [0] : $contactIds;
+        
+    }
+    
+    /**
+     * 返回指定部门(含子部门）下的所有用户id
+     *
+     * @param $departmentId
+     * @return array
+     */
+    function userIds($departmentId): array {
+        
+        $departmentIds[] = $departmentId;
+        $department = new Department();
+        $departmentIds = array_unique(
+            array_merge(
+                $department->subDepartmentIds($departmentId), $departmentIds
+            )
+        );
+        $userIds = [];
+        foreach ($departmentIds as $id) {
+            $userIds = array_merge(
+                DepartmentUser::whereDepartmentId($id)->pluck('user_id')->toArray(),
+                $userIds
+            );
+        }
+        
+        return array_unique($userIds);
+        
+    }
+    
+    /**
+     * 返回指定部门(含子部门）下的所有学生Id
+     *
+     * @param $departmentId
+     * @return array
+     */
+    function studentIds($departmentId): array {
+        
+        return $this->getIds($departmentId, 'student');
+        
+    }
+    
+    /**
+     * 返回指定部门(含子部门）下的所有监护人Id
+     *
+     * @param $departmentId
+     * @return array
+     */
+    function custodianIds($departmentId): array {
+        
+        return $this->getIds($departmentId, 'custodian');
+        
+    }
+    
+    /**
+     * 返回指定部门(含子部门）下的所有教职员工Id
+     *
+     * @param $departmentId
+     * @return array
+     */
+    function educatorIds($departmentId): array {
+        
+        return $this->getIds($departmentId, 'educator');
+        
+    }
+    
+    /**
+     * 返回对指定用户可见的所有部门Id
+     *
+     * @param $userId
+     * @return array
+     */
+    function departmentIds($userId) {
+        
+        $departmentIds = [];
+        $user = User::find($userId);
+        foreach ($user->departments as $d) {
+            $departmentIds[] = $d->id;
+            $departmentIds = array_merge(
+                $d->subDepartmentIds($d->id),
+                $departmentIds
+            );
+        }
+        
+        return array_unique($departmentIds);
+        
+    }
+    
+    
+    /**
+     * 获取指定部门的联系人Id
+     *
+     * @param $departmentId
+     * @param $type
+     * @return array
+     */
+    private function getIds($departmentId, $type): array {
+        
+        $ids = [];
+        $userIds = $this->userIds($departmentId);
+        foreach ($userIds as $id) {
+            $$type = User::find($id)->{$type};
+            if ($$type) {
+                $ids[] = $$type->id;
+            }
+        }
+        
+        return $ids;
+        
+    }
+    
 
 }
 

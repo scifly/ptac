@@ -31,6 +31,11 @@ class Constant {
         'wap_sites/edit/%s',
         'wap_sites/update/%s',
     ];
+    
+    # 性别符号
+    const MALE = '<i class="fa fa-mars"></i>';
+    const FEMALE = '<i class="fa fa-venus"></i>';
+    
     const SIMPLE = '<li%s><a id="%s" href="%s" class="leaf"><i class="%s"></i> %s</a></li>';
     # 包含子菜单的HTML模板
     const TREE = <<<HTML

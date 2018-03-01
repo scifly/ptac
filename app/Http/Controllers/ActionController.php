@@ -5,6 +5,7 @@ use App\Helpers\HttpStatusCode;
 use App\Http\Requests\ActionRequest;
 use App\Models\Action;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -56,25 +57,26 @@ class ActionController extends Controller {
     public function edit($id) {
 
         $action = $this->action->find($id);
-        abort_if(!$action, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eu', $action);
 
         return $this->output([
             'action' => $action,
         ]);
 
     }
-
+    
     /**
      * 更新功能
      *
      * @param ActionRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(ActionRequest $request, $id) {
 
         $action = $this->action->find($id);
-        abort_if(!$action, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eu', $action);
 
         return $this->result(
             $action->update($request->all())

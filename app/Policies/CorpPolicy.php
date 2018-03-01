@@ -32,7 +32,11 @@ class CorpPolicy {
      */
     public function veud(User $user, Corp $corp) {
 
-        abort_if(!$corp, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
+        abort_if(
+            !$corp,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
         $role = $user->group->name;
         switch ($role) {
             case '运营': return true;

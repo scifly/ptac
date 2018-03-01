@@ -5,6 +5,7 @@ use App\Events\GradeCreated;
 use App\Events\GradeDeleted;
 use App\Events\GradeUpdated;
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
@@ -57,35 +58,35 @@ class Grade extends Model {
      *
      * @return BelongsTo
      */
-    public function department() { return $this->belongsTo('App\Models\Department'); }
+    function department() { return $this->belongsTo('App\Models\Department'); }
     
     /**
      * 返回指定年级所属的学校对象
      *
      * @return BelongsTo
      */
-    public function school() { return $this->belongsTo('App\Models\School'); }
+    function school() { return $this->belongsTo('App\Models\School'); }
     
     /**
      * 获取指定年级包含的所有班级对象
      *
      * @return HasMany
      */
-    public function classes() { return $this->hasMany('App\Models\Squad'); }
+    function classes() { return $this->hasMany('App\Models\Squad'); }
     
     /**
      * 获取指定年级包含的学生考勤设置对象
      *
      * @return HasMany
      */
-    public function studentAttendanceSetting() { return $this->hasMany('App\Models\StudentAttendanceSetting'); }
+    function studentAttendanceSetting() { return $this->hasMany('App\Models\StudentAttendanceSetting'); }
     
     /**
      * 通过Squad中间对象获取指定年级包含的所有学生对象
      *
      * @return HasManyThrough
      */
-    public function students() {
+    function students() {
         
         return $this->hasManyThrough(
             'App\Models\Student',
@@ -107,13 +108,40 @@ class Grade extends Model {
     }
     
     /**
+     * 返回对当前用户可见的所有年级Id
+     *
+     * @return array
+     */
+    function gradeIds() {
+    
+        $user = Auth::user();
+        $role = $user->group->name;
+        if (in_array($role, Constant::SUPER_ROLES)) {
+            $schoolId = $this->schoolId();
+            $gradeIds = School::find($schoolId)->grades->pluck('id')->toArray();
+        } else {
+            $departmentIds = $this->departmentIds($user->id);
+            $gradeIds = [];
+            foreach ($departmentIds as $id) {
+                $department = Department::find($id);
+                if ($department->departmentType->name == '年级') {
+                    $gradeIds[] = $department->grade->id;
+                }
+            }
+        }
+    
+        return empty($gradeIds) ? [0] : $gradeIds;
+        
+    }
+    
+    /**
      * 保存年级
      *
      * @param array $data
      * @param bool $fireEvent
      * @return bool
      */
-    public function store(array $data, $fireEvent = false) {
+    function store(array $data, $fireEvent = false) {
         
         $grade = self::create($data);
         if ($grade && $fireEvent) {
@@ -134,7 +162,7 @@ class Grade extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    public function modify(array $data, $id, $fireEvent = false) {
+    function modify(array $data, $id, $fireEvent = false) {
         
         $grade = self::find($id);
         $updated = $grade->update($data);
@@ -156,7 +184,7 @@ class Grade extends Model {
      * @return bool
      * @throws Exception
      */
-    public function remove($id, $fireEvent = false) {
+    function remove($id, $fireEvent = false) {
         
         $grade = self::find($id);
         if (!$grade) {
@@ -178,7 +206,7 @@ class Grade extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'Grade.id', 'dt' => 0],
@@ -231,25 +259,11 @@ class Grade extends Model {
                 ],
             ],
         ];
-        // todo: 增加角色过滤条件
-        $school = new School();
-        $condition = 'Grade.school_id = ' . $this->schoolId();
-        unset($school);
-        $user = Auth::user();
-        $role = $user->group->name;
-        if ($role == '教职员工') {
-            $gradeIds = [];
-            $educatorId = $user->educator->id;
-            $grades = self::where('educator_ids', 'like', '%' . $educatorId . '%')
-                ->get();
-            foreach ($grades as $g) {
-                $gradeIds[] = $g->id;
-            }
-            $gradeIds = implode(',', $gradeIds);
-            $condition .= " and Grade.id in ($gradeIds)";
-        }
+        $condition = 'Grade.id IN (' . implode(',', $this->gradeIds()) . ')';
         
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        return Datatable::simple(
+            self::getModel(), $columns, $joins, $condition
+        );
         
     }
     

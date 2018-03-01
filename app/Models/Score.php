@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -218,20 +217,11 @@ class Score extends Model {
                 ],
             ],
         ];
-        // todo: 增加过滤条件
-        $schoolId = $this->schoolId();
-        $condition = 'Subject.school_id = ' . $schoolId;
-        $groupId = Auth::user()->group->id;
-        if ($groupId > 5) {
-            $educatorId = Auth::user()->educator->id;
-            $student = new Student();
-            $studentIds = $student->getClassStudent($schoolId, $educatorId)[1];
-            unset($student);
-            $studentIds = implode(',', $studentIds);
-            $condition .= " and Student.id in ($studentIds)";
-        }
+        $condition = 'Student.id IN (' . implode(',', $this->contactIds('student')) . ')';
         
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        return Datatable::simple(
+            self::getModel(), $columns, $joins, $condition
+        );
         
     }
     
@@ -1136,6 +1126,7 @@ class Score extends Model {
      * @return mixed
      */
     public function stuAnalysis($input) {
+        
         #学生对象
         $student = Student::whereId($input['student_id'])->first();
         #先找出这个学生最近十场考试
@@ -1226,6 +1217,7 @@ class Score extends Model {
         ];
         
         return $data;
+        
     }
     
     /**
@@ -1234,6 +1226,7 @@ class Score extends Model {
      * @return array|bool
      */
     public function totalAnalysis($input) {
+        
         #根据当前学生取的班级
         $student = Student::whereId($input['student_id'])->first();
         $squad = $student->squad;
@@ -1316,6 +1309,7 @@ class Score extends Model {
     
     /**
      * 根据class_id获取考试的相关信息
+     *
      * @param $id
      * @param null $keyword
      * @return array
@@ -1377,20 +1371,18 @@ class Score extends Model {
         
     }
     
-    /**根据教职员工userId获取所在班级的考试
-     * @param $userId
+    /**
+     * 根据教职员工userId获取所在班级的考试
+     *
      * @return array|bool
      */
-    public function getEducatorScore($userId) {
+    public function getEducatorScore() {
         
         $score = $data = $className = $classIds = [];
-        $user = User::whereUserid($userId)->first();
-        $educatorId = $user->educator->id;
-        $schoolId = $user->educator->school_id;
         // 取出该教职员工对应的所有班级
-        $student = new Student();
-        $classIds = $student->getClassStudent($schoolId, $educatorId)[0];
-        unset($student);
+        $class = new Squad();
+        $classIds = $class->classIds();
+        unset($class);
         if (!$classIds) { return false; }
         $class = Squad::whereEnabled(1)->whereIn('id', $classIds)->get();
         foreach ($class as $k => $c) {
@@ -1406,7 +1398,6 @@ class Score extends Model {
                     $score[$k][$key]['class_id'] = $c->id;
                     $score[$k][$key]['subject_ids'] = $e->subject_ids;
                 }
-                
             }
             $className[] = [
                 'title' => $c->name,

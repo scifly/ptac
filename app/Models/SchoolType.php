@@ -83,7 +83,7 @@ class SchoolType extends Model {
         
         $st = self::find($id);
         if (!$st) { return false; }
-        $removed = SchoolType::removable($st) ? $st->delete() : false;
+        $removed = self::removable($st) ? $st->delete() : false;
         
         return $removed ?? false;     
     }

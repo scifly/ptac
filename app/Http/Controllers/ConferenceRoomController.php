@@ -108,7 +108,9 @@ class ConferenceRoomController extends Controller {
         $cr = $this->cr->find($id);
         $this->authorize('rud', $cr);
         
-        return $this->output(['cr' => $cr]);
+        return $this->output([
+            'cr' => $cr,
+        ]);
         
     }
     
@@ -125,7 +127,9 @@ class ConferenceRoomController extends Controller {
         $cr = $this->cr->find($id);
         $this->authorize('rud', $cr);
         
-        return $this->result($cr->modify($request->all(), $id));
+        return $this->result(
+            $cr->modify($request->all(), $id)
+        );
         
     }
     

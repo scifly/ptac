@@ -5,6 +5,7 @@ use App\Events\ClassCreated;
 use App\Events\ClassDeleted;
 use App\Events\ClassUpdated;
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
@@ -58,28 +59,28 @@ class Squad extends Model {
      *
      * @return BelongsTo
      */
-    public function department() { return $this->belongsTo('App\Models\Department'); }
+    function department() { return $this->belongsTo('App\Models\Department'); }
     
     /**
      * 返回指定班级所属的年级对象
      *
      * @return BelongsTo
      */
-    public function grade() { return $this->belongsTo('App\Models\Grade'); }
+    function grade() { return $this->belongsTo('App\Models\Grade'); }
     
     /**
      * 获取指定班级包含的所有学生对象
      *
      * @return HasMany
      */
-    public function students() { return $this->hasMany('App\Models\Student', 'class_id'); }
+    function students() { return $this->hasMany('App\Models\Student', 'class_id'); }
     
     /**
      * 获取指定班级包含的所有教职员工对象
      *
      * @return BelongsToMany
      */
-    public function educators() { return $this->belongsToMany('App\Models\Educator', 'educators_classes'); }
+    function educators() { return $this->belongsToMany('App\Models\Educator', 'educators_classes'); }
     
     /**
      * 保存班级
@@ -131,7 +132,7 @@ class Squad extends Model {
      * @return bool
      * @throws Exception
      */
-    public function remove($id, $fireEvent = false) {
+    function remove($id, $fireEvent = false) {
         
         $class = self::find($id);
         if (!$class) {
@@ -146,6 +147,41 @@ class Squad extends Model {
         
         return $removed ? true : false;
         
+    }
+    
+    /**
+     * 获取对当前用户可见的所有班级Id
+     *
+     * @return array
+     */
+    function classIds() {
+    
+        $user = Auth::user();
+        $role = $user->group->name;
+        if (in_array($role, Constant::SUPER_ROLES)) {
+            $schoolId = $this->schoolId();
+            $grades = School::find($schoolId)->grades;
+            $classIds = [];
+            foreach ($grades as $grade) {
+                $classes = $grade->classes;
+                foreach ($classes as $class) {
+                    $classIds[] = $class->id;
+                }
+            }
+        } else {
+            $departmentIds = $this->departmentIds($user->id);
+            $classIds = [];
+            
+            foreach ($departmentIds as $id) {
+                $department = Department::find($id);
+                if ($department->departmentType->name == '班级') {
+                    $classIds[] = $department->squad->id;
+                }
+            }
+        }
+        
+        return empty($classIds) ? [0] : $classIds;
+    
     }
     
     /**
@@ -223,19 +259,7 @@ class Squad extends Model {
                 ],
             ],
         ];
-        // todo: 增加角色过滤条件
-        $schoolId = $this->schoolId();
-        $condition = 'Grade.school_id = ' . $schoolId;
-        $user = Auth::user();
-        $role = $user->group->id;
-        if ($role > 5) {
-            $educatorId = $user->educator->id;
-            $student = new Student();
-            $classIds = $student->getClassStudent($schoolId, $educatorId)[0];
-            unset($student);
-            $classIds = implode(',', $classIds);
-            $condition .= " and Squad.id in ($classIds)";
-        }
+        $condition = 'Squad.id IN (' . implode(',', $this->classIds()) . ')';
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         

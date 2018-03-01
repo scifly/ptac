@@ -62,21 +62,21 @@ class Subject extends Model {
      *
      * @return BelongsTo
      */
-    public function school() { return $this->belongsTo('App\Models\School'); }
+    function school() { return $this->belongsTo('App\Models\School'); }
     
     /**
      * 获取指定科目包含的所有科目次分类对象
      *
      * @return HasMany
      */
-    public function subjectModules() { return $this->hasMany('App\Models\SubjectModule'); }
+    function subjectModules() { return $this->hasMany('App\Models\SubjectModule'); }
     
     /**
      * 获取指定科目包含的所有专业对象
      *
      * @return BelongsToMany
      */
-    public function majors() {
+    function majors() {
         
         return $this->belongsToMany(
             'App\Models\Major',
@@ -129,7 +129,7 @@ class Subject extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function store(SubjectRequest $request) {
+    function store(SubjectRequest $request) {
         
         try {
             DB::transaction(function () use ($request) {
@@ -144,7 +144,7 @@ class Subject extends Model {
                 ]);
                 if (!empty($request->input('major_ids'))) {
                     $ms = new MajorSubject();
-                    $this->ms->storeBySubjectId(
+                    $ms->storeBySubjectId(
                         $subject->id, $request->input('major_ids')
                     );
                     unset($ms);
@@ -168,7 +168,7 @@ class Subject extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function modify(SubjectRequest $request, $id) {
+    function modify(SubjectRequest $request, $id) {
         
         $subject = self::find($id);
         if (!isset($subject)) {
@@ -187,9 +187,11 @@ class Subject extends Model {
                 ]);
                 MajorSubject::whereSubjectId($id)->delete();
                 if (!empty($request->input('major_ids'))) {
-                    $this->ms->storeBySubjectId(
+                    $ms = new MajorSubject();
+                    $ms->storeBySubjectId(
                         $id, $request->input('major_ids')
                     );
+                    unset($ms);
                 }
             });
             

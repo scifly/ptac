@@ -14,7 +14,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -42,14 +41,16 @@ class Custodian extends Model {
         '手机号码', '创建于', '更新于',
     ];
     protected $fillable = ['user_id'];
-    
+
     /**
      * 返回对应的用户对象
      *
      * @return BelongsTo
      */
-    public function user() {
+    function user() {
+        
         return $this->belongsTo('App\Models\User');
+        
     }
 
     /**
@@ -57,7 +58,7 @@ class Custodian extends Model {
      *
      * @return BelongsToMany
      */
-    public function students() {
+    function students() {
 
         return $this->belongsToMany(
             'App\Models\Student',
@@ -76,7 +77,7 @@ class Custodian extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function store(CustodianRequest $request) {
+    function store(CustodianRequest $request) {
 
         try {
             DB::transaction(function () use ($request) {
@@ -87,7 +88,7 @@ class Custodian extends Model {
                 $relationships = $request->input('relationships');
                 $studentId_relationship = [];
 
-                # 创建用户
+                # 创建用户(User)
                 $userid = uniqid('custodian_'); // 企业号会员userid
                 $u = User::create([
                     'username' => $userid,
@@ -104,25 +105,25 @@ class Custodian extends Model {
                     'wechatid' => '',
                     'enabled' => $user['enabled'],
                 ]);
-
+                
+                # 向部门用户关系表(DepartmentUser)中添加数据
                 foreach ($studentIds as $key => $studentId) {
-                    $student = Student::whereId($studentId)->first();
+                    $student = Student::find($studentId);
                     if ($student) {
                         $du = DepartmentUser::whereUserId($student->user->id)->first();
                         if ($du) {
                             # 创建企业微信部门成员
-                            $departmentUser = [
+                            DepartmentUser::create([
                                 'department_id' => $du->department_id,
                                 'user_id' => $u->id,
-                                'enabled' => 1,
-                            ];
-                            DepartmentUser::create($departmentUser);
+                                'enabled' => Constant::ENABLED,
+                            ]);
                         }
                     }
                     $studentId_relationship[$studentId] = $relationships[$key];
                 }
 
-                # 保存手机号码
+                # 保存用户手机号码(Mobile)
                 $mobiles = $request->input('mobile');
                 if ($mobiles) {
                     foreach ($mobiles as $k => $mobile) {
@@ -134,13 +135,17 @@ class Custodian extends Model {
                         ]);
                     }
                 }
+                
+                # 创建监护人(Custodian) 记录
                 $c = self::create(['user_id' => $u->id]);
-                # 向监护人学生表中添加数据
+                
+                # 向监护人学生关系表(CustodianStudent)中添加数据
                 if (isset($studentId_relationship)) {
                     $cs = new CustodianStudent();
                     $cs->storeByCustodianId($c->id, $studentId_relationship);
                     unset($cs);
                 }
+                
                 # 创建企业号成员
                 $u->createWechatUser($u->id);
             });
@@ -160,7 +165,7 @@ class Custodian extends Model {
      * @return bool|mixed
      * @throws Throwable
      */
-    public function modify(CustodianRequest $request, $custodianId) {
+    function modify(CustodianRequest $request, $custodianId) {
 
         $custodian = self::find($custodianId);
         if (!isset($custodian)) { return false; }
@@ -173,7 +178,8 @@ class Custodian extends Model {
                 # 与学生之间的关系
                 $relationships = $request->input('relationships');
                 $studentId_Relationship = [];
-
+                
+                # 更新用户(User)数据
                 User::find($userId)->update([
                     'group_id' => $userData['group_id'],
                     'email' => $userData['email'],
@@ -184,26 +190,31 @@ class Custodian extends Model {
                     'telephone' => $userData['telephone'],
                     'enabled' => $userData['enabled'],
                 ]);
+                
+                # 保存部门用户关系(DepartmentUser)数据
                 if (!empty($studentIds)) {
                     DepartmentUser::whereUserId($userId)->delete();
                     foreach ($studentIds as $key => $studentId) {
-                        $student = Student::whereId($studentId)->first();
+                        $student = Student::find($studentId);
                         if ($student) {
                             $du = DepartmentUser::whereUserId($student->user->id)->first();
                             if ($du) {
                                 # 创建企业微信部门成员
-                                $departmentUser = [
+                                DepartmentUser::create([
                                     'department_id' => $du->department_id,
                                     'user_id' => $userId,
-                                    'enabled' => 1,
-                                ];
-                                DepartmentUser::create($departmentUser);
+                                    'enabled' => Constant::ENABLED,
+                                ]);
                             }
                         }
                         $studentId_Relationship[$studentId] = $relationships[$key];
                     }
                 }
+                
+                # 更新监护人(Custodian)记录
                 $custodian->update(['user_id' => $userId]);
+                
+                # 更新用户的手机号码(Mobile)记录
                 $mobiles = $request->input('mobile');
                 if ($mobiles) {
                     $mobileModel = new Mobile();
@@ -221,11 +232,14 @@ class Custodian extends Model {
                     }
                     unset($mobile);
                 }
-                # 向监护人学生表中添加数据
+                
+                # 更新监护人学生关系表(CustodianStudent)中的数据
                 CustodianStudent::whereCustodianId($custodianId)->delete();
                 $cs = new CustodianStudent();
                 $cs->storeByCustodianId($custodianId, $studentId_Relationship);
                 unset($cs);
+                
+                # 更新企业号会员数据
                 $custodian->user->UpdateWechatUser($userId);
             });
         } catch (Exception $e) {
@@ -245,7 +259,8 @@ class Custodian extends Model {
      * @throws Throwable
      */
     function remove($custodianId) {
-
+    
+        # todo 删除监护人（监护人可能绑定不同学校的学生，所以不能直接删除）
         $custodian = self::find($custodianId);
         if (!isset($custodian)) { return false; }
         try {
@@ -253,6 +268,7 @@ class Custodian extends Model {
                 $userId = $custodian->user_id;
                 # 删除与指定监护人绑定的学生记录
                 CustodianStudent::whereCustodianId($custodianId)->delete();
+                
                 # 删除指定的监护人记录
                 $custodian->delete();
                 # 删除user数据
@@ -267,13 +283,13 @@ class Custodian extends Model {
     }
 
     /**
-     * 导出监护人记录
+     * 导出（仅对当前用户可见的）监护人记录
      *
      * @return array
      */
-    public function export() {
+    function export() {
 
-        $custodians = self::all();
+        $custodians = self::whereIn('id', $this->contactIds('custodian'))->get();
         $data = array(self::EXCEL_EXPORT_TITLE);
         foreach ($custodians as $custodian) {
             if (!empty($custodian->user)) {
@@ -285,7 +301,7 @@ class Custodian extends Model {
                 $mobiles = implode(',', $mobile);
                 $item = [
                     $custodian->user->realname,
-                    $custodian->user->gender == 1 ? '男' : '女',
+                    $custodian->user->gender == Constant::ENABLED ? '男' : '女',
                     $custodian->user->email,
                     $mobiles,
                     $custodian->created_at,
@@ -302,11 +318,11 @@ class Custodian extends Model {
     }
 
     /**
-     * 返回监护人记录列表
+     * 监护人记录列表
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'Custodian.id', 'dt' => 0],
@@ -314,7 +330,7 @@ class Custodian extends Model {
             [
                 'db' => 'CustodianStudent.student_id', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return Student::whereId($d)->first()->user->realname;
+                    return Student::find($d)->user->realname;
                 }
             ],
             ['db' => 'User.email', 'dt' => 3],
@@ -369,37 +385,13 @@ class Custodian extends Model {
                     'Student.id = CustodianStudent.student_id',
                 ]
             ],
-            [
-                'table' => 'classes',
-                'alias' => 'Squad',
-                'type' => 'INNER',
-                'conditions' => [
-                    'Squad.id = Student.class_id',
-                ],
-            ],
-            [
-                'table' => 'grades',
-                'alias' => 'Grade',
-                'type' => 'INNER',
-                'conditions' => [
-                    'Grade.id = Squad.grade_id',
-                ],
-            ],
         ];
-        $schoolId = $this->schoolId();
-        $condition = 'Grade.school_id = ' . $schoolId;
-        $role = Auth::user()->group->name;
+    
+        $condition = 'Custodian.id IN (' . implode(',', $this->contactIds('custodian')) . ')';
 
-        if (!in_array($role, Constant::SUPER_ROLES)) {
-            $educatorId = Auth::user()->educator->id;
-            $student = new Student();
-            $studentIds = $student->getClassStudent($schoolId,$educatorId)[1];
-            unset($student);
-            $studentIds = implode(',',$studentIds);
-            $condition .= " and Student.id in ($studentIds)";
-        }
-
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        return Datatable::simple(
+            self::getModel(), $columns, $joins, $condition
+        );
 
     }
 

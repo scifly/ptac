@@ -2,11 +2,11 @@
 namespace App\Policies;
 
 use App\Helpers\HttpStatusCode;
-use App\Models\Action;
+use App\Models\CommType;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class ActionPolicy {
+class CommTypePolicy {
     
     use HandlesAuthorization;
     
@@ -19,11 +19,18 @@ class ActionPolicy {
         //
     }
     
-    public function eu(User $user, Action $action) {
-        
-        abort_if(!$action, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
+    public function cs(User $user) {
         
         return $user->group->name == '运营';
         
     }
+    
+    public function eud(User $user, CommType $ct) {
+    
+        abort_if(!$ct, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
+        
+        return $user->group->name == '运营';
+        
+    }
+    
 }

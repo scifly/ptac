@@ -119,7 +119,7 @@ class ScoreCenterController extends Controller {
                         return response()->json(['data' => $scores]);
                     }
                 }
-                $datas = $this->score->getEducatorScore($userId);
+                $datas = $this->score->getEducatorScore();
                 if (!$datas) {
                     return '你还没有对应的班级';
                 }

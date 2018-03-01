@@ -78,7 +78,7 @@ class Action extends Model {
      *
      * @return HasMany
      */
-    public function tabs() { return $this->hasMany('App\Models\Tab'); }
+    function tabs() { return $this->hasMany('App\Models\Tab'); }
 
     /**
      * 返回HTTP请求方法中包含GET以及路由中不带参数的action列表
@@ -113,7 +113,7 @@ class Action extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'Action.id', 'dt' => 0],

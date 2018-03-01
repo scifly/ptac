@@ -78,21 +78,21 @@ class Educator extends Model {
      *
      * @return BelongsTo
      */
-    public function user() { return $this->belongsTo('App\Models\User'); }
+    function user() { return $this->belongsTo('App\Models\User'); }
 
     /**
      * 返回指定教职员工所属的学校对象
      *
      * @return BelongsTo
      */
-    public function school() { return $this->belongsTo('App\Models\School'); }
+    function school() { return $this->belongsTo('App\Models\School'); }
 
     /**
      * 获取指定教职员工所属的所有班级对象
      *
      * @return BelongsToMany
      */
-    public function classes() {
+    function classes() {
 
         return $this->belongsToMany(
             'App\Models\Squad',
@@ -108,7 +108,7 @@ class Educator extends Model {
      *
      * @return HasMany
      */
-    public function educatorClasses() {
+    function educatorClasses() {
 
         return $this->hasMany(
             'App\Models\EducatorClass',
@@ -124,7 +124,7 @@ class Educator extends Model {
      *
      * @return BelongsToMany
      */
-    public function teams() {
+    function teams() {
 
         return $this->belongsToMany(
             'App\Models\Team',
@@ -158,7 +158,7 @@ class Educator extends Model {
      * @param $classId
      * @return Collection|static[]
      */
-    public function classDeans($classId) {
+    function classDeans($classId) {
 
         $educatorIds = Squad::whereEnabled(1)
             ->where('id', $classId)
@@ -314,7 +314,7 @@ class Educator extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function modify(EducatorRequest $request) {
+    function modify(EducatorRequest $request) {
         try {
             DB::transaction(function () use ($request) {
                 $user = $request->input('user');
@@ -433,7 +433,7 @@ class Educator extends Model {
      * @throws Exception
      * @throws Throwable
      */
-    public function remove($id, $fireEvent = false) {
+    function remove($id, $fireEvent = false) {
 
         $educator = self::find($id);
         $userId = $educator->user_id;
@@ -455,7 +455,7 @@ class Educator extends Model {
      * @return array
      * @throws PHPExcel_Exception
      */
-    public function upload(UploadedFile $file) {
+    function upload(UploadedFile $file) {
         
         $ext = $file->getClientOriginalExtension();     // 扩展名//xls
         $realPath = $file->getRealPath();   //临时文件的绝对路径
@@ -518,7 +518,7 @@ class Educator extends Model {
      * @param $id
      * @return array
      */
-    public function export($id) {
+    function export($id) {
         
         $educators = self::whereSchoolId($id)->get();
         $data = [self::EXCEL_EXPORT_TITLE];
@@ -546,7 +546,7 @@ class Educator extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'Educator.id', 'dt' => 0],
@@ -595,10 +595,11 @@ class Educator extends Model {
                 ],
             ],
         ];
-        // todo: 根据角色显示教职员工列表，[运营/企业/学校]角色显示当前学校的所有教职员工，其他角色显示所属所有部门的教职员工
-        $condition = 'Educator.school_id = ' . $this->schoolId() . ' or User.group_id=3';
+        $condition = 'Educator.id IN (' . implode(',', $this->contactIds('educator')) . ')';
         
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        return Datatable::simple(
+            self::getModel(), $columns, $joins, $condition
+        );
 
     }
     

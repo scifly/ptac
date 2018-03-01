@@ -86,13 +86,6 @@ class Company extends Model {
 
     }
 
-//    /**
-//     * 获取指定运营者公司内部的所有管理/操作员对象
-//     *
-//     * @return HasMany
-//     */
-//    public function operators() { return $this->hasMany('App\Models\Operator'); }
-
     /**
      * 保存运营者
      *
@@ -145,7 +138,7 @@ class Company extends Model {
 
         $company = $this->find($id);
         if (!$company) { return false; }
-        $removed = Company::removable($company) ? $company->delete() : false;
+        $removed = self::removable($company) ? $company->delete() : false;
         if ($removed && $fireEvent) {
             event(new CompanyDeleted($company));
             return true;
