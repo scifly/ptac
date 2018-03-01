@@ -163,30 +163,13 @@
             <div class="modal-body with-border">
                 <div class="form-horizontal">
                     <!-- 所属学校 -->
-                        @if(isset($schools))
-                            @include('partials.single_select', [
-                                    'id' => 'schoolId',
-                                    'label' => '所属学校',
-                                    'items' => $schools,
-                                ])
-                            {{--@if($schools->count() > 1)--}}
+                        {{--@if(isset($schools))--}}
                             {{--@include('partials.single_select', [--}}
-                            {{--'id' => 'schoolId',--}}
-                            {{--'label' => '所属学校',--}}
-                            {{--'items' => $schools--}}
-                            {{--])--}}
-                            {{--@else--}}
-                            {{--{{ Form::label('schoolId', '所属学校', [--}}
-                            {{--'class' => 'control-label col-sm-3'--}}
-                            {{--]) }}--}}
-                            {{--<div class="col-sm-6" style="padding-top: 8px;">--}}
-                            {{--{{ $grades->first() }}--}}
-                            {{--{{ Form::hidden('schoolId', $grades->keys()->first(), [--}}
-                            {{--'id' => 'schoolId'--}}
-                            {{--]) }}--}}
-                            {{--</div>--}}
-                            {{--@endif--}}
-                        @endif
+                                    {{--'id' => 'schoolId',--}}
+                                    {{--'label' => '所属学校',--}}
+                                    {{--'items' => $schools--}}
+                                {{--])--}}
+                        {{--@endif--}}
                     <!-- 所属年级 -->
                         @if(isset($grades))
                             @include('partials.single_select', [
