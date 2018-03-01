@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
@@ -12,7 +11,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
 class CustodianComposer {
-
+    
     use ModelTrait;
     
     protected $student;
@@ -20,41 +19,38 @@ class CustodianComposer {
     function __construct(Student $student) { $this->student = $student; }
     
     public function compose(View $view) {
-
+        
         $schools = null;
         $grades = null;
         $classes = null;
         $students = null;
-
         $schoolId = $this->schoolId();
         $schools = School::whereId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id');
         $groupId = Auth::user()->group->id;
-        if($groupId > 5){
+        if ($groupId > 5) {
             $educatorId = Auth::user()->educator->id;
             $gradeIds = $this->student->getGrade($educatorId)[0];
             $gradeClass = $this->student->getGrade($educatorId)[1];
-            foreach ($gradeClass as $k=>$g){
+            foreach ($gradeClass as $k => $g) {
                 $grades = Grade::whereEnabled(1)
-                    ->whereIn('id',$gradeIds)
+                    ->whereIn('id', $gradeIds)
                     ->pluck('name', 'id')
                     ->toArray();
                 $classes = Squad::whereEnabled(1)
-                    ->whereIn('id',$g)
+                    ->whereIn('id', $g)
                     ->pluck('name', 'id')
                     ->toArray();
                 break;
             }
-            foreach($classes as $k=>$c){
+            foreach ($classes as $k => $c) {
                 $list = Student::whereClassId($k)
                     ->where('enabled', 1)
                     ->get();
                 break;
             }
-
-
-        }else{
+        } else {
             if ($schools) {
                 $grades = Grade::whereSchoolId($schoolId)
                     ->where('enabled', 1)
@@ -76,18 +72,24 @@ class CustodianComposer {
                 $students[$s->id] = $s->user->realname . "-" . $s->student_number;
             }
         }
-        if (empty($students)) {$students[] = '' ;}
-        if (empty($classes)) {$classes[] = '' ;}
-        if (empty($grades)) {$grades[] = '' ;}
+        if (empty($students)) {
+            $students[] = '';
+        }
+        if (empty($classes)) {
+            $classes[] = '';
+        }
+        if (empty($grades)) {
+            $grades[] = '';
+        }
         $view->with([
-            'schools' => $schools,
-            'grades' => $grades,
-            'classes' => $classes,
+            'schools'  => $schools,
+            'grades'   => $grades,
+            'classes'  => $classes,
             'students' => $students,
-            'groupId' => Group::whereName('监护人')->first()->id,
-            'uris' => $this->uris()
+            'groupId'  => Group::whereName('监护人')->first()->id,
+            'uris'     => $this->uris(),
         ]);
-
+        
     }
-
+    
 }

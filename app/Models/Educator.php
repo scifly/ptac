@@ -172,7 +172,7 @@ class Educator extends Model {
     }
 
     /**
-     * 根据教职员工Id获取教职员工列表
+     * 根据教职员工Id数组返回教职员工"id => 姓名"数组
      *
      * @param array $ids
      * @return array
@@ -197,7 +197,7 @@ class Educator extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function store(EducatorRequest $request) {
+    function store(EducatorRequest $request) {
         
         try {
             DB::transaction(function () use ($request) {
@@ -641,7 +641,13 @@ class Educator extends Model {
         return count(array_diff(self::EXCEL_FILE_TITLE, $fileTitle)) != 0;
 
     }
-
+    
+    /**
+     * 验证数据合法性
+     *
+     * @param array $data
+     * @return array
+     */
     private function checkData(array $data) {
         
         $rules = [

@@ -54,7 +54,9 @@ class TabController extends Controller {
      */
     public function create() {
         
-        return $this->output(['menus' => $this->menu->leaves(1)]);
+        return $this->output([
+            'menus' => $this->menu->leaves(1)
+        ]);
         
     }
     
