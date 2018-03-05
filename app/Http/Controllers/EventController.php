@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Http\Requests\EventRequest;
 use App\Models\Event;
@@ -22,7 +23,7 @@ class EventController extends Controller {
     
     function __construct(Event $event) {
     
-        $this->middleware(['auth']);
+        $this->middleware(['auth', 'checkrole']);
         $this->event = $event;
         
     }
@@ -35,18 +36,17 @@ class EventController extends Controller {
      */
     public function index() {
 
-        $user = Auth::user();
-        $isAdmin = $this->event->getRole($user) ? 1 : 0;
         $events = $this->event
-            ->where('User_id', $user->id)
+            ->whereUserId(Auth::id())
             ->where('enabled', '0')
-            ->get()->toArray();
-        $show = true;
+            ->get()
+            ->toArray();
+
         return $this->output([
             'events'  => $events,
-            'userId'  => $user->id,
-            'isAdmin' => $isAdmin,
-            'show' => $show,
+            'userId'  => Auth::id(),
+            'isAdmin' => Auth::user()->group->name == '运营',
+            'show' => true,
         ]);
         
     }
@@ -71,10 +71,12 @@ class EventController extends Controller {
      * @return JsonResponse|string
      */
     public function store(EventRequest $request) {
+        
         $inputEvent = $request->all();
         $listDate = $this->event->create($inputEvent);
         
         return $this->result($listDate, $listDate);
+        
     }
     
     /**
@@ -86,18 +88,20 @@ class EventController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-        //判断当前用户权限
-        $row = Request::all();
-        if ($row['ispublic'] == 1) {
-            abort_if(
-                !$this->event->getRole($row['userId']),
-                HttpStatusCode::NOT_ACCEPTABLE,
-                '此事件只有管理员可编辑！'
-            );
-        }
-        $data = view('event.show', ['events' => $this->event->find($id)])->render();
         
-        return $this->result(!empty($data), $data);
+        //判断当前用户权限
+        $event = $this->event->find($id);
+        
+        $row = Request::all();
+        abort_if(
+            !in_array(Auth::user()->group->name, Constant::SUPER_ROLES) && $row['ispublic'] == 1,
+            HttpStatusCode::NOT_ACCEPTABLE,
+            '此事件只有管理员可编辑！'
+        );
+        
+        return $this->output([
+             'event' => $event,
+        ]);
     }
     
     /**
@@ -108,6 +112,7 @@ class EventController extends Controller {
      * @return JsonResponse|string
      */
     public function update(EventRequest $request, $id) {
+        
         $input = $request->all();
         $input['enabled'] = 1;
         abort_if($input['end'] <= $input['start'], HttpStatusCode::NOT_ACCEPTABLE, '结束时间必须大于开始时间！');
@@ -129,6 +134,7 @@ class EventController extends Controller {
         return $this->result(
             $event->update($input)
         );
+        
     }
     
     /**
@@ -152,6 +158,7 @@ class EventController extends Controller {
      * 拖动列表添加日历事件
      */
     public function dragEvents() {
+        
         $listJson = Request::all();
         $event = $this->event->whereId($listJson['id'])
             ->first([

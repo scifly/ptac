@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\ExamRequest;
 use App\Models\Exam;
 use Exception;
@@ -53,7 +52,7 @@ class ExamController extends Controller {
      */
     public function create() {
         
-        $this->authorize('c', Exam::class);
+        $this->authorize('cs', Exam::class);
         
         return $this->output();
         
@@ -68,7 +67,9 @@ class ExamController extends Controller {
      */
     public function store(ExamRequest $request) {
         
-        $this->authorize('c', Exam::class);
+        $this->authorize(
+            'cs', Exam::class
+        );
         
         return $this->result(
             $this->exam->store($request->all())
@@ -86,7 +87,7 @@ class ExamController extends Controller {
     public function show($id) {
         
         $exam = Exam::find($id);
-        abort_if(!$exam, HttpStatusCode::NOT_FOUND);
+        $this->authorize('seud', $exam);
         
         return $this->output([
             'exam'     => $exam,
@@ -106,7 +107,7 @@ class ExamController extends Controller {
     public function edit($id) {
         
         $exam = Exam::find($id);
-        abort_if(!$exam, HttpStatusCode::NOT_FOUND);
+        $this->authorize('seud', $exam);
         
         return $this->output([
             'exam'             => $exam,
@@ -121,11 +122,12 @@ class ExamController extends Controller {
      * @param ExamRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(ExamRequest $request, $id) {
         
         $exam = Exam::find($id);
-        abort_if(!$exam, HttpStatusCode::NOT_FOUND);
+        $this->authorize('seud', $exam);
         
         return $this->result(
             $exam->modify($request->all(), $id)
@@ -143,7 +145,7 @@ class ExamController extends Controller {
     public function destroy($id) {
         
         $exam = Exam::find($id);
-        abort_if(!$exam, HttpStatusCode::NOT_FOUND);
+        $this->authorize('seud', $exam);
         
         return $this->result($exam->delete());
         

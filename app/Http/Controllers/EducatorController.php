@@ -64,7 +64,7 @@ class EducatorController extends Controller {
         if (Request::method() === 'POST') {
             return response()->json(
                 $this->department->tree(
-                    $this->school->getSchoolById()->department_id
+                    $this->school->find($this->school->schoolId())->department_id
                 )
             );
         }
@@ -131,6 +131,7 @@ class EducatorController extends Controller {
             $selectedDepartmentIds[] = $department->id;
         }
         $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
+        
         return $this->output([
             'mobiles' => $educator->user->mobiles,
             'educator' => $educator,
@@ -153,7 +154,9 @@ class EducatorController extends Controller {
         $educator = Educator::find($id);
         $this->authorize('rud', $educator);
 
-        return $this->output(['educator' => $educator]);
+        return $this->output([
+            'educator' => $educator,
+        ]);
 
     }
 
@@ -217,15 +220,19 @@ class EducatorController extends Controller {
         );
 
     }
-
+    
     /**
      * 导入教职员工
      *
      * @return JsonResponse|null
+     * @throws AuthorizationException
      * @throws PHPExcel_Exception
      */
     public function import() {
 
+        $this->authorize(
+            'c', Educator::class
+        );
         if (Request::isMethod('post')) {
             $file = Request::file('file');
             abort_if(
@@ -245,19 +252,25 @@ class EducatorController extends Controller {
         return abort(HttpStatusCode::METHOD_NOT_ALLOWED);
 
     }
-
+    
     /**
      * 导出教职员工
      *
      * @return JsonResponse|string
+     * @throws AuthorizationException
      */
     public function export() {
 
+        $this->authorize(
+            'c', Educator::class
+        );
         if (Request::method() === 'POST') {
             $field = Request::query('field');
             $id = Request::query('id');
             $this->result['html'] = $this->educator->school->getFieldList($field, $id);
-            return response()->json($this->result);
+            return response()->json(
+                $this->result
+            );
         }
         $id = Request::query('id');
         if ($id) {

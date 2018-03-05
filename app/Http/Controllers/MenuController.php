@@ -74,7 +74,9 @@ class MenuController extends Controller {
      */
     public function store(MenuRequest $request) {
 
-        return $this->result($this->menu->store($request));
+        return $this->result(
+            $this->menu->store($request)
+        );
 
     }
     
@@ -136,7 +138,9 @@ class MenuController extends Controller {
         $parentMenu = $this->menu->find($parentId);
         abort_if(!$menu || !$parentMenu, HttpStatusCode::NOT_FOUND);
         if ($this->menu->movable($id, $parentId)) {
-            return $this->result($$this->menu->move($id, $parentId, true));
+            return $this->result(
+                $$this->menu->move($id, $parentId, true)
+            );
         }
 
         return abort(HttpStatusCode::NOT_ACCEPTABLE, '非法操作');

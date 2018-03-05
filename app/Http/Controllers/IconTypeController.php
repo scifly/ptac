@@ -1,10 +1,11 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
+
 use App\Http\Requests\IconTypeRequest;
 use App\Models\IconType;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request as Request;
 use Throwable;
@@ -52,6 +53,10 @@ class IconTypeController extends Controller {
      */
     public function create() {
         
+        $this->authorize(
+            'cs', IconType::class
+        );
+        
         return $this->output();
         
     }
@@ -61,9 +66,13 @@ class IconTypeController extends Controller {
      *
      * @param IconTypeRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(IconTypeRequest $request) {
         
+        $this->authorize(
+            'cs', IconType::class
+        );
         return $this->result(
             $this->it->store($request->all())
         );
@@ -80,9 +89,11 @@ class IconTypeController extends Controller {
     public function edit($id) {
         
         $it = IconType::find($id);
-        abort_if(!$it, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $it);
         
-        return $this->output(['it' => $it]);
+        return $this->output([
+            'it' => $it,
+        ]);
         
     }
     
@@ -92,11 +103,12 @@ class IconTypeController extends Controller {
      * @param IconTypeRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(IconTypeRequest $request, $id) {
         
         $it = IconType::find($id);
-        abort_if(!$it, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $it);
         
         return $this->result(
             $it->modify($request->all(), $id)
@@ -114,7 +126,7 @@ class IconTypeController extends Controller {
     public function destroy($id) {
         
         $it = IconType::find($id);
-        abort_if(!$it, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $it);
         
         return $this->result(
             $it->remove($id)

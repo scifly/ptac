@@ -2,11 +2,11 @@
 namespace App\Policies;
 
 use App\Helpers\HttpStatusCode;
-use App\Models\AlertType;
+use App\Models\Event;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class AlertTypePolicy {
+class EventPolicy {
     
     use HandlesAuthorization;
     
@@ -19,17 +19,15 @@ class AlertTypePolicy {
         //
     }
     
-    public function cs(User $user) {
+    public function eud(User $user, Event $event) {
         
-        return $user->group->name == '运营';
+        abort_if(
+            !$event,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
         
-    }
-    
-    public function eud(User $user, AlertType $at) {
-        
-        abort_if(!$at, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
-        
-        return $user->group->name == '运营';
+        return $event->user_id == $user->id;
         
     }
     

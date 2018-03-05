@@ -32,6 +32,8 @@ class Constant {
         'wap_sites/update/%s',
     ];
     
+    const ROOT_DEPARTMENT_ID = 1;
+    
     # 性别符号
     const MALE = '<i class="fa fa-mars"></i>';
     const FEMALE = '<i class="fa fa-venus"></i>';

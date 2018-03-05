@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use ReflectionException;
 
 /**
@@ -189,10 +191,17 @@ class Exam extends Model {
                 ],
             ],
         ];
-        // todo: 增加角色过滤条件
         $condition = 'ExamType.school_id = ' . $this->schoolId();
+        $class = new Squad();
+        $allowedClassIds = $class->classIds();
+        unset($class);
+        if (!in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
+            $condition .= ' AND class_ids IN (' . $this->implode(',', $allowedClassIds) . ')';
+        }
         
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        return Datatable::simple(
+            self::getModel(), $columns, $joins, $condition
+        );
 
     }
 

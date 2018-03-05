@@ -1,10 +1,11 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
+
 use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -52,6 +53,10 @@ class CompanyController extends Controller {
      */
     public function create() {
         
+        $this->authorize(
+            'cs', Company::class
+        );
+        
         return $this->output();
         
     }
@@ -61,8 +66,13 @@ class CompanyController extends Controller {
      *
      * @param CompanyRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(CompanyRequest $request) {
+        
+        $this->authorize(
+            'cs', Company::class
+        );
         
         return $this->result(
             $this->company->store($request->all(), true)
@@ -80,7 +90,7 @@ class CompanyController extends Controller {
     public function edit($id) {
         
         $company = $this->company->find($id);
-        abort_if(!$company, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $company);
 
         return $this->output([
             'company' => $company,
@@ -94,11 +104,12 @@ class CompanyController extends Controller {
      * @param CompanyRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(CompanyRequest $request, $id) {
         
         $company = $this->company->find($id);
-        abort_if(!$company, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $company);
 
         return $this->result(
             $company->modify($request->all(), $id, true)
@@ -116,7 +127,7 @@ class CompanyController extends Controller {
     public function destroy($id) {
     
         $company = $this->company->find($id);
-        abort_if(!$company, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $company);
 
         return $this->result(
             $company->remove($id, true)

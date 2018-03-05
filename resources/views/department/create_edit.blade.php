@@ -19,14 +19,8 @@
                         'required' => 'true',
                         'maxlength' => '255'
                     ]) !!}
-
                 </div>
             </div>
-            {!! Form::hidden(
-                'department_type_id',
-                isset($departmentTypeId) ? $departmentTypeId : null,
-                ['id' => 'department_type_id']
-            ) !!}
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',

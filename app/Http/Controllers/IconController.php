@@ -1,10 +1,11 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
+
 use App\Http\Requests\IconRequest;
 use App\Models\Icon;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request as Request;
 use Throwable;
@@ -52,6 +53,9 @@ class IconController extends Controller {
      */
     public function create() {
         
+        $this->authorize(
+            'cs', Icon::class
+        );
         return $this->output();
         
     }
@@ -61,8 +65,13 @@ class IconController extends Controller {
      *
      * @param IconRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(IconRequest $request) {
+        
+        $this->authorize(
+            'cs', Icon::class
+        );
         
         return $this->result(
             $this->icon->store($request->all())
@@ -80,7 +89,7 @@ class IconController extends Controller {
     public function edit($id) {
         
         $icon = Icon::find($id);
-        abort_if(!$icon, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $icon);
         
         return $this->output([
             'icon' => $icon,
@@ -94,11 +103,12 @@ class IconController extends Controller {
      * @param IconRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(IconRequest $request, $id) {
         
         $icon = Icon::find($id);
-        abort_if(!$icon, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $icon);
         
         return $this->result(
             $icon->modify($request->all(), $id)
@@ -116,7 +126,7 @@ class IconController extends Controller {
     public function destroy($id) {
         
         $icon = Icon::find($id);
-        abort_if(!$icon, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $icon);
         
         return $this->result(
             $icon->remove($id)

@@ -197,7 +197,10 @@ trait ModelTrait {
         
         $departmentIds = [];
         $user = User::find($userId);
-        foreach ($user->departments as $d) {
+        $departments = $user->group->name == '运营'
+            ? Department::find(Constant::ROOT_DEPARTMENT_ID)
+            : $user->departments;
+        foreach ($departments as $d) {
             $departmentIds[] = $d->id;
             $departmentIds = array_merge(
                 $d->subDepartmentIds($d->id),

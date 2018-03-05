@@ -2,11 +2,11 @@
 namespace App\Policies;
 
 use App\Helpers\HttpStatusCode;
-use App\Models\AlertType;
+use App\Models\Icon;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class AlertTypePolicy {
+class IconPolicy {
     
     use HandlesAuthorization;
     
@@ -25,9 +25,13 @@ class AlertTypePolicy {
         
     }
     
-    public function eud(User $user, AlertType $at) {
+    public function eud(User $user, Icon $icon) {
         
-        abort_if(!$at, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
+        abort_if(
+            !$icon,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
         
         return $user->group->name == '运营';
         

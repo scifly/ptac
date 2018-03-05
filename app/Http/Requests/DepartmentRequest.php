@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Models\DepartmentType;
 use Illuminate\Foundation\Http\FormRequest;
 
 class DepartmentRequest extends FormRequest {
@@ -31,5 +32,13 @@ class DepartmentRequest extends FormRequest {
         ];
 
     }
-
+    
+    protected function prepareForValidation() {
+        
+        $input = $this->all();
+        $input['department_type_id'] = DepartmentType::whereName('其他')->first()->id;
+        $this->replace($input);
+        
+    }
+    
 }

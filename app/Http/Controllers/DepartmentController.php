@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 use App\Helpers\HttpStatusCode;
 use App\Http\Requests\DepartmentRequest;
 use App\Models\Department;
-use App\Models\DepartmentType;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -36,7 +36,9 @@ class DepartmentController extends Controller {
     public function index() {
         
         if (Request::method() === 'POST') {
-            return response()->json($this->department->tree());
+            return response()->json(
+                $this->department->tree()
+            );
         }
 
         return $this->output();
@@ -52,9 +54,12 @@ class DepartmentController extends Controller {
      */
     public function create($id) {
         
+        $this->authorize(
+            'css', Department::class
+        );
+        
         return $this->output([
             'parentId' => $id,
-            'departmentTypeId' => DepartmentType::whereName('其他')->first()->id
         ]);
         
     }
@@ -85,7 +90,7 @@ class DepartmentController extends Controller {
     public function show($id) {
         
         $department = $this->department->find($id);
-        abort_if(!$department, HttpStatusCode::NOT_FOUND);
+        $this->authorize('seud', $department);
 
         return $this->output([
             'department' => $department,
@@ -103,8 +108,8 @@ class DepartmentController extends Controller {
     public function edit($id) {
         
         $department = $this->department->find($id);
-        abort_if(!$department, HttpStatusCode::NOT_FOUND);
-
+        $this->authorize('seud', $department);
+        
         return $this->output([
             'department' => $department,
         ]);
@@ -117,11 +122,12 @@ class DepartmentController extends Controller {
      * @param DepartmentRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(DepartmentRequest $request, $id) {
         
         $department = $this->department->find($id);
-        abort_if(!$department, HttpStatusCode::NOT_FOUND);
+        $this->authorize('seud', $department);
 
         return $this->result(
             $department->modify($request->all(), $id, true)
@@ -140,8 +146,8 @@ class DepartmentController extends Controller {
     public function destroy($id) {
         
         $department = $this->department->find($id);
-        abort_if(!$department, HttpStatusCode::NOT_FOUND);
-
+        $this->authorize('seud', $department);
+        
         return $this->result($department->remove($id));
         
     }
@@ -157,7 +163,10 @@ class DepartmentController extends Controller {
         
         $department = $this->department->find($id);
         $parentDepartment = $this->department->find($parentId);
-        abort_if(!$department || !$parentDepartment, HttpStatusCode::NOT_FOUND);
+        abort_if(
+            !$department || !$parentDepartment,
+            HttpStatusCode::NOT_FOUND
+        );
         if ($department->movable($id, $parentId)) {
             return $this->result(
                 $department->move($id, $parentId, true)
@@ -170,9 +179,11 @@ class DepartmentController extends Controller {
     
     /**
      * 保存部门的排列顺序
+     * @throws AuthorizationException
      */
     public function sort() {
         
+        $this->authorize('css', Department::class);
         $orders = Request::get('data');
         foreach ($orders as $id => $order) {
             $department = $this->department->find($id);

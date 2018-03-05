@@ -41,7 +41,7 @@ class CorpPolicy {
         switch ($role) {
             case '运营': return true;
             case '企业':
-                # userCorp - the Corp to which user belongs
+                # userCorp - the Corp to which the user belongs
                 $userCorp = Corp::whereDepartmentId($user->topDeptId())->first();
                 return $userCorp->id == $corp->id;
             default: return false;

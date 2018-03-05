@@ -5,12 +5,12 @@ use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Models\ActionGroup;
 use App\Models\Corp;
+use App\Models\Grade;
 use App\Models\School;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Database\Eloquent\Model;
 
-class CommonPolicy {
+class GradePolicy {
     
     use HandlesAuthorization, ModelTrait;
     
@@ -19,15 +19,11 @@ class CommonPolicy {
      *
      * @return void
      */
-    public function __construct() { }
+    public function __construct() {
+        //
+    }
     
-    /**
-     * (c)reate
-     *
-     * @param User $user
-     * @return bool
-     */
-    public function c(User $user) {
+    public function cs(User $user) {
         
         $role = $user->group->name;
         switch ($role) {
@@ -46,39 +42,31 @@ class CommonPolicy {
                     && (ActionGroup::whereGroupId($user->group_id)->first() ? true : false);
         }
         
+        
     }
     
-    /**
-     * (r)ead, (u)pdate, (d)elete
-     *
-     * @param User $user
-     * @param Model $model
-     * @return bool
-     */
-    public function rud(User $user, Model $model) {
-        
+    public function eud(User $user, Grade $grade) {
+    
         abort_if(
-            !$model,
+            !$grade,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
         $role = $user->group->name;
-        $schoolId = $model->{'school_id'} ?? null;
         switch ($role) {
             case '运营': return true;
             case '企业':
                 $corp = Corp::whereDepartmentId($user->topDeptId())->first();
                 return in_array(
-                    $schoolId,
+                    $grade->school_id,
                     $corp->schools->pluck('id')->toArray()
                 );
-            case '学校':
-                return $schoolId == $this->schoolId();
             default:
-                return ($user->educator->school_id == $this->schoolId())
-                    && (ActionGroup::whereGroupId($user->group_id)->first() ? true : false);
+                return ($user->educator->school_id == $grade->school_id)
+                    && (ActionGroup::whereGroupId($user->group->id)->first() ? true : false)
+                    && (in_array($grade->id, $grade->gradeIds()));
         }
-        
+    
     }
     
 }

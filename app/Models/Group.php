@@ -55,35 +55,35 @@ class Group extends Model {
      *
      * @return HasMany
      */
-    public function users() { return $this->hasMany('App\Models\User'); }
+    function users() { return $this->hasMany('App\Models\User'); }
 
     /**
      * 返回指定角色所属的学校对象
      *
      * @return BelongsTo
      */
-    public function school() { return $this->belongsTo('App\Models\School'); }
+    function school() { return $this->belongsTo('App\Models\School'); }
     
     /**
      * 获取指定角色可以访问的菜单对象
      *
      * @return BelongsToMany
      */
-    public function menus() { return $this->belongsToMany('App\Models\Menu', 'groups_menus'); }
+    function menus() { return $this->belongsToMany('App\Models\Menu', 'groups_menus'); }
     
     /**
      * 获取指定角色可以访问的功能对象
      *
      * @return BelongsToMany
      */
-    public function actions() { return $this->belongsToMany('App\Models\Action', 'actions_groups'); }
+    function actions() { return $this->belongsToMany('App\Models\Action', 'actions_groups'); }
     
     /**
      * 获取指定角色可以访问的卡片对象
      *
      * @return BelongsToMany
      */
-    public function tabs() { return $this->belongsToMany('App\Models\Tab', 'groups_tabs'); }
+    function tabs() { return $this->belongsToMany('App\Models\Tab', 'groups_tabs'); }
     
     /**
      * 保存角色
@@ -93,7 +93,7 @@ class Group extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function store(array $data) {
+    function store(array $data) {
 
         try {
             DB::transaction(function () use ($data) {
@@ -131,7 +131,7 @@ class Group extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function modify(array $data, $id) {
+    function modify(array $data, $id) {
 
         $group = self::find($id);
         if (!$group) { return false; }
@@ -168,7 +168,7 @@ class Group extends Model {
      * @return bool
      * @throws Exception
      */
-    public function remove($id) {
+    function remove($id) {
 
         $group = self::find($id);
         if (!$group) { return false; }
@@ -182,7 +182,7 @@ class Group extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'Groups.id', 'dt' => 0],

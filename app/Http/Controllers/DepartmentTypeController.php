@@ -1,10 +1,11 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
+
 use App\Http\Requests\DepartmentTypeRequest;
 use App\Models\DepartmentType;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -52,18 +53,27 @@ class DepartmentTypeController extends Controller {
      */
     public function create() {
 
+        $this->authorize(
+            'cs', DepartmentType::class
+        );
+        
         return $this->output();
 
     }
-
+    
     /**
      * 保存部门类型
      *
      * @param DepartmentTypeRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(DepartmentTypeRequest $request) {
-
+    
+        $this->authorize(
+            'cs', DepartmentType::class
+        );
+        
         return $this->result(
             $this->dt->store($request->all())
         );
@@ -80,25 +90,26 @@ class DepartmentTypeController extends Controller {
     public function edit($id) {
 
         $dt = $this->dt->find($id);
-        abort_if(!$dt, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $dt);
 
         return $this->output([
             'departmentType' => $dt,
         ]);
 
     }
-
+    
     /**
      * 更新部门类型
      *
      * @param DepartmentTypeRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(DepartmentTypeRequest $request, $id) {
 
         $dt = $this->dt->find($id);
-        abort_if(!$dt, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $dt);
         
         return $this->result(
             $dt->modify($request->all(), $id)
@@ -116,7 +127,7 @@ class DepartmentTypeController extends Controller {
     public function destroy($id) {
 
         $dt = $this->dt->find($id);
-        abort_if(!$dt, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $dt);
         
         return $this->result(
             $dt->remove($id)

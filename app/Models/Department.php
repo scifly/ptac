@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Events\DepartmentCreated;
 use App\Events\DepartmentMoved;
 use App\Events\DepartmentUpdated;
+use App\Helpers\Constant;
+use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
@@ -63,63 +65,61 @@ class Department extends Model {
         'remark', 'order', 'enabled',
     ];
 
-    const ROLES = ['运营', '企业', '学校'];
-
     /**
      * 返回所属的部门类型对象
      *
      * @return BelongsTo
      */
-    public function departmentType() { return $this->belongsTo('App\Models\DepartmentType'); }
+    function departmentType() { return $this->belongsTo('App\Models\DepartmentType'); }
 
     /**
      * 返回对应的运营者对象
      *
      * @return HasOne
      */
-    public function company() { return $this->hasOne('App\Models\Company'); }
+    function company() { return $this->hasOne('App\Models\Company'); }
 
     /**
      * 返回对应的班级对象
      *
      * @return HasOne
      */
-    public function corp() { return $this->hasOne('App\Models\Corp'); }
+    function corp() { return $this->hasOne('App\Models\Corp'); }
 
     /**
      * 返回对应的学校对象
      *
      * @return HasOne
      */
-    public function school() { return $this->hasOne('App\Models\School'); }
+    function school() { return $this->hasOne('App\Models\School'); }
 
     /**
      * 返回对应的年级对象
      *
      * @return HasOne
      */
-    public function grade() { return $this->hasOne('App\Models\Grade'); }
+    function grade() { return $this->hasOne('App\Models\Grade'); }
 
     /**
      * 返回对应的班级对象
      *
      * @return HasOne
      */
-    public function squad() { return $this->hasOne('App\Models\Squad'); }
+    function squad() { return $this->hasOne('App\Models\Squad'); }
 
     /**
      * 获取指定部门包含的所有用户对象
      *
      * @return BelongsToMany
      */
-    public function users() { return $this->belongsToMany('App\Models\User', 'departments_users'); }
+    function users() { return $this->belongsToMany('App\Models\User', 'departments_users'); }
 
     /**
      * 返回上级部门对象
      *
      * @return BelongsTo
      */
-    public function parent() {
+    function parent() {
 
         return $this->belongsTo('App\Models\Department', 'parent_id');
 
@@ -130,7 +130,7 @@ class Department extends Model {
      *
      * @return HasMany
      */
-    public function children() {
+    function children() {
 
         return $this->hasMany('App\Models\Department', 'parent_id', 'id');
 
@@ -302,7 +302,7 @@ class Department extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    public function move($id, $parentId, $fireEvent = false) {
+    function move($id, $parentId, $fireEvent = false) {
 
         $deparment = self::find($id);
         if (!isset($deparment)) { return false; }
@@ -325,16 +325,16 @@ class Department extends Model {
      */
     function tree($rootId = null) {
 
-        $departments = self::nodes();
+        $departments = $this->nodes();
         if (isset($rootId)) {
-            $departments = self::nodes($rootId);
+            $departments = $this->nodes($rootId);
         } else {
             $user = Auth::user();
             if ($user->group->name != '运营') {
-                $departments = self::nodes($user->topDeptId());
+                $departments = $this->nodes($user->topDeptId());
             }
         }
-        $data = [];
+        $nodes = [];
         for ($i = 0; $i < sizeof($departments); $i++) {
             $parentId = $i == 0 ? '#' : $departments[$i]['parent_id'];
             $text = $departments[$i]['name'];
@@ -348,7 +348,7 @@ class Department extends Model {
                 case '班级': $type = 'class'; break;
                 default: $type = 'other'; break;
             }
-            $data[] = [
+            $nodes[] = [
                 'id' => $departments[$i]['id'],
                 'parent' => $parentId,
                 'text' => $text,
@@ -356,7 +356,7 @@ class Department extends Model {
             ];
         }
 
-        return ($data);
+        return $nodes;
 
     }
 
@@ -399,29 +399,29 @@ class Department extends Model {
     function showDepartments($ids) {
 
         $departments = self::whereIn('id', $ids)->get()->toArray();
-        $departmentParentIds = [];
+        $parentDepartmentIds = [];
         $departmentUsers = [];
-        foreach ($departments as $key => $department) {
-            $departmentParentIds[] = $department['id'];
+        foreach ($departments as $department) {
+            $parentDepartmentIds[] = $department->id;
         }
-        foreach ($departmentParentIds as $departmentId) {
-            $department = $this->find($departmentId);
+        foreach ($parentDepartmentIds as $id) {
+            $department = $this->find($id);
             foreach ($department->users as $user) {
                 $departmentUsers[] = [
-                    'id' => $departmentId . 'UserId_' . $user['id'],
-                    'parent' => $departmentId,
+                    'id' => $id . 'UserId_' . $user['id'],
+                    'parent' => $id,
                     'text' => $user['username'],
                     'icon' => 'fa fa-user',
                     'type' => 'user',
                 ];
             }
         }
-        $data = [];
+        $nodes = [];
         foreach ($departmentUsers as $departmentUser) {
-            $data[] = $departmentUser;
+            $nodes[] = $departmentUser;
         }
         foreach ($departments as $department) {
-            $parentId = isset($department['parent_id']) && in_array($department['parent_id'], $departmentParentIds)
+            $parentId = isset($department['parent_id']) && in_array($department['parent_id'], $parentDepartmentIds)
                 ? $department['parent_id'] : '#';
             $text = $department['name'];
             $departmentType = DepartmentType::find($department['department_type_id'])->name;
@@ -429,12 +429,12 @@ class Department extends Model {
                 case '根': $type = 'root'; $icon = 'fa fa-sitemap'; break;
                 case '运营': $type = 'company'; $icon = 'fa fa-building'; break;
                 case '企业': $type = 'corp'; $icon = 'fa fa-weixin'; break;
-                case '学校': $type = 'school'; $icon = 'fa fa-university'; break;
+                case '学校': $type = 'school'; $icon = 'fan fa-university'; break;
                 case '年级': $type = 'grade'; $icon = 'fa fa-object-group'; break;
                 case '班级': $type = 'class'; $icon = 'fa fa-users'; break;
                 default: $type = 'other'; $icon = 'fa fa-list'; break;
             }
-            $data[] = [
+            $nodes[] = [
                 'id' => $department['id'],
                 'parent' => $parentId,
                 'text' => $text,
@@ -443,7 +443,7 @@ class Department extends Model {
             ];
         }
 
-        return $data;
+        return $nodes;
 
     }
 
@@ -456,7 +456,14 @@ class Department extends Model {
      */
     function movable($id, $parentId) {
 
-        if (!isset($parentId)) { return false; }
+        if (!isset($id, $parentId)) { return false; }
+        $allowedDepartmentIds = $this->departmentIds(Auth::id());
+        # 如果部门(被移动的部门和目标部门）不在当前用户的可见范围内，则抛出401异常
+        abort_if(
+            !in_array($id, $allowedDepartmentIds) || !in_array($parentId, $allowedDepartmentIds),
+            HttpStatusCode::UNAUTHORIZED,
+            __('messages.forbidden')
+        );
         $type = self::find($id)->departmentType->name;
         $parentType = self::find($parentId)->departmentType->name;
         switch ($type) {
@@ -644,7 +651,7 @@ class Department extends Model {
         $role = $user->group->name;
         $departmentId = School::find($this->schoolId())->department_id;
         $contacts = [];
-        if (in_array($role, self::ROLES)) {
+        if (in_array($role, Constant::SUPER_ROLES)) {
             $tree = self::tree($departmentId);
             foreach ($tree as &$t) {
                 $t['seletable'] =1;
@@ -672,7 +679,6 @@ class Department extends Model {
             $belongedDeptIds = $user->departments
                 ->pluck('id')
                 ->toArray();
-
             for ($i = 0; $i < sizeof($nodes); $i++) {
                 $parentId = $i == 0 ? '#' : $nodes[$i]['parent_id'];
                 $type = $i == 0 ? '#' : 'dept';
@@ -716,7 +722,9 @@ class Department extends Model {
                 }
             }
             
-            return response()->json(array_merge($data, $contacts));
+            return response()->json(
+                array_merge($data, $contacts)
+            );
 
         }
         

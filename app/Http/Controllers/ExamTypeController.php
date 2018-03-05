@@ -51,7 +51,9 @@ class ExamTypeController extends Controller {
      */
     public function create() {
         
-        $this->authorize('c', ExamType::class);
+        $this->authorize(
+            'c', ExamType::class
+        );
         
         return $this->output();
         
@@ -66,7 +68,9 @@ class ExamTypeController extends Controller {
      */
     public function store(ExamTypeRequest $request) {
      
-        $this->authorize('c', ExamType::class);
+        $this->authorize(
+            'c', ExamType::class
+        );
         
         return $this->result(
             $this->et->store($request->all())
@@ -86,7 +90,9 @@ class ExamTypeController extends Controller {
         $et = ExamType::find($id);
         $this->authorize('rud', $et);
         
-        return $this->output(['et' => $et]);
+        return $this->output([
+            'et' => $et,
+        ]);
         
     }
     
@@ -121,7 +127,9 @@ class ExamTypeController extends Controller {
         $et = ExamType::find($id);
         $this->authorize('rud', $et);
         
-        return $this->result($et->remove($id));
+        return $this->result(
+            $et->remove($id)
+        );
         
     }
     
