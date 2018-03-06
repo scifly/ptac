@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Facades\Wechat;
+use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Http\Requests\WapSiteRequest;
 use App\Models\Media;
@@ -30,7 +31,7 @@ class WapSiteController extends Controller {
         $this->ws = $ws;
         $this->media = $media;
         $this->school = $school;
-
+        
     }
     
     /**
@@ -40,18 +41,18 @@ class WapSiteController extends Controller {
      * @throws Throwable
      */
     public function index() {
-
-        $ws = WapSite::whereSchoolId($this->school->getSchoolById()->id)
-            ->where('enabled', 1)->first();
+        
+        $ws = WapSite::whereSchoolId($this->school->schoolId())
+            ->where('enabled', Constant::ENABLED)->first();
         abort_if(!$ws, HttpStatusCode::NOT_FOUND);
         $mediaIds = explode(",", $ws->media_ids);
-    
+        
         return $this->output([
-            'ws' => $ws,
-            'medias'  => $this->media->medias($mediaIds),
-            'show'    => true,
+            'ws'     => $ws,
+            'medias' => $this->media->medias($mediaIds),
+            'show'   => true,
         ]);
-    
+        
     }
     
     /**
@@ -67,7 +68,7 @@ class WapSiteController extends Controller {
         return $this->result(
             $this->ws->store($request)
         );
-
+        
     }
     
     /**
@@ -78,13 +79,13 @@ class WapSiteController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-
+        
         $ws = WapSite::find($id);
         abort_if(!$ws, HttpStatusCode::NOT_FOUND);
         
         return $this->output([
-            'ws' => $ws,
-            'medias'  => $this->media->medias(explode(',',$ws->media_ids)),
+            'ws'     => $ws,
+            'medias' => $this->media->medias(explode(',', $ws->media_ids)),
         ]);
         
     }
@@ -106,7 +107,7 @@ class WapSiteController extends Controller {
         return $this->result(
             $ws->modify($request, $id)
         );
-
+        
     }
     
     /**
@@ -134,7 +135,6 @@ class WapSiteController extends Controller {
         
         $files = Request::file('img');
         abort_if(empty($files), HttpStatusCode::NOT_ACCEPTABLE, '您还未选择图片！');
-        
         $this->result['data'] = [];
         $mes = [];
         foreach ($files as $key => $file) {
@@ -147,8 +147,8 @@ class WapSiteController extends Controller {
             $path = '';
             foreach ($mes AS $m)
                 $path = dirname(public_path()) . '/' . $m['path'];
-                $data = ["media" => curl_file_create($path)];
-                Wechat::uploadMedia($token, 'image', $data);
+            $data = ["media" => curl_file_create($path)];
+            Wechat::uploadMedia($token, 'image', $data);
         }
         
         return response()->json($this->result);
@@ -195,6 +195,6 @@ class WapSiteController extends Controller {
         }
         
     }
-
+    
 }
 

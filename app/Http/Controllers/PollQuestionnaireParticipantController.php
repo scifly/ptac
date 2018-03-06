@@ -21,35 +21,29 @@ use Illuminate\View\View;
  */
 class PollQuestionnaireParticipantController extends Controller {
     
-    protected $pollQuestionnaires;
-    protected $pollQuestionnaireParticipant;
-    protected $pollQuestionnaireAnswer;
-    protected $pollQuestionnaireChoice;
-    protected $pollQuestionnaireSubject;
+    protected $pq, $pqp, $pqa, $pqc, $pqs;
     protected $user, $school, $tempChoice = [], $result = [], $count;
     
     function __construct(
-        PollQuestionnaire $pollQuestionnaires,
-        PollQuestionnaireAnswer $pollQuestionnaireAnswer,
-        PollQuestionnaireSubjectChoice $pollQuestionnaireChoice,
-        pollQuestionnaireSubject $pollQuestionnaireSubject,
-        PollQuestionnaireParticipant $pollQuestionnaireParticipant,
+        PollQuestionnaire $pq,
+        PollQuestionnaireAnswer $pqa,
+        PollQuestionnaireSubjectChoice $pqc,
+        pollQuestionnaireSubject $pqs,
+        PollQuestionnaireParticipant $pqp,
         User $user
     ) {
         
-        $this->middleware(['auth']);
+        $this->middleware(['auth', 'checkrole']);
         #投票问卷
-        $this->pollQuestionnaires = $pollQuestionnaires;
+        $this->pq = $pq;
         #投票问卷参与者
-        $this->pollQuestionnaireParticipant = $pollQuestionnaireParticipant;
+        $this->pqp = $pqp;
         #投票问卷列表
-        $this->pollQuestionnaireChoice = $pollQuestionnaireChoice;
+        $this->pqc = $pqc;
         #投票问卷选项
-        $this->pollQuestionnaireSubject = $pollQuestionnaireSubject;
+        $this->pqs = $pqs;
         #投票问卷参与者
-        $this->pollQuestionnaireAnswer = $pollQuestionnaireAnswer;
-        #用户
-        $this->user = $user;
+        $this->pqa = $pqa;
         
     }
     
@@ -61,7 +55,7 @@ class PollQuestionnaireParticipantController extends Controller {
     public function index() {
         
         #根据登录的角色ID筛选参与的调查问卷
-        $result = $this->pollQuestionnaires
+        $result = $this->pq
             ->join('poll_questionnaire_participants as A', 'poll_questionnaires.id', 'A.pq_id')
             #这里获取用户ID
             ->where('A.user_id', 1)
@@ -102,7 +96,7 @@ class PollQuestionnaireParticipantController extends Controller {
                     break;
             }
             #存储答案
-            $Answer = $this->pollQuestionnaireAnswer
+            $Answer = $this->pqa
                 ->where('pqs_id', $item->id)->first();
             #判断是否存在，如果存在
             $hasObject = true;
@@ -130,7 +124,7 @@ class PollQuestionnaireParticipantController extends Controller {
     public function show($id) {
         
         # 先获取投票问卷列
-        $this->pollQuestionnaireSubject
+        $this->pqs
             ->where('pq_id', $id)
             ->orderBy('id', 'asc')
             ->each(

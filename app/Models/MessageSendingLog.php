@@ -42,7 +42,7 @@ class MessageSendingLog extends Model {
      *
      * @return HasMany
      */
-    public function messages() { return $this->hasMany('App\Models\Message'); }
+    function messages() { return $this->hasMany('App\Models\Message'); }
     
     /**
      * 保存消息发送记录

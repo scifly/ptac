@@ -54,28 +54,28 @@ class Procedure extends Model {
      *
      * @return BelongsTo
      */
-    public function school() { return $this->belongsTo('App\Models\School'); }
+    function school() { return $this->belongsTo('App\Models\School'); }
 
     /**
      * 返回指定流程所属的流程类型对象
      *
      * @return BelongsTo
      */
-    public function procedureType() { return $this->belongsTo('App\Models\ProcedureType'); }
+    function procedureType() { return $this->belongsTo('App\Models\ProcedureType'); }
 
     /**
      * 获取指定审批流程包含的所有审批流程步骤对象
      *
      * @return HasMany
      */
-    public function procedureSteps() { return $this->hasMany('App\Models\ProcedureStep'); }
+    function procedureSteps() { return $this->hasMany('App\Models\ProcedureStep'); }
 
     /**
      * 获取指定审批流程包含的所有流程审批日志对象
      *
      * @return HasMany
      */
-    public function procedureLogs() { return $this->hasMany('App\Models\ProcedureLog'); }
+    function procedureLogs() { return $this->hasMany('App\Models\ProcedureLog'); }
 
     /**
      * 保存审批流程
@@ -83,9 +83,9 @@ class Procedure extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    function store(array $data) {
         
-        $procedure = self::create($data);
+        $procedure = $this->create($data);
 
         return $procedure ? true : false;
 
@@ -98,9 +98,9 @@ class Procedure extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    function modify(array $data, $id) {
         
-        $procedure = self::find($id);
+        $procedure = $this->find($id);
         if (!$procedure) { return false; }
 
         return $procedure->update($data) ? true : false;
@@ -114,12 +114,12 @@ class Procedure extends Model {
      * @return bool|null
      * @throws Exception
      */
-    public function remove($id) {
+    function remove($id) {
         
-        $procedure = self::find($id);
+        $procedure = $this->find($id);
         if (!$procedure) { return false; }
 
-        return self::removable($procedure) ? $procedure->delete() : false;
+        return $this->removable($procedure) ? $procedure->delete() : false;
 
     }
     
@@ -128,7 +128,7 @@ class Procedure extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'Procedures.id', 'dt' => 0],
@@ -163,9 +163,11 @@ class Procedure extends Model {
                 ],
             ],
         ];
+        $condition = 'School.id = ' . $this->schoolId();
 
-        // todo: 增加过滤条件
-        return Datatable::simple(self::getModel(), $columns, $joins);
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
         
     }
 

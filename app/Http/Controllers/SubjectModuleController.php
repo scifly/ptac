@@ -1,10 +1,10 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\SubjectModuleRequest;
 use App\Models\SubjectModule;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -21,7 +21,7 @@ class SubjectModuleController extends Controller {
     
     function __construct(SubjectModule $sm) {
     
-        $this->middleware(['auth']);
+        $this->middleware(['auth', 'checkrole']);
         $this->sm = $sm;
         
     }
@@ -52,6 +52,10 @@ class SubjectModuleController extends Controller {
      */
     public function create() {
         
+        $this->authorize(
+            'cs', SubjectModule::class
+        );
+        
         return $this->output();
         
     }
@@ -61,9 +65,13 @@ class SubjectModuleController extends Controller {
      *
      * @param SubjectModuleRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(SubjectModuleRequest $request) {
         
+        $this->authorize(
+            'cs', SubjectModule::class
+        );
         return $this->result(
             $this->sm->create($request->all())
         );
@@ -80,9 +88,11 @@ class SubjectModuleController extends Controller {
     public function edit($id) {
         
         $sm = $this->sm->find($id);
-        abort_if(!$sm, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $sm);
         
-        return $this->output(['sm' => $sm]);
+        return $this->output([
+            'sm' => $sm,
+        ]);
         
     }
     
@@ -92,11 +102,12 @@ class SubjectModuleController extends Controller {
      * @param SubjectModuleRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(SubjectModuleRequest $request, $id) {
-        
-        $sm = SubjectModule::find($id);
-        abort_if(!$sm, HttpStatusCode::NOT_FOUND);
+    
+        $sm = $this->sm->find($id);
+        $this->authorize('eud', $sm);
         
         return $this->result(
             $sm->update($request->all())
@@ -112,9 +123,9 @@ class SubjectModuleController extends Controller {
      * @throws Exception
      */
     public function destroy($id) {
-        
+    
         $sm = $this->sm->find($id);
-        abort_if(!$sm, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $sm);
         
         return $this->result(
             $sm->delete()

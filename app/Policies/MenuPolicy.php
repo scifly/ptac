@@ -3,15 +3,14 @@ namespace App\Policies;
 
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
-use App\Models\Corp;
+use App\Helpers\ModelTrait;
 use App\Models\Menu;
-use App\Models\School;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class MenuPolicy {
     
-    use HandlesAuthorization;
+    use HandlesAuthorization, ModelTrait;
     
     /**
      * Create a new policy instance.
@@ -22,12 +21,28 @@ class MenuPolicy {
         //
     }
     
-    public function cs(User $user) {
+    /**
+     * (c)reate, (s)tore, (s)ort
+     *
+     * @param User $user
+     * @return bool
+     */
+    public function css(User $user) {
     
-        return in_array($user->group->name, Constant::SUPER_ROLES);
+        return in_array(
+            $user->group->name,
+            Constant::SUPER_ROLES
+        );
         
     }
     
+    /**
+     * (e)dit, (u)pdate, (d)estroy
+     *
+     * @param User $user
+     * @param Menu $menu
+     * @return bool
+     */
     public function eudmr(User $user, Menu $menu) {
         
         abort_if(
@@ -36,19 +51,16 @@ class MenuPolicy {
             __('messages.not_found')
         );
         switch ($user->group->name) {
-            case '运营': return true;
+            case '运营':
+                return true;
             case '企业':
-                $corp = Corp::whereDepartmentId($user->topDeptId())->first();
-                $allowedMenuIds = $menu->subMenuIds($corp->menu_id);
-                return in_array($menu->id, $allowedMenuIds);
             case '学校':
-                $school = School::whereDepartmentId($user->topDeptId())->first();
-                $allowedMenuIds = $menu->subMenuIds($school->menu_id);
-                return in_array($menu->id, $allowedMenuIds);
-            default: return false;
+                return in_array($menu->id, $this->menuIds());
+            default:
+                # 校级以下角色没有管理菜单的权限
+                return false;
         }
         
     }
-    
     
 }

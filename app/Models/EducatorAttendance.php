@@ -48,14 +48,14 @@ class EducatorAttendance extends Model {
      *
      * @return BelongsTo
      */
-    public function educator() { return $this->belongsTo('App\Models\Educator'); }
+    function educator() { return $this->belongsTo('App\Models\Educator'); }
 
     /**
      * 获取对应的教职员工考勤设置对象
      *
      * @return BelongsTo
      */
-    public function educatorAttendanceSetting() {
+    function educatorAttendanceSetting() {
 
         return $this->belongsTo('App\Models\EducatorAttendanceSetting', 'eas_id');
 

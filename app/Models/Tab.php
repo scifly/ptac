@@ -240,7 +240,9 @@ class Tab extends Model {
             ],
         ];
         
-        return Datatable::simple(self::getModel(), $columns, $joins);
+        return Datatable::simple(
+            self::getModel(), $columns, $joins
+        );
 
     }
     

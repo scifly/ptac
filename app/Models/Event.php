@@ -71,21 +71,21 @@ class Event extends Model {
      *
      * @return BelongsTo
      */
-    public function user() { return $this->belongsTo('App\Models\User'); }
+    function user() { return $this->belongsTo('App\Models\User'); }
 
     /**
      * 返回课程表事件对应的教职员工对象
      *
      * @return BelongsTo
      */
-    public function educator() { return $this->belongsTo('App\Models\Educator'); }
+    function educator() { return $this->belongsTo('App\Models\Educator'); }
 
     /**
      * 返回课程表事件对应的科目对象
      *
      * @return BelongsTo
      */
-    public function subject() { return $this->belongsTo('App\Models\Subject'); }
+    function subject() { return $this->belongsTo('App\Models\Subject'); }
 
     function datatable() {
 
@@ -146,7 +146,7 @@ class Event extends Model {
      * @param $userId
      * @return JsonResponse
      */
-    public function showCalendar($userId) {
+    function showCalendar($userId) {
         
         //通过userId找出educator_id
         $educator = Educator::whereUserId($userId)->first();
@@ -187,7 +187,7 @@ class Event extends Model {
      * @param $user
      * @return bool
      */
-    public function getRole($user) {
+    function getRole($user) {
         $role = $user->group->name;
         if ($role == '运营' || $role == '企业' || $role == '学校'){
             return true;
@@ -206,7 +206,7 @@ class Event extends Model {
      * @param $id
      * @return bool
      */
-    public function isValidateTime($userId, $educator_id, $start, $end, $id = null) {
+    function isValidateTime($userId, $educator_id, $start, $end, $id = null) {
         
         if (!$this->getRole($userId)) {
             return $this->isRepeatTimeUser($userId, $start, $end, $id);
@@ -227,7 +227,7 @@ class Event extends Model {
      * @param null $id
      * @return bool
      */
-    public function isRepeatTimeUser($userId, $start, $end, $id = null) {
+    function isRepeatTimeUser($userId, $start, $end, $id = null) {
         
         //通过userId 找到educator_id
         $educator = Educator::whereUserId($userId)->first();
@@ -295,7 +295,7 @@ class Event extends Model {
      * @param null $id
      * @return bool
      */
-    public function isRepeatTimeAdmin($educatorId, $start, $end, $id = null) {
+    function isRepeatTimeAdmin($educatorId, $start, $end, $id = null) {
         
         $event = $this
             ->where('id', '<>', $id)
@@ -341,7 +341,7 @@ class Event extends Model {
      * @param $minute
      * @return int
      */
-    public function timeDiff($day, $hour, $minute) {
+    function timeDiff($day, $hour, $minute) {
         
         $days = $day * 24 * 60 * 60;
         $hours = $hour * 60 * 60;

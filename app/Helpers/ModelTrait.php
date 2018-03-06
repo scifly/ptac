@@ -2,6 +2,7 @@
 namespace App\Helpers;
 
 use App\Models\Action;
+use App\Models\Corp;
 use App\Models\Department;
 use App\Models\DepartmentUser;
 use App\Models\Menu;
@@ -91,7 +92,92 @@ trait ModelTrait {
     }
     
     /**
-     * 获取对当前用户可见的联系人id
+     * 返回对指定用户可见的所有学校Id
+     *
+     * @return array
+     */
+    function schoolIds() {
+        
+        $user = Auth::user();
+        $role = $user->group->name;
+        switch ($role) {
+            case '运营':
+                return School::all()->pluck('id')->toArray();
+            case '企业':
+                $corp = Corp::whereDepartmentId($user->topDeptId())->first();
+                return $corp->schools->pluck('id')->toArray();
+            case '学校':
+                return [School::whereDepartmentId($user->topDeptId())->first()->id];
+            default:
+                return [$user->educator->school_id];
+        }
+        
+    }
+    
+    /**
+     * 返回对当前用户可见的所有年级Id
+     *
+     * @return array
+     */
+    function gradeIds() {
+        
+        $user = Auth::user();
+        $role = $user->group->name;
+        if (in_array($role, Constant::SUPER_ROLES)) {
+            $schoolId = $this->schoolId();
+            $gradeIds = School::find($schoolId)->grades->pluck('id')->toArray();
+        } else {
+            $departmentIds = $this->departmentIds($user->id);
+            $gradeIds = [];
+            foreach ($departmentIds as $id) {
+                $department = Department::find($id);
+                if ($department->departmentType->name == '年级') {
+                    $gradeIds[] = $department->grade->id;
+                }
+            }
+        }
+        
+        return empty($gradeIds) ? [0] : $gradeIds;
+        
+    }
+    
+    /**
+     * 获取对当前用户可见的所有班级Id
+     *
+     * @return array
+     */
+    function classIds() {
+        
+        $user = Auth::user();
+        $role = $user->group->name;
+        if (in_array($role, Constant::SUPER_ROLES)) {
+            $schoolId = $this->schoolId();
+            $grades = School::find($schoolId)->grades;
+            $classIds = [];
+            foreach ($grades as $grade) {
+                $classes = $grade->classes;
+                foreach ($classes as $class) {
+                    $classIds[] = $class->id;
+                }
+            }
+        } else {
+            $departmentIds = $this->departmentIds($user->id);
+            $classIds = [];
+            
+            foreach ($departmentIds as $id) {
+                $department = Department::find($id);
+                if ($department->departmentType->name == '班级') {
+                    $classIds[] = $department->squad->id;
+                }
+            }
+        }
+        
+        return empty($classIds) ? [0] : $classIds;
+        
+    }
+    
+    /**
+     * 获取对当前用户可见的、指定学校的联系人id
      *
      * @param string $type - 联系人类型: custodian, student, educator
      * @return array
@@ -104,7 +190,7 @@ trait ModelTrait {
         if (method_exists($this, $method)) {
             if (in_array($role, Constant::SUPER_ROLES)) {
                 $contactIds = $this->$method(
-                    School::find($schoolId = $this->schoolId())->department_id
+                    School::find($this->schoolId())->department_id
                 );
             } else {
                 $departments = $user->departments;
@@ -211,7 +297,37 @@ trait ModelTrait {
         return array_unique($departmentIds);
         
     }
-    
+
+    /**
+     * 返回指定用户可管理的所有菜单id（校级以下角色没有管理菜单的权限）
+     *
+     * @return array
+     */
+    function menuIds() {
+        
+        $user = Auth::user();
+        $role = $user->group->name;
+        switch ($role) {
+            case '运营':
+                return Menu::all()->pluck('id')->toArray();
+            case '企业':
+                $corp = Corp::whereDepartmentId($user->topDeptId())->first();
+                $menu = new Menu();
+                $menuIds = $menu->subMenuIds($corp->menu_id);
+                unset($menu);
+                return $menuIds;
+            case '学校':
+                $school = School::whereDepartmentId($user->topDeptId())->first();
+                $menu = new Menu();
+                $menuIds = $menu->subMenuIds($school->menu_id);
+                unset($menu);
+                return $menuIds;
+            default:
+                return [];
+                
+        }
+        
+    }
     
     /**
      * 获取指定部门的联系人Id
@@ -234,7 +350,6 @@ trait ModelTrait {
         return $ids;
         
     }
-    
 
 }
 

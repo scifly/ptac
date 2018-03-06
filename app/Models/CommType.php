@@ -38,14 +38,14 @@ class CommType extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function messages() { return $this->hasMany('App\Models\Message'); }
+    function messages() { return $this->hasMany('App\Models\Message'); }
     
     /**
      * 通信方式列表
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'CommType.id', 'dt' => 0],

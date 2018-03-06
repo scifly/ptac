@@ -112,56 +112,56 @@ class User extends Authenticatable {
      *
      * @return BelongsTo
      */
-    public function group() { return $this->belongsTo('App\Models\Group'); }
+    function group() { return $this->belongsTo('App\Models\Group'); }
 
     /**
      * 获取指定用户对应的监护人对象
      *
      * @return HasOne
      */
-    public function custodian() { return $this->hasOne('App\Models\Custodian'); }
+    function custodian() { return $this->hasOne('App\Models\Custodian'); }
 
     /**
      * 获取指定用户对应的教职员工对象
      *
      * @return HasOne
      */
-    public function educator() { return $this->hasOne('App\Models\Educator'); }
+    function educator() { return $this->hasOne('App\Models\Educator'); }
 
     /**
      * 获取指定用户对应的学生对象
      *
      * @return HasOne
      */
-    public function student() { return $this->hasOne('App\Models\Student'); }
+    function student() { return $this->hasOne('App\Models\Student'); }
 
     /**
      * 获取指定用户对应的管理/操作员对象
      *
      * @return HasOne
      */
-    public function operator() { return $this->hasOne('App\Models\Operator'); }
+    function operator() { return $this->hasOne('App\Models\Operator'); }
 
     /**
      * 获取指定用户的所有订单对象
      *
      * @return HasMany
      */
-    public function orders() { return $this->hasMany('App\Models\Order'); }
+    function orders() { return $this->hasMany('App\Models\Order'); }
 
     /**
      * 获取指定用户的所有手机号码对象
      *
      * @return HasMany
      */
-    public function mobiles() { return $this->hasMany('App\Models\Mobile'); }
+    function mobiles() { return $this->hasMany('App\Models\Mobile'); }
 
     /**
      * 获取指定用户所属的所有部门对象
      *
      * @return BelongsToMany
      */
-    public function departments() {
+    function departments() {
         
         return $this->belongsToMany('App\Models\Department', 'departments_users');
     
@@ -172,7 +172,7 @@ class User extends Authenticatable {
      *
      * @return HasMany
      */
-    public function pollQuestionnaires() {
+    function pollQuestionnaires() {
         
         return $this->hasMany('App\Models\PollQuestionnaire');
     
@@ -183,7 +183,7 @@ class User extends Authenticatable {
      *
      * @return HasMany
      */
-    public function pollQuestionnaireAnswers() {
+    function pollQuestionnaireAnswers() {
         
         return $this->hasMany('App\Models\PollQuestionnaireAnswer');
     
@@ -194,7 +194,7 @@ class User extends Authenticatable {
      *
      * @return HasMany
      */
-    public function pollQuestionnairePartcipants() {
+    function pollQuestionnairePartcipants() {
         
         return $this->hasMany('App\Models\PollQuestionnaireParticipant');
     
@@ -205,7 +205,7 @@ class User extends Authenticatable {
      *
      * @return HasMany
      */
-    public function messages() { return $this->hasMany('App\Models\Message'); }
+    function messages() { return $this->hasMany('App\Models\Message'); }
 
     /**
      * 返回用户列表(id, name)
@@ -330,7 +330,7 @@ class User extends Authenticatable {
      * @param bool $fireEvent
      * @return bool
      */
-    public function modify(array $data, $id, $fireEvent = false) {
+    function modify(array $data, $id, $fireEvent = false) {
 
         $user = self::find($id);
         $user->username=$data["username"];

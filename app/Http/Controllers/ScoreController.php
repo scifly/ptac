@@ -397,6 +397,7 @@ class ScoreController extends Controller {
      * @return JsonResponse|string
      */
     public function clastudents($suquad_id) {
+        
         $squad = Squad::whereId($suquad_id)->first();
         $students = [];
         if ($squad) {

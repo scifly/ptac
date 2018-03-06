@@ -47,36 +47,6 @@ class TabController extends Controller {
     }
     
     /**
-     * 创建卡片
-     *
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function create() {
-        
-        return $this->output([
-            'menus' => $this->menu->leaves(1)
-        ]);
-        
-    }
-    
-    /**
-     * 保存卡片
-     *
-     * @param TabRequest $request
-     * @return JsonResponse
-     * @throws Exception
-     * @throws Throwable
-     */
-    public function store(TabRequest $request) {
-        
-        return $this->result(
-            $this->tab->store($request->all())
-        );
-        
-    }
-    
-    /**
      * 编辑卡片
      *
      * @param $id
@@ -86,7 +56,7 @@ class TabController extends Controller {
     public function edit($id) {
         
         $tab = Tab::find($id);
-        abort_if(!$tab, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eu', $tab);
         $tabMenus = $tab->menus;
         $selectedMenus = [];
         foreach ($tabMenus as $menu) {
@@ -110,31 +80,12 @@ class TabController extends Controller {
      * @throws Throwable
      */
     public function update(TabRequest $request, $id) {
-        
+    
         $tab = Tab::find($id);
-        abort_if(!$tab, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eu', $tab);
         
         return $this->result(
             $this->tab->modify($request->all(), $id)
-        );
-        
-    }
-    
-    /**
-     * 删除卡片
-     *
-     * @param $id
-     * @return JsonResponse
-     * @throws Exception
-     * @throws Throwable
-     */
-    public function destroy($id) {
-        
-        $tab = Tab::find($id);
-        abort_if(!$tab, HttpStatusCode::NOT_FOUND);
-        
-        return $this->result(
-            $this->tab->remove($id)
         );
         
     }

@@ -4,8 +4,6 @@ namespace App\Policies;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Models\ActionGroup;
-use App\Models\Corp;
-use App\Models\School;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Database\Eloquent\Model;
@@ -31,18 +29,13 @@ class CommonPolicy {
         
         $role = $user->group->name;
         switch ($role) {
-            case '运营': return true;
+            case '运营':
+                return true;
             case '企业':
-                $corp = Corp::whereDepartmentId($user->topDeptId())->first();
-                return in_array(
-                    $this->schoolId(),
-                    $corp->schools->pluck('id')->toArray()
-                );
             case '学校':
-                $school = School::whereDepartmentId($user->topDeptId())->first();
-                return $this->schoolId() == $school->id;
+                return in_array($this->schoolId(), $this->schoolIds());
             default:
-                return ($user->educator->school_id == $this->schoolId())
+                return in_array($this->schoolId(), $this->schoolIds())
                     && (ActionGroup::whereGroupId($user->group_id)->first() ? true : false);
         }
         
@@ -65,15 +58,10 @@ class CommonPolicy {
         $role = $user->group->name;
         $schoolId = $model->{'school_id'} ?? null;
         switch ($role) {
-            case '运营': return true;
+            case '运营':
             case '企业':
-                $corp = Corp::whereDepartmentId($user->topDeptId())->first();
-                return in_array(
-                    $schoolId,
-                    $corp->schools->pluck('id')->toArray()
-                );
             case '学校':
-                return $schoolId == $this->schoolId();
+                return in_array($schoolId, $this->schoolIds());
             default:
                 return ($user->educator->school_id == $this->schoolId())
                     && (ActionGroup::whereGroupId($user->group_id)->first() ? true : false);

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Constant;
 use App\Helpers\Snippet;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\PollQuestionnaireSubject 调查问卷题目
@@ -46,12 +48,24 @@ class PollQuestionnaireSubject extends Model {
 
     protected $table = 'poll_questionnaire_subjects';
 
-    protected $fillable = ['subject', 'pq_id', 'subject_type', 'created_at', 'updated_at'];
+    protected $fillable = [
+        'subject', 'pq_id', 'subject_type',
+        'created_at', 'updated_at'
+    ];
+    
+    const SINGLE = 0;
+    const MULTIPLE = 1;
+    const FILLBLANK = 2;
+    const SUBJECT_TYPES = [
+        self::SINGLE => '单选',
+        self::MULTIPLE => '多选',
+        self::FILLBLANK => '填空'
+    ];
 
     /**
      * @return HasOne
      */
-    public function pollQuestionnaireAnswer() {
+    function pollQuestionnaireAnswer() {
         
         return $this->hasOne('App\Models\PollQuestionnaireAnswer', 'pqs_id', 'id');
         
@@ -60,7 +74,7 @@ class PollQuestionnaireSubject extends Model {
     /**
      * @return HasMany
      */
-    public function pollQuestionnaireSubjectChoice() {
+    function pollQuestionnaireSubjectChoice() {
         
         return $this->hasMany("App\Models\PollQuestionnaireSubjectChoice", 'pqs_id', 'id');
         
@@ -84,10 +98,10 @@ class PollQuestionnaireSubject extends Model {
      */
     function remove($id) {
 
-        $pqSubject = self::find($id);
+        $pqSubject = $this->find($id);
         if (!$pqSubject) { return false; }
         
-        return self::removable($pqSubject) ? $pqSubject->delete() : false;
+        return $this->removable($pqSubject) ? $pqSubject->delete() : false;
 
     }
     
@@ -96,7 +110,7 @@ class PollQuestionnaireSubject extends Model {
      *
      * @return array
      */
-    function dataTable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'PollQuestionnaireSubject.id', 'dt' => 0],
@@ -105,17 +119,16 @@ class PollQuestionnaireSubject extends Model {
             [
                 'db' => 'PollQuestionnaireSubject.subject_type', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return self::subjectType($d);
+                    return self::SUBJECT_TYPES[$d];
                 },
             ],
             [
                 'db' => 'PollQuestionnaireSubject.id as subject_id', 'dt' => 4,
                 'formatter' => function ($d) {
-                    $showLink = sprintf(Snippet::DT_LINK_SHOW, 'show_' . $d);
                     $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $d);
                     $delLink = sprintf(Snippet::DT_LINK_DEL, $d);
-                    return $showLink . Snippet::DT_SPACE .
-                        $editLink . Snippet::DT_SPACE . $delLink;
+                    return ($this::uris()['edit'] ? $editLink : '')
+                        . ($this::uris()['destroy'] ? Snippet::DT_SPACE . $delLink : '');
                 },
             ],
         ];
@@ -128,27 +141,24 @@ class PollQuestionnaireSubject extends Model {
                     'PollQuestionnaire.id = PollQuestionnaireSubject.pq_id',
                 ],
             ],
+            [
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'INNER',
+                'conditions' => [
+                    'School.id = PollQuestionnaire.school_id',
+                ],
+            ],
         ];
-        // todo: 根据学校和角色进行过滤
-
-        return Datatable::simple(self::getModel(), $columns, $joins);
-
-    }
-    
-    /**
-     * 获取问题类型
-     *
-     * @param $type
-     * @return string
-     */
-    private function subjectType($type) {
-
-        switch ($type) {
-            case 0: return '单选';
-            case 1: return '多选';
-            case 2: return '填空';
-            default: return '错误';
+        $condition = 'School.id = ' . $this->schoolId();
+        $user = Auth::user();
+        if (!in_array($user->group->name, Constant::SUPER_ROLES)) {
+            $condition .= ' AND PollQuestionnaire.user_id = ' . $user->id;
         }
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
 
     }
     

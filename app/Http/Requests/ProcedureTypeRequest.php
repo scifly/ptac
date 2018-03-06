@@ -2,6 +2,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class ProcedureTypeRequest extends FormRequest {
     
@@ -10,7 +11,11 @@ class ProcedureTypeRequest extends FormRequest {
      *
      * @return bool
      */
-    public function authorize() { return true; }
+    public function authorize() {
+        
+        return Auth::user()->group->name == '运营';
+        
+    }
     
     /**
      * Get the validation rules that apply to the request.
@@ -18,12 +23,14 @@ class ProcedureTypeRequest extends FormRequest {
      * @return array
      */
     public function rules() {
+        
         return [
             'name'    => 'required|string|max:60|unique:procedure_types,name,' .
                 $this->input('id') . ',id',
             'remark'  => 'required|string|max:255',
             'enabled' => 'required|boolean',
         ];
+        
     }
     
 }

@@ -70,21 +70,21 @@ class ConferenceQueue extends Model {
      *
      * @return BelongsTo
      */
-    public function conferenceRoom() { return $this->belongsTo('App\Models\ConferenceRoom'); }
+    function conferenceRoom() { return $this->belongsTo('App\Models\ConferenceRoom'); }
 
     /**
      * 获取参与指定会议的所有教职员工对象
      *
      * @return HasMany
      */
-    public function conferenceParticipants() { return $this->hasMany('App\Models\ConferenceParticipant'); }
+    function conferenceParticipants() { return $this->hasMany('App\Models\ConferenceParticipant'); }
 
     /**
      * 获取会议发起者的用户对象
      *
      * @return BelongsTo
      */
-    public function user() { return $this->belongsTo('App\Models\User'); }
+    function user() { return $this->belongsTo('App\Models\User'); }
 
     /**
      * 保存会议
@@ -92,7 +92,7 @@ class ConferenceQueue extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    function store(array $data) {
 
         $cq = self::create($data);
         
@@ -107,7 +107,7 @@ class ConferenceQueue extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    function modify(array $data, $id) {
 
         $cq = self::find($id);
         if (!$cq) {return false;}
@@ -123,7 +123,7 @@ class ConferenceQueue extends Model {
      * @return bool
      * @throws Exception
      */
-    public function remove($id) {
+    function remove($id) {
 
         $cq = self::find($id);
         if (!$cq) { return false; }
@@ -137,7 +137,7 @@ class ConferenceQueue extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'ConferenceQueue.id', 'dt' => 0],

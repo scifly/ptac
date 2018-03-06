@@ -101,36 +101,10 @@ class Grade extends Model {
      *
      * @return Collection
      */
-    function grades() {
+    function gradeList() {
         
-        return self::whereSchoolId($this->schoolId())->get()->pluck('name', 'id');
-        
-    }
-    
-    /**
-     * 返回对当前用户可见的所有年级Id
-     *
-     * @return array
-     */
-    function gradeIds() {
-    
-        $user = Auth::user();
-        $role = $user->group->name;
-        if (in_array($role, Constant::SUPER_ROLES)) {
-            $schoolId = $this->schoolId();
-            $gradeIds = School::find($schoolId)->grades->pluck('id')->toArray();
-        } else {
-            $departmentIds = $this->departmentIds($user->id);
-            $gradeIds = [];
-            foreach ($departmentIds as $id) {
-                $department = Department::find($id);
-                if ($department->departmentType->name == '年级') {
-                    $gradeIds[] = $department->grade->id;
-                }
-            }
-        }
-    
-        return empty($gradeIds) ? [0] : $gradeIds;
+        return self::whereIn('id', $this->gradeIds())
+            ->get()->pluck('name', 'id');
         
     }
     

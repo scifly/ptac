@@ -41,7 +41,7 @@ class DepartmentType extends Model {
      *
      * @return HasMany
      */
-    public function departments() { return $this->hasMany('App\Models\Department'); }
+    function departments() { return $this->hasMany('App\Models\Department'); }
 
     /**
      * 创建部门类型
@@ -49,7 +49,7 @@ class DepartmentType extends Model {
      * @param array $data
      * @return $this|Model
      */
-    public function store(array $data) {
+    function store(array $data) {
 
         return self::create($data);
 
@@ -62,7 +62,7 @@ class DepartmentType extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    function modify(array $data, $id) {
 
         return self::find($id)->update($data);
 
@@ -75,7 +75,7 @@ class DepartmentType extends Model {
      * @return bool|null
      * @throws Exception
      */
-    public function remove($id) {
+    function remove($id) {
 
         $dt = self::find($id);
         if (!$dt) { return false; }
@@ -90,7 +90,7 @@ class DepartmentType extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'DepartmentType.id', 'dt' => 0],

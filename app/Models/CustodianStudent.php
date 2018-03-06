@@ -45,7 +45,7 @@ class CustodianStudent extends Model {
      * 
      * @return BelongsTo
      */
-    public function custodian() { return $this->belongsTo('App\Models\Custodian'); }
+    function custodian() { return $this->belongsTo('App\Models\Custodian'); }
     
     /**
      * 返回所属的学生对象

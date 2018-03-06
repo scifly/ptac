@@ -88,14 +88,11 @@ Route::group(['prefix' => 'scores'], function () {
     Route::post('send_message', $c . '@send_message');
     Route::get('listdatas/{examId}', $c . '@listdatas');
     Route::get('clastudents/{classId}', $c . '@clastudents');
-    
 });
 Route::group(['prefix' => 'score_totals'], function () {
     $c = 'ScoreTotalController';
     Route::get('index', $c . '@index');
-    Route::get('show/{id}', $c . '@show');
-    Route::delete('delete/{id}', $c . '@destroy');
-    // Route::get('statistics/{examId}', $c . '@statistics');
+    Route::get('stat/{examId}', $c . '@stat');
 });
 Route::group(['prefix' => 'score_ranges'], routes('ScoreRangeController'));
 Route::group(['prefix' => 'score_ranges'], function () {
@@ -227,10 +224,6 @@ Route::group(['prefix' => 'combo_types'], routes('ComboTypeController'));
 /** 系统设置 */
 // 学校设置 - 学校管理.学期设置.教职员工组别设置.学校类型设置
 Route::group(['prefix' => 'schools'], routes('SchoolController'));
-Route::group(['prefix' => 'schools'], function (){
-    $ctrl = 'SchoolController';
-    Route::get('showInfo', $ctrl . '@showInfo');
-});
 Route::group(['prefix' => 'semesters'], routes('SemesterController'));
 Route::group(['prefix' => 'teams'], routes('TeamController'));
 Route::group(['prefix' => 'school_types'], routes('SchoolTypeController'));

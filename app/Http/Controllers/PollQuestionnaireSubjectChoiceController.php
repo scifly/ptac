@@ -1,16 +1,16 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\PqChoiceRequest;
 use App\Models\PollQuestionnaireSubjectChoice;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
- * 题目选项
+ * 调查问卷题目选项
  *
  * Class PqChoiceController
  * @package App\Http\Controllers
@@ -47,10 +47,14 @@ class PollQuestionnaireSubjectChoiceController extends Controller {
     /**
      * 创建选项
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
      * @throws \Throwable
      */
     public function create() {
+        
+        $this->authorize(
+            'cs', PollQuestionnaireSubjectChoice::class
+        );
         
         return $this->output();
         
@@ -60,10 +64,15 @@ class PollQuestionnaireSubjectChoiceController extends Controller {
      * 保存选项
      *
      * @param PqChoiceRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(PqChoiceRequest $request) {
-        
+    
+        $this->authorize(
+            'cs', PollQuestionnaireSubjectChoice::class
+        );
+    
         return $this->result(
             $this->pqsc->create($request->all())
         );
@@ -71,33 +80,15 @@ class PollQuestionnaireSubjectChoiceController extends Controller {
     }
     
     /**
-     * 选项详情
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
-     * @throws \Throwable
-     */
-    public function show($id) {
-        
-        $pqsc = $this->pqsc->find($id);
-        abort_if(!$pqsc, HttpStatusCode::NOT_FOUND);
-        
-        return $this->output([
-            'pqsc' => $pqsc,
-        ]);
-        
-    }
-    
-    /**
      * 编辑选项
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
      * @throws \Throwable
      */
     public function edit($id) {
         
         $pqsc = $this->pqsc->find($id);
-        abort_if(!$pqsc, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $pqsc);
         
         return $this->output([
             'pqsc' => $pqsc,
@@ -110,12 +101,13 @@ class PollQuestionnaireSubjectChoiceController extends Controller {
      *
      * @param PqChoiceRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(PqChoiceRequest $request, $id) {
     
         $pqsc = $this->pqsc->find($id);
-        abort_if(!$pqsc, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $pqsc);
     
         return $this->result(
             $pqsc->update($request->all())
@@ -127,13 +119,13 @@ class PollQuestionnaireSubjectChoiceController extends Controller {
      * 删除选项
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      * @throws Exception
      */
     public function destroy($id) {
         
         $pqsc = $this->pqsc->find($id);
-        abort_if(!$pqsc, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $pqsc);
         
         return $this->result(
             $pqsc->delete()

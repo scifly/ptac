@@ -1,10 +1,10 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\PqSubjectRequest;
 use App\Models\PollQuestionnaireSubject;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -36,7 +36,7 @@ class PollQuestionnaireSubjectController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->pqs->dataTable()
+                $this->pqs->datatable()
             );
         }
         
@@ -52,6 +52,10 @@ class PollQuestionnaireSubjectController extends Controller {
      */
     public function create() {
         
+        $this->authorize(
+            'cs', PollQuestionnaireSubject::class
+        );
+        
         return $this->output();
         
     }
@@ -61,30 +65,17 @@ class PollQuestionnaireSubjectController extends Controller {
      *
      * @param PqSubjectRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(PqSubjectRequest $request) {
-        
+    
+        $this->authorize(
+            'cs', PollQuestionnaireSubject::class
+        );
+    
         return $this->result(
             $this->pqs->create($request->all())
         );
-        
-    }
-    
-    /**
-     * 题目详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function show($id) {
-        
-        $pqs = $this->pqs->find($id);
-        abort_if(!$pqs, HttpStatusCode::NOT_FOUND);
-        
-        return $this->output([
-            'pqs' => $pqs,
-        ]);
         
     }
     
@@ -97,7 +88,7 @@ class PollQuestionnaireSubjectController extends Controller {
     public function edit($id) {
         
         $pqs = $this->pqs->find($id);
-        abort_if(!$pqs, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $pqs);
         
         return $this->output([
             'pqs' => $pqs
@@ -111,11 +102,12 @@ class PollQuestionnaireSubjectController extends Controller {
      * @param PqSubjectRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(PqSubjectRequest $request, $id) {
     
         $pqs = $this->pqs->find($id);
-        abort_if(!$pqs, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $pqs);
     
         return $this->result(
             $pqs->update($request->all())
@@ -133,7 +125,7 @@ class PollQuestionnaireSubjectController extends Controller {
     public function destroy($id) {
         
         $pqs = $this->pqs->find($id);
-        abort_if(!$pqs, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $pqs);
         
         return $this->result(
             $pqs->remove($id)

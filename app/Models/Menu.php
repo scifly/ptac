@@ -8,6 +8,7 @@ use App\Events\MenuMoved;
 use App\Events\MenuUpdated;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
+use App\Helpers\ModelTrait;
 use App\Http\Requests\MenuRequest;
 use App\Models\MenuTab as MenuTab;
 use Carbon\Carbon;
@@ -62,10 +63,11 @@ use Throwable;
  * @method static Builder|Menu whereUpdatedAt($value)
  * @method static Builder|Menu whereUri($value)
  * @mixin Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\GroupMenu[] $groupMenus
+ * @property-read Collection|GroupMenu[] $groupMenus
  */
 class Menu extends Model {
 
+    use ModelTrait;
     // todo: needs to be optimized
 
     protected $fillable = [
@@ -539,25 +541,15 @@ class Menu extends Model {
         $user = Auth::user();
         $role = $user->group->name;
         if ($role != '运营') {
-            $abort = true;
-            switch ($role) {
-                case '企业':
-                    $corp = Corp::whereDepartmentId($user->topDeptId())->first();
-                    $allowedMenuIds = $this->subMenuIds($corp->menu_id);
-                    $abort = !in_array($id, $allowedMenuIds) || !in_array($parentId, $allowedMenuIds);
-                    break;
-                case '学校':
-                    $school = School::whereDepartmentId($user->topDeptId())->first();
-                    $allowedMenuIds = $this->subMenuIds($school->menu_id);
-                    $abort = !in_array($id, $allowedMenuIds) || !in_array($parentId, $allowedMenuIds);
-                    break;
-                default:
-                    break;
-            }
-            abort_if($abort, HttpStatusCode::UNAUTHORIZED, __('messages.forbidden'));
+            $menuIds = $this->menuIds();
+            abort_if(
+                !in_array($id, $menuIds) || !in_array($parentId, $menuIds),
+                HttpStatusCode::UNAUTHORIZED,
+                __('messages.forbidden')
+            );
         }
-        $type = self::find($id)->menuType->name;
-        $parentType = self::find($parentId)->menuType->name;
+        $type = $this->find($id)->menuType->name;
+        $parentType = $this->find($parentId)->menuType->name;
         switch ($type) {
             case '运营': return $parentType == '根';
             case '企业': return $parentType == '运营';

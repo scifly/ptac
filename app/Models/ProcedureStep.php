@@ -54,7 +54,7 @@ class ProcedureStep extends Model {
      *
      * @return BelongsTo
      */
-    public function procedure() { return $this->belongsTo('App\Models\Procedure'); }
+    function procedure() { return $this->belongsTo('App\Models\Procedure'); }
 
     /**
      * 保存审批流程步骤

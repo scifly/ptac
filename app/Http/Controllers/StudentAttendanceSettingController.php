@@ -1,10 +1,10 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\StudentAttendanceSettingRequest;
 use App\Models\StudentAttendanceSetting;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -52,6 +52,10 @@ class StudentAttendanceSettingController extends Controller {
      */
     public function create() {
         
+        $this->authorize(
+            'cs', StudentAttendanceSetting::class
+        );
+        
         return $this->output();
         
     }
@@ -61,8 +65,13 @@ class StudentAttendanceSettingController extends Controller {
      *
      * @param StudentAttendanceSettingRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(StudentAttendanceSettingRequest $request) {
+    
+        $this->authorize(
+            'cs', StudentAttendanceSetting::class
+        );
         
         return $this->result(
             $this->sas->create($request->all())
@@ -80,7 +89,7 @@ class StudentAttendanceSettingController extends Controller {
     public function edit($id) {
         
         $sas = $this->sas->find($id);
-        abort_if(!$sas, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $sas);
         
         return $this->output([
             'sas' => $sas,
@@ -94,11 +103,12 @@ class StudentAttendanceSettingController extends Controller {
      * @param StudentAttendanceSettingRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(StudentAttendanceSettingRequest $request, $id) {
         
         $sas = $this->sas->find($id);
-        abort_if(!$sas, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $sas);
         
         return $this->result(
             $sas->update($request->all())
@@ -116,7 +126,7 @@ class StudentAttendanceSettingController extends Controller {
     public function destroy($id) {
         
         $sas = $this->sas->find($id);
-        abort_if(!$sas, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $sas);
         
         return $this->result(
             $sas->delete()

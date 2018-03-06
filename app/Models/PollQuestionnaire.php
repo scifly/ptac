@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Exception;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\PollQuestionnaire 调查问卷
@@ -47,28 +48,31 @@ class PollQuestionnaire extends Model {
 
     protected $table = 'poll_questionnaires';
 
-    protected $fillable = ['school_id', 'user_id', 'name', 'start', 'end', 'enabled'];
+    protected $fillable = [
+        'school_id', 'user_id', 'name',
+        'start', 'end', 'enabled'
+    ];
 
     /**
      * 返回指定调查问卷所属的学校对象
      *
      * @return BelongsTo
      */
-    public function school() { return $this->belongsTo('App\Models\School'); }
+    function school() { return $this->belongsTo('App\Models\School'); }
 
     /**
      * 返回调查问卷发起者的用户对象
      *
      * @return BelongsTo
      */
-    public function user() { return $this->belongsTo('App\Models\User'); }
+    function user() { return $this->belongsTo('App\Models\User'); }
 
     /**
      * 返回指定调查问卷包含的调查问卷答案对象
      * 
      * @return HasOne
      */
-    public function poll_questionnaire_answer() {
+    function poll_questionnaire_answer() {
         
         return $this->hasOne('App\Models\PollQuestionnaireAnswer', 'pq_id');
         
@@ -79,7 +83,7 @@ class PollQuestionnaire extends Model {
      * 
      * @return HasOne
      */
-    public function poll_questionnaire_partcipant() {
+    function poll_questionnaire_partcipant() {
         
         return $this->hasOne('App\Models\PollQuestionnaireParticipant', 'pq_id');
         
@@ -88,7 +92,7 @@ class PollQuestionnaire extends Model {
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function poll_questionnaire_subject() {
+    function poll_questionnaire_subject() {
         
         return $this->hasMany('App\Models\PollQuestionnaireSubject', 'pq_id');
         
@@ -100,9 +104,9 @@ class PollQuestionnaire extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    function store(array $data) {
         
-        $pq = self::create($data);
+        $pq = $this->create($data);
         
         return $pq ? true : false;
         
@@ -115,12 +119,12 @@ class PollQuestionnaire extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    function modify(array $data, $id) {
         
-        $pq = self::find($id);
+        $pq = $this->find($id);
         if (!$pq) { return false; }
         
-        return self::update($data) ? true : false;
+        return $this->update($data) ? true : false;
         
     }
     
@@ -131,12 +135,12 @@ class PollQuestionnaire extends Model {
      * @return bool|null
      * @throws Exception
      */
-    public function remove($id) {
+    function remove($id) {
         
-        $pq = self::find($id);
+        $pq = $this->find($id);
         if (!$pq) { return false; }
 
-        return self::removable($pq) ? $pq->delete() : false;
+        return $this->removable($pq) ? $pq->delete() : false;
 
     }
     
@@ -145,7 +149,7 @@ class PollQuestionnaire extends Model {
      *
      * @return array
      */
-    public function dataTable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'PollQuestionnaire.id', 'dt' => 0],
@@ -181,8 +185,15 @@ class PollQuestionnaire extends Model {
                 ],
             ],
         ];
-        // todo: 根据学校和角色进行过滤
-        return Datatable::simple(self::getModel(), $columns, $joins);
+        $condition = 'School.id = ' . $this->schoolId();
+        $user = Auth::user();
+        if (!in_array($user->group->name, Constant::SUPER_ROLES)) {
+            $condition .= ' AND PollQuestionnaire.user_id = ' . $user->id;
+        }        
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
         
     }
     

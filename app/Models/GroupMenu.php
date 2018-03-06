@@ -38,7 +38,7 @@ class GroupMenu extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function menu() { return $this->belongsTo('App\Models\Menu'); }
+    function menu() { return $this->belongsTo('App\Models\Menu'); }
 
     /**
      * 根据角色id保存所有菜单id

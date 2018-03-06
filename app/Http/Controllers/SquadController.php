@@ -1,11 +1,11 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\SquadRequest;
 use App\Models\Educator;
 use App\Models\Squad;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -54,6 +54,9 @@ class SquadController extends Controller {
      */
     public function create() {
         
+        $this->authorize(
+            'cs', Squad::class
+        );
         return $this->output();
         
     }
@@ -63,11 +66,18 @@ class SquadController extends Controller {
      *
      * @param SquadRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(SquadRequest $request) {
+    
+        $this->authorize(
+            'cs', Squad::class
+        );
         
         return $this->result(
-            $this->class->store($request->all(), true)
+            $this->class->store(
+                $request->all(), true
+            )
         );
         
     }
@@ -82,7 +92,7 @@ class SquadController extends Controller {
     public function edit($id) {
         
         $class = Squad::find($id);
-        abort_if(!$class, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $class);
         $selectedEducators = [];
         if ($class->educator_ids != '0') {
             $selectedEducators = $this->educator->educatorList(
@@ -103,11 +113,12 @@ class SquadController extends Controller {
      * @param SquadRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(SquadRequest $request, $id) {
         
         $class = Squad::find($id);
-        abort_if(!$class, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $class);
         
         return $this->result(
             $this->class->modify($request->all(), $id, true)
@@ -125,7 +136,7 @@ class SquadController extends Controller {
     public function destroy($id) {
         
         $class = Squad::find($id);
-        abort_if(!$class, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $class);
         
         return $this->result(
             $class->remove($id, true)

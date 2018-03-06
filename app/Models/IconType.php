@@ -40,7 +40,7 @@ class IconType extends Model {
      *
      * @return HasMany
      */
-    public function icons() { return $this->hasMany('App\Models\Icon'); }
+    function icons() { return $this->hasMany('App\Models\Icon'); }
 
     /**
      * 保存图标类型
@@ -48,7 +48,7 @@ class IconType extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    function store(array $data) {
 
         $iconType = self::create($data);
 
@@ -63,7 +63,7 @@ class IconType extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    function modify(array $data, $id) {
 
         $iconType = self::find($id);
         if (!$iconType) { return false; }
@@ -79,7 +79,7 @@ class IconType extends Model {
      * @return bool|null
      * @throws Exception
      */
-    public function remove($id) {
+    function remove($id) {
 
         $iconType = self::find($id);
         if (!$iconType) { return false; }
@@ -93,7 +93,7 @@ class IconType extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'IconType.id', 'dt' => 0],

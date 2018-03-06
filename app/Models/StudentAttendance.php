@@ -59,22 +59,22 @@ class StudentAttendance extends Model {
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function attendanceMachine() { return $this->belongsTo('App\Models\AttendanceMachine'); }
+    function attendanceMachine() { return $this->belongsTo('App\Models\AttendanceMachine'); }
     
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function student() { return $this->belongsTo('App\Models\Student'); }
+    function student() { return $this->belongsTo('App\Models\Student'); }
     
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function medias() { return $this->belongsTo('App\Models\Media'); }
+    function medias() { return $this->belongsTo('App\Models\Media'); }
     
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function studentAttendancesetting() { return $this->belongsTo('App\Models\StudentAttendanceSetting', 'sas_id', 'id'); }
+    function studentAttendancesetting() { return $this->belongsTo('App\Models\StudentAttendanceSetting', 'sas_id', 'id'); }
     
     /**
      * 学生考勤记录列表
@@ -153,7 +153,7 @@ class StudentAttendance extends Model {
      * @param null $days
      * @return array
      */
-    public function getData($classId = null, $startTime = null, $endTime = null, $days = null) {
+    function getData($classId = null, $startTime = null, $endTime = null, $days = null) {
         if (!$classId) { $classId = $this->getClass(); }
         if (!$startTime) { $startTime = date('Y-m-d',strtotime('-7 day')); }
         if (!$endTime) { $endTime = date('Y-m-d'); }
@@ -201,7 +201,7 @@ class StudentAttendance extends Model {
         return $item;
     }
     
-    public function getStudentData($date , $type, $classId) {
+    function getStudentData($date , $type, $classId) {
         
         $startTime = date('Y-m-d H:i:s', strtotime($date));
         $endTime = date('Y-m-d H:i:s', strtotime($date)+24*3600-1);

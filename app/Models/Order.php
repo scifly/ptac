@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -37,6 +38,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read User $user
  */
 class Order extends Model {
+    
+    use ModelTrait;
 
     protected $table = 'orders';
 
@@ -51,21 +54,21 @@ class Order extends Model {
      *
      * @return BelongsTo
      */
-    public function user() { return $this->belongsTo('App\Models\User'); }
+    function user() { return $this->belongsTo('App\Models\User'); }
 
     /**
      * 返回指定订单所属的套餐类型对象
      *
      * @return BelongsTo
      */
-    public function comboType() { return $this->belongsTo('App\models\ComboType'); }
+    function comboType() { return $this->belongsTo('App\models\ComboType'); }
 
     /**
      * 订单列表
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'Orders.id', 'dt' => 0],
@@ -100,10 +103,19 @@ class Order extends Model {
                     'ComboType.id = Orders.combo_type_id',
                 ],
             ],
+            [
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'INNER',
+                'conditions' => [
+                    'School.id = ComboType.school_id'
+                ]
+            ]
         ];
 
-        // todo: 根据角色和学校进行过滤
-        return Datatable::simple($this, $columns, $joins);
+        $condition = 'School.id = ' . $this->schoolId();
+        
+        return Datatable::simple($this, $columns, $joins, $condition);
 
     }
 

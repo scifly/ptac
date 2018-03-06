@@ -52,7 +52,9 @@ class TeamController extends Controller {
      */
     public function create() {
         
-        $this->authorize('c', Team::class);
+        $this->authorize(
+            'c', Team::class
+        );
         
         return $this->output();
         
@@ -67,7 +69,9 @@ class TeamController extends Controller {
      */
     public function store(TeamRequest $request) {
         
-        $this->authorize('c', Team::class);
+        $this->authorize(
+            'c', Team::class
+        );
         
         return $this->result(
             $this->team->create($request->all())

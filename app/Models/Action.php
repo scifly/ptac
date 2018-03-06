@@ -197,7 +197,7 @@ class Action extends Model {
      * @throws Exception
      * @throws Throwable
      */
-    public function scan() {
+    function scan() {
 
         $this->routes = Route::getRoutes()->getRoutes();
         $controllers = self::scanDirectories(self::getSiteRoot() . self::CONTROLLER_DIR);

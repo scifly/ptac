@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\StudentAttendanceSetting 学生考勤设置
@@ -59,14 +61,14 @@ class StudentAttendanceSetting extends Model {
      *
      * @return BelongsTo
      */
-    public function grade() { return $this->belongsTo('App\Models\Grade'); }
+    function grade() { return $this->belongsTo('App\Models\Grade'); }
     
     /**
      * 返回指定学生考勤设置所属的学期对象
      *
      * @return BelongsTo
      */
-    public function semester() {
+    function semester() {
         
         return $this->belongsTo('App\Models\Semester', 'semester_id', 'id');
         
@@ -75,7 +77,7 @@ class StudentAttendanceSetting extends Model {
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function studentAttendance() {
+    function studentAttendance() {
         
         return $this->hasOne('App\Models\StudentAttendance', 'id', 'sas_id');
         
@@ -134,6 +136,10 @@ class StudentAttendanceSetting extends Model {
             ],
         ];
         $condition = 'Semester.school_id = ' . $this->schoolId();
+        $user = Auth::user();
+        if (!in_array($user->group->name, Constant::SUPER_ROLES)) {
+            $condition .= ' AND StudentAttendanceSetting.grade_id IN (' . implode(',', $this->gradeIds()) . ')';
+        }
         
         return Datatable::simple(self::getModel(), $columns, $joins, $condition);
 

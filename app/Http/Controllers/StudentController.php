@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Http\Requests\StudentRequest;
 use App\Models\Department;
@@ -9,6 +10,7 @@ use App\Models\School;
 use App\Models\Squad;
 use App\Models\Student;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
@@ -61,19 +63,21 @@ class StudentController extends Controller {
      */
     public function create() {
         
-        $groupId = Auth::user()->group->id;
+        $this->authorize(
+            'csie', Student::class
+        );
+        $user = Auth::user();
         if (Request::method() === 'POST') {
             $field = Request::query('field');
             $id = Request::query('id');
             if ($field && $id) {
-                if ($groupId > 5) {
-                    $educatorId = Auth::user()->educator->id;
+                if (!in_array($user->group->name, Constant::SUPER_ROLES)) {
+                    $educatorId = $user->educator->id;
                     $gradeClass = $this->student->getGrade($educatorId)[1];
                     $this->result['html'] = $this->school->getFieldList($field, $id, $gradeClass);
                 } else {
                     $this->result['html'] = $this->school->getFieldList($field, $id);
                 }
-                
                 return response()->json($this->result);
             } else {
                 return response()->json($this->department->tree());
@@ -97,7 +101,11 @@ class StudentController extends Controller {
      * @throws Throwable
      */
     public function store(StudentRequest $request) {
-        
+    
+        $this->authorize(
+            'csie', Student::class
+        );
+    
         return $this->result(
             $this->student->store($request)
         );
@@ -114,7 +122,7 @@ class StudentController extends Controller {
     public function show($id) {
         
         $student = Student::find($id);
-        abort_if(!$student, HttpStatusCode::NOT_FOUND);
+        $this->authorize('seud', $student);
         
         return $this->output([
             'student' => $student,
@@ -131,6 +139,8 @@ class StudentController extends Controller {
      */
     public function edit($id) {
         
+        $student = $this->student->find($id);
+        $this->authorize('seud', $student);
         $users = Auth::user();
         $groupId = Auth::user()->group->id;
         if (Request::method() === 'POST') {
@@ -192,9 +202,12 @@ class StudentController extends Controller {
      * @throws Throwable
      */
     public function update(StudentRequest $request, $id) {
+    
+        $student = $this->student->find($id);
+        $this->authorize('seud', $student);
         
         return $this->result(
-            $this->student->modify($request, $id)
+            $student->modify($request, $id)
         );
         
     }
@@ -208,12 +221,12 @@ class StudentController extends Controller {
      * @throws Throwable
      */
     public function destroy($id) {
-        
-        $student = Student::find($id);
-        abort_if(!$student, HttpStatusCode::NOT_FOUND);
+    
+        $student = $this->student->find($id);
+        $this->authorize('seud', $student);
         
         return $this->result(
-            $this->student->remove($id)
+            $student->remove($id)
         );
         
     }
@@ -222,9 +235,14 @@ class StudentController extends Controller {
      * 导入学籍
      *
      * @throws PHPExcel_Exception
+     * @throws AuthorizationException
      */
     public function import() {
-        
+    
+        $this->authorize(
+            'csie', Student::class
+        );
+    
         if (Request::isMethod('post')) {
             $file = Request::file('file');
             abort_if(
@@ -248,9 +266,13 @@ class StudentController extends Controller {
      * 导出学籍
      *
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function export() {
-        
+    
+        $this->authorize(
+            'csie', Student::class
+        );
         if (Request::method() === 'POST') {
             $field = Request::query('field');
             $id = Request::query('id');

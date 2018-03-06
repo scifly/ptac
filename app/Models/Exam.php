@@ -192,11 +192,8 @@ class Exam extends Model {
             ],
         ];
         $condition = 'ExamType.school_id = ' . $this->schoolId();
-        $class = new Squad();
-        $allowedClassIds = $class->classIds();
-        unset($class);
         if (!in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
-            $condition .= ' AND class_ids IN (' . $this->implode(',', $allowedClassIds) . ')';
+            $condition .= ' AND class_ids IN (' . $this->implode(',', $this->classIds()) . ')';
         }
         
         return Datatable::simple(

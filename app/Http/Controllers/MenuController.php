@@ -8,6 +8,7 @@ use App\Models\MenuTab;
 use App\Models\MenuType;
 use App\Models\Tab;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -57,6 +58,10 @@ class MenuController extends Controller {
      */
     public function create($id) {
 
+        $this->authorize(
+            'css', Menu::class
+        );
+        
         return $this->output([
             'parentId'   => $id,
             'menuTypeId' => MenuType::whereName('其他')->first()->id,
@@ -74,6 +79,10 @@ class MenuController extends Controller {
      */
     public function store(MenuRequest $request) {
 
+        $this->authorize(
+            'css', Menu::class
+        );
+        
         return $this->result(
             $this->menu->store($request)
         );
@@ -90,7 +99,7 @@ class MenuController extends Controller {
     public function edit($id) {
 
         $menu = $this->menu->find($id);
-        abort_if(!$menu, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eudmr', $menu);
         # 获取已选定的卡片
         $menuTabs = $menu->tabs;
         $selectedTabs = [];
@@ -117,7 +126,9 @@ class MenuController extends Controller {
     public function update(MenuRequest $request, $id) {
 
         $menu = $this->menu->find($id);
-        abort_if(!$menu, HttpStatusCode::NOT_FOUND);
+        $this->authorize(
+            'eudmr', $menu
+        );
 
         return $this->result(
             $menu->modify($request, $id)
@@ -134,16 +145,20 @@ class MenuController extends Controller {
      */
     public function move($id, $parentId = null) {
 
-        $menu = $this->menu->find($id);
-        $parentMenu = $this->menu->find($parentId);
-        abort_if(!$menu || !$parentMenu, HttpStatusCode::NOT_FOUND);
+        abort_if(
+            !$this->menu->find($id) || !$this->menu->find($parentId),
+            HttpStatusCode::NOT_FOUND
+        );
         if ($this->menu->movable($id, $parentId)) {
             return $this->result(
                 $$this->menu->move($id, $parentId, true)
             );
         }
 
-        return abort(HttpStatusCode::NOT_ACCEPTABLE, '非法操作');
+        return abort(
+            HttpStatusCode::NOT_ACCEPTABLE,
+            '非法操作'
+        );
 
     }
     
@@ -158,17 +173,24 @@ class MenuController extends Controller {
     public function destroy($id) {
 
         $menu = $this->menu->find($id);
-        abort_if(!$menu, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eudmr', $menu);
 
         return $this->result(
             $menu->remove($id)
         );
 
     }
-
-    /** 保存菜单排列顺序 */
+    
+    /**
+     * 保存菜单排列顺序
+     *
+     * @throws AuthorizationException
+     */
     public function sort() {
 
+        $this->authorize(
+            'css', Menu::class
+        );
         $positions = Request::get('data');
         foreach ($positions as $id => $pos) {
             $menu = $this->menu->find($id);
@@ -190,7 +212,7 @@ class MenuController extends Controller {
     public function menuTabs($id) {
 
         $menu = $this->menu->find($id);
-        abort_if(!$menu, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eudmr', $menu);
         $tabRanks = MenuTab::whereMenuId($id)
             ->get()
             ->sortBy('tab_order')
@@ -217,7 +239,8 @@ class MenuController extends Controller {
      */
     public function rankTabs($id) {
 
-        abort_if(!$this->menu->find($id), HttpStatusCode::NOT_FOUND);
+        $menu = $this->menu->find($id);
+        $this->authorize('eudmr', $menu);
         $ranks = Request::get('data');
 
         return $this->result(

@@ -1,10 +1,10 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\SchoolTypeRequest;
 use App\Models\SchoolType;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -47,10 +47,14 @@ class SchoolTypeController extends Controller {
     /**
      * 创建学校类型
      *
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
      * @throws Throwable
      */
     public function create() {
+        
+        $this->authorize(
+            'cs', SchoolType::class
+        );
         
         return $this->output();
         
@@ -59,11 +63,16 @@ class SchoolTypeController extends Controller {
     /**
      * 保存学校类型
      *
-     * @param SchoolTypeRequest|\Illuminate\Http\Request $request
+     * @param SchoolTypeRequest $request
      * @return JsonResponse|string
+     * @throws AuthorizationException
      */
     public function store(SchoolTypeRequest $request) {
-        
+    
+        $this->authorize(
+            'cs', SchoolType::class
+        );
+    
         return $this->result(
             $this->st->store($request->all())
         );
@@ -74,15 +83,17 @@ class SchoolTypeController extends Controller {
      * 编辑学校类型
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse
+     * @return bool|JsonResponse
      * @throws Throwable
      */
     public function edit($id) {
         
         $st = SchoolType::find($id);
-        abort_if(!$st, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $st);
         
-        return $this->output(['st' => $st]);
+        return $this->output([
+            'st' => $st,
+        ]);
         
     }
     
@@ -91,12 +102,13 @@ class SchoolTypeController extends Controller {
      *
      * @param SchoolTypeRequest $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(SchoolTypeRequest $request, $id) {
         
         $st = SchoolType::find($id);
-        abort_if(!$st, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $st);
         
         return $this->result(
             $st->modify($request->all(), $id)
@@ -108,13 +120,13 @@ class SchoolTypeController extends Controller {
      * 删除学校类型
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      * @throws Exception
      */
     public function destroy($id) {
         
         $st = SchoolType::find($id);
-        abort_if(!$st, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $st);
         
         return $this->result(
             $st->remove($id)

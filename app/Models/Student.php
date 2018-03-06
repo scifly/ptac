@@ -152,7 +152,7 @@ class Student extends Model {
                 ]);
                 $student = $request->all();
                 # 向student表添加数据
-                self::create([
+                $this->create([
                     'user_id'        => $u->id,
                     'class_id'       => $student['class_id'],
                     'student_number' => $student['student_number'],
@@ -177,7 +177,7 @@ class Student extends Model {
                 $school = School::find($this->schoolId());
                 $grade = Grade::find($student['grade_id']);
                 $class = Squad::find($student['class_id']);
-                $deptId = self::deptId($school->name, $grade->name, $class->name);
+                $deptId = $this->deptId($school->name, $grade->name, $class->name);
                 $departmentUser = [
                     'department_id' => $deptId,
                     'user_id'       => $u->id,
@@ -185,39 +185,13 @@ class Student extends Model {
                 ];
                 DepartmentUser::create($departmentUser);
                 # 创建企业号成员
-                $this->user->createWechatUser($u->id);
+                $u->createWechatUser($u->id);
             });
         } catch (Exception $e) {
             throw $e;
         }
         
         return true;
-        
-    }
-    
-    /**
-     * 返回年级和班级列表
-     *
-     * @param int $gradeId
-     * @return array
-     */
-    function gcList($gradeId = 0): array {
-        
-        $grades = Grade::whereEnabled(1)
-            ->where('school_id', $this->schoolId())
-            ->pluck('name', 'id')
-            ->toArray();
-        if (empty($grades)) {
-            $classes = [];
-        } else {
-            $gradeId = $gradeId == 0 ? array_keys($grades)[0] : $gradeId;
-            $classes = Squad::whereEnabled(1)
-                ->where('grade_id', $gradeId)
-                ->pluck('name', 'id')
-                ->toArray();
-        }
-        
-        return [$grades, $classes];
         
     }
     
@@ -231,7 +205,7 @@ class Student extends Model {
      */
     function modify(StudentRequest $request, $id) {
         
-        $student = self::find($id);
+        $student = $this->find($id);
         if (!isset($student)) { return false; }
         try {
             DB::transaction(function () use ($request, $id, $student) {
@@ -279,7 +253,7 @@ class Student extends Model {
                 $school = School::find($this->schoolId());
                 $grade = Grade::find($studentData['grade_id']);
                 $class = Squad::find($studentData['class_id']);
-                $deptId = self::deptId($school->name, $grade->name, $class->name);
+                $deptId = $this->deptId($school->name, $grade->name, $class->name);
                 $departmentUser = [
                     'department_id' => $deptId,
                     'user_id'       => $userId,
@@ -296,7 +270,7 @@ class Student extends Model {
         return true;
         
     }
-    
+
     /**
      * 删除指定的学生记录
      *
@@ -307,7 +281,7 @@ class Student extends Model {
      */
     function remove($studentId) {
         
-        $student = self::find($studentId);
+        $student = $this->find($studentId);
         #if (!isset($custodian)) { return false; }
         try {
             DB::transaction(function () use ($studentId, $student) {
@@ -343,7 +317,7 @@ class Student extends Model {
      * @return array
      * @throws PHPExcel_Exception
      */
-    public function upload(UploadedFile $file) {
+    function upload(UploadedFile $file) {
         
         $ext = $file->getClientOriginalExtension();     // 扩展名//xls
         $realPath = $file->getRealPath();   //临时文件的绝对路径
@@ -365,7 +339,7 @@ class Student extends Model {
             $sheet = $reader->getExcel()->getSheet(0);
             $students = $sheet->toArray();
             abort_if(
-                self::checkFileFormat($students[0]),
+                $this->checkFileFormat($students[0]),
                 HttpStatusCode::NOT_ACCEPTABLE,
                 '文件格式错误'
             );
@@ -378,7 +352,7 @@ class Student extends Model {
                         unset($students[$key]);
                     }
                 }
-                self::checkData($students);
+                $this->checkData($students);
             }
             $data['user'] = Auth::user();
             $data['type'] = 'student';
@@ -401,7 +375,7 @@ class Student extends Model {
      */
     function export($classId) {
         
-        $students = self::whereClassId($classId)->get();
+        $students = $this->whereClassId($classId)->get();
         $data = [self::EXCEL_EXPORT_TITLE];
         foreach ($students as $student) {
             if (!empty($student)) {
@@ -431,88 +405,6 @@ class Student extends Model {
         }
         
         return $data;
-        
-    }
-    
-    /**
-     * 学生列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'Student.id', 'dt' => 0],
-            ['db' => 'User.realname as realname', 'dt' => 1],
-            [
-                'db'        => 'User.gender as gender', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return $d == 1 ? Constant::MALE : Constant::FEMALE;
-                },
-            ],
-            [
-                'db'        => 'Squad.name as classname', 'dt' => 3,
-                'formatter' => function ($d) {
-                    return '<i class="fa fa-users"></i>&nbsp;' . $d;
-                },
-            ],
-            ['db' => 'Student.student_number', 'dt' => 4],
-            ['db' => 'Student.card_number', 'dt' => 5],
-            [
-                'db'        => 'Student.oncampus', 'dt' => 6,
-                'formatter' => function ($d) {
-                    return $d == 1 ? '是' : '否';
-                },
-            ],
-            [
-                'db'        => 'Student.id as mobile', 'dt' => 7,
-                'formatter' => function ($d) {
-                    $student = self::find($d);
-                    $mobiles = $student->user->mobiles;
-                    $mobile = [];
-                    foreach ($mobiles as $key => $value) {
-                        $mobile[] = $value->mobile;
-                    }
-                    
-                    return implode(',', $mobile);
-                },
-            ],
-            [
-                'db'        => 'Student.birthday', 'dt' => 8,
-                'formatter' => function ($d) {
-                    return $d ? substr($d, 0, 10) : '';
-                },
-            ],
-            ['db' => 'Student.created_at', 'dt' => 9],
-            ['db' => 'Student.updated_at', 'dt' => 10],
-            [
-                'db'        => 'Student.enabled', 'dt' => 11,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row);
-                },
-            ],
-        ];
-        $joins = [
-            [
-                'table'      => 'users',
-                'alias'      => 'User',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'User.id = Student.user_id',
-                ],
-            ],
-            [
-                'table'      => 'classes',
-                'alias'      => 'Squad',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'Squad.id = Student.class_id',
-                ],
-            ]
-        ];
-        $condition = 'Student.id In (' . implode(',', $this->contactIds('student')) . ')';
-        
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
         
     }
     
@@ -581,6 +473,116 @@ class Student extends Model {
         
     }
     
+    /**
+     * 返回年级和班级列表
+     *
+     * @param int $gradeId
+     * @return array
+     */
+    function gcList($gradeId = 0): array {
+        
+        $grades = Grade::whereEnabled(1)
+            ->where('school_id', $this->schoolId())
+            ->pluck('name', 'id')
+            ->toArray();
+        if (empty($grades)) {
+            $classes = [];
+        } else {
+            $gradeId = $gradeId == 0 ? array_keys($grades)[0] : $gradeId;
+            $classes = Squad::whereEnabled(1)
+                ->where('grade_id', $gradeId)
+                ->pluck('name', 'id')
+                ->toArray();
+        }
+        
+        return [$grades, $classes];
+        
+    }
+    
+    /**
+     * 学生列表
+     *
+     * @return array
+     */
+    function datatable() {
+        
+        $columns = [
+            ['db' => 'Student.id', 'dt' => 0],
+            ['db' => 'User.realname as realname', 'dt' => 1],
+            [
+                'db'        => 'User.gender as gender', 'dt' => 2,
+                'formatter' => function ($d) {
+                    return $d == 1 ? Constant::MALE : Constant::FEMALE;
+                },
+            ],
+            [
+                'db'        => 'Squad.name as classname', 'dt' => 3,
+                'formatter' => function ($d) {
+                    return '<i class="fa fa-users"></i>&nbsp;' . $d;
+                },
+            ],
+            ['db' => 'Student.student_number', 'dt' => 4],
+            ['db' => 'Student.card_number', 'dt' => 5],
+            [
+                'db'        => 'Student.oncampus', 'dt' => 6,
+                'formatter' => function ($d) {
+                    return $d == 1 ? '是' : '否';
+                },
+            ],
+            [
+                'db'        => 'Student.id as mobile', 'dt' => 7,
+                'formatter' => function ($d) {
+                    $student = $this->find($d);
+                    $mobiles = $student->user->mobiles;
+                    $mobile = [];
+                    foreach ($mobiles as $key => $value) {
+                        $mobile[] = $value->mobile;
+                    }
+                    
+                    return implode(',', $mobile);
+                },
+            ],
+            [
+                'db'        => 'Student.birthday', 'dt' => 8,
+                'formatter' => function ($d) {
+                    return $d ? substr($d, 0, 10) : '';
+                },
+            ],
+            ['db' => 'Student.created_at', 'dt' => 9],
+            ['db' => 'Student.updated_at', 'dt' => 10],
+            [
+                'db'        => 'Student.enabled', 'dt' => 11,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row);
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'User.id = Student.user_id',
+                ],
+            ],
+            [
+                'table'      => 'classes',
+                'alias'      => 'Squad',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Squad.id = Student.class_id',
+                ],
+            ]
+        ];
+        $condition = 'Student.id In (' . implode(',', $this->contactIds('student')) . ')';
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
+        
+    }
+
     /**
      * 获取年级/班级的部门id
      *
@@ -706,7 +708,7 @@ class Student extends Model {
                 ->where('class_id', $class->id)
                 ->first();
             $user['class_id'] = $class->id;
-            $deptId = self::deptId($user['school'], $user['grade'], $user['class']);
+            $deptId = $this->deptId($user['school'], $user['grade'], $user['class']);
             $user['department_id'] = $deptId;
             # 学生数据已存在 更新操作
             if ($student) {

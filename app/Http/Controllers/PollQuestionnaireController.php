@@ -36,7 +36,7 @@ class PollQuestionnaireController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->pq->dataTable()
+                $this->pq->datatable()
             );
         }
         
@@ -53,7 +53,7 @@ class PollQuestionnaireController extends Controller {
     public function create() {
         
         $this->authorize(
-            'c', PollQuestionnaire::class
+            'cs', PollQuestionnaire::class
         );
         
         return $this->output();
@@ -70,7 +70,7 @@ class PollQuestionnaireController extends Controller {
     public function store(PqRequest $request) {
     
         $this->authorize(
-            'c', PollQuestionnaire::class
+            'cs', PollQuestionnaire::class
         );
         
         return $this->result(
@@ -89,7 +89,7 @@ class PollQuestionnaireController extends Controller {
     public function show($id) {
         
         $pq = PollQuestionnaire::find($id);
-        $this->authorize('rud', $pq);
+        $this->authorize('eud', $pq);
         
         return $this->output([
             'pq' => $pq,
@@ -106,9 +106,11 @@ class PollQuestionnaireController extends Controller {
     public function edit($id) {
         
         $pq = PollQuestionnaire::find($id);
-        $this->authorize('rud', $pq);
+        $this->authorize('eud', $pq);
         
-        return $this->output(['pq' => $pq]);
+        return $this->output([
+            'pq' => $pq,
+        ]);
         
     }
     
@@ -123,7 +125,7 @@ class PollQuestionnaireController extends Controller {
     public function update(PqRequest $request, $id) {
         
         $pq = PollQuestionnaire::find($id);
-        $this->authorize('rud', $pq);
+        $this->authorize('eud', $pq);
         
         return $this->result(
             $pq->modify($request->all(), $id)
@@ -141,9 +143,11 @@ class PollQuestionnaireController extends Controller {
     public function destroy($id) {
         
         $pq = PollQuestionnaire::find($id);
-        $this->authorize('rud', $pq);
+        $this->authorize('eud', $pq);
         
-        return $this->result($pq->remove($id));
+        return $this->result(
+            $pq->remove($id)
+        );
         
     }
     

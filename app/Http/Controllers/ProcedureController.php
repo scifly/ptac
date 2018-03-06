@@ -69,7 +69,9 @@ class ProcedureController extends Controller {
      */
     public function store(ProcedureRequest $request) {
         
-        $this->authorize('c', Procedure::class);
+        $this->authorize(
+            'c', Procedure::class
+        );
         
         return $this->result(
             $this->procedure->store($request->all())

@@ -63,35 +63,35 @@ class Corp extends Model {
      *
      * @return BelongsTo
      */
-    public function department() { return $this->belongsTo('App\Models\Department'); }
+    function department() { return $this->belongsTo('App\Models\Department'); }
 
     /**
      * 返回对应的菜单对象
      *
      * @return BelongsTo
      */
-    public function menu() { return $this->belongsTo('App\Models\Menu'); }
+    function menu() { return $this->belongsTo('App\Models\Menu'); }
 
     /**
      * 获取所属运营者公司对象
      *
      * @return BelongsTo
      */
-    public function company() { return $this->belongsTo('App\Models\Company'); }
+    function company() { return $this->belongsTo('App\Models\Company'); }
 
     /**
      * 获取下属学校对象
      *
      * @return HasMany
      */
-    public function schools() { return $this->hasMany('App\Models\School'); }
+    function schools() { return $this->hasMany('App\Models\School'); }
 
     /**
      * 通过School中间对象获取所有年级对象
      *
      * @return HasManyThrough
      */
-    public function grades() {
+    function grades() {
 
         return $this->hasManyThrough('App\Models\Grade', 'App\Models\School');
 
@@ -102,7 +102,7 @@ class Corp extends Model {
      *
      * @return HasManyThrough
      */
-    public function departments() {
+    function departments() {
 
         return $this->hasManyThrough('App\Models\Department', 'App\Models\School');
 
@@ -113,7 +113,7 @@ class Corp extends Model {
      *
      * @return HasManyThrough
      */
-    public function teams() {
+    function teams() {
 
         return $this->hasManyThrough('App\Models\Team', 'App\Models\School');
 
@@ -126,9 +126,9 @@ class Corp extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    public function store(array $data, $fireEvent = false) {
+    function store(array $data, $fireEvent = false) {
 
-        $corp = self::create($data);
+        $corp = $this->create($data);
         if ($corp && $fireEvent) {
             event(new CorpCreated($corp));
             return true;
@@ -146,9 +146,9 @@ class Corp extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    public function modify(array $data, $id, $fireEvent = false) {
+    function modify(array $data, $id, $fireEvent = false) {
 
-        $corp = self::find($id);
+        $corp = $this->find($id);
         $updated = $corp->update($data);
         if ($updated && $fireEvent) {
             event(new CorpUpdated($corp));
@@ -169,9 +169,9 @@ class Corp extends Model {
      */
     function remove($id, $fireEvent = false) {
 
-        $corp = self::find($id);
+        $corp = $this->find($id);
         if (!$corp) { return false; }
-        $removed = self::removable($corp) ? $corp->delete() : false;
+        $removed = $this->removable($corp) ? $corp->delete() : false;
         if ($removed && $fireEvent) {
             event(new CorpDeleted($corp));
             return true;
@@ -196,7 +196,7 @@ class Corp extends Model {
                 $menu = new Menu();
                 $corpMenuId = $menu->menuId(session('menuId'), '企业');
                 unset($menu);
-                return $corpMenuId ? self::whereMenuId($corpMenuId)->first()->id : 1;
+                return $corpMenuId ? $this->whereMenuId($corpMenuId)->first()->id : 1;
             case '学校':
                 $departmentId = $user->topDeptId();
                 return School::whereDepartmentId($departmentId)->first()->corp_id;
@@ -211,7 +211,7 @@ class Corp extends Model {
      *
      * @return mixed
      */
-    public function datatable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'Corp.id', 'dt' => 0],
@@ -248,7 +248,7 @@ class Corp extends Model {
             ],
         ];
 
-        return Datatable::simple(self::getModel(), $columns, $joins);
+        return Datatable::simple($this->getModel(), $columns, $joins);
 
     }
 

@@ -48,15 +48,15 @@ class WapSiteModule extends Model {
         'media_id', 'enabled',
     ];
     
-    public function wsmArticles() {
+    function wsmArticles() {
         
         return $this->hasMany('App\Models\WsmArticle', 'wsm_id', 'id');
         
     }
 
-    public function media() { return $this->belongsTo('App\Models\Media'); }
+    function media() { return $this->belongsTo('App\Models\Media'); }
 
-    public function wapsite() { return $this->belongsTo('App\Models\WapSite'); }
+    function wapsite() { return $this->belongsTo('App\Models\WapSite'); }
     
     /**
      * 保存网站栏目
@@ -66,7 +66,7 @@ class WapSiteModule extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function store(WapSiteModuleRequest $request) {
+    function store(WapSiteModuleRequest $request) {
         
         try {
             //删除原有的图片
@@ -113,7 +113,7 @@ class WapSiteModule extends Model {
      * @throws Exception
      * @throws Throwable
      */
-    public function modify(WapSiteModuleRequest $request, $id) {
+    function modify(WapSiteModuleRequest $request, $id) {
         
         $wapSite = self::find($id);
         if (!$wapSite) { return false; }
@@ -133,7 +133,7 @@ class WapSiteModule extends Model {
     /**
      * @return array
      */
-    public function datatable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'WapSiteModule.id', 'dt' => 0],

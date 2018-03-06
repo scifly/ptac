@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
@@ -11,6 +12,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -83,7 +85,7 @@ class ScoreTotal extends Model {
      */
     function store(array $data) {
         
-        $st = self::create($data);
+        $st = $this->create($data);
         
         return $st ? true : false;
         
@@ -98,7 +100,7 @@ class ScoreTotal extends Model {
      */
     function modify(array $data, $id) {
         
-        $st = self::find($id);
+        $st = $this->find($id);
         if (!$st) { return false; }
         
         return $st->update($data) ? true : false;
@@ -114,7 +116,7 @@ class ScoreTotal extends Model {
      */
     function remove($id) {
     
-        $st = self::find($id);
+        $st = $this->find($id);
         if (!$st) { return false; }
 
         return $st->delete() ? true : false;
@@ -179,7 +181,7 @@ class ScoreTotal extends Model {
         $condition = 'Student.id IN (' . implode(',', $this->contactIds('student')) . ')';
         
         return Datatable::simple(
-            self::getModel(), $columns, $joins ,$condition
+            $this->getModel(), $columns, $joins ,$condition
         );
         
     }
@@ -187,21 +189,40 @@ class ScoreTotal extends Model {
     /**
      * 统计
      *
-     * @param $exam_id
+     * @param $examId
      * @return bool
      * @throws Exception
      */
-    function statistics($exam_id) {
+    function stat($examId) {
         
+        $exam = Exam::find($examId);
+        $role = Auth::user()->group->name;
+        
+        if ($role != '运营') {
+            # 对当前用户可见的学生Id
+            $allowedStudentIds = $this->contactIds('student');
+            # 参与指定考试的学生Id
+            $examStudentIds = self::whereExamId($examId)->pluck('student_id')->toArray();
+            /**
+             * 如果指定考试所属学校对当前用户不可见，或者指定考试包含的
+             * 部分或所有学生对当前用户不可见，则抛出403异常
+             */
+            abort_if(
+                !in_array($exam->examType->school_id, $this->schoolIds())
+                || !empty(array_diff($allowedStudentIds, $examStudentIds)),
+                HttpStatusCode::FORBIDDEN,
+                __('messages.forbidden')
+            );
+        }
         //删除之前这场考试的统计
         try {
-            self::whereExamId($exam_id)->delete();
+            $this->whereExamId($examId)->delete();
         } catch (Exception $e) {
             throw $e;
         }
         //查询参与这场考试的所有班级和科目
         $exam = DB::table('exams')
-            ->where('id', $exam_id)
+            ->where('id', $examId)
             ->select('class_ids', 'subject_ids')
             ->first();
         $class = DB::table('classes')
@@ -224,7 +245,7 @@ class ScoreTotal extends Model {
             foreach ($students as $student => $class_id) {
                 //计算总成绩
                 $scores = DB::table('scores')
-                    ->where(['student_id' => $student, 'exam_id' => $exam_id])
+                    ->where(['student_id' => $student, 'exam_id' => $examId])
                     ->pluck('score', 'subject_id');
                 $score = 0;
                 $subject_ids = '';
@@ -241,7 +262,7 @@ class ScoreTotal extends Model {
                 $insert = [
                     'student_id' => $student,
                     'class_id' => $class_id,
-                    'exam_id' => intval($exam_id),
+                    'exam_id' => intval($examId),
                     'score' => $score,
                     'subject_ids' => empty($subject_ids) ? '' : substr($subject_ids, 1),
                     'na_subject_ids' => empty($na_subject_ids) ? '' : substr($na_subject_ids, 1),

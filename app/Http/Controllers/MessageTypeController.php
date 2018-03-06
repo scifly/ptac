@@ -1,10 +1,10 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\MessageTypeRequest;
 use App\Models\MessageType;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 
@@ -51,6 +51,10 @@ class MessageTypeController extends Controller {
      */
     public function create() {
         
+        $this->authorize(
+            'cs', MessageType::class
+        );
+        
         return $this->output();
         
     }
@@ -60,8 +64,13 @@ class MessageTypeController extends Controller {
      *
      * @param MessageTypeRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(MessageTypeRequest $request) {
+        
+        $this->authorize(
+            'cs', MessageType::class
+        );
         
         return $this->result(
             $this->mt->store($request->all())
@@ -79,7 +88,7 @@ class MessageTypeController extends Controller {
     public function edit($id) {
         
         $mt = MessageType::find($id);
-        abort_if(!$mt, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $mt);
         
         return $this->output([
             'mt' => $mt
@@ -93,11 +102,12 @@ class MessageTypeController extends Controller {
      * @param MessageTypeRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function update(MessageTypeRequest $request, $id) {
         
         $mt = MessageType::find($id);
-        abort_if(!$mt, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $mt);
         
         return $this->result(
             $mt->modify($request->all(), $id)
@@ -115,7 +125,7 @@ class MessageTypeController extends Controller {
     public function destroy($id) {
         
         $mt = MessageType::find($id);
-        abort_if(!$mt, HttpStatusCode::NOT_FOUND);
+        $this->authorize('eud', $mt);
         
         return $this->result(
             $mt->remove($id)

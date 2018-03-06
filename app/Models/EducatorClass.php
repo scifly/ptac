@@ -40,10 +40,10 @@ class EducatorClass extends Model {
      *
      * @return BelongsTo
      */
-    public function classes() { return $this->belongsTo('App\Models\Educator'); }
+    function classes() { return $this->belongsTo('App\Models\Educator'); }
   
-    public function squad() { return $this->belongsTo('App\Models\squad', 'class_id', 'id'); }
+    function squad() { return $this->belongsTo('App\Models\squad', 'class_id', 'id'); }
     
-    public function subject() { return $this->belongsTo('App\Models\subject'); }
+    function subject() { return $this->belongsTo('App\Models\subject'); }
 
 }

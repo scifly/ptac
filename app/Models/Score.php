@@ -1380,11 +1380,8 @@ class Score extends Model {
         
         $score = $data = $className = $classIds = [];
         // 取出该教职员工对应的所有班级
-        $class = new Squad();
-        $classIds = $class->classIds();
-        unset($class);
         if (!$classIds) { return false; }
-        $class = Squad::whereEnabled(1)->whereIn('id', $classIds)->get();
+        $class = Squad::whereEnabled(1)->whereIn('id', $this->classIds())->get();
         foreach ($class as $k => $c) {
             $exams = Exam::whereEnabled(1)->get();
             // $exams = Exam::where('class_ids', 'like', '%' . $c->id . '%')

@@ -46,14 +46,14 @@ class Team extends Model {
      *
      * @return BelongsTo
      */
-    public function school() { return $this->belongsTo('App\Models\School'); }
+    function school() { return $this->belongsTo('App\Models\School'); }
 
     /**
      * 获取指定教职员工组包含的所有教职员工对象
      *
      * @return BelongsToMany
      */
-    public function educators() { return $this->belongsToMany('App\Models\Educator', 'educators_teams'); }
+    function educators() { return $this->belongsToMany('App\Models\Educator', 'educators_teams'); }
 
     /**
      * 获取教职员工组列表
@@ -80,7 +80,7 @@ class Team extends Model {
      * @return bool|null
      * @throws Exception
      */
-    public function remove($id) {
+    function remove($id) {
         
         $team = $this->find($id);
         if (!$team) { return false; }

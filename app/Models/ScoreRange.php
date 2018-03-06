@@ -53,7 +53,7 @@ class ScoreRange extends Model {
      *
      * @return BelongsTo
      */
-    public function school() { return $this->belongsTo('App\Models\School'); }
+    function school() { return $this->belongsTo('App\Models\School'); }
 
     /**
      * 保存成绩统计项

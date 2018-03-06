@@ -55,11 +55,13 @@ class SubjectController extends Controller {
      */
     public function create() {
         
-        $this->authorize('c', Subject::class);
+        $this->authorize(
+            'c', Subject::class
+        );
         
         return $this->output([
-            'majors' => $this->major->majors(),
-            'grades' => $this->grade->grades(),
+            'majors' => $this->major->majorList(),
+            'grades' => $this->grade->gradeList(),
         ]);
         
     }
@@ -74,7 +76,9 @@ class SubjectController extends Controller {
      */
     public function store(SubjectRequest $request) {
         
-        $this->authorize('c', Subject::class);
+        $this->authorize(
+            'c', Subject::class
+        );
         
         return $this->result(
             $this->subject->store($request)
@@ -109,8 +113,8 @@ class SubjectController extends Controller {
             'subject'        => $subject,
             'selectedGrades' => $selectedGrades,
             'selectedMajors' => $selectedMajors,
-            'majors'         => $this->major->majors(),
-            'grades'         => $this->grade->grades(),
+            'majors'         => $this->major->majorList(),
+            'grades'         => $this->grade->gradeList(),
         ]);
         
     }

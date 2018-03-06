@@ -22,9 +22,12 @@ class StudentAttendanceController extends Controller {
     
     protected $sa, $student, $media, $school;
     
-    function __construct(StudentAttendance $sa, Student $student, Media $media, School $school) {
+    function __construct(
+        StudentAttendance $sa, Student $student,
+        Media $media, School $school
+    ) {
         
-        // $this->middleware(['auth']);
+        // $this->middleware(['auth', 'checkrole']);
         $this->sa = $sa;
         $this->student = $student;
         $this->media = $media;

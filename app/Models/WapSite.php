@@ -53,21 +53,21 @@ class WapSite extends Model {
      *
      * @return HasMany
      */
-    public function wapSiteModules() { return $this->hasMany('App\Models\WapSiteModule'); }
+    function wapSiteModules() { return $this->hasMany('App\Models\WapSiteModule'); }
     
     /**
      * 返回微网站所属的学校对象
      *
      * @return BelongsTo
      */
-    public function school() { return $this->belongsTo('App\Models\School'); }
+    function school() { return $this->belongsTo('App\Models\School'); }
 
     /**
      * 微网站列表
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'WapSite.id', 'dt' => 0],
@@ -104,7 +104,7 @@ class WapSite extends Model {
      * @throws Exception
      * @throws Throwable
      */
-    public function store(WapSiteRequest $request) {
+    function store(WapSiteRequest $request) {
         
         try {
             DB::transaction(function () use ($request) {
@@ -129,7 +129,7 @@ class WapSite extends Model {
      * @throws Exception
      * @throws Throwable
      */
-    public function modify(WapSiteRequest $request, $id) {
+    function modify(WapSiteRequest $request, $id) {
         
         $wapSite = self::find($id);
         if (!$wapSite) { return false; }

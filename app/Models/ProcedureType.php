@@ -43,7 +43,7 @@ class ProcedureType extends Model {
      *
      * @return HasMany
      */
-    public function procedures() { return $this->hasMany('App\Models\Procedure'); }
+    function procedures() { return $this->hasMany('App\Models\Procedure'); }
     
     /**
      * 保存审批流程类型
@@ -51,7 +51,7 @@ class ProcedureType extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    function store(array $data) {
         
         $pt = self::create($data);
         
@@ -66,7 +66,7 @@ class ProcedureType extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    function modify(array $data, $id) {
         
         $pt = self::find($id);
         if (!$pt) { return false; }
@@ -82,7 +82,7 @@ class ProcedureType extends Model {
      * @return bool
      * @throws Exception
      */
-    public function remove($id) {
+    function remove($id) {
         
         $pt = self::find($id);
         if (!$pt) { return false; }
@@ -96,7 +96,7 @@ class ProcedureType extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'ProcedureType.id', 'dt' => 0],

@@ -2,17 +2,17 @@
 namespace App\Policies;
 
 use App\Helpers\Constant;
+use App\Helpers\ModelTrait;
 use App\Models\ActionGroup;
 use App\Models\Corp;
 use App\Models\Exam;
 use App\Models\School;
-use App\Models\Squad;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ExamPolicy {
     
-    use HandlesAuthorization;
+    use HandlesAuthorization, ModelTrait;
     
     /**
      * Create a new policy instance.
@@ -60,11 +60,8 @@ class ExamPolicy {
                 $userSchool = School::whereDepartmentId($user->topDeptId())->first();
                 return $exam->examType->school_id == $userSchool->id;
             default:
-                $class = new Squad();
-                $allowedClassIds = $class->classIds();
-                unset($class);
                 return ($user->educator->school_id == $exam->examType->school_id)
-                    && (empty(array_diff(explode(',', $exam->class_ids), $allowedClassIds)) ? true : false)
+                    && (empty(array_diff(explode(',', $exam->class_ids), $this->classIds())) ? true : false)
                     && (ActionGroup::whereGroupId($user->group_id)->first() ? true : false);
         }
         

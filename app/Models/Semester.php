@@ -51,21 +51,25 @@ class Semester extends Model {
      * 
      * @return BelongsTo
      */
-    public function school() { return $this->belongsTo('App\Models\School'); }
+    function school() { return $this->belongsTo('App\Models\School'); }
     
     /**
      * 返回学期记录包含的所有学生考勤设置对象
      * 
      * @return HasMany
      */
-    public function studentAttendanceSettings() { return $this->hasMany('App\Models\StudentAttendanceSetting'); }
+    function studentAttendanceSettings() { 
+        
+        return $this->hasMany('App\Models\StudentAttendanceSetting'); 
+        
+    }
     
     /**
      * 学期列表
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'Semester.id', 'dt' => 0],
@@ -94,7 +98,9 @@ class Semester extends Model {
         ];
         $condition = 'Semester.school_id = ' . $this->schoolId();
     
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        return Datatable::simple(
+            self::getModel(), $columns, $joins, $condition
+        );
 
     }
 

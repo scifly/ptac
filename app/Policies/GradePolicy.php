@@ -64,7 +64,7 @@ class GradePolicy {
             default:
                 return ($user->educator->school_id == $grade->school_id)
                     && (ActionGroup::whereGroupId($user->group->id)->first() ? true : false)
-                    && (in_array($grade->id, $grade->gradeIds()));
+                    && (in_array($grade->id, $this->gradeIds()));
         }
     
     }

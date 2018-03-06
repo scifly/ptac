@@ -37,6 +37,6 @@ class AttachmentType extends Model {
      *
      * @return HasMany
      */
-    public function attachments() { return $this->hasMany('App\Models\Attachment'); }
+    function attachments() { return $this->hasMany('App\Models\Attachment'); }
 
 }

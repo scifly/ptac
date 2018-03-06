@@ -76,7 +76,7 @@ class Major extends Model {
      *
      * @return Collection
      */
-    function majors() {
+    function majorList() {
 
         return self::whereSchoolId($this->schoolId())->get()->pluck('name', 'id');
 

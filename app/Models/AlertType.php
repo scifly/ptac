@@ -34,7 +34,7 @@ class AlertType extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'AlertType.id', 'dt' => 0],

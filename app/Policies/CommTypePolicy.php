@@ -27,7 +27,11 @@ class CommTypePolicy {
     
     public function eud(User $user, CommType $ct) {
     
-        abort_if(!$ct, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
+        abort_if(
+            !$ct,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
         
         return $user->group->name == '运营';
         

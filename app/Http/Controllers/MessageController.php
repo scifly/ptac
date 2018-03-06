@@ -25,7 +25,10 @@ class MessageController extends Controller {
     
     protected $message, $department, $user, $media;
     
-    public function __construct(Message $message, Department $departement, User $user, Media $media) {
+    public function __construct(
+        Message $message, Department $departement,
+        User $user, Media $media
+    ) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->message = $message;
@@ -44,11 +47,14 @@ class MessageController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->message->datatable());
+            return response()->json(
+                $this->message->datatable()
+            );
         }
         if (Request::method() == 'POST') {
             return $this->department->contacts();
         }
+        
         return $this->output();
         
     }
@@ -61,6 +67,7 @@ class MessageController extends Controller {
     public function message() {
         
         // return $this->output();
+        
     }
     
     /**
@@ -91,51 +98,11 @@ class MessageController extends Controller {
      */
     public function store(MessageRequest $request) {
         
-        $input = $request->all();
-        $message = new Message();
-        return $message->sendMessage($input);
+        return $this->message->sendMessage(
+            $request->all()
+        );
         
     }
-    
-    // /**
-    //  * 消息详情
-    //  *
-    //  * @param $id
-    //  * @return bool|JsonResponse
-    //  * @throws Throwable
-    //  */
-    // public function show($id) {
-    //
-    //     $message = $this->message->find($id);
-    //     abort_if(!$message, HttpStatusCode::NOT_FOUND);
-    //
-    //     return $this->output([
-    //         'message' => $message,
-    //         'users'   => $this->user->users($message->user_ids),
-    //         'medias'  => $this->media->medias(explode(',', $message->media_ids)),
-    //     ]);
-    //
-    // }
-    
-    // /**
-    //  * 编辑消息
-    //  *
-    //  * @param $id
-    //  * @return bool|JsonResponse
-    //  * @throws Throwable
-    //  */
-    // public function edit($id) {
-    //
-    //     $message = $this->message->find($id);
-    //     abort_if(!$message, HttpStatusCode::NOT_FOUND);
-    //
-    //     return $this->output([
-    //         'message'       => $message,
-    //         'selectedUsers' => $this->user->users($message->user_ids),
-    //         'medias'        => $this->media->medias($message->media_ids),
-    //     ]);
-    //
-    // }
     
     /**
      * 更新消息
@@ -143,12 +110,13 @@ class MessageController extends Controller {
      * @param MessageRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws Exception
      * @throws Throwable
      */
     public function update(MessageRequest $request, $id) {
         
-        return $this->result($this->message->modify($request, $id));
+        return $this->result(
+            $this->message->modify($request, $id)
+        );
         
     }
     

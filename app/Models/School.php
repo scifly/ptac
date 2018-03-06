@@ -1,11 +1,11 @@
 <?php
-
 namespace App\Models;
 
 use App\Events\SchoolCreated;
 use App\Events\SchoolDeleted;
 use App\Events\SchoolUpdated;
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\School 学校
@@ -73,144 +74,143 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @mixin Eloquent
  */
 class School extends Model {
-
+    
     // todo: needs to be optimized
-
     use ModelTrait;
-
+    
     protected $fillable = [
-        'name', 'address', 'school_type_id', 'menu_id','signature',
+        'name', 'address', 'school_type_id', 'menu_id', 'signature',
         'corp_id', 'department_id', 'enabled',
     ];
-
+    
     /**
      * 返回对应的部门对象
      *
      * @return BelongsTo
      */
-    public function department() { return $this->belongsTo('App\Models\Department'); }
-
+    function department() { return $this->belongsTo('App\Models\Department'); }
+    
     /**
      * 返回对应的菜单对象
      *
      * @return BelongsTo
      */
-    public function menu() { return $this->belongsTo('App\Models\Menu'); }
+    function menu() { return $this->belongsTo('App\Models\Menu'); }
     
     /**
      * 返回所属学校类型对象
      *
      * @return BelongsTo
      */
-    public function schoolType() { return $this->belongsTo('App\Models\SchoolType'); }
+    function schoolType() { return $this->belongsTo('App\Models\SchoolType'); }
     
     /**
      * 返回所属企业对象
      *
      * @return BelongsTo
      */
-    public function corp() { return $this->belongsTo('App\Models\Corp'); }
+    function corp() { return $this->belongsTo('App\Models\Corp'); }
     
     /**
      * 获取隶属指定学校的所有角色对象
      *
      * @return HasMany
      */
-    public function groups() { return $this->hasMany('App\Models\Group'); }
+    function groups() { return $this->hasMany('App\Models\Group'); }
     
     /**
      * 获取指定学校所有的考勤机对象
      *
      * @return HasMany
      */
-    public function attendanceMachines() { return $this->hasMany('App\Models\AttendanceMachine'); }
+    function attendanceMachines() { return $this->hasMany('App\Models\AttendanceMachine'); }
     
     /**
      * 获取所有的会议室对象
      *
      * @return HasMany
      */
-    public function conferenceRooms() { return $this->hasMany('App\Models\ConferenceRoom'); }
+    function conferenceRooms() { return $this->hasMany('App\Models\ConferenceRoom'); }
     
     /**
      * 获取指定学校的所有调查问卷对象
      *
      * @return HasMany
      */
-    public function pollQuestionnaires() { return $this->hasMany('App\Models\PollQuestionnaire'); }
+    function pollQuestionnaires() { return $this->hasMany('App\Models\PollQuestionnaire'); }
     
     /**
      * 获取指定学校的所有审批流程对象
      *
      * @return HasMany
      */
-    public function procedures() { return $this->hasMany('App\Models\Procedure'); }
+    function procedures() { return $this->hasMany('App\Models\Procedure'); }
     
     /**
      * 获取指定学校所有的学期对象
      *
      * @return HasMany
      */
-    public function semesters() { return $this->hasMany('App\Models\Semester'); }
+    function semesters() { return $this->hasMany('App\Models\Semester'); }
     
     /**
      * 获取指定学校所有的科目对象
      *
      * @return HasMany
      */
-    public function subjects() { return $this->hasMany('App\Models\Subject'); }
+    function subjects() { return $this->hasMany('App\Models\Subject'); }
     
     /**
      * 获取指定学校的所有教职员工组对象
      *
      * @return HasMany
      */
-    public function teams() { return $this->hasMany('App\Models\Team'); }
+    function teams() { return $this->hasMany('App\Models\Team'); }
     
     /**
      * 获取指定学校所有的年级对象
      *
      * @return HasMany
      */
-    public function grades() { return $this->hasMany('App\Models\Grade'); }
+    function grades() { return $this->hasMany('App\Models\Grade'); }
     
     /**
      * 获取指定学校的所有专业对象
      *
      * @return HasMany
      */
-    public function majors() { return $this->hasMany('App\Models\Major'); }
+    function majors() { return $this->hasMany('App\Models\Major'); }
     
     /**
      * 获取指定学校包含的所有考试类型对象
      *
      * @return HasMany
      */
-    public function examTypes() { return $this->hasMany('App\Models\ExamType'); }
+    function examTypes() { return $this->hasMany('App\Models\ExamType'); }
     
     /**
      * 获取指定学校所有的教职员工对象
      *
      * @return HasMany
      */
-    public function educators() { return $this->hasMany('App\Models\Educator'); }
+    function educators() { return $this->hasMany('App\Models\Educator'); }
     
     /**
      * 获取指定学校的微网站对象
      *
      * @return HasOne
      */
-    public function wapSite() { return $this->hasOne('App\Models\WapSite'); }
+    function wapSite() { return $this->hasOne('App\Models\WapSite'); }
     
     /**
      * 通过WapSite中间对象获取所有的微网站模块对象
      *
      * @return HasManyThrough
      */
-    public function wapSiteModules() {
-    
+    function wapSiteModules() {
+        
         return $this->hasManyThrough('App\Models\WapSiteModule', 'App\Models\WapSite');
-    
+        
     }
     
     /**
@@ -218,15 +218,15 @@ class School extends Model {
      *
      * @return HasManyThrough
      */
-    public function classes() {
-    
+    function classes() {
+        
         return $this->hasManyThrough(
             'App\Models\Squad', 'App\Models\Grade',
             'school_id', 'grade_id'
         );
-    
+        
     }
-
+    
     /**
      * 保存学校
      *
@@ -234,18 +234,19 @@ class School extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    public function store(array $data, $fireEvent = false) {
-
-        $school = self::create($data);
+    function store(array $data, $fireEvent = false) {
+        
+        $school = $this->create($data);
         if ($school && $fireEvent) {
             event(new SchoolCreated($school));
+            
             return true;
         }
-
+        
         return $school ? true : false;
-
+        
     }
-
+    
     /**
      * 更新学校
      *
@@ -254,18 +255,21 @@ class School extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    public function modify(array $data, $id, $fireEvent = false) {
-
-        $school = self::find($id);
-        if (!$school) { return false; }
+    function modify(array $data, $id, $fireEvent = false) {
+        
+        $school = $this->find($id);
+        if (!$school) {
+            return false;
+        }
         $updated = $school->update($data);
         if ($updated && $fireEvent) {
-            event(new SchoolUpdated(self::find($id)));
+            event(new SchoolUpdated($this->find($id)));
+            
             return true;
         }
-
+        
         return $updated ? true : false;
-
+        
     }
     
     /**
@@ -276,18 +280,26 @@ class School extends Model {
      * @return bool|null
      * @throws Exception
      */
-    public function remove($id, $fireEvent = false) {
-
-        $school = self::find($id);
+    function remove($id, $fireEvent = false) {
+        
+        $school = $this->find($id);
         if (!$school) { return false; }
-        $removed = self::removable($school) ? $school->delete() : false;
+        $user = Auth::user();
+        $role = $user->group->name;
+        abort_if(
+            !in_array($role, ['运营', '企业']) || !in_array($id, $this->schoolIds()),
+            HttpStatusCode::FORBIDDEN,
+            __('messages.forbidden')
+        );
+        $removed = $this->removable($school) ? $school->delete() : false;
         if ($removed && $fireEvent) {
             event(new SchoolDeleted($school));
+            
             return true;
         }
-
+        
         return $removed ? true : false;
-
+        
     }
     
     /**
@@ -295,12 +307,12 @@ class School extends Model {
      *
      * @return array
      */
-    public function datatable() {
-
+    function datatable() {
+        
         $columns = [
             ['db' => 'School.id', 'dt' => 0],
             [
-                'db' => 'School.name as schoolname', 'dt' => 1,
+                'db'        => 'School.name as schoolname', 'dt' => 1,
                 'formatter' => function ($d) {
                     return '<i class="fa fa-university"></i>&nbsp;' . $d;
                 },
@@ -308,7 +320,7 @@ class School extends Model {
             ['db' => 'School.address', 'dt' => 2],
             ['db' => 'SchoolType.name as typename', 'dt' => 3],
             [
-                'db' => 'Corp.name as corpname', 'dt' => 4,
+                'db'        => 'Corp.name as corpname', 'dt' => 4,
                 'formatter' => function ($d) {
                     return '<i class="fa fa-weixin"></i>&nbsp;' . $d;
                 },
@@ -316,35 +328,39 @@ class School extends Model {
             ['db' => 'School.created_at', 'dt' => 5],
             ['db' => 'School.updated_at', 'dt' => 6],
             [
-                'db' => 'School.enabled', 'dt' => 7,
+                'db'        => 'School.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row,false);
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
         $joins = [
             [
-                'table' => 'school_types',
-                'alias' => 'SchoolType',
-                'type' => 'INNER',
+                'table'      => 'school_types',
+                'alias'      => 'SchoolType',
+                'type'       => 'INNER',
                 'conditions' => [
                     'SchoolType.id = School.school_type_id',
                 ],
             ],
             [
-                'table' => 'corps',
-                'alias' => 'Corp',
-                'type' => 'INNER',
+                'table'      => 'corps',
+                'alias'      => 'Corp',
+                'type'       => 'INNER',
                 'conditions' => [
                     'Corp.id = School.corp_id',
                 ],
             ],
         ];
-
-        return Datatable::simple(self::getModel(), $columns, $joins);
-
+        # 仅在企业级显示学校列表
+        $condition = 'Corp.id = ' . Corp::whereDepartmentId(Auth::user()->topDeptId())->first()->id;
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
+        
     }
-
+    
     /**
      * 获取字段列表
      *
@@ -353,8 +369,9 @@ class School extends Model {
      * @param null $gradeClass
      * @return array
      */
-    function getFieldList($field, $id ,$gradeClass = null) {
-
+    function getFieldList($field, $id, $gradeClass = null) {
+        
+        # todo - fetch field list by role
         $grades = [];
         $classes = [];
         $students = [];
@@ -371,10 +388,10 @@ class School extends Model {
                     ->pluck('student_number', 'id');
                 break;
             case 'grade':
-                if(isset($gradeClass)){
-                    $classes = self::getClass($id,$gradeClass)[0];
-                    $students = self::getClass($id,$gradeClass)[1];
-                }else{
+                if (isset($gradeClass)) {
+                    $classes = $this->getClass($id, $gradeClass)[0];
+                    $students = $this->getClass($id, $gradeClass)[1];
+                } else {
                     $classes = Squad::whereGradeId($id)
                         ->where('enabled', 1)
                         ->pluck('name', 'id');
@@ -382,7 +399,6 @@ class School extends Model {
                         ->where('enabled', 1)
                         ->pluck('student_number', 'id');
                 }
-
                 break;
             case 'class':
                 $list = Student::whereClassId($id)
@@ -404,22 +420,17 @@ class School extends Model {
                     $html .= '<option value="' . $key . '">' . $value . '</option>';
                 }
                 $html .= '</select>';
+                
                 return $html;
-
+                
             }, [$grades, $classes, $students]
         );
-
-        return [
-            'grades' => sprintf($htmls[0], 'gradeId', 'gradeId'),
-            'classes' => sprintf($htmls[1], 'classId', 'classId'),
-            'students' => sprintf($htmls[2], 'studentId', 'studentId')
-        ];
-
-    }
-
-    function getSchoolById() {
         
-        return $this->find($this->schoolId());
+        return [
+            'grades'   => sprintf($htmls[0], 'gradeId', 'gradeId'),
+            'classes'  => sprintf($htmls[1], 'classId', 'classId'),
+            'students' => sprintf($htmls[2], 'studentId', 'studentId'),
+        ];
         
     }
     
@@ -429,15 +440,15 @@ class School extends Model {
      * @param $gradeClass
      * @return array
      */
-    function getClass( $gradeId, $gradeClass){
+    function getClass($gradeId, $gradeClass) {
         $classes = $students = [];
-        foreach ($gradeClass as $k=>$g){
-            if($k == $gradeId){
+        foreach ($gradeClass as $k => $g) {
+            if ($k == $gradeId) {
                 $classes = Squad::whereEnabled(1)
-                    ->whereIn('id',$g)
+                    ->whereIn('id', $g)
                     ->pluck('name', 'id')
                     ->toArray();
-                foreach ($g as $v){
+                foreach ($g as $v) {
                     $students = Student::whereClassId($v)
                         ->where('enabled', 1)
                         ->pluck('student_number', 'id');
@@ -445,7 +456,8 @@ class School extends Model {
                 }
             }
         }
-        return [$classes , $students];
+        
+        return [$classes, $students];
     }
-
+    
 }

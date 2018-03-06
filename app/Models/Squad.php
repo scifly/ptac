@@ -5,7 +5,6 @@ use App\Events\ClassCreated;
 use App\Events\ClassDeleted;
 use App\Events\ClassUpdated;
 use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
@@ -16,7 +15,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\Squad 班级
@@ -147,41 +145,6 @@ class Squad extends Model {
         
         return $removed ? true : false;
         
-    }
-    
-    /**
-     * 获取对当前用户可见的所有班级Id
-     *
-     * @return array
-     */
-    function classIds() {
-    
-        $user = Auth::user();
-        $role = $user->group->name;
-        if (in_array($role, Constant::SUPER_ROLES)) {
-            $schoolId = $this->schoolId();
-            $grades = School::find($schoolId)->grades;
-            $classIds = [];
-            foreach ($grades as $grade) {
-                $classes = $grade->classes;
-                foreach ($classes as $class) {
-                    $classIds[] = $class->id;
-                }
-            }
-        } else {
-            $departmentIds = $this->departmentIds($user->id);
-            $classIds = [];
-            
-            foreach ($departmentIds as $id) {
-                $department = Department::find($id);
-                if ($department->departmentType->name == '班级') {
-                    $classIds[] = $department->squad->id;
-                }
-            }
-        }
-        
-        return empty($classIds) ? [0] : $classIds;
-    
     }
     
     /**

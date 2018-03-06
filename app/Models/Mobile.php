@@ -43,7 +43,7 @@ class Mobile extends Model {
      *
      * @return BelongsTo
      */
-    public function user() { return $this->belongsTo('App\Models\User'); }
+    function user() { return $this->belongsTo('App\Models\User'); }
 
     /**
      * 保存手机号码
@@ -51,7 +51,7 @@ class Mobile extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    function store(array $data) {
         
         $mobile = $this->create($data);
 
@@ -66,7 +66,7 @@ class Mobile extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    function modify(array $data, $id) {
         
         $mobile = $this->find($id);
         if (!$mobile) { return false; }
@@ -82,7 +82,7 @@ class Mobile extends Model {
      * @return bool|null
      * @throws Exception
      */
-    public function remove($id) {
+    function remove($id) {
         
         $mobile = $this->find($id);
         if (!$mobile) { return false; }

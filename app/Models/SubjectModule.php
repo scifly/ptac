@@ -35,7 +35,10 @@ class SubjectModule extends Model {
     use ModelTrait;
 
     protected $table = 'subject_modules';
-    protected $fillable = ['subject_id', 'name', 'weight', 'enabled'];
+    protected $fillable = [
+        'subject_id', 'name',
+        'weight', 'enabled'
+    ];
     
     /**
      * 返回科目次分类所属的科目对象
@@ -77,7 +80,9 @@ class SubjectModule extends Model {
         ];
         $condition = 'Subject.school_id = ' . $this->schoolId();
         
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        return Datatable::simple(
+            self::getModel(), $columns, $joins, $condition
+        );
 
     }
 
