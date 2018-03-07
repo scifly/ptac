@@ -13,7 +13,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(请输入功能名称)',
                         'required' => 'true',
                         'maxlength' => '80'

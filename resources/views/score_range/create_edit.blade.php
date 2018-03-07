@@ -13,7 +13,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '请输入成绩项名称',
                         'required' => 'true',
                     ]) !!}
@@ -25,7 +25,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('start_score', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '最多两位小数',
                         'required' => 'true',
                         'type' => 'number',
@@ -39,7 +39,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('end_score', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '最多两位小数',
                         'required' => 'true',
                         'type' => 'number',

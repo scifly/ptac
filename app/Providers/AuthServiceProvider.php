@@ -64,6 +64,7 @@ use App\Policies\SubjectModulePolicy;
 use App\Policies\TabPolicy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Laravel\Passport\Passport;
 
 class AuthServiceProvider extends ServiceProvider {
     
@@ -113,7 +114,9 @@ class AuthServiceProvider extends ServiceProvider {
      * @return void
      */
     public function boot() {
+        
         $this->registerPolicies();
-        //
+        Passport::routes();
+        
     }
 }

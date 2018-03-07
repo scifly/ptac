@@ -39,6 +39,8 @@ class ComposerServiceProvider extends ServiceProvider {
             ['educator_attendance_setting.create_edit', 'educator_attendance_setting.index'],
             'App\Http\ViewComposers\EducatorAttendanceSettingComposer'
         );
+        
+        View::composer('consumption.index', 'App\Http\ViewComposers\ConsumptionIndexComposer');
 
         View::composer('student_attendance_setting.create_edit', 'App\Http\ViewComposers\StudentAttendanceSettingComposer');
         View::composer('student_attendance_setting.index', 'App\Http\ViewComposers\StudentAttendanceSettingIndexComposer');

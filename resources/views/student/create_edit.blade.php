@@ -22,14 +22,12 @@
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class="fa fa-child"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-child'])
                         {{ Form::text('user[realname]', null, [
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'required' => 'true',
                             'placeholder' => '(请填写真实姓名)',
-                            'data-parsley-length' => '[2, 30]'
+                            'data-parsley-length' => '[2, 30]',
                         ]) }}
                     </div>
                 </div>
@@ -41,11 +39,9 @@
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class="fa fa-language"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-language'])
                         {{ Form::text('user[english_name]', null, [
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'placeholder' => '请填写英文名(可选)',
                             'type' => 'string',
                             'data-parsley-length' => '[2, 255]',
@@ -55,26 +51,24 @@
                 </div>
             </div>
             <!-- 性别 -->
-        @include('partials.enabled', [
-            'id' => 'user[gender]',
-            'label' => '性别',
-            'value' => $user['gender'] ?? null,
-            'options' => ['男', '女']
-        ])
-        <!-- 手机号码 -->
-        @include('partials.mobile')
-        <!-- 座机号码 -->
+            @include('partials.enabled', [
+                'id' => 'user[gender]',
+                'label' => '性别',
+                'value' => $user['gender'] ?? null,
+                'options' => ['男', '女']
+            ])
+            <!-- 手机号码 -->
+            @include('partials.mobile')
+            <!-- 座机号码 -->
             <div class="form-group">
                 {{ Form::label('user[telephone]', '座机', [
                     'class' => 'col-sm-3 control-label'
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class="fa fa-phone"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-phone'])
                         {{ Form::text('user[telephone]', null, [
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'placeholder' => '请输入座机号码(可选}',
                         ]) }}
                     </div>
@@ -87,11 +81,9 @@
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class="fa fa-envelope-o"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-envelope-o'])
                         {{ Form::text('user[email]', null, [
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'placeholder' => '(请输入电子邮件地址)',
                             'required' => 'true',
                             'type' => 'email',
@@ -116,8 +108,11 @@
                             'class' => 'col-sm-3 control-label'
                         ]) }}
                         <div class="col-sm-6" style="margin-top: 7px;">
-                            <i class="fa fa-object-group"></i>&nbsp;{{ $grades[array_keys($grades)[0]] }}
-                            {{ Form::hidden('grade_id', array_keys($grades)[0], ['id' => 'grade_id']) }}
+                            <div class="input-group">
+                                @include('partials.icon_addon', ['class' => 'fa-object-group'])
+                                &nbsp;{{ $grades[array_keys($grades)[0]] }}
+                                {{ Form::hidden('grade_id', array_keys($grades)[0], ['id' => 'grade_id']) }}
+                            </div>
                         </div>
                     </div>
                 @endif
@@ -129,9 +124,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class="fa fa-users"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-users'])
                         {!! Form::select('class_id', $classes, null, [
                             'class' => 'form-control select2',
                             'id' => 'classId',
@@ -147,7 +140,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('student_number', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '小写字母与阿拉伯数字',
                         'data-parsley-type' => 'alphanum',
                         'required' => 'true',
@@ -162,7 +155,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('card_number', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '小写字母与阿拉伯数字',
                         'required' => 'true',
                         'data-parsley-type' => 'alphanum',
@@ -177,12 +170,10 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class="fa fa-calendar"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa fa-calendar'])
                         {!! Form::date('birthday', null, [
                             'required' => 'true',
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'data-parsley-type' => 'date',
                         ]) !!}
                     </div>
@@ -195,11 +186,11 @@
                 'value' => $student['oncampus'] ?? null,
                 'options' => ['是', '否']
             ])
-        <!-- 备注 -->
+            <!-- 备注 -->
             @include('partials.remark', [
                 'field' => 'user[remark]'
             ])
-        <!-- 状态 -->
+            <!-- 状态 -->
             @include('partials.enabled', [
                 'id' => 'user[enabled]',
                 'value' => $student['enabled'] ?? null

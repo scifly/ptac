@@ -9,6 +9,8 @@
 			<tr class="bg-info">
                 <th>#</th>
                 <th>名称</th>
+                <th>控制器</th>
+                <th>角色</th>
                 <th>默认功能</th>
                 <th>创建于</th>
                 <th>更新于</th>

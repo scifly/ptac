@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Constant;
 use App\Helpers\Snippet;
 use App\Models\ActionType as ActionType;
 use Carbon\Carbon;
@@ -55,23 +56,8 @@ class Action extends Model {
         'controller', 'view', 'route',
         'js', 'action_type_ids', 'enabled',
     ];
-    const EXCLUDED_CONTROLLERS = [
-        'Controller',
-        'ForgotPasswordController',
-        'LoginController',
-        'RegisterController',
-        'ResetPasswordController',
-        'HomeController',
-        'TestController',
-        'HomeWorkController',
-        'MessageCenterController',
-        'AttendanceController',
-        'MobileSiteController',
-        'ScoreCenterController'
-    ];
+    
     protected $routes;
-    # 控制器相对路径
-    const CONTROLLER_DIR = 'app/Http/Controllers';
 
     /**
      * 返回当前action包含的卡片
@@ -120,7 +106,7 @@ class Action extends Model {
             [
                 'db' => 'Action.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return empty($d) ? '-' : $d;
+                    return empty($d) ? '-' : sprintf(Snippet::ICON, 'fa fa-gears') . $d;
                 },
             ],
             [
@@ -200,14 +186,14 @@ class Action extends Model {
     function scan() {
 
         $this->routes = Route::getRoutes()->getRoutes();
-        $controllers = self::scanDirectories(self::getSiteRoot() . self::CONTROLLER_DIR);
+        $controllers = self::scanDirectories(self::getSiteRoot() . Constant::CONTROLLER_DIR);
         # 获取控制器的名字空间
         $this->getControllerNamespaces($controllers);
 
         # 移除excluded控制器
         $controllerNames = array_diff(
             $this->getControllerNames($controllers),
-            self::EXCLUDED_CONTROLLERS
+            Constant::EXCLUDED_CONTROLLERS
         );
         $selfDefinedMethods = [];
         // remove actions of non-existing controllers
@@ -228,7 +214,7 @@ class Action extends Model {
         }
         foreach ($controllers as $controller) {
             $paths = explode('\\', $controller);
-            if (!in_array($paths[sizeof($paths) - 1], self::EXCLUDED_CONTROLLERS)) {
+            if (!in_array($paths[sizeof($paths) - 1], Constant::EXCLUDED_CONTROLLERS)) {
                 $obj = new ReflectionClass(ucfirst($controller));
                 $className = $obj->getName();
                 $methods = $obj->getMethods();
@@ -473,7 +459,7 @@ class Action extends Model {
      */
     private function getViewPath($controller, $action) {
 
-        if (!in_array($controller, self::EXCLUDED_CONTROLLERS)) {
+        if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
             switch ($action) {
                 case 'index':
                 case 'create':
@@ -531,7 +517,7 @@ class Action extends Model {
     private function getRoute($controller, $action) {
 
         $action = ($action == 'destroy' ? 'delete' : $action);
-        if (!in_array($controller, self::EXCLUDED_CONTROLLERS)) {
+        if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
             $route = $this->getTableName($controller) . '/' . $action;
             foreach ($this->routes as $r) {
                 if (stripos($r->uri, $route) === 0) {
@@ -555,7 +541,7 @@ class Action extends Model {
 
         $action = ($action == 'destroy' ? 'delete' : $action);
         $actionTypes = ActionType::pluck('id', 'name')->toArray();
-        if (!in_array($controller, self::EXCLUDED_CONTROLLERS)) {
+        if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
             $route = $this->getTableName($controller) . '/' . $action;
             $actionTypeIds = [];
             foreach ($this->routes as $r) {
@@ -582,15 +568,12 @@ class Action extends Model {
      */
     private function getJsPath($ctlr, $action) {
 
-        if (!in_array($ctlr, self::EXCLUDED_CONTROLLERS)) {
+        if (!in_array($ctlr, Constant::EXCLUDED_CONTROLLERS)) {
             $prefix = str_singular($this->getTableName($ctlr));
             $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
             if (in_array($action, ['destroy', 'store', 'update', 'sort', 'move', 'rankTabs'])) {
                 return null;
             }
-            // if (in_array($action, ['destroy', 'store', 'update', 'sort', 'move', 'rankTabs', 'show'])) {
-            //     return null;
-            // }
             return 'js/' . $prefix . '/' . $action . '.js';
         }
 

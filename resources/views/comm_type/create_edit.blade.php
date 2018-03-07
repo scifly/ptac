@@ -13,11 +13,9 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <span class="input-group-addon">
-                            <i class="fa fa-commenting"></i>
-                        </span>
+                        @include('partials.icon_addon', ['class' => 'fa-commenting'])
                         {!! Form::text('name', null, [
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'placeholder' => '(请输入通信方式名称)',
                             'required' => 'true',
                             'data-parsley-length' => '[2, 60]'

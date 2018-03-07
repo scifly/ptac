@@ -19,12 +19,10 @@
                         <tr>
                             <td class="text-center">
                                 <div class="input-group">
-                                    <div class="input-group-addon">
-                                        <i class="fa fa-mobile"></i>
-                                    </div>
+                                    @include('partials.icon_addon', ['class' => 'fa-mobile'])
                                     <input class="form-control"
                                            name="mobile[{{ $key }}][mobile]"
-                                           placeholder="（请输入手机号码）"
+                                           placeholder="(请输入手机号码)"
                                            value='{{ $mobile->mobile }}'
                                            required
                                            pattern="/^1[0-9]{10}$/"
@@ -82,9 +80,7 @@
                     <tr>
                         <td class="text-center">
                             <div class="input-group">
-                                <div class="input-group-addon">
-                                    <i class="fa fa-mobile"></i>
-                                </div>
+                                @include('partials.icon_addon', ['class' => 'fa-mobile'])
                                 <input class="form-control"
                                        name="mobile[0][mobile]"
                                        placeholder="（请输入手机号码）"

@@ -16,7 +16,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(请输入会议名称)',
                         'required' => 'true',
                         'data-parsley-length' => '[4, 120]'
@@ -29,7 +29,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('start', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(请输入会议开始时间)',
                         'required' => 'true',
                         'type' => 'date'
@@ -42,7 +42,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('end', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(请输入会议结束时间)',
                         'required' => 'true',
                         'type' => 'date'

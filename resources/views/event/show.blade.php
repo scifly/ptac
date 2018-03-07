@@ -4,7 +4,7 @@
         {!! Form::label('title', '名称',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-6">
             {!! Form::text('title', null, [
-                'class' => 'form-control',
+                'class' => 'form-control text-blue',
                 'placeholder' => '(不超过40个汉字)',
                 'required' => 'true',
                 'data-parsley-length' => '[1, 40]'
@@ -15,7 +15,7 @@
         {!! Form::label('remark', '备注',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-6">
             {!! Form::text('remark', null, [
-            'class' => 'form-control',
+            'class' => 'form-control text-blue',
             'placeholder' => '(不超过40个汉字)',
             'required' => 'true'
             ]) !!}
@@ -25,7 +25,7 @@
         {!! Form::label('location', '地点',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-6">
             {!! Form::text('location', null, [
-            'class' => 'form-control',
+            'class' => 'form-control text-blue',
             'placeholder' => '(不超过40个汉字)',
             'required' => 'true'
             ]) !!}
@@ -35,7 +35,7 @@
         {!! Form::label('contact', '联系人',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-6">
             {!! Form::text('contact', null, [
-            'class' => 'form-control',
+            'class' => 'form-control text-blue',
             'required' => 'true'
             ]) !!}
         </div>
@@ -44,7 +44,7 @@
         {!! Form::label('url', '事件URL',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-6">
             {!! Form::text('url', null, [
-            'class' => 'form-control',
+            'class' => 'form-control text-blue',
             'data-parsley-type' => "url"
             ]) !!}
         </div>
@@ -82,13 +82,13 @@
     <div class="form-group educator_id-from">
         {!! Form::label('educator_id', '教师姓名',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-6">
-            {!! Form::select('educator_id', $educators, null, [ 'class' => 'form-control']) !!}
+            {!! Form::select('educator_id', $educators, null, [ 'class' => 'form-control text-blue']) !!}
         </div>
     </div>
     <div class="form-group subject_id-from">
         {!! Form::label('subject_id', '科目名称',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-6">
-            {!! Form::select('subject_id', $subjects, null, [ 'class' => 'form-control']) !!}
+            {!! Form::select('subject_id', $subjects, null, [ 'class' => 'form-control text-blue']) !!}
         </div>
     </div>
     <div class="form-group">
@@ -103,7 +103,7 @@
     <div class="form-group alert_mins">
         {!! Form::label('alert_mins', '提醒时间',['class' => 'col-sm-3 control-label']) !!}
         <div class="col-sm-6">
-            {!! Form::text('alert_mins', null, [ 'class' => 'form-control']) !!}
+            {!! Form::text('alert_mins', null, [ 'class' => 'form-control text-blue']) !!}
         </div>
     </div>
 </div>

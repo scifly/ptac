@@ -13,7 +13,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(不超过40个汉字)',
                         'required' => 'true',
                         'data-parsley-length' => '[4, 40]'
@@ -26,7 +26,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('capacity', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(会议室可容纳的人数)',
                         'required' => 'true',
                         'type' => 'number'

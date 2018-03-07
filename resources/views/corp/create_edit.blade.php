@@ -13,11 +13,9 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class="fa fa-weixin"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-weixin'])
                         {!! Form::text('name', null, [
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'placeholder' => '(不超过60个汉字)',
                             'required' => 'true',
                             'minlength' => '3',
@@ -39,7 +37,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('corpid', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(18个小写字母与阿拉伯数字)',
                         'required' => 'true',
                         'data-parsley-type' => 'alphanum',

@@ -18,12 +18,10 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class="fa fa-list-ul"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-list-ul'])
                         {!! Form::text('name', null, [
                             'id' => 'name',
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'placeholder' => '(不得超过8个汉字)',
                             'required' => 'true',
                             'data-parsley-length' => '[2, 8]'
@@ -42,9 +40,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class="fa fa-fonticons"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-fonticons'])
                         {{ Form::select('icon_id', $icons, null, [
                             'id' => 'icon_id',
                             'style' => 'width: 100%;'
@@ -59,12 +55,10 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class="fa fa-link"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-link'])
                         {!! Form::text('uri', null, [
                             'id' => 'uri',
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'placeholder' => '(可选)',
                             'data-parsley-length' => '[1, 255]'
                         ]) !!}

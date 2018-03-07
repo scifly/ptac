@@ -17,11 +17,9 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class= "fa fa-user"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-user'])
                         {!! Form::text('user[realname]', null, [
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'placeholder' => '(请输入真实姓名)',
                             'required' => 'true',
                             'data-parsley-length' => '[2,10]'
@@ -36,11 +34,9 @@
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class= "fa fa-language"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-language'])
                         {{ Form::text('user[english_name]', null, [
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'placeholder' => '请填写英文名(可选)',
                             'data-parsley-type' => 'alphanum',
                             'data-parsley-length' => '[2, 255]'
@@ -55,11 +51,9 @@
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class= "fa fa-weixin"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-weixin'])
                         {{ Form::text('user[wechatid]', null, [
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'data-parsley-type' => 'alphanum',
                             'data-parsley-length' => '[2, 255]'
                         ]) }}
@@ -87,11 +81,9 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class= "fa fa-user-o"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-user-o'])
                         {!! Form::text('user[username]', null, [
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'placeholder' => '(请输入用户名)',
                             'required' => 'true',
                             'data-parsley-length' => '[6,30]'
@@ -107,11 +99,9 @@
                     ]) !!}
                     <div class="col-sm-6">
                         <div class="input-group">
-                            <div class="input-group-addon">
-                                <i class= "fa fa-lock"></i>
-                            </div>
+                            @include('partials.icon_addon', ['class' => 'fa-lock'])
                             {!! Form::password('user[password]', [
-                                'class' => 'form-control',
+                                'class' => 'form-control text-blue',
                                 'placeholder' => '(请输入密码)',
                                 'required' => 'true',
                                 'minlength' => '8'
@@ -126,11 +116,9 @@
                     ]) !!}
                     <div class="col-sm-6">
                         <div class="input-group">
-                            <div class="input-group-addon">
-                                <i class= "fa fa-lock"></i>
-                            </div>
+                            @include('partials.icon_addon', ['class' => 'fa-lock'])
                             {!! Form::password('user[password_confirmation]', [
-                                'class' => 'form-control',
+                                'class' => 'form-control text-blue',
                                 'placeholder' => '(请确认密码)',
                                 'required' => 'true',
                                 'minlength' => '8'
@@ -146,11 +134,9 @@
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class= "fa fa-phone"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-phone'])
                         {{ Form::text('user[telephone]', null, [
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'placeholder' => '请输入座机号码(可选}',
                         ]) }}
                     </div>
@@ -163,11 +149,9 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class= "fa fa-envelope-o"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-envelope-o'])
                         {!! Form::email('user[email]', null, [
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'placeholder' => '(请输入电子邮件地址)',
                         ]) !!}
                     </div>

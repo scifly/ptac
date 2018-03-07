@@ -54,12 +54,6 @@ class Tab extends Model {
         'name', 'remark', 'icon_id','group_id',
         'action_id', 'enabled', 'controller',
     ];
-    const EXCLUDED_CONTROLLERS = [
-        'ForgotPasswordController', 'Controller', 'RegisterController',
-        'LoginController', 'ResetPasswordController', 'TestController',
-        'MessageCenterController', 'HomeWorkController', 'MobileSiteController'
-    ];
-    const CONTROLLER_DIR = 'app/Http/Controllers';
 
     /**
      * 返回指定卡片所属的菜单对象
@@ -92,7 +86,7 @@ class Tab extends Model {
     public function scan() {
 
         $action = new Action();
-        $controllers = self::controllerPaths($action->getSiteRoot() . self::CONTROLLER_DIR);
+        $controllers = self::controllerPaths($action->getSiteRoot() . Constant::CONTROLLER_DIR);
         $action->getControllerNamespaces($controllers);
         $controllerNames = $action->getControllerNames($controllers);
         // remove nonexisting controllers
@@ -101,7 +95,10 @@ class Tab extends Model {
         foreach ($ctlrs as $ctlr) {
             $existingCtlrs[] = $ctlr['controller'];
         }
-        $ctlrDiff = array_diff($existingCtlrs, $controllerNames);
+        $ctlrDiff = array_merge(
+            array_diff($existingCtlrs, $controllerNames),
+            Constant::EXCLUDED_CONTROLLERS
+        );
         foreach ($ctlrDiff as $ctlr) {
             $tab = self::whereController($ctlr)->first();
             if ($tab && !self::remove($tab->id)) {
@@ -114,7 +111,7 @@ class Tab extends Model {
             $ctlrNameSpace = $obj->getName();
             $paths = explode('\\', $ctlrNameSpace);
             $ctlrName = $paths[sizeof($paths) - 1];
-            if (in_array($ctlrName, self::EXCLUDED_CONTROLLERS)) continue;
+            if (in_array($ctlrName, Constant::EXCLUDED_CONTROLLERS)) continue;
             $record = [
                 'name' => self::controllerComments($obj),
                 'controller' => $ctlrName,
@@ -204,21 +201,29 @@ class Tab extends Model {
                 'formatter' => function ($d, $row) {
                     $iconId = self::find($row['id'])->icon_id;
                     if ($iconId) {
-                        return '<i class="' . Icon::find($iconId)->name . '"></i>&nbsp;' . $d;
+                        return sprintf(Snippet::ICON, Icon::find($iconId)->name, '') . $d;
                     }
-                    return '<i class="fa fa-calendar-check-o"></i>&nbsp;' . $d;
+                    return sprintf(Snippet::ICON, 'fa-calendar-check-o text-gray') . $d;
+                }
+            ],
+            ['db' => 'Tab.controller', 'dt' => 2],
+            [
+                'db' => 'Tab.group_id', 'dt' => 3,
+                'formatter' => function($d) {
+                    if ($d == 0) { return '所有'; }
+                    return Group::find($d)->name;
                 }
             ],
             [
-                'db' => 'Action.name as actionname', 'dt' => 2,
+                'db' => 'Action.name as actionname', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return '<i class="fa fa-gears"></i>&nbsp;' . $d;
+                    return sprintf(Snippet::ICON, 'fa-gears') . $d;
                 }
             ],
-            ['db' => 'Tab.created_at', 'dt' => 3],
-            ['db' => 'Tab.updated_at', 'dt' => 4],
+            ['db' => 'Tab.created_at', 'dt' => 5],
+            ['db' => 'Tab.updated_at', 'dt' => 6],
             [
-                'db' => 'Tab.enabled', 'dt' => 5,
+                'db' => 'Tab.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $status = $d ? Snippet::DT_ON : Snippet::DT_OFF;

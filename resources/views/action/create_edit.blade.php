@@ -13,7 +13,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(请输入功能名称)',
                         'required' => 'true',
                         'maxlength' => '80'
@@ -26,7 +26,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('method', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(请输入方法名称)',
                         'required' => 'true',
                         'maxlength' => '255',
@@ -39,7 +39,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('route', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(请输入路由)',
                         'required' => 'true',
                         'maxlength' => '255',
@@ -52,7 +52,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('controller', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(请输入控制器名称)',
                         'required' => 'true',
                         'maxlength' => '255'
@@ -65,7 +65,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('view', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(请输入view路径)',
                         'maxlength' => '255'
                     ]) !!}
@@ -77,7 +77,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('js', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(请输入js文件路径)',
                         'maxlength' => '255'
                     ]) !!}

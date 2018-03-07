@@ -21,6 +21,7 @@ use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Laravel\Passport\HasApiTokens;
 
 /**
  * App\Models\User 用户
@@ -82,7 +83,8 @@ use Illuminate\Support\Facades\DB;
  */
 class User extends Authenticatable {
 
-    use Notifiable;
+    use HasApiTokens, Notifiable;
+    
     protected $table = 'users';
 
     /**

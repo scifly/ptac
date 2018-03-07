@@ -5,7 +5,7 @@
     <div class="col-sm-6">
         <div class="input-group">
             <div class="input-group-addon">
-                <i class="@if(isset($icon)) {{ $icon }} @else fa fa-list @endif"></i>
+                <i class="@if(isset($icon)) {{ $icon }} @else fa fa-list @endif" style="width: 20px;"></i>
             </div>
             {!! Form::select($id, $items, null, [
                 'class' => 'form-control select2',

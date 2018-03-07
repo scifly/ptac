@@ -13,15 +13,13 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class= "fa fa-users"></i>
-                        </div>
-                    {!! Form::text('name', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(不超过40个汉字)',
-                        'required' => 'true',
-                        'data-parsley-length' => '[4, 40]'
-                    ]) !!}
+                        @include('partials.icon_addon', ['class' => 'fa-users'])
+                        {!! Form::text('name', null, [
+                            'class' => 'form-control text-blue',
+                            'placeholder' => '(不超过40个汉字)',
+                            'required' => 'true',
+                            'data-parsley-length' => '[4, 40]'
+                        ]) !!}
                     </div>
                 </div>
             </div>

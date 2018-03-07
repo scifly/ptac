@@ -33,11 +33,9 @@
                             ]) !!}
                             <div class="col-sm-6">
                                 <div class="input-group">
-                                    <div class="input-group-addon">
-                                        <i class="fa fa-user"></i>
-                                    </div>
+                                    @include('partials.icon_addon', ['class' => 'fa-user'])
                                     {!! Form::text('realname', null, [
-                                        'class' => 'form-control',
+                                        'class' => 'form-control text-blue',
                                         'placeholder' => '(请输入真实姓名)',
                                         'required' => 'true',
                                         'data-parsley-length' => '[2,10]',
@@ -52,11 +50,9 @@
                             ]) !!}
                             <div class="col-sm-6">
                                 <div class="input-group">
-                                    <div class="input-group-addon">
-                                        <i class="fa fa-user-o"></i>
-                                    </div>
+                                    @include('partials.icon_addon', ['class' => 'fa-user-o'])
                                     {!! Form::text('username', null, [
-                                        'class' => 'form-control',
+                                        'class' => 'form-control text-blue',
                                         'placeholder' => '(请输入用户名)',
                                         'required' => 'true',
                                         'readonly' => 'true',
@@ -77,11 +73,9 @@
                             ]) }}
                             <div class="col-sm-6">
                                 <div class="input-group">
-                                    <div class="input-group-addon">
-                                        <i class="fa fa-language"></i>
-                                    </div>
+                                    @include('partials.icon_addon', ['class' => 'fa-language'])
                                     {{ Form::text('english_name', null, [
-                                        'class' => 'form-control',
+                                        'class' => 'form-control text-blue',
                                         'placeholder' => '请填写英文名(可选)',
                                         'data-parsley-type' => 'alphanum',
                                         'data-parsley-length' => '[2, 64]',
@@ -101,11 +95,9 @@
                             ]) }}
                             <div class="col-sm-6">
                                 <div class="input-group">
-                                    <div class="input-group-addon">
-                                        <i class="fa fa-weixin"></i>
-                                    </div>
+                                    @include('partials.icon_addon', ['class' => 'fa-weixin'])
                                     {{ Form::text('wechatid', null, [
-                                        'class' => 'form-control',
+                                        'class' => 'form-control text-blue',
                                         'readonly' => 'true',
                                         'data-parsley-type' => 'alphanum',
                                         'data-parsley-length' => '[2, 255]'
@@ -132,11 +124,9 @@
                             ]) }}
                             <div class="col-sm-6">
                                 <div class="input-group">
-                                    <div class="input-group-addon">
-                                        <i class="fa fa-phone"></i>
-                                    </div>
+                                    @include('partials.icon_addon', ['class' => 'fa-phone'])
                                     {{ Form::text('telephone', null, [
-                                        'class' => 'form-control',
+                                        'class' => 'form-control text-blue',
                                         'placeholder' => '请输入座机号码(可选}',
                                        'readonly' => 'true',
                                     ]) }}
@@ -154,11 +144,9 @@
                             ]) !!}
                             <div class="col-sm-6">
                                 <div class="input-group">
-                                    <div class="input-group-addon">
-                                        <i class="fa fa-envelope-o"></i>
-                                    </div>
+                                    @include('partials.icon_addon', ['class' => 'fa-envelope-o'])
                                     {!! Form::email('email', null, [
-                                        'class' => 'form-control',
+                                        'class' => 'form-control text-blue',
                                         'placeholder' => '(请输入电子邮件地址)',
                                         'readonly' => 'true',
                                     ]) !!}

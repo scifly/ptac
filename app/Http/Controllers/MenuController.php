@@ -151,7 +151,7 @@ class MenuController extends Controller {
         );
         if ($this->menu->movable($id, $parentId)) {
             return $this->result(
-                $$this->menu->move($id, $parentId, true)
+                $this->menu->move($id, $parentId, true)
             );
         }
 

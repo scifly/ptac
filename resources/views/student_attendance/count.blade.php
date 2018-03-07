@@ -41,9 +41,7 @@
 				                <label class="col-sm-3 control-label">时间</label>
 								<div class="col-sm-6">
 									<div class="input-group">
-					                  	<div class="input-group-addon">
-					                    	<i class="fa fa-calendar"></i>
-					                  	</div>
+										@include('partials.icon_addon', ['class' => 'fa-calendar'])
 					                  	<input type="text" class="form-control pull-right" id="reservation">
 					                </div>
 								</div>
@@ -54,7 +52,6 @@
 			       	</div>
 			        
 		        </div>
-		
 				<div class="row">
 					<div class="btns col-md-12" style="width: 120px;float: right;margin-bottom: 10px;">
 						<button type="button" class="btn btn-block btn-primary" id="search">查询</button>

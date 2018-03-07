@@ -15,7 +15,9 @@
                                class="tab @if($tab['active']) text-blue @else text-gray @endif"
                             >
                                 @if(isset($tab['icon']))
-                                    <i class="{{ $tab['icon'] }}"></i>
+                                    <i class="{{ $tab['icon'] }}" style="width: 20px;"></i>
+                                @else
+                                    <i class="fa fa-circle-o" style="width: 20px;"></i>
                                 @endif
                                 {{ $tab['name'] }}
                             </a>
@@ -24,8 +26,8 @@
                 </ul>
                 <div class="tab-content">
                     @foreach ($tabs as $tab)
-                        <div class="@if($tab['active']) active @endif tab-pane card"
-                             id="{{ $tab['id'] }}"></div>
+                        <div class="@if($tab['active']) active @endif tab-pane card" id="{{ $tab['id'] }}">
+                        </div>
                     @endforeach
                 </div>
             </div>

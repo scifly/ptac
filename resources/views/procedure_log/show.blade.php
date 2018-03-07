@@ -77,7 +77,7 @@
                                 <div class="col-sm-4 text-right">留言：</div>
                                 <div class="col-sm-3">
                                     {!! Form::text('operator_msg', null, [
-                                    'class' => 'form-control',
+                                    'class' => 'form-control text-blue',
                                     'placeholder' => '请输入留言',
                                     'required' => 'true',
                                     ]) !!}

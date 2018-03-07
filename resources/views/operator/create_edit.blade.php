@@ -16,7 +16,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('user[realname]', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(请输入真实姓名)',
                         'required' => 'true',
                         'data-parsley-length' => '[2,10]'
@@ -29,7 +29,7 @@
                 ]) }}
                 <div class="col-sm-6">
                     {{ Form::text('user[english_name]', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '请填写英文名(可选)',
                         'data-parsley-type' => 'alphanum',
                         'data-parsley-length' => '[2, 255]'
@@ -85,7 +85,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('user[username]', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(请输入用户名)',
                         'required' => 'true',
                         'data-parsley-length' => '[6,20]'
@@ -99,7 +99,7 @@
                     ]) !!}
                     <div class="col-sm-6">
                         {!! Form::password('user[password]', [
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'placeholder' => '(请输入密码)',
                             'required' => 'true',
                             'minlength' => '8'
@@ -112,7 +112,7 @@
                     ]) !!}
                     <div class="col-sm-6">
                         {!! Form::password('user[password_confirmation]', [
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'placeholder' => '(请确认密码)',
                             'required' => 'true',
                             'minlength' => '8'
@@ -126,7 +126,7 @@
                 ]) }}
                 <div class="col-sm-6">
                     {{ Form::text('user[telephone]', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '请输入座机号码(可选}',
                     ]) }}
                 </div>
@@ -137,7 +137,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::email('user[email]', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(请输入电子邮件地址)',
                     ]) !!}
                 </div>

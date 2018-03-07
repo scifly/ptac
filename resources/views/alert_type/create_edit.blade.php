@@ -13,11 +13,9 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <span class="input-group-addon">
-                            <i class="fa fa-warning"></i>
-                        </span>
+                        @include('partials.icon_addon', ['class' => 'fa-warning'])
                         {!! Form::text('name', null, [
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'placeholder' => '(请输入警告类型名称)',
                             'required' => 'true',
                             'data-parsley-length' => '[2, 60]'
@@ -31,11 +29,9 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <span class="input-group-addon">
-                            <i class="fa fa-language"></i>
-                        </span>
+                        @include('partials.icon_addon', ['class' => 'fa-language'])
                         {!! Form::text('english_name', null, [
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'placeholder' => '(请输入英文名称)',
                             'required' => 'true',
                             'data-parsley-length' => '[2, 60]'

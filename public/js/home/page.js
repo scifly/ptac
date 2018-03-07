@@ -674,7 +674,7 @@ $(function () {
         // 获取状态为active的卡片
         var $activeTabPane = $('#tab_' + page.getActiveTabId());
         // 如果状态为active的卡片的内容为空, 清空其他卡片的内容
-        if ($activeTabPane.html() === '') {
+        if ($.trim($activeTabPane.html()) === '') {
             // 清空所有卡片的内容
             $.each($tabPanes, function () { $(this).html(''); });
             // 获取状态为active的卡片内容

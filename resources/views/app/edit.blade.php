@@ -18,7 +18,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('agentid', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'required' => 'true',
                         'placeholder' => '请输入应用id',
                         'maxlength' => '12'
@@ -31,11 +31,9 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class="fa fa-weixin"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-weixin'])
                         {!! Form::text('name', null, [
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'required' => 'true',
                             'placeholder' => '请输入应用名称（不超过12个汉字）',
                             'maxlength' => '12'
@@ -49,7 +47,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('redirect_domain', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'required' => 'true',
                         'placeholder' => '请输入企业应用可信域名',
                         'maxlength' => '255'
@@ -62,11 +60,9 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class="fa fa-link"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-link'])
                         {!! Form::text('home_url', null, [
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'required' => 'true',
                             'placeholder' => '请输入主页型应用url',
                             'maxlength' => '255'

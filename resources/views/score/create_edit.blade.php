@@ -30,7 +30,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('score', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(不超过5个数字含小数点)',
                         'required' => 'true',
                         'type' => "number",

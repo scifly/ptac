@@ -13,11 +13,9 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class= "fa fa-book"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-book'])
                         {!! Form::text('name', null, [
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'placeholder' => '不能超过20个汉字',
                             'required' => 'true',
                             'data-parsley-length' => '[2, 20]'
@@ -31,17 +29,15 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class= "fa fa-hand-o-up"></i>
-                        </div>
-                    {!! Form::text('max_score', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(不超过6个数字含小数点)',
-                        'required' => 'true',
-                        'type' => 'number',
-                        'data-parsley-range' => '[100,150]',
-                        'data-parsley-length' => '[3, 6]'
-                    ]) !!}
+                        @include('partials.icon_addon', ['class' => 'fa-hand-o-up'])
+                        {!! Form::text('max_score', null, [
+                            'class' => 'form-control text-blue',
+                            'placeholder' => '(不超过6个数字含小数点)',
+                            'required' => 'true',
+                            'type' => 'number',
+                            'data-parsley-range' => '[100,150]',
+                            'data-parsley-length' => '[3, 6]'
+                        ]) !!}
                     </div>
                 </div>
             </div>
@@ -51,17 +47,15 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class= "fa fa-hand-o-down"></i>
-                        </div>
-                    {!! Form::text('pass_score', null, [
-                        'class' => 'form-control',
-                        'placeholder' => '(不超过5个数字含小数点)',
-                        'required' => 'true',
-                        'data-parsley-range' => '[60,90]',
-                        'type' => 'number',
-                        'data-parsley-length' => '[2, 5]'
-                    ]) !!}
+                        @include('partials.icon_addon', ['class' => 'fa-hand-o-down'])
+                        {!! Form::text('pass_score', null, [
+                            'class' => 'form-control text-blue',
+                            'placeholder' => '(不超过5个数字含小数点)',
+                            'required' => 'true',
+                            'data-parsley-range' => '[60,90]',
+                            'type' => 'number',
+                            'data-parsley-length' => '[2, 5]'
+                        ]) !!}
                     </div>
                 </div>
             </div>

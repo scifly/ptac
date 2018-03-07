@@ -250,6 +250,7 @@ class DatatableFacade extends Facade {
      * @return array Formatted data in a row based format
      */
     static function data_output(array $columns, array $data) {
+        
         $out = [];
         $length = count($data);
         for ($i = 0; $i < $length; $i++) {
@@ -380,11 +381,11 @@ class DatatableFacade extends Facade {
         $user = Auth::user();
         $id = $row['id'];
         $status = $active ? Snippet::DT_ON : Snippet::DT_OFF;
-        $showLink = str_repeat(Snippet::DT_SPACE, 3) .
+        $showLink = str_repeat(Snippet::DT_SPACE, 5) .
             sprintf(Snippet::DT_LINK_SHOW, 'show_' . $id);
-        $editLink = str_repeat(Snippet::DT_SPACE, 3) .
+        $editLink = str_repeat(Snippet::DT_SPACE, 5) .
             sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
-        $delLink = str_repeat(Snippet::DT_SPACE, 2) .
+        $delLink = str_repeat(Snippet::DT_SPACE, 4) .
             sprintf(Snippet::DT_LINK_DEL, $id);
         return
             $status .

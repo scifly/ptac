@@ -26,7 +26,7 @@ var crud = {
                     '<td>' +
                         '<div class="input-group">' +
                             '<div class="input-group-addon">' +
-                                '<i class="fa fa-mobile"></i>' +
+                                '<i class="fa fa-mobile" style="width: 20px;"></i>' +
                             '</div>' +
                             '<input class="form-control" placeholder="（请输入手机号码）" name="mobile[' + size + '][mobile]" value="" style="width: 75%">' +
                         '</div>' +

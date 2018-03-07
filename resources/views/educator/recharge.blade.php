@@ -14,7 +14,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::select('user_id', $users, null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'style' => 'width: 100%;',
                         'disabled' => 'disabled'
                     ]) !!}
@@ -26,7 +26,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('sms_quote', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'disabled' => 'disabled'
                     ]) !!}
                 </div>
@@ -37,7 +37,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('recharge', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(请输入充值条数)',
                         'required' => 'true',
                         'maxlength' => '255'

@@ -34,20 +34,22 @@ class Constant {
     
     const ROOT_DEPARTMENT_ID = 1;
     
-    # 性别符号
-    const MALE = '<i class="fa fa-mars"></i>';
-    const FEMALE = '<i class="fa fa-venus"></i>';
+    # 控制器相对路径
+    const CONTROLLER_DIR = 'app/Http/Controllers';
+
+    const EXCLUDED_CONTROLLERS = [
+        'Controller',
+        'ForgotPasswordController',
+        'LoginController',
+        'RegisterController',
+        'ResetPasswordController',
+        'HomeController',
+        'TestController',
+        'HomeWorkController',
+        'MessageCenterController',
+        'AttendanceController',
+        'MobileSiteController',
+        'ScoreCenterController'
+    ];
     
-    const SIMPLE = '<li%s><a id="%s" href="%s" class="leaf"><i class="%s"></i> %s</a></li>';
-    # 包含子菜单的HTML模板
-    const TREE = <<<HTML
-            <li class="treeview%s">
-                <a href="#">
-                    <i class="%s"></i> <span>%s</span>
-                    <span class="pull-right-container">
-                        <i class="fa fa-angle-left pull-right"></i>
-                    </span>
-                </a>
-                <ul class="treeview-menu">
-HTML;
 }

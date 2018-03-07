@@ -21,15 +21,15 @@
                         </div>
                         <div class="form-group grade_div" style="margin-right: 50px">
                             <label class="control-label" for="grade_id">请选择年级：</label>
-                            {!! Form::select('grade_id', $grades, null, ['class' => 'form-control', 'style'=>'margin-right: 10px']) !!}
+                            {!! Form::select('grade_id', $grades, null, ['class' => 'form-control text-blue', 'style'=>'margin-right: 10px']) !!}
                         </div>
                         <div class="form-group class_div" style="margin-right: 50px;display: none">
                             <label class="control-label" for="class_id">请选择班级：</label>
-                            {!! Form::select('class_id', $classes, null, ['class' => 'form-control', 'style'=>'margin-right: 10px']) !!}
+                            {!! Form::select('class_id', $classes, null, ['class' => 'form-control text-blue', 'style'=>'margin-right: 10px']) !!}
                         </div>
                         <div class="form-group" style="margin-right: 50px">
                             <label class="control-label" for="exam_id">请选择考试：</label>
-                            {!! Form::select('exam_id', $exams, null, ['class' => 'form-control', 'style'=>'margin-right: 10px']) !!}
+                            {!! Form::select('exam_id', $exams, null, ['class' => 'form-control text-blue', 'style'=>'margin-right: 10px']) !!}
                         </div>
                         <div class="form-group">
                             <a id="submit" class="btn btn-primary">提交</a>

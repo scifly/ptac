@@ -157,6 +157,7 @@ return [
         App\Providers\DatatableServiceProvider::class,
         App\Providers\ComposerServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
+        Laravel\Passport\PassportServiceProvider::class
     ],
     /*
     |--------------------------------------------------------------------------

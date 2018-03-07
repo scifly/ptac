@@ -4,8 +4,8 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
-use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -33,7 +33,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static Builder|Icon whereName($value)
  * @method static Builder|Icon whereRemark($value)
  * @method static Builder|Icon whereUpdatedAt($value)
- * @mixin Eloquent
+ * @mixin \Eloquent
  */
 class Icon extends Model {
 
@@ -46,21 +46,21 @@ class Icon extends Model {
      *
      * @return BelongsTo
      */
-    public function iconType() { return $this->belongsTo('App\Models\IconType'); }
+    function iconType() { return $this->belongsTo('App\Models\IconType'); }
 
     /**
      * 返回Icon包含的菜单对象
      *
      * @return HasMany
      */
-    public function menus() { return $this->hasMany('App\Models\Menu'); }
+    function menus() { return $this->hasMany('App\Models\Menu'); }
 
     /**
      * 返回指定图标包含的所有卡片对象
      *
      * @return HasMany
      */
-    public function tabs() { return $this->hasMany('App\Models\Tab'); }
+    function tabs() { return $this->hasMany('App\Models\Tab'); }
 
     /**
      * 返回Icon列表
@@ -69,7 +69,7 @@ class Icon extends Model {
      */
     function icons() {
 
-        $data = self::whereEnabled(1)->get();
+        $data = $this->whereEnabled(1)->get();
         $icons = [];
         foreach ($data as $datum) {
             $icons[$datum->iconType->name][$datum->id] = $datum->name;
@@ -85,9 +85,9 @@ class Icon extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    function store(array $data) {
 
-        $icon = self::create($data);
+        $icon = $this->create($data);
 
         return $icon ? true : false;
 
@@ -100,9 +100,9 @@ class Icon extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    function modify(array $data, $id) {
 
-        $icon = self::find($id);
+        $icon = $this->find($id);
         if (!$icon) {
             return false;
         }
@@ -118,9 +118,9 @@ class Icon extends Model {
      * @return bool|null
      * @throws Exception
      */
-    public function remove($id) {
+    function remove($id) {
 
-        $icon = self::find($id);
+        $icon = $this->find($id);
         if (!$icon) { return false; }
         
         return $icon->removable($icon) ? $icon->delete() : false;
@@ -132,14 +132,14 @@ class Icon extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'Icon.id', 'dt' => 0],
             [
                 'db' => 'Icon.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return '<i class="' . $d . '"></i>&nbsp;' . $d;
+                    return sprintf(Snippet::ICON, $d) . $d;
                 },
             ],
             ['db' => 'IconType.name as icontypename', 'dt' => 2],
@@ -148,7 +148,7 @@ class Icon extends Model {
             [
                 'db' => 'Icon.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row);
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
@@ -163,7 +163,7 @@ class Icon extends Model {
             ],
         ];
 
-        return Datatable::simple(self::getModel(), $columns, $joins);
+        return Datatable::simple($this->getModel(), $columns, $joins);
 
     }
 

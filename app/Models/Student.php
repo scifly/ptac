@@ -8,6 +8,7 @@ use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use App\Http\Requests\StudentRequest;
 use App\Rules\Mobiles;
 use Carbon\Carbon;
@@ -512,7 +513,7 @@ class Student extends Model {
             [
                 'db'        => 'User.gender as gender', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return $d == 1 ? Constant::MALE : Constant::FEMALE;
+                    return $d == 1 ? Snippet::MALE : Snippet::FEMALE;
                 },
             ],
             [

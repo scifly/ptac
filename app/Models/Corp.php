@@ -40,7 +40,7 @@ use Illuminate\Support\Facades\Session;
  * @method static Builder|Corp whereCompanyId($value)
  * @method static Builder|Corp whereDepartmentId($value)
  * @method static Builder|Corp whereMenuId($value)
- * @mixin Eloquent
+ * @mixin \Eloquent
  * @property-read Company $company
  * @property-read Collection|Department[] $departments
  * @property-read Collection|Grade[] $grades

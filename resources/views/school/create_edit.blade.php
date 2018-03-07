@@ -13,7 +13,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'required' => 'true',
                         'data-parsley-length' => '[6, 255]'
                     ]) !!}
@@ -25,7 +25,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('address', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'required' => 'true',
                         'data-parsley-length' => '[6, 255]'
                     ]) !!}
@@ -37,7 +37,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('signature', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'required' => 'true',
                         'placeholder'=>'签名格式必须为[内容]',
                         'data-parsley-length' => '[2, 7]'

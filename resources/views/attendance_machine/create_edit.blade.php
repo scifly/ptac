@@ -13,11 +13,9 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <span class="input-group-addon">
-                            <i class="fa fa-print"></i>
-                        </span>
+                        @include('partials.icon_addon', ['class' => 'fa-print'])
                         {!! Form::text('name', null, [
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'placeholder' => '(不得超过20个汉字)',
                             'required' => 'true',
                             'maxlength' => '60'
@@ -31,11 +29,9 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <span class="input-group-addon">
-                            <i class="fa fa-location-arrow"></i>
-                        </span>
+                        @include('partials.icon_addon', ['class' => 'fa-location-arrow'])
                         {!! Form::text('location', null, [
-                            'class' => 'form-control',
+                            'class' => 'form-control text-blue',
                             'placeholder' => '(不得超过80个汉字)',
                             'required' => 'true',
                             'maxlength' => '255'
@@ -49,7 +45,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('machineid', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(小写字母和数字，不超过20个字符)',
                         'required' => 'true',
                         'data-parsley-type' => 'alphanum',

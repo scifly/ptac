@@ -16,3 +16,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::post('create_attendance', 'StudentAttendanceController@createStuAttendance');
+Route::post('store', 'ConsumptionController@store')->middleware('auth:api');

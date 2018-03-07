@@ -27,11 +27,9 @@
                             ]) !!}
                             <div class="col-sm-6">
                                 <div class="input-group">
-                                    <div class="input-group-addon">
-                                        <i class="fa fa-lock"></i>
-                                    </div>
+                                    @include('partials.icon_addon', ['class' => 'fa-lock'])
                                     {!! Form::password('old_password', [
-                                        'class' => 'form-control',
+                                        'class' => 'form-control text-blue',
                                         'placeholder' => '(请输入密码)',
                                         'required' => 'true',
                                         'minlength' => '6',
@@ -45,11 +43,9 @@
                             ]) !!}
                             <div class="col-sm-6">
                                 <div class="input-group">
-                                    <div class="input-group-addon">
-                                        <i class="fa fa-lock"></i>
-                                    </div>
+                                    @include('partials.icon_addon', ['class' => 'fa-lock'])
                                     {!! Form::password('password', [
-                                        'class' => 'form-control',
+                                        'class' => 'form-control text-blue',
                                         'placeholder' => '(请输入密码)',
                                         'required' => 'true',
                                         'minlength' => '6',
@@ -63,11 +59,9 @@
                             ]) !!}
                             <div class="col-sm-6">
                                 <div class="input-group">
-                                    <div class="input-group-addon">
-                                        <i class="fa fa-lock"></i>
-                                    </div>
+                                    @include('partials.icon_addon', ['class' => 'fa-lock'])
                                     {!! Form::password('confirm_password', [
-                                        'class' => 'form-control',
+                                        'class' => 'form-control text-blue',
                                         'placeholder' => '(请确认密码)',
                                         'required' => 'true',
                                         'minlength' => '6',

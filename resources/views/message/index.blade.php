@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.list_header', ['addBtn' => false])
+        @include('partials.list_header')
     </div>
     <div class="box-bod">
         <div class="nav-tabs-custom">
@@ -108,7 +108,7 @@
                                             {!! Form::textarea('content', null, [
                                                 'id' => 'messageText',
                                                 'name' => 'content',
-                                                'class' => 'form-control',
+                                                'class' => 'form-control text-blue',
                                             ]) !!}
                                         </div>
                                         <div class="tab-pane" id="content_mpnews">
@@ -170,7 +170,7 @@
                                         	<input id="content-sms-maxlength" type="hidden" value="{{$messageMaxSize}}" >
                                             {!! Form::textarea('content', null, [
                                                 'id' => 'contentSms',
-                                                'class' => 'form-control',
+                                                'class' => 'form-control text-blue',
                                             ]) !!}
                                             <span id="content-sms-length" style="color: #777;margin-top: 10px;display: inline-block;"></span>
                                         </div>

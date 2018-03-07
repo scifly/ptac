@@ -13,7 +13,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(不超过40个汉字)',
                         'required' => 'true',
                         'data-parsley-length' => '[4, 40]'
@@ -43,7 +43,7 @@
                 {{--]) !!}--}}
                 {{--<div class="col-sm-6">--}}
                     {{--{!! Form::text('max_scores', null, [--}}
-                        {{--'class' => 'form-control',--}}
+                        {{--'class' => 'form-control text-blue',--}}
                         {{--'placeholder' => '(不超过10个数字)',--}}
                         {{--'required' => 'true',--}}
                         {{--'type' => "number",--}}
@@ -58,7 +58,7 @@
                 {{--]) !!}--}}
                 {{--<div class="col-sm-6">--}}
                     {{--{!! Form::text('pass_scores', null, [--}}
-                        {{--'class' => 'form-control',--}}
+                        {{--'class' => 'form-control text-blue',--}}
                         {{--'placeholder' => '(不超过10个数字)',--}}
                         {{--'required' => 'true',--}}
                         {{--'type' => "number",--}}
@@ -73,7 +73,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::date('start_date', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                     ]) !!}
                 </div>
             </div>
@@ -83,7 +83,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::date('end_date', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                     ]) !!}
                 </div>
             </div>

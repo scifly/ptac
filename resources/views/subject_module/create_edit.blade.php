@@ -13,7 +13,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '不能超过20个汉字',
                         'required' => 'true',
                         'data-parsley-length' => '[2, 20]'
@@ -31,7 +31,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('weight', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '次分类权重是数字',
                         'required' => 'true',
                         'type' => 'number',

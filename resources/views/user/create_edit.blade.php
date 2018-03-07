@@ -8,7 +8,7 @@
                 {!! Form::label('username', '用户名',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
                     {!! Form::text('username', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(用户名不能为空)',
                         'required' => 'true',
                         'maxlength' => '255'
@@ -42,7 +42,7 @@
                 {!! Form::label('realname', '姓名',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
                     {!! Form::text('realname', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(不得超过20个汉字)',
                         'required' => 'true',
                         'maxlength' => '60'
@@ -60,14 +60,14 @@
             <div class="form-group">
                 {!! Form::label('group_id', '所属组别',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
-                    {!! Form::select('group_id', $groups, null, ['class' => 'form-control']) !!}
+                    {!! Form::select('group_id', $groups, null, ['class' => 'form-control text-blue']) !!}
                 </div>
             </div>
             <div class="form-group">
                 {!! Form::label('email', '电子邮箱',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
                     {!! Form::text('email', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(电子邮箱)',
                         'required' => 'true',
                         'maxlength' => '255'
@@ -78,7 +78,7 @@
                 {!! Form::label('wechatid', '微信号id',['class' => 'col-sm-4 control-label']) !!}
                 <div class="col-sm-2">
                     {!! Form::text('wechatid', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(小写字母和数字)',
                         'required' => 'true',
                         'data-parsley-type' => 'alphanum',

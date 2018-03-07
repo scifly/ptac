@@ -18,7 +18,7 @@
                 {!! Form::label('initiator_msg', '留言',['class' => 'col-sm-3 control-label']) !!}
                 <div class="col-sm-6">
                     {!! Form::text('initiator_msg', null, [
-                    'class' => 'form-control',
+                    'class' => 'form-control text-blue',
                     'placeholder' => '请输入留言',
                     'required' => 'true'
                     ]) !!}

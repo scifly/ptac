@@ -28,7 +28,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::textarea('content', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '不能超过60个汉字',
                         'required' => 'true',
                         'data-parsley-length' => '[2, 60]'
@@ -41,7 +41,7 @@
                 {{--]) !!}--}}
                 {{--<div class="col-sm-6">--}}
                     {{--{!! Form::text('serviceid', null, [--}}
-                        {{--'class' => 'form-control'--}}
+                        {{--'class' => 'form-control text-blue'--}}
                     {{--]) !!}--}}
                 {{--</div>--}}
             {{--</div>--}}
@@ -51,7 +51,7 @@
                 {{--]) !!}--}}
                 {{--<div class="col-sm-6">--}}
                     {{--{!! Form::text('message_id', null, [--}}
-                        {{--'class' => 'form-control'--}}
+                        {{--'class' => 'form-control text-blue'--}}
                     {{--]) !!}--}}
                 {{--</div>--}}
             {{--</div>--}}
@@ -61,7 +61,7 @@
                 {{--]) !!}--}}
                 {{--<div class="col-sm-6">--}}
                     {{--{!! Form::text('url', null, [--}}
-                        {{--'class' => 'form-control'--}}
+                        {{--'class' => 'form-control text-blue'--}}
                     {{--]) !!}--}}
                 {{--</div>--}}
             {{--</div>--}}

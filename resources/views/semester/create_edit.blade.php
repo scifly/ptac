@@ -13,7 +13,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '(不得超过20个汉字)',
                         'required' => 'true',
                     ]) !!}
@@ -25,9 +25,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group date">
-                        <div class="input-group-addon">
-                            <i class="fa fa-calendar"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-calendar'])
                         {!! Form::text('start_date', null, [
                             'class' => 'form-control pull-right start_date',
                             'placeholder' => '(请选择起始日期)',
@@ -41,9 +39,7 @@
                     'class' => 'col-sm-3 control-label']) !!}
                 <div class="col-sm-6">
                     <div class="input-group date">
-                        <div class="input-group-addon">
-                            <i class="fa fa-calendar"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'calendar'])
                         {!! Form::text('end_date', null, [
                             'class' => 'form-control pull-right start_date',
                             'placeholder' => '(请选择结束日期)',

@@ -89,10 +89,18 @@ Route::group(['prefix' => 'scores'], function () {
     Route::get('listdatas/{examId}', $c . '@listdatas');
     Route::get('clastudents/{classId}', $c . '@clastudents');
 });
+// 总成绩
 Route::group(['prefix' => 'score_totals'], function () {
     $c = 'ScoreTotalController';
     Route::get('index', $c . '@index');
     Route::get('stat/{examId}', $c . '@stat');
+});
+// 消费记录
+Route::group(['prefix' => 'consumptions'], function () {
+    $c = 'ConsumptionController';
+    Route::get('index', $c . '@index');
+    Route::get('stat/{examId}', $c . '@stat');
+    Route::get('export', $c . '@export');
 });
 Route::group(['prefix' => 'score_ranges'], routes('ScoreRangeController'));
 Route::group(['prefix' => 'score_ranges'], function () {

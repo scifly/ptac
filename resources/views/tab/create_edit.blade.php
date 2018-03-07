@@ -14,7 +14,7 @@
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
 
-                        'class' => 'form-control'
+                        'class' => 'form-control text-blue'
                     ]) !!}
                 </div>
             </div>
@@ -30,9 +30,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class="fa fa-fonticons"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-fonticons'])
                         {{ Form::select('icon_id', $icons, null, [
                             'id' => 'icon_id',
                             'style' => 'width: 100%;'

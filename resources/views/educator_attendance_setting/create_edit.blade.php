@@ -13,7 +13,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     {!! Form::text('name', null, [
-                        'class' => 'form-control',
+                        'class' => 'form-control text-blue',
                         'placeholder' => '不能超过60个汉字',
                         'required' => 'true',
                         'data-parsley-length' => '[2, 60]'
@@ -27,9 +27,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class="fa fa-clock-o"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-clock-o'])
                         {!! Form::text('start', null, [
                             'class' => 'form-control start-time',
                             'required' => 'true',
@@ -45,9 +43,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class="fa fa-clock-o"></i>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-clock-o'])
                         {!! Form::text('end', null, [
                             'class' => 'form-control end-time',
                             'required' => 'true',
