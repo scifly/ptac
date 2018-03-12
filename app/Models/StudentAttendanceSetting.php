@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -106,7 +107,9 @@ class StudentAttendanceSetting extends Model {
             ['db' => 'StudentAttendanceSetting.day', 'dt' => 7],
             ['db' => 'StudentAttendanceSetting.inorout', 'dt' => 8,
                 'formatter' => function ($d) {
-                    return $d == 1 ? '进' : '出';
+                    return $d 
+                        ? sprintf(Snippet::BADGE_GREEN, '进')
+                        : sprintf(Snippet::BADGE_GREEN, '出');
                 },
             ],
             ['db' => 'StudentAttendanceSetting.msg_template', 'dt' => 9],
@@ -141,7 +144,9 @@ class StudentAttendanceSetting extends Model {
             $condition .= ' AND StudentAttendanceSetting.grade_id IN (' . implode(',', $this->gradeIds()) . ')';
         }
         
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
 
     }
 

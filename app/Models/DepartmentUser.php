@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
@@ -9,6 +10,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * App\Models\DepartmentUser
@@ -42,19 +44,21 @@ class DepartmentUser extends Model {
      * @param array $departmentIds
      * @return bool
      * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     function storeByUserId($userId, array $departmentIds) {
         
         try {
             DB::transaction(function () use ($userId, $departmentIds) {
+                $values = [];
                 foreach ($departmentIds as $departmentId) {
-                    self::create([
+                    $values[] = [
                         'user_id' => $userId,
                         'department_id' => $departmentId,
-                        'enabled' => 1,
-                    ]);
+                        'enabled' => Constant::ENABLED,
+                    ];
                 }
+                $this->insert($values);
             });
         } catch (Exception $e) {
             throw $e;
@@ -77,13 +81,17 @@ class DepartmentUser extends Model {
         
         try {
             DB::transaction(function () use ($departmentId, $userIds) {
+                $values = [];
                 foreach ($userIds as $userId) {
-                    self::create([
+                    $values[] = [
                         'user_id' => $userId,
                         'department_id' => $departmentId,
-                        'enabled' => 1,
-                    ]);
+                        'created_at' => now()->toDateTimeString(),
+                        'updated_at' => now()->toDateTimeString(),
+                        'enabled' => Constant::ENABLED,
+                    ];
                 }
+                $this->insert($values);
             });
         } catch (Exception $e) {
             throw $e;

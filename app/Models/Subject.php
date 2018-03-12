@@ -245,19 +245,22 @@ class Subject extends Model {
             [
                 'db'        => 'Subject.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return '<i class="fa fa-book"></i>&nbsp;' . $d;
+                    return sprintf(Snippet::ICON, 'fa-book') . $d;
                 },
             ],
             [
                 'db'        => 'School.name as schoolname', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return '<i class="fa fa-university"></i>&nbsp;' . $d;
+                    return sprintf(Snippet::ICON, 'fa-university') . $d;
                 },
             ],
             [
                 'db'        => 'Subject.isaux', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return $d == 1 ? '是' : '否';
+                    return $d
+                        ? sprintf(Snippet::BADGE_GREEN, '是')
+                        : sprintf(Snippet::BADGE_GREEN, '否');
+    
                 },
             ],
             ['db' => 'Subject.max_score', 'dt' => 4],
@@ -289,7 +292,9 @@ class Subject extends Model {
         ];
         $condition = 'Subject.school_id = ' . $this->schoolId();
         
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
         
     }
     

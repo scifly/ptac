@@ -146,7 +146,7 @@ class ProcedureStep extends Model {
             ],
         ];
 
-        return Datatable::simple(self::getModel(), $columns, $joins);
+        return Datatable::simple($this->getModel(), $columns, $joins);
         
     }
 

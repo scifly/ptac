@@ -160,7 +160,9 @@ class WapSiteModule extends Model {
         ];
         $condition = 'WapSite.school_id = ' . $this->schoolId();
         
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
         
     }
 

@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -47,21 +49,21 @@ class ConferenceParticipant extends Model {
      *
      * @return BelongsTo
      */
-    public function educator() { return $this->belongsTo('\App\Models\Educator'); }
+    function educator() { return $this->belongsTo('\App\Models\Educator'); }
 
     /**
      * 返回与会者参加的会议对象
      *
      * @return BelongsTo
      */
-    public function conferenceQueue() { return $this->belongsTo('App\Models\ConferenceQueue'); }
+    function conferenceQueue() { return $this->belongsTo('App\Models\ConferenceQueue'); }
     
     /**
      * 与会者列表
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'ConferenceParticipant.id', 'dt' => 0],
@@ -73,8 +75,8 @@ class ConferenceParticipant extends Model {
             [
                 'db' => 'ConferenceParticipant.status', 'dt' => 6,
                 'formatter' => function ($d) {
-                    return $d ? '<span class="badge bg-green">签到已到</span>' :
-                        '<span class="badge bg-yellow">签到未到</span>';
+                    return $d ? sprintf(Snippet::BADGE_GREEN, '签到已到') :
+                        sprintf(Snippet::BADGE_YELLOW, '签到未到');
                 },
             ],
         ];
@@ -107,11 +109,11 @@ class ConferenceParticipant extends Model {
         $condition = 'Educator.school_id = ' . $this->schoolId();
         $user = Auth::user();
         # 普通角色用户只能查看自己发起会议的与会者列表
-        if (!in_array($user->group->name, ['运营', '企业', '学校'])) {
+        if (!in_array($user->group->name, Constant::SUPER_ROLES)) {
             $condition .= ' AND ConferenceQueue.user_id = ' . $user->id;
         }
 
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        return Datatable::simple($this->getModel(), $columns, $joins, $condition);
 
     }
 

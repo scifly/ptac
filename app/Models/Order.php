@@ -115,7 +115,9 @@ class Order extends Model {
 
         $condition = 'School.id = ' . $this->schoolId();
         
-        return Datatable::simple($this, $columns, $joins, $condition);
+        return Datatable::simple(
+            $this, $columns, $joins, $condition
+        );
 
     }
 

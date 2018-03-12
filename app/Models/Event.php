@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -100,16 +101,20 @@ class Event extends Model {
                 'db' => 'Event.ispublic', 'dt' => 6,
                 'formatter' => function ( $d) {
                     if (!empty($d)) {
-                       return  $d ? '是' : '否';
+                       return  $d
+                           ? sprintf(Snippet::BADGE_GREEN, '是')
+                           : sprintf(Snippet::BADGE_RED, '否');
                     }
-                    return '[n/a]';
+                    return Snippet::BADGE_GRAY;
                 },
             ],
             ['db' => 'Subject.name', 'dt' => 7],
             [
                 'db' => 'Event.alertable', 'dt' => 8,
                 'formatter' => function ($d){
-                 return $d ? '是' : '否';
+                    return  $d
+                        ? sprintf(Snippet::BADGE_GREEN, '是')
+                        : sprintf(Snippet::BADGE_RED, '否');
                 }
             ],
             ['db' => 'User.realname', 'dt' => 9],
@@ -134,10 +139,11 @@ class Event extends Model {
             ],
 
         ];
-        $condition = null;
         $condition = 'Event.enabled = 1';
 
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
 
     }
 

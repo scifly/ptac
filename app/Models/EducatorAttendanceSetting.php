@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -53,21 +54,21 @@ class EducatorAttendanceSetting extends Model {
      *
      * @return HasMany
      */
-    public function educatorAttendances() { return $this->hasMany('App\Models\EducatorAttendance', 'eas_id'); }
+    function educatorAttendances() { return $this->hasMany('App\Models\EducatorAttendance', 'eas_id'); }
 
     /**
      * 返回所属的学校对象
      *
      * @return BelongsTo
      */
-    public function school() { return $this->belongsTo('App\Models\School'); }
+    function school() { return $this->belongsTo('App\Models\School'); }
 
     /**
      * 教职员工考勤设置列表
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'EducatorAttendanceSetting.id', 'dt' => 0],
@@ -75,7 +76,7 @@ class EducatorAttendanceSetting extends Model {
             [
                 'db' => 'School.name as schoolname ', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return '<i class="fa fa-university"></i>&nbsp;' . $d;
+                    return sprintf(Snippet::ICON, 'fa-university') . $d;
                 }
             ],
             ['db' => 'EducatorAttendanceSetting.start', 'dt' => 3],
@@ -83,7 +84,9 @@ class EducatorAttendanceSetting extends Model {
             [
                 'db' => 'EducatorAttendanceSetting.inorout', 'dt' => 5,
                 'formatter' => function ($d) {
-                    return $d ? '进' : '出';
+                    return $d
+                        ? sprintf(Snippet::BADGE_GREEN, '进')
+                        : sprintf(Snippet::BADGE_RED, '出');
                 },
             ],
             ['db' => 'EducatorAttendanceSetting.created_at', 'dt' => 6],
@@ -106,7 +109,9 @@ class EducatorAttendanceSetting extends Model {
         ];
         $condition = 'EducatorAttendanceSetting.school_id = ' . $this->schoolId();
         
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
 
     }
 

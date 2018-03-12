@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -51,14 +52,14 @@ class ComboType extends Model {
      *
      * @return BelongsTo
      */
-    public function school() { return $this->belongsTo('App\Models\school'); }
+    function school() { return $this->belongsTo('App\Models\school'); }
     
     /**
      * 套餐类型列表
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'ComboType.id', 'dt' => 0],
@@ -79,7 +80,7 @@ class ComboType extends Model {
             [
                 'db' => 'School.name as schoolname', 'dt' => 4,
                 'formatter' => function($d) {
-                    return '<i class="fa fa-university"></i>&nbsp;' . $d;
+                    return sprintf(Snippet::ICON, 'fa-university') . $d;
                 }
             ],
             ['db' => 'ComboType.months', 'dt' => 5],
@@ -104,7 +105,7 @@ class ComboType extends Model {
         ];
         $condition = 'ComboType.school_id = ' . $this->schoolId();
         
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        return Datatable::simple($this->getModel(), $columns, $joins, $condition);
 
     }
 

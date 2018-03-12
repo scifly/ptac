@@ -5,7 +5,6 @@ use App\Events\ContactImportTrigger;
 use App\Events\StudentImported;
 use App\Events\StudentUpdated;
 use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
@@ -519,7 +518,7 @@ class Student extends Model {
             [
                 'db'        => 'Squad.name as classname', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return '<i class="fa fa-users"></i>&nbsp;' . $d;
+                    return sprintf(Snippet::ICON, 'fa-users') . $d;
                 },
             ],
             ['db' => 'Student.student_number', 'dt' => 4],

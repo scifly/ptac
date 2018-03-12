@@ -32,7 +32,6 @@ class UserController extends Controller {
         
     }
 
-
     /**
      * 修改个人信息
      *

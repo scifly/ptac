@@ -101,6 +101,7 @@ Route::group(['prefix' => 'consumptions'], function () {
     Route::get('index', $c . '@index');
     Route::get('stat/{examId}', $c . '@stat');
     Route::get('export', $c . '@export');
+    // Route::get('store', $c . '@store');
 });
 Route::group(['prefix' => 'score_ranges'], routes('ScoreRangeController'));
 Route::group(['prefix' => 'score_ranges'], function () {
@@ -331,7 +332,44 @@ Route::get('wechat/score/analysis', 'Wechat\ScoreCenterController@analysis');
 Route::get('wechat/score/cus_total', 'Wechat\ScoreCenterController@cusTotal');
 
 
+/** Laravel Passport Test */
+Route::get('/pp', function () {
+    $query = http_build_query([
+        'client_id' => 3, // Replace with Client ID
+        'redirect_uri' => 'http://sandbox.ddd:8080/ptac/public/callback',
+        'response_type' => 'code',
+        'scope' => ''
+    ]);
+    
+    return redirect('http://sandbox.ddd:8080/myLaravel/public/oauth/authorize?' . $query);
+});
 
+Route::get('/callback', function (Request $request) {
+    
+    $response = (new GuzzleHttp\Client)->post('http://sandbox.ddd:8080/myLaravel/public/oauth/token', [
+        'form_params' => [
+            'grant_type' => 'authorization_code',
+            'client_id' => 3, // Replace with Client ID
+            'client_secret' => '7OU0zawjuyGUqzzHVeux76gfDXGN7RPZTWxTnTsf', // Replace with client secret
+            'redirect_uri' => 'http://sandbox.ddd:8080/ptac/public/callback',
+            'code' => $request::query('code'),
+        ]
+    ]);
+    
+    session()->put('token', json_decode((string) $response->getBody(), true));
+    
+    return redirect('/todos');
+});
+
+Route::get('/todos', function () {
+    $response = (new GuzzleHttp\Client)->get('http://sandbox.ddd:8080/myLaravel/public/api/todos', [
+        'headers' => [
+            'Authorization' => 'Bearer '. session()->get('token.access_token')
+        ]
+    ]);
+    
+    return json_decode((string) $response->getBody(), true);
+});
 
 
 

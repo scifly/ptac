@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\Constant;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -41,20 +42,23 @@ class MenuTab extends Model {
      * @param $menuId
      * @param array $tabIds
      * @return bool
-     * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     function storeByMenuId($menuId, array $tabIds) {
         
         try {
             DB::transaction(function () use ($menuId, $tabIds) {
+                $values = [];
                 foreach ($tabIds as $tabId) {
-                    self::create([
+                    $values[] = [
                         'menu_id' => $menuId,
                         'tab_id' => $tabId,
-                        'enabled' => 1,
-                    ]);
+                        'created_at' => now()->toDateTimeString(),
+                        'updated_at' => now()->toDateTimeString(),
+                        'enabled' => Constant::ENABLED,
+                    ];
                 }
+                $this->insert($values);
             });
         } catch (Exception $e) {
             throw $e;
@@ -70,20 +74,21 @@ class MenuTab extends Model {
      * @param $tabId
      * @param array $menuIds
      * @return bool
-     * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     function storeByTabId($tabId, array $menuIds) {
         
         try {
             DB::transaction(function () use ($tabId, $menuIds) {
+                $values = [];
                 foreach ($menuIds as $menuId) {
-                    self::create([
+                    $values[] = [
                         'menu_id' => $menuId,
                         'tab_id' => $tabId,
-                        'enabled' => 1,
-                    ]);
+                        'enabled' => Constant::ENABLED,
+                    ];
                 }
+                $this->insert($values);
             });
         } catch (Exception $e) {
             throw $e;

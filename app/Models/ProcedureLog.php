@@ -91,28 +91,28 @@ class ProcedureLog extends Model {
      *
      * @return BelongsTo
      */
-    public function initiatorUser() { return $this->belongsTo('App\Models\User', 'initiator_user_id'); }
+    function initiatorUser() { return $this->belongsTo('App\Models\User', 'initiator_user_id'); }
 
     /**
      * 返回审批流程操作者对应的用户对象
      *
      * @return BelongsTo
      */
-    public function operatorUser() { return $this->belongsTo('App\Models\User', 'operator_user_id'); }
+    function operatorUser() { return $this->belongsTo('App\Models\User', 'operator_user_id'); }
 
     /**
      * 返回指定流程日志所属的流程对象
      *
      * @return BelongsTo
      */
-    public function procedure() { return $this->belongsTo('App\Models\Procedure'); }
+    function procedure() { return $this->belongsTo('App\Models\Procedure'); }
 
     /**
      * 返回指定流程日志所属的流程步骤对象
      *
      * @return BelongsTo
      */
-    public function procedureStep() {
+    function procedureStep() {
         
         return $this->belongsTo('App\Models\ProcedureStep', 'procedure_step_id');
         
@@ -123,7 +123,7 @@ class ProcedureLog extends Model {
      * @param $media_ids
      * @return array 处理后字典 key=>media.id,value => media
      */
-    public function operate_ids($media_ids) {
+    function operate_ids($media_ids) {
 
         $ids = explode(',', $media_ids);
         $medias = [];
@@ -140,7 +140,7 @@ class ProcedureLog extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    function store(array $data) {
 
         return true;
         
@@ -152,7 +152,7 @@ class ProcedureLog extends Model {
      * @param $where
      * @return array
      */
-    public function datatable($where) {
+    function datatable($where) {
 
         $columns = [
             ['db' => 'ProcedureLog.first_log_id', 'dt' => 0],
@@ -190,7 +190,7 @@ class ProcedureLog extends Model {
             ],
         ];
 
-        return Datatable::simple(self::getModel(), $columns, self::JOINS, $where);
+        return Datatable::simple($this->getModel(), $columns, self::JOINS, $where);
     }
 
 }

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Facades\Wechat;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use App\Http\Requests\MessageRequest;
 use Carbon\Carbon;
 use Eloquent;
@@ -81,21 +82,21 @@ class Message extends Model {
      *
      * @return BelongsTo
      */
-    public function messageType() { return $this->belongsTo('App\Models\MessageType'); }
+    function messageType() { return $this->belongsTo('App\Models\MessageType'); }
 
     /**
      * 返回指定消息所属的用户对象
      *
      * @return BelongsTo
      */
-    public function user() { return $this->belongsTo('App\Models\User','s_user_id','id'); }
+    function user() { return $this->belongsTo('App\Models\User','s_user_id','id'); }
     
     /**
      * 返回指定消息接收的用户对象
      *
      * @return BelongsTo
      */
-    public function receiveUser() { return $this->belongsTo('App\Models\User','r_user_id','id'); }
+    function receiveUser() { return $this->belongsTo('App\Models\User','r_user_id','id'); }
     
     /**
      * 获取
@@ -103,11 +104,11 @@ class Message extends Model {
      * @param array $classIds
      * @return Collection|static[]
      */
-    public function classes(array $classIds) { return Squad::whereIn('id', $classIds)->get(['id', 'name']); }
+    function classes(array $classIds) { return Squad::whereIn('id', $classIds)->get(['id', 'name']); }
 
-    public function messageSendinglogs() { return $this->belongsTo('App\Models\MessageSendingLog','msl_id','id'); }
+    function messageSendinglogs() { return $this->belongsTo('App\Models\MessageSendingLog','msl_id','id'); }
 
-    public function commType() { return $this->belongsTo('App\Models\CommType'); }
+    function commType() { return $this->belongsTo('App\Models\CommType'); }
 
     /**
      * @param MessageRequest $request
@@ -207,19 +208,20 @@ class Message extends Model {
             ['db' => 'MessageType.name as messagetypename', 'dt' => 5],
             ['db' => 'Message.read', 'dt' => 6,
                 'formatter' => function ($d) {
-                    return $d === 0 ? "否" : "是";
+                    return $d
+                        ? sprintf(Snippet::BADGE_GREEN, '是')
+                        : sprintf(Snippet::BADGE_GREEN, '否');
                 },
             ],
             ['db' => 'Message.sent', 'dt' => 7,
                 'formatter' => function ($d) {
-                    return $d === 0 ? "否" : "是";
+                    return $d
+                        ? sprintf(Snippet::BADGE_GREEN, '是')
+                        : sprintf(Snippet::BADGE_GREEN, '否');
                 },
             ],
             ['db' => 'Message.created_at', 'dt' => 8],
-            [
-                'db' => 'Message.updated_at', 'dt' => 9,
-
-            ],
+            ['db' => 'Message.updated_at', 'dt' => 9],
         ];
         $joins = [
             [
@@ -274,11 +276,14 @@ class Message extends Model {
         if ($role == '教职员工') {
             $condition = 'Message.r_user_id=' . Auth::id();
         }
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
         
     }
 
-    public function sendMessage($data) {
+    function sendMessage($data) {
         
         $result = [
             'statusCode' => 200,
@@ -441,7 +446,7 @@ class Message extends Model {
      * @param $content
      * @return string
      */
-    public function sendSms($touser, $toparty, $content) {
+    function sendSms($touser, $toparty, $content) {
         $items = $this->getMobiles($touser, $toparty);
         $autograph = '【成都外国语】';
         $result = Wechat::batchSend('LKJK004923', "654321@", implode(',', $items['mobiles']), $content . $autograph);
@@ -455,7 +460,7 @@ class Message extends Model {
      * @param $toparty
      * @return array
      */
-    public function getMobiles($touser, $toparty) {
+    function getMobiles($touser, $toparty) {
         
         $mobiles = [];
         $userDatas = [];

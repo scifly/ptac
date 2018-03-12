@@ -776,7 +776,7 @@ class Department extends Model {
             }
         }
 
-        return $childrenIds;
+        return $childrenIds ?? [];
 
     }
 

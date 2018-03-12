@@ -40,7 +40,7 @@ class SchoolType extends Model {
      *
      * @return HasMany
      */
-    public function schools() { return $this->hasMany('App\Models\School'); }
+    function schools() { return $this->hasMany('App\Models\School'); }
     
     /**
      * 保存学校类型
@@ -48,7 +48,7 @@ class SchoolType extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    function store(array $data) {
         
         $st = self::create($data);
         
@@ -63,7 +63,7 @@ class SchoolType extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    function modify(array $data, $id) {
         
         $st = self::find($id);
         if (!$st) { return false; }
@@ -79,7 +79,7 @@ class SchoolType extends Model {
      * @return bool
      * @throws Exception
      */
-    public function remove($id) {
+    function remove($id) {
         
         $st = self::find($id);
         if (!$st) { return false; }
@@ -93,7 +93,7 @@ class SchoolType extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'SchoolType.id', 'dt' => 0],
@@ -109,7 +109,7 @@ class SchoolType extends Model {
             ],
         ];
 
-        return Datatable::simple(self::getModel(), $columns);
+        return Datatable::simple($this->getModel(), $columns);
 
     }
 

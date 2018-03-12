@@ -41,7 +41,7 @@ class MediaType extends Model {
      *
      * @return HasMany
      */
-    public function medias() { return $this->hasMany('App\Models\Media'); }
+    function medias() { return $this->hasMany('App\Models\Media'); }
 
     /**
      * 保存媒体类型
@@ -49,7 +49,7 @@ class MediaType extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    function store(array $data) {
 
         $mediaType = $this->create($data);
 
@@ -64,7 +64,7 @@ class MediaType extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    function modify(array $data, $id) {
 
         $mediaType = $this->find($id);
         if (!$mediaType) {
@@ -82,7 +82,7 @@ class MediaType extends Model {
      * @return bool|null
      * @throws Exception
      */
-    public function remove($id) {
+    function remove($id) {
 
         $mediaType = $this->find($id);
         if (!$mediaType) { return false; }

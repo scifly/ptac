@@ -45,14 +45,14 @@ class SubjectModule extends Model {
      * 
      * @return BelongsTo
      */
-    public function subject() { return $this->belongsTo('App\Models\Subject'); }
+    function subject() { return $this->belongsTo('App\Models\Subject'); }
     
     /**
      * 科目次分类列表
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'SubjectModule.id', 'dt' => 0],
@@ -81,7 +81,7 @@ class SubjectModule extends Model {
         $condition = 'Subject.school_id = ' . $this->schoolId();
         
         return Datatable::simple(
-            self::getModel(), $columns, $joins, $condition
+            $this->getModel(), $columns, $joins, $condition
         );
 
     }

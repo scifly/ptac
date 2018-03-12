@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Helpers\Constant;
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -28,6 +30,8 @@ use Illuminate\Support\Facades\DB;
  */
 class ActionGroup extends Model {
 
+    use ModelTrait;
+    
     protected $table = 'actions_groups';
 
     protected $fillable = ['action_id', 'group_id', 'enabled'];
@@ -46,14 +50,18 @@ class ActionGroup extends Model {
             DB::transaction(function () use ($groupId, $ids) {
                 # step 1: 删除group_id等于$groupId的所有记录
                 self::whereGroupId($groupId)->delete();
-                # step 2: 创建ids中的所有记录
+                # step 2: 创建ids对应的所有记录
+                $values = [];
                 foreach ($ids as $id) {
-                    self::create([
+                    $values[] = [
                         'group_id' => $groupId,
                         'action_id' => $id,
-                        'enabled' => 1,
-                    ]);
+                        'created_at' => now()->toDateTimeString(),
+                        'updated_at' => now()->toDateTimeString(),
+                        'enabled' => Constant::ENABLED,
+                    ];
                 }
+                self::insert($values);
             });
         } catch (Exception $e) {
             throw $e;

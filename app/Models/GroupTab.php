@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\Constant;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -46,13 +47,15 @@ class GroupTab extends Model {
         try {
             DB::transaction(function () use ($groupId, $ids) {
                 self::whereGroupId($groupId)->delete();
+                $values = [];
                 foreach ($ids as $id) {
-                    self::create([
+                    $values[] = [
                         'group_id' => $groupId,
                         'tab_id' => $id,
-                        'enabled' => 1,
-                    ]);
+                        'enabled' => Constant::ENABLED,
+                    ];
                 }
+                $this->insert($values);
             });
         } catch (Exception $e) {
             throw $e;

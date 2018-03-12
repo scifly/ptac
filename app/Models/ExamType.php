@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -45,14 +46,14 @@ class ExamType extends Model {
      *
      * @return BelongsTo
      */
-    public function school() { return $this->belongsTo('App\Models\School'); }
+    function school() { return $this->belongsTo('App\Models\School'); }
 
     /**
      * 获取指定考试类型包含的所有考试对象
      *
      * @return HasMany
      */
-    public function exams() { return $this->hasMany('App\Models\Exam'); }
+    function exams() { return $this->hasMany('App\Models\Exam'); }
 
     /**
      * 保存考试类型
@@ -60,7 +61,7 @@ class ExamType extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    function store(array $data) {
         
         $et = self::create($data);
 
@@ -75,7 +76,7 @@ class ExamType extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    function modify(array $data, $id) {
         
         $et = self::find($id);
         if (!$et) { return false; }
@@ -91,7 +92,7 @@ class ExamType extends Model {
      * @return bool
      * @throws Exception
      */
-    public function remove($id) {
+    function remove($id) {
         
         $et = self::find($id);
         if (!$et) { return false; }
@@ -105,12 +106,17 @@ class ExamType extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'ExamType.id', 'dt' => 0],
             ['db' => 'ExamType.name', 'dt' => 1],
-            ['db' => 'School.name as schoolname', 'dt' => 2],
+            [
+                'db' => 'School.name as schoolname', 'dt' => 2,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-university') . $d;
+                }
+            ],
             ['db' => 'ExamType.remark', 'dt' => 3],
             ['db' => 'ExamType.created_at', 'dt' => 4],
             ['db' => 'ExamType.updated_at', 'dt' => 5],
@@ -133,7 +139,9 @@ class ExamType extends Model {
         ];
         $condition = 'ExamType.school_id = ' . $this->schoolId();
         
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
         
     }
 

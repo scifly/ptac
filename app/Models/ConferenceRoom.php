@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -50,14 +51,14 @@ class ConferenceRoom extends Model {
      *
      * @return BelongsTo
      */
-    public function school() { return $this->belongsTo('\App\Models\School'); }
+    function school() { return $this->belongsTo('\App\Models\School'); }
 
     /**
      * 获取指定会议室的会议队列
      *
      * @return HasMany
      */
-    public function conferenceQueues() { return $this->hasMany('App\Models\ConferenceQueue'); }
+    function conferenceQueues() { return $this->hasMany('App\Models\ConferenceQueue'); }
 
     /**
      * 保存会议室
@@ -65,7 +66,7 @@ class ConferenceRoom extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    function store(array $data) {
 
         $cr = self::create($data);
         
@@ -80,7 +81,7 @@ class ConferenceRoom extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    function modify(array $data, $id) {
 
         $cr = self::find($id);
         if (!$cr) { return false; }
@@ -96,7 +97,7 @@ class ConferenceRoom extends Model {
      * @return bool
      * @throws Exception
      */
-    public function remove($id) {
+    function remove($id) {
 
         $cr = self::find($id);
         if (!$cr) { return false; }
@@ -115,7 +116,12 @@ class ConferenceRoom extends Model {
         $columns = [
             ['db' => 'ConferenceRoom.id', 'dt' => 0],
             ['db' => 'ConferenceRoom.name', 'dt' => 1],
-            ['db' => 'School.name as schoolname', 'dt' => 2],
+            [
+                'db' => 'School.name as schoolname', 'dt' => 2,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa fa-university') . $d;
+                }
+            ],
             ['db' => 'ConferenceRoom.capacity', 'dt' => 3],
             ['db' => 'ConferenceRoom.remark', 'dt' => 4],
             ['db' => 'ConferenceRoom.created_at', 'dt' => 5],
@@ -139,7 +145,9 @@ class ConferenceRoom extends Model {
         ];
         $condition = 'ConferenceRoom.school_id = ' . $this->schoolId();
         
-        return Datatable::simple(self::getModel(), $columns, $joins,$condition);
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
 
     }
 

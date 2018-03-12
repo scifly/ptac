@@ -106,7 +106,9 @@ class DepartmentType extends Model {
             ],
         ];
 
-        return Datatable::simple(self::getModel(), $columns);
+        return Datatable::simple(
+            $this->getModel(), $columns
+        );
 
     }
 

@@ -7,6 +7,7 @@ use App\Events\CompanyDeleted;
 use App\Events\CompanyUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -59,28 +60,28 @@ class Company extends Model {
      *
      * @return BelongsTo
      */
-    public function department() { return $this->belongsTo('App\Models\Department'); }
+    function department() { return $this->belongsTo('App\Models\Department'); }
 
     /**
      * 返回对应的菜单对象
      *
      * @return BelongsTo
      */
-    public function menu() { return $this->belongsTo('App\Models\Menu'); }
+    function menu() { return $this->belongsTo('App\Models\Menu'); }
 
     /**
      * 获取指定运营者公司下属的企业对象
      *
      * @return HasMany
      */
-    public function corps() { return $this->hasMany('App\Models\Corp'); }
+    function corps() { return $this->hasMany('App\Models\Corp'); }
 
     /**
      * 通过Corp中间对象获取所有的学校对象
      *
      * @return HasManyThrough
      */
-    public function schools() {
+    function schools() {
 
         return $this->hasManyThrough('App\Models\School', 'App\Models\Corp');
 
@@ -93,7 +94,7 @@ class Company extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    public function store(array $data, $fireEvent = false) {
+    function store(array $data, $fireEvent = false) {
 
         $company = self::create($data);
         if ($company && $fireEvent) {
@@ -113,7 +114,7 @@ class Company extends Model {
      * @param bool $fireEvent
      * @return bool
      */
-    public function modify(array $data, $id, $fireEvent = false) {
+    function modify(array $data, $id, $fireEvent = false) {
 
         $company = self::find($id);
         $updated = $company->update($data);
@@ -134,7 +135,7 @@ class Company extends Model {
      * @return bool
      * @throws Exception
      */
-    public function remove($id, $fireEvent = false) {
+    function remove($id, $fireEvent = false) {
 
         $company = $this->find($id);
         if (!$company) { return false; }
@@ -153,14 +154,14 @@ class Company extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'Company.id', 'dt' => 0],
             [
                 'db' => 'Company.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return '<i class="fa fa-building"></i>&nbsp;' . $d;
+                    return sprintf(Snippet::ICON, 'fa-building') . $d;
                 }
             ],
             ['db' => 'Company.remark', 'dt' => 2],
@@ -173,7 +174,7 @@ class Company extends Model {
                 }],
         ];
 
-        return Datatable::simple(self::getModel(), $columns);
+        return Datatable::simple($this->getModel(), $columns);
 
     }
 

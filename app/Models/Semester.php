@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -74,7 +75,12 @@ class Semester extends Model {
         $columns = [
             ['db' => 'Semester.id', 'dt' => 0],
             ['db' => 'Semester.name as semestername', 'dt' => 1],
-            ['db' => 'School.name as schoolname', 'dt' => 2],
+            [
+                'db' => 'School.name as schoolname', 'dt' => 2,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-university') . $d;
+                }
+            ],
             ['db' => 'Semester.start_date', 'dt' => 3],
             ['db' => 'Semester.end_date', 'dt' => 4],
             ['db' => 'Semester.created_at', 'dt' => 5],
@@ -99,7 +105,7 @@ class Semester extends Model {
         $condition = 'Semester.school_id = ' . $this->schoolId();
     
         return Datatable::simple(
-            self::getModel(), $columns, $joins, $condition
+            $this->getModel(), $columns, $joins, $condition
         );
 
     }

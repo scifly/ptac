@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\Constant;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -58,7 +59,7 @@ class GroupMenu extends Model {
                     self::create([
                         'group_id' => $groupId,
                         'menu_id' => $id,
-                        'enabled' => 1,
+                        'enabled' => Constant::ENABLED,
                     ]);
                 }
             });

@@ -59,13 +59,13 @@ class WsmArticle extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function wapSiteModule() {
+    function wapSiteModule() {
 
         return $this->belongsTo('App\Models\WapSiteModule', 'wsm_id', 'id');
 
     }
 
-    public function thumbnailmedia() {
+    function thumbnailmedia() {
 
         return $this->belongsTo('App\Models\Media', 'thumbnail_media_id', 'id');
 
@@ -79,7 +79,7 @@ class WsmArticle extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function store(WsmArticleRequest $request) {
+    function store(WsmArticleRequest $request) {
 
         try {
             //删除原有的图片
@@ -129,7 +129,7 @@ class WsmArticle extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    public function modify(WsmArticleRequest $request, $id) {
+    function modify(WsmArticleRequest $request, $id) {
         
         $wsma = self::find($id);
         if (!$wsma) { return false; }
@@ -151,7 +151,7 @@ class WsmArticle extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'WsmArticle.id', 'dt' => 0],
@@ -187,7 +187,9 @@ class WsmArticle extends Model {
         ];
         $condition = 'WapSite.school_id = ' . $this->schoolId();
         
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
         
     }
 

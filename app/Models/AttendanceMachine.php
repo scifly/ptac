@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -50,21 +51,21 @@ class AttendanceMachine extends Model {
      *
      * @return BelongsTo
      */
-    public function school() { return $this->belongsTo('App\Models\School'); }
+    function school() { return $this->belongsTo('App\Models\School'); }
 
     /**
      * 获取指定考勤机的学生考勤记录对象
      *
      * @return HasMany
      */
-    public function studentAttendances() { return $this->hasMany('App\Models\StudentAttendance'); }
+    function studentAttendances() { return $this->hasMany('App\Models\StudentAttendance'); }
     
     /**
      * 考勤机列表
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'AttendanceMachine.id', 'dt' => 0],
@@ -73,7 +74,7 @@ class AttendanceMachine extends Model {
             [
                 'db' => 'School.name as schoolname', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return '<i class="fa fa-university"></i>&nbsp;' . $d;
+                    return sprintf(Snippet::ICON, 'fa-university') . $d;
                 }
             ],
             ['db' => 'AttendanceMachine.machineid', 'dt' => 4],
@@ -98,7 +99,9 @@ class AttendanceMachine extends Model {
         ];
         $condition = 'School.id = ' . $this->schoolId();
 
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
         
     }
 

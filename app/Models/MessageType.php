@@ -43,7 +43,7 @@ class MessageType extends Model {
      *
      * @return HasMany
      */
-    public function messages() { return $this->hasMany('App\Models\Message'); }
+    function messages() { return $this->hasMany('App\Models\Message'); }
 
     /**
      * 保存消息类型
@@ -51,7 +51,7 @@ class MessageType extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    function store(array $data) {
 
         $mt = self::create($data);
 
@@ -66,7 +66,7 @@ class MessageType extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    function modify(array $data, $id) {
 
         $mt = self::find($id);
         if (!$mt) { return false; }
@@ -82,7 +82,7 @@ class MessageType extends Model {
      * @return bool|null
      * @throws Exception
      */
-    public function remove($id) {
+    function remove($id) {
 
         $mt = self::find($id);
         if (!$mt) { return false; }
@@ -96,7 +96,7 @@ class MessageType extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'MessageType.id', 'dt' => 0],
@@ -112,7 +112,9 @@ class MessageType extends Model {
             ],
         ];
 
-        return Datatable::simple(self::getModel(), $columns);
+        return Datatable::simple(
+            $this->getModel(), $columns
+        );
 
     }
 
