@@ -3,7 +3,8 @@ namespace App\Exceptions;
 
 use App\Helpers\HttpStatusCode;
 use Exception;
-use HttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+// use HttpException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -82,22 +83,23 @@ class Handler extends ExceptionHandler {
                     break;
                 case 'TokenMismatchException':
                     $status = HttpStatusCode::TOKEN_MISMATCH;
+                    $response['message'] = __('messages.token_mismatch');
                     break;
                 case 'ErrorException':
                     $status = HttpStatusCode::INTERNAL_SERVER_ERROR;
+                    break;
+                case 'HttpException':
+                    /** @var HttpException $exception */
+                    $status = $exception->getStatusCode();
+                    break;
+                case 'ValidationException':
+                    /** @var ValidationException $exception */
+                    $response['errors'] = $exception->errors();
                     break;
                 default:
                     break;
             }
             #如果是调试环境env('APP_DEBUG')，如果非调试环境
-            if ($eName == 'ValidationException' ) {
-                /** @var ValidationException $ve */
-                $ve = $exception;
-                $response['errors'] = $ve->errors();
-            }
-            if ($this->isHttpException($exception)) {
-               $status = $exception->getCode();
-            }
             $response['statusCode'] = $status;
             $response['exception'] = $eName;
             return response()->json($response, $status);

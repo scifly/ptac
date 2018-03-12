@@ -53,12 +53,10 @@ class LoginController extends Controller {
             return response()->redirectTo($request->server('HTTP_REFERER'));
         }
         $returnUrl = null;
-        
         if ($request->get('returnUrl')) {
             $returnUrl = urldecode($request->get('returnUrl'));
         }
         if (Auth::id()) {
-
             $this->result['url'] = $returnUrl ? $returnUrl : '/';
             return response()->json($this->result);
         }
@@ -76,26 +74,17 @@ class LoginController extends Controller {
         # 手机号码登录
         } else {
             # 获取用户的默认手机号码
-            $mobile = Mobile::whereMobile($input)
-                ->where('isdefault', 1)->first();
-            if (!$mobile || !$mobile->user_id) {
-                return abort(HttpStatusCode::INTERNAL_SERVER_ERROR);
-            }
+            $mobile = Mobile::whereMobile($input)->where('isdefault', 1)->first();
+            abort_if(
+                !$mobile || !$mobile->user_id,
+                HttpStatusCode::NOT_ACCEPTABLE,
+                __('messages.invalid_credentials')
+            );
             # 通过默认手机号码查询对应的用户名
             $username = User::find($mobile->user_id)->username;
             $user = User::whereUsername($username)->first();
-            # 通过用户名登录
-            if (Auth::attempt(
-                ['username' => $username, 'password' => $password],
-                $rememberMe
-            )) {
-                Session::put('user', $user);
-
-                $this->result['url'] = $returnUrl ? $returnUrl : '/';
-                return response()->json($this->result);
-            } else {
-                return abort(HttpStatusCode::INTERNAL_SERVER_ERROR);
-            }
+            $field = 'username';
+            $input = $username;
         }
         # 登录(用户名或邮箱)
         if (Auth::attempt(
@@ -103,12 +92,14 @@ class LoginController extends Controller {
             $rememberMe
         )) {
             Session::put('user', $user);
-
             $this->result['url'] = $returnUrl ? $returnUrl : '/';
             return response()->json($this->result);
         }
         
-        return abort(HttpStatusCode::INTERNAL_SERVER_ERROR);
+        return abort(
+            HttpStatusCode::NOT_ACCEPTABLE,
+            __('messages.invalid_credentials')
+        );
         
     }
     

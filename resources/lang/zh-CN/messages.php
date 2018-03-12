@@ -16,5 +16,7 @@ return [
     'method_not_allowed' => '不支持该请求方法',
     'internal_server_error' => '内部服务器错误',
     'nonexistent_action' => '功能不存在',
-    'misconfigured_action' => '功能配置错误'
+    'misconfigured_action' => '功能配置错误',
+    'invalid_credentials' => '用户名/密码错误',
+    'token_mismatch' => '页面已失效，请重试',
 ];

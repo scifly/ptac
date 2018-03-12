@@ -39,25 +39,14 @@ $(function() {
             error: function(e) {
                 $('.overlay').hide();
                 var obj = JSON.parse(e.responseText);
-                switch (obj['statusCode']) {
-                    case 498:
-                        window.location.reload();
-                        $.gritter.add({
-                            title: '登录',
-                            text: '页面已失效, 请重试',
-                            image: 'img/error.png'
-                        });
-                        break;
-                    case 500:
-                        $.gritter.add({
-                            title: '登录',
-                            text: '用户名/密码错误',
-                            image: 'img/error.png'
-                        });
-                        break;
-                    default:
-                        break;
+                if (obj['statusCode'] === 498) {
+                    window.location.reload();
                 }
+                $.gritter.add({
+                    title: '登录',
+                    text: obj['message'],
+                    image: 'img/error.png'
+                });
             }
         })
     });

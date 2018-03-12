@@ -19,16 +19,16 @@
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <style>
+        @media (max-width: 768px) {
+            .main {
+                width:90% !important;
+                margin-top:20px !important;
+            }
+        }
+    </style>
 </head>
 <body class="hold-transition login-page">
-<style>
-    @media (max-width: 768px) {
-        .main {
-            width:90% !important;
-            margin-top:20px !important;
-        }
-    }
-</style>
 <div class="main" style="margin:15% auto;width: 360px">
     <div class="box box-success">
         <div class="box-header with-border">
@@ -69,7 +69,6 @@
 <script src="{{ URL::asset('js/adminlte.min.js') }}"></script>
 <script src="{{ asset('js/bootstrap.min.js')  }}"></script>
 <script src="{{ asset('js/auth/login.js')  }}"></script>
-<script src="{{ asset('js/home/page.js')  }}"></script>
 <script src="{{ URL::asset('js/plugins/icheck/icheck.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/gritter/js/jquery.gritter.min.js') }}"></script>
 <script>
