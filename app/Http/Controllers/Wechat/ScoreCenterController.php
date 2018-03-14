@@ -37,7 +37,7 @@ class ScoreCenterController extends Controller {
     }
     
     /**
-     *  微信端成绩
+     * 微信端成绩
      *
      * @return string
      */
@@ -60,39 +60,39 @@ class ScoreCenterController extends Controller {
         $role = User::whereUserid($userId)->first()->group->name;
         $pageSize = 4;
         $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
-        $scores = [];
+        $exams = [];
         switch ($role) {
             case '监护人':
                 if (Request::isMethod('post')) {
                     $studentId = Request::get('student_id');
                     $classId = Student::whereId($studentId)->first()->class_id;
-                    if (array_key_exists('start', Request::all())) {
-                        $score = $this->score->getClassScore($classId);
-                        $scores = array_slice($score, $start, $pageSize);
-                        
-                        return response()->json(['data' => $scores, 'studentId' => $studentId]);
-                    } elseif (array_key_exists('keywords', Request::all())) {
-                        $keyword = Request::get('keywords');
-                        $score = $this->score->getClassScore($classId, $keyword);
-                        $scores = array_slice($score, $start, $pageSize);
-                        
-                        return response()->json(['data' => $scores, 'studentId' => $studentId]);
+                    if (Request::has('keywords')) {
+                        $exams = array_slice(
+                            $this->exam->examsByClassId(
+                                $classId, Request::get('keywords')
+                            ),
+                            $start, $pageSize
+                        );
                     } else {
-                        $score = $this->score->getClassScore($classId);
-                        $scores = array_slice($score, $start, $pageSize);
-                        
-                        return response()->json(['data' => $scores, 'studentId' => $studentId]);
+                        $exams = array_slice(
+                            $this->exam->examsByClassId($classId),
+                            $start, $pageSize
+                        );
                     }
+                    return response()->json([
+                        'data' => $exams,
+                        'studentId' => $studentId,
+                    ]);
                 }
                 $data = $this->score->getStudentScore($userId);
                 $score = $data['score'];
                 $studentName = $data['studentName'];
                 if (sizeof($score) != 0) {
-                    $scores = array_slice($score[0], $start, $pageSize);
+                    $exams = array_slice($score[0], $start, $pageSize);
                 }
                 
                 return view('wechat.score.students_score_lists', [
-                    'scores'      => $scores,
+                    'scores'      => $exams,
                     'studentName' => json_encode($studentName, JSON_UNESCAPED_UNICODE),
                     'pageSize'    => $pageSize,
                 ]);
@@ -100,37 +100,31 @@ class ScoreCenterController extends Controller {
             case '教职员工':
                 if (Request::isMethod('post')) {
                     $classId = Request::get('class_id');
-                    if (array_key_exists('start', Request::all())) {
-                        $score = $this->score->getClassScore($classId);
-                        $scores = array_slice($score, $start, $pageSize);
-                        
-                        return response()->json(['data' => $scores]);
-                        
-                    } elseif (array_key_exists('keywords', Request::all())) {
-                        $keyword = Request::get('keywords');
-                        $score = $this->score->getClassScore($classId, $keyword);
-                        $scores = array_slice($score, $start, $pageSize);
-                        
-                        return response()->json(['data' => $scores]);
+                    if (Request::has('keywords')) {
+                        $exams = array_slice(
+                            $this->exam->examsByClassId(
+                                $classId, Request::get('keywords')
+                            ),
+                            $start, $pageSize
+                        );
                     } else {
-                        $score = $this->score->getClassScore($classId);
-                        $scores = array_slice($score, $start, $pageSize);
-                        
-                        return response()->json(['data' => $scores]);
+                        $exams = array_slice(
+                            $this->exam->examsByClassId($classId),
+                            $start, $pageSize
+                        );
                     }
+                    return response()->json(['data' => $exams]);
                 }
-                $datas = $this->score->getEducatorScore();
-                if (!$datas) {
-                    return '你还没有对应的班级';
-                }
+                $datas = $this->exam->examsByEducator();
+                if (!$datas) { return '你还没有绑定班级'; }
                 $score = $datas['score'];
                 $className = $datas['className'];
                 if (sizeof($score) != 0) {
-                    $scores = array_slice($score[0], $start, $pageSize);
+                    $exams = array_slice($score[0], $start, $pageSize);
                 }
                 
                 return view('wechat.score.educator_score_lists', [
-                    'scores'    => $scores,
+                    'scores'    => $exams,
                     'className' => json_encode($className, JSON_UNESCAPED_UNICODE),
                     'pageSize'  => $pageSize,
                 ]);
@@ -252,12 +246,9 @@ class ScoreCenterController extends Controller {
         $classId = Request::input('classId');
         $examId = Request::input('examId');
         $student = Request::input('student');
-//        $classId = 1;
-//        $examId = 1;
         if ($classId && $examId) {
             $data = $this->score->getExamClass($examId, $classId, $student);
 
-//            print_r($data);die;
             return view('wechat.score.detail', [
                 'data'    => $data,
                 'classId' => $classId,

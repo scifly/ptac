@@ -47,7 +47,7 @@ class Operator extends Model {
      *
      * @return BelongsTo
      */
-    public function user() { return $this->belongsTo('App\Models\User'); }
+    function user() { return $this->belongsTo('App\Models\User'); }
     
     /**
      * 保存系统管理员
@@ -346,7 +346,9 @@ class Operator extends Model {
             ],
         ];
         
-        return Datatable::simple(self::getModel(), $columns, $joins);
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins
+        );
 
     }
 

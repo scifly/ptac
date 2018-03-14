@@ -38,18 +38,19 @@ class Constant {
     const CONTROLLER_DIR = 'app/Http/Controllers';
 
     const EXCLUDED_CONTROLLERS = [
+        'ApiController',
+        'AttendanceController',
         'Controller',
         'ForgotPasswordController',
+        'HomeController',
+        'HomeWorkController',
         'LoginController',
+        'MessageCenterController',
+        'MobileSiteController',
         'RegisterController',
         'ResetPasswordController',
-        'HomeController',
+        'ScoreCenterController',
         'TestController',
-        'HomeWorkController',
-        'MessageCenterController',
-        'AttendanceController',
-        'MobileSiteController',
-        'ScoreCenterController'
     ];
     
 }

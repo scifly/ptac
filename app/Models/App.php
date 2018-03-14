@@ -74,7 +74,7 @@ class App extends Model {
      * 
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function corp() {
+    function corp() {
         
         return $this->belongsTo('App\Models\Corp');
         
@@ -85,7 +85,7 @@ class App extends Model {
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store() {
+    function store() {
 
         $secret = Request::input('secret');
         $agentid = Request::input('agentid');
@@ -96,7 +96,7 @@ class App extends Model {
         if (isset($corpApp->name)) {
             $app = self::whereAgentid($agentid)->where('corp_id', $corp_id)->first();
             if (!$app) {
-                $data = [
+                $a = self::create([
                     'corp_id' => intval($corp_id),
                     'name' => $corpApp->name,
                     'secret' => $secret,
@@ -112,9 +112,11 @@ class App extends Model {
                     'allow_partys' => json_encode($corpApp->allow_partys),
                     'allow_tags' => isset($corpApp->allow_tags) ? json_encode($corpApp->allow_tags) : '',
                     'enabled' => $corpApp->close,
-                ];
-                $a = self::create($data);
-                $response = response()->json(['app' => self::formatDateTime($a->toArray()), 'action' => 'create']);
+                ]);
+                $response = response()->json([
+                    'app' => self::formatDateTime($a->toArray()), 
+                    'action' => 'create'
+                ]);
             } else {
                 $app->corp_id = intval($corp_id);
                 $app->name = $corpApp->name;
@@ -134,10 +136,15 @@ class App extends Model {
                 $app->save();
                 $app = $app->toArray();
                 self::formatDateTime($app);
-                $response = response()->json(['app' => $app, 'action' => 'update']);
+                $response = response()->json([
+                    'app' => $app, 
+                    'action' => 'update',
+                ]);
             }
         } else {
-            $response = response()->json(['error' => $corpApp->errmsg]);
+            $response = response()->json([
+                'error' => $corpApp->errmsg
+            ]);
         }
 
         return $response;
@@ -151,7 +158,7 @@ class App extends Model {
      * @param $id
      * @return bool|Collection|Model|null|static|static[]
      */
-    public function modify(array $data, $id) {
+    function modify(array $data, $id) {
 
         $app = self::find($id);
         if (!$app) { return false; }

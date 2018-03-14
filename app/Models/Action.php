@@ -156,7 +156,7 @@ class Action extends Model {
             ],
         ];
         
-        return Datatable::simple(self::getModel(), $columns);
+        return Datatable::simple($this->getModel(), $columns);
         
     }
     
@@ -186,13 +186,13 @@ class Action extends Model {
     function scan() {
 
         $this->routes = Route::getRoutes()->getRoutes();
-        $controllers = self::scanDirectories(self::getSiteRoot() . Constant::CONTROLLER_DIR);
+        $controllers = self::scanDirs(self::siteRoot() . Constant::CONTROLLER_DIR);
         # 获取控制器的名字空间
-        $this->getControllerNamespaces($controllers);
+        $this->controllerNamespaces($controllers);
 
         # 移除excluded控制器
         $controllerNames = array_diff(
-            $this->getControllerNames($controllers),
+            $this->controllerNames($controllers),
             Constant::EXCLUDED_CONTROLLERS
         );
         $selfDefinedMethods = [];
@@ -232,16 +232,16 @@ class Action extends Model {
                         $method->isUserDefined() &&
                         $method->isPublic()
                     ) {
-                        $ctlr = $this->getControllerName($className);
+                        $ctlr = $this->controllerName($className);
                         $selfDefinedMethods[$className][$action] = [
-                            'name' => $this->getMethodComment($obj, $method),
+                            'name' => $this->methodComment($obj, $method),
                             'method' => $action,
                             'remark' => '',
                             'controller' => $ctlr,
-                            'view' => $this->getViewPath($ctlr, $action),
-                            'route' => $this->getRoute($ctlr, $action),
-                            'action_type_ids' => $this->getActionTypeIds($ctlr, $action),
-                            'js' => $this->getJsPath($ctlr, $action),
+                            'view' => $this->viewPath($ctlr, $action),
+                            'route' => $this->actionRoute($ctlr, $action),
+                            'action_type_ids' => $this->actionTypeIds($ctlr, $action),
+                            'js' => $this->jsPath($ctlr, $action),
                         ];
                     }
                 }
@@ -271,7 +271,7 @@ class Action extends Model {
                         'route' => $action['route'],
                         'action_type_ids' => $action['action_type_ids'],
                         'js' => $action['js'],
-                        'enabled' => 1,
+                        'enabled' => Constant::ENABLED,
                     ]);
                 }
             }
@@ -285,7 +285,7 @@ class Action extends Model {
      *
      * @return bool|string
      */
-    function getSiteRoot() {
+    function siteRoot() {
         
         return substr(__DIR__, 0, stripos(__DIR__, 'app/Models'));
         
@@ -296,9 +296,9 @@ class Action extends Model {
      *
      * @param $controllers
      */
-    function getControllerNamespaces(&$controllers) {
+    function controllerNamespaces(&$controllers) {
         
-        $siteRoot = str_replace('/', '\\', $this->getSiteRoot());
+        $siteRoot = str_replace('/', '\\', $this->siteRoot());
         for ($i = 0; $i < sizeof($controllers); $i++) {
             $controllers[$i] = str_replace('/', '\\', $controllers[$i]);
             $controllers[$i] = str_replace($siteRoot, '', $controllers[$i]);
@@ -313,7 +313,7 @@ class Action extends Model {
      * @param $controllers
      * @return array
      */
-    function getControllerNames($controllers) {
+    function controllerNames($controllers) {
         
         $controllerNames = [];
         foreach ($controllers as $controller) {
@@ -333,7 +333,7 @@ class Action extends Model {
      * @param array $allData
      * @return array
      */
-    private function scanDirectories($rootDir, $allData = []) {
+    private function scanDirs($rootDir, $allData = []) {
 
         // set filenames invisible if you want
         $invisibleFileNames = [".", "..", ".htaccess", ".htpasswd"];
@@ -350,7 +350,7 @@ class Action extends Model {
                     // if content is a directory and readable, add path and name
                 } elseif (is_dir($path) && is_readable($path)) {
                     // recursive callback to open new directory
-                    $allData = $this->scanDirectories($path, $allData);
+                    $allData = $this->scanDirs($path, $allData);
                 }
             }
         }
@@ -370,9 +370,9 @@ class Action extends Model {
     private function delNonExistingMethods($methods, $className) {
 
         // remove non-existing methods of current controller
-        $currentMethods = self::getMethodNames($methods);
+        $currentMethods = self::methodNames($methods);
         $existingMethods = [];
-        $controllerName = self::getControllerName($className);
+        $controllerName = self::controllerName($className);
         $results = self::whereController($controllerName)->get(['method'])->toArray();
         foreach ($results as $result) {
             $existingMethods[] = $result['method'];
@@ -400,7 +400,7 @@ class Action extends Model {
      * @param $methods
      * @return array
      */
-    private function getMethodNames($methods) {
+    private function methodNames($methods) {
 
         $methodNames = [];
         /** @var ReflectionMethod $method */
@@ -418,7 +418,7 @@ class Action extends Model {
      * @param $controller
      * @return mixed
      */
-    private function getControllerName($controller) {
+    private function controllerName($controller) {
 
         $nameSpacePaths = explode('\\', $controller);
 
@@ -433,7 +433,7 @@ class Action extends Model {
      * @param ReflectionMethod $method
      * @return mixed|string
      */
-    private function getMethodComment(ReflectionClass $controllerObj, ReflectionMethod $method) {
+    private function methodComment(ReflectionClass $controllerObj, ReflectionMethod $method) {
        
         $comment = $controllerObj->getMethod($method->getName())->getDocComment();
         $name = 'n/a';
@@ -457,7 +457,7 @@ class Action extends Model {
      * @param $action
      * @return string
      */
-    private function getViewPath($controller, $action) {
+    private function viewPath($controller, $action) {
 
         if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
             switch ($action) {
@@ -465,7 +465,7 @@ class Action extends Model {
                 case 'create':
                 case 'edit':
                 case 'show':
-                    $prefix = str_singular($this->getTableName($controller));
+                    $prefix = str_singular($this->tableName($controller));
                     $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
                     $viewPath = $prefix . '.' . $action;
                     break;
@@ -476,7 +476,7 @@ class Action extends Model {
                     $viewPath = 'custodian.relationship';
                     break;
                 default:
-                    $viewPath = Inflector::singularize(self::getTableName($controller)) . '.' . $action;
+                    $viewPath = Inflector::singularize(self::tableName($controller)) . '.' . $action;
                     break;
             }
 
@@ -493,7 +493,7 @@ class Action extends Model {
      * @param $controller string 控制器类名
      * @return string 数据表名称
      */
-    private function getTableName($controller) {
+    private function tableName($controller) {
 
         $modelName = substr(
             $controller, 0,
@@ -514,11 +514,11 @@ class Action extends Model {
      * @param $action string action名称
      * @return mixed 路由名称
      */
-    private function getRoute($controller, $action) {
+    private function actionRoute($controller, $action) {
 
         $action = ($action == 'destroy' ? 'delete' : $action);
         if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
-            $route = $this->getTableName($controller) . '/' . $action;
+            $route = $this->tableName($controller) . '/' . $action;
             foreach ($this->routes as $r) {
                 if (stripos($r->uri, $route) === 0) {
                     return $r->uri;
@@ -537,12 +537,12 @@ class Action extends Model {
      * @param $action
      * @return null|string
      */
-    private function getActionTypeIds($controller, $action) {
+    private function actionTypeIds($controller, $action) {
 
         $action = ($action == 'destroy' ? 'delete' : $action);
         $actionTypes = ActionType::pluck('id', 'name')->toArray();
         if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
-            $route = $this->getTableName($controller) . '/' . $action;
+            $route = $this->tableName($controller) . '/' . $action;
             $actionTypeIds = [];
             foreach ($this->routes as $r) {
                 if (stripos($r->uri, $route) === 0) {
@@ -566,10 +566,10 @@ class Action extends Model {
      * @param $action
      * @return mixed
      */
-    private function getJsPath($ctlr, $action) {
+    private function jsPath($ctlr, $action) {
 
         if (!in_array($ctlr, Constant::EXCLUDED_CONTROLLERS)) {
-            $prefix = str_singular($this->getTableName($ctlr));
+            $prefix = str_singular($this->tableName($ctlr));
             $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
             if (in_array($action, ['destroy', 'store', 'update', 'sort', 'move', 'rankTabs'])) {
                 return null;

@@ -62,10 +62,11 @@ class Consumption extends Model {
      * 保存消费记录
      *
      * @param array $data
+     * @return bool
      */
     function store(array $data) {
     
-    
+        return $this->create($data) ? true : false;
     
     }
     

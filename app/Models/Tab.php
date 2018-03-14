@@ -60,21 +60,21 @@ class Tab extends Model {
      *
      * @return BelongsToMany
      */
-    public function menus() { return $this->belongsToMany('App\Models\Menu', 'menus_tabs'); }
+    function menus() { return $this->belongsToMany('App\Models\Menu', 'menus_tabs'); }
 
     /**
      * 返回指定卡片所属的图标对象
      *
      * @return BelongsTo
      */
-    public function icon() { return $this->belongsTo('App\Models\Icon'); }
+    function icon() { return $this->belongsTo('App\Models\Icon'); }
 
     /**
      * 返回指定卡片默认的Action对象
      *
      * @return BelongsTo
      */
-    public function action() { return $this->belongsTo('App\Models\Action'); }
+    function action() { return $this->belongsTo('App\Models\Action'); }
     
     /**
      * 扫描
@@ -83,12 +83,12 @@ class Tab extends Model {
      * @throws Exception
      * @throws Throwable
      */
-    public function scan() {
+    function scan() {
 
         $action = new Action();
-        $controllers = self::controllerPaths($action->getSiteRoot() . Constant::CONTROLLER_DIR);
-        $action->getControllerNamespaces($controllers);
-        $controllerNames = $action->getControllerNames($controllers);
+        $controllers = self::controllerPaths($action->siteRoot() . Constant::CONTROLLER_DIR);
+        $action->controllerNamespaces($controllers);
+        $controllerNames = $action->controllerNames($controllers);
         // remove nonexisting controllers
         $existingCtlrs = [];
         $ctlrs = self::groupBy('controller')->get(['controller'])->toArray();
@@ -117,7 +117,7 @@ class Tab extends Model {
                 'controller' => $ctlrName,
                 'remark' => $controller,
                 'action_id' => self::indexActionId($ctlrName),
-                'enabled' => 1,
+                'enabled' => Constant::ENABLED,
             ];
             $tab = self::whereController($record['controller'])->first();
             if ($tab) {
@@ -168,7 +168,7 @@ class Tab extends Model {
      * @return bool|mixed
      * @throws Throwable
      */
-    public function remove($id) {
+    function remove($id) {
 
         $tab = self::find($id);
         if (!isset($tab)) { return false; }
@@ -192,7 +192,7 @@ class Tab extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'Tab.id', 'dt' => 0],
@@ -246,7 +246,7 @@ class Tab extends Model {
         ];
         
         return Datatable::simple(
-            self::getModel(), $columns, $joins
+            $this->getModel(), $columns, $joins
         );
 
     }
@@ -260,7 +260,7 @@ class Tab extends Model {
      * @throws Exception
      * @throws Throwable
      */
-    public function modify(array $data, $id) {
+    function modify(array $data, $id) {
 
         $tab = self::find($id);
         if (!isset($tab)) { return false; }

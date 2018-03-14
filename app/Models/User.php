@@ -6,6 +6,7 @@ use App\Events\UserCreated;
 use App\Events\UserDeleted;
 use App\Events\UserUpdated;
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -22,6 +23,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Laravel\Passport\HasApiTokens;
+use Throwable;
 
 /**
  * App\Models\User 用户
@@ -325,7 +327,6 @@ class User extends Authenticatable {
 
     }
 
-
     /**
      * 更新用户
      *
@@ -352,7 +353,37 @@ class User extends Authenticatable {
         return $updated ? true : false;
 
     }
-
+    
+    /**
+     * 删除用户数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Throwable
+     */
+    function remove($id){
+        
+        $user = self::find($id);
+        if (!isset($user)) { return false; }
+        try {
+            DB::transaction(function () use ($id, $user) {
+                # custodian删除指定user绑定的部门记录
+                DepartmentUser::whereUserId($id)->delete();
+                # 删除与指定user绑定的手机记录
+                Mobile::whereUserId($id)->delete();
+                # 删除企业号成员
+                User::deleteWechatUser($id);
+                # 删除user
+                $user->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
     /**
      * 返回指定用户所属的所有部门id
      *
@@ -373,7 +404,7 @@ class User extends Authenticatable {
         return array_unique($departmentIds);
 
     }
-
+    
     /**
      * 用户列表
      *
@@ -390,7 +421,7 @@ class User extends Authenticatable {
             [
                 'db' => 'User.gender', 'dt' => 5,
                 'formatter' => function ($d) {
-                    return $d ? '男' : '女';
+                    return $d ? Snippet::MALE : Snippet::FEMALE;
                 },
             ],
             ['db' => 'User.email', 'dt' => 6],
@@ -414,39 +445,10 @@ class User extends Authenticatable {
             ],
         ];
 
-        return Datatable::simple(self::getModel(), $columns, $joins);
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins
+        );
 
-    }
-    
-    /**
-     * 删除用户数据
-     *
-     * @param $userId
-     * @return bool
-     * @throws \Exception
-     * @throws \Throwable
-     */
-    function remove($userId){
-        
-        $user = self::find($userId);
-        if (!isset($user)) { return false; }
-        try {
-            DB::transaction(function () use ($userId, $user) {
-                # custodian删除指定user绑定的部门记录
-                DepartmentUser::whereUserId($userId)->delete();
-                # 删除与指定user绑定的手机记录
-                Mobile::whereUserId($userId)->delete();
-                # 删除企业号成员
-                User::deleteWechatUser($userId);
-                # 删除user
-                $user->delete();
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-    
-        return true;
-        
     }
 
 }

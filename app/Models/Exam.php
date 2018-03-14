@@ -64,14 +64,14 @@ class Exam extends Model {
      *
      * @return BelongsTo
      */
-    public function examType() { return $this->belongsTo('App\models\ExamType'); }
+    function examType() { return $this->belongsTo('App\models\ExamType'); }
 
     /**
      * 返回考试
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function score() { return $this->hasMany('App\Models\Score'); }
+    function score() { return $this->hasMany('App\Models\Score'); }
     
     /**
      * 获取参与指定考试的所有班级列表
@@ -79,7 +79,7 @@ class Exam extends Model {
      * @param $classIds
      * @return array
      */
-    public function classes($classIds) {
+    function classes($classIds) {
         
         $classIds = explode(",", $classIds);
         $selectedClasses = [];
@@ -98,7 +98,7 @@ class Exam extends Model {
      * @param $subjectIds
      * @return array
      */
-    public function subjects($subjectIds = null) {
+    function subjects($subjectIds = null) {
 
         $subjectIds = explode(",", $subjectIds);
         $selectedSubjects = [];
@@ -116,7 +116,7 @@ class Exam extends Model {
      * @param array $data
      * @return bool
      */
-    public function store(array $data) {
+    function store(array $data) {
         
         $exam = self::create($data);
 
@@ -131,7 +131,7 @@ class Exam extends Model {
      * @param $id
      * @return bool
      */
-    public function modify(array $data, $id) {
+    function modify(array $data, $id) {
         
         $exam = self::find($id);
         if (!$exam) { return false; }
@@ -147,7 +147,7 @@ class Exam extends Model {
      * @return bool
      * @throws ReflectionException
      */
-    public function remove($id) {
+    function remove($id) {
         
         $exam = self::find($id);
         if (!$exam) { return false; }
@@ -157,11 +157,70 @@ class Exam extends Model {
     }
     
     /**
+     * 获取指定班级的所有考试
+     *
+     * @param $classId
+     * @param null $keyword
+     * @return array
+     */
+    function examsByClassId($classId, $keyword = null) {
+        
+        $values = [];
+        $exams = $this->when($keyword, function (Exam $query) use ($keyword) {
+            return $query->where('name', 'like', '%' . $keyword . '%');
+        })->whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')->get();
+        foreach ($exams as $key => $e) {
+            $values[$key]['id'] = $e->id;
+            $values[$key]['name'] = $e->name;
+            $values[$key]['start_date'] = $e->start_date;
+            $values[$key]['class_id'] = $classId;
+            $values[$key]['subject_ids'] = $e->subject_ids;
+        }
+        
+        return $values;
+        
+    }
+    
+    /**
+     * 根据教职员工userId获取所在班级的考试
+     *
+     * @return array|bool
+     */
+    function examsByEducator() {
+        
+        $scores = $classNames = $classIds = [];
+        $classes = Squad::whereEnabled(Constant::ENABLED)->whereIn('id', $this->classIds())->get();
+        foreach ($classes as $k => $c) {
+            $exams = Exam::whereEnabled(Constant::ENABLED)->get();
+            foreach ($exams as $key => $e) {
+                if (in_array($c->id, explode(',', $e->class_ids))) {
+                    $scores[$k][$key]['id'] = $e->id;
+                    $scores[$k][$key]['name'] = $e->name;
+                    $scores[$k][$key]['classname'] = $c->name;
+                    $scores[$k][$key]['start_date'] = $e->start_date;
+                    $scores[$k][$key]['class_id'] = $c->id;
+                    $scores[$k][$key]['subject_ids'] = $e->subject_ids;
+                }
+            }
+            $classNames[] = [
+                'title' => $c->name,
+                'value' => $c->id,
+            ];
+        }
+        
+        return [
+            'score'     => $scores,
+            'className' => $classNames,
+        ];
+        
+    }
+    
+    /**
      * 考试列表
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'Exam.id', 'dt' => 0],
@@ -197,7 +256,7 @@ class Exam extends Model {
         }
         
         return Datatable::simple(
-            self::getModel(), $columns, $joins, $condition
+            $this->getModel(), $columns, $joins, $condition
         );
 
     }

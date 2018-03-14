@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -133,7 +134,12 @@ class Procedure extends Model {
         $columns = [
             ['db' => 'Procedures.id', 'dt' => 0],
             ['db' => 'ProcedureType.name as proceduretypename', 'dt' => 1],
-            ['db' => 'School.name as schoolname', 'dt' => 2],
+            [
+                'db' => 'School.name as schoolname', 'dt' => 2,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-university') . $d;
+                }
+            ],
             ['db' => 'Procedures.name', 'dt' => 3],
             ['db' => 'Procedures.remark', 'dt' => 4],
             ['db' => 'Procedures.created_at', 'dt' => 5],

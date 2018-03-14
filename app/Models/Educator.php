@@ -561,8 +561,6 @@ class Educator extends Model {
                     $id = $row['id'];
                     $status = $d ? Snippet::DT_ON : Snippet::DT_OFF;
                     $user = Auth::user();
-                    // $showLink = sprintf(HtmlSnippet::DT_LINK_SHOW, 'show_' . $id) .
-                    //     str_repeat(HtmlSnippet::DT_SPACE, 3);
                     $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id) .
                         str_repeat(Snippet::DT_SPACE, 2);
                     $delLink = sprintf(Snippet::DT_LINK_DEL, $id) .
@@ -598,7 +596,7 @@ class Educator extends Model {
         $condition = 'Educator.id IN (' . implode(',', $this->contactIds('educator')) . ')';
         
         return Datatable::simple(
-            self::getModel(), $columns, $joins, $condition
+            $this->getModel(), $columns, $joins, $condition
         );
 
     }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -189,13 +190,13 @@ class Group extends Model {
             [
                 'db' => 'Groups.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return '<i class="fa fa-meh-o"></i>&nbsp;' . $d;
+                    return sprintf(Snippet::ICON, 'fa-meh-o') . $d;
                 }
             ],
             [
                 'db' => 'School.name as schoolname', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return '<i class="fa fa-university"></i>&nbsp;' . $d;
+                    return sprintf(Snippet::ICON, 'fa-university') . $d;
                 }
             ],
             ['db' => 'Groups.remark', 'dt' => 3],
@@ -243,9 +244,9 @@ class Group extends Model {
                 break;
         }
         if (empty($condition)) {
-            return Datatable::simple(self::getModel(), $columns, $joins);
+            return Datatable::simple($this->getModel(), $columns, $joins);
         }
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        return Datatable::simple($this->getModel(), $columns, $joins, $condition);
 
     }
 

@@ -4,6 +4,7 @@ namespace App\Models;
 use App\Events\StudentAttendanceCreate;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Query\Builder;
@@ -94,7 +95,9 @@ class StudentAttendance extends Model {
                     if ($d == 2) {
                         return ' ';
                     } else {
-                        return $d == 1 ? '<span class="badge bg-green">进</span>' : '<span class="badge bg-red">出</span>';
+                        return $d
+                            ? sprintf(Snippet::BADGE_GREEN, '进')
+                            : sprintf(Snippet::BADGE_RED, '出');
                     }
                 },
             ],
@@ -142,7 +145,9 @@ class StudentAttendance extends Model {
         // todo: 增加角色过滤条件
         $condition = 'AttendanceMachine.school_id = ' . $this->schoolId();
         
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
         
     }
 
@@ -154,6 +159,7 @@ class StudentAttendance extends Model {
      * @return array
      */
     function getData($classId = null, $startTime = null, $endTime = null, $days = null) {
+        
         if (!$classId) { $classId = $this->getClass(); }
         if (!$startTime) { $startTime = date('Y-m-d',strtotime('-7 day')); }
         if (!$endTime) { $endTime = date('Y-m-d'); }

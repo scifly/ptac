@@ -35,6 +35,6 @@ class Attachment extends Model {
      *
      * @return BelongsTo
      */
-    public function attachmentType() { return $this->belongsTo('App\Models\AttachmentType'); }
+    function attachmentType() { return $this->belongsTo('App\Models\AttachmentType'); }
 
 }

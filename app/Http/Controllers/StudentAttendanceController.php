@@ -111,62 +111,6 @@ class StudentAttendanceController extends Controller {
         ]);
 
     }
-    /**
-     * 写入学生考勤记录接口
-     *
-     * @param StudentAttendanceRequest $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Exception
-     * @throws \Throwable
-     */
-    public function createStuAttendance(StudentAttendanceRequest $request) {
-        
-        $input = $request->all();
-        #处理返回错误信息
-        $student = Student::where('card_number', $input['card_number'])->first();
-        if (!$student) {
-            return response()->json(['message' => '学生信息有误！', 'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR]);
-        }
-        $squad = $student->squad;
-        if (!$squad) {
-            return response()->json(['message' => '学生信息有误！', 'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR]);
-        }
-        $grade = $squad->grade;
-        $school = $grade->school;
-        $weekArray = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-        //将时间转化成时间戳 获得星期 日期 时间
-        $time = strtotime($input['punch_time']);
-        $weekDay = $weekArray[date("w", $time)];
-        $date_time = date("Y-m-d", $time);
-        $schoolSemesters = Semester::where('school_id', $school->id)->get();
-        //找出对应的学期 根据打卡时间
-        foreach ($schoolSemesters as $se) {
-            if ($se->start_date <= $date_time && $se->end_date >= $date_time) {
-                $semester = $se->id;
-            }
-        }
-        if (!isset($semester)) {
-            #没有找到打卡对应的学期
-            return response()->json(['message' => '学期信息有误！', 'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR]);
-        }
-        //找出对应的考勤机id
-        $attendance = AttendanceMachine::whereMachineid($input['attendId'])
-            ->where('school_id', $school->id)->first();
-        if (empty($attendance)) {
-            return response()->json(['message' => '考勤机信息有误！', 'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR]);
-        }
-        //根据时间找出对应的 规则
-        $rules = StudentAttendanceSetting::where('grade_id', $grade->id)
-            ->where('semester_id', $semester)
-            ->where('day', $weekDay)
-            ->get();
-        if (count($rules) == 0) {
-            return response()->json(['message' => '考勤规则有误！', 'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR]);
-        }
-        
-        return $this->sa->storeByFace($input)
-            ? response()->json(['message' => 'success', 'statusCode' => HttpStatusCode::OK])
-            : response()->json(['message' => 'failed', 'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR]);
-    }
+    
     
 }

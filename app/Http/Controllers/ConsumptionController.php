@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ConsumptionRequest;
 use App\Models\Consumption;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
@@ -18,7 +19,7 @@ class ConsumptionController extends Controller {
     
     function __construct(Consumption $consumption) {
         
-        $this->middleware(['auth', 'checkrole']);
+        // $this->middleware(['auth', 'checkrole']);
         $this->consumption = $consumption;
         
     }
@@ -43,16 +44,24 @@ class ConsumptionController extends Controller {
     /**
      * 保存消费记录
      *
-     * @return string
+     * @param ConsumptionRequest $request
+     * @return JsonResponse|string
      */
-    public function store() {
-    
-        return 'hi there';
+    public function store(ConsumptionRequest $request) {
+
+        return response()->json([
+            'success' => 'ok'
+        ]);
+        return $this->result(
+            $this->consumption->store(
+                $request->all()
+            )
+        );
         
     }
     
     /**
-     * 统计
+     * 统计消费记录
      *
      * @throws Throwable
      */

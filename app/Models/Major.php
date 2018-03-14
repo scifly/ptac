@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use App\Http\Requests\MajorRequest;
 use Carbon\Carbon;
 use Eloquent;
@@ -53,14 +54,14 @@ class Major extends Model {
      *
      * @return BelongsTo
      */
-    public function school() { return $this->belongsTo('App\Models\School'); }
+    function school() { return $this->belongsTo('App\Models\School'); }
 
     /**
      * 获取指定专业所包含的科目对象
      *
      * @return BelongsToMany
      */
-    public function subjects() {
+    function subjects() {
 
         return $this->belongsToMany(
             'App\Models\Subject',
@@ -89,7 +90,7 @@ class Major extends Model {
      * @return bool|mixed
      * @throws Throwable
      */
-    public function store(MajorRequest $request) {
+    function store(MajorRequest $request) {
 
         try {
             DB::transaction(function () use ($request) {
@@ -114,7 +115,7 @@ class Major extends Model {
      * @return bool|mixed
      * @throws Throwable
      */
-    public function modify(MajorRequest $request, $id) {
+    function modify(MajorRequest $request, $id) {
 
         $major = self::find($id);
         if (!isset($major)) { return false; }
@@ -141,7 +142,7 @@ class Major extends Model {
      * @return bool|mixed
      * @throws Throwable
      */
-    public function remove($id) {
+    function remove($id) {
 
         $major = self::find($id);
         if (!$major) { return false; }
@@ -165,20 +166,20 @@ class Major extends Model {
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
 
         $columns = [
             ['db' => 'Major.id', 'dt' => 0],
             [
                 'db' => 'Major.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return '<i class="fa fa-graduation-cap"></i>&nbsp;' . $d;
+                    return sprintf(Snippet::ICON, 'fa-graduation-cap') . $d;
                 }
             ],
             [
                 'db' => 'School.name as schoolname', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return '<i class="fa fa-university"></i>&nbsp;' . $d;
+                    return sprintf(Snippet::ICON, 'fa-university') . $d;
                 }
             ],
             ['db' => 'Major.remark', 'dt' => 3],
@@ -202,7 +203,9 @@ class Major extends Model {
         ];
         $condition = 'Major.school_id = ' . $this->schoolId();
 
-        return DataTable::simple(self::getModel(), $columns, $joins, $condition);
+        return DataTable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
 
     }
 

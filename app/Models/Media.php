@@ -55,28 +55,28 @@ class Media extends Model {
      *
      * @return BelongsTo
      */
-    public function mediaType() { return $this->belongsTo('App\Models\MediaType'); }
+    function mediaType() { return $this->belongsTo('App\Models\MediaType'); }
     
     /**
      * 返回对应的网站模块对象
      *
      * @return HasOne
      */
-    public function wapSiteModule() { return $this->hasOne('App\Models\WapSiteModule'); }
+    function wapSiteModule() { return $this->hasOne('App\Models\WapSiteModule'); }
     
     /**
      * 返回对应的网站文章对象
      *
      * @return HasOne
      */
-    public function wsmArticle() { return $this->hasOne('App\Models\WsmArticle'); }
+    function wsmArticle() { return $this->hasOne('App\Models\WsmArticle'); }
 
     /**
      * 获取指定媒体所包含的所有菜单对象
      *
      * @return HasMany
      */
-    public function menus() { return $this->hasMany('App\Models\Menu'); }
+    function menus() { return $this->hasMany('App\Models\Menu'); }
 
     /**
      * 根据媒体ID返回媒体对象

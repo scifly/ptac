@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -111,7 +112,12 @@ class ScoreRange extends Model {
         $columns = [
             ['db' => 'ScoreRange.id', 'dt' => 0],
             ['db' => 'ScoreRange.name', 'dt' => 1],
-            ['db' => 'School.name as schoolname', 'dt' => 2],
+            [
+                'db' => 'School.name as schoolname', 'dt' => 2,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-university') . $d;
+                }
+            ],
             ['db' => 'ScoreRange.start_score', 'dt' => 3],
             ['db' => 'ScoreRange.end_score', 'dt' => 4],
             ['db' => 'ScoreRange.created_at', 'dt' => 5],
@@ -135,7 +141,9 @@ class ScoreRange extends Model {
         ];
         $condition = 'ScoreRange.school_id = ' . $this->schoolId();
         
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
 
     }
     

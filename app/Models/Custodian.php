@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use App\Http\Requests\CustodianRequest;
 use Carbon\Carbon;
 use Eloquent;
@@ -336,7 +337,7 @@ class Custodian extends Model {
             ['db' => 'User.email', 'dt' => 3],
             ['db' => 'User.gender', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return $d == 1 ? '男' : '女';
+                    return $d == 1 ? Snippet::MALE : Snippet::FEMALE;
                 },
             ],
             ['db' => 'Custodian.id as mobile', 'dt' => 5,
@@ -390,7 +391,7 @@ class Custodian extends Model {
         $condition = 'Custodian.id IN (' . implode(',', $this->contactIds('custodian')) . ')';
 
         return Datatable::simple(
-            self::getModel(), $columns, $joins, $condition
+            $this->getModel(), $columns, $joins, $condition
         );
 
     }

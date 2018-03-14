@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Helpers\Constant;
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * App\Models\CustodianStudent
@@ -52,42 +56,62 @@ class CustodianStudent extends Model {
      * 
      * @return BelongsTo
      */
-    public function student() { return $this->belongsTo('App\Models\Student'); }
+    function student() { return $this->belongsTo('App\Models\Student'); }
     
     /**
      * 按监护人ID保存记录
-     * 
+     *
      * @param $custodianId
      * @param array $studentIds
+     * @throws Throwable
      */
     function storeByCustodianId($custodianId, array $studentIds) {
 
-        foreach ($studentIds as $studentId => $relationship) {
-            self::create([
-                'custodian_id' => $custodianId,
-                'student_id' => $studentId,
-                'enabled' => 1,
-                'relationship' => $relationship,
-            ]);
+        try {
+            DB::transaction(function () use ($custodianId, $studentIds) {
+                $values = [];
+                foreach ($studentIds as $studentId => $relationship) {
+                    $values[] = [
+                        'custodian_id' => $custodianId,
+                        'student_id' => $studentId,
+                        'enabled' => Constant::ENABLED,
+                        'relationship' => $relationship,
+                        'created_at' => now()->toDateTimeString(),
+                        'updated_at' => now()->toDateTimeString(),
+                    ];
+                }
+                $this->insert($values);
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
 
     }
     
     /**
      * 按学生ID保存记录
-     * 
+     *
      * @param $studentId
      * @param array $custodianIds
+     * @throws Throwable
      */
     function storeByStudentId($studentId, array $custodianIds) {
 
-        foreach ($custodianIds as $custodianId => $relationship) {
-            self::create([
-                'student_id' => $studentId,
-                'custodian_id' => $custodianId,
-                'relationship' => $relationship,
-                'enabled' => 1,
-            ]);
+        try {
+            DB::transaction(function () use ($studentId, $custodianIds) {
+                $values = [];
+                foreach ($custodianIds as $custodianId => $relationship) {
+                    $values = [
+                        'student_id' => $studentId,
+                        'custodian_id' => $custodianId,
+                        'relationship' => $relationship,
+                        'enabled' => Constant::ENABLED,
+                    ];
+                }
+                $this->insert($values);
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
 
     }

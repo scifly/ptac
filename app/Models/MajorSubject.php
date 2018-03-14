@@ -4,8 +4,11 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * App\Models\MajorSubject 专业与科目关系
@@ -29,25 +32,59 @@ class MajorSubject extends Model {
     protected $table = 'majors_subjects';
 
     protected $fillable = ['major_id', 'subject_id'];
-
+    
+    /**
+     * 根据专业id保存记录
+     *
+     * @param $majorId
+     * @param array $subjectIds
+     * @throws Throwable
+     */
     function storeByMajorId($majorId, array $subjectIds) {
 
-        foreach ($subjectIds as $subjectId) {
-            self::create([
-                'major_id' => $majorId,
-                'subject_id' => $subjectId,
-            ]);
+        try {
+            DB::transaction(function () use ($majorId, $subjectIds) {
+                $values = [];
+                foreach ($subjectIds as $subjectId) {
+                    $values[] = [
+                        'major_id' => $majorId,
+                        'subject_id' => $subjectId,
+                        'created_at' => now()->toDateTimeString(),
+                        'updated_at' => now()->toDateTimeString(),
+                    ];
+                }
+                $this->insert($values);
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
-
+        
     }
-
+    
+    /**
+     * 根据科目id保存记录
+     *
+     * @param $subjectId
+     * @param $majorIds
+     * @throws Throwable
+     */
     function storeBySubjectId($subjectId, $majorIds) {
 
-        foreach ($majorIds as $majorId) {
-            self::create([
-                'major_id' => $majorId,
-                'subject_id' => $subjectId,
-            ]);
+        try {
+            DB::transaction(function () use ($subjectId, $majorIds) {
+                $values = [];
+                foreach ($majorIds as $majorId) {
+                    $values[] = [
+                        'major_id' => $majorId,
+                        'subject_id' => $subjectId,
+                        'created_at' => now()->toDateTimeString(),
+                        'updated_at' => now()->toDateTimeString(),
+                    ];
+                }
+                $this->insert($values);
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
 
     }

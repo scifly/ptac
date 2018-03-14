@@ -204,7 +204,7 @@ class ConferenceQueue extends Model {
             $condition .= ' AND ConferenceQueue.user_id = ' . Auth::id();
         }
 
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        return Datatable::simple($this->getModel(), $columns, $joins, $condition);
 
     }
 

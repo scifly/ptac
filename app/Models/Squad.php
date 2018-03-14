@@ -6,6 +6,7 @@ use App\Events\ClassDeleted;
 use App\Events\ClassUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -159,27 +160,24 @@ class Squad extends Model {
             [
                 'db'        => 'Squad.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return '<i class="fa fa-users"></i>&nbsp;' . $d;
+                    return sprintf(Snippet::ICON, 'fa-users') . $d;
                 },
             ],
             [
                 'db'        => 'Grade.name as gradename', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return '<i class="fa fa-object-group"></i>&nbsp;' . $d;
-                },
+                    return sprintf(Snippet::ICON, 'fa-object-group') . $d;                },
             ],
             [
                 'db'        => 'School.name as schoolname', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return '<i class="fa fa-university"></i>&nbsp;' . $d;
+                    return sprintf(Snippet::ICON, 'fa-university') . $d;
                 },
             ],
             [
                 'db'        => 'Squad.educator_ids', 'dt' => 4,
                 'formatter' => function ($d) {
-                    if (empty($d)) {
-                        return '';
-                    }
+                    if (empty($d)) { return ''; }
                     $educatorIds = explode(',', $d);
                     $educators = [];
                     foreach ($educatorIds as $id) {
@@ -224,7 +222,9 @@ class Squad extends Model {
         ];
         $condition = 'Squad.id IN (' . implode(',', $this->classIds()) . ')';
         
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
         
     }
     

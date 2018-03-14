@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -100,7 +101,12 @@ class Team extends Model {
         $columns = [
             ['db' => 'Team.id', 'dt' => 0],
             ['db' => 'Team.name', 'dt' => 1],
-            ['db' => 'School.name as schoolname', 'dt' => 2],
+            [
+                'db' => 'School.name as schoolname', 'dt' => 2,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-university') . $d;
+                }
+            ],
             ['db' => 'Team.remark', 'dt' => 3],
             ['db' => 'Team.created_at', 'dt' => 4],
             ['db' => 'Team.updated_at', 'dt' => 5],
@@ -121,9 +127,11 @@ class Team extends Model {
                 ],
             ],
         ];
-        // todo: 增加过滤条件
         $condition = 'Team.school_id = ' . $this->schoolId();
-        return Datatable::simple(self::getModel(), $columns, $joins, $condition);
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
 
     }
 

@@ -52,21 +52,21 @@ class EducatorAppeal extends Model {
      *
      * @return BelongsTo
      */
-    public function educator() { return $this->belongsTo('App\Models\Educator'); }
+    function educator() { return $this->belongsTo('App\Models\Educator'); }
 
     /**
      * 获取对应的流程日志对象
      *
      * @return BelongsTo
      */
-    public function procedureLog() { return $this->belongsTo('App\Models\ProcedureLog'); }
+    function procedureLog() { return $this->belongsTo('App\Models\ProcedureLog'); }
 
     /**
      * 教职员工申诉记录列表
      *
      * @return array
      */
-    public function datatable() {
+    function datatable() {
         
         $columns = [
             ['db' => 'EducatorAppeal.id', 'dt' => 0],

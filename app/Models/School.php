@@ -7,6 +7,7 @@ use App\Events\SchoolUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -314,7 +315,7 @@ class School extends Model {
             [
                 'db'        => 'School.name as schoolname', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return '<i class="fa fa-university"></i>&nbsp;' . $d;
+                    return sprintf(Snippet::ICON, 'fa-university') . $d;
                 },
             ],
             ['db' => 'School.address', 'dt' => 2],
@@ -322,7 +323,7 @@ class School extends Model {
             [
                 'db'        => 'Corp.name as corpname', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return '<i class="fa fa-weixin"></i>&nbsp;' . $d;
+                    return sprintf(Snippet::ICON, 'fa-weixin') . $d;
                 },
             ],
             ['db' => 'School.created_at', 'dt' => 5],

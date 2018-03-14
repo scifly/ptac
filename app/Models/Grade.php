@@ -7,6 +7,7 @@ use App\Events\GradeUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -187,13 +188,13 @@ class Grade extends Model {
             [
                 'db'        => 'Grade.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return '<i class="fa fa-object-group"></i>&nbsp;' . $d;
+                    return sprintf(Snippet::ICON, 'fa-object-group') . $d;
                 },
             ],
             [
                 'db'        => 'School.name as schoolname', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return '<i class="fa fa-university"></i>&nbsp;' . $d;
+                    return sprintf(Snippet::ICON, 'fa-university') . $d;
                 },
             ],
             [
@@ -239,7 +240,7 @@ class Grade extends Model {
         }
         
         return Datatable::simple(
-            self::getModel(), $columns, $joins, $condition
+            $this->getModel(), $columns, $joins, $condition
         );
         
     }

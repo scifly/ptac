@@ -1,4 +1,4 @@
-var oPage = { title: '', url: location.href};
+var oPage = {title: '', url: location.href};
 var updateHistory = true;
 var replaceState = true;
 var docTitle = '家校通';
@@ -72,18 +72,18 @@ var page = {
             jscn: 'js/plugins/jqueryui/js/datepicker-zh-CN.js'
         },
         moment: {
-        	css: 'js/student_attendance/count.css',
-        	js: 'js/plugins/moment/min/moment.min.js',
+            css: 'js/student_attendance/count.css',
+            js: 'js/plugins/moment/min/moment.min.js',
         },
         daterangepicker: {
-        	css: 'js/plugins/bootstrap-daterangepicker/daterangepicker.css',
-        	js: 'js/plugins/bootstrap-daterangepicker/daterangepicker.js',
+            css: 'js/plugins/bootstrap-daterangepicker/daterangepicker.css',
+            js: 'js/plugins/bootstrap-daterangepicker/daterangepicker.js',
         },
         echarts: {
-        	js: 'js/plugins/echarts.simple.min.js',
+            js: 'js/plugins/echarts.simple.min.js',
         },
         echarts_common: {
-        	js: 'js/plugins/echarts.common.min.js',
+            js: 'js/plugins/echarts.common.min.js',
         },
         minimal_icheck: {
             css: 'js/plugins/icheck/all.css',
@@ -95,10 +95,10 @@ var page = {
             }
         },
         send_css: {
-        	css: 'js/score/send.css'
+            css: 'js/score/send.css'
         },
         analysis_css: {
-        	css: 'js/score/analysis.css'
+            css: 'js/score/analysis.css'
         }
     },
     backToList: function (table) {
@@ -109,7 +109,7 @@ var page = {
         $.gritter.add({title: title, text: text, image: page.siteRoot() + image});
     },
     siteRoot: function () {
-        var siteRoot =  window.location.origin
+        var siteRoot = window.location.origin
             ? window.location.origin + '/'
             : window.location.protocol + '/' + window.location.host + '/';
         if (window.location.href.indexOf('public') > -1) {
@@ -122,17 +122,21 @@ var page = {
         return "<img id='ajaxLoader' alt='' src='" + page.siteRoot() + "/img/throbber.gif' " +
             "style='vertical-align: middle;'/>"
     },
-    formatState: function(state) {
-        if (!state.id) { return state.text; }
+    formatState: function (state) {
+        if (!state.id) {
+            return state.text;
+        }
         return $('<span><i class="' + state.text + '"> ' + state.text + '</span>');
     },
-    formatStateImg: function(state) {
+    formatStateImg: function (state) {
         var paths = state.text.split('|');
-        if (!state.id) { return paths[0]; }
+        if (!state.id) {
+            return paths[0];
+        }
         var style = "height: 18px; vertical-align: text-bottom; margin-right: 5px;";
         return $('<span><img src="' + paths[1] + '" style="' + style + '">&nbsp;' + paths[0] + '</span>');
     },
-    refreshMenus: function() {
+    refreshMenus: function () {
         var $active = $('.sidebar-menu li.active');
         var parents = $active.parentsUntil('.sidebar-menu');
         if (typeof parents !== 'undefined') {
@@ -146,9 +150,9 @@ var page = {
             }
         }
     },
-    refreshTabs: function() {
+    refreshTabs: function () {
         var $tabs = $('a.tab');
-        $.each($tabs, function() {
+        $.each($tabs, function () {
             $(this).removeClass('text-blue').addClass('text-gray');
         });
         $('li.active a.tab').removeClass('text-gray').addClass('text-blue');
@@ -161,27 +165,27 @@ var page = {
         }
         return false;
     },
-    getActiveMenuId: function() {
+    getActiveMenuId: function () {
         return $('.sidebar-menu li.active').last().find('a').attr('id');
     },
-    getTabUrl: function() {
+    getTabUrl: function () {
         var url = window.location.href;
         return encodeURIComponent(url + this.getQuerySting());
     },
-    getMenuUrl: function() {
+    getMenuUrl: function () {
         return page.siteRoot() + $('.sidebar-menu li.active').last().find('a').attr('href');
     },
-    getQuerySting: function() {
+    getQuerySting: function () {
         return '?menuId=' + this.getActiveMenuId() + '&tabId=' + this.getActiveTabId();
     },
     errorHandler: function (e) {
-         var obj = JSON.parse(e.responseText);
+        var obj = JSON.parse(e.responseText);
         $('.overlay').hide();
         switch (obj['statusCode']) {
             case 400:
                 // var response = JSON.parse(e.responseText);
                 var errors = obj['errors'];
-                $.each(errors, function() {
+                $.each(errors, function () {
                     page.inform('验证错误', this, page.failure);
                 });
                 break;
@@ -189,8 +193,8 @@ var page = {
                 page.inform('重新登录', '会话已过期，请重新登录', page.info);
                 window.location = page.siteRoot() + 'login?returnUrl=' +
                     (typeof obj['returnUrl'] !== 'undefined'
-                    ? encodeURIComponent(obj['returnUrl'])
-                    : this.getTabUrl());
+                        ? encodeURIComponent(obj['returnUrl'])
+                        : this.getTabUrl());
                 break;
             case 498:
                 window.location.reload();
@@ -204,15 +208,15 @@ var page = {
                 break;
         }
     },
-    getWrapperContent: function(menuId, menuUrl, tabId, tabUrl) {
+    getWrapperContent: function (menuId, menuUrl, tabId, tabUrl) {
         var $wrapper = $('.content-wrapper');
         $('.overlay').show();
         $.ajax({
             type: 'GET',
             dataType: 'json',
             url: menuUrl,
-            data: { menuId: menuId },
-            success: function(result) {
+            data: {menuId: menuId},
+            success: function (result) {
                 switch (result.statusCode) {
                     case 200:
                         $wrapper.html(result.html);
@@ -224,7 +228,9 @@ var page = {
                             // Wrapper中的Html包含卡片，获取卡片中的Html
                             if (typeof tabId !== 'undefined') {
                                 var $tabPanes = $('.card');
-                                $.each($tabPanes, function() { $(this).html(''); });
+                                $.each($tabPanes, function () {
+                                    $(this).html('');
+                                });
                                 $('.nav-tabs .active').removeClass('active');
                                 $('.active .card').removeClass('active');
                                 $('a[href="#tab_' + tabId + '"]').parent().addClass('active');
@@ -240,8 +246,10 @@ var page = {
                             }
                             // 初始化鼠标悬停特效
                             $('.tab').hover(
-                                function() { $(this).removeClass('text-gray').addClass('text-blue'); },
-                                function() {
+                                function () {
+                                    $(this).removeClass('text-gray').addClass('text-blue');
+                                },
+                                function () {
                                     if (!($(this).parent().hasClass('active'))) {
                                         $(this).removeClass('text-blue').addClass('text-gray');
                                     }
@@ -279,7 +287,9 @@ var page = {
                         break;
                 }
             },
-            error: function(e) { page.errorHandler(e); }
+            error: function (e) {
+                page.errorHandler(e);
+            }
         });
     },
     getTabContent: function ($tabPane, url) {
@@ -334,7 +344,9 @@ var page = {
                     window.location = page.siteRoot() + 'login';
                 }
             },
-            error: function (e) { page.errorHandler(e); }
+            error: function (e) {
+                page.errorHandler(e);
+            }
         });
     },
     ajaxRequest: function (requestType, url, data, obj) {
@@ -346,40 +358,29 @@ var page = {
             data: data,
             success: function (result) {
                 $('.overlay').hide();
-                switch (result.statusCode) {
-                    case 200:
-                        switch (requestType) {
-                            case 'POST':        // create
-                                obj.reset();    // reset create form
-                                break;
-                            case 'DELETE':
-                                $('#data-table').dataTable().fnDestroy();
-                                page.initDatatable(obj);
-                                break;
-                            default:
-                                break;
-                        }
-                        page.inform(
-                            '操作结果', result.message,
-                            result.statusCode === 200 ? page.success : page.failure
-                        );
+                switch (requestType) {
+                    case 'POST':        // create
+                        obj.reset();    // reset create form
                         break;
-                    case 401:
-                        window.location = page.siteRoot() + 'login?returnUrl=' + page.getTabUrl();
-                        break;
-
-                    case 500:
-                        page.inform('操作失败',result.message,page.failure);
+                    case 'DELETE':
+                        $('#data-table').dataTable().fnDestroy();
+                        page.initDatatable(obj);
                         break;
                     default:
                         break;
                 }
+                page.inform(
+                    '操作结果', result.message,
+                    result.statusCode === 200 ? page.success : page.failure
+                );
             },
-            error: function (e) { page.errorHandler(e); }
+            error: function (e) {
+                page.errorHandler(e);
+            }
         });
     },
     initDatatable: function (table, options) {
-        var showTable = function() {
+        var showTable = function () {
             var $datatable = $('#data-table');
             var columns = $datatable.find('thead tr th').length;
             var statusCol = {className: 'text-right', targets: [columns - 1]};
@@ -393,7 +394,9 @@ var page = {
                 serverSide: true,
                 ajax: {
                     url: page.siteRoot() + table + '/index' + page.getQuerySting(),
-                    error: function (e) { page.errorHandler(e); }
+                    error: function (e) {
+                        page.errorHandler(e);
+                    }
                 },
                 order: [[0, 'desc']],
                 stateSave: true,
@@ -415,17 +418,21 @@ var page = {
                 // $('.paginate_button').each(function() { $(this).addClass('btn-sm'); })
                 $('input[type="search"]').attr('placeholder', '多关键词请用空格分隔');
                 $('.overlay').hide();
-            }).on('error.dt', function(e, settings, techNote, message) {
+            }).on('error.dt', function (e, settings, techNote, message) {
                 page.inform('出现异常', message, page.failure);
             });
-            $('input[type="search"]').on('keyup', function() {
+            $('input[type="search"]').on('keyup', function () {
                 dt.search(this.value, true).draw();
             });
         };
         if (!($.fn.dataTable)) {
             $.getMultiScripts([page.plugins.datatable.js], page.siteRoot())
-                .done(function() { showTable(); });
-        } else { showTable(); }
+                .done(function () {
+                    showTable();
+                });
+        } else {
+            showTable();
+        }
     },
     index: function (table, options) {
         this.unbindEvents();
@@ -476,34 +483,34 @@ var page = {
         var url = 'edit/' + id;
         var $activeTabPane = $('#tab_' + page.getActiveTabId());
         page.initBackBtn(table);
-        $('.btn-bianji').on('click',function () {
-            page.getTabContent($activeTabPane,table + '/' + url);
+        $('.btn-bianji').on('click', function () {
+            page.getTabContent($activeTabPane, table + '/' + url);
         });
     },
-    loadCss: function(css) {
-        if (!$('link[href="' + page.siteRoot() + css +'"]').length) {
+    loadCss: function (css) {
+        if (!$('link[href="' + page.siteRoot() + css + '"]').length) {
             $cip.after($("<link/>", {
                 rel: "stylesheet", type: "text/css",
                 href: page.siteRoot() + css
             }));
         }
     },
-    initSelect2: function(options) {
+    initSelect2: function (options) {
         if (!($.fn.select2)) {
             page.loadCss(page.plugins.select2.css);
             $.getMultiScripts([page.plugins.select2.js], page.siteRoot())
-                .done(function() {
+                .done(function () {
                     $.getMultiScripts([page.plugins.select2.jscn], page.siteRoot()).done(function () {
-                        $('select').select2(typeof options !== 'undefined' ? options : { language: "zh-CN" });
+                        $('select').select2(typeof options !== 'undefined' ? options : {language: "zh-CN"});
                     });
                 });
         } else {
-            $('select').select2(typeof options !== 'undefined' ? options : { language: "zh-CN" });
+            $('select').select2(typeof options !== 'undefined' ? options : {language: "zh-CN"});
         }
     },
-    
+
     initICheck: function (object) {
-        var init = function(object) {
+        var init = function (object) {
             if (typeof object === 'undefined') {
                 $(page.plugins.icheck.selector).iCheck(page.plugins.icheck.params);
             } else {
@@ -513,11 +520,15 @@ var page = {
         if (!($.fn.iCheck)) {
             page.loadCss(page.plugins.icheck.css);
             $.getMultiScripts([page.plugins.icheck.js], page.siteRoot())
-                .done(function() { init(object); });
-        } else { init(object); }
+                .done(function () {
+                    init(object);
+                });
+        } else {
+            init(object);
+        }
     },
     initMinimalIcheck: function (object) {
-        var init = function(object) {
+        var init = function (object) {
             if (typeof object === 'undefined') {
                 $(page.plugins.minimal_icheck.selector).iCheck(page.plugins.minimal_icheck.params);
             } else {
@@ -527,8 +538,12 @@ var page = {
         if (!($.fn.iCheck)) {
             page.loadCss(page.plugins.minimal_icheck.css);
             $.getMultiScripts([page.plugins.minimal_icheck.js], page.siteRoot())
-                .done(function() { init(object); });
-        } else { init(object); }
+                .done(function () {
+                    init(object);
+                });
+        } else {
+            init(object);
+        }
     },
     initParsley: function ($form, requestType, url) {
         $form.parsley().on('form:validated', function () {
@@ -539,8 +554,10 @@ var page = {
             return false;
         });
     },
-    initBackBtn: function(table) {
-        $('#cancel, #record-list').on('click', function() { page.backToList(table); })
+    initBackBtn: function (table) {
+        $('#cancel, #record-list').on('click', function () {
+            page.backToList(table);
+        })
     },
     initForm: function (table, formId, url, requestType, options) {
         this.unbindEvents();
@@ -559,12 +576,12 @@ var page = {
         $('#cancel, #record-list').unbind('click');
     },
     // 初始化起始时间与结束时间的Parsley验证规则
-    initParsleyRules: function() {
+    initParsleyRules: function () {
         window.Parsley.removeValidator('start');
         window.Parsley.removeValidator('end');
         window.Parsley.addValidator('start', {
             requirementType: 'string',
-            validateString: function(value, requirement) {
+            validateString: function (value, requirement) {
                 var endTime = $(requirement).val();
                 return value < endTime;
             },
@@ -574,7 +591,7 @@ var page = {
         });
         window.Parsley.addValidator('end', {
             requirementType: 'string',
-            validateString: function(value, requirement) {
+            validateString: function (value, requirement) {
                 var startTime = $(requirement).val();
                 return value > startTime;
             },
@@ -594,12 +611,12 @@ var page = {
         return vars;
     }
 };
-$.getMultiScripts = function(arr, path) {
-    var _arr = $.map(arr, function(scr) {
-        return $.getScript( (path||"") + scr );
+$.getMultiScripts = function (arr, path) {
+    var _arr = $.map(arr, function (scr) {
+        return $.getScript((path || "") + scr);
     });
-    _arr.push($.Deferred(function( deferred ){
-        $( deferred.resolve );
+    _arr.push($.Deferred(function (deferred) {
+        $(deferred.resolve);
     }));
     return $.when.apply($, _arr);
 };
@@ -610,11 +627,15 @@ $(function () {
     var $activeTabPane = $('#tab_' + page.getActiveTabId());
     // 初始化浏览器历史相关的popstate事件
     window.onpopstate = function (e) {
-        if (!e.state) { return false; }
+        if (!e.state) {
+            return false;
+        }
         // 如果用户点击浏览器“前进”或“后退”按钮，则不需要更新浏览器历史
         updateHistory = false;
         // 如果目标页面链接地址中包含pages关键字，则停止重定向
-        if (e.state.url.indexOf('pages') > -1) { return false; }
+        if (e.state.url.indexOf('pages') > -1) {
+            return false;
+        }
         // 获取目标页面的卡片ID、菜单ID和菜单链接地址
         var paths = e.state.title.split(',');
         var targetTabId = paths[0];
@@ -656,7 +677,7 @@ $(function () {
         }
     };
     // 初始化菜单点击事件
-    $(document).on('click', '.sidebar-menu a.leaf', function(e) {
+    $(document).on('click', '.sidebar-menu a.leaf', function (e) {
         e.preventDefault();
         // var uri = $(this).attr('href');
         $('.sidebar-menu li.active').removeClass('active menu-open');
@@ -665,7 +686,7 @@ $(function () {
         page.getWrapperContent(page.getActiveMenuId(), page.getMenuUrl());
     });
     // 初始化卡片点击事件
-    $(document).on('click', '.tab', function() {
+    $(document).on('click', '.tab', function () {
         page.refreshTabs();
         // 获取被点击卡片的uri
         var url = $(this).attr('data-uri');
@@ -676,7 +697,9 @@ $(function () {
         // 如果状态为active的卡片的内容为空, 清空其他卡片的内容
         if ($.trim($activeTabPane.html()) === '') {
             // 清空所有卡片的内容
-            $.each($tabPanes, function () { $(this).html(''); });
+            $.each($tabPanes, function () {
+                $(this).html('');
+            });
             // 获取状态为active的卡片内容
             page.getTabContent($activeTabPane, url);
         }
