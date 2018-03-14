@@ -80,6 +80,8 @@ use Laravel\Passport\HasApiTokens;
  * @method static Builder|User whereUsername($value)
  * @method static Builder|User whereWechatid($value)
  * @mixin Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Passport\Client[] $clients
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Passport\Token[] $tokens
  */
 class User extends Authenticatable {
 
