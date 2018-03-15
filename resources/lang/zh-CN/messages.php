@@ -10,7 +10,7 @@ return [
     'edit_fail' => '保存失败',
     'del_fail' => '删除失败',
     'bad_request' => '请求错误',
-    'unauthorized' => '无权访问',
+    'unauthorized' => '您无权访问该页面',
     'forbidden' => '禁止访问',
     'not_found' => '找不到需要访问的页面',
     'method_not_allowed' => '不支持该请求方法',
@@ -18,5 +18,6 @@ return [
     'nonexistent_action' => '功能不存在',
     'misconfigured_action' => '功能配置错误',
     'invalid_credentials' => '用户名/密码错误',
+    'invalid_argument' => '参数无效',
     'token_mismatch' => '页面已失效，请重试',
 ];

@@ -34,6 +34,8 @@ use App\Policies\ActionPolicy;
 use App\Policies\AlertTypePolicy;
 use App\Policies\CommTypePolicy;
 use App\Policies\CompanyPolicy;
+use App\Policies\ConsumptionPolicy;
+use App\Policies\ConsumptionStat;
 use App\Policies\DepartmentPolicy;
 use App\Policies\DepartmentTypePolicy;
 use App\Policies\ExamPolicy;
@@ -84,6 +86,7 @@ class AuthServiceProvider extends ServiceProvider {
         Company::class => CompanyPolicy::class,
         ConferenceParticipant::class => ConferenceParticipantPolicy::class,
         ConferenceQueue::class => ConferenceQueuePolicy::class,
+        ConsumptionStat::class => ConsumptionPolicy::class,
         Corp::class => CorpPolicy::class,
         Custodian::class => CustodianPolicy::class,
         Department::class => DepartmentPolicy::class,

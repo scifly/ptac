@@ -76,8 +76,9 @@ var page = {
             js: 'js/plugins/moment/min/moment.min.js',
         },
         daterangepicker: {
-            css: 'js/plugins/bootstrap-daterangepicker/daterangepicker.css',
-            js: 'js/plugins/bootstrap-daterangepicker/daterangepicker.js',
+            css: 'js/plugins/daterangepicker/daterangepicker.css',
+            js: 'js/plugins/daterangepicker/daterangepicker.js',
+            moment: 'js/plugins/daterangepicker/moment.min.js'
         },
         echarts: {
             js: 'js/plugins/echarts.simple.min.js',
@@ -181,20 +182,13 @@ var page = {
     errorHandler: function (e) {
         var obj = JSON.parse(e.responseText);
         $('.overlay').hide();
+        console.log(obj);
         switch (obj['statusCode']) {
             case 400:
-                // var response = JSON.parse(e.responseText);
                 var errors = obj['errors'];
                 $.each(errors, function () {
                     page.inform('验证错误', this, page.failure);
                 });
-                break;
-            case 401:
-                page.inform('重新登录', '会话已过期，请重新登录', page.info);
-                window.location = page.siteRoot() + 'login?returnUrl=' +
-                    (typeof obj['returnUrl'] !== 'undefined'
-                        ? encodeURIComponent(obj['returnUrl'])
-                        : this.getTabUrl());
                 break;
             case 498:
                 window.location.reload();
@@ -508,7 +502,6 @@ var page = {
             $('select').select2(typeof options !== 'undefined' ? options : {language: "zh-CN"});
         }
     },
-
     initICheck: function (object) {
         var init = function (object) {
             if (typeof object === 'undefined') {

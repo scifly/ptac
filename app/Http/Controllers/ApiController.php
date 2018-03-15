@@ -12,6 +12,7 @@ use App\Models\StudentAttendance;
 use App\Models\StudentAttendanceSetting;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class ApiController extends Controller {
@@ -32,7 +33,7 @@ class ApiController extends Controller {
      */
     public function login() {
     
-        if (Auth::attempt([
+        if (Auth::id() || Auth::attempt([
             'username' => request('username'),
             'password' => request('password')
         ])) {
