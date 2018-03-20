@@ -15,83 +15,36 @@ class CustodianComposer {
     
     use ModelTrait;
     
-    protected $student;
-    
-    function __construct(Student $student) { $this->student = $student; }
-    
     public function compose(View $view) {
-        
-        $schools = null;
-        $grades = null;
-        $classes = null;
-        $students = null;
-        $schoolId = $this->schoolId();
-        $schools = School::whereId($schoolId)
+    
+        $grades = Grade::whereIn('id', $this->gradeIds())
             ->where('enabled', 1)
-            ->pluck('name', 'id');
-        $groupId = Auth::user()->group->id;
-        if ($groupId > 5) {
-            $educatorId = Auth::user()->educator->id;
-            $gradeIds = $this->student->getGrade($educatorId)[0];
-            $gradeClass = $this->student->getGrade($educatorId)[1];
-            foreach ($gradeClass as $k => $g) {
-                $grades = Grade::whereEnabled(1)
-                    ->whereIn('id', $gradeIds)
-                    ->pluck('name', 'id')
-                    ->toArray();
-                $classes = Squad::whereEnabled(1)
-                    ->whereIn('id', $g)
-                    ->pluck('name', 'id')
-                    ->toArray();
-                break;
-            }
-
-            foreach ($classes as $k => $c) {
-                $list = Student::whereClassId($k)
-                    ->where('enabled', 1)
-                    ->get();
-                break;
-            }
-        } else {
-            if ($schools) {
-                $grades = Grade::whereSchoolId($schoolId)
-                    ->where('enabled', 1)
-                    ->pluck('name', 'id');
-            }
-            if ($grades) {
-                $classes = Squad::whereGradeId($grades->keys()->first())
-                    ->where('enabled', 1)
-                    ->pluck('name', 'id');
-            }
-            if ($classes) {
-                $list = Student::whereClassId($classes->keys()->first())
-                    ->where('enabled', 1)
-                    ->get();
-            }
+            ->pluck('name', 'id')
+            ->toArray();
+        reset($grades);
+        $classes = Squad::whereGradeId(key($grades))
+            ->where('enabled', 1)
+            ->pluck('name', 'id')
+            ->toArray();
+        reset($classes);
+        $records = Student::with('user:id,realname')
+            ->where('class_id', key($classes))
+            ->where('enabled', 1)
+            ->get()
+            ->toArray();
+        $students = [];
+        foreach ($records as $record) {
+            if (!isset($record['user'])) { continue; }
+            $students[$record['id']] = $record['user']['realname'] . '(' . $record['card_number'] . ')';
         }
-        if (!empty($list)) {
-            foreach ($list as $s) {
-                $students[$s->id] = $s->user->realname . "-" . $s->student_number;
-            }
-        }
-        if (empty($students)) {
-            $students[] = '';
-        }
-        if (empty($classes)) {
-            $classes[] = '';
-        }
-        if (empty($grades)) {
-            $grades[] = '';
-        }
-        Log::debug($grades);
-        Log::debug($schools);
+        
         $view->with([
-            'schools'  => $schools,
             'grades'   => $grades,
             'classes'  => $classes,
             'students' => $students,
-            'groupId'  => Group::whereName('监护人')->first()->id,
+            'title'    => '新增监护关系',
             'uris'     => $this->uris(),
+            'relationship' => true
         ]);
         
     }

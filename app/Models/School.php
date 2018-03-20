@@ -304,6 +304,23 @@ class School extends Model {
     }
     
     /**
+     * 返回对当前用户可见的所有年级列表html
+     *
+     * @return array
+     */
+    function gradeList() {
+
+        $grades = Grade::whereIn('id', $this->gradeIds())->pluck('name', 'id')->toArray();
+        reset($grades);
+        
+        return [
+            $this->singleSelectList($grades, 'grade_id'),
+            key($grades)
+        ];
+        
+    }
+    
+    /**
      * 学校列表
      *
      * @return array
@@ -370,28 +387,16 @@ class School extends Model {
      * @param null $gradeClass
      * @return array
      */
-    function getFieldList($field, $id, $gradeClass = null) {
+    function fieldLists($field, $id, $gradeClass = null) {
         
         # todo - fetch field list by role
         $grades = [];
         $classes = [];
         $students = [];
         switch ($field) {
-            case 'school':
-                $grades = Grade::whereSchoolId($id)
-                    ->where('enabled', 1)
-                    ->pluck('name', 'id');
-                $classes = Squad::whereGradeId($grades->keys()->first())
-                    ->where('enabled', 1)
-                    ->pluck('name', 'id');
-                $students = Student::whereClassId($classes->keys()->first())
-                    ->where('enabled', 1)
-                    ->pluck('student_number', 'id');
-                break;
             case 'grade':
                 if (isset($gradeClass)) {
-                    $classes = $this->getClass($id, $gradeClass)[0];
-                    $students = $this->getClass($id, $gradeClass)[1];
+                    list($classes, $students) = $this->getClass($id, $gradeClass);
                 } else {
                     $classes = Squad::whereGradeId($id)
                         ->where('enabled', 1)
@@ -423,7 +428,6 @@ class School extends Model {
                 $html .= '</select>';
                 
                 return $html;
-                
             }, [$grades, $classes, $students]
         );
         
@@ -436,12 +440,14 @@ class School extends Model {
     }
     
     /**
-     * 根据年级获取对应的班级和对应的学生
+     * 获取指定年级包含的的班级和学生列表
+     *
      * @param $gradeId
      * @param $gradeClass
      * @return array
      */
-    function getClass($gradeId, $gradeClass) {
+    function getClass($gradeId, $gradeClass): array {
+        
         $classes = $students = [];
         foreach ($gradeClass as $k => $g) {
             if ($k == $gradeId) {
@@ -459,6 +465,7 @@ class School extends Model {
         }
         
         return [$classes, $students];
+        
     }
     
 }

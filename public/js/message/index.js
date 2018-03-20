@@ -84,7 +84,7 @@ function get_sms_length(){
 function uploadfile(obj){
 	var $this = $(obj);
 	var type = $this.prev().val();
-	var extension = $('#file-'+type)[0].files[0].name.split('.');
+	var extension = $(`#file-${type}`)[0].files[0].name.split('.');
 	extension = extension[extension.length-1];
 	extension = extension.toUpperCase();
 		switch (type) {
@@ -116,7 +116,7 @@ function uploadfile(obj){
     page.inform("温馨提示", '正在上传中...', page.info);
     var formData = new FormData();
 
-	formData.append('uploadFile', $('#file-'+type)[0].files[0]);
+	formData.append('uploadFile', $(`#file-${type}`)[0].files[0]);
     formData.append('_token', $token.attr('content'));
     formData.append('type', type);
 	$('.overlay').show();
@@ -146,7 +146,7 @@ function uploadfile(obj){
                             	'<i class="fa fa-close file-del" style="position: absolute;top: 10px;right: 15px;font-size: 20px;z-index: 2;cursor: pointer;"></i>'+
                             '</div>'+
                             '</form>';
-                    $('#message-content .tab-pane.active').html(html);
+                    $('#message-content').find('.tab-pane.active').html(html);
                     removefile(type);
 				 	break;
 				case 'voice':
@@ -162,7 +162,7 @@ function uploadfile(obj){
 							    '<i class="fa fa-close file-del" style="margin-left: 35px;cursor:pointer;"></i>'+
 						    '</div>'+
 						    '</form>';
-				  	$('#message-content .tab-pane.active').html(html);	
+				  	$('#message-content').find('.tab-pane.active').html(html);
 				  	removefile(type);
 				 	break;
 				case 'video':

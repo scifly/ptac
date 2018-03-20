@@ -28,11 +28,20 @@ var crud = {
                             '<div class="input-group-addon">' +
                                 '<i class="fa fa-mobile" style="width: 20px;"></i>' +
                             '</div>' +
-                            '<input class="form-control" placeholder="（请输入手机号码）" name="mobile[' + size + '][mobile]" value="" style="width: 75%">' +
+                            '<input class="form-control" ' +
+                                    'placeholder="（请输入手机号码）" ' +
+                                    'name="mobile[' + size + '][mobile]" ' +
+                                    'value="" style="width: 75%"' +
+                            '>' +
                         '</div>' +
                     '</td>' +
                     '<td style="text-align: center">' +
-                        '<input type="radio" class="minimal" id="mobile[isdefault]" name="mobile[isdefault]" value="' + size + '">' +
+                        '<input type="radio" ' +
+                                'class="minimal" ' +
+                                'id="mobile[isdefault]" ' +
+                                'name="mobile[isdefault]" ' +
+                                'value="' + size + '"' +
+                        '>' +
                     '</td>' +
                     '<td style="text-align: center">' +
                         '<input type="checkbox" class="minimal" name="mobile[' + size + '][enabled]">' +

@@ -4,7 +4,6 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use App\Models\Grade;
-use App\Models\School;
 use App\Models\Squad;
 use Illuminate\Contracts\View\View;
 
@@ -14,29 +13,21 @@ class StudentIndexComposer {
 
     public function compose(View $view) {
 
-        $schools = null;
-        $grades = null;
-        $classes = null;
-
-        $schoolId = $this->schoolId();
-        $schools = School::whereId($schoolId)
+        $grades = Grade::whereIn('id', $this->gradeIds())
             ->where('enabled', 1)
-            ->pluck('name', 'id');
-        if ($schools) {
-            $grades = Grade::whereSchoolId($schoolId)
-                ->where('enabled', 1)
-                ->pluck('name', 'id');
-        }
-        if ($grades) {
-            $classes = Squad::whereGradeId($grades->keys()->first())
-                ->where('enabled', 1)
-                ->pluck('name', 'id');
-        }
+            ->pluck('name', 'id')
+            ->toArray();
+        reset($grades);
+        $classes = Squad::whereGradeId(key($grades))
+            ->where('enabled', 1)
+            ->pluck('name', 'id')
+            ->toArray();
 
         $view->with([
-            'schools' => $schools,
             'grades' => $grades,
             'classes' => $classes,
+            'importTemplate' => 'files/students.xlsx',
+            'title' => '导出学籍',
             'uris' => $this->uris()
         ]);
 

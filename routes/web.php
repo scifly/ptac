@@ -371,5 +371,11 @@ Route::get('wechat/score/cus_total', 'Wechat\ScoreCenterController@cusTotal');
 //     return json_decode((string) $response->getBody(), true);
 // });
 // Route::post('api/login', 'ApiController@login');
+Route::get('event', function () {
+    event(new \App\Events\ContactImportTrigger([
+        'user' => Auth::user(),
+        'type' => 'educator'
+    ]));
+});
 
-
+Route::get('listen', 'TestController@listen');

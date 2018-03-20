@@ -16,35 +16,35 @@ window.Vue = require('vue');
 
 Vue.component('example', require('./components/Example.vue'));
 
-Vue.component(
-    'passport-clients',
-    require('./components/passport/Clients.vue')
-);
-
-Vue.component(
-    'passport-authorized-clients',
-    require('./components/passport/AuthorizedClients.vue')
-);
-
-Vue.component(
-    'passport-personal-access-tokens',
-    require('./components/passport/PersonalAccessTokens.vue')
-);
+// Vue.component(
+//     'passport-clients',
+//     require('./components/passport/Clients.vue')
+// );
+//
+// Vue.component(
+//     'passport-authorized-clients',
+//     require('./components/passport/AuthorizedClients.vue')
+// );
+//
+// Vue.component(
+//     'passport-personal-access-tokens',
+//     require('./components/passport/PersonalAccessTokens.vue')
+// );
 
 const app = new Vue({
     // el: '#app',
     created() {
         Echo.private('user.' + document.getElementById('userId').value)
             .listen('ContactImportTrigger', (e) => {
-                console.log(e);
-                // alert('123');
-                if (e.type = 'educator') {
-                    page.inform('导入成功', '教职员工队列导入成功', page.success)
+                console.log(e.data['type']);
+                if (e.data['type'] === 'educator') {
+                    alert('you nailed it!!!');
+                    // page.inform('导入成功', '教职员工队列导入成功', page.success)
                 }
-                if (e.type = 'student') {
-                    page.inform('导入成功', '学生队列导入成功', page.success)
+                if (e.data['type'] === 'student') {
+                    alert('you got it!!!');
+                    // page.inform('导入成功', '学生队列导入成功', page.success)
                 }
             });
-
     }
 });

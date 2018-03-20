@@ -1,4 +1,4 @@
-<style>.parsley-errors-list.filled{text-align: left}</style>
+<style>.parsley-errors-list.filled {text-align: left}</style>
 <div class="form-group">
     <label for="mobile" class="col-sm-3 control-label">手机</label>
     <div class="col-sm-6">

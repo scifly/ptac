@@ -70,7 +70,7 @@ class StudentAttendanceController extends Controller {
             $endTime = Request::input('end_time');
             $days = Request::input('days');
             if ($field && $id) {
-                $this->result['html'] = $this->school->getFieldList($field, $id);
+                $this->result['html'] = $this->school->fieldLists($field, $id);
                 return response()->json($this->result);
             }else{
                 return response()->json($this->sa->getData($classId , $startTime , date("Y-m-d", (strtotime($endTime) + 86400)), $days));

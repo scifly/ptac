@@ -28,6 +28,7 @@ use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Readers\LaravelExcelReader;
 use PHPExcel_Exception;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Throwable;
 
 /**
@@ -52,21 +53,15 @@ use Throwable;
  * @method static Builder|Educator whereUpdatedAt($value)
  * @method static Builder|Educator whereUserId($value)
  * @mixin Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\EducatorClass[] $educatorClasses
+ * @property-read Collection|EducatorClass[] $educatorClasses
  */
 class Educator extends Model {
     
     use ModelTrait;
     
-    const EXCEL_FILE_TITLE = [
-        '姓名', '性别', '生日', '学校',
-        '手机号码', '年级主任', '班级主任',
-        '科目名称', '任课班级', '所属部门',
-    ];
-    const EXCEL_EXPORT_TITLE = [
-        '教职工名称', '所属学校', '可用短信条数',
-        '创建于', '更新于',
-        '状态',
+    const EXPORT_TITLES = [
+        '#', '姓名', '所属学校', '手机号码',
+        '创建于', '更新于', '状态',
     ];
     protected $fillable = [
         'user_id', 'team_ids', 'school_id',
@@ -447,13 +442,14 @@ class Educator extends Model {
         return $removed ? true : false;
 
     }
-
+    
     /**
      * 批量导入
      *
      * @param UploadedFile $file
      * @return array
-     * @throws PHPExcel_Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
     function upload(UploadedFile $file) {
         
@@ -463,26 +459,14 @@ class Educator extends Model {
         $filename = date('His') . uniqid() . '.' . $ext;
         $stored = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
         if ($stored) {
-            $filePath =
-                'public/uploads/'
-                . date('Y')
-                . '/'
-                . date('m')
-                . '/'
-                . date('d')
-                . '/'
-                . $filename;
-            // var_dump($filePath);die;
-            /** @var LaravelExcelReader $reader */
-            $reader = Excel::load($filePath);
-            try {
-                $sheet = $reader->getExcel()->getSheet(0);
-            } catch (PHPExcel_Exception $e) {
-                throw $e;
-            }
-            $educators = $sheet->toArray();
+            $spreadsheet = IOFactory::load(
+                $this->uploadedFile($filename)
+            );
+            $educators = $spreadsheet->getActiveSheet()->toArray(
+                null, true, true, true
+            );
             abort_if(
-                self::checkFileFormat($educators[0]),
+                $this->checkFileFormat(self::EXPORT_TITLES, $educators[0]),
                 HttpStatusCode::NOT_ACCEPTABLE,
                 '文件格式错误'
             );
@@ -515,29 +499,33 @@ class Educator extends Model {
     /**
      * 批量导出
      *
-     * @param $id
-     * @return array
+     * @param integer $range, 0 - 指定部门(含所有子部门), 1 - 所有
+     * @param null $departmentId
+     * @return mixed
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    function export($id) {
+    function export($range, $departmentId = null) {
         
-        $educators = self::whereSchoolId($id)->get();
-        $data = [self::EXCEL_EXPORT_TITLE];
+        $educatorIds = $range == 0
+            ? $this->educatorIds($departmentId)
+            : $this->contactIds('educator');
+        $educators = $this->whereIn('id', $educatorIds)->get();
+        $records = [self::EXPORT_TITLES];
         foreach ($educators as $educator) {
-            if (!empty($educator)) {
-                $item = [
-                    $educator->user->realname,
-                    $educator->school->name,
-                    $educator->sms_quote,
-                    $educator->created_at,
-                    $educator->updated_at,
-                    $educator->enabled == 1 ? '启用' : '禁用',
-                ];
-                $data[] = $item;
-                unset($item);
-            }
+            if (!$educator->user) { continue; }
+            $records = [
+                $educator->user->realname,
+                $educator->school->name,
+                implode(', ', $educator->user->mobiles->pluck('mobile')->toArray()),
+                $educator->sms_quote,
+                $educator->created_at,
+                $educator->updated_at,
+                $educator->enabled == 1 ? '启用' : '禁用',
+            ];
         }
         
-        return $data;
+        return $this->excel($records);
         
     }
     
@@ -552,7 +540,14 @@ class Educator extends Model {
             ['db' => 'Educator.id', 'dt' => 0],
             ['db' => 'User.realname as username', 'dt' => 1],
             ['db' => 'School.name', 'dt' => 2],
-            ['db' => 'Educator.sms_quote', 'dt' => 3],
+            [
+                'db' => 'Educator.sms_quote', 'dt' => 3,
+                'formatter' => function($row) {
+                    $mobiles = User::find(self::find($row['id'])->user_id)
+                        ->mobiles->pluck('mobile')->toArray();
+                    return implode(', ', $mobiles);
+                }
+            ],
             ['db' => 'Educator.created_at', 'dt' => 4],
             ['db' => 'Educator.updated_at', 'dt' => 5],
             [
@@ -629,17 +624,6 @@ class Educator extends Model {
         
     }
 
-    /**
-     * 检查表头是否合法
-     *
-     * @param array $fileTitle
-     * @return bool
-     */
-    private function checkFileFormat(array $fileTitle) {
-
-        return count(array_diff(self::EXCEL_FILE_TITLE, $fileTitle)) != 0;
-
-    }
     
     /**
      * 验证数据合法性

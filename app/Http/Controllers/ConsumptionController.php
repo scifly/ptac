@@ -92,8 +92,9 @@ class ConsumptionController extends Controller {
     /**
      * 导出消费记录
      *
-     * @throws Exception
+     * @return mixed
      * @throws AuthorizationException
+     * @throws Exception
      */
     public function export() {
     
@@ -102,11 +103,10 @@ class ConsumptionController extends Controller {
         );
     
         $detail = Request::query('detail');
-        if (!isset($detail)) {
-            $this->consumption->export();
-        } else {
-            $this->consumption->export($detail, Request::all());
-        }
+        
+        return !isset($detail)
+            ? $this->consumption->export()
+            : $this->consumption->export($detail, Request::all());
     
     }
     

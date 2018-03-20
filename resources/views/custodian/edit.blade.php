@@ -1,4 +1,7 @@
-{!! Form::model($custodian, ['method' => 'put', 'id' => 'formCustodian','data-parsley-validate' => 'true']) !!}
+{!! Form::model($custodian, [
+    'method' => 'put',
+    'id' => 'formCustodian',
+    'data-parsley-validate' => 'true'
+]) !!}
 @include('custodian.create_edit')
 {!! Form::close() !!}
-@include('custodian.department_tree')

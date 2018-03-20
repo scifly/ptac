@@ -6,6 +6,7 @@ use App\Events\GradeDeleted;
 use App\Events\GradeUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\Constant;
+use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
@@ -173,6 +174,29 @@ class Grade extends Model {
         }
         
         return $removed ? true : false;
+        
+    }
+    
+    /**
+     * 返回指定年级包含的班级列表html
+     *
+     * @param $id
+     * @return array
+     */
+    function classList($id) {
+        
+        abort_if(
+            !in_array($id, $this->gradeIds()) || !$this->find($id),
+            HttpStatusCode::NOT_ACCEPTABLE,
+            __('messages.not_acceptable')
+        );
+        $items = $this->find($id)->classes->pluck('name', 'id')->toArray();
+        reset($items);
+        
+        return [
+            $this->singleSelectList($items, 'class_id'),
+            key($items)
+        ];
         
     }
     

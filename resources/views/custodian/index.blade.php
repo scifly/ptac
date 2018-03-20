@@ -17,8 +17,8 @@
             <thead>
 			<tr class="bg-info">
                 <th>#</th>
-                <th>监护人姓名</th>
-                <th>学生姓名</th>
+                <th>姓名</th>
+                <th>学生</th>
                 <th>邮箱</th>
                 <th>性别</th>
                 <th>手机号码</th>
@@ -32,3 +32,6 @@
     </div>
     @include('partials.form_overlay')
 </div>
+
+<!-- 导出excel -->
+@include('partials.contact_range')

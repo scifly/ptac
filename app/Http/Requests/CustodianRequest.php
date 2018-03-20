@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Models\Group;
 use App\Rules\Mobiles;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -53,6 +54,7 @@ class CustodianRequest extends FormRequest {
                 }
             }
         }
+        $input['user']['group_id'] = Group::whereName('监护人')->first()->id;
         $this->replace($input);
     }
     

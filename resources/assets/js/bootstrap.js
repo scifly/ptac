@@ -30,7 +30,6 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
  */
 
 let token = document.head.querySelector('meta[name="csrf-token"]');
-console.log(token);
 
 if (token) {
     window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
@@ -48,8 +47,9 @@ import Echo from "laravel-echo";
 
 window.Pusher = require('pusher-js');
 
-var pusher = new Pusher('15d0dcb36363ff076262', {
-    authEndpoint: '/broadcasting/auth',
+// noinspection JSUnusedLocalSymbols
+var pusher = new Pusher('bc8e8ee821cf30234a31', {
+    authEndpoint: '/ptac/public/broadcasting/auth',
     auth: {
         headers: {
             'X-CSRF-Token': token.content
@@ -58,9 +58,9 @@ var pusher = new Pusher('15d0dcb36363ff076262', {
 });
 
 window.Echo = new Echo({
-    authEndpoint: '/broadcasting/auth',
+    authEndpoint: '/ptac/public/broadcasting/auth',
     broadcaster: 'pusher',
-    key: '15d0dcb36363ff076262',
+    key: 'bc8e8ee821cf30234a31',
     cluster: 'ap1',
     encrypted: true
 });

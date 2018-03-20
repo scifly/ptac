@@ -11,8 +11,6 @@ use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
-use Maatwebsite\Excel\Facades\Excel;
-use PHPExcel_Exception;
 use Throwable;
 
 /**
@@ -226,7 +224,8 @@ class EducatorController extends Controller {
      *
      * @return JsonResponse|null
      * @throws AuthorizationException
-     * @throws PHPExcel_Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
     public function import() {
 
@@ -256,47 +255,23 @@ class EducatorController extends Controller {
     /**
      * 导出教职员工
      *
-     * @return JsonResponse|string
+     * @return mixed
      * @throws AuthorizationException
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function export() {
 
         $this->authorize(
             'c', Educator::class
         );
-        if (Request::method() === 'POST') {
-            $field = Request::query('field');
-            $id = Request::query('id');
-            $this->result['html'] = $this->educator->school->getFieldList($field, $id);
-            return response()->json(
-                $this->result
-            );
-        }
-        $id = Request::query('id');
-        if ($id) {
-            $data = $this->educator->export($id);
-            /** @noinspection PhpMethodParametersCountMismatchInspection */
-            /** @noinspection PhpUndefinedMethodInspection */
-            Excel::create(iconv('UTF-8', 'GBK', '教职员工列表'), function ($excel) use ($data) {
-                /** @noinspection PhpUndefinedMethodInspection */
-                $excel->sheet('score', function ($sheet) use ($data) {
-                    /** @noinspection PhpUndefinedMethodInspection */
-                    $sheet->rows($data);
-                    /** @noinspection PhpUndefinedMethodInspection */
-                    $sheet->setWidth(array(
-                        'A' => 30,
-                        'B' => 30,
-                        'C' => 30,
-                        'D' => 30,
-                        'E' => 30,
-                        'F' => 30,
-                    ));
-                });
-            }, 'UTF-8')->export('xls');
-            return $this->result(true);
-        }
-
-        return $this->result(false);
+        
+        $range = Request::query('range');
+        $departmentId = Request::query('department_id');
+        
+        return $this->educator->export(
+            $range, $departmentId
+        );
 
     }
 
