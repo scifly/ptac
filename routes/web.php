@@ -128,11 +128,12 @@ Route::group(['prefix' => 'educator_attendance_settings'], routes('EducatorAtten
 Route::group(['prefix' => 'student_attendance_settings'], routes('StudentAttendanceSettingController'));
 // 学生考勤记录
 Route::group(['prefix' => 'student_attendances'], function (){
-    $ctrl = 'StudentAttendanceController';
-    Route::get('index', $ctrl . '@index');
-    Route::get('count', $ctrl . '@count');
-    Route::post('count', $ctrl . '@count');
-    Route::post('student', $ctrl . '@student');
+    $c = 'StudentAttendanceController';
+    Route::get('index', $c . '@index');
+    Route::get('stat', $c . '@stat');
+    Route::post('stat', $c . '@stat');
+    Route::post('detail', $c . '@detail');
+    Route::get('export', $c . '@export');
 });
 
 /** 课程表管理 */
@@ -296,81 +297,47 @@ Route::group(['prefix' => 'operators'], function() {
 
 # --------------------------------------------------------------------------------
 // 消息中心
-Route::get('message_center', 'Wechat\MessageCenterController@index');
-Route::post('message_center', 'Wechat\MessageCenterController@index');
-Route::get('message_create', 'Wechat\MessageCenterController@create');
-Route::post('message_create', 'Wechat\MessageCenterController@create');
-Route::post('message_store', 'Wechat\MessageCenterController@store');
-Route::get('message_show/{id}', 'Wechat\MessageCenterController@show');
-Route::get('message_update/{id}', 'Wechat\MessageCenterController@updateStatus');
-Route::delete('message_delete/{id}', 'Wechat\MessageCenterController@destroy');
-Route::post('message_upload', 'Wechat\MessageCenterController@upload');
-Route::get('message_dept/{id}', 'Wechat\MessageCenterController@getNextDept');
-Route::post('message_replay', 'Wechat\MessageCenterController@replay');
-Route::post('message_replaylist', 'Wechat\MessageCenterController@replayList');
-Route::delete('message_replaydel/{id}', 'Wechat\MessageCenterController@replayDestroy');
+$c = 'Wechat\MessageCenterController';
+Route::get('message_center', $c . '@index');
+Route::post('message_center', $c . '@index');
+Route::get('message_create', $c . '@create');
+Route::post('message_create', $c . '@create');
+Route::post('message_store', $c . '@store');
+Route::get('message_show/{id}', $c . '@show');
+Route::get('message_update/{id}', $c . '@updateStatus');
+Route::delete('message_delete/{id}', $c . '@destroy');
+Route::post('message_upload', $c . '@upload');
+Route::get('message_dept/{id}', $c . '@getNextDept');
+Route::post('message_replay', $c . '@replay');
+Route::post('message_replaylist', $c . '@replayList');
+Route::delete('message_replaydel/{id}', $c . '@replayDestroy');
 //布置作业
 Route::get('homework', 'Wechat\HomeWorkController@index');
 //微网站
-Route::any('wapsite/home', 'Wechat\MobileSiteController@wapHome');
-Route::any('wapsite/module/home', 'Wechat\MobileSiteController@wapSiteModuleHome');
-Route::any('wapsite/article/home', 'Wechat\MobileSiteController@articleHome');
+$c = 'Wechat\MobileSiteController';
+Route::any('wapsite/home', $c . '@wapHome');
+Route::any('wapsite/module/home', $c . '@wapSiteModuleHome');
+Route::any('wapsite/article/home', $c . '@articleHome');
 // 考勤
-Route::get('lists', 'Wechat\AttendanceController@index');
-Route::get('attendance_records/{id}', 'Wechat\AttendanceController@records');
-Route::post('attendance_records/{id?}', 'Wechat\AttendanceController@records');
-Route::post('attendance_charts', 'Wechat\AttendanceController@stuChart');
-Route::get('attendance_rules/{id}', 'Wechat\AttendanceController@getRules');
-Route::get('attendance_date', 'Wechat\AttendanceController@dateRules');
+$c = 'Wechat\AttendanceController';
+Route::get('lists', $c . '@index');
+Route::get('attendance_records/{id}', $c . '@records');
+Route::post('attendance_records/{id?}', $c . '@records');
+Route::post('attendance_charts', $c . '@stuChart');
+Route::get('attendance_rules/{id}', $c . '@getRules');
+Route::get('attendance_date', $c . '@dateRules');
 // 成绩中心
-Route::any('wechat/score/score_lists', 'Wechat\ScoreCenterController@index');
-Route::get('wechat/score/detail', 'Wechat\ScoreCenterController@detail');
-Route::get('wechat/score/student_detail', 'Wechat\ScoreCenterController@subjectDetail');
-Route::post('wechat/score/student_detail', 'Wechat\ScoreCenterController@subjectDetail');
-Route::any('wechat/score/show', 'Wechat\ScoreCenterController@show');
-Route::get('wechat/score/analysis', 'Wechat\ScoreCenterController@analysis');
-Route::get('wechat/score/cus_total', 'Wechat\ScoreCenterController@cusTotal');
+$c = 'Wechat\ScoreCenterController';
+Route::any('wechat/score/score_lists', $c . '@index');
+Route::get('wechat/score/detail', $c . '@detail');
+Route::get('wechat/score/student_detail', $c . '@subjectDetail');
+Route::post('wechat/score/student_detail', $c . '@subjectDetail');
+Route::any('wechat/score/show', $c . '@show');
+Route::get('wechat/score/analysis', $c . '@analysis');
+Route::get('wechat/score/cus_total', $c . '@cusTotal');
 
 
-/** Laravel Passport Test */
-// Route::get('/pp', function () {
-//     $query = http_build_query([
-//         'client_id' => 3, // Replace with Client ID
-//         'redirect_uri' => 'http://sandbox.ddd:8080/ptac/public/callback',
-//         'response_type' => 'code',
-//         'scope' => ''
-//     ]);
-//
-//     return redirect('http://sandbox.ddd:8080/myLaravel/public/oauth/authorize?' . $query);
-// });
-//
-// Route::get('/callback', function (Request $request) {
-//
-//     $response = (new GuzzleHttp\Client)->post('http://sandbox.ddd:8080/myLaravel/public/oauth/token', [
-//         'form_params' => [
-//             'grant_type' => 'authorization_code',
-//             'client_id' => 3, // Replace with Client ID
-//             'client_secret' => '7OU0zawjuyGUqzzHVeux76gfDXGN7RPZTWxTnTsf', // Replace with client secret
-//             'redirect_uri' => 'http://sandbox.ddd:8080/ptac/public/callback',
-//             'code' => $request::query('code'),
-//         ]
-//     ]);
-//
-//     session()->put('token', json_decode((string) $response->getBody(), true));
-//
-//     return redirect('/todos');
-// });
-//
-// Route::get('/todos', function () {
-//     $response = (new GuzzleHttp\Client)->get('http://sandbox.ddd:8080/myLaravel/public/api/todos', [
-//         'headers' => [
-//             'Authorization' => 'Bearer '. session()->get('token.access_token')
-//         ]
-//     ]);
-//
-//     return json_decode((string) $response->getBody(), true);
-// });
-// Route::post('api/login', 'ApiController@login');
+/** Broadcasting test */
 Route::get('event', function () {
     event(new \App\Events\ContactImportTrigger([
         'user' => Auth::user(),

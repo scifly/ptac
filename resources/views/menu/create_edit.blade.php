@@ -29,10 +29,6 @@
                     </div>
                 </div>
             </div>
-            <!-- 菜单类型ID -->
-            {{ Form::hidden('menu_type_id', $menuTypeId ?? null, [
-                'id' => 'menu_type_id'
-            ]) }}
             <!-- 图标ID -->
             <div class="form-group">
                 {!! Form::label('icon_id', '图标', [

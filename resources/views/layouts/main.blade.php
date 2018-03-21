@@ -579,7 +579,6 @@
     <script src="{{ URL::asset('js/plugins/datatables/datatables.min.js') }}"></script>
 @endisset
 <!-- Custom JS -->
-<script src="{{ URL::asset('js/admin.crud.js') }}"></script>
 @isset($js)
     <script src="{{ URL::asset($js) }}"></script>
 @endisset

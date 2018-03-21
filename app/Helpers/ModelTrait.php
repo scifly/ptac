@@ -403,13 +403,13 @@ trait ModelTrait {
      */
     public function singleSelectList(array $items, $id) {
     
-        $html = '<select class="form-control col-sm-6" id="%s" name="%s">';
+        $html = '<select class="form-control select2" id="%s" name="%s" style="width: %s">';
         foreach ($items as $key => $value) {
             $html .= '<option value="' . $key . '">' . $value . '</option>';
         }
         $html .= '</select>';
         
-        return sprintf($html, $id, $id);
+        return sprintf($html, $id, $id, '100%;');
         
     }
     

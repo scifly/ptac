@@ -27,6 +27,7 @@ use App\Models\School;
 use App\Models\SchoolType;
 use App\Models\Squad;
 use App\Models\Student;
+use App\Models\StudentAttendance;
 use App\Models\StudentAttendanceSetting;
 use App\Models\SubjectModule;
 use App\Models\Tab;
@@ -60,6 +61,7 @@ use App\Policies\Route;
 use App\Policies\SchoolPolicy;
 use App\Policies\SchoolTypePolicy;
 use App\Policies\SquadPolicy;
+use App\Policies\StudentAttendancePolicy;
 use App\Policies\StudentAttendanceSettingPolicy;
 use App\Policies\StudentPolicy;
 use App\Policies\SubjectModulePolicy;
@@ -109,6 +111,7 @@ class AuthServiceProvider extends ServiceProvider {
         Student::class => StudentPolicy::class,
         SubjectModule::class => SubjectModulePolicy::class,
         Tab::class => TabPolicy::class,
+        StudentAttendance::class => StudentAttendancePolicy::class,
     ];
     
     /**

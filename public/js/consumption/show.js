@@ -186,13 +186,13 @@ var getDetails = function (detail) {
             for (var i = 0; i < result['details'].length; i++) {
                 rows +=
                     '<tr>' +
-                    '<td>' + result['details']['id'] + '</td>' +
-                    '<td>' + result['details']['name'] + '</td>' +
-                    '<td>' + result['details']['amount'] + '</td>' +
-                    '<td>' + result['details']['type'] + '</td>' +
-                    '<td>' + result['details']['machineid'] + '</td>' +
-                    '<td>' + result['details']['datetime'] + '</td>' +
-                    '<td>' + result['details']['location'] + '</td>' +
+                        '<td>' + result['details']['id'] + '</td>' +
+                        '<td>' + result['details']['name'] + '</td>' +
+                        '<td>' + result['details']['amount'] + '</td>' +
+                        '<td>' + result['details']['type'] + '</td>' +
+                        '<td>' + result['details']['machineid'] + '</td>' +
+                        '<td>' + result['details']['datetime'] + '</td>' +
+                        '<td>' + result['details']['location'] + '</td>' +
                     '</tr>';
             }
             $detail.html(rows);

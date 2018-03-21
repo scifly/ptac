@@ -46,7 +46,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('student_attendance_setting.create_edit', 'App\Http\ViewComposers\StudentAttendanceSettingComposer');
         View::composer('student_attendance_setting.index', 'App\Http\ViewComposers\StudentAttendanceSettingIndexComposer');
 
-        View::composer('student_attendance.count', 'App\Http\ViewComposers\StudentAttendanceCountComposer');
+        View::composer('student_attendance.stat', 'App\Http\ViewComposers\StudentAttendanceStatComposer');
 
         View::composer(
             ['student.index','student.show'],
@@ -104,10 +104,6 @@ class ComposerServiceProvider extends ServiceProvider {
             'App\Http\ViewComposers\ExamTypeComposer'
         );
 
-        View::composer('operator.create', 'App\Http\ViewComposers\OperatorCreateComposer');
-        View::composer('operator.edit', 'App\Http\ViewComposers\OperatorEditComposer');
-        View::composer('operator.index', 'App\Http\ViewComposers\OperatorIndexComposer');
-
         View::composer(
             ['conference_room.create_edit', 'conference_room.index'],
             'App\Http\ViewComposers\ConferenceRoomComposer'
@@ -150,6 +146,8 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('wsm_article.index', 'App\Http\ViewComposers\WsmArticleIndexComposer');
 
         View::composer('action.create_edit', 'App\Http\ViewComposers\ActionComposer');
+        
+        View::composer('student_attendance.index', 'App\Http\ViewComposers\StudentAttendanceIndexComposer');
         
         View::composer('school.create_edit', 'App\Http\ViewComposers\SchoolComposer');
         View::composer('school.index', 'App\Http\ViewComposers\SchoolIndexComposer');

@@ -72,7 +72,7 @@ var page = {
             jscn: 'js/plugins/jqueryui/js/datepicker-zh-CN.js'
         },
         moment: {
-            css: 'js/student_attendance/count.css',
+            css: 'js/student_attendance/stat.css',
             js: 'js/plugins/moment/min/moment.min.js',
         },
         daterangepicker: {
@@ -191,7 +191,7 @@ var page = {
                 });
                 break;
             case 498:
-                window.location.reload();
+                // window.location.reload();
                 break;
             case 500:
                 var message = obj['message'] + '\n' + obj['file'] + ' : ' + obj['line'];

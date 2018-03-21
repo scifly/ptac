@@ -7,10 +7,11 @@ use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 
 /**
  * App\Models\StudentAttendance 学生考勤记录
@@ -57,6 +58,10 @@ class StudentAttendance extends Model {
         'updated_at',
     ];
     
+    const EXPORT_TITLES = [
+        '姓名', '监护人', '手机号码', '打卡时间', '进/出'
+    ];
+    
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -75,7 +80,11 @@ class StudentAttendance extends Model {
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    function studentAttendancesetting() { return $this->belongsTo('App\Models\StudentAttendanceSetting', 'sas_id', 'id'); }
+    function studentAttendancesetting() {
+        
+        return $this->belongsTo('App\Models\StudentAttendanceSetting', 'sas_id', 'id');
+        
+    }
     
     /**
      * 学生考勤记录列表
@@ -142,208 +151,116 @@ class StudentAttendance extends Model {
                 ],
             ],
         ];
-        // todo: 增加角色过滤条件
-        $condition = 'AttendanceMachine.school_id = ' . $this->schoolId();
+        
+        $condition = 'StudentAttendance.student_id IN(' .
+            implode(',', $this->contactIds('student')) . ')';
         
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition
         );
         
     }
-
-    /**
-     * @param null $classId
-     * @param null $startTime
-     * @param null $endTime
-     * @param null $days
-     * @return array
-     */
-    function getData($classId = null, $startTime = null, $endTime = null, $days = null) {
-        
-        if (!$classId) { $classId = $this->getClass(); }
-        if (!$startTime) { $startTime = date('Y-m-d',strtotime('-7 day')); }
-        if (!$endTime) { $endTime = date('Y-m-d'); }
-        $item = [];
-        if ($classId && $startTime && $endTime) {
-            $all = Student::whereClassId($classId)->get()->pluck('id')->toArray();
-            if (empty($all)) {
-                return $item;
-            }
-            $data =$this->getSqlData(implode(',',$all), $startTime, $endTime);
-
-            $n = [];
-            $a = [];
-            if ($data) {
-                foreach ($data as $key => &$val)
-                {
-                    if ($val->lastest) {
-                        if(isset($n[$val->day])) {
-                            $n[$val->day] = ($n[$val->day]+1);
-                        }else{
-                            $n[$val->day] = 1;
-                        }
-                    }else{
-                        if(isset($a[$val->day])) {
-                            $a[$val->day] = ($a[$val->day]+1);
-                        }else{
-                            $a[$val->day] = 1;
-                        }
-                    }
-
-                }
-            }
-            for ($i = 0;$i < $days; $i++)
-            {
-                $date = strtotime($startTime);
-                $date = date("Y-m-d",$date+(86400*$i));
-                $item[$i]['date'] = $date;
-                $item[$i]['all'] = count($all);
-                $item[$i]['normal'] = isset($n[$date]) ? $n[$date] : 0;
-                $item[$i]['abnormal'] = isset($a[$date]) ? $a[$date] : 0;
-                $item[$i]['surplus'] = $item[$i]['all']-$item[$i]['normal']-$item[$i]['abnormal'];
-            }
-            return $item;
-        }
-        return $item;
-    }
     
-    function getStudentData($date , $type, $classId) {
-        
-        $startTime = date('Y-m-d H:i:s', strtotime($date));
-        $endTime = date('Y-m-d H:i:s', strtotime($date)+24*3600-1);
-        $all = Student::whereClassId($classId)->get()->pluck('id')->toArray();
-        $result = [];
-        $data =$this->getSqlData(implode(',',$all), $startTime, $endTime);
-
-        if ($type == 'surplus') {
-            $items = $this->whereIn('student_id', $all)
-                ->where('punch_time', '>=', $startTime)
-                ->where('punch_time', '<', $endTime)
-                ->get()
-                ->pluck('student_id');
-            $s = Student::whereClassId($classId)
-                ->whereNotIn('id', $items)
-                ->get();
-            if ($s) {
-                foreach ($s as $datum) {
-                    if ($datum->custodians) {
-                        $cu = User::whereIn('id', array_column(json_decode($datum->custodians), 'user_id'))
-                            ->get()
-                            ->pluck('realname');
-                    }else{
-                        $cu = [];
-                    }
-                    if (json_decode($datum->user['mobiles'])) {
-                        $mo = array_column(json_decode($datum->user['mobiles']), 'mobile');
-                    }else{
-                        $mo = [];
-                    }
-                    $result[] = [
-                        'name' => $datum->user['realname'],
-                        'custodian' => $cu,
-                        'moblie' => $mo,
-                        'punch_time' => '',
-                        'inorout' => '',
-                    ];
-                }
-            }
-        }
-
-        if ($data) {
-            switch ($type) {
-                case 'normal':
-                    $n = [];
-                    foreach ($data as $d) {
-                        if ($d->lastest) {
-                            $n[] = $d->id;
-                        }
-                    }
-                    $items = $this->whereIn('id', $n)->get();
-                    foreach ($items as $datum) {
-                        $result[] = [
-                            'name' => $datum->student->user->realname,
-                            'custodian' => User::whereIn('id', array_column($datum->student->custodians->toArray(), 'user_id'))
-                                ->get()
-                                ->pluck('realname'),
-                            'moblie' => array_column($datum->student->user->mobiles->toArray(), 'mobile'),
-                            'punch_time' => $datum->punch_time,
-                            'inorout' => $datum->inorout == 1 ? '进' : '出',
-                        ];
-                    }
-
-                    break;
-                case 'abnormal':
-                    $a = [];
-                    foreach ($data as $d) {
-                        if ($d->lastest == 0) {
-                            $a[] = $d->id;
-                        }
-                    }
-                    $items = $this->whereIn('id', $a)->get();
-                    foreach ($items as $datum) {
-                        $result[] = [
-                            'name' => $datum->student->user->realname,
-                            'custodian' => User::whereIn('id', array_column($datum->student->custodians->toArray(), 'user_id'))
-                                ->get()
-                                ->pluck('realname'),
-                            'moblie' => array_column($datum->student->user->mobiles->toArray(), 'mobile'),
-                            'punch_time' => $datum->punch_time,
-                            'inorout' => $datum->inorout == 1 ? '进' : '出',
-                        ];
-                    }
-                    break;
-
-            }
-        }
-
-        return $result;
-    }
-
     /**
-     * @param $studentIds
-     * @param $start
-     * @param $end
+     * 考勤统计
+     *
      * @return array
      */
-    private function getSqlData($studentIds, $start, $end) {
-        $data = DB::select("
-          select max(t.id) id,t.student_id, substring_index(group_concat( t.status order by t.punch_time DESC),',',1) lastest, DATE(t.punch_time) day 
-          from (
-            select ord.id,ord.student_id, ord.inorout,ord.status, ord.punch_time 
-              from student_attendances ord where ord.punch_time >= '". $start."' and ord.punch_time <= '". $end."' order by ord.student_id asc , ord.punch_time desc) t 
-              where t.student_id in (" . $studentIds . ") 
-          group by t.student_id,day"
-        );
-        return $data;
+    function stat() {
+    
+        $classId = Request::input('class_id');
+        $startTime = Request::input('start_time');
+        $endTime = Request::input('end_time');
+        $days = Request::input('days');
+        
+        if (!$classId) {
+            $classId = $this->classIds()[0];
+        }
+        if (!$startTime) {
+            $startTime = date('Y-m-d', strtotime('-7 day'));
+        }
+        if (!$endTime) {
+            $endTime = date('Y-m-d');
+        }
+        $attendances = [];
+        # 指定班级所有学生的id
+        $studentIds = Student::whereClassId($classId)->get()->pluck('id')->toArray();
+        if (empty($studentIds)) {
+            return $attendances;
+        }
+        $attendances = $this->latestAttendances(implode(',', $studentIds), $startTime, $endTime);
+        $normals = [];
+        $abnormals = [];
+        if (!empty($attendances)) {
+            foreach ($attendances as $key => &$val) {
+                if ($val->lastest) {
+                    if (isset($normals[$val->day])) {
+                        $normals[$val->day] = ($normals[$val->day] + 1);
+                    } else {
+                        $normals[$val->day] = 1;
+                    }
+                } else {
+                    if (isset($abnormals[$val->day])) {
+                        $abnormals[$val->day] = ($abnormals[$val->day] + 1);
+                    } else {
+                        $abnormals[$val->day] = 1;
+                    }
+                }
+                
+            }
+        }
+        for ($i = 0; $i < $days; $i++) {
+            $date = strtotime($startTime);
+            $date = date("Y-m-d", $date + (86400 * $i));
+            $all = sizeof($studentIds);
+            $normal = $normals[$date] ?? 0;
+            $abnormal = $abnormals[$date] ?? 0;
+            $attendances[$i] = [
+                'date' => $date,
+                'all' => $all,
+                'normal' => $normal,
+                'abnormal' => $abnormal,
+                'missed' => $all - $normal - $abnormal
+            ];
+        }
+        
+        return $attendances;
+        
     }
     
     /**
+     * 获取考勤明细
+     *
+     * @return array
+     */
+    function detail() {
+    
+        $details = $this->details();
+        # 缓存导出数据
+        $this->cache($details);
+        
+        return $details;
+        
+    }
+    
+    /**
+     * 导出考勤明细
+     *
      * @return mixed
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    private function getClass() {
-        
-        $schools = null;
-        $grades = null;
-        $classes = null;
-
-        $schoolId = $this->schoolId();
-        $schools = School::whereId($schoolId)
-            ->where('enabled', 1)
-            ->pluck('name', 'id');
-        if ($schools) {
-            $grades = Grade::whereSchoolId($schoolId)
-                ->where('enabled', 1)
-                ->pluck('name', 'id');
-        }
-        if ($grades) {
-            $classes = Squad::whereGradeId($grades->keys()->first())
-                ->where('enabled', 1)
-                ->pluck('name', 'id');
-            return $classes->keys()->first();
-        }
-        
-        return false;
-        
+    function export() {
+    
+        $details = session('details');
+        Session::forget('details');
+    
+        return $this->excel(
+            $details,
+            '学生考勤明细',
+            '考勤明细'
+        );
+    
     }
     
     /**
@@ -351,12 +268,171 @@ class StudentAttendance extends Model {
      * @return bool
      */
     function storeByFace($input) {
-
-        #触发事件调用队列，这个是异步处理的因此错误信息不能返回
+        
+        # 触发事件调用队列，这个是异步处理的因此错误信息不能返回
         event(new StudentAttendanceCreate($input));
+        
         return true;
+        
     }
+    
+    /**
+     * 获取指定学生的最新考勤数据
+     *
+     * @param string $studentIds - 学生id列表
+     * @param $start
+     * @param $end
+     * @return array
+     */
+    private function latestAttendances($studentIds, $start, $end) {
+        
+        return DB::select("
+          SELECT
+            max(t.id) id,
+            t.student_id,
+            substring_index(group_concat(t.status ORDER BY t.punch_time DESC), ',', 1) lastest,
+            DATE(t.punch_time) day
+          FROM (
+            SELECT
+              sa.id,
+              sa.student_id,
+              sa.inorout,
+              sa.status,
+              sa.punch_time
+            FROM
+              student_attendances sa
+            WHERE
+              sa.punch_time >= '" . $start . "' AND
+              sa.punch_time <= '" . $end . "'
+            ORDER BY
+              sa.student_id ASC,
+              sa.punch_time DESC
+          ) t
+          WHERE
+            t.student_id IN (" . $studentIds . ")
+          GROUP BY
+            t.student_id,
+            day
+        ");
+        
+    }
+    
+    /**
+     * @return array
+     */
+    private function details(): array {
+        
+        $date = Request::input('date');
+        $type = Request::input('type');
+        $classId = Request::input('class_id');
+        $startTime = date('Y-m-d H:i:s', strtotime($date));
+        $endTime = date('Y-m-d H:i:s', strtotime($date) + 24 * 3600 - 1);
+        $studentIds = Student::whereClassId($classId)->get()->pluck('id')->toArray();
+        $result = [];
+        $attendances = $this->latestAttendances(implode(',', $studentIds), $startTime, $endTime);
+        if ($type == 'missed') {
+            # 打过考勤的学生ids
+            $aStudentIds = $this->whereIn('student_id', $studentIds)
+                ->whereBetween('punch_time', [$startTime, $endTime])
+                ->get()->pluck('student_id');
+            # 未打考勤的学生
+            $nStudents = Student::whereClassId($classId)
+                ->whereNotIn('id', $aStudentIds)
+                ->get();
+            if ($nStudents) {
+                foreach ($nStudents as $student) {
+                    $userIds = array_column(json_decode($student->custodians), 'user_id');
+                    if ($student->custodians) {
+                        $custodians = User::whereIn('id', $userIds)->get()->pluck('realname')->toArray();
+                    } else {
+                        $custodians = [];
+                    }
+                    if (json_decode($student->user['mobiles'])) {
+                        $mobiles = array_column(json_decode($student->user['mobiles']), 'mobile');
+                    } else {
+                        $mobiles = [];
+                    }
+                    $result[] = [
+                        'name'       => $student->user['realname'],
+                        'custodian'  => $custodians,
+                        'mobile'     => $mobiles,
+                        'punch_time' => '',
+                        'inorout'    => '',
+                    ];
+                }
+            }
+        }
+        if ($attendances) {
+            switch ($type) {
+                case 'normal':
+                    $n = [];
+                    foreach ($attendances as $a) {
+                        if ($a->lastest) {
+                            $n[] = $a->id;
+                        }
+                    }
+                    $aStudentIds = $this->whereIn('id', $n)->get();
+                    foreach ($aStudentIds as $student) {
+                        $userIds = array_column($student->student->custodians->toArray(), 'user_id');
+                        $result[] = [
+                            'name'       => $student->student->user->realname,
+                            'custodian'  => User::whereIn('id', $userIds)->get()->pluck('realname')->toArray(),
+                            'mobile'     => array_column($student->student->user->mobiles->toArray(), 'mobile'),
+                            'punch_time' => $student->punch_time,
+                            'inorout'    => $student->inorout == 1 ? '进' : '出',
+                        ];
+                    }
+                    break;
+                case 'abnormal':
+                    $student = [];
+                    foreach ($attendances as $a) {
+                        if ($a->lastest == 0) {
+                            $student[] = $a->id;
+                        }
+                    }
+                    $aStudentIds = $this->whereIn('id', $student)->get();
+                    foreach ($aStudentIds as $student) {
+                        $userIds = array_column($student->student->custodians->toArray(), 'user_id');
+                        $custodians = User::whereIn('id', $userIds)->get()->pluck('realname')->toArray();
+                        $result[] = [
+                            'name'       => $student->student->user->realname,
+                            'custodian'  => $custodians,
+                            'mobile'     => array_column($student->student->user->mobiles->toArray(), 'mobile'),
+                            'punch_time' => $student->punch_time,
+                            'inorout'    => $student->inorout == 1 ? '进' : '出',
+                        ];
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
 
-
+        $a = $result;
+        return $result;
+        
+    }
+    
+    /**
+     * 缓存导出数据
+     *
+     * @param $details
+     */
+    private function cache($details): void {
+        
+        $rows = [self::EXPORT_TITLES];
+        foreach ($details as $detail) {
+            $rows[] = [
+                $detail['name'],
+                implode(',', $detail['custodian']),
+                implode(',', $detail['mobile']),
+                $detail['punch_time'],
+                $detail['inorout'] ? '进' : '出'
+            ];
+        }
+        
+        session(['details' => $rows]);
+        
+    }
     
 }

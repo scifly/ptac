@@ -150,8 +150,8 @@
                                 $studentNext.remove();
                                 $studentId.remove();
                                 $studentPrev.after(result['html']['students']);
-                                page.initSelect2();
                             }
+                            page.initSelect2();
                         },
                         error: function (e) {
                             page.errorHandler(e);
@@ -406,7 +406,8 @@
         return {
             index: cr.index,
             create: cr.create,
-            edit: cr.edit
+            edit: cr.edit,
+            onGradeChange: cr.onGradeChange
         }
     }
 })(jQuery);
