@@ -3,6 +3,7 @@ namespace App\Models;
 
 use App\Events\StudentAttendanceCreate;
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
@@ -252,6 +253,11 @@ class StudentAttendance extends Model {
      */
     function export() {
     
+        abort_if(
+            !session('details'),
+            HttpStatusCode::BAD_REQUEST,
+            __('messages.bad_request')
+        );
         $details = session('details');
         Session::forget('details');
     
@@ -408,7 +414,6 @@ class StudentAttendance extends Model {
             }
         }
 
-        $a = $result;
         return $result;
         
     }
