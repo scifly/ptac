@@ -135,6 +135,15 @@ Route::group(['prefix' => 'student_attendances'], function (){
     Route::post('detail', $c . '@detail');
     Route::get('export', $c . '@export');
 });
+// 教职员工考勤记录
+Route::group(['prefix' => 'educator_attendances'], function (){
+    $c = 'EducatorAttendanceController';
+    Route::get('index', $c . '@index');
+    Route::get('stat', $c . '@stat');
+    Route::post('stat', $c . '@stat');
+    Route::post('detail', $c . '@detail');
+    Route::get('export', $c . '@export');
+});
 
 /** 课程表管理 */
 // 课程表设置
@@ -288,12 +297,12 @@ Route::group(['prefix' => 'menus'], function () {
     Route::post('ranktabs/{id}', $c . '@rankTabs');
 });
 // 管理员
-Route::group(['prefix' => 'operators'], routes('OperatorController'));
-Route::group(['prefix' => 'operators'], function() {
-    $c = 'OperatorController';
-    Route::post('create', $c . '@create');
-    Route::post('edit/{id}', $c . '@edit');
-});
+// Route::group(['prefix' => 'operators'], routes('OperatorController'));
+// Route::group(['prefix' => 'operators'], function() {
+//     $c = 'OperatorController';
+//     Route::post('create', $c . '@create');
+//     Route::post('edit/{id}', $c . '@edit');
+// });
 
 # --------------------------------------------------------------------------------
 // 消息中心

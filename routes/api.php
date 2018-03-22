@@ -17,7 +17,8 @@ Route::post('login', 'ApiController@login');
 
 Route::group(['middleware' => 'auth:api'], function() {
     $c = 'ApiController@';
-    Route::post('upload_consumption', $c . 'studentConsumption');
-    Route::post('upload_attendance', $c . 'studentAttendance');
+    Route::post('student_consumption', $c . 'studentConsumption');
+    Route::post('student_attendance', $c . 'studentAttendance');
+    Route::post('educator_attendance', $c . 'educatorAttendance');
 });
 

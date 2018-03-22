@@ -31,80 +31,16 @@ $rangeId.on('change', function () {
             break;
     }
 });
-var initDateRangePicker = function () {
-    page.loadCss(page.plugins.daterangepicker.css);
-    $('#daterange').daterangepicker(
-        {
-            locale: {
-                format: "YYYY-MM-D",
-                separator: " 至 ",
-                applyLabel: "确定",
-                cancelLabel: "取消",
-                fromLabel: "从",
-                toLabel: "到",
-                todayRangeLabel: '今天',
-                customRangeLabel: "自定义",
-                weekLabel: "W",
-                daysOfWeek: ["日", "一", "二", "三", "四", "五", "六"],
-                monthNames: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
-                firstDay: 1
-            },
-            ranges: {
-                '今天': [
-                    moment(),
-                    moment()
-                ],
-                '昨天': [
-                    moment().subtract(1, 'days'),
-                    moment().subtract(1, 'days')
-                ],
-                '过去 7 天': [
-                    moment().subtract(6, 'days'),
-                    moment()
-                ],
-                '过去 30 天': [
-                    moment().subtract(29, 'days'),
-                    moment()
-                ],
-                '这个月': [
-                    moment().startOf('month'),
-                    moment().endOf('month')
-                ],
-                '上个月': [
-                    moment().subtract(1, 'month').startOf('month'),
-                    moment().subtract(1, 'month').endOf('month')
-                ]
-            },
-            startDate: moment().subtract(29, 'days'),
-            endDate: moment()
-        },
-        function (start, end) {
-            $('#daterange').find('span').html(
-                start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD')
-            );
-        }
-    );
-};
-if (typeof moment === 'undefined' && !$.fn.daterangepicker) {
-    $.getScript(
-        page.siteRoot() + page.plugins.daterangepicker.moment,
-        function () {
-            $.getScript(
-                page.siteRoot() + page.plugins.daterangepicker.js,
-                function () { initDateRangePicker(); }
-            )
-        }
-    )
-} else { initDateRangePicker(); }
-var $stat = $('#stat');
-var $range = $('#range');
-var $studentId = $('#student_id');
-var $classId = $('#class_id');
-var $gradeId = $('#grade_id');
-var $aConsume = $('#a_consume');
-var $consume = $('#consume');
-var $charge = $('#charge');
-var $aCharge = $('#a_charge');
+page.initDateRangePicker();
+var $stat = $('#stat'),
+    $range = $('#range'),
+    $studentId = $('#student_id'),
+    $classId = $('#class_id'),
+    $gradeId = $('#grade_id'),
+    $aConsume = $('#a_consume'),
+    $consume = $('#consume'),
+    $charge = $('#charge'),
+    $aCharge = $('#a_charge');
 $stat.on('click', function () {
     if ($range.html().indexOf('fa-calendar') !== -1) {
         page.inform('错误', '请选择日期范围', page.failure);

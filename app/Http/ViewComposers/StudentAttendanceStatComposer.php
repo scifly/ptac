@@ -25,6 +25,7 @@ class StudentAttendanceStatComposer {
             ->toArray();
 
         $view->with([
+            'titles' => ['姓名', '监护人', '手机号码', '打卡时间', '进/出'],
             'grades' => $grades,
             'classes' => $classes,
             'uris' => $this->uris()

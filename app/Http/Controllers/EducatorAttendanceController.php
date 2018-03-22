@@ -1,37 +1,32 @@
 <?php
+
 namespace App\Http\Controllers;
 
-use App\Models\Grade;
-use App\Models\Media;
-use App\Models\School;
-use App\Models\Student;
-use App\Models\StudentAttendance;
+use App\Models\EducatorAttendance;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
- * 学生考勤记录
+ * 教职员工考勤
  *
- * Class StudentAttendanceController
+ * Class EducatorAttendanceController
  * @package App\Http\Controllers
  */
-class StudentAttendanceController extends Controller {
+class EducatorAttendanceController extends Controller {
+
+    protected $ea;
     
-    protected $sa, $student, $grade;
-    
-    function __construct(StudentAttendance $sa, Student $student, Grade $grade) {
+    function __construct(EducatorAttendance $ea) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->sa = $sa;
-        $this->student = $student;
-        $this->grade = $grade;
+        $this->ea = $ea;
         
     }
     
     /**
-     * 学生考勤记录列表
+     * 教职员工考勤记录列表
      *
      * @return bool|JsonResponse
      * @throws Throwable
@@ -40,7 +35,7 @@ class StudentAttendanceController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->sa->datatable()
+                $this->ea->datatable()
             );
         }
         
@@ -49,30 +44,18 @@ class StudentAttendanceController extends Controller {
     }
     
     /**
-     * 学生考勤统计
+     * 教职员工考勤统计
      *
-     * @return bool|JsonResponse
+     * @throws AuthorizationException
      * @throws Throwable
      */
     public function stat() {
-        
+    
         $this->authorize(
-            'sde', StudentAttendance::class
+            'sde', EducatorAttendance::class
         );
         if (Request::method() === 'POST') {
-            $field = Request::input('field');
-            $id = Request::input('id');
-            if ($field && $id) {
-                list($classes) = $this->grade->classList(
-                    Request::input('id')
-                );
-                $this->result['html']['classes'] = $classes;
-                return response()->json($this->result);
-            } else {
-                return response()->json(
-                    $this->sa->stat()
-                );
-            }
+            return $this->ea->stat();
         }
         
         return $this->output();
@@ -80,7 +63,7 @@ class StudentAttendanceController extends Controller {
     }
     
     /**
-     * 查询学生考勤明细
+     * 查询教职员工考勤明细
      *
      * @return bool|JsonResponse
      * @throws Throwable
@@ -88,11 +71,11 @@ class StudentAttendanceController extends Controller {
     public function detail() {
         
         $this->authorize(
-            'sde', StudentAttendance::class
+            'sde', EducatorAttendance::class
         );
         if (Request::method() === 'POST') {
             return response()->json(
-                $this->sa->detail()
+                $this->ea->detail()
             );
         }
         
@@ -101,7 +84,7 @@ class StudentAttendanceController extends Controller {
     }
     
     /**
-     * 导出学生考勤明细
+     * 导出教职员工考勤明细
      *
      * @return mixed
      * @throws AuthorizationException
@@ -109,13 +92,13 @@ class StudentAttendanceController extends Controller {
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function export() {
-    
+        
         $this->authorize(
-            'sde', StudentAttendance::class
+            'sde', EducatorAttendance::class
         );
         
-        return $this->sa->export();
-    
+        return $this->ea->export();
+        
     }
     
 }

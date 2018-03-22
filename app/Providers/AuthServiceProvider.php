@@ -12,6 +12,7 @@ use App\Models\Corp;
 use App\Models\Custodian;
 use App\Models\Department;
 use App\Models\DepartmentType;
+use App\Models\EducatorAttendance;
 use App\Models\Exam;
 use App\Models\Grade;
 use App\Models\Group;
@@ -39,6 +40,7 @@ use App\Policies\ConsumptionPolicy;
 use App\Policies\ConsumptionStat;
 use App\Policies\DepartmentPolicy;
 use App\Policies\DepartmentTypePolicy;
+use App\Policies\EducatorAttendancePolicy;
 use App\Policies\ExamPolicy;
 use App\Policies\GradePolicy;
 use App\Policies\GroupPolicy;
@@ -112,6 +114,7 @@ class AuthServiceProvider extends ServiceProvider {
         SubjectModule::class => SubjectModulePolicy::class,
         Tab::class => TabPolicy::class,
         StudentAttendance::class => StudentAttendancePolicy::class,
+        EducatorAttendance::class => EducatorAttendancePolicy::class,
     ];
     
     /**

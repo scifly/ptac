@@ -102,6 +102,7 @@ class Handler extends ExceptionHandler {
                     break;
                 case 'ValidationException':
                     /** @var ValidationException $exception */
+                    $status = HttpStatusCode::NOT_ACCEPTABLE;
                     $response['errors'] = $exception->errors();
                     break;
                 case 'NotFoundHttpException':

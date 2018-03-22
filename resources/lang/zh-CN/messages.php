@@ -21,4 +21,9 @@ return [
     'invalid_credentials' => '用户名/密码错误',
     'invalid_argument' => '参数无效',
     'token_mismatch' => '页面已失效，请重试',
+    'student_not_found' => '学生信息有误',
+    'semester_not_found' => '学期信息有误',
+    'machine_not_found' => '该考勤机没有注册',
+    'user_not_found' => '没有这个用户',
+    'educator_not_found' => '没有这个教职员工'
 ];
