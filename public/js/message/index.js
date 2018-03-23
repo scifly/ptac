@@ -2,7 +2,7 @@ page.initSelect2({
     templateResult: page.formatStateImg,
     templateSelection: page.formatStateImg,
 });
-page.initDatatable('messages');
+page.index('messages');
 
 var $message = $('#message'),
     $objects = $('#objects'),
