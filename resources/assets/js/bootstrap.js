@@ -49,7 +49,7 @@ window.Pusher = require('pusher-js');
 
 // noinspection JSUnusedLocalSymbols
 var pusher = new Pusher('bc8e8ee821cf30234a31', {
-    authEndpoint: '/ptac/public/broadcasting/auth',
+    authEndpoint: '/broadcasting/auth',
     auth: {
         headers: {
             'X-CSRF-Token': token.content
@@ -58,7 +58,7 @@ var pusher = new Pusher('bc8e8ee821cf30234a31', {
 });
 
 window.Echo = new Echo({
-    authEndpoint: '/ptac/public/broadcasting/auth',
+    authEndpoint: '/broadcasting/auth',
     broadcaster: 'pusher',
     key: 'bc8e8ee821cf30234a31',
     cluster: 'ap1',
