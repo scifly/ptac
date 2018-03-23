@@ -108,7 +108,6 @@ class User extends Authenticatable {
      *
      * @var array
      */
-
     protected $hidden = ['password', 'remember_token'];
     
     /**
@@ -217,7 +216,7 @@ class User extends Authenticatable {
      * @param array $ids
      * @return array
      */
-    function users(array $ids) {
+    function userList(array $ids) {
 
         $list = [];
         foreach ($ids as $id) {

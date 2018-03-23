@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Facades\Wechat;
+use App\Helpers\Constant;
+use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use App\Http\Requests\MessageRequest;
@@ -259,22 +261,18 @@ class Message extends Model {
         ];
         $condition = null;
         $role = Auth::user()->group->name;
-        if ($role == '运营' ||$role == '企业' || $role == '学校') {
-            $schoolId = $this->schoolId();
-            $educators = Educator::whereSchoolId($schoolId)->whereEnabled(1)->get();
-            $eduUserIds = [];
-            $userIds = [];
-            foreach ($educators as $educator) {
-                $eduUserIds[] = $educator->user_id;
-            }
-            #当前用户自己的发送的信息
+        if (in_array($role, Constant::SUPER_ROLES)) {
             $userIds[] = Auth::id();
-            $ids = array_merge($eduUserIds, $userIds);
-            #获取当前用户自己发送的信息和该学校下教职员工的信息
-            $condition = 'Message.s_user_id IN' . '(' . implode(',', array_unique($ids)) . ')';
-        }
-        if ($role == '教职员工') {
-            $condition = 'Message.r_user_id=' . Auth::id();
+            $userIds = array_unique(
+                array_merge(
+                    $this->userIds(School::find($this->schoolId())->department_id),
+                    $userIds
+                )
+            );
+            $condition = 'Message.s_user_id IN' . '(' . implode(',', $userIds) . ')';
+        } else {
+            $condition = 'Message.s_user_id = ' . Auth::id()
+                . ' OR Message.r_user_id = ' . Auth::id();
         }
         
         return Datatable::simple(
@@ -282,7 +280,11 @@ class Message extends Model {
         );
         
     }
-
+    
+    /**
+     * @param $data
+     * @return \Illuminate\Http\JsonResponse
+     */
     function sendMessage($data) {
         
         $result = [
@@ -290,9 +292,8 @@ class Message extends Model {
             'message' => '',
         ];
 
-        $obj = explode(',', $data['departIds']);
-        if ($obj) {
-
+        $departmentIds = explode(',', $data['departIds']);
+        if ($departmentIds) {
             $apps = App::whereIn('id', $data['app_ids'])->get()->toArray();
             if (!$apps) {
                 $result = [
@@ -301,19 +302,17 @@ class Message extends Model {
                 ];
                 return response()->json($result);
             }
-            $corp = Corp::whereName('万浪软件')->first();
-            if (!$corp) {
-                $result = [
-                    'statusCode' => 0,
-                    'message' => '企业号不存在，请刷新页面！',
-                ];
-                return response()->json($result);
-            }
+            $corp = School::find($this->schoolId())->corp;
+            abort_if(
+                !$corp,
+                HttpStatusCode::NOT_FOUND,
+                '企业号不存在，请刷新页面！'
+            );
 
             $depts = [];
             $users = [];
             $us = [];
-            foreach ($obj as $o) {
+            foreach ($departmentIds as $o) {
                 $item = explode('-', $o);
                 if (isset($item[1])) {
                     $users[] = User::find($item[1])->userid;
@@ -430,7 +429,10 @@ class Message extends Model {
             if ($result['statusCode'] == 200) {
                 $readCount = $data['type'] == 'sms' ? count($userDatas['users']) : 0;
                 $receivedCount = count($userDatas['users']);
-                MessageSendingLog::find($id)->update(['read_count' => $readCount , 'received_count' => $receivedCount]);
+                MessageSendingLog::find($id)->update([
+                    'read_count' => $readCount ,
+                    'received_count' => $receivedCount
+                ]);
             }
         }
         

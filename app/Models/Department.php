@@ -339,20 +339,11 @@ class Department extends Model {
             $parentId = $i == 0 ? '#' : $departments[$i]['parent_id'];
             $text = $departments[$i]['name'];
             $departmentType = DepartmentType::find($departments[$i]['department_type_id'])->name;
-            switch ($departmentType) {
-                case '根': $type = 'root'; break;
-                case '运营': $type = 'company'; break;
-                case '企业': $type = 'corp'; break;
-                case '学校': $type = 'school'; break;
-                case '年级': $type = 'grade'; break;
-                case '班级': $type = 'class'; break;
-                default: $type = 'other'; break;
-            }
             $nodes[] = [
                 'id' => $departments[$i]['id'],
                 'parent' => $parentId,
                 'text' => $text,
-                'type' => $type,
+                'type' => Constant::DEPARTMENT_TYPES[$departmentType],
             ];
         }
 
@@ -645,6 +636,11 @@ class Department extends Model {
 
     }
     
+    /**
+     * 获取联系人树
+     *
+     * @return array|\Illuminate\Http\JsonResponse
+     */
     function contacts() {
         
         $user = Auth::user();
@@ -654,7 +650,7 @@ class Department extends Model {
         if (in_array($role, Constant::SUPER_ROLES)) {
             $tree = self::tree($departmentId);
             foreach ($tree as &$t) {
-                $t['seletable'] =1;
+                $t['seletable'] = 1;
                 $t['role'] ='dept';
                 $t['type'] = $t['id'] == 0 ? '#' : 'dept';
                 # 读取当前部门下的所有用户
