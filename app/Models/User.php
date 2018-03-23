@@ -437,7 +437,7 @@ class User extends Authenticatable {
             [
                 'db' => 'User.enabled', 'dt' => 9,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row);
+                    return Datatable::dtOps($d, $row, false, true, true);
                 },
             ],
         ];
