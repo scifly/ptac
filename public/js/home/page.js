@@ -742,18 +742,20 @@ $(function () {
         page.refreshTabs();
         // 获取被点击卡片的uri
         var url = $(this).attr('data-uri');
-        // 选定所有卡片
-        var $tabPanes = $('.card');
-        // 获取状态为active的卡片
-        var $activeTabPane = $('#tab_' + page.getActiveTabId());
-        // 如果状态为active的卡片的内容为空, 清空其他卡片的内容
-        if ($.trim($activeTabPane.html()) === '') {
-            // 清空所有卡片的内容
-            $.each($tabPanes, function () {
-                $(this).html('');
-            });
-            // 获取状态为active的卡片内容
-            page.getTabContent($activeTabPane, url);
+        if (typeof url !== 'undefined') {
+            // 选定所有卡片
+            var $tabPanes = $('.card');
+            // 获取状态为active的卡片
+            var $activeTabPane = $('#tab_' + page.getActiveTabId());
+            // 如果状态为active的卡片的内容为空, 清空其他卡片的内容
+            if ($.trim($activeTabPane.html()) === '') {
+                // 清空所有卡片的内容
+                $.each($tabPanes, function () {
+                    $(this).html('');
+                });
+                // 获取状态为active的卡片内容
+                page.getTabContent($activeTabPane, url);
+            }
         }
     });
     // 获取wrapper div中显示的Html
