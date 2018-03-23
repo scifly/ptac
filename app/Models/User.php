@@ -269,7 +269,7 @@ class User extends Authenticatable {
         }
 
     }
-
+    
     /**
      * 创建企业号会员
      *
@@ -290,7 +290,6 @@ class User extends Authenticatable {
         event(new UserCreated($data));
 
     }
-
     /**
      * 更新企业号会员
      *
@@ -312,7 +311,6 @@ class User extends Authenticatable {
         event(new UserUpdated($data));
 
     }
-
     /**
      * 删除企业号会员
      *
@@ -323,7 +321,19 @@ class User extends Authenticatable {
         event(new UserDeleted(self::find($id)->userid));
 
     }
-
+    
+    /**
+     * 保存用户
+     *
+     * @param array $data
+     * @return bool
+     */
+    function store(array $data) {
+        
+        return $this->create($data) ? true : false;
+        
+    }
+    
     /**
      * 更新用户
      *
@@ -442,7 +452,7 @@ class User extends Authenticatable {
             ],
         ];
         $user = Auth::user();
-        $sql = 'User.group_id IN %s';
+        $sql = 'User.group_id IN (%s)';
         $rootGroupId = Group::whereName('运营')->first()->id;
         $corpGroupId = Group::whereName('企业')->first()->id;
         $schoolGroupId = Group::whereName('学校')->first()->id;
