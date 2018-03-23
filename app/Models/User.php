@@ -421,8 +421,8 @@ class User extends Authenticatable {
 
         $columns = [
             ['db' => 'User.id', 'dt' => 0],
-            ['db' => 'User.username', 'dt' => 2],
-            ['db' => 'Groups.name as grapname', 'dt' => 1],
+            ['db' => 'User.username', 'dt' => 1],
+            ['db' => 'Groups.name as role', 'dt' => 2],
             ['db' => 'User.avatar_url', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
             [
