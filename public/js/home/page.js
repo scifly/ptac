@@ -3,6 +3,7 @@ var updateHistory = true;
 var replaceState = true;
 var docTitle = '家校通';
 var $cip = $('#cip');
+// noinspection JSUnusedGlobalSymbols
 var page = {
     success: 'img/confirm.png',
     failure: 'img/error.png',
@@ -170,12 +171,12 @@ var page = {
     },
     getTabUrl: function () {
         var url = window.location.href;
-        return encodeURIComponent(url + this.getQuerySting());
+        return encodeURIComponent(url + this.getQueryString());
     },
     getMenuUrl: function () {
         return page.siteRoot() + $('.sidebar-menu li.active').last().find('a').attr('href');
     },
-    getQuerySting: function () {
+    getQueryString: function () {
         return '?menuId=' + this.getActiveMenuId() + '&tabId=' + this.getActiveTabId();
     },
     errorHandler: function (e) {
@@ -384,7 +385,7 @@ var page = {
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: page.siteRoot() + table + '/index' + page.getQuerySting(),
+                    url: page.siteRoot() + table + '/index' + page.getQueryString(),
                     error: function (e) {
                         page.errorHandler(e);
                     }
@@ -416,14 +417,7 @@ var page = {
                 dt.search(this.value, true).draw();
             });
         };
-        if (!($.fn.dataTable)) {
-            $.getMultiScripts([page.plugins.datatable.js], page.siteRoot())
-                .done(function () {
-                    showTable();
-                });
-        } else {
-            showTable();
-        }
+        $.getMultiScripts([page.plugins.datatable.js], page.siteRoot()).done(function () { showTable(); });
     },
     index: function (table, options) {
         this.unbindEvents();
