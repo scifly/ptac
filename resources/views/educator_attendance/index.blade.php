@@ -1,1 +1,1 @@
-@include('partials.attendance.index')
+@include('partials.index')

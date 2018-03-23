@@ -441,9 +441,27 @@ class User extends Authenticatable {
                 ],
             ],
         ];
+        $user = Auth::user();
+        $sql = 'User.group_id IN %s';
+        $rootGroupId = Group::whereName('运营')->first()->id;
+        $corpGroupId = Group::whereName('企业')->first()->id;
+        $schoolGroupId = Group::whereName('学校')->first()->id;
+        switch ($user->group->name) {
+            case '运营':
+                $condition = sprintf($sql, implode(',', [$rootGroupId, $corpGroupId, $schoolGroupId]));
+                break;
+            case '企业':
+                $condition = sprintf($sql, implode(',', [$corpGroupId, $schoolGroupId]));
+                break;
+            case '学校':
+                $condition = sprintf($sql, implode(',', [$schoolGroupId]));
+                break;
+            default:
+                break;
+        }
 
         return Datatable::simple(
-            $this->getModel(), $columns, $joins
+            $this->getModel(), $columns, $joins, $condition
         );
 
     }
