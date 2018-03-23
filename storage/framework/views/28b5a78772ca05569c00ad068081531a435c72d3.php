@@ -56,7 +56,7 @@
                 	<a href="#" style="position: relative;">
                 		添加封面图
                 		<input type="hidden" value="image" name="type" />
-                        <input type="file" id="file-cover" onchange="upload_cover(this)" name="input-cover" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
+                        <input type="file" id="file-cover" onchange="uploadCover(this)" name="input-cover" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
                 	</a>
                 	&nbsp;&nbsp;<span class="text-gray">建议尺寸:1068*534</span>
                 	

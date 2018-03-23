@@ -36,7 +36,7 @@ switch (htmlspecialchars($_GET['action'])) {
         );
         $fieldName = $CONFIG['videoFieldName'];
         break;
-    case 'uploadfile':
+    case 'uploadFile':
     default:
         $config = array(
             "pathFormat" => $CONFIG['filePathFormat'],

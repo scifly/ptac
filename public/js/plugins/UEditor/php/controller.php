@@ -20,7 +20,7 @@ switch ($action) {
     /* 上传视频 */
     case 'uploadvideo':
     /* 上传文件 */
-    case 'uploadfile':
+    case 'uploadFile':
         $result = include("action_upload.php");
         break;
 

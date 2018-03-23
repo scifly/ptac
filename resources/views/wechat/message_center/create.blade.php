@@ -55,7 +55,7 @@
                             </div>
                             <div class="weui-uploader__bd" id="cover" style="width: 100%">
                                 <div class="weui-uploader__input-box" >
-                                    <input id="upload_mpnews" onchange="upload_cover()" class="weui-uploader__input upload_mpnews" type="file" accept="image/*" multiple="">
+                                    <input id="upload_mpnews" onchange="uploadCover()" class="weui-uploader__input upload_mpnews" type="file" accept="image/*" multiple="">
                                 </div>
                             </div>
                         </div>

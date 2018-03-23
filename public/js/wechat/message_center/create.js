@@ -332,7 +332,7 @@ function upload_cover() {
             $('#upload-wait').hide();
             if (result.statusCode === 1) {
                 var html = '<img class="uploadimg-item upload_mpnews" id="' + result.data.id + '" src="http://weixin.028lk.com/' + result.data.path + '"  style="width: 100%" data-id="' + result.data.id + '">' +
-                    '<input id="mpnews_media_id" name="mpnews_media_id" onchange="upload_cover()" data-content-id="' + result.data.media_id + '" class="weui-uploader__input upload_mpnews" type="file" accept="image/*" multiple="" >';
+                    '<input id="mpnews_media_id" name="mpnews_media_id" onchange="uploadCover()" data-content-id="' + result.data.media_id + '" class="weui-uploader__input upload_mpnews" type="file" accept="image/*" multiple="" >';
                 $('#cover').html(html);
             } else {
                 $.alert('上传失败，请稍后重新尝试！')

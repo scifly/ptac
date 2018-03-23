@@ -1003,6 +1003,7 @@ Vue.component('example', __webpack_require__(40));
 //     require('./components/passport/PersonalAccessTokens.vue')
 // );
 
+// noinspection JSUnusedLocalSymbols
 var app = new Vue({
     // el: '#app',
     created: function created() {
