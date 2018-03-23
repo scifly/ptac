@@ -3,7 +3,7 @@ page.initSelect2({
     templateSelection: page.formatStateImg,
 });
 page.initDatatable('messages');
-page.loadCss('css/message/message.css');
+page.loadCss('/css/message/message.css');
 
 var $message = $('#message'),
     $objects = $('#objects'),
