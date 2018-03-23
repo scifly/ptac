@@ -2,7 +2,7 @@ page.initSelect2({
     templateResult: page.formatStateImg,
     templateSelection: page.formatStateImg,
 });
-page.index('messages');
+page.initDatatable('messages');
 
 var $message = $('#message'),
     $objects = $('#objects'),
@@ -304,10 +304,7 @@ $saveImageText.click(function () {
         alert('请编辑内容');
         return false;
     }
-    var picurl = $('#cover').find('.show').find('.show-cover'
-    "backgroundImage"
-)
-    ;
+    var picurl = $('#cover').find('.show').find('.show-cover'));
     if (!picurl) {
         alert('请添加封面图');
         return false;
