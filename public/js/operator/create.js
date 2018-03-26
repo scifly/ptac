@@ -10,26 +10,24 @@ $groupId.on('change', function () {
         $schoolId = $('#school_id');
     switch (parseInt($groupId.val())) {
         case 1:
-            $corp.hide();
-            $school.hide();
+            $corp.slideUp();
+            $school.slideUp();
             break;
         case 2:
             if ($corpId.length === 0) {
                 getLists();
-            } else {
-                $corp.slideDown();
-                $school.slideUp();
             }
+            $corp.slideDown();
+            $school.slideUp();
             break;
         case 3:
             $corp.show();
             $school.show();
             if ($schoolId.length === 0) {
                 getLists();
-            } else {
-                $corp.show();
-                $school.hide();
             }
+            $corp.slideDown();
+            $school.slideDown();
             break;
         default:
             break;
@@ -37,7 +35,7 @@ $groupId.on('change', function () {
 });
 
 function getLists() {
-    $.ajax({
+    return $.ajax({
         type: 'POST',
         dataType: 'json',
         data: {
@@ -46,8 +44,6 @@ function getLists() {
         },
         url: page.siteRoot() + 'operators/create',
         success: function (result) {
-            $corp.show();
-            $school.hide();
             $corp.find('.input-group').append(result['corpList']);
             $('#corp_id').select2();
             if (result['schoolList'] !== '') {
