@@ -21,8 +21,6 @@ $groupId.on('change', function () {
             $school.slideUp();
             break;
         case 3:
-            $corp.show();
-            $school.show();
             if ($schoolId.length === 0) {
                 getLists();
             }
@@ -44,11 +42,15 @@ function getLists() {
         },
         url: page.siteRoot() + 'operators/create',
         success: function (result) {
-            $corp.find('.input-group').append(result['corpList']);
-            $('#corp_id').select2();
+            var $corpId = $('#corp_id'),
+                $schoolId = $('#school_id');
+            if ($corpId.length === 0) {
+                $corp.find('.input-group').append(result['corpList']);
+                $corpId.select2();
+            }
             if (result['schoolList'] !== '') {
                 $school.find('.input-group').append(result['schoolList']);
-                $('#school_id').select2();
+                $schoolId.select2();
             }
         },
         error: function (e) {
