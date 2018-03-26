@@ -433,8 +433,8 @@ class User extends Authenticatable {
         $corps = Corp::pluck('name', 'id')->toArray();
         $html = str_replace('ID', 'corp_id', self::SELECT_HTML);
         
-        foreach ($corps as $corp) {
-            $html .= '<option value="' . $corp['id'] . '">' . $corp['name'] . '</option>';
+        foreach ($corps as $key => $value) {
+            $html .= '<option value="' . $key . '">' . $value . '</option>';
         }
         $result['corps'] = $html . '</select>';
         
@@ -442,8 +442,8 @@ class User extends Authenticatable {
             reset($corps);
             $schools = School::whereCorpId(key($corps))->get()->pluck('name', 'id')->toArray();
             $html = str_replace('ID', 'school_id', self::SELECT_HTML);
-            foreach ($schools as $school) {
-                $html .= '<option value="' . $school['id'] . '">' . $school['name'] . '</option>';
+            foreach ($schools as $key => $value) {
+                $html .= '<option value="' . $key . '">' . $value . '</option>';
             }
             $result['schools'] = $html . '</select>';
         }
