@@ -34,7 +34,10 @@ function getLists() {
     $.ajax({
         type: 'POST',
         dataType: 'json',
-        data: {groupId: $groupId.val()},
+        data: {
+            _token: $('#csrf_token').attr('content'),
+            groupId: $groupId.val()
+        },
         url: page.siteRoot() + 'operators/create',
         success: function (result) {
             $corp.show();
