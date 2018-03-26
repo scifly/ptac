@@ -14,20 +14,20 @@ $groupId.on('change', function () {
             $school.hide();
             break;
         case 2:
-            if (typeof $corpId === 'undefined') {
-                 getLists();
-             }
-             break;
-         case 3:
-             $corp.show();
-             $school.show();
-             if (typeof $schoolId === 'undefined') {
+            if ($corpId.length === 0) {
                 getLists();
-             }
-             break;
-         default:
-             break;
-     }
+            }
+            break;
+        case 3:
+            $corp.show();
+            $school.show();
+            if ($schoolId.length === 0) {
+                getLists();
+            }
+            break;
+        default:
+            break;
+    }
 });
 
 function getLists() {
