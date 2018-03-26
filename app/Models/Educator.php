@@ -544,6 +544,7 @@ class Educator extends Model {
                 'db' => 'Educator.sms_quote', 'dt' => 3,
                 'formatter' => function($row) {
                     $educator = self::find($row['id']);
+                    if (!$educator) { return ''; }
                     $user = User::find($educator->user_id);
                     if (!$user) { return ''; }
                     $mobiles = $user->mobiles->pluck('mobile')->toArray();
