@@ -28,7 +28,7 @@
             <!-- 密码 -->
             <div class="form-group">
                 {!! Form::label('password', '密码', [
-                    'class' => 'col-sm-3'
+                    'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
@@ -44,7 +44,7 @@
             <!-- 确认密码 -->
             <div class="form-group">
                 {!! Form::label('password-confirm', '确认密码', [
-                    'class' => 'col-sm-3'
+                    'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
@@ -63,7 +63,7 @@
                 'label' => '角色',
                 'id' => 'group_id',
                 'items' => $groups,
-                'icon' => 'fa fa-meh'
+                'icon' => 'fa fa-meh-o'
             ])
             <!-- 所属企业 -->
             <div id="corp-id" class="form-group" style="display: none;">
