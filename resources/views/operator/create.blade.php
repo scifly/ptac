@@ -3,5 +3,5 @@
     'id' => 'formUser',
     'data-parsley-validate' => 'true'
 ]) !!}
-@include('user.create_edit')
+@include('operator.create_edit')
 {!! Form::close() !!}
