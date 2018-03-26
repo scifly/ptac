@@ -105,7 +105,7 @@ class User extends Authenticatable {
         'avatar_mediaid', 'enabled',
     ];
     
-    const SELECT_HTML = '<select class="form-control select2" style="width: 100%;" id="corp_id" name="%s">';
+    const SELECT_HTML = '<select class="form-control select2" style="width: 100%;" id="ID" name="ID">';
 
     /**
      * The attributes that should be hidden for arrays.
@@ -431,7 +431,7 @@ class User extends Authenticatable {
             'schools' => '',
         ];
         $corps = Corp::pluck('name', 'id')->toArray();
-        $html = sprintf(self::SELECT_HTML, 'group_id');
+        $html = str_replace('ID', 'corp_id', self::SELECT_HTML);
         
         foreach ($corps as $corp) {
             $html .= '<option value="' . $corp->id . '">' . $corp->name . '</option>';
@@ -441,7 +441,7 @@ class User extends Authenticatable {
         if ($role == '学校') {
             reset($corps);
             $schools = School::whereCorpId(key($corps))->get()->pluck('name', 'id')->toArray();
-            $html = sprintf(self::SELECT_HTML, 'school_id');
+            $html = str_replace('ID', 'school_id', self::SELECT_HTML);
             foreach ($schools as $school) {
                 $html .= '<option value="' . $school->id . '">' . $school->name . '</option>';
             }
@@ -500,6 +500,7 @@ class User extends Authenticatable {
         $rootGroupId = Group::whereName('运营')->first()->id;
         $corpGroupId = Group::whereName('企业')->first()->id;
         $schoolGroupId = Group::whereName('学校')->first()->id;
+        $condition = '';
         switch ($user->group->name) {
             case '运营':
                 $condition = sprintf($sql, implode(',', [$rootGroupId, $corpGroupId, $schoolGroupId]));
