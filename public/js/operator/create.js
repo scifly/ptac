@@ -1,3 +1,4 @@
+//# sourceURL=create.js
 page.create('formOperator', 'operators');
 
 var $groupId = $('#group_id'),
