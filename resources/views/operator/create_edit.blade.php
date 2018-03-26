@@ -30,28 +30,32 @@
                 {!! Form::label('password', '密码', [
                     'class' => 'col-sm-3'
                 ]) !!}
-                <div class="input-group">
-                    @include('partials.icon_addon', ['class' => 'fa-lock'])
-                    {{ Form::password('password', [
-                        'id' => 'password',
-                        'class' => 'form-control text-blue',
-                        'required' => 'true'
-                    ]) }}
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        @include('partials.icon_addon', ['class' => 'fa-lock'])
+                        {{ Form::password('password', [
+                            'id' => 'password',
+                            'class' => 'form-control text-blue',
+                            'required' => 'true'
+                        ]) }}
+                    </div>
                 </div>
             </div>
             <!-- 确认密码 -->
             <div class="form-group">
-                {!! Form::label('password-confirm', '密码', [
+                {!! Form::label('password-confirm', '确认密码', [
                     'class' => 'col-sm-3'
                 ]) !!}
-                <div class="input-group">
-                    @include('partials.icon_addon', ['class' => 'fa-lock'])
-                    {{ Form::password('password-confirm', [
-                        'id' => 'password-confirm',
-                        'class' => 'form-control text-blue',
-                        'required' => 'true',
-                        'data-parsley-equalto' => '#password'
-                    ]) }}
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        @include('partials.icon_addon', ['class' => 'fa-lock'])
+                        {{ Form::password('password-confirm', [
+                            'id' => 'password-confirm',
+                            'class' => 'form-control text-blue',
+                            'required' => 'true',
+                            'data-parsley-equalto' => '#password'
+                        ]) }}
+                    </div>
                 </div>
             </div>
             <!-- 角色 -->
@@ -161,8 +165,10 @@
             </div>
             <!-- 微信号 -->
             <div class="form-group">
-                {!! Form::label('wechatid', '微信号',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
+                {!! Form::label('wechatid', '微信号', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
                     {!! Form::text('wechatid', null, [
                         'class' => 'form-control text-blue',
                         'placeholder' => '(小写字母和数字)',
