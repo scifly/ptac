@@ -23,6 +23,7 @@ $groupId.on('change', function () {
         case 3:
             if ($schoolId.length === 0) {
                 getLists();
+                getLists('corp_id');
             }
             $corp.slideDown();
             $school.slideDown();
