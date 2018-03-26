@@ -25,39 +25,41 @@
                     </div>
                 </div>
             </div>
-            <!-- 密码 -->
-            <div class="form-group">
-                {!! Form::label('password', '密码', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-lock'])
-                        {{ Form::password('password', [
-                            'id' => 'password',
-                            'class' => 'form-control text-blue',
-                            'required' => 'true'
-                        ]) }}
+            @if (!isset($user['id']))
+                <!-- 密码 -->
+                <div class="form-group">
+                    {!! Form::label('password', '密码', [
+                        'class' => 'col-sm-3 control-label'
+                    ]) !!}
+                    <div class="col-sm-6">
+                        <div class="input-group">
+                            @include('partials.icon_addon', ['class' => 'fa-lock'])
+                            {{ Form::password('password', [
+                                'id' => 'password',
+                                'class' => 'form-control text-blue',
+                                'required' => 'true'
+                            ]) }}
+                        </div>
                     </div>
                 </div>
-            </div>
-            <!-- 确认密码 -->
-            <div class="form-group">
-                {!! Form::label('password-confirm', '确认密码', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-lock'])
-                        {{ Form::password('password-confirm', [
-                            'id' => 'password-confirm',
-                            'class' => 'form-control text-blue',
-                            'required' => 'true',
-                            'data-parsley-equalto' => '#password'
-                        ]) }}
+                <!-- 确认密码 -->
+                <div class="form-group">
+                    {!! Form::label('password-confirm', '确认密码', [
+                        'class' => 'col-sm-3 control-label'
+                    ]) !!}
+                    <div class="col-sm-6">
+                        <div class="input-group">
+                            @include('partials.icon_addon', ['class' => 'fa-lock'])
+                            {{ Form::password('password-confirm', [
+                                'id' => 'password-confirm',
+                                'class' => 'form-control text-blue',
+                                'required' => 'true',
+                                'data-parsley-equalto' => '#password'
+                            ]) }}
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endif
             <!-- 角色 -->
             @include('partials.single_select', [
                 'label' => '角色',
