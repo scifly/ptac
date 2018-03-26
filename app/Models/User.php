@@ -453,14 +453,6 @@ class User extends Authenticatable {
         
     }
     
-    
-    function sList() {
-        
-        $corpId = Request::input('corpId');
-        
-        
-    }
-    
     /**
      * 用户列表
      *
@@ -535,7 +527,6 @@ class User extends Authenticatable {
      */
     private function selectList(array $items, $field) {
         
-        if (empty($items)) { return ''; }
         $html = str_replace('ID', $field, self::SELECT_HTML);
         foreach ($items as $key => $value) {
             $html .= '<option value="' . $key . '">' . $value . '</option>';

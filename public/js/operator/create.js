@@ -33,7 +33,9 @@ $groupId.on('change', function () {
 });
 
 $(document).on('change', '#corp_id', function () {
-    getLists('corp_id')
+    if ($('#school').is(':visible')) {
+        getLists('corp_id')
+    }
 });
 
 function getLists(field) {
