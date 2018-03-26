@@ -16,6 +16,9 @@ $groupId.on('change', function () {
         case 2:
             if ($corpId.length === 0) {
                 getLists();
+            } else {
+                $corp.show();
+                $school.hide();
             }
             break;
         case 3:
@@ -23,6 +26,9 @@ $groupId.on('change', function () {
             $school.show();
             if ($schoolId.length === 0) {
                 getLists();
+            } else {
+                $corp.show();
+                $school.hide();
             }
             break;
         default:
