@@ -67,7 +67,7 @@ function getLists(field) {
                 var $schoolId = $('#school_id'),
                     $prev = $schoolId.prev(),
                     $next = $schoolId.next();
-                $next().remove();
+                $next.remove();
                 $schoolId.remove();
                 $prev.after(result['schoolList']);
                 page.initSelect2();
