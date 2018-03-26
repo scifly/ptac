@@ -171,13 +171,16 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('wechatid', null, [
-                        'class' => 'form-control text-blue',
-                        'placeholder' => '(小写字母和数字)',
-                        'required' => 'true',
-                        'data-parsley-type' => 'alphanum',
-                        'maxlength' => '255'
-                    ]) !!}
+                    <div class="input-group">
+                        @include('partials.icon_addon', ['class' => 'fa-weixin'])
+                        {!! Form::text('wechatid', null, [
+                            'class' => 'form-control text-blue',
+                            'placeholder' => '(小写字母和数字)',
+                            'required' => 'true',
+                            'data-parsley-type' => 'alphanum',
+                            'maxlength' => '255'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             <!-- 状态 -->
