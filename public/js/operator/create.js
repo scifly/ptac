@@ -58,21 +58,16 @@ function getLists(field) {
         },
         url: page.siteRoot() + 'operators/create',
         success: function (result) {
-            var $corpId = $('#corp_id'),
-                $schoolId = $('#school_id'),
-                $prev = $schoolId.prev(),
-                $next = $schoolId.next();
             if (field === 'group_id') {
-                if ($corpId.length === 0) {
-                    $corp.find('.input-group').append(result['corpList']);
-                    $corpId.select2();
-                }
-                if (result['schoolList'] !== '') {
-                    $school.find('.input-group').append(result['schoolList']);
-                    $schoolId.select2();
-                }
+                $corp.find('.input-group').append(result['corpList']);
+                $('#corp_id').select2();
+                $school.find('.input-group').append(result['schoolList']);
+                $('#school_id').select2();
             } else {
-                $next.remove();
+                var $schoolId = $('#school_id'),
+                    $prev = $schoolId.prev(),
+                    $next = $schoolId.next();
+                $next().remove();
                 $schoolId.remove();
                 $prev.after(result['schoolList']);
                 page.initSelect2();
