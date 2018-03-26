@@ -1,6 +1,6 @@
 {!! Form::open([
     'method' => 'post',
-    'id' => 'formUser',
+    'id' => 'formOperator',
     'data-parsley-validate' => 'true'
 ]) !!}
 @include('operator.create_edit')
