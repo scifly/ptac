@@ -48,6 +48,7 @@ function getLists(field) {
     } else {
         value = $('#' + field).val();
     }
+    $('.overlay').show();
     return $.ajax({
         type: 'POST',
         dataType: 'json',
@@ -72,6 +73,7 @@ function getLists(field) {
                 $prev.after(result['schoolList']);
                 page.initSelect2();
             }
+            $('.overlay').hide();
         },
         error: function (e) {
             page.errorHandler(e);
