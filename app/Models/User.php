@@ -423,7 +423,7 @@ class User extends Authenticatable {
      */
     function groupList() {
         
-        $groupId = Request::input('group_id');
+        $groupId = Request::input('groupId');
         abort_if(!$groupId, HttpStatusCode::NOT_ACCEPTABLE, __('messages.not_acceptable'));
         $role = Group::find($groupId)->name;
         $result = [
