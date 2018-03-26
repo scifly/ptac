@@ -435,18 +435,21 @@ class User extends Authenticatable {
             'statusCode' => HttpStatusCode::OK,
         ];
         # 获取企业和学校列表
-        $schools = [];
+        $corpId = 0;
         if ($field == 'group_id') {
             $role = Group::find($value)->name;
             $corps = Corp::whereEnabled(1)->pluck('name', 'id')->toArray();
             $result['corpList'] = $this->selectList($corps, 'corp_id');
             if ($role == '学校') {
                 reset($corps);
-                $schools = School::whereCorpId(key($corps))
-                    ->where('enabled', 1)->get()
-                    ->pluck('name', 'id')->toArray();
+                $corpId = key($corps);
             }
+        } else {
+            $corpId = $value;
         }
+        $schools = $corpId ? School::whereCorpId($corpId)
+            ->where('enabled', 1)->get()
+            ->pluck('name', 'id')->toArray() : [];
         $result['schoolList'] = $this->selectList($schools, 'school_id');
         
         return response()->json($result);
