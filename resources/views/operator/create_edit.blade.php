@@ -68,7 +68,7 @@
                 'icon' => 'fa fa-meh-o'
             ])
             <!-- 所属企业 -->
-            <div id="corp-id" class="form-group" style="display: none;">
+            <div id="corp" class="form-group" style="display: none;">
                 {!! Form::label('corp_id', '所属企业', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
@@ -79,7 +79,7 @@
                 </div>
             </div>
             <!-- 所属学校 -->
-            <div id="school-id" class="form-group" style="display: none;">
+            <div id="school" class="form-group" style="display: none;">
                 {!! Form::label('corp_id', '所属学校', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}

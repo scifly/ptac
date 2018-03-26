@@ -51,6 +51,10 @@ class OperatorController extends Controller {
      */
     public function create() {
         
+        if (Request::method() == 'POST') {
+            return $this->user->groupList();
+        }
+        
         return $this->output();
         
     }
@@ -79,6 +83,9 @@ class OperatorController extends Controller {
     public function edit($id) {
         
         $user = $this->user->find($id);
+        if (Request::method() == 'POST') {
+            return $this->user->groupList();
+        }
         
         return $this->output([
             'user' => $user

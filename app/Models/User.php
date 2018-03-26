@@ -6,6 +6,7 @@ use App\Events\UserCreated;
 use App\Events\UserDeleted;
 use App\Events\UserUpdated;
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\HttpStatusCode;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
@@ -22,6 +23,7 @@ use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Laravel\Passport\HasApiTokens;
 use Throwable;
 
@@ -102,6 +104,8 @@ class User extends Authenticatable {
         'telephone', 'order', 'mobile',
         'avatar_mediaid', 'enabled',
     ];
+    
+    const SELECT_HTML = '<select class="form-control select2" style="width: 100%;" id="corp_id" name="%s">';
 
     /**
      * The attributes that should be hidden for arrays.
@@ -410,6 +414,46 @@ class User extends Authenticatable {
 
         return array_unique($departmentIds);
 
+    }
+    
+    /**
+     * 返回角色对应的企业/学校列表HTML
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    function groupList() {
+        
+        $groupId = Request::input('group_id');
+        abort_if(!$groupId, HttpStatusCode::NOT_ACCEPTABLE, __('messages.not_acceptable'));
+        $role = Group::find($groupId)->name;
+        $result = [
+            'corps' => '',
+            'schools' => '',
+        ];
+        $corps = Corp::pluck('name', 'id')->toArray();
+        $html = sprintf(self::SELECT_HTML, 'group_id');
+        
+        foreach ($corps as $corp) {
+            $html .= '<option value="' . $corp->id . '">' . $corp->name . '</option>';
+        }
+        $result['corps'] = $html . '</select>';
+        
+        if ($role == '学校') {
+            reset($corps);
+            $schools = School::whereCorpId(key($corps))->get()->pluck('name', 'id')->toArray();
+            $html = sprintf(self::SELECT_HTML, 'school_id');
+            foreach ($schools as $school) {
+                $html .= '<option value="' . $school->id . '">' . $school->name . '</option>';
+            }
+            $result['schools'] = $html . '</select>';
+        }
+        
+        return response()->json([
+            'statusCode' => HttpStatusCode::OK,
+            'corpList' => $result['corps'],
+            'schoolList' => $result['schools']
+        ]);
+        
     }
     
     /**
