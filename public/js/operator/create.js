@@ -14,18 +14,14 @@ $groupId.on('change', function () {
             $school.slideUp();
             break;
         case 2:
-            if ($corpId.length === 0) {
-                getLists();
-            }
+            getLists();
             $corp.slideDown();
             $school.slideUp();
             break;
         case 3:
-            if ($schoolId.length === 0) {
-                $.when(getLists()).then(function () {
-                    getLists('corp_id');
-                });
-            }
+            $.when(getLists()).then(function () {
+                getLists('corp_id');
+            });
             $corp.slideDown();
             $school.slideDown();
             break;
