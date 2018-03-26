@@ -3,11 +3,11 @@ page.create('formOperator', 'operators');
 
 var $groupId = $('#group_id'),
     $corp = $('#corp'),
-    $school = $('#school'),
-    $corpId = $('#corp_id'),
-    $schoolId = $('#school_id');
+    $school = $('#school');
 
 $groupId.on('change', function () {
+    var $corpId = $('#corp_id'),
+        $schoolId = $('#school_id');
     switch (parseInt($groupId.val())) {
         case 1:
             $corp.hide();
