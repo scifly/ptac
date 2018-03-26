@@ -20,7 +20,7 @@
                             'class' => 'form-control text-blue',
                             'placeholder' => '(用户名不能为空)',
                             'required' => 'true',
-                            'data-parsley-length' => [6, 255]
+                            'data-parsley-length' => '[6, 255]'
                         ]) !!}
                     </div>
                 </div>
@@ -95,7 +95,7 @@
                             'class' => 'form-control text-blue',
                             'placeholder' => '(不超过60个汉字)',
                             'required' => 'true',
-                            'data-parsley-length' => [2, 60],
+                            'data-parsley-length' => '[2, 60]',
                         ]) !!}
                     </div>
                 </div>
@@ -111,7 +111,7 @@
                         {!! Form::text('english_name', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(可选)',
-                            'data-parsley-length' => [2, 64],
+                            'data-parsley-length' => '[2, 64]',
                         ]) !!}
                     </div>
                 </div>
