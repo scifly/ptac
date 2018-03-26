@@ -32,25 +32,46 @@ $groupId.on('change', function () {
     }
 });
 
-function getLists() {
+$(document).on('change', '#corp_id', function () {
+    getLists('corp_id')
+});
+
+function getLists(field) {
+    var value = 0;
+    if (typeof field === 'undefined') {
+        field = 'group_id';
+        value = $('#' + field).val();
+    } else {
+        value = $('#' + field).val();
+    }
     return $.ajax({
         type: 'POST',
         dataType: 'json',
         data: {
             _token: $('#csrf_token').attr('content'),
-            groupId: $groupId.val()
+            field: field,
+            value: value
         },
         url: page.siteRoot() + 'operators/create',
         success: function (result) {
             var $corpId = $('#corp_id'),
-                $schoolId = $('#school_id');
-            if ($corpId.length === 0) {
-                $corp.find('.input-group').append(result['corpList']);
-                $corpId.select2();
-            }
-            if (result['schoolList'] !== '') {
-                $school.find('.input-group').append(result['schoolList']);
-                $schoolId.select2();
+                $schoolId = $('#school_id'),
+                $prev = $schoolId.prev(),
+                $next = $schoolId.next();
+            if (field === 'group_id') {
+                if ($corpId.length === 0) {
+                    $corp.find('.input-group').append(result['corpList']);
+                    $corpId.select2();
+                }
+                if (result['schoolList'] !== '') {
+                    $school.find('.input-group').append(result['schoolList']);
+                    $schoolId.select2();
+                }
+            } else {
+                $next.remove();
+                $schoolId.remove();
+                $prev.after(result['schoolList']);
+                page.initSelect2();
             }
         },
         error: function (e) {

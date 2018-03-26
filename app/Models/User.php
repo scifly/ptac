@@ -417,42 +417,47 @@ class User extends Authenticatable {
     }
     
     /**
-     * 返回角色对应的企业/学校列表HTML
+     * 返回指定角色对应的企业/学校列表HTML
+     * 或返回指定企业对应的学校列表HTML
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    function groupList() {
+    function csList() {
         
-        $groupId = Request::input('groupId');
-        abort_if(!$groupId, HttpStatusCode::NOT_ACCEPTABLE, __('messages.not_acceptable'));
-        $role = Group::find($groupId)->name;
+        $field = Request::input('field');
+        $value = Request::input('value');
+        abort_if(
+            !in_array($field, ['group_id', 'corp_id']),
+            HttpStatusCode::NOT_ACCEPTABLE,
+            __('messages.not_acceptable')
+        );
         $result = [
-            'corps' => '',
-            'schools' => '',
-        ];
-        $corps = Corp::pluck('name', 'id')->toArray();
-        $html = str_replace('ID', 'corp_id', self::SELECT_HTML);
-        
-        foreach ($corps as $key => $value) {
-            $html .= '<option value="' . $key . '">' . $value . '</option>';
-        }
-        $result['corps'] = $html . '</select>';
-        
-        if ($role == '学校') {
-            reset($corps);
-            $schools = School::whereCorpId(key($corps))->get()->pluck('name', 'id')->toArray();
-            $html = str_replace('ID', 'school_id', self::SELECT_HTML);
-            foreach ($schools as $key => $value) {
-                $html .= '<option value="' . $key . '">' . $value . '</option>';
-            }
-            $result['schools'] = $html . '</select>';
-        }
-        
-        return response()->json([
             'statusCode' => HttpStatusCode::OK,
-            'corpList' => $result['corps'],
-            'schoolList' => $result['schools']
-        ]);
+        ];
+        # 获取企业和学校列表
+        $schools = [];
+        if ($field == 'group_id') {
+            $role = Group::find($value)->name;
+            $corps = Corp::whereEnabled(1)->pluck('name', 'id')->toArray();
+            $result['corpList'] = $this->selectList($corps, $field);
+            if ($role == '学校') {
+                reset($corps);
+                $schools = School::whereCorpId(key($corps))
+                    ->where('enabled', 1)->get()
+                    ->pluck('name', 'id')->toArray();
+            }
+        }
+        $result['schoolList'] = $this->selectList($schools, $field);
+        
+        return response()->json($result);
+        
+    }
+    
+    
+    function sList() {
+        
+        $corpId = Request::input('corpId');
+        
         
     }
     
@@ -520,5 +525,24 @@ class User extends Authenticatable {
         );
 
     }
-
+    
+    /**
+     * 获取Select HTML
+     *
+     * @param array $items
+     * @param $field
+     * @return string
+     */
+    private function selectList(array $items, $field) {
+        
+        if (empty($items)) { return ''; }
+        $html = str_replace('ID', $field, self::SELECT_HTML);
+        foreach ($items as $key => $value) {
+            $html .= '<option value="' . $key . '">' . $value . '</option>';
+        }
+        
+        return $html . '</select>';
+        
+    }
+    
 }
