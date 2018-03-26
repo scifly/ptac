@@ -1,1 +1,1 @@
-page.create('operators', 'formOperator');
+page.create('formOperator', 'operators');

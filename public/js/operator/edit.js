@@ -1,1 +1,1 @@
-page.edit('operators', 'formOperator');
+page.edit('formOperator', 'operators');
