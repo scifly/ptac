@@ -447,7 +447,6 @@
     <script src="{{ URL::asset('js/plugins/fullcalendar/js/moment.min.js') }}"></script>
     <script src="{{ URL::asset('js/plugins/fullcalendar/js/fullcalendar.min.js') }}"></script>
 @endisset
-<script src="{{ URL::asset('js/admin.crud.js') }}"></script>
 <script src="{{ URL::asset('js/demo.js') }}"></script>
 @isset($js)
     <script src="{{ URL::asset($js) }}"></script>

@@ -12,7 +12,10 @@ class EducatorAttendanceSettingComposer {
 
     public function compose(View $view) {
 
-        $view->with(['uris' => $this->uris()]);
+        $view->with([
+            'titles' => ['姓名', '手机号码', '打卡时间', '进/出', '状态'],
+            'uris' => $this->uris(),
+        ]);
 
     }
 

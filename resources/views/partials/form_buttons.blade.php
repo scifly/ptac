@@ -3,9 +3,15 @@
     {{--button--}}
     <div class="form-group">
         <div class="col-sm-3 col-sm-offset-3">
-            {!! Form::submit('保存', ['class' => 'btn btn-primary pull-left', 'id' => 'save']) !!}
+            {!! Form::submit(isset($label) ? $label : '保存', [
+                'class' => 'btn btn-primary pull-left',
+                'id' => isset($id) ? $id : 'save'
+            ]) !!}
             @can('act', $uris['index'])
-                {!! Form::reset('取消', ['class' => 'btn btn-default pull-right', 'id' => 'cancel']) !!}
+                {!! Form::reset('取消', [
+                    'class' => 'btn btn-default pull-right',
+                    'id' => 'cancel'
+                ]) !!}
             @endcan
         </div>
     </div>

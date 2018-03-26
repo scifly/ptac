@@ -104,7 +104,7 @@
                     ])
                 @else
                     <div class="form-group">
-                        {{ Form::label('class_id', '所属年级', [
+                        {{ Form::label('grade_id', '所属年级', [
                             'class' => 'col-sm-3 control-label'
                         ]) }}
                         <div class="col-sm-6" style="margin-top: 7px;">
@@ -117,7 +117,7 @@
                     </div>
                 @endif
             @endif
-        <!-- 所属班级 -->
+            <!-- 所属班级 -->
             <div class="form-group">
                 {!! Form::label('class_id', '所属班级', [
                     'class' => 'col-sm-3 control-label',
@@ -127,7 +127,7 @@
                         @include('partials.icon_addon', ['class' => 'fa-users'])
                         {!! Form::select('class_id', $classes, null, [
                             'class' => 'form-control select2',
-                            'id' => 'classId',
+                            'id' => 'class_id',
                             'style' => 'width: 100%;'
                         ]) !!}
                     </div>

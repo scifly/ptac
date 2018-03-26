@@ -1,19 +1,17 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\Constant;
+use App\Helpers\HttpStatusCode;
 use App\Http\Requests\CustodianRequest;
 use App\Models\Custodian;
 use App\Models\CustodianStudent;
-use App\Models\Department;
-use App\Models\School;
+use App\Models\Grade;
+use App\Models\Squad;
 use App\Models\Student;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
-use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
 
 /**
@@ -24,18 +22,18 @@ use Throwable;
  */
 class CustodianController extends Controller {
     
-    protected $custodian, $student, $department, $school;
+    protected $custodian, $student, $grade, $class;
     
     function __construct(
         Custodian $custodian, Student $student,
-        Department $department, School $school
+        Grade $grade, Squad $class
     ) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->custodian = $custodian;
         $this->student = $student;
-        $this->department = $department;
-        $this->school = $school;
+        $this->grade = $grade;
+        $this->class = $class;
         
     }
     
@@ -69,15 +67,22 @@ class CustodianController extends Controller {
             'cse', Custodian::class
         );
         if (Request::method() === 'POST') {
-            $user = Auth::user();
-            $field = Request::query('field');
-            $id = Request::query('id');
-            if (!in_array($user->group->name, Constant::SUPER_ROLES)) {
-                $educatorId = $user->educator->id;
-                $gradeClass = $this->student->getGrade($educatorId)[1];
-                $this->result['html'] = $this->school->getFieldList($field, $id, $gradeClass);
+            abort_if(
+                !Request::input('field') ||
+                !Request::input('id') ||
+                !in_array(Request::input('field'), ['grade', 'class']),
+                HttpStatusCode::NOT_ACCEPTABLE,
+                __('messages.not_acceptable')
+            );
+            $id = Request::input('id');
+            if (Request::input('field') == 'grade') {
+                list($classes, $classId) = $this->grade->classList($id);
+                $this->result['html'] = [
+                    'classes' => $classes,
+                    'students' => $this->class->studentList($classId)
+                ];
             } else {
-                $this->result['html'] = $this->school->getFieldList($field, $id);
+                $this->result['html']['students'] = $this->class->studentList($id);
             }
             
             return response()->json($this->result);
@@ -137,21 +142,31 @@ class CustodianController extends Controller {
         $custodian = $this->custodian->find($id);
         $this->authorize('seud', $custodian);
         if (Request::method() === 'POST') {
-            $field = Request::query('field');
-            $id = Request::query('id');
-            if ($field && $id) {
-                $this->result['html'] = $this->school->getFieldList($field, $id);
-                return response()->json($this->result);
+            abort_if(
+                !Request::input('field') ||
+                !Request::input('id') ||
+                !in_array(Request::input('field'), ['grade', 'class']),
+                HttpStatusCode::NOT_ACCEPTABLE,
+                __('messages.not_acceptable')
+            );
+            $id = Request::input('id');
+            if (Request::input('field') == 'grade') {
+                list($classes, $classId) = $this->grade->classList($id);
+                $this->result['html'] = [
+                    'classes' => $classes,
+                    'students' => $this->class->studentList($classId)
+                ];
             } else {
-                return response()->json($this->department->tree());
+                $this->result['html']['students'] = $this->class->studentList($id);
             }
+            return response()->json($this->result);
         }
-        $pupils = CustodianStudent::whereCustodianId($id)->get();
+        $relations = CustodianStudent::whereCustodianId($id)->get();
         
         return $this->output([
             'mobiles'   => $custodian->user->mobiles,
             'custodian' => $custodian,
-            'pupils'    => $pupils,
+            'relations' => $relations,
         ]);
         
     }
@@ -195,36 +210,18 @@ class CustodianController extends Controller {
     }
     
     /**
-     * 导出监护人
-     *
-     * @return void
+     * @return array
      * @throws AuthorizationException
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function export() {
 
         $this->authorize(
             'cse', Custodian::class
         );
-        $data = $this->custodian->export();
-        /** @noinspection PhpMethodParametersCountMismatchInspection */
-        /** @noinspection PhpUndefinedMethodInspection */
-        Excel::create(iconv('UTF-8', 'GBK', '监护人列表'), function ($excel) use ($data) {
-            /** @noinspection PhpUndefinedMethodInspection */
-            $excel->sheet('score', function ($sheet) use ($data) {
-                /** @noinspection PhpUndefinedMethodInspection */
-                $sheet->rows($data);
-                /** @noinspection PhpUndefinedMethodInspection */
-                $sheet->setWidth([
-                    'A' => 30,
-                    'B' => 30,
-                    'C' => 30,
-                    'D' => 30,
-                    'E' => 30,
-                    'F' => 30,
-                ]);
-                
-            });
-        }, 'UTF-8')->export('xls');
+        
+        return $this->custodian->export();
         
     }
     

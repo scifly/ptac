@@ -5,6 +5,7 @@ use App\Events\ClassCreated;
 use App\Events\ClassDeleted;
 use App\Events\ClassUpdated;
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
@@ -124,6 +125,32 @@ class Squad extends Model {
     }
     
     /**
+     * 返回指定班级包含的学生列表html
+     *
+     * @param $id
+     * @return string
+     */
+    function studentList($id) {
+        
+        abort_if(
+            !in_array($id, $this->classIds()) ||
+            !$this->find($id),
+            HttpStatusCode::NOT_ACCEPTABLE,
+            __('messages.not_acceptable')
+        );
+        $students = $this->find($id)->students;
+        $items = [];
+        foreach ($students as $student) {
+            if (!$student->user) { continue; }
+            $items[$student->id] = $student->user->realname .
+                '(' . $student->student_number . ')';
+        }
+        
+        return $this->singleSelectList($items, 'student_id');
+        
+    }
+    
+    /**
      * 删除班级
      *
      * @param $id
@@ -166,7 +193,8 @@ class Squad extends Model {
             [
                 'db'        => 'Grade.name as gradename', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-object-group') . $d;                },
+                    return sprintf(Snippet::ICON, 'fa-object-group') . $d;
+                },
             ],
             [
                 'db'        => 'School.name as schoolname', 'dt' => 3,

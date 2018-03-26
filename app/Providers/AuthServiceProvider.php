@@ -12,6 +12,7 @@ use App\Models\Corp;
 use App\Models\Custodian;
 use App\Models\Department;
 use App\Models\DepartmentType;
+use App\Models\EducatorAttendance;
 use App\Models\Exam;
 use App\Models\Grade;
 use App\Models\Group;
@@ -27,6 +28,7 @@ use App\Models\School;
 use App\Models\SchoolType;
 use App\Models\Squad;
 use App\Models\Student;
+use App\Models\StudentAttendance;
 use App\Models\StudentAttendanceSetting;
 use App\Models\SubjectModule;
 use App\Models\Tab;
@@ -34,8 +36,11 @@ use App\Policies\ActionPolicy;
 use App\Policies\AlertTypePolicy;
 use App\Policies\CommTypePolicy;
 use App\Policies\CompanyPolicy;
+use App\Policies\ConsumptionPolicy;
+use App\Policies\ConsumptionStat;
 use App\Policies\DepartmentPolicy;
 use App\Policies\DepartmentTypePolicy;
+use App\Policies\EducatorAttendancePolicy;
 use App\Policies\ExamPolicy;
 use App\Policies\GradePolicy;
 use App\Policies\GroupPolicy;
@@ -58,6 +63,7 @@ use App\Policies\Route;
 use App\Policies\SchoolPolicy;
 use App\Policies\SchoolTypePolicy;
 use App\Policies\SquadPolicy;
+use App\Policies\StudentAttendancePolicy;
 use App\Policies\StudentAttendanceSettingPolicy;
 use App\Policies\StudentPolicy;
 use App\Policies\SubjectModulePolicy;
@@ -84,6 +90,7 @@ class AuthServiceProvider extends ServiceProvider {
         Company::class => CompanyPolicy::class,
         ConferenceParticipant::class => ConferenceParticipantPolicy::class,
         ConferenceQueue::class => ConferenceQueuePolicy::class,
+        ConsumptionStat::class => ConsumptionPolicy::class,
         Corp::class => CorpPolicy::class,
         Custodian::class => CustodianPolicy::class,
         Department::class => DepartmentPolicy::class,
@@ -106,6 +113,8 @@ class AuthServiceProvider extends ServiceProvider {
         Student::class => StudentPolicy::class,
         SubjectModule::class => SubjectModulePolicy::class,
         Tab::class => TabPolicy::class,
+        StudentAttendance::class => StudentAttendancePolicy::class,
+        EducatorAttendance::class => EducatorAttendancePolicy::class,
     ];
     
     /**

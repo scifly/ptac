@@ -12,6 +12,9 @@ class VerifyCsrfToken extends BaseVerifier {
      */
     protected $except = [
         'score_ranges/statistics',
-        'api/create_attendance',
+        // 'api/upload_attendance',
+        // 'api/upload_consumption',
+        // 'api/*'
     ];
 }
+

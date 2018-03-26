@@ -1,21 +1,14 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Http\Requests\StudentRequest;
-use App\Models\Department;
 use App\Models\Grade;
-use App\Models\School;
-use App\Models\Squad;
 use App\Models\Student;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
-use Maatwebsite\Excel\Facades\Excel;
-use PHPExcel_Exception;
 use Throwable;
 
 /**
@@ -26,19 +19,18 @@ use Throwable;
  */
 class StudentController extends Controller {
     
-    protected $student, $department, $school;
+    protected $student, $grade;
     
-    function __construct(Student $student, Department $department, School $school) {
+    function __construct(Student $student, Grade $grade) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->student = $student;
-        $this->department = $department;
-        $this->school = $school;
+        $this->grade = $grade;
         
     }
     
     /**
-     * 学生记录列表
+     * 学籍列表
      *
      * @return bool|JsonResponse
      * @throws Throwable
@@ -56,7 +48,7 @@ class StudentController extends Controller {
     }
     
     /**
-     * 创建学生记录
+     * 创建学籍
      *
      * @return JsonResponse
      * @throws Throwable
@@ -66,34 +58,21 @@ class StudentController extends Controller {
         $this->authorize(
             'csie', Student::class
         );
-        $user = Auth::user();
         if (Request::method() === 'POST') {
-            $field = Request::query('field');
-            $id = Request::query('id');
-            if ($field && $id) {
-                if (!in_array($user->group->name, Constant::SUPER_ROLES)) {
-                    $educatorId = $user->educator->id;
-                    $gradeClass = $this->student->getGrade($educatorId)[1];
-                    $this->result['html'] = $this->school->getFieldList($field, $id, $gradeClass);
-                } else {
-                    $this->result['html'] = $this->school->getFieldList($field, $id);
-                }
-                return response()->json($this->result);
-            } else {
-                return response()->json($this->department->tree());
-            }
+            list($classes) = $this->grade->classList(
+                Request::input('id')
+            );
+            $this->result['html']['classes'] = $classes;
+            
+            return response()->json($this->result);
         }
-        list($grades, $classes) = $this->student->gcList();
         
-        return $this->output([
-            'grades'  => $grades,
-            'classes' => $classes,
-        ]);
+        return $this->output();
         
     }
     
     /**
-     * 保存学生记录
+     * 保存学籍
      *
      * @param StudentRequest $request
      * @return JsonResponse
@@ -113,7 +92,7 @@ class StudentController extends Controller {
     }
     
     /**
-     * 学生记录详情
+     * 学籍详情
      *
      * @param $id
      * @return bool|JsonResponse
@@ -131,7 +110,7 @@ class StudentController extends Controller {
     }
     
     /**
-     * 编辑学生记录
+     * 编辑学籍
      *
      * @param $id
      * @return bool|JsonResponse
@@ -141,59 +120,25 @@ class StudentController extends Controller {
         
         $student = $this->student->find($id);
         $this->authorize('seud', $student);
-        $users = Auth::user();
-        $groupId = Auth::user()->group->id;
         if (Request::method() === 'POST') {
-            $field = Request::get('field');
-            $id = Request::get('id');
-            if ($groupId > 5) {
-                $educatorId = Auth::user()->educator->id;
-                $gradeClass = $this->student->getGrade($educatorId)[1];
-                $this->result['html'] = $this->school->getFieldList($field, $id, $gradeClass);
-            } else {
-                $this->result['html'] = $this->school->getFieldList($field, $id);
-            }
+            list($classes) = $this->grade->classList(
+                Request::input('id')
+            );
+            $this->result['html']['classes'] = $classes;
             
             return response()->json($this->result);
-        }
-        # 查询学生信息
-        $student = Student::find($id);
-        abort_if(!$student, HttpStatusCode::NOT_FOUND);
-        $user = $student->user;
-        $grades = $classes = [];
-        if ($groupId > 5) {
-            $educatorId = $users->educator->id;
-            $gradeIds = $this->student->getGrade($educatorId)[0];
-            $gradeClass = $this->student->getGrade($educatorId)[1];
-            foreach ($gradeClass as $k => $g) {
-                $grades = Grade::whereEnabled(1)
-                    ->whereIn('id', $gradeIds)
-                    ->pluck('name', 'id')
-                    ->toArray();
-                $classes = Squad::whereEnabled(1)
-                    ->whereIn('id', $g)
-                    ->pluck('name', 'id')
-                    ->toArray();
-                break;
-            }
-        } else {
-            list($grades, $classes) = $this->student->gcList(
-                $student->squad->grade_id
-            );
-            $student->{'grade_id'} = $student->squad->grade_id;
         }
         
         return $this->output([
             'student' => $student,
-            'mobiles' => $user->mobiles,
-            'grades'  => $grades,
-            'classes' => $classes,
+            'user' => $student->user,
+            'mobiles' => $student->user->mobiles,
         ]);
         
     }
     
     /**
-     * 更新学生记录
+     * 更新学籍
      *
      * @param StudentRequest $request
      * @param $id
@@ -213,7 +158,7 @@ class StudentController extends Controller {
     }
     
     /**
-     * 删除学生记录
+     * 删除学籍
      *
      * @param $id
      * @return JsonResponse
@@ -233,9 +178,11 @@ class StudentController extends Controller {
     
     /**
      * 导入学籍
-     *
-     * @throws PHPExcel_Exception
+     * 
+     * @return JsonResponse
      * @throws AuthorizationException
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
     public function import() {
     
@@ -265,8 +212,9 @@ class StudentController extends Controller {
     /**
      * 导出学籍
      *
-     * @return JsonResponse
      * @throws AuthorizationException
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function export() {
     
@@ -274,47 +222,17 @@ class StudentController extends Controller {
             'csie', Student::class
         );
         if (Request::method() === 'POST') {
-            $field = Request::query('field');
-            $id = Request::query('id');
-            $this->result['html'] = $this->school->getFieldList($field, $id);
+            list($classes) = $this->grade->classList(
+                Request::input('id')
+            );
+            $this->result['html']['classes'] = $classes;
             
             return response()->json($this->result);
         }
+        $range = Request::query('range');
         $id = Request::query('id');
-        if ($id) {
-            $data = $this->student->export($id);
-            /** @noinspection PhpMethodParametersCountMismatchInspection */
-            /** @noinspection PhpUndefinedMethodInspection */
-            Excel::create(iconv('UTF-8', 'GBK', '学生列表'), function ($excel) use ($data) {
-                /** @noinspection PhpUndefinedMethodInspection */
-                $excel->sheet('score', function ($sheet) use ($data) {
-                    /** @noinspection PhpUndefinedMethodInspection */
-                    $sheet->rows($data);
-                    /** @noinspection PhpUndefinedMethodInspection */
-                    $sheet->setColumnFormat([
-                        'E' => '@',//文本
-                        'H' => 'yyyy-mm-dd',
-                    ]);
-                    /** @noinspection PhpUndefinedMethodInspection */
-                    $sheet->setWidth([
-                        'A' => 20,
-                        'B' => 10,
-                        'C' => 25,
-                        'D' => 30,
-                        'E' => 30,
-                        'F' => 30,
-                        'G' => 20,
-                        'H' => 15,
-                        'I' => 30,
-                        'J' => 30,
-                        'K' => 15,
-                        'L' => 30,
-                    ]);
-                });
-            }, 'UTF-8')->export('xls');
-        }
         
-        return abort(HttpStatusCode::BAD_REQUEST, '导出失败');
+        return $this->student->export($range, $id);
         
     }
     

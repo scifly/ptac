@@ -3,11 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="csrf_token" content="{{ csrf_token() }}" id="csrf_token">
+    <meta name="csrf-token" content="{{ csrf_token() }}" id="csrf_token">
     <title>家校通</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="stylesheet" href="{{ URL::asset('css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ URL::asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/font-awesome.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/ionicons.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/gritter/css/jquery.gritter.css') }}" id="cip">
@@ -41,10 +42,9 @@
     <!-- 页面尾部 -->
     @include('partials.site_footer')
 </div>
-
 <script src="{{ URL::asset('js/jquery-ui.min.js') }}"></script>
-{{--<script src="{{ URL::asset('js/app.js') }}"></script>--}}
-<script src="{{ URL::asset('js/bootstrap.min.js') }}"></script>
+<script src="{{ URL::asset('js/app.js') }}"></script>
+{{--<script src="{{ URL::asset('js/bootstrap.min.js') }}"></script>--}}
 <script src="{{ URL::asset('js/adminlte.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/gritter/js/jquery.gritter.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/parsley/parsley.min.js') }}"></script>

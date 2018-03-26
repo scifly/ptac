@@ -7,12 +7,15 @@ use App\Models\Department;
 use App\Models\DepartmentUser;
 use App\Models\Menu;
 use App\Models\School;
+use App\Models\SchoolType;
 use App\Models\User;
 use App\Policies\Route;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
+use PhpOffice\PhpSpreadsheet\Exception;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use ReflectionClass;
 
 trait ModelTrait {
@@ -284,9 +287,14 @@ trait ModelTrait {
         
         $departmentIds = [];
         $user = User::find($userId);
-        $departments = $user->group->name == '运营'
-            ? Department::find(Constant::ROOT_DEPARTMENT_ID)
-            : $user->departments;
+        if (in_array($user->group->name, Constant::SUPER_ROLES)) {
+            $department = School::find($this->schoolId())->department;
+            $departmentIds[] = $department->id;
+            return array_unique(
+                array_merge($departmentIds, $department->subDepartmentIds($department->id))
+            );
+        }
+        $departments = $user->departments;
         foreach ($departments as $d) {
             $departmentIds[] = $d->id;
             $departmentIds = array_merge(
@@ -329,6 +337,95 @@ trait ModelTrait {
         }
         
     }
+    
+    /**
+     * 导出Excel文件
+     *
+     * @param array $records
+     * @param string $fileName
+     * @param string $sheetTitle
+     * @throws Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     */
+    function excel(array $records, $fileName = 'export', $sheetTitle = '导出数据') {
+        
+        $user = Auth::user();
+        $spreadsheet = new Spreadsheet();
+        $spreadsheet->getProperties()->setCreator($user->realname)
+            ->setLastModifiedBy($user->realname)
+            ->setTitle('家校通')
+            ->setSubject('家校通导出文件')
+            ->setDescription('-')
+            ->setKeywords('导出')
+            ->setCategory('export');
+        $spreadsheet->setActiveSheetIndex(0)->setTitle($sheetTitle);
+        $spreadsheet->getActiveSheet()->fromArray($records, null, 'A1');
+    
+        // Redirect output to a client’s web browser (Xlsx)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename=' . '"'. $fileName . '.xlsx"');
+        header('Cache-Control: max-age=0');
+    
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+    
+        // If you're serving to IE over SSL, then the following may be needed
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+        header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        header('Pragma: public'); // HTTP/1.0
+    
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        return $writer->save('php://output');
+        
+    }
+    
+    /**
+     * 返回上传文件路径
+     *
+     * @param $filename
+     * @return string
+     */
+    public function uploadedFile($filename): string {
+        
+        return 'public/uploads/'
+            . date('Y') . '/' . date('m') . '/' . date('d') . '/'
+            . $filename;
+        
+    }
+    
+    /**
+     * 返回指定单选列表对应的html
+     *
+     * @param array $items
+     * @param $id
+     * @return string
+     */
+    public function singleSelectList(array $items, $id) {
+    
+        $html = '<select class="form-control select2" id="%s" name="%s" style="width: %s">';
+        foreach ($items as $key => $value) {
+            $html .= '<option value="' . $key . '">' . $value . '</option>';
+        }
+        $html .= '</select>';
+        
+        return sprintf($html, $id, $id, '100%;');
+        
+    }
+    
+    /**
+     * 检查上传文件格式
+     *
+     * @param array $titles
+     * @param array $format
+     * @return bool
+     */
+    private function checkFileFormat(array $titles, array $format) {
+        
+        return empty(array_diff($titles, $format));
+        
+    }
+    
     
     /**
      * 获取指定部门的联系人Id

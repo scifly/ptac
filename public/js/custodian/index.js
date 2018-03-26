@@ -1,10 +1,10 @@
+//# sourceURL=index.js
 page.index('custodians');
 
-/**批量导出监护人
- * */
-$(document).off('click', '#export');
-$(document).on('click', '#export', function () {
-    //无法用ajax请求
-    window.location.href='../custodians/export';
-});
-
+/** 初始化监护人首页功能 */
+$.getMultiScripts(['js/contact.select.js'], page.siteRoot()).done(
+    function () {
+        var cr = $.contactRange();
+        cr.index('custodians');
+    }
+);

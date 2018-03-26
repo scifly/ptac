@@ -25,9 +25,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use Maatwebsite\Excel\Facades\Excel;
-use Maatwebsite\Excel\Readers\LaravelExcelReader;
-use PHPExcel_Exception;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 /**
  * App\Models\Student 学生
@@ -71,7 +69,7 @@ class Student extends Model {
         '学号', '卡号', '住校',
         '备注', '监护关系',
     ];
-    const EXCEL_EXPORT_TITLE = [
+    const EXPORT_TITLES = [
         '姓名', '性别', '班级', '学号',
         '卡号', '住校', '手机',
         '生日', '创建于', '更新于',
@@ -121,6 +119,13 @@ class Student extends Model {
      * @return HasMany
      */
     function scoreTotals() { return $this->hasMany('App\Models\ScoreTotal'); }
+    
+    /**
+     * 获取指定学生的所有消费/充值记录
+     *
+     * @return HasMany
+     */
+    function consumptions() { return $this->hasMany('App\Models\Consumption'); }
     
     /**
      * 保存新创建的学生记录
@@ -315,7 +320,8 @@ class Student extends Model {
      *
      * @param UploadedFile $file
      * @return array
-     * @throws PHPExcel_Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
     function upload(UploadedFile $file) {
         
@@ -325,19 +331,12 @@ class Student extends Model {
         $filename = date('His') . uniqid() . '.' . $ext;
         $stored = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
         if ($stored) {
-            $filePath =
-                'public/uploads/'
-                . date('Y')
-                . '/'
-                . date('m')
-                . '/'
-                . date('d')
-                . '/'
-                . $filename;
-            /** @var LaravelExcelReader $reader */
-            $reader = Excel::load($filePath);
-            $sheet = $reader->getExcel()->getSheet(0);
-            $students = $sheet->toArray();
+            $spreadsheet = IOFactory::load(
+                $this->uploadedFile($filename)
+            );
+            $students = $spreadsheet->getActiveSheet()->toArray(
+                null, true, true, true
+            );
             abort_if(
                 $this->checkFileFormat($students[0]),
                 HttpStatusCode::NOT_ACCEPTABLE,
@@ -345,7 +344,7 @@ class Student extends Model {
             );
             unset($students[0]);
             $students = array_values($students);
-            if (count($students) != 0) {
+            if (!empty($students)) {
                 # 去除表格的空数据
                 foreach ($students as $key => $v) {
                     if ((array_filter($v)) == null) {
@@ -359,7 +358,7 @@ class Student extends Model {
             event(new ContactImportTrigger($data));
             
             return [
-                'statusCode' => 200,
+                'statusCode' => HttpStatusCode::OK,
                 'message'    => '上传成功',
             ];
         }
@@ -369,42 +368,49 @@ class Student extends Model {
     }
     
     /**
-     * 导出指定班级的学生数据
-     * @param $classId
-     * @return array
+     * 导出学籍
+     *
+     * @param $range - 导出范围
+     * @param null|integer $id - 班级/年级id
+     * @return mixed
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    function export($classId) {
-        
-        $students = $this->whereClassId($classId)->get();
-        $data = [self::EXCEL_EXPORT_TITLE];
+    function export($range, $id = null) {
+
+        $students = null;
+        switch ($range) {
+            case 0: # 导出指定班级的学籍
+                $students = Squad::find($id)->students;
+                break;
+            case 1: # 导出指定年级的学籍
+                $students = Grade::find($id)->students;
+                break;
+            case 2: # 导出对当前用户可见的所有学籍
+                $students = $this->whereIn('id', $this->contactIds('student'))->get();
+                break;
+            default:
+                break;
+        }
+        $records = [self::EXPORT_TITLES];
         foreach ($students as $student) {
-            if (!empty($student)) {
-                $m = $student->user->mobiles;
-                $mobile = [];
-                foreach ($m as $key => $value) {
-                    $mobile[] = $value->mobile;
-                }
-                $mobiles = implode(',', $mobile);
-                $item = [
-                    $student->user->realname,
-                    $student->user->gender == 1 ? '男' : '女',
-                    $student->squad->name,
-                    $student->student_number,
-                    $student->card_number . "\t",
-                    $student->oncampus == 1 ? '是' : '否',
-                    $mobiles,
-                    $student->birthday,
-                    $student->created_at,
-                    $student->updated_at,
-                    $student->enabled == 1 ? '启用' : '禁用',
-                ];
-                $data[] = $item;
-                unset($item);
-            }
-            
+            if (!$student->user) { continue; }
+            $records[] = [
+                $student->user->realname,
+                $student->user->gender ? '男' : '女',
+                $student->squad->name,
+                $student->student_number,
+                $student->card_number . "\t",
+                $student->oncampus ? '是' : '否',
+                implode(', ', $student->user->mobiles->pluck('mobile')->toArray()),
+                $student->birthday,
+                $student->created_at->toDateTimeString(),
+                $student->updated_at->toDateTimeString(),
+                $student->enabled ? '启用' : '禁用',
+            ];
         }
         
-        return $data;
+        return $this->excel($records);
         
     }
     
@@ -442,7 +448,7 @@ class Student extends Model {
                 // 说明是班主任
                 if (in_array($educatorId, explode(',', $class->educator_ids))) {
                     # 查询该班主任所在年级
-                    $gradeId = Squad::whereId($class->id)->first()->grade_id;
+                    $gradeId = Squad::find($class->id)->grade_id;
                     # 如果该班主任不在之前的年级id中 则把该年级的id和班级id存入数组
                     # 如果该班主任所在年级在之前的年级id中，班级id肯定也在
                     if (!in_array($gradeId, $gradeIds)) {
@@ -685,7 +691,6 @@ class Student extends Model {
                 $invalidRows[] = $datum;
                 unset($data[$i]);
                 continue;
-                
             }
             $grade = Grade::whereName($user['grade'])
                 ->where('school_id', $school->id)

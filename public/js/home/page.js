@@ -72,12 +72,12 @@ var page = {
             jscn: 'js/plugins/jqueryui/js/datepicker-zh-CN.js'
         },
         moment: {
-            css: 'js/student_attendance/count.css',
             js: 'js/plugins/moment/min/moment.min.js',
         },
         daterangepicker: {
-            css: 'js/plugins/bootstrap-daterangepicker/daterangepicker.css',
-            js: 'js/plugins/bootstrap-daterangepicker/daterangepicker.js',
+            css: 'js/plugins/daterangepicker/daterangepicker.css',
+            js: 'js/plugins/daterangepicker/daterangepicker.js',
+            moment: 'js/plugins/daterangepicker/moment.min.js'
         },
         echarts: {
             js: 'js/plugins/echarts.simple.min.js',
@@ -180,31 +180,22 @@ var page = {
     },
     errorHandler: function (e) {
         var obj = JSON.parse(e.responseText);
+        var message = '';
         $('.overlay').hide();
+        console.log(obj);
         switch (obj['statusCode']) {
-            case 400:
-                // var response = JSON.parse(e.responseText);
+            case 406:
                 var errors = obj['errors'];
                 $.each(errors, function () {
-                    page.inform('验证错误', this, page.failure);
+                    page.inform(obj['exception'], this, page.failure);
                 });
                 break;
-            case 401:
-                page.inform('重新登录', '会话已过期，请重新登录', page.info);
-                window.location = page.siteRoot() + 'login?returnUrl=' +
-                    (typeof obj['returnUrl'] !== 'undefined'
-                        ? encodeURIComponent(obj['returnUrl'])
-                        : this.getTabUrl());
-                break;
             case 498:
-                window.location.reload();
-                break;
-            case 500:
-                var message = obj['message'] + '\n' + obj['file'] + ' : ' + obj['line'];
-                page.inform('500错误', message, page.failure);
+                // window.location.reload();
                 break;
             default:
-                page.inform('出现异常', obj['message'], page.failure);
+                message = obj['message'] + '\n' + obj['file'] + ' : ' + obj['line'];
+                page.inform(obj['exception'] + ' : ' + obj['statusCode'], message, page.failure);
                 break;
         }
     },
@@ -508,7 +499,6 @@ var page = {
             $('select').select2(typeof options !== 'undefined' ? options : {language: "zh-CN"});
         }
     },
-
     initICheck: function (object) {
         var init = function (object) {
             if (typeof object === 'undefined') {
@@ -599,6 +589,74 @@ var page = {
                 cn: '结束时间不得小于等于%s'
             }
         });
+    },
+    dateRange: function(selector) {
+        if (typeof selector === 'undefined') {
+            selector = 'daterange';
+        }
+        page.loadCss(page.plugins.daterangepicker.css);
+        $('#' + selector).daterangepicker(
+            {
+                locale: {
+                    format: "YYYY-MM-D",
+                    separator: " 至 ",
+                    applyLabel: "确定",
+                    cancelLabel: "取消",
+                    fromLabel: "从",
+                    toLabel: "到",
+                    todayRangeLabel: '今天',
+                    customRangeLabel: "自定义",
+                    weekLabel: "W",
+                    daysOfWeek: ["日", "一", "二", "三", "四", "五", "六"],
+                    monthNames: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+                    firstDay: 1
+                },
+                ranges: {
+                    '今天': [
+                        moment(),
+                        moment()
+                    ],
+                    '昨天': [
+                        moment().subtract(1, 'days'),
+                        moment().subtract(1, 'days')
+                    ],
+                    '过去 7 天': [
+                        moment().subtract(6, 'days'),
+                        moment()
+                    ],
+                    '过去 30 天': [
+                        moment().subtract(29, 'days'),
+                        moment()
+                    ],
+                    '这个月': [
+                        moment().startOf('month'),
+                        moment().endOf('month')
+                    ],
+                    '上个月': [
+                        moment().subtract(1, 'month').startOf('month'),
+                        moment().subtract(1, 'month').endOf('month')
+                    ]
+                },
+                startDate: moment().subtract(29, 'days'),
+                endDate: moment()
+            },
+            function (start, end) {
+                $('#' + selector).find('span').html(
+                    start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD')
+                );
+            }
+        );
+    },
+    initDateRangePicker: function (selector) {
+        $.getScript(
+            page.siteRoot() + page.plugins.daterangepicker.moment,
+            function () {
+                $.getScript(
+                    page.siteRoot() + page.plugins.daterangepicker.js,
+                    function () { page.dateRange(selector); }
+                )
+            }
+        )
     },
     getUrlVars: function () {
         var vars = [], hash;

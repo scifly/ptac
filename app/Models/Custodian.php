@@ -282,39 +282,33 @@ class Custodian extends Model {
         return true;
 
     }
-
+    
     /**
      * 导出（仅对当前用户可见的）监护人记录
      *
      * @return array
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     function export() {
 
-        $custodians = self::whereIn('id', $this->contactIds('custodian'))->get();
-        $data = array(self::EXCEL_EXPORT_TITLE);
+        $custodians = self::whereIn(
+            'id', $this->contactIds('custodian')
+        )->get();
+        $records = array(self::EXCEL_EXPORT_TITLE);
         foreach ($custodians as $custodian) {
-            if (!empty($custodian->user)) {
-                $m = $custodian->user->mobiles;
-                $mobile = [];
-                foreach ($m as $key => $value) {
-                    $mobile[] = $value->mobile;
-                }
-                $mobiles = implode(',', $mobile);
-                $item = [
-                    $custodian->user->realname,
-                    $custodian->user->gender == Constant::ENABLED ? '男' : '女',
-                    $custodian->user->email,
-                    $mobiles,
-                    $custodian->created_at,
-                    $custodian->updated_at,
-                ];
-                $data[] = $item;
-                unset($item);
-            }
-
+            if (!$custodian->user) { continue; }
+            $records[] = [
+                $custodian->user->realname,
+                $custodian->user->gender == Constant::ENABLED ? '男' : '女',
+                $custodian->user->email,
+                implode(', ', $custodian->user->mobiles->pluck('mobile')->toArray()),
+                $custodian->created_at,
+                $custodian->updated_at,
+            ];
         }
 
-        return $data;
+        return $this->excel($records);
 
     }
 

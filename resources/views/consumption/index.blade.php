@@ -24,9 +24,9 @@
                 <th>学生</th>
                 <th>消费地点</th>
                 <th>消费机ID</th>
-                <th>消费类型</th>
-                <th>消费金额</th>
-                <th>消费时间</th>
+                <th>类型</th>
+                <th>金额</th>
+                <th>时间</th>
             </tr>
             </thead>
             <tbody></tbody>

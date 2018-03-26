@@ -440,6 +440,7 @@ class Menu extends Model {
             'name'         => $root->name,
             'icon'         => $root->icon ? $root->icon->name : 'fa fa-circle-o',
             'menu_type_id' => $root->menu_type_id,
+            'enabled'      => 1
         ];
         $tree = [];
         foreach ($menus as $key => $menu) {
@@ -453,7 +454,11 @@ class Menu extends Model {
             }
             $type = MenuType::find($menu['menu_type_id'])->name;
             $parentId = isset($menu['parent_id']) ? $menu['parent_id'] : '#';
-            $text = sprintf(Snippet::MENU_TEXT, self::MENU_TYPES[$type]['color'], $name);
+            $text = sprintf(
+                Snippet::MENU_TEXT,
+                $menu['enabled'] ? self::MENU_TYPES[$type]['color'] : 'lightgray',
+                $name
+            );
             $tree[] = [
                 'id'     => $key,
                 'parent' => $parentId,
@@ -670,6 +675,7 @@ class Menu extends Model {
                 'uri'          => $datum['uri'],
                 'icon'         => $icon,
                 'menu_type_id' => $datum['menu_type_id'],
+                'enabled'      => $datum['enabled']
             ];
         }
         

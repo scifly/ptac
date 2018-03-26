@@ -136,7 +136,9 @@ class Controller extends BaseController {
      */
     protected function result($result, String $success = null, String $failure = null) {
         
-        $statusCode = $result ? HttpStatusCode::OK : HttpStatusCode::INTERNAL_SERVER_ERROR;
+        $statusCode = $result
+            ? HttpStatusCode::OK
+            : HttpStatusCode::INTERNAL_SERVER_ERROR;
         $message = $result
             ? ($success ?? __('messages.ok'))
             : ($failure ?? __('messages.fail'));

@@ -69,6 +69,10 @@ class Handler extends ExceptionHandler {
             $response['line'] = $exception->getLine();
             $eName = $paths[sizeof($paths) -1];
             switch ($eName) {
+                case 'AuthorizationException':
+                    $status = HttpStatusCode::UNAUTHORIZED;
+                    $response['message'] = __('messages.unauthorized');
+                    break;
                 case 'AuthenticationException':
                     $status = HttpStatusCode::UNAUTHORIZED;
                     if ($request->method() == 'GET') {
@@ -80,6 +84,10 @@ class Handler extends ExceptionHandler {
                             $response['returnUrl'] = $request->fullUrl();
                         }
                     }
+                    break;
+                case 'InvalidArgumentException':
+                    $status = HttpStatusCode::INTERNAL_SERVER_ERROR;
+                    $response['message'] = __('messages.invalid_argument');
                     break;
                 case 'TokenMismatchException':
                     $status = HttpStatusCode::TOKEN_MISMATCH;
@@ -94,7 +102,16 @@ class Handler extends ExceptionHandler {
                     break;
                 case 'ValidationException':
                     /** @var ValidationException $exception */
+                    $status = HttpStatusCode::NOT_ACCEPTABLE;
                     $response['errors'] = $exception->errors();
+                    break;
+                case 'NotFoundHttpException':
+                    $status = HttpStatusCode::NOT_FOUND;
+                    $response['message'] = __('messages.not_found');
+                    break;
+                case 'MethodNotAllowedHttpException':
+                    $status = HttpStatusCode::METHOD_NOT_ALLOWED;
+                    $response['message'] = __('messages.method_not_allowed');
                     break;
                 default:
                     break;

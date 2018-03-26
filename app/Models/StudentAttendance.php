@@ -1,16 +1,18 @@
 <?php
 namespace App\Models;
 
-use App\Events\StudentAttendanceCreate;
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Constant;
+use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 
 /**
  * App\Models\StudentAttendance 学生考勤记录
@@ -57,6 +59,10 @@ class StudentAttendance extends Model {
         'updated_at',
     ];
     
+    const EXPORT_TITLES = [
+        '姓名', '监护人', '手机号码', '打卡时间', '进/出'
+    ];
+    
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -75,7 +81,170 @@ class StudentAttendance extends Model {
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    function studentAttendancesetting() { return $this->belongsTo('App\Models\StudentAttendanceSetting', 'sas_id', 'id'); }
+    function studentAttendancesetting() {
+        
+        return $this->belongsTo('App\Models\StudentAttendanceSetting', 'sas_id', 'id');
+        
+    }
+    
+    /**
+     * 保存学生考勤记录
+     *
+     * @param array $data
+     * @return bool
+     */
+    function store(array $data) {
+        
+        $student = Student::whereCardNumber($data['card_number'])->first();
+        abort_if(!$student, HttpStatusCode::NOT_FOUND, __('messages.student_not_found'));
+        $class = $student->squad;
+        abort_if(!$class, HttpStatusCode::NOT_FOUND, __('messages.student_not_found'));
+        $grade = $class->grade;
+        abort_if(!$grade, HttpStatusCode::NOT_FOUND, __('messages.student_not_found'));
+        $school = $grade->school;
+        abort_if(!$school, HttpStatusCode::NOT_FOUND, __('messages.student_not_found'));
+        $dateTime = strtotime($data['punch_time']);
+        $day = Constant::DAYS[date('w', $dateTime)];
+        $strDateTime = date('Y-m-d', $dateTime);
+        $semester = Semester::where('start_date', '<=', $strDateTime)
+            ->where('end_date', '>=', $strDateTime)
+            ->where('enabled', 1)
+            ->first();
+        abort_if(!$semester, HttpStatusCode::NOT_FOUND, __('messages.semester_not_found'));
+        $machine = AttendanceMachine::whereMachineid($data['machineid'])
+            ->where('school_id', $school->id)->first();
+        abort_if(!$machine, HttpStatusCode::NOT_FOUND, __('messages.machine_not_found'));
+        $sases = StudentAttendanceSetting::whereGradeId($grade->id)
+            ->where('semester_id', $semester->id)
+            ->where('day', $day)->get();
+        abort_if(!$sases, HttpStatusCode::NOT_FOUND, __('messages.sas_not_found'));
+        $punchTime = date('H:i:s', $dateTime);
+        $status = 0; # 考勤异常
+        $sasId = 0;
+        foreach ($sases as $sas) {
+            $sasId = $sas->id;
+            if ($punchTime <= $sas->end && $punchTime >= $sas->start) {
+                $status = 1; break;
+            }
+        }
+        
+        return $this->create([
+            'student_id' => $student->id,
+            'sas_id' => $sasId,
+            'punch_time' => $dateTime,
+            'inorout' => $data['inorout'],
+            'attendance_machine_id' => $machine->id,
+            'status' => $status,
+            'longitude' => $data['longitude'],
+            'latitude' => $data['latitude'],
+            'media_id' => $data['media_id']
+        ]) ? true : false;
+        
+    }
+    
+    /**
+     * 考勤统计
+     *
+     * @return array
+     */
+    function stat() {
+    
+        Request::validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|greater_than_or_equal_to:start_date'
+        ]);
+        $classId = Request::input('class_id') ?? $this->classIds()[0];
+        $startDate = Request::input('start_date') ?? date('Y-m-d', strtotime('-7 day'));
+        $endDate = Request::input('end_date') ?? date('Y-m-d');
+        $days = Carbon::createFromTimestamp(strtotime($startDate))->diffInDays(
+            Carbon::createFromTimestamp(strtotime($endDate))
+        ) + 1;
+        # 指定班级所有学生的id
+        $studentIds = Student::whereClassId($classId)->get()->pluck('id')->toArray();
+        if (empty($studentIds)) { return []; }
+        $attendances = $this->latestAttendances(
+            implode(',', $studentIds),
+            $startDate,
+            $endDate
+        );
+        $normals = [];
+        $abnormals = [];
+        if (!empty($attendances)) {
+            foreach ($attendances as $key => &$val) {
+                if ($val->lastest) {
+                    if (isset($normals[$val->day])) {
+                        $normals[$val->day] += 1;
+                    } else {
+                        $normals[$val->day] = 1;
+                    }
+                } else {
+                    if (isset($abnormals[$val->day])) {
+                        $abnormals[$val->day] += 1;
+                    } else {
+                        $abnormals[$val->day] = 1;
+                    }
+                }
+            }
+        }
+        $results = [];
+        for ($i = 0; $i < $days; $i++) {
+            $date = strtotime($startDate);
+            $date = date("Y-m-d", $date + (86400 * $i));
+            $all = sizeof($studentIds);
+            $normal = $normals[$date] ?? 0;
+            $abnormal = $abnormals[$date] ?? 0;
+            $results[$i] = [
+                'date' => $date,
+                'all' => $all,
+                'normal' => $normal,
+                'abnormal' => $abnormal,
+                'missed' => $all - $normal - $abnormal
+            ];
+        }
+        
+        return $results;
+        
+    }
+    
+    /**
+     * 获取考勤明细
+     *
+     * @return array
+     */
+    function detail() {
+        
+        $details = $this->details();
+        # 缓存导出数据
+        $this->cache($details);
+        
+        return $details;
+        
+    }
+    
+    /**
+     * 导出考勤明细
+     *
+     * @return mixed
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     */
+    function export() {
+        
+        abort_if(
+            !session('sa_details'),
+            HttpStatusCode::BAD_REQUEST,
+            __('messages.bad_request')
+        );
+        $details = session('sa_details');
+        Session::forget('sa_details');
+        
+        return $this->excel(
+            $details,
+            '学生考勤明细',
+            '考勤明细'
+        );
+        
+    }
     
     /**
      * 学生考勤记录列表
@@ -89,8 +258,10 @@ class StudentAttendance extends Model {
             ['db' => 'User.realname', 'dt' => 1],
             ['db' => 'Student.card_number', 'dt' => 2],
             ['db' => 'StudentAttendance.punch_time', 'dt' => 3],
+            ['db' => 'StudentAttendanceSetting.name as sasname', 'dt' => 4],
+            ['db' => 'AttendanceMachine.name as machinename', 'dt' => 5],
             [
-                'db'        => 'StudentAttendance.inorout', 'dt' => 4,
+                'db'        => 'StudentAttendance.inorout', 'dt' => 6,
                 'formatter' => function ($d) {
                     if ($d == 2) {
                         return ' ';
@@ -101,20 +272,7 @@ class StudentAttendance extends Model {
                     }
                 },
             ],
-            ['db' => 'AttendanceMachine.name as attendname', 'dt' => 5],
-            [
-                'db'        => 'StudentAttendance.longitude', 'dt' => 6,
-                'formatter' => function ($d) {
-                    return $d == 0 ? ' ' : $d;
-                },
-            ],
-            [
-                'db'        => 'StudentAttendance.latitude', 'dt' => 7,
-                'formatter' => function ($d) {
-                    return $d == 0 ? ' ' : $d;
-                },
-            ],
-            ['db' => 'StudentAttendance.created_at', 'dt' => 8],
+            ['db' => 'StudentAttendance.status', 'dt' => 7],
         ];
         $joins = [
             [
@@ -134,6 +292,14 @@ class StudentAttendance extends Model {
                 ],
             ],
             [
+                'table'      => 'student_attendance_settings',
+                'alias'      => 'StudentAttendanceSetting',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'StudentAttendanceSetting.id = StudentAttendance.sas_id'
+                ]
+            ],
+            [
                 'table'      => 'users',
                 'alias'      => 'User',
                 'type'       => 'INNER',
@@ -142,8 +308,9 @@ class StudentAttendance extends Model {
                 ],
             ],
         ];
-        // todo: 增加角色过滤条件
-        $condition = 'AttendanceMachine.school_id = ' . $this->schoolId();
+        
+        $condition = 'StudentAttendance.student_id IN(' .
+            implode(',', $this->contactIds('student')) . ')';
         
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition
@@ -152,211 +319,159 @@ class StudentAttendance extends Model {
     }
 
     /**
-     * @param null $classId
-     * @param null $startTime
-     * @param null $endTime
-     * @param null $days
-     * @return array
-     */
-    function getData($classId = null, $startTime = null, $endTime = null, $days = null) {
-        
-        if (!$classId) { $classId = $this->getClass(); }
-        if (!$startTime) { $startTime = date('Y-m-d',strtotime('-7 day')); }
-        if (!$endTime) { $endTime = date('Y-m-d'); }
-        $item = [];
-        if ($classId && $startTime && $endTime) {
-            $all = Student::whereClassId($classId)->get()->pluck('id')->toArray();
-            if (empty($all)) {
-                return $item;
-            }
-            $data =$this->getSqlData(implode(',',$all), $startTime, $endTime);
-
-            $n = [];
-            $a = [];
-            if ($data) {
-                foreach ($data as $key => &$val)
-                {
-                    if ($val->lastest) {
-                        if(isset($n[$val->day])) {
-                            $n[$val->day] = ($n[$val->day]+1);
-                        }else{
-                            $n[$val->day] = 1;
-                        }
-                    }else{
-                        if(isset($a[$val->day])) {
-                            $a[$val->day] = ($a[$val->day]+1);
-                        }else{
-                            $a[$val->day] = 1;
-                        }
-                    }
-
-                }
-            }
-            for ($i = 0;$i < $days; $i++)
-            {
-                $date = strtotime($startTime);
-                $date = date("Y-m-d",$date+(86400*$i));
-                $item[$i]['date'] = $date;
-                $item[$i]['all'] = count($all);
-                $item[$i]['normal'] = isset($n[$date]) ? $n[$date] : 0;
-                $item[$i]['abnormal'] = isset($a[$date]) ? $a[$date] : 0;
-                $item[$i]['surplus'] = $item[$i]['all']-$item[$i]['normal']-$item[$i]['abnormal'];
-            }
-            return $item;
-        }
-        return $item;
-    }
-    
-    function getStudentData($date , $type, $classId) {
-        
-        $startTime = date('Y-m-d H:i:s', strtotime($date));
-        $endTime = date('Y-m-d H:i:s', strtotime($date)+24*3600-1);
-        $all = Student::whereClassId($classId)->get()->pluck('id')->toArray();
-        $result = [];
-        $data =$this->getSqlData(implode(',',$all), $startTime, $endTime);
-
-        if ($type == 'surplus') {
-            $items = $this->whereIn('student_id', $all)
-                ->where('punch_time', '>=', $startTime)
-                ->where('punch_time', '<', $endTime)
-                ->get()
-                ->pluck('student_id');
-            $s = Student::whereClassId($classId)
-                ->whereNotIn('id', $items)
-                ->get();
-            if ($s) {
-                foreach ($s as $datum) {
-                    if ($datum->custodians) {
-                        $cu = User::whereIn('id', array_column(json_decode($datum->custodians), 'user_id'))
-                            ->get()
-                            ->pluck('realname');
-                    }else{
-                        $cu = [];
-                    }
-                    if (json_decode($datum->user['mobiles'])) {
-                        $mo = array_column(json_decode($datum->user['mobiles']), 'mobile');
-                    }else{
-                        $mo = [];
-                    }
-                    $result[] = [
-                        'name' => $datum->user['realname'],
-                        'custodian' => $cu,
-                        'moblie' => $mo,
-                        'punch_time' => '',
-                        'inorout' => '',
-                    ];
-                }
-            }
-        }
-
-        if ($data) {
-            switch ($type) {
-                case 'normal':
-                    $n = [];
-                    foreach ($data as $d) {
-                        if ($d->lastest) {
-                            $n[] = $d->id;
-                        }
-                    }
-                    $items = $this->whereIn('id', $n)->get();
-                    foreach ($items as $datum) {
-                        $result[] = [
-                            'name' => $datum->student->user->realname,
-                            'custodian' => User::whereIn('id', array_column($datum->student->custodians->toArray(), 'user_id'))
-                                ->get()
-                                ->pluck('realname'),
-                            'moblie' => array_column($datum->student->user->mobiles->toArray(), 'mobile'),
-                            'punch_time' => $datum->punch_time,
-                            'inorout' => $datum->inorout == 1 ? '进' : '出',
-                        ];
-                    }
-
-                    break;
-                case 'abnormal':
-                    $a = [];
-                    foreach ($data as $d) {
-                        if ($d->lastest == 0) {
-                            $a[] = $d->id;
-                        }
-                    }
-                    $items = $this->whereIn('id', $a)->get();
-                    foreach ($items as $datum) {
-                        $result[] = [
-                            'name' => $datum->student->user->realname,
-                            'custodian' => User::whereIn('id', array_column($datum->student->custodians->toArray(), 'user_id'))
-                                ->get()
-                                ->pluck('realname'),
-                            'moblie' => array_column($datum->student->user->mobiles->toArray(), 'mobile'),
-                            'punch_time' => $datum->punch_time,
-                            'inorout' => $datum->inorout == 1 ? '进' : '出',
-                        ];
-                    }
-                    break;
-
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param $studentIds
+     * 获取指定学生的最新考勤数据
+     *
+     * @param string $studentIds - 学生id列表
      * @param $start
      * @param $end
      * @return array
      */
-    private function getSqlData($studentIds, $start, $end) {
-        $data = DB::select("
-          select max(t.id) id,t.student_id, substring_index(group_concat( t.status order by t.punch_time DESC),',',1) lastest, DATE(t.punch_time) day 
-          from (
-            select ord.id,ord.student_id, ord.inorout,ord.status, ord.punch_time 
-              from student_attendances ord where ord.punch_time >= '". $start."' and ord.punch_time <= '". $end."' order by ord.student_id asc , ord.punch_time desc) t 
-              where t.student_id in (" . $studentIds . ") 
-          group by t.student_id,day"
-        );
-        return $data;
-    }
-    
-    /**
-     * @return mixed
-     */
-    private function getClass() {
+    private function latestAttendances($studentIds, $start, $end) {
         
-        $schools = null;
-        $grades = null;
-        $classes = null;
-
-        $schoolId = $this->schoolId();
-        $schools = School::whereId($schoolId)
-            ->where('enabled', 1)
-            ->pluck('name', 'id');
-        if ($schools) {
-            $grades = Grade::whereSchoolId($schoolId)
-                ->where('enabled', 1)
-                ->pluck('name', 'id');
-        }
-        if ($grades) {
-            $classes = Squad::whereGradeId($grades->keys()->first())
-                ->where('enabled', 1)
-                ->pluck('name', 'id');
-            return $classes->keys()->first();
-        }
-        
-        return false;
+        return DB::select("
+            SELECT
+                max(t.id) id,
+                t.student_id,
+                substring_index(group_concat(t.status ORDER BY t.punch_time DESC), ',', 1) lastest,
+                DATE(t.punch_time) day
+          FROM (
+                SELECT
+                    sa.id,
+                    sa.student_id,
+                    sa.inorout,
+                    sa.status,
+                    sa.punch_time
+            FROM
+                student_attendances sa
+            WHERE
+                sa.punch_time >= '" . $start . "' AND
+                sa.punch_time <= '" . $end . "'
+            ORDER BY
+                sa.student_id ASC,
+                sa.punch_time DESC
+          ) t
+          WHERE
+                t.student_id IN (" . $studentIds . ")
+          GROUP BY
+                t.student_id,
+                day
+        ");
         
     }
     
     /**
-     * @param $input
-     * @return bool
+     * @return array
      */
-    function storeByFace($input) {
+    private function details(): array {
+        
+        $date = Request::input('date');
+        $type = Request::input('type');
+        $classId = Request::input('class_id');
+        $startDate = date('Y-m-d H:i:s', strtotime($date));
+        $endDate = date('Y-m-d H:i:s', strtotime($date) + 24 * 3600 - 1);
+        $studentIds = Student::whereClassId($classId)->get()->pluck('id')->toArray();
+        $results = []; # 统计结果
+        $attendances = $this->latestAttendances(implode(',', $studentIds), $startDate, $endDate);
+        if ($type == 'missed') {
+            # 打过考勤的学生ids
+            $nStudentIds = $this->whereIn('student_id', $studentIds)
+                ->whereBetween('punch_time', [$startDate, $endDate])
+                ->get()->pluck('student_id')->toArray();
+            # 未打考勤的学生
+            $mStudents = Student::whereIn('id', array_diff($studentIds, $nStudentIds))->get();
+            if ($mStudents) {
+                foreach ($mStudents as $student) {
+                    $userIds = array_column(json_decode($student->custodians), 'user_id');
+                    if ($student->custodians) {
+                        $custodians = User::whereIn('id', $userIds)->get()->pluck('realname')->toArray();
+                    } else {
+                        $custodians = [];
+                    }
+                    if (json_decode($student->user['mobiles'])) {
+                        $mobiles = array_column(json_decode($student->user['mobiles']), 'mobile');
+                    } else {
+                        $mobiles = [];
+                    }
+                    $results[] = [
+                        'name'       => $student->user['realname'],
+                        'custodian'  => $custodians,
+                        'mobile'     => $mobiles,
+                        'punch_time' => '',
+                        'inorout'    => '',
+                    ];
+                }
+            }
+        }
+        if ($attendances) {
+            switch ($type) {
+                case 'normal':
+                    $saIds = [];
+                    foreach ($attendances as $a) {
+                        if ($a->lastest) {
+                            $saIds[] = $a->id;
+                        }
+                    }
+                    $sas = $this->whereIn('id', $saIds)->get();
+                    foreach ($sas as $sa) {
+                        $userIds = array_column($sa->student->custodians->toArray(), 'user_id');
+                        $results[] = [
+                            'name'       => $sa->student->user->realname,
+                            'custodian'  => User::whereIn('id', $userIds)->get()->pluck('realname')->toArray(),
+                            'mobile'     => array_column($sa->student->user->mobiles->toArray(), 'mobile'),
+                            'punch_time' => $sa->punch_time,
+                            'inorout'    => $sa->inorout == 1 ? '进' : '出',
+                        ];
+                    }
+                    break;
+                case 'abnormal':
+                    $saIds = [];
+                    foreach ($attendances as $a) {
+                        if ($a->lastest == 0) {
+                            $saIds[] = $a->id;
+                        }
+                    }
+                    $sas = $this->whereIn('id', $saIds)->get();
+                    foreach ($sas as $sa) {
+                        $userIds = array_column($sa->student->custodians->toArray(), 'user_id');
+                        $custodians = User::whereIn('id', $userIds)->get()->pluck('realname')->toArray();
+                        $results[] = [
+                            'name'       => $sa->student->user->realname,
+                            'custodian'  => $custodians,
+                            'mobile'     => array_column($sa->student->user->mobiles->toArray(), 'mobile'),
+                            'punch_time' => $sa->punch_time,
+                            'inorout'    => $sa->inorout ? '进' : '出',
+                        ];
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
 
-        #触发事件调用队列，这个是异步处理的因此错误信息不能返回
-        event(new StudentAttendanceCreate($input));
-        return true;
+        return $results;
+        
     }
-
-
+    
+    /**
+     * 缓存导出数据
+     *
+     * @param $details
+     */
+    private function cache($details): void {
+        
+        $rows = [self::EXPORT_TITLES];
+        foreach ($details as $detail) {
+            $rows[] = [
+                $detail['name'],
+                implode(',', $detail['custodian']),
+                implode(',', $detail['mobile']),
+                $detail['punch_time'],
+                $detail['inorout'] ? '进' : '出'
+            ];
+        }
+        
+        session(['sa_details' => $rows]);
+        
+    }
     
 }

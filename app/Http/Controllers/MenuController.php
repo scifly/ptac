@@ -5,7 +5,6 @@ use App\Helpers\HttpStatusCode;
 use App\Http\Requests\MenuRequest;
 use App\Models\Menu;
 use App\Models\MenuTab;
-use App\Models\MenuType;
 use App\Models\Tab;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -64,7 +63,6 @@ class MenuController extends Controller {
         
         return $this->output([
             'parentId'   => $id,
-            'menuTypeId' => MenuType::whereName('其他')->first()->id,
         ]);
 
     }
@@ -147,7 +145,8 @@ class MenuController extends Controller {
 
         abort_if(
             !$this->menu->find($id) || !$this->menu->find($parentId),
-            HttpStatusCode::NOT_FOUND
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
         );
         if ($this->menu->movable($id, $parentId)) {
             return $this->result(

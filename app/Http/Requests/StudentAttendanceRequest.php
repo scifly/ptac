@@ -20,31 +20,28 @@ class StudentAttendanceRequest extends FormRequest {
     public function rules() {
         
         return [
-            'punch_time'            => 'required|date',
-            'inorout'               => 'required|integer',
-            'media_id'              => 'required|integer',
-            'longitude'             => 'required|numeric',
-            'latitude'              => 'required|numeric',
+            'card_number' => 'required|string|between:5,32',
+            'punch_time' => 'required|date',
+            'inorout'    => 'required|integer',
+            'media_id'   => 'required|integer',
+            'longitude'  => 'required|numeric',
+            'latitude'   => 'required|numeric',
+            'machineid'  => 'required|string|between:2,20'
         ];
         
     }
     
     protected function prepareForValidation() {
-    
+        
         $input = $this->all();
-        if (!isset($input['inorout'])) {
-            $input['inorout'] = 2;
-        }
-        if (!isset($input['longitude'])){
-            $input['longitude'] = 0;
-        }
-        if (!isset($input['latitude'])){
-            $input['latitude'] = 0;
-        }
+        $input['inorout'] = $input['inorout'] ?? 2;
+        $input['longitude'] = $input['longitude'] ?? 0;
+        $input['latitude'] = $input['latitude'] ?? 0;
         $input['attendance_machine_id'] = $input['attendId'];
         $input['media_id'] = 0;
+        
         $this->replace($input);
-       
+        
     }
     
 }

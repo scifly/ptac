@@ -24,7 +24,6 @@ class MethodPolicy {
 
     public function act(User $user, Route $route) {
     
-    
         $role = $user->group->name;
         if (!in_array($role, Constant::SUPER_ROLES)) {
             $actionGroup = ActionGroup::whereGroupId($user->group_id)
