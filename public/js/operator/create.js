@@ -17,8 +17,8 @@ $groupId.on('change', function () {
             if ($corpId.length === 0) {
                 getLists();
             } else {
-                $corp.show();
-                $school.hide();
+                $corp.slideDown();
+                $school.slideUp();
             }
             break;
         case 3:
