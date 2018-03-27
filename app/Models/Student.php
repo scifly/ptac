@@ -8,7 +8,6 @@ use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
-use App\Http\Requests\StudentRequest;
 use App\Rules\Mobiles;
 use Carbon\Carbon;
 use Eloquent;
@@ -26,6 +25,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Throwable;
 
 /**
  * App\Models\Student 学生
@@ -75,11 +75,17 @@ class Student extends Model {
         '生日', '创建于', '更新于',
         '状态',
     ];
+    const EXPORT_RANGES = [
+        'class' => 0,
+        'grade' => 1,
+        'all'   => 2
+    ];
     protected $fillable = [
         'user_id', 'class_id', 'student_number',
         'card_number', 'oncampus', 'birthday',
         'remark', 'enabled',
     ];
+    
     
     /**
      * 返回指定学生所属的班级对象
@@ -130,67 +136,57 @@ class Student extends Model {
     /**
      * 保存新创建的学生记录
      *
-     * @param StudentRequest $request
+     * @param array $data
      * @return bool|mixed
      * @throws Exception
      * @throws \Throwable
      */
-    function store(StudentRequest $request) {
+    function store(array $data) {
         
         try {
-            DB::transaction(function () use ($request) {
-                $user = $request->input('user');
-                $u = User::create([
-                    'username'     => uniqid('custodian_'),
+            DB::transaction(function () use ($data) {
+                # 创建用户
+                $userid = uniqid('student_');
+                $user = User::create([
+                    'username'     => $userid,
+                    'userid'       => $userid,
                     'group_id'     => Group::whereName('学生')->first()->id,
-                    'password'     => 'student8888',
-                    'email'        => $user['email'],
-                    'realname'     => $user['realname'],
-                    'gender'       => $user['gender'],
-                    'avatar_url'   => '00001.jpg',
-                    'userid'       => uniqid('student_'),
-                    'isleader'     => 0,
-                    'english_name' => $user['english_name'],
-                    'telephone'    => $user['telephone'],
+                    'password'     => bcrypt('student8888'),
+                    'email'        => $data['user']['email'],
+                    'realname'     => $data['user']['realname'],
+                    'gender'       => $data['user']['gender'],
+                    'english_name' => $data['user']['english_name'],
+                    'telephone'    => $data['user']['telephone'],
+                    'enabled'      => $data['user']['enabled'],
+                    'avatar_url'   => '',
                     'wechatid'     => '',
-                    'enabled'      => $user['enabled'],
+                    'isleader'     => 0,
                 ]);
-                $student = $request->all();
-                # 向student表添加数据
+
+                # 创建学籍
                 $this->create([
-                    'user_id'        => $u->id,
-                    'class_id'       => $student['class_id'],
-                    'student_number' => $student['student_number'],
-                    'card_number'    => $student['card_number'],
-                    'oncampus'       => $student['oncampus'],
-                    'birthday'       => $student['birthday'],
-                    'remark'         => $user['remark'],
-                    'enabled'        => $u->enabled,
+                    'user_id'        => $user->id,
+                    'class_id'       => $data['class_id'],
+                    'student_number' => $data['student_number'],
+                    'card_number'    => $data['card_number'],
+                    'oncampus'       => $data['oncampus'],
+                    'birthday'       => $data['birthday'],
+                    'remark'         => $data['remark'],
+                    'enabled'        => $user->enabled,
                 ]);
-                $mobiles = $request->input('mobile');
-                if ($mobiles) {
-                    foreach ($mobiles as $k => $mobile) {
-                        Mobile::create([
-                            'user_id'   => $u->id,
-                            'mobile'    => $mobile['mobile'],
-                            'isdefault' => $mobile['isdefault'],
-                            'enabled'   => $mobile['enabled'],
-                        ]);
-                    }
-                }
-                # 创建企业微信部门成员
-                $school = School::find($this->schoolId());
-                $grade = Grade::find($student['grade_id']);
-                $class = Squad::find($student['class_id']);
-                $deptId = $this->deptId($school->name, $grade->name, $class->name);
-                $departmentUser = [
-                    'department_id' => $deptId,
-                    'user_id'       => $u->id,
-                    'enabled'       => 1,
-                ];
-                DepartmentUser::create($departmentUser);
+
+                # 保存手机号码
+                $mobile = new Mobile();
+                $mobile->store($data, $user);
+                unset($mobile);
+
+                # 保存用户所处部门
+                $du = new DepartmentUser();
+                $du->store($data, $user);
+                unset($du);
+
                 # 创建企业号成员
-                $u->createWechatUser($u->id);
+                $user->createWechatUser($user->id);
             });
         } catch (Exception $e) {
             throw $e;
@@ -203,70 +199,58 @@ class Student extends Model {
     /**
      * 更新指定的学生记录
      *
-     * @param StudentRequest $request
+     * @param array $data
      * @param $id
      * @return bool|mixed
-     * @throws \Exception|\Throwable
+     * @throws Exception
+     * @throws Throwable
      */
-    function modify(StudentRequest $request, $id) {
+    function modify(array $data, $id) {
         
         $student = $this->find($id);
-        if (!isset($student)) { return false; }
+        abort_if(!$student, HttpStatusCode::NOT_FOUND, '找不到该学籍');
         try {
-            DB::transaction(function () use ($request, $id, $student) {
-                $userId = $request->input('user_id');
-                $userData = $request->input('user');
-                User::find($userId)
-                    ->update([
-                        'group_id'     => Group::whereName('学生')->first()->id,
-                        'email'        => $userData['email'],
-                        'realname'     => $userData['realname'],
-                        'gender'       => $userData['gender'],
-                        'isleader'     => 0,
-                        'english_name' => $userData['english_name'],
-                        'telephone'    => $userData['telephone'],
-                        'enabled'      => $userData['enabled'],
-                    ]);
-                $studentData = $request->all();
-                $student->update([
-                    'user_id'        => $userId,
-                    'class_id'       => $studentData['class_id'],
-                    'student_number' => $studentData['student_number'],
-                    'card_number'    => $studentData['card_number'],
-                    'oncampus'       => $studentData['oncampus'],
-                    'birthday'       => $studentData['birthday'],
-                    'remark'         => $userData['remark'],
-                    'enabled'        => $userData['enabled'],
+            DB::transaction(function () use ($data, $id, $student) {
+                $user = User::find($data['user_id']);
+                
+                # 更新用户
+                $user->update([
+                    'group_id'     => Group::whereName('学生')->first()->id,
+                    'email'        => $data['user']['email'],
+                    'realname'     => $data['user']['realname'],
+                    'gender'       => $data['user']['gender'],
+                    'isleader'     => 0,
+                    'english_name' => $data['user']['english_name'],
+                    'telephone'    => $data['user']['telephone'],
+                    'enabled'      => $data['user']['enabled'],
                 ]);
-                $mobiles = $request->input('mobile');
-                if ($mobiles) {
-                    $mobile = new Mobile();
-                    $delMobile = $mobile->where('user_id', $userId)->delete();
-                    if ($delMobile) {
-                        foreach ($mobiles as $k => $mobile) {
-                            Mobile::create([
-                                'user_id'   => $request->input('user_id'),
-                                'mobile'    => $mobile['mobile'],
-                                'isdefault' => $mobile['isdefault'],
-                                'enabled'   => $mobile['enabled'],
-                            ]);
-                        }
-                    }
-                }
-                # 创建部门成员
-                DepartmentUser::whereUserId($userId)->delete();
-                $school = School::find($this->schoolId());
-                $grade = Grade::find($studentData['grade_id']);
-                $class = Squad::find($studentData['class_id']);
-                $deptId = $this->deptId($school->name, $grade->name, $class->name);
-                $departmentUser = [
-                    'department_id' => $deptId,
-                    'user_id'       => $userId,
-                    'enabled'       => 1,
-                ];
-                DepartmentUser::create($departmentUser);
+                
+                # 更新学籍
+                $student->update([
+                    'user_id'        => $data['user_id'],
+                    'class_id'       => $data['class_id'],
+                    'student_number' => $data['student_number'],
+                    'card_number'    => $data['card_number'],
+                    'oncampus'       => $data['oncampus'],
+                    'birthday'       => $data['birthday'],
+                    'remark'         => $data['remark'],
+                    'enabled'        => $data['user']['enabled'],
+                ]);
+                
+                # 更新手机号码
+                Mobile::whereUserId($user->id)->delete();
+                $mobile = new Mobile();
+                $mobile->store($data, $student->user);
+                unset($mobile);
+                
+                # 更新用户所在部门
+                DepartmentUser::whereUserId($user->id)->delete();
+                $du = new DepartmentUser();
+                $du->store($data, $user);
+                unset($du);
+                
                 # 更新企业号成员
-                $this->user->UpdateWechatUser($userId);
+                $user->UpdateWechatUser($user->id);
             });
         } catch (Exception $e) {
             throw $e;
@@ -275,7 +259,7 @@ class Student extends Model {
         return true;
         
     }
-
+    
     /**
      * 删除指定的学生记录
      *
@@ -326,10 +310,12 @@ class Student extends Model {
     function upload(UploadedFile $file) {
         
         $ext = $file->getClientOriginalExtension();     // 扩展名//xls
-        $realPath = $file->getRealPath();   //临时文件的绝对路径
+        $realPath = $file->getRealPath();   // 临时文件的绝对路径
         // 上传文件
         $filename = date('His') . uniqid() . '.' . $ext;
-        $stored = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
+        $stored = Storage::disk('uploads')->put(
+            $filename, file_get_contents($realPath)
+        );
         if ($stored) {
             $spreadsheet = IOFactory::load(
                 $this->uploadedFile($filename)
@@ -338,7 +324,7 @@ class Student extends Model {
                 null, true, true, true
             );
             abort_if(
-                $this->checkFileFormat($students[0]),
+                !empty(array_diff(self::EXCEL_FILE_TITLE, $students[0])),
                 HttpStatusCode::NOT_ACCEPTABLE,
                 '文件格式错误'
             );
@@ -351,7 +337,7 @@ class Student extends Model {
                         unset($students[$key]);
                     }
                 }
-                $this->checkData($students);
+                $this->validateData($students);
             }
             $data['user'] = Auth::user();
             $data['type'] = 'student';
@@ -377,16 +363,16 @@ class Student extends Model {
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     function export($range, $id = null) {
-
+        
         $students = null;
         switch ($range) {
-            case 0: # 导出指定班级的学籍
+            case self::EXPORT_RANGES['class']:
                 $students = Squad::find($id)->students;
                 break;
-            case 1: # 导出指定年级的学籍
+            case self::EXPORT_RANGES['grade']:
                 $students = Grade::find($id)->students;
                 break;
-            case 2: # 导出对当前用户可见的所有学籍
+            case self::EXPORT_RANGES['all']:
                 $students = $this->whereIn('id', $this->contactIds('student'))->get();
                 break;
             default:
@@ -411,71 +397,6 @@ class Student extends Model {
         }
         
         return $this->excel($records);
-        
-    }
-    
-    /**
-     * 获取指定教职员工所在年级和班级数据
-     *
-     * @param $educatorId ||教职员工id
-     * @return array
-     */
-    function getGrade($educatorId): array {
-        
-        $schoolId = $this->schoolId();
-        $gradeIds = $classIds = $classes = [];
-        // 查询该教职员工是否是年级主任
-        $grades = Grade::whereEnabled(1)
-            ->where('school_id', $schoolId)
-            ->get();
-        if (sizeof($grades) != 0) {
-            foreach ($grades as $grade) {
-                //  说明是年级主任
-                if (in_array($educatorId, explode(',', $grade->educator_ids))) {
-                    $classes = Squad::whereGradeId($grade->id)->get();
-                    foreach ($classes as $class) {
-                        $gradeClass[$grade->id][] = $class->id;
-                        $gradeIds[] = $grade->id;
-                        $gradeIds = array_unique($gradeIds);
-                    }
-                }
-            }
-        }
-        // 查询该教职员工是否是班主任
-        $classes = Squad::whereEnabled(1)->get();
-        if (sizeof($classes) != 0) {
-            foreach ($classes as $class) {
-                // 说明是班主任
-                if (in_array($educatorId, explode(',', $class->educator_ids))) {
-                    # 查询该班主任所在年级
-                    $gradeId = Squad::find($class->id)->grade_id;
-                    # 如果该班主任不在之前的年级id中 则把该年级的id和班级id存入数组
-                    # 如果该班主任所在年级在之前的年级id中，班级id肯定也在
-                    if (!in_array($gradeId, $gradeIds)) {
-                        # 把年级id和班级id放入数组
-                        $gradeClass[$gradeId][] = $class->id;
-                        $gradeIds[] = $gradeId;
-                        $gradeIds = array_unique($gradeIds);
-                    }
-                }
-            }
-        }
-        // 查询该教职员工是否是科任老师
-        $classes = Educator::find($educatorId)->classes;
-        $gradeClass = [];
-        if (sizeof($classes) != 0) {
-            foreach ($classes as $class) {
-                # 如果该科任老师所在年级不在之前的年级id中，则把该年级的id和班级id存入数组
-                if (!in_array($class->grade_id, $gradeIds)) {
-                    # 把年级id和班级id放入数组
-                    $gradeClass[$class->grade_id][] = $class->id;
-                    $gradeIds[] = $class->grade_id;
-                    $gradeIds = array_unique($gradeIds);
-                }
-            }
-        }
-        
-        return [$gradeIds, $gradeClass];
         
     }
     
@@ -579,7 +500,7 @@ class Student extends Model {
                 'conditions' => [
                     'Squad.id = Student.class_id',
                 ],
-            ]
+            ],
         ];
         $condition = 'Student.id In (' . implode(',', $this->contactIds('student')) . ')';
         
@@ -588,59 +509,16 @@ class Student extends Model {
         );
         
     }
-
-    /**
-     * 获取年级/班级的部门id
-     *
-     * @param string $school - 学校名称
-     * @param string $grade - 年级名称
-     * @param string $class - 班级名称
-     * @return int|mixed
-     */
-    private function deptId($school, $grade, $class) {
-        
-        $deptSchool = Department::whereName($school)->first();
-        if ($deptSchool) {
-            $deptGrade = Department::whereName($grade)
-                ->where('parent_id', $deptSchool->id)
-                ->first();
-            if ($deptGrade) {
-                $deptClass = Department::whereName($class)
-                    ->where('parent_id', $deptGrade->id)
-                    ->first();
-                return $deptClass ? $deptClass->id : 0;
-            }
-            return 0;
-        }
-        
-        return 0;
-        
-    }
-    
-    /**
-     * 检查表头是否合法
-     * @param array $fileTitle
-     * @return bool
-     */
-    private function checkFileFormat(array $fileTitle) {
-        
-        return count(array_diff(self::EXCEL_FILE_TITLE, $fileTitle)) != 0;
-        
-    }
     
     /**
      *  检查每行数据 是否符合导入数据
      * @param array $data
      */
-    private function checkData(array $data) {
+    private function validateData(array $data) {
         
         $rules = [
             'name'           => 'required|string|between:2,6',
-            'gender'         => [
-                'required',
-                Rule::in(['男', '女']),
-            ],
-            // 'birthday' => ['required', 'string', 'regex:/^((19\d{2})|(20\d{2}))-([1-12])-([1-31])$/'],
+            'gender'         => ['required', Rule::in(['男', '女'])],
             'birthday'       => 'required|date',
             'school'         => 'required|string|between:4,20',
             'grade'          => 'required|string|between:3,20',
@@ -648,14 +526,10 @@ class Student extends Model {
             'mobile'         => 'required', new Mobiles(),
             'student_number' => 'required|alphanum|between:2,32',
             'card_number'    => 'required|alphanum|between:2,32',
-            'oncampus'       => [
-                'required',
-                Rule::in(['住读', '走读']),
-            ],
+            'oncampus'       => ['required', Rule::in(['住读', '走读'])],
             'remark'         => 'string|nullable',
             'relationship'   => 'string',
         ];
-        // Validator::make($data,$rules);
         # 不合法的数据
         $invalidRows = [];
         # 更新的数据
@@ -663,32 +537,31 @@ class Student extends Model {
         # 需要添加的数据
         $rows = [];
         for ($i = 0; $i < count($data); $i++) {
-            $datum = $data[$i];
             $user = [
-                'name'           => $datum[0],
-                'gender'         => $datum[1],
-                'birthday'       => $datum[2],
-                'school'         => $datum[3],
-                'grade'          => $datum[4],
-                'class'          => $datum[5],
-                'mobile'         => $datum[6],
-                'student_number' => $datum[7],
-                'card_number'    => $datum[8],
-                'oncampus'       => $datum[9],
-                'remark'         => $datum[10],
-                'relationship'   => $datum[11],
+                'name'           => $data[$i][0],
+                'gender'         => $data[$i][1],
+                'birthday'       => $data[$i][2],
+                'school'         => $data[$i][3],
+                'grade'          => $data[$i][4],
+                'class'          => $data[$i][5],
+                'mobile'         => $data[$i][6],
+                'student_number' => $data[$i][7],
+                'card_number'    => $data[$i][8],
+                'oncampus'       => $data[$i][9],
+                'remark'         => $data[$i][10],
+                'relationship'   => $data[$i][11],
                 'class_id'       => 0,
                 'department_id'  => 0,
             ];
             $status = Validator::make($user, $rules);
             if ($status->fails()) {
-                $invalidRows[] = $datum;
+                $invalidRows[] = $data[$i];
                 unset($data[$i]);
                 continue;
             }
             $school = School::whereName($user['school'])->first();
             if (!$school) {
-                $invalidRows[] = $datum;
+                $invalidRows[] = $data[$i];
                 unset($data[$i]);
                 continue;
             }
@@ -697,7 +570,7 @@ class Student extends Model {
                 ->first();
             # 数据非法
             if (!$grade) {
-                $invalidRows[] = $datum;
+                $invalidRows[] = $data[$i];
                 unset($data[$i]);
                 continue;
             }
@@ -705,7 +578,7 @@ class Student extends Model {
                 ->where('grade_id', $grade->id)
                 ->first();
             if (!$class) {
-                $invalidRows[] = $datum;
+                $invalidRows[] = $data[$i];
                 unset($data[$i]);
                 continue;
             }
@@ -713,8 +586,7 @@ class Student extends Model {
                 ->where('class_id', $class->id)
                 ->first();
             $user['class_id'] = $class->id;
-            $deptId = $this->deptId($user['school'], $user['grade'], $user['class']);
-            $user['department_id'] = $deptId;
+            $user['department_id'] = $class->department_id;
             # 学生数据已存在 更新操作
             if ($student) {
                 $updateRows[] = $user;

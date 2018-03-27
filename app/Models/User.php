@@ -1,16 +1,17 @@
 <?php
-
 namespace App\Models;
 
 use App\Events\UserCreated;
 use App\Events\UserDeleted;
 use App\Events\UserUpdated;
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use function foo\func;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -86,11 +87,11 @@ use Throwable;
  * @mixin Eloquent
  */
 class User extends Authenticatable {
-
+    
     use HasApiTokens, Notifiable;
     
     protected $table = 'users';
-
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -106,7 +107,7 @@ class User extends Authenticatable {
     ];
     
     const SELECT_HTML = '<select class="form-control select2" style="width: 100%;" id="ID" name="ID">';
-
+    
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -120,49 +121,49 @@ class User extends Authenticatable {
      * @return BelongsTo
      */
     function group() { return $this->belongsTo('App\Models\Group'); }
-
+    
     /**
      * 获取指定用户对应的监护人对象
      *
      * @return HasOne
      */
     function custodian() { return $this->hasOne('App\Models\Custodian'); }
-
+    
     /**
      * 获取指定用户对应的教职员工对象
      *
      * @return HasOne
      */
     function educator() { return $this->hasOne('App\Models\Educator'); }
-
+    
     /**
      * 获取指定用户对应的学生对象
      *
      * @return HasOne
      */
     function student() { return $this->hasOne('App\Models\Student'); }
-
+    
     /**
      * 获取指定用户对应的管理/操作员对象
      *
      * @return HasOne
      */
     function operator() { return $this->hasOne('App\Models\Operator'); }
-
+    
     /**
      * 获取指定用户的所有订单对象
      *
      * @return HasMany
      */
     function orders() { return $this->hasMany('App\Models\Order'); }
-
+    
     /**
      * 获取指定用户的所有手机号码对象
      *
      * @return HasMany
      */
     function mobiles() { return $this->hasMany('App\Models\Mobile'); }
-
+    
     /**
      * 获取指定用户所属的所有部门对象
      *
@@ -171,9 +172,9 @@ class User extends Authenticatable {
     function departments() {
         
         return $this->belongsToMany('App\Models\Department', 'departments_users');
-    
+        
     }
-
+    
     /**
      * 获取指定用户发起的所有调查问卷对象
      *
@@ -182,9 +183,9 @@ class User extends Authenticatable {
     function pollQuestionnaires() {
         
         return $this->hasMany('App\Models\PollQuestionnaire');
-    
+        
     }
-
+    
     /**
      * 获取指定用户参与的调查问卷所给出的答案对象
      *
@@ -193,9 +194,9 @@ class User extends Authenticatable {
     function pollQuestionnaireAnswers() {
         
         return $this->hasMany('App\Models\PollQuestionnaireAnswer');
-    
+        
     }
-
+    
     /**
      * 获取指定用户参与的所有调查问卷对象
      *
@@ -204,16 +205,16 @@ class User extends Authenticatable {
     function pollQuestionnairePartcipants() {
         
         return $this->hasMany('App\Models\PollQuestionnaireParticipant');
-    
+        
     }
-
+    
     /**
      * 获取指定用户发出的消息对象
      *
      * @return HasMany
      */
     function messages() { return $this->hasMany('App\Models\Message'); }
-
+    
     /**
      * 返回用户列表(id, name)
      *
@@ -221,17 +222,17 @@ class User extends Authenticatable {
      * @return array
      */
     function userList(array $ids) {
-
+        
         $list = [];
         foreach ($ids as $id) {
             $user = self::find($id);
             $list[$user->id] = $user->realname;
         }
-
+        
         return $list;
-
+        
     }
-
+    
     /**
      * 返回用户所属最顶级部门的ID
      *
@@ -250,11 +251,11 @@ class User extends Authenticatable {
         }
         asort($levels);
         reset($levels);
-
+        
         return key($levels) ?? 1;
-
+        
     }
-
+    
     /**
      * 根据部门id获取部门所属学校的部门id
      *
@@ -262,16 +263,17 @@ class User extends Authenticatable {
      * @return int|mixed
      */
     function schoolDeptId(&$deptId) {
-
+        
         $dept = Department::find($deptId);
         $typeId = DepartmentType::whereName('学校')->first()->id;
         if ($dept->department_type_id != $typeId) {
             $deptId = $dept->parent_id;
+            
             return self::schoolDeptId($deptId);
         } else {
             return $deptId;
         }
-
+        
     }
     
     /**
@@ -280,89 +282,148 @@ class User extends Authenticatable {
      * @param $id
      */
     function createWechatUser($id) {
-
+        
         $user = self::find($id);
         $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
         $data = [
-            'userid' => $user->userid,
-            'name' => $user->realname,
-            'mobile' => $mobile,
+            'userid'     => $user->userid,
+            'name'       => $user->realname,
+            'mobile'     => $mobile,
             'department' => $user->departments->pluck('id')->toArray(),
-            'gender' => $user->gender,
-            'enable' => $user->enabled,
+            'gender'     => $user->gender,
+            'enable'     => $user->enabled,
         ];
         event(new UserCreated($data));
-
+        
     }
+    
     /**
      * 更新企业号会员
      *
      * @param $id
      */
     function updateWechatUser($id) {
-
+        
         $user = self::find($id);
         $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
         $data = [
-            'userid' => $user->userid,
-            'name' => $user->realname,
+            'userid'       => $user->userid,
+            'name'         => $user->realname,
             'english_name' => $user->english_name,
-            'mobile' => $mobile,
-            'department' => $user->departments->pluck('id')->toArray(),
-            'gender' => $user->gender,
-            'enable' => $user->enabled,
+            'mobile'       => $mobile,
+            'department'   => $user->departments->pluck('id')->toArray(),
+            'gender'       => $user->gender,
+            'enable'       => $user->enabled,
         ];
         event(new UserUpdated($data));
-
+        
     }
+    
     /**
      * 删除企业号会员
      *
      * @param $id
      */
     function deleteWechatUser($id) {
-
+        
         event(new UserDeleted(self::find($id)->userid));
-
+        
     }
     
     /**
-     * 保存用户
+     * 保存超级用户
      *
      * @param array $data
      * @return bool
+     * @throws Exception
+     * @throws Throwable
      */
     function store(array $data) {
         
-        return $this->create($data) ? true : false;
+        try {
+            DB::transaction(function () use ($data) {
+                # 创建用户
+                $user = $this->create([
+                    'username'     => $data['username'],
+                    'password'     => bcrypt($data['password']),
+                    'group_id'     => $data['group_id'],
+                    'email'        => $data['email'],
+                    'realname'     => $data['realname'],
+                    'gender'       => $data['gender'],
+                    'avatar_url'   => '',
+                    'userid'       => uniqid('manager_'),
+                    'isleader'     => 0,
+                    'english_name' => $data['english_name'],
+                    'telephone'    => $data['telephone'],
+                    'wechatid'     => $data['wechatid'],
+                    'enabled'      => $data['enabled'],
+                ]);
+                # 保存手机号码
+                $mobile = new Mobile();
+                $mobile->store($data, $user);
+                unset($mobile);
+                # 保存用户所属部门数据
+                $du = new DepartmentUser();
+                $du->store($data, $user);
+                unset($du);
+                # 创建企业号成员
+                $this->createWechatUser($user->id);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
         
     }
     
     /**
-     * 更新用户
+     * 更新超级用户
      *
      * @param array $data
      * @param $id
      * @param bool $fireEvent
      * @return bool
+     * @throws Exception
+     * @throws Throwable
      */
     function modify(array $data, $id, $fireEvent = false) {
-
-        $user = self::find($id);
-        $user->username=$data["username"];
-        $user->english_name=$data["english_name"];
-        $user->wechatid=$data["wechatid"];
-        $user->gender=$data["gender"];
-        $user->telephone = $data["telephone"];
-        $user->email=$data["email"];
-        $updated = $user->update();
-        if ($updated && $fireEvent) {
-            #event(new SchoolUpdated(self::find($id)));
-            return true;
+        
+        $user = $this->find($id);
+        abort_if(!$user, HttpStatusCode::NOT_FOUND, '找不到该用户');
+        try {
+            # 更新用户数据
+            DB::transaction(function () use ($data, $id, $user) {
+                $user->update([
+                    'username'     => $data['username'],
+                    'group_id'     => $data['group_id'],
+                    'email'        => $data['email'],
+                    'realname'     => $data['realname'],
+                    'gender'       => $data['gender'],
+                    'english_name' => $data['english_name'],
+                    'telephone'    => $data['telephone'],
+                    'wechatid'     => $data['wechatid'],
+                    'enabled'      => $data['enabled'],
+                ]);
+            });
+            # 更新手机号码
+            Mobile::whereUserId($user->id)->delete();
+            $mobile = new Mobile();
+            $mobile->store($data, $user);
+            unset($mobile);
+            # 更新部门数据
+            DepartmentUser::whereUserId($user->id)->delete();
+            $du = new DepartmentUser();
+            $du->store($data, $user);
+            unset($du);
+            # 更新企业号成员记录
+            $this->updateWechatUser($user->id);
+        } catch (Exception $e) {
+            throw $e;
         }
-
-        return $updated ? true : false;
-
+        
+        return true;
+        
     }
     
     /**
@@ -372,10 +433,12 @@ class User extends Authenticatable {
      * @return bool
      * @throws Throwable
      */
-    function remove($id){
+    function remove($id) {
         
         $user = self::find($id);
-        if (!isset($user)) { return false; }
+        if (!isset($user)) {
+            return false;
+        }
         try {
             DB::transaction(function () use ($id, $user) {
                 # custodian删除指定user绑定的部门记录
@@ -402,7 +465,7 @@ class User extends Authenticatable {
      * @return array
      */
     function departmentIds($id) {
-
+        
         $departments = self::find($id)->departments;
         $departmentIds = [];
         foreach ($departments as $d) {
@@ -411,9 +474,9 @@ class User extends Authenticatable {
                 $departmentIds, $d->subDepartmentIds($d->id)
             );
         }
-
+        
         return array_unique($departmentIds);
-
+        
     }
     
     /**
@@ -462,7 +525,7 @@ class User extends Authenticatable {
      * @return array
      */
     function datatable() {
-
+        
         $columns = [
             ['db' => 'User.id', 'dt' => 0],
             ['db' => 'User.username', 'dt' => 1],
@@ -470,7 +533,7 @@ class User extends Authenticatable {
             ['db' => 'User.avatar_url', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
             [
-                'db' => 'User.gender', 'dt' => 5,
+                'db'        => 'User.gender', 'dt' => 5,
                 'formatter' => function ($d) {
                     return $d ? Snippet::MALE : Snippet::FEMALE;
                 },
@@ -479,7 +542,7 @@ class User extends Authenticatable {
             ['db' => 'User.created_at', 'dt' => 7],
             ['db' => 'User.updated_at', 'dt' => 8],
             [
-                'db' => 'User.enabled', 'dt' => 9,
+                'db'        => 'User.enabled', 'dt' => 9,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false, true, true);
                 },
@@ -487,9 +550,9 @@ class User extends Authenticatable {
         ];
         $joins = [
             [
-                'table' => 'groups',
-                'alias' => 'Groups',
-                'type' => 'INNER',
+                'table'      => 'groups',
+                'alias'      => 'Groups',
+                'type'       => 'INNER',
                 'conditions' => [
                     'Groups.id = User.group_id',
                 ],
@@ -514,11 +577,11 @@ class User extends Authenticatable {
             default:
                 break;
         }
-
+        
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition
         );
-
+        
     }
     
     /**
