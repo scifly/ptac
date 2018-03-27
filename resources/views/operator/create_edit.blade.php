@@ -50,8 +50,8 @@
                     <div class="col-sm-6">
                         <div class="input-group">
                             @include('partials.icon_addon', ['class' => 'fa-lock'])
-                            {{ Form::password('password-confirm', [
-                                'id' => 'password-confirm',
+                            {{ Form::password('password_confirmation', [
+                                'id' => 'password_confirm',
                                 'class' => 'form-control text-blue',
                                 'required' => 'true',
                                 'data-parsley-equalto' => '#password'

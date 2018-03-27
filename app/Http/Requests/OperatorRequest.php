@@ -27,12 +27,12 @@ class OperatorRequest extends FormRequest {
             'realname'              => 'required|string',
             'english_name'          => 'nullable|string|between:2,64',
             'gender'                => 'required|boolean',
-            'enabled'               => 'required|boolean',
             'email'                 => 'nullable|email|unique:users,email,' . $this->input('id') . ',id',
             'wechatid'              => 'nullable|string|unique:users,wechatid,' . $this->input('id') . ',id',
             'password'              => 'string|min:6|confirmed',
             'password_confirmation' => 'string|min:6',
             'mobile.*'              => ['required', new Mobiles()],
+            'enabled'               => 'required|boolean',
         ];
         
     }
