@@ -733,7 +733,8 @@ class Menu extends Model {
             $mName = $menu['name'];
             $mIcon = $menu['icon'];
             $mUri = $menu['uri'];
-            $hasChildren = self::find($mId)->children->count();
+            // $hasChildren = self::find($mId)->children->count();
+            $hasChildren = self::whereParentId($mId)->where('enabled', 1)->get()->count();
             $mUrl = empty($mUri) ? 'pages/' . $mId : $mUri;
             if ($currentParent == $menu['parent_id']) {
                 if ($hasChildren) {
