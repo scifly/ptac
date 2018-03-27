@@ -54,7 +54,6 @@
                         'class' => 'form-control text-blue',
                         'placeholder' => '(43个小写字母与阿拉伯数字)',
                         'required' => 'true',
-                        'data-parsley-type' => 'alphanum',
                         'data-parsley-length' => '[43, 43]'
                     ]) !!}
                 </div>
