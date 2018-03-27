@@ -38,7 +38,14 @@ $(document).on('change', '#corp_id', function () {
     if ($('#school').is(':visible')) {
         getLists('corp_id')
     }
-});
+})
+
+$.getMultiScripts(['js/contact.select.js'], page.siteRoot()).done(
+    function () {
+        var cr = $.contactRange();
+        cr.create('operators');
+    }
+);
 
 function getLists(field) {
     var value = 0;
@@ -80,4 +87,3 @@ function getLists(field) {
         }
     });
 }
-

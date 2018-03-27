@@ -371,6 +371,11 @@
                         $.getMultiScripts(['js/department.tree.js'], page.siteRoot())
                             .done(function() { dept.init('educators/create'); });
                         break;
+                    case 'operators':
+                        formId = 'formOperator';
+                        break;
+                    default:
+                        break;
                 }
                 cr.mobile(formId, 0, 'POST', table + '/store');
             },
