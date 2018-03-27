@@ -45,6 +45,20 @@
                     ]) !!}
                 </div>
             </div>
+            <div class="form-group">
+                {!! Form::label('contact_sync_secret', '"通讯录同步"应用Secret', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    {!! Form::text('contact_sync_secret', null, [
+                        'class' => 'form-control text-blue',
+                        'placeholder' => '(43个小写字母与阿拉伯数字)',
+                        'required' => 'true',
+                        'data-parsley-type' => 'alphanum',
+                        'data-parsley-length' => '[43, 43]'
+                    ]) !!}
+                </div>
+            </div>
             @if (isset($corp['department_id']))
                 {!! Form::hidden('department_id', $corp['department_id']) !!}
             @endif

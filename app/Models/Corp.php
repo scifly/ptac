@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Session;
  * @property int $id
  * @property string $name 企业名称
  * @property string $corpid 企业号id
+ * @property string $contact_sync_secret "通讯录同步"应用Secret
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
@@ -32,6 +33,7 @@ use Illuminate\Support\Facades\Session;
  * @property int $company_id 所属运营者公司ID
  * @property int $department_id 对应的部门ID
  * @method static Builder|Corp whereCorpid($value)
+ * @method static Builder|Corp whereContactSyncSecret($value)
  * @method static Builder|Corp whereCreatedAt($value)
  * @method static Builder|Corp whereEnabled($value)
  * @method static Builder|Corp whereId($value)
@@ -54,7 +56,7 @@ class Corp extends Model {
     use ModelTrait;
 
     protected $fillable = [
-        'name', 'company_id', 'corpid',
+        'name', 'company_id', 'corpid', 'contact_sync_secret',
         'menu_id', 'department_id', 'enabled',
     ];
 
@@ -228,10 +230,11 @@ class Corp extends Model {
                 }
             ],
             ['db' => 'Corp.corpid', 'dt' => 3],
-            ['db' => 'Corp.created_at', 'dt' => 4],
-            ['db' => 'Corp.updated_at', 'dt' => 5],
+            ['db' => 'Corp.contact_sync_secret', 'dt' => 4],
+            ['db' => 'Corp.created_at', 'dt' => 5],
+            ['db' => 'Corp.updated_at', 'dt' => 6],
             [
-                'db' => 'Corp.enabled', 'dt' => 6,
+                'db' => 'Corp.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
