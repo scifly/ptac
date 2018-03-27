@@ -16,24 +16,24 @@ class Mobiles implements Rule {
         if (!isset($value['id'])) {
             $value['id'] = 0;
         }
-        $mobile = Mobile::whereMobile($value['mobile'])
-            ->where('id', '!=', $value['id'])
-            ->get()->toArray();
         if (!preg_match(self::PHONEREG, $value['mobile'])) {
             return false;
         }
         if (Request::isMethod('put')) {
             if (isset($value['user_id']) && $value['user_id'] != 0) {
-                $userMobile = Mobile::whereMobile($value['mobile'])
+                $mobiles = Mobile::whereMobile($value['mobile'])
                     ->where('id', '!=', $value['id'])
                     ->where('user_id', '!=', $value['user_id'])
                     ->get()->toArray();
-                if ($userMobile) {
+                if (!empty($mobiles)) {
                     return false;
                 }
             }
         } else {
-            if ($mobile) {
+            $mobiles = Mobile::whereMobile($value['mobile'])
+                ->where('id', '!=', $value['id'])
+                ->get()->toArray();
+            if (!empty($mobiles)) {
                 return false;
             }
         }
@@ -42,8 +42,9 @@ class Mobiles implements Rule {
     }
     
     public function message() {
-        $number = $this->value;
         
-        return "手机号 {$number['mobile']} 已存在或者格式不正确";
+        return "手机号 {$this->value['mobile']} 已存在或者格式不正确";
+        
     }
+    
 }
