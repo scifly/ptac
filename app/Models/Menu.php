@@ -581,7 +581,7 @@ class Menu extends Model {
         $menus = self::subMenus($rootId, self::subMenuIds($rootId));
         $menu = self::buildTree($menus, $rootId);
         
-        return substr($menu, 0, -10);
+        return $menu; // substr($menu, 0, -10);
         
     }
     
