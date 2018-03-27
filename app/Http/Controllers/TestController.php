@@ -53,8 +53,8 @@ class TestController extends Controller {
         $corp = Corp::find(3);
         var_dump($corp->schools);
         var_dump($corp->grades);
-        var_dump($corp->departments);
         var_dump($corp->teams);
+        var_dump($corp->departments);
         die;
         
         dd(implode(',', [1,2,3]));
