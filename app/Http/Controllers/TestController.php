@@ -51,7 +51,11 @@ class TestController extends Controller {
     public function index() {
       
         $corp = Corp::find(3);
-        dd($corp->schools);
+        var_dump($corp->schools);
+        var_dump($corp->grades);
+        var_dump($corp->departments);
+        var_dump($corp->teams);
+        die;
         
         dd(implode(',', [1,2,3]));
         $start = '2018-03-01';
