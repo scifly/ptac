@@ -27,8 +27,8 @@ class CorpRequest extends FormRequest {
                                      'company_id,' . $this->input('company_id'),
             'department_id'       => 'required|integer',
             'menu_id'             => 'required|integer',
-            'corpid'              => 'required|string|alpha_num|max:18',
-            'contact_sync_secret' => 'required|string|alpha_num|max:43',
+            'corpid'              => 'required|string|max:18',
+            'contact_sync_secret' => 'required|string|max:43',
         ];
         
     }
