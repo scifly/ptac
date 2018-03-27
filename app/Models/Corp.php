@@ -100,17 +100,6 @@ class Corp extends Model {
     }
 
     /**
-     * 通过School中间对象获取所有部门对象
-     *
-     * @return HasManyThrough
-     */
-    function departments() {
-
-        return $this->hasManyThrough('App\Models\Department', 'App\Models\School');
-
-    }
-
-    /**
      * 通过School中间对象获取所有教职员工组对象
      *
      * @return HasManyThrough
