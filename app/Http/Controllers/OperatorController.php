@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 
 
-use App\Http\Requests\UserRequest;
+use App\Http\Requests\OperatorRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -62,10 +62,10 @@ class OperatorController extends Controller {
     /**
      * 保存超级管理员
      *
-     * @param UserRequest $request
+     * @param OperatorRequest $request
      * @return JsonResponse|string
      */
-    public function store(UserRequest $request) {
+    public function store(OperatorRequest $request) {
         
         return $this->result(
             $this->user->store($request->all())
@@ -97,11 +97,11 @@ class OperatorController extends Controller {
     /**
      * 更新超级管理员
      *
-     * @param UserRequest $request
+     * @param OperatorRequest $request
      * @param $id
      * @return JsonResponse|string
      */
-    public function update(UserRequest $request, $id) {
+    public function update(OperatorRequest $request, $id) {
         
         $user = $this->user->find($id);
         
