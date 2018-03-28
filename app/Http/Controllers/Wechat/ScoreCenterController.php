@@ -11,6 +11,7 @@ use App\Models\Student;
 use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -115,6 +116,7 @@ class ScoreCenterController extends Controller {
                     }
                     return response()->json(['data' => $exams]);
                 }
+                Auth::login(User::whereUserid($userId),true);
                 $datas = $this->exam->examsByEducator();
                 if (!$datas) { return '你还没有绑定班级'; }
                 $score = $datas['score'];
