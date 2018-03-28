@@ -117,7 +117,7 @@ class ScoreCenterController extends Controller {
                     }
                     return response()->json(['data' => $exams]);
                 }
-                $datas = $this->exam->examsByEducator();
+                $datas = $this->exam->examsByEducator($userId);
                 if (!$datas) { return '你还没有绑定班级'; }
                 $score = $datas['score'];
                 $className = $datas['className'];
