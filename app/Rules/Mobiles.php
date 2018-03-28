@@ -9,45 +9,42 @@ class Mobiles implements Rule {
     
     const PHONEREG = '/^1[34578][0-9]{9}$/';
     private $value;
-
-
+    
     public function passes($attribute, $value) {
+        
         $this->value = $value;
         if (!isset($value['id'])) {
             $value['id'] = 0;
         }
-
-        $mobile = Mobile::whereMobile($value['mobile'])
-            ->where('id', '!=', $value['id'])
-            ->get()->toArray();
-
         if (!preg_match(self::PHONEREG, $value['mobile'])) {
             return false;
         }
-        if(Request::isMethod('put')) {
+        if (Request::isMethod('put')) {
             if (isset($value['user_id']) && $value['user_id'] != 0) {
-                $userMobile = Mobile::whereMobile($value['mobile'])
+                $mobiles = Mobile::whereMobile($value['mobile'])
                     ->where('id', '!=', $value['id'])
                     ->where('user_id', '!=', $value['user_id'])
                     ->get()->toArray();
-
-                if ($userMobile) {
+                if (!empty($mobiles)) {
                     return false;
                 }
             }
-        }else {
-            if ($mobile) {
+        } else {
+            $mobiles = Mobile::whereMobile($value['mobile'])
+                ->where('id', '!=', $value['id'])
+                ->get()->toArray();
+            if (!empty($mobiles)) {
                 return false;
             }
         }
-
         
         return true;
     }
     
     public function message() {
-        $number = $this->value;
         
-        return "手机号 {$number['mobile']} 已存在或者格式不正确";
+        return "手机号 {$this->value['mobile']} 已存在或者格式不正确";
+        
     }
+    
 }

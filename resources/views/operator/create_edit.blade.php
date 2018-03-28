@@ -20,49 +20,55 @@
                             'class' => 'form-control text-blue',
                             'placeholder' => '(用户名不能为空)',
                             'required' => 'true',
-                            'data-parsley-length' => [6, 255]
+                            'data-parsley-length' => '[6, 255]'
                         ]) !!}
                     </div>
                 </div>
             </div>
-            <!-- 密码 -->
-            <div class="form-group">
-                {!! Form::label('password', '密码', [
-                    'class' => 'col-sm-3'
-                ]) !!}
-                <div class="input-group">
-                    @include('partials.icon_addon', ['class' => 'fa-lock'])
-                    {{ Form::password('password', [
-                        'id' => 'password',
-                        'class' => 'form-control text-blue',
-                        'required' => 'true'
-                    ]) }}
+            @if (!isset($user['id']))
+                <!-- 密码 -->
+                <div class="form-group">
+                    {!! Form::label('password', '密码', [
+                        'class' => 'col-sm-3 control-label'
+                    ]) !!}
+                    <div class="col-sm-6">
+                        <div class="input-group">
+                            @include('partials.icon_addon', ['class' => 'fa-lock'])
+                            {{ Form::password('password', [
+                                'id' => 'password',
+                                'class' => 'form-control text-blue',
+                                'required' => 'true'
+                            ]) }}
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <!-- 确认密码 -->
-            <div class="form-group">
-                {!! Form::label('password-confirm', '密码', [
-                    'class' => 'col-sm-3'
-                ]) !!}
-                <div class="input-group">
-                    @include('partials.icon_addon', ['class' => 'fa-lock'])
-                    {{ Form::password('password-confirm', [
-                        'id' => 'password-confirm',
-                        'class' => 'form-control text-blue',
-                        'required' => 'true',
-                        'data-parsley-equalto' => '#password'
-                    ]) }}
+                <!-- 确认密码 -->
+                <div class="form-group">
+                    {!! Form::label('password-confirm', '确认密码', [
+                        'class' => 'col-sm-3 control-label'
+                    ]) !!}
+                    <div class="col-sm-6">
+                        <div class="input-group">
+                            @include('partials.icon_addon', ['class' => 'fa-lock'])
+                            {{ Form::password('password_confirmation', [
+                                'id' => 'password_confirm',
+                                'class' => 'form-control text-blue',
+                                'required' => 'true',
+                                'data-parsley-equalto' => '#password'
+                            ]) }}
+                        </div>
+                    </div>
                 </div>
-            </div>
+            @endif
             <!-- 角色 -->
             @include('partials.single_select', [
                 'label' => '角色',
                 'id' => 'group_id',
                 'items' => $groups,
-                'icon' => 'fa fa-meh'
+                'icon' => 'fa fa-meh-o'
             ])
             <!-- 所属企业 -->
-            <div id="corp-id" class="form-group" style="display: none;">
+            <div id="corp" class="form-group" style="display: none;">
                 {!! Form::label('corp_id', '所属企业', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
@@ -73,7 +79,7 @@
                 </div>
             </div>
             <!-- 所属学校 -->
-            <div id="school-id" class="form-group" style="display: none;">
+            <div id="school" class="form-group" style="display: none;">
                 {!! Form::label('corp_id', '所属学校', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
@@ -95,7 +101,7 @@
                             'class' => 'form-control text-blue',
                             'placeholder' => '(不超过60个汉字)',
                             'required' => 'true',
-                            'data-parsley-length' => [2, 60],
+                            'data-parsley-length' => '[2, 60]',
                         ]) !!}
                     </div>
                 </div>
@@ -111,7 +117,7 @@
                         {!! Form::text('english_name', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(可选)',
-                            'data-parsley-length' => [2, 64],
+                            'data-parsley-length' => '[2, 64]',
                         ]) !!}
                     </div>
                 </div>
@@ -161,15 +167,20 @@
             </div>
             <!-- 微信号 -->
             <div class="form-group">
-                {!! Form::label('wechatid', '微信号',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::text('wechatid', null, [
-                        'class' => 'form-control text-blue',
-                        'placeholder' => '(小写字母和数字)',
-                        'required' => 'true',
-                        'data-parsley-type' => 'alphanum',
-                        'maxlength' => '255'
-                    ]) !!}
+                {!! Form::label('wechatid', '微信号', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        @include('partials.icon_addon', ['class' => 'fa-weixin'])
+                        {!! Form::text('wechatid', null, [
+                            'class' => 'form-control text-blue',
+                            'placeholder' => '(小写字母和数字)',
+                            'required' => 'true',
+                            'data-parsley-type' => 'alphanum',
+                            'maxlength' => '255'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             <!-- 状态 -->

@@ -440,7 +440,7 @@ class Menu extends Model {
             'name'         => $root->name,
             'icon'         => $root->icon ? $root->icon->name : 'fa fa-circle-o',
             'menu_type_id' => $root->menu_type_id,
-            'enabled'      => 1
+            'enabled'      => 1,
         ];
         $tree = [];
         foreach ($menus as $key => $menu) {
@@ -485,7 +485,9 @@ class Menu extends Model {
         $menuId = session('menuId');
         switch ($user->group->name) {
             case '运营':
-                if (!$subRoot) { return 1; };
+                if (!$subRoot) {
+                    return 1;
+                };
                 $schoolMenuId = self::menuId($menuId);
                 if ($schoolMenuId) {
                     return $schoolMenuId;
@@ -495,16 +497,21 @@ class Menu extends Model {
                         return $corpMenuId;
                     }
                 }
+                
                 return 1;
             case '企业':
                 $corpMenuId = self::menuId($menuId, '企业');
-                if (!$subRoot) { return $corpMenuId; }
+                if (!$subRoot) {
+                    return $corpMenuId;
+                }
                 $schoolMenuId = self::menuId($menuId);
+                
                 return $schoolMenuId ?? $corpMenuId;
             case '学校':
                 return School::whereDepartmentId($user->topDeptId())->first()->menu_id;
             default:
                 $school_id = $user->educator->school_id;
+                
                 return School::find($school_id)->menu_id;
         }
         
@@ -581,8 +588,7 @@ class Menu extends Model {
         $menus = self::subMenus($rootId, self::subMenuIds($rootId));
         $menu = self::buildTree($menus, $rootId);
         
-        return substr($menu, 0, -10);
-        
+        return $menu; // substr($menu, 0, -10);
     }
     
     /**
@@ -598,7 +604,9 @@ class Menu extends Model {
         $menuType = $menu->menuType->name;
         while ($menuType != $type) {
             $menu = $menu->parent;
-            if (!$menu) { return null; }
+            if (!$menu) {
+                return null;
+            }
             $menuType = $menu->menuType->name;
         }
         
@@ -616,7 +624,9 @@ class Menu extends Model {
     private function leafPath($id, array &$path) {
         
         $menu = self::find($id);
-        if (!$menu) { return ''; }
+        if (!$menu) {
+            return '';
+        }
         $path[] = $menu->name;
         if (isset($menu->parent_id)) {
             self::leafPath($menu->parent_id, $path);
@@ -675,7 +685,7 @@ class Menu extends Model {
                 'uri'          => $datum['uri'],
                 'icon'         => $icon,
                 'menu_type_id' => $datum['menu_type_id'],
-                'enabled'      => $datum['enabled']
+                'enabled'      => $datum['enabled'],
             ];
         }
         
@@ -733,7 +743,8 @@ class Menu extends Model {
             $mName = $menu['name'];
             $mIcon = $menu['icon'];
             $mUri = $menu['uri'];
-            $hasChildren = self::find($mId)->children->count();
+            // $hasChildren = self::find($mId)->children->count();
+            $hasChildren = self::whereParentId($mId)->where('enabled', 1)->get()->count();
             $mUrl = empty($mUri) ? 'pages/' . $mId : $mUri;
             if ($currentParent == $menu['parent_id']) {
                 if ($hasChildren) {

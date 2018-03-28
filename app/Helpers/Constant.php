@@ -39,6 +39,16 @@ class Constant {
     
     const ROOT_DEPARTMENT_ID = 1;
     
+    const DEPARTMENT_TYPES = [
+        '根' => 'root',
+        '运营' => 'company',
+        '企业' => 'corp',
+        '学校' => 'school',
+        '年级' => 'grade',
+        '班级' => 'class',
+        '其他' => 'other'
+    ];
+    
     # 控制器相对路径
     const CONTROLLER_DIR = 'app/Http/Controllers';
 

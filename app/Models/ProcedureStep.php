@@ -173,7 +173,7 @@ class ProcedureStep extends Model {
 
         $ps = self::find($id);
         $user = Auth::user();
-        $userIds = $user->users(explode(',', $ps->{$field}));
+        $userIds = $user->userList(explode(',', $ps->{$field}));
         $userList = collect($userIds)->flatten()->toArray();
 
         return implode(',', $userList);

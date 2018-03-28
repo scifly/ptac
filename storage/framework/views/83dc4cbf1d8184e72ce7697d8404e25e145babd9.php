@@ -134,7 +134,7 @@
                                                     <i class="fa fa-plus text-blue">
                                                         &nbsp;添加图片
                                                             <input type="hidden" value="image" name="type" />
-                                                            <input type="file" id="file-image" onchange="uploadfile(this)" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
+                                                            <input type="file" id="file-image" onchange="uploadFile(this)" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
                                                     </i>
                                                 </button>
                                             </form>

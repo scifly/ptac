@@ -1,35 +1,31 @@
 <?php
-
 namespace App\Models;
 
-use App\Events\EducatorImported;
-use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\Snippet;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Http\Requests\CustodianRequest;
-use App\Http\Requests\EducatorRequest;
-use App\Rules\Mobiles;
-use Carbon\Carbon;
 use Eloquent;
+use Throwable;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
+use Carbon\Carbon;
+use App\Rules\Mobiles;
+use App\Helpers\Snippet;
+use App\Helpers\ModelTrait;
+use App\Helpers\HttpStatusCode;
+use Illuminate\Validation\Rule;
+use App\Events\EducatorImported;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\EducatorRequest;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Model;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use App\Http\Requests\CustodianRequest;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\Eloquent\Collection;
+use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
-use Maatwebsite\Excel\Facades\Excel;
-use Maatwebsite\Excel\Readers\LaravelExcelReader;
-use PHPExcel_Exception;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use Throwable;
 
 /**
  * App\Models\Educator 教职员工
@@ -67,67 +63,66 @@ class Educator extends Model {
         'user_id', 'team_ids', 'school_id',
         'sms_quote', 'enabled',
     ];
-
+    
     /**
      * 返回指定教职员工对应的用户对象
      *
      * @return BelongsTo
      */
     function user() { return $this->belongsTo('App\Models\User'); }
-
+    
     /**
      * 返回指定教职员工所属的学校对象
      *
      * @return BelongsTo
      */
     function school() { return $this->belongsTo('App\Models\School'); }
-
+    
     /**
      * 获取指定教职员工所属的所有班级对象
      *
      * @return BelongsToMany
      */
     function classes() {
-
+        
         return $this->belongsToMany(
             'App\Models\Squad',
             'educators_classes',
             'educator_id',
             'class_id'
         );
-
+        
     }
-
+    
     /**
      * 获取指定教职员工所属的所管理班级科目对象
      *
      * @return HasMany
      */
     function educatorClasses() {
-
+        
         return $this->hasMany(
             'App\Models\EducatorClass',
             'educator_id',
             'id'
-
         );
-
+        
     }
-
+    
     /**
      * 获取指定教职员工所属的所有教职员工组对象
      *
      * @return BelongsToMany
      */
     function teams() {
-
+        
         return $this->belongsToMany(
             'App\Models\Team',
             'educators_teams'
         );
-
+        
     }
-
+    
     /**
      * 获取指定年级的年级主任教职员工对象
      *
@@ -135,7 +130,7 @@ class Educator extends Model {
      * @return Collection|static[]
      */
     function gradeDeans($gradeId) {
-
+        
         $educatorIds = Grade::whereEnabled(1)
             ->where('id', $gradeId)
             ->first()
@@ -144,9 +139,9 @@ class Educator extends Model {
         return self::whereIn('id', explode(',', $educatorIds))
             ->where('enabled', 1)
             ->get();
-
+        
     }
-
+    
     /**
      * 获取指定班级的班级主任教职员工对象
      *
@@ -154,7 +149,7 @@ class Educator extends Model {
      * @return Collection|static[]
      */
     function classDeans($classId) {
-
+        
         $educatorIds = Squad::whereEnabled(1)
             ->where('id', $classId)
             ->first()
@@ -163,9 +158,9 @@ class Educator extends Model {
         return self::whereIn('id', explode(',', $educatorIds))
             ->where('enabled', 1)
             ->get();
-
+        
     }
-
+    
     /**
      * 根据教职员工Id数组返回教职员工"id => 姓名"数组
      *
@@ -173,7 +168,7 @@ class Educator extends Model {
      * @return array
      */
     function educatorList(array $ids) {
-
+        
         $educators = [];
         foreach ($ids as $id) {
             $educator = self::find($id);
@@ -181,7 +176,7 @@ class Educator extends Model {
         }
         
         return $educators;
-
+        
     }
     
     /**
@@ -199,38 +194,38 @@ class Educator extends Model {
                 # 创建用户
                 $user = $request->input('user');
                 $u = User::create([
-                    'username' => $user['username'],
-                    'group_id' => $user['group_id'],
-                    'password' => bcrypt($user['password']),
-                    'email' => $user['email'],
-                    'realname' => $user['realname'],
-                    'gender' => $user['gender'],
-                    'avatar_url' => '00001.jpg',
-                    'userid' => 'user_' . uniqid(),
-                    'wechatid' => $user['wechatid'],
-                    'isleader' => 0,
+                    'username'     => $user['username'],
+                    'group_id'     => $user['group_id'],
+                    'password'     => bcrypt($user['password']),
+                    'email'        => $user['email'],
+                    'realname'     => $user['realname'],
+                    'gender'       => $user['gender'],
+                    'avatar_url'   => '00001.jpg',
+                    'userid'       => 'user_' . uniqid(),
+                    'wechatid'     => $user['wechatid'],
+                    'isleader'     => 0,
                     'english_name' => $user['english_name'],
-                    'telephone' => $user['telephone'],
-                    'enabled' => $user['enabled'],
+                    'telephone'    => $user['telephone'],
+                    'enabled'      => $user['enabled'],
                 ]);
+                
                 # 创建教职员工(当角色选择学校管理员时，也同时创建教职员工数据20180207 by wenw)
-
                 $educatorInputData = $request->input('educator');
                 $educator = self::create([
-                    'user_id' => $u->id,
+                    'user_id'   => $u->id,
                     'school_id' => $educatorInputData['school_id'],
                     'sms_quote' => 0,
-                    'enabled' => $user['enabled'],
+                    'enabled'   => $user['enabled'],
                 ]);
                 if ($u->group_id != Group::whereName('学校')->first()->id) {
-
+                    
                     # 保存班级科目绑定关系
                     $classSubjectData = $request->input('classSubject');
                     if ($classSubjectData['class_ids'] && $classSubjectData['subject_ids']) {
                         $uniqueArray = [];
                         foreach ($classSubjectData['class_ids'] as $index => $class) {
                             $uniqueArray[] = [
-                                'class_id' => $class,
+                                'class_id'   => $class,
                                 'subject_id' => $classSubjectData['subject_ids'][$index],
                             ];
                         }
@@ -239,9 +234,9 @@ class Educator extends Model {
                             if ($row['class_id'] != 0 && $row['class_id'] != 0) {
                                 EducatorClass::create([
                                     'educator_id' => $educator->id,
-                                    'class_id' => $row['class_id'],
-                                    'subject_id' => $row['subject_id'],
-                                    'enabled' => $user['enabled'],
+                                    'class_id'    => $row['class_id'],
+                                    'subject_id'  => $row['subject_id'],
+                                    'enabled'     => $user['enabled'],
                                 ]);
                             }
                         }
@@ -250,8 +245,8 @@ class Educator extends Model {
                         foreach ($educatorInputData['team_id'] as $key => $row) {
                             EducatorTeam::create([
                                 'educator_id' => $educator->id,
-                                'team_id' => $row,
-                                'enabled' => $user['enabled'],
+                                'team_id'     => $row,
+                                'enabled'     => $user['enabled'],
                             ]);
                         }
                     }
@@ -261,9 +256,9 @@ class Educator extends Model {
                 if (!empty($selectedDepartments)) {
                     foreach ($selectedDepartments as $department) {
                         DepartmentUser::create([
-                            'user_id' => $u->id,
+                            'user_id'       => $u->id,
                             'department_id' => $department,
-                            'enabled' => $user['enabled'],
+                            'enabled'       => $user['enabled'],
                         ]);
                     }
                 }
@@ -274,19 +269,19 @@ class Educator extends Model {
                     ->first();
                 if ($u->group_id == Group::whereName('学校')->first()->id && empty($deptUser)) {
                     DepartmentUser::create([
-                        'user_id' => $u->id,
+                        'user_id'       => $u->id,
                         'department_id' => School::find($schoolId)->department_id,
-                        'enabled' => $user['enabled'],
+                        'enabled'       => $user['enabled'],
                     ]);
                 }
                 $mobiles = $request->input('mobile');
                 if ($mobiles) {
                     foreach ($mobiles as $k => $mobile) {
                         Mobile::create([
-                            'user_id' => $u->id,
-                            'mobile' => $mobile['mobile'],
+                            'user_id'   => $u->id,
+                            'mobile'    => $mobile['mobile'],
                             'isdefault' => $mobile['isdefault'],
-                            'enabled' => $mobile['enabled'],
+                            'enabled'   => $mobile['enabled'],
                         ]);
                     }
                 }
@@ -298,7 +293,7 @@ class Educator extends Model {
         }
         
         return true;
-
+        
     }
     
     /**
@@ -314,28 +309,28 @@ class Educator extends Model {
             DB::transaction(function () use ($request) {
                 $user = $request->input('user');
                 User::find($request->input('user_id'))->update([
-                    'username' => $user['username'],
-                    'group_id' => $user['group_id'],
-                    'email' => $user['email'],
-                    'realname' => $user['realname'],
-                    'gender' => $user['gender'],
-                    'avatar_url' => '00001.jpg',
-                    'wechatid' => $user['wechatid'],
-                    'isleader' => 0,
+                    'username'     => $user['username'],
+                    'group_id'     => $user['group_id'],
+                    'email'        => $user['email'],
+                    'realname'     => $user['realname'],
+                    'gender'       => $user['gender'],
+                    'avatar_url'   => '00001.jpg',
+                    'wechatid'     => $user['wechatid'],
+                    'isleader'     => 0,
                     'english_name' => $user['english_name'],
-                    'telephone' => $user['telephone'],
-                    'enabled' => $user['enabled'],
+                    'telephone'    => $user['telephone'],
+                    'enabled'      => $user['enabled'],
                 ]);
                 $selectedDepartments = $request->input('selectedDepartments');
                 if (!empty($selectedDepartments)) {
                     DepartmentUser::whereUserId($request->input('user_id'))->delete();
                     foreach ($selectedDepartments as $department) {
                         DepartmentUser::create([
-                            'user_id' => $request->input('user_id'),
+                            'user_id'       => $request->input('user_id'),
                             'department_id' => $department,
-                            'enabled' => $user['enabled'],
+                            'enabled'       => $user['enabled'],
                         ]);
-
+                        
                     }
                 }
                 # 当选择了学校角色没有选择学校部门时
@@ -345,25 +340,25 @@ class Educator extends Model {
                     ->first();
                 if ($user['group_id'] == Group::whereName('学校')->first()->id && empty($deptUser)) {
                     DepartmentUser::create([
-                        'user_id' => $request->input('user_id'),
+                        'user_id'       => $request->input('user_id'),
                         'department_id' => School::find($schoolId)->department_id,
-                        'enabled' => $user['enabled'],
+                        'enabled'       => $user['enabled'],
                     ]);
                 }
                 $educator = $request->input('educator');
                 self::find($request->input('id'))->update([
-                    'user_id' => $request->input('user_id'),
+                    'user_id'   => $request->input('user_id'),
                     'school_id' => $educator['school_id'],
                     'sms_quote' => 0,
-                    'enabled' => $user['enabled'],
+                    'enabled'   => $user['enabled'],
                 ]);
                 if (isset($educator['team_id'])) {
                     EducatorTeam::whereEducatorId($request->input('id'))->delete();
                     foreach ($educator['team_id'] as $key => $row) {
                         EducatorTeam::create([
                             'educator_id' => $request->input('id'),
-                            'team_id' => $row,
-                            'enabled' => $user['enabled'],
+                            'team_id'     => $row,
+                            'enabled'     => $user['enabled'],
                         ]);
                     }
                 }
@@ -374,19 +369,18 @@ class Educator extends Model {
                         $uniqueArray = [];
                         foreach ($classSubjectData['class_ids'] as $index => $class) {
                             $uniqueArray[] = [
-                                'class_id' => $class,
+                                'class_id'   => $class,
                                 'subject_id' => $classSubjectData['subject_ids'][$index],
                             ];
                         }
                         $classSubjects = self::array_unique_fb($uniqueArray);
-
                         foreach ($classSubjects as $key => $row) {
                             if ($row['class_id'] != 0 && $row['subject_id'] != 0) {
                                 EducatorClass::create([
                                     'educator_id' => $request->input('id'),
-                                    'class_id' => $row['class_id'],
-                                    'subject_id' => $row['subject_id'],
-                                    'enabled' => $user['enabled'],
+                                    'class_id'    => $row['class_id'],
+                                    'subject_id'  => $row['subject_id'],
+                                    'enabled'     => $user['enabled'],
                                 ]);
                             }
                         }
@@ -399,10 +393,10 @@ class Educator extends Model {
                     Mobile::whereUserId($request->input('user_id'))->delete();
                     foreach ($mobiles as $k => $mobile) {
                         Mobile::create([
-                            'user_id' => $request->input('user_id'),
-                            'mobile' => $mobile['mobile'],
+                            'user_id'   => $request->input('user_id'),
+                            'mobile'    => $mobile['mobile'],
                             'isdefault' => $mobile['isdefault'],
-                            'enabled' => $mobile['enabled'],
+                            'enabled'   => $mobile['enabled'],
                         ]);
                     }
                 }
@@ -429,18 +423,19 @@ class Educator extends Model {
      * @throws Throwable
      */
     function remove($id, $fireEvent = false) {
-
+        
         $educator = self::find($id);
         $userId = $educator->user_id;
         $removed = self::removable($educator) ? $educator->delete() : false;
         if ($removed && $fireEvent) {
             # 删除User数据
             $this->user->remove($userId);
+            
             return true;
         }
-
+        
         return $removed ? true : false;
-
+        
     }
     
     /**
@@ -479,15 +474,16 @@ class Educator extends Model {
                         unset($educators[$key]);
                     }
                 }
-                $rows = self::checkData($educators);
+                $rows = self::validateData($educators);
                 if (!empty($rows)) {
                     event(new EducatorImported($rows));
                 }
             }
             Storage::disk('uploads')->delete($filename);
+            
             return [
                 'statusCode' => HttpStatusCode::OK,
-                'message' => '上传成功'
+                'message'    => '上传成功',
             ];
             
         }
@@ -499,7 +495,7 @@ class Educator extends Model {
     /**
      * 批量导出
      *
-     * @param integer $range, 0 - 指定部门(含所有子部门), 1 - 所有
+     * @param integer $range , 0 - 指定部门(含所有子部门), 1 - 所有
      * @param null $departmentId
      * @return mixed
      * @throws \PhpOffice\PhpSpreadsheet\Exception
@@ -521,7 +517,7 @@ class Educator extends Model {
                 $educator->sms_quote,
                 $educator->created_at,
                 $educator->updated_at,
-                $educator->enabled == 1 ? '启用' : '禁用',
+                $educator->enabled ? '启用' : '禁用',
             ];
         }
         
@@ -541,17 +537,25 @@ class Educator extends Model {
             ['db' => 'User.realname as username', 'dt' => 1],
             ['db' => 'School.name', 'dt' => 2],
             [
-                'db' => 'Educator.sms_quote', 'dt' => 3,
-                'formatter' => function($row) {
-                    $mobiles = User::find(self::find($row['id'])->user_id)
-                        ->mobiles->pluck('mobile')->toArray();
+                'db'        => 'Educator.sms_quote', 'dt' => 3,
+                'formatter' => function ($row) {
+                    $educator = self::find($row['id']);
+                    if (!$educator) {
+                        return '';
+                    }
+                    $user = User::find($educator->user_id);
+                    if (!$user) {
+                        return '';
+                    }
+                    $mobiles = $user->mobiles->pluck('mobile')->toArray();
+                    
                     return implode(', ', $mobiles);
-                }
+                },
             ],
             ['db' => 'Educator.created_at', 'dt' => 4],
             ['db' => 'Educator.updated_at', 'dt' => 5],
             [
-                'db' => 'Educator.enabled', 'dt' => 6,
+                'db'        => 'Educator.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $status = $d ? Snippet::DT_ON : Snippet::DT_OFF;
@@ -561,6 +565,7 @@ class Educator extends Model {
                     $delLink = sprintf(Snippet::DT_LINK_DEL, $id) .
                         str_repeat(Snippet::DT_SPACE, 2);
                     $rechargeLink = sprintf(Snippet::DT_LINK_RECHARGE, 'recharge_' . $id);
+                    
                     return
                         $status . str_repeat(Snippet::DT_SPACE, 3) .
                         // ($user->can('act', self::uris()['show']) ? $showLink : '') .
@@ -572,17 +577,17 @@ class Educator extends Model {
         ];
         $joins = [
             [
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'INNER',
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
                 'conditions' => [
                     'User.id = Educator.user_id',
                 ],
             ],
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
                     'School.id = Educator.school_id',
                 ],
@@ -593,7 +598,7 @@ class Educator extends Model {
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition
         );
-
+        
     }
     
     /**
@@ -623,7 +628,6 @@ class Educator extends Model {
         return $csArray;
         
     }
-
     
     /**
      * 验证数据合法性
@@ -631,20 +635,20 @@ class Educator extends Model {
      * @param array $data
      * @return array
      */
-    private function checkData(array $data) {
+    private function validateData(array $data) {
         
         $rules = [
-            'name' => 'required|string|between:2,20',
-            'gender' => ['required', Rule::in(['男', '女'])],
-            'birthday' => 'required|date',
+            'name'              => 'required|string|between:2,20',
+            'gender'            => ['required', Rule::in(['男', '女'])],
+            'birthday'          => 'required|date',
             // 'birthday' => ['required', 'string', 'regex:/^((19\d{2})|(20\d{2}))-([1-12])-([1-31])$/'],
-            'school' => 'required|string|between:4,20',
-            'mobile' => 'required', new Mobiles(),
-            'grades' => 'string',
-            'classes' => 'string',
-            'subjects' => 'string',
+            'school'            => 'required|string|between:4,20',
+            'mobile'            => 'required', new Mobiles(),
+            'grades'            => 'string',
+            'classes'           => 'string',
+            'subjects'          => 'string',
             'educators_classes' => 'string',
-            'departments' => 'required|string',
+            'departments'       => 'required|string',
         ];
         // Validator::make($data,$rules);
         # 不合法的数据
@@ -652,28 +656,27 @@ class Educator extends Model {
         # 需要添加的数据
         $rows = [];
         for ($i = 0; $i < count($data); $i++) {
-            $datum = $data[$i];
             $user = [
-                'name' => $datum[0],
-                'gender' => $datum[1],
-                'birthday' => $datum[2],
-                'school' => $datum[3],
-                'mobile' => $datum[4],
-                'grades' => $datum[5],
-                'classes' => $datum[6],
-                'subjects' => $datum[7],
-                'educators_classes' => $datum[8],
-                'departments' => $datum[9],
+                'name'              => $data[$i][0],
+                'gender'            => $data[$i][1],
+                'birthday'          => $data[$i][2],
+                'school'            => $data[$i][3],
+                'mobile'            => $data[$i][4],
+                'grades'            => $data[$i][5],
+                'classes'           => $data[$i][6],
+                'subjects'          => $data[$i][7],
+                'educators_classes' => $data[$i][8],
+                'departments'       => $data[$i][9],
             ];
             $status = Validator::make($user, $rules);
             if ($status->fails()) {
-                $invalidRows[] = $datum;
+                $invalidRows[] = $data[$i];
                 unset($data[$i]);
                 continue;
             }
             $school = School::whereName($user['school'])->first();
             if (!$school) {
-                $invalidRows[] = $datum;
+                $invalidRows[] = $data[$i];
                 unset($data[$i]);
                 continue;
             }
@@ -681,7 +684,7 @@ class Educator extends Model {
             foreach ($departments as $d) {
                 $department = Department::whereName($d)->first();
                 if (empty($department)) {
-                    $invalidRows[] = $datum;
+                    $invalidRows[] = $data[$i];
                     unset($data[$i]);
                     continue;
                 }

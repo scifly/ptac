@@ -28,7 +28,7 @@
                 <a href="#" style="position: relative;">
                 		添加视频
                 		<input type="hidden" value="video" name="type" />
-                        <input type="file" id="file-video" onchange="uploadfile(this)" name="input-video" accept="video/mp4" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
+                        <input type="file" id="file-video" onchange="uploadFile(this)" name="input-video" accept="video/mp4" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
                 	</a>
                </form>
             </p>

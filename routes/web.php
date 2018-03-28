@@ -297,12 +297,12 @@ Route::group(['prefix' => 'menus'], function () {
     Route::post('ranktabs/{id}', $c . '@rankTabs');
 });
 // 管理员
-// Route::group(['prefix' => 'operators'], routes('OperatorController'));
-// Route::group(['prefix' => 'operators'], function() {
-//     $c = 'OperatorController';
-//     Route::post('create', $c . '@create');
-//     Route::post('edit/{id}', $c . '@edit');
-// });
+Route::group(['prefix' => 'operators'], routes('OperatorController'));
+Route::group(['prefix' => 'operators'], function() {
+    $c = 'OperatorController';
+    Route::post('create', $c . '@create');
+    Route::post('edit/{id}', $c . '@edit');
+});
 
 # --------------------------------------------------------------------------------
 // 消息中心

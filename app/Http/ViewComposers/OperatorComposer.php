@@ -7,7 +7,7 @@ use App\Models\Group;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
-class UserComposer {
+class OperatorComposer {
     
     use ModelTrait;
     

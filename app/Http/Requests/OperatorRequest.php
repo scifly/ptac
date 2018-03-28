@@ -21,17 +21,22 @@ class OperatorRequest extends FormRequest {
     public function rules() {
         
         return [
-            'user.group_id'       => 'required|integer',
-            'user.realname'       => 'required|string',
-            'user.gender'         => 'required|boolean',
-            'user.enabled'        => 'required|boolean',
-            'user.email'          => 'nullable|email|unique:users,email,' .
-                $this->input('user_id') . ',id',
-            'user.password'      => 'string|min:3|confirmed',
-            'user.password_confirmation '      => 'string|min:3',
-            'mobile.*'            => [
-                'required', new Mobiles(),
-            ],
+            'username'              => 'required|string|between:6,255|unique:users,username,' .
+                                       $this->input('id') . ',id',
+            'group_id'              => 'required|integer',
+            'corp_id'               => 'nullable|integer',
+            'school_id'             => 'nullable|integer',
+            'realname'              => 'required|string',
+            'english_name'          => 'nullable|string|between:2,64',
+            'gender'                => 'required|boolean',
+            'email'                 => 'nullable|email|unique:users,email,' .
+                                       $this->input('id') . ',id',
+            'wechatid'              => 'nullable|string|unique:users,wechatid,' .
+                                       $this->input('id') . ',id',
+            'password'              => 'string|min:6|confirmed',
+            'password_confirmation' => 'string|min:6',
+            'mobile.*'              => ['required', new Mobiles()],
+            'enabled'               => 'required|boolean',
         ];
         
     }
@@ -39,9 +44,6 @@ class OperatorRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        if (isset($input['operator']['school_ids'])) {
-            $input['operator']['school_ids'] = implode(',', $input['operator']['school_ids']);
-        }
         if (isset($input['mobile'])) {
             $defaultIndex = $input['mobile']['isdefault'];
             unset($input['mobile']['isdefault']);
@@ -51,14 +53,13 @@ class OperatorRequest extends FormRequest {
                 } else {
                     $input['mobile'][$i]['isdefault'] = 0;
                 }
-                if ((!isset($mobile[$i]['enabled']))) {
-                    $input['mobile'][$i]['enabled'] = 1;
-                } else {
+                if (!isset($input['mobile'][$i]['enabled'])) {
                     $input['mobile'][$i]['enabled'] = 0;
+                } else {
+                    $input['mobile'][$i]['enabled'] = 1;
                 }
             }
         }
-
         $this->replace($input);
         
     }

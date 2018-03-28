@@ -107,7 +107,9 @@ class CustodianController extends Controller {
         );
         
         return $this->result(
-            $this->custodian->store($request)
+            $this->custodian->store(
+                $request->all()
+            )
         );
         
     }
@@ -185,7 +187,9 @@ class CustodianController extends Controller {
         $this->authorize('seud', $custodian);
         
         return $this->result(
-            $custodian->modify($request, $id)
+            $custodian->modify(
+                $request->all(), $id
+            )
         );
         
     }

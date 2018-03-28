@@ -3,6 +3,7 @@ var updateHistory = true;
 var replaceState = true;
 var docTitle = '家校通';
 var $cip = $('#cip');
+// noinspection JSUnusedGlobalSymbols
 var page = {
     success: 'img/confirm.png',
     failure: 'img/error.png',
@@ -170,12 +171,12 @@ var page = {
     },
     getTabUrl: function () {
         var url = window.location.href;
-        return encodeURIComponent(url + this.getQuerySting());
+        return encodeURIComponent(url + this.getQueryString());
     },
     getMenuUrl: function () {
         return page.siteRoot() + $('.sidebar-menu li.active').last().find('a').attr('href');
     },
-    getQuerySting: function () {
+    getQueryString: function () {
         return '?menuId=' + this.getActiveMenuId() + '&tabId=' + this.getActiveTabId();
     },
     errorHandler: function (e) {
@@ -384,7 +385,7 @@ var page = {
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: page.siteRoot() + table + '/index' + page.getQuerySting(),
+                    url: page.siteRoot() + table + '/index' + page.getQueryString(),
                     error: function (e) {
                         page.errorHandler(e);
                     }
@@ -416,14 +417,7 @@ var page = {
                 dt.search(this.value, true).draw();
             });
         };
-        if (!($.fn.dataTable)) {
-            $.getMultiScripts([page.plugins.datatable.js], page.siteRoot())
-                .done(function () {
-                    showTable();
-                });
-        } else {
-            showTable();
-        }
+        $.getMultiScripts([page.plugins.datatable.js], page.siteRoot()).done(function () { showTable(); });
     },
     index: function (table, options) {
         this.unbindEvents();
@@ -748,18 +742,20 @@ $(function () {
         page.refreshTabs();
         // 获取被点击卡片的uri
         var url = $(this).attr('data-uri');
-        // 选定所有卡片
-        var $tabPanes = $('.card');
-        // 获取状态为active的卡片
-        var $activeTabPane = $('#tab_' + page.getActiveTabId());
-        // 如果状态为active的卡片的内容为空, 清空其他卡片的内容
-        if ($.trim($activeTabPane.html()) === '') {
-            // 清空所有卡片的内容
-            $.each($tabPanes, function () {
-                $(this).html('');
-            });
-            // 获取状态为active的卡片内容
-            page.getTabContent($activeTabPane, url);
+        if (typeof url !== 'undefined') {
+            // 选定所有卡片
+            var $tabPanes = $('.card');
+            // 获取状态为active的卡片
+            var $activeTabPane = $('#tab_' + page.getActiveTabId());
+            // 如果状态为active的卡片的内容为空, 清空其他卡片的内容
+            if ($.trim($activeTabPane.html()) === '') {
+                // 清空所有卡片的内容
+                $.each($tabPanes, function () {
+                    $(this).html('');
+                });
+                // 获取状态为active的卡片内容
+                page.getTabContent($activeTabPane, url);
+            }
         }
     });
     // 获取wrapper div中显示的Html

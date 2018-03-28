@@ -101,4 +101,44 @@ class DepartmentUser extends Model {
 
     }
     
+    /**
+     * 保存用户部门数据
+     *
+     * @param array $data
+     * @param $user
+     * @return void
+     */
+    function store(array $data, User $user): void {
+        
+        $du = [
+            'user_id' => $user->id,
+            'enabled' => Constant::ENABLED
+        ];
+        switch (Group::find($data['group_id'])->name) {
+            case '运营':
+                $du['department_id'] = Department::whereDepartmentTypeId(
+                    DepartmentType::whereName('根')->first()->id
+                );
+                break;
+            case '企业':
+                $du['department_id'] = Corp::find($data['corp_id'])->department_id;
+                break;
+            case '学校':
+                $du['department_id'] = School::find($data['school_id'])->department_id;
+                break;
+            case '学生':
+                $du['department_id'] = Squad::find($data['class_id'])->department_id;
+                break;
+            case '监护人':
+                $du['department_id'] = $data['department_id'];
+                break;
+            default:
+                break;
+        }
+        
+        $this->create($du);
+        
+    }
+    
+    
 }

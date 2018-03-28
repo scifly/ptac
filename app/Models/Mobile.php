@@ -44,18 +44,26 @@ class Mobile extends Model {
      * @return BelongsTo
      */
     function user() { return $this->belongsTo('App\Models\User'); }
-
+    
     /**
      * 保存手机号码
      *
      * @param array $data
-     * @return bool
+     * @param User $user
+     * @return void
      */
-    function store(array $data) {
-        
-        $mobile = $this->create($data);
-
-        return $mobile ? true : false;
+    function store(array $data, User $user) {
+    
+        $mobiles = $data['mobile'];
+        self::whereUserId($user->id)->delete();
+        foreach ($mobiles as $mobile) {
+            Mobile::create([
+                'user_id' => $user->id,
+                'mobile' => $mobile['mobile'],
+                'isdefault' => $mobile['isdefault'],
+                'enabled' => $mobile['enabled']
+            ]);
+        }
 
     }
 

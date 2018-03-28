@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.list_header')
+        @include('partials.form_header')
     </div>
     <div class="box-bod">
         <div class="nav-tabs-custom">
@@ -130,7 +130,7 @@
                                                     <i class="fa fa-plus text-blue">
                                                         &nbsp;添加图片
                                                             <input type="hidden" value="image" name="type" />
-                                                            <input type="file" id="file-image" onchange="uploadfile(this)" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
+                                                            <input type="file" id="file-image" onchange="uploadFile(this)" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
                                                     </i>
                                                 </button>
                                             </form>
@@ -143,7 +143,7 @@
                                                 <i class="fa fa-plus text-blue">
                                                 	&nbsp;添加音频
                                                 	<input type="hidden" value="voice" name="type" />
-                                                	<input type="file" id="file-voice" onchange="uploadfile(this)" name="uploadFile" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
+                                                	<input type="file" id="file-voice" onchange="uploadFile(this)" name="uploadFile" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
                                                 </i>
                                             </button>
                                             </form>
@@ -161,7 +161,7 @@
                                                     <i class="fa fa-plus text-blue">
                                                         &nbsp;添加视频
                                                         <input type="hidden" value="video" name="type" />
-                                                        <input type="file" id="file-video" onchange="uploadfile(this)" name="uploadFile" accept="video/mp4"  style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
+                                                        <input type="file" id="file-video" onchange="uploadFile(this)" name="uploadFile" accept="video/mp4"  style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
                                                     </i>
                                                 </button>
                                             </form>-->

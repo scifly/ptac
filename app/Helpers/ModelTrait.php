@@ -7,7 +7,6 @@ use App\Models\Department;
 use App\Models\DepartmentUser;
 use App\Models\Menu;
 use App\Models\School;
-use App\Models\SchoolType;
 use App\Models\User;
 use App\Policies\Route;
 use Illuminate\Database\Eloquent\Model;
@@ -42,21 +41,22 @@ trait ModelTrait {
             }
         }
         foreach ($relations as $relation) {
-            if(count($model->{$relation})){
+            if (count($model->{$relation})) {
                 return false;
             }
         }
+        
         return true;
         
     }
-
+    
     /**
      * 获取当前控制器包含的方法所对应的路由对象数组
      *
      * @return array
      */
     static function uris() {
-
+        
         $controller = class_basename(Request::route()->controller);
         $routes = Action::whereController($controller)
             ->where('route', '<>', null)
@@ -68,7 +68,7 @@ trait ModelTrait {
         }
         
         return $uris;
-
+        
     }
     
     /**
@@ -77,7 +77,7 @@ trait ModelTrait {
      * @return int|mixed
      */
     function schoolId() {
-    
+        
         $user = Auth::user();
         switch ($user->group->name) {
             case '运营':
@@ -85,9 +85,11 @@ trait ModelTrait {
                 $menu = new Menu();
                 $schoolMenuId = $menu->menuId(session('menuId'));
                 unset($menu);
+                
                 return $schoolMenuId ? School::whereMenuId($schoolMenuId)->first()->id : 0;
             case '学校':
                 $departmentId = $user->topDeptId();
+                
                 return School::whereDepartmentId($departmentId)->first()->id;
             default:
                 return $user->educator->school_id;
@@ -109,6 +111,7 @@ trait ModelTrait {
                 return School::all()->pluck('id')->toArray();
             case '企业':
                 $corp = Corp::whereDepartmentId($user->topDeptId())->first();
+                
                 return $corp->schools->pluck('id')->toArray();
             case '学校':
                 return [School::whereDepartmentId($user->topDeptId())->first()->id];
@@ -167,7 +170,6 @@ trait ModelTrait {
         } else {
             $departmentIds = $this->departmentIds($user->id);
             $classIds = [];
-            
             foreach ($departmentIds as $id) {
                 $department = Department::find($id);
                 if ($department->departmentType->name == '班级') {
@@ -290,6 +292,7 @@ trait ModelTrait {
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {
             $department = School::find($this->schoolId())->department;
             $departmentIds[] = $department->id;
+            
             return array_unique(
                 array_merge($departmentIds, $department->subDepartmentIds($department->id))
             );
@@ -306,7 +309,7 @@ trait ModelTrait {
         return array_unique($departmentIds);
         
     }
-
+    
     /**
      * 返回指定用户可管理的所有菜单id（校级以下角色没有管理菜单的权限）
      *
@@ -324,16 +327,18 @@ trait ModelTrait {
                 $menu = new Menu();
                 $menuIds = $menu->subMenuIds($corp->menu_id);
                 unset($menu);
+                
                 return $menuIds;
             case '学校':
                 $school = School::whereDepartmentId($user->topDeptId())->first();
                 $menu = new Menu();
                 $menuIds = $menu->subMenuIds($school->menu_id);
                 unset($menu);
+                
                 return $menuIds;
             default:
                 return [];
-                
+            
         }
         
     }
@@ -360,22 +365,19 @@ trait ModelTrait {
             ->setCategory('export');
         $spreadsheet->setActiveSheetIndex(0)->setTitle($sheetTitle);
         $spreadsheet->getActiveSheet()->fromArray($records, null, 'A1');
-    
         // Redirect output to a client’s web browser (Xlsx)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename=' . '"'. $fileName . '.xlsx"');
+        header('Content-Disposition: attachment;filename=' . '"' . $fileName . '.xlsx"');
         header('Cache-Control: max-age=0');
-    
         // If you're serving to IE 9, then the following may be needed
         header('Cache-Control: max-age=1');
-    
         // If you're serving to IE over SSL, then the following may be needed
         header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
         header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
         header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
         header('Pragma: public'); // HTTP/1.0
-    
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        
         return $writer->save('php://output');
         
     }
@@ -402,7 +404,7 @@ trait ModelTrait {
      * @return string
      */
     public function singleSelectList(array $items, $id) {
-    
+        
         $html = '<select class="form-control select2" id="%s" name="%s" style="width: %s">';
         foreach ($items as $key => $value) {
             $html .= '<option value="' . $key . '">' . $value . '</option>';
@@ -426,7 +428,6 @@ trait ModelTrait {
         
     }
     
-    
     /**
      * 获取指定部门的联系人Id
      *
@@ -448,6 +449,6 @@ trait ModelTrait {
         return $ids;
         
     }
-
+    
 }
 

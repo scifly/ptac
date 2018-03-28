@@ -1,7 +1,7 @@
-{!! Form::model($corp, [
+{!! Form::model($user, [
     'method' => 'put',
-    'id' => 'formCorp',
+    'id' => 'formOperator',
     'data-parsley-validate' => 'true'
 ]) !!}
-@include('corp.create_edit')
+@include('operator.create_edit')
 {!! Form::close() !!}

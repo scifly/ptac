@@ -86,7 +86,9 @@ class StudentController extends Controller {
         );
     
         return $this->result(
-            $this->student->store($request)
+            $this->student->store(
+                $request->all()
+            )
         );
         
     }
@@ -152,7 +154,9 @@ class StudentController extends Controller {
         $this->authorize('seud', $student);
         
         return $this->result(
-            $student->modify($request, $id)
+            $student->modify(
+                $request->all(), $id
+            )
         );
         
     }

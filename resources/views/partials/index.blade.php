@@ -1,14 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.list_header', [
-            'buttons' => [
-                'stat' => [
-                    'id' => 'stat',
-                    'label' => '统计',
-                    'icon' => 'fa fa-bar-chart'
-                ]
-            ]
-        ])
+        @include('partials.list_header')
     </div>
     <div class="box-body">
         <table id="data-table" style="width: 100%"
