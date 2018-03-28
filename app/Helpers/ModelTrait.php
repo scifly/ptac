@@ -154,8 +154,8 @@ trait ModelTrait {
      *
      * @return array
      */
-    function classIds() {
-        $user = Auth::user();
+    function classIds($id=0) {
+        $user = Auth::user()??User::whereUserid($id);
         $role = $user->group->name;
         if (in_array($role, Constant::SUPER_ROLES)) {
             $schoolId = $this->schoolId();
@@ -189,7 +189,6 @@ trait ModelTrait {
      * @return array
      */
     function contactIds($type) {
-        
         $user = Auth::user();
         $role = $user->group->name;
         $method = $type . 'Ids';

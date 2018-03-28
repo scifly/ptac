@@ -117,7 +117,6 @@ class ScoreCenterController extends Controller {
                     }
                     return response()->json(['data' => $exams]);
                 }
-                Auth::attempt(['id'=>$userId]);
                 $datas = $this->exam->examsByEducator();
                 if (!$datas) { return '你还没有绑定班级'; }
                 $score = $datas['score'];
