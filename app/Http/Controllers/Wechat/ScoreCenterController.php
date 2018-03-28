@@ -11,6 +11,8 @@ use App\Models\Student;
 use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -57,7 +59,9 @@ class ScoreCenterController extends Controller {
             $userId = $userInfo['UserId'];
             Session::put('userId', $userId);
         }
-        $role = User::whereUserid($userId)->first()->group->name;
+        $role = User::where($userId)->first()->group->name;
+        Log::error($role);
+        Log::error($userId);
         $pageSize = 4;
         $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
         $exams = [];

@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Policies\Route;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -154,7 +155,6 @@ trait ModelTrait {
      * @return array
      */
     function classIds() {
-        
         $user = Auth::user();
         $role = $user->group->name;
         if (in_array($role, Constant::SUPER_ROLES)) {
@@ -189,7 +189,6 @@ trait ModelTrait {
      * @return array
      */
     function contactIds($type) {
-        
         $user = Auth::user();
         $role = $user->group->name;
         $method = $type . 'Ids';
