@@ -1,7 +1,7 @@
 {!! Form::open([
     'method' => 'post', 
-    'id' => 'formActionType',
+    'id' => 'formAlertType',
     'data-parsley-validate' => 'true'
 ]) !!}
-@include('action_type.create_edit')
+@include('alert_type.create_edit')
 {!! Form::close() !!}

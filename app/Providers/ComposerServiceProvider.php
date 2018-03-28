@@ -16,10 +16,8 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('app.index', 'App\Http\ViewComposers\AppIndexComposer');
         View::composer('app.edit', 'App\Http\ViewComposers\AppComposer');
 
-        View::composer(
-            ['alert_type.index', 'alert_type.create_edit'],
-            'App\Http\ViewComposers\AlertTypeComposer'
-        );
+        View::composer('alert_type.index', 'App\Http\ViewComposers\AlertTypeIndexComposer');
+        View::composer('alert_type.create_edit', 'App\Http\ViewComposers\AlertTypeComposer');
         
         View::composer('action_type.index', 'App\Http\ViewComposers\ActionTypeIndexComposer');
         View::composer('action_type.create_edit', 'App\Http\ViewComposers\ActionTypeComposer');
