@@ -42,6 +42,7 @@
     <!-- 页面尾部 -->
     @include('partials.site_footer')
 </div>
+<script src="{{ URL::asset('js/jquery.min.js') }}"></script>
 <script src="{{ URL::asset('js/jquery-ui.min.js') }}"></script>
 <script src="{{ URL::asset('js/app.js') }}"></script>
 {{--<script src="{{ URL::asset('js/bootstrap.min.js') }}"></script>--}}
