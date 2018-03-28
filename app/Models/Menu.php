@@ -476,43 +476,25 @@ class Menu extends Model {
      *
      * @param bool $subRoot
      *      false 返回当前角色可访问的最顶级菜单id,
-     *      true  返回当前菜单的上级菜单中类型为“学校”、“企业”的id
+     *      true  返回当前菜单的上级菜单中类型为“学校”或“企业”的id
      * @return int|mixed
      */
     function rootMenuId($subRoot = false) {
         
         $user = Auth::user();
         $menuId = session('menuId');
+        $rootMId = Menu::whereMenuTypeId(MenuType::whereName('根')->first()->id)->first()->id;
+        $smId = self::menuId($menuId);
+        $cmId = self::menuId($menuId, '企业');
         switch ($user->group->name) {
             case '运营':
-                if (!$subRoot) {
-                    return 1;
-                };
-                $schoolMenuId = self::menuId($menuId);
-                if ($schoolMenuId) {
-                    return $schoolMenuId;
-                } else {
-                    $corpMenuId = self::menuId($menuId, '企业');
-                    if ($corpMenuId) {
-                        return $corpMenuId;
-                    }
-                }
-                
-                return 1;
+                return !$subRoot ? $rootMId : ($smId ?? ($cmId ?? $rootMId));
             case '企业':
-                $corpMenuId = self::menuId($menuId, '企业');
-                if (!$subRoot) {
-                    return $corpMenuId;
-                }
-                $schoolMenuId = self::menuId($menuId);
-                
-                return $schoolMenuId ?? $corpMenuId;
+                return !$subRoot ? $cmId : ($smId ?? $cmId);
             case '学校':
-                return School::whereDepartmentId($user->topDeptId())->first()->menu_id;
+                return $smId;
             default:
-                $school_id = $user->educator->school_id;
-                
-                return School::find($school_id)->menu_id;
+                return School::find($user->educator->school_id)->menu_id;
         }
         
     }

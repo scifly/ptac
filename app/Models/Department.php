@@ -350,7 +350,37 @@ class Department extends Model {
         return $nodes;
 
     }
-
+    
+    /**
+     * 获取当前用户的根部门ID
+     *
+     * @param bool $subRoot
+     * @return int|mixed
+     */
+    function rootDepartmentId($subRoot = false) {
+        
+        $user = Auth::user();
+        $role = $user->group->name;
+        $rootDId = Department::whereDepartmentTypeId(DepartmentType::whereName('根')->first()->id)->first()->id;
+        $menuId = session('menuId');
+        $menu = new Menu();
+        $smId = $menu->menuId($menuId);
+        $sdId = $smId ? School::whereMenuId($smId)->first()->department_id : null;
+        $cmId = $menu->menuId($menuId, '企业');
+        $cdId = $cmId ? Corp::whereMenuId($cmId)->first()->department_id : null;
+        switch ($role) {
+            case '运营':
+                return !$subRoot ? $rootDId : ($sdId ?? ($cdId ?? $rootDId));
+            case '企业':
+                return !$subRoot ? $cdId : ($sdId ?? $cdId);
+            case '学校':
+                return $sdId;
+            default:
+                return School::find($user->educator->school_id)->department_id;
+        }
+        
+    }
+    
     /**
      * 选中的部门节点
      *
@@ -775,20 +805,21 @@ class Department extends Model {
         return $childrenIds ?? [];
 
     }
-
+    
     /**
-     * 返回指定部门所属学校
+     * 返回指定部门所属学校的部门id
      *
-     * @param $dept
+     * @param $id
      * @return int|mixed
      */
-    function schoolDeptId($dept) {
+    function schoolDeptId($id) {
         
-        $de = Department::whereId($dept)->first();
-        if ($de->department_type_id != 4) {
-            return self::schoolDeptId($de->parent_id);
+        $department = $this->find($id);
+        if ($department->department_type->name != '学校') {
+            return self::schoolDeptId($department->parent_id);
         }
-        return $de->id;
+        
+        return $department->id;
         
     }
 
