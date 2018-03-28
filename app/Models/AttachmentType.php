@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use App\Facades\DatatableFacade as Datatable;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -38,5 +39,61 @@ class AttachmentType extends Model {
      * @return HasMany
      */
     function attachments() { return $this->hasMany('App\Models\Attachment'); }
+    
+    /**
+     * 保存附件类型
+     *
+     * @param array $data
+     * @return bool
+     */
+    function store(array $data) {
+        
+        return $this->create($data) ? true : false;
+        
+    }
+    
+    /**
+     * 更新附件类型
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    function modify(array $data, $id) {
+        
+        $at = $this->find($id);
+        if (!$at) { return false; }
+        
+        return $at->update($data) ? true : false;
+        
+    }
+    
+    /**
+     * 附件类型列表
+     *
+     * @return array
+     */
+    function datatable() {
+        
+        $columns = [
+            ['db' => 'AttachmentType.id', 'dt' => 0],
+            ['db' => 'AttachmentType.name', 'dt' => 1],
+            ['db' => 'AttachmentType.remark', 'dt' => 2],
+            ['db' => 'AttachmentType.created_at', 'dt' => 3],
+            ['db' => 'AttachmentType.updated_at', 'dt' => 4],
+            [
+                'db' => 'AttachmentType.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                }
+            ]
+        ];
+        
+        return Datatable::simple(
+            $this->getModel(), $columns
+        );
+        
+    }
+    
 
 }

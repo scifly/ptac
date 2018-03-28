@@ -26,7 +26,7 @@ class SchoolTypeRequest extends FormRequest {
 
         return [
             'name'    => 'required|string|between:2,60|unique:school_types,name,' .
-                $this->input('id') . ',id',
+                         $this->input('id') . ',id',
             'remark'  => 'string|between:2,255',
             'enabled' => 'required|boolean',
         ];

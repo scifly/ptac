@@ -12,18 +12,21 @@ class ComposerServiceProvider extends ServiceProvider {
      * @return void
      */
     public function boot() {
-
-        View::composer('app.index', 'App\Http\ViewComposers\AppIndexComposer');
+    
         View::composer('app.edit', 'App\Http\ViewComposers\AppComposer');
+        View::composer('app.index', 'App\Http\ViewComposers\AppIndexComposer');
     
         View::composer('action.index', 'App\Http\ViewComposers\ActionIndexComposer');
     
-        View::composer('alert_type.index', 'App\Http\ViewComposers\AlertTypeIndexComposer');
         View::composer('alert_type.create_edit', 'App\Http\ViewComposers\AlertTypeComposer');
-        
-        View::composer('action_type.index', 'App\Http\ViewComposers\ActionTypeIndexComposer');
+        View::composer('alert_type.index', 'App\Http\ViewComposers\AlertTypeIndexComposer');
+    
         View::composer('action_type.create_edit', 'App\Http\ViewComposers\ActionTypeComposer');
-
+        View::composer('action_type.index', 'App\Http\ViewComposers\ActionTypeIndexComposer');
+    
+        View::composer('attachment_type.create_edit', 'App\Http\ViewComposers\AttachmentTypeComposer');
+        View::composer('attachment_type.index', 'App\Http\ViewComposers\AttachmentTypeIndexComposer');
+    
         View::composer(
             ['company.index', 'company.create_edit'],
             'App\Http\ViewComposers\CompanyComposer'
@@ -133,7 +136,10 @@ class ComposerServiceProvider extends ServiceProvider {
     
         View::composer('wap_site.create_edit', 'App\Http\ViewComposers\WapSiteComposer');
         View::composer('wap_site.index', 'App\Http\ViewComposers\WapSiteIndexComposer');
-    
+        
+        View::composer('media_type.create_edit', 'App\Http\ViewComposers\MediaTypeComposer');
+        View::composer('media_type.index', 'App\Http\ViewComposers\MediaTypeIndexComposer');
+        
         View::composer('menu.create_edit', 'App\Http\ViewComposers\MenuComposer');
         View::composer('menu.index', 'App\Http\ViewComposers\MenuIndexComposer');
         View::composer('menu.menu_tabs', 'App\Http\ViewComposers\MenuTabComposer');

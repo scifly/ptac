@@ -1,0 +1,1 @@
+page.create('formAttachmentType', 'attachment_types');

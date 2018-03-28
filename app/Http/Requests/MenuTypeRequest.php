@@ -21,7 +21,7 @@ class MenuTypeRequest extends FormRequest {
         
         return [
             'name'    => 'required|string|between:2,60|unique:menu_types,name,' .
-                $this->input('id') . ',id',
+                         $this->input('id') . ',id',
             'remark'  => 'nullable|string',
             'enabled' => 'required|boolean',
         ];

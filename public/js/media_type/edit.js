@@ -1,0 +1,1 @@
+page.edit('formMediaType', 'media_types');

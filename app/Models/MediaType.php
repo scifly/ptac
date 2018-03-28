@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
+use App\Facades\DatatableFacade as Datatable;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -89,6 +90,33 @@ class MediaType extends Model {
 
         return $mediaType->removable($mediaType) ? $mediaType->delete() : false;
 
+    }
+    
+    /**
+     * 媒体类型列表
+     *
+     * @return array
+     */
+    function datatable() {
+        
+        $columns = [
+            ['db' => 'MediaType.id', 'dt' => 0],
+            ['db' => 'MediaType.name', 'dt' => 1],
+            ['db' => 'MediaType.remark', 'dt' => 2],
+            ['db' => 'MediaType.created_at', 'dt' => 3],
+            ['db' => 'MediaType.updated_at', 'dt' => 4],
+            [
+                'db' => 'MediaType.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                }
+            ]
+        ];
+        
+        return Datatable::simple(
+            $this->getModel(), $columns
+        );
+        
     }
 
 }

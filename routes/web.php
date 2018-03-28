@@ -245,7 +245,6 @@ Route::group(['prefix' => 'combo_types'], routes('ComboTypeController'));
 Route::group(['prefix' => 'schools'], routes('SchoolController'));
 Route::group(['prefix' => 'semesters'], routes('SemesterController'));
 Route::group(['prefix' => 'teams'], routes('TeamController'));
-Route::group(['prefix' => 'school_types'], routes('SchoolTypeController'));
 // 科目设置 - 科目管理.科目次分类设置
 Route::group(['prefix' => 'subjects'], routes('SubjectController'));
 Route::get('subjects/query/{id}', 'SubjectController@query');
@@ -303,6 +302,9 @@ Route::group(['prefix' => 'comm_types'], routes('CommTypeController'));
 Route::group(['prefix' => 'alert_types'], routes('AlertTypeController'));
 Route::group(['prefix' => 'department_types'], routes('DepartmentTypeController'));
 Route::group(['prefix' => 'menu_types'], routes('MenuTypeController'));
+Route::group(['prefix' => 'media_types'], routes('MediaTypeController'));
+Route::group(['prefix' => 'attachment_types'], routes('AttachmentTypeController'));
+Route::group(['prefix' => 'school_types'], routes('SchoolTypeController'));
 # --------------------------------------------------------------------------------
 // 消息中心
 $c = 'Wechat\MessageCenterController';

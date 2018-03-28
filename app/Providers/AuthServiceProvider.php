@@ -5,6 +5,7 @@ use App\Models\Action;
 use App\Models\ActionType;
 use App\Models\AlertType;
 use App\Models\App;
+use App\Models\AttachmentType;
 use App\Models\CommType;
 use App\Models\Company;
 use App\Models\ConferenceParticipant;
@@ -19,6 +20,7 @@ use App\Models\Grade;
 use App\Models\Group;
 use App\Models\Icon;
 use App\Models\IconType;
+use App\Models\MediaType;
 use App\Models\Menu;
 use App\Models\MenuType;
 use App\Models\MessageType;
@@ -37,6 +39,7 @@ use App\Models\Tab;
 use App\Policies\ActionPolicy;
 use App\Policies\ActionTypePolicy;
 use App\Policies\AlertTypePolicy;
+use App\Policies\AttachmentTypePolicy;
 use App\Policies\CommTypePolicy;
 use App\Policies\CompanyPolicy;
 use App\Policies\ConsumptionPolicy;
@@ -49,6 +52,7 @@ use App\Policies\GradePolicy;
 use App\Policies\GroupPolicy;
 use App\Policies\IconPolicy;
 use App\Policies\IconTypePolicy;
+use App\Policies\MediaTypePolicy;
 use App\Policies\MenuPolicy;
 use App\Policies\MenuTypePolicy;
 use App\Policies\MessageTypePolicy;
@@ -90,6 +94,7 @@ class AuthServiceProvider extends ServiceProvider {
         Action::class => ActionPolicy::class,
         ActionType::class => ActionTypePolicy::class,
         AlertType::class => AlertTypePolicy::class,
+        AttachmentType::class => AttachmentTypePolicy::class,
         App::class => AppPolicy::class,
         CommType::class => CommTypePolicy::class,
         Company::class => CompanyPolicy::class,
@@ -107,6 +112,7 @@ class AuthServiceProvider extends ServiceProvider {
         IconType::class => IconTypePolicy::class,
         Menu::class => MenuPolicy::class,
         MenuType::class => MenuTypePolicy::class,
+        MediaType::class => MediaTypePolicy::class,
         MessageType::class => MessageTypePolicy::class,
         PollQuestionnaire::class => PollQuestionnairePolicy::class,
         PollQuestionnaireSubject::class => PollQuestionnaireSubjectPolicy::class,
