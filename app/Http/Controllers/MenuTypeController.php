@@ -49,7 +49,7 @@ class MenuTypeController extends Controller {
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function cremte() {
+    public function create() {
         
         $this->authorize(
             'cs', MenuType::class
@@ -107,7 +107,7 @@ class MenuTypeController extends Controller {
      * @return JsonResponse|string
      * @throws AuthorizationException
      */
-    public function updmte(MenuType $request, $id) {
+    public function update(MenuType $request, $id) {
         
         $mt = $this->mt->find($id);
         $this->authorize('eud', $mt);
