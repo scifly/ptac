@@ -59,6 +59,8 @@ class Action extends Model {
     
     protected $routes;
 
+    const ACTIONS_WITHOUT_VIEW_AND_JS = ['destroy', 'store', 'update', 'sort', 'move', 'rankTabs'];
+    
     /**
      * 返回当前action包含的卡片
      *
@@ -458,7 +460,10 @@ class Action extends Model {
      * @return string
      */
     private function viewPath($controller, $action) {
-
+    
+        if (in_array($action, self::ACTIONS_WITHOUT_VIEW_AND_JS)) {
+            return null;
+        }
         if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
             switch ($action) {
                 case 'index':
@@ -571,7 +576,7 @@ class Action extends Model {
         if (!in_array($ctlr, Constant::EXCLUDED_CONTROLLERS)) {
             $prefix = str_singular($this->tableName($ctlr));
             $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
-            if (in_array($action, ['destroy', 'store', 'update', 'sort', 'move', 'rankTabs'])) {
+            if (in_array($action, self::ACTIONS_WITHOUT_VIEW_AND_JS)) {
                 return null;
             }
             return 'js/' . $prefix . '/' . $action . '.js';
