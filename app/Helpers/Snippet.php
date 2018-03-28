@@ -4,12 +4,17 @@ namespace App\Helpers;
 class Snippet {
     
     # 字体颜色
-    const BADGE_GRAY = '<span class="text-black">[n/a]</span>';
+    const BADGE_COLOR = '<span class="%s">%s</span>';
+    const BADGE_GRAY = '<span class="text-gray">%s</span>';
     const BADGE_GREEN = '<span class="text-green">%s</span>';
     const BADGE_YELLOW = '<span class="text-yellow">%s</span>';
     const BADGE_RED = '<span class="text-red">%s</span>';
     const BADGE_LIGHT_BLUE = '<span class="text-light-blue">%s</span>';
     const BADGE_MAROON = '<span class="text-maroon">%s</span>';
+    const BADGE_AQUA = '<span class="text-aqua">%s</span>';
+    const BADGE_BLACK = '<span class="text-black">%s</span>';
+    const BADGE_DANGER = '<span class="text-danger">%s</span>';
+    const BADGE_FUCHSIA = '<span class="text-fuchsia">%s</span>';
     
     # Datatable
     const DT_ON = '<i class="fa fa-circle text-green" title="已启用"></i>';

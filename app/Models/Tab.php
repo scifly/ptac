@@ -210,8 +210,24 @@ class Tab extends Model {
             [
                 'db' => 'Tab.group_id', 'dt' => 3,
                 'formatter' => function($d) {
-                    if ($d == 0) { return '所有'; }
-                    return Group::find($d)->name;
+                    $badge = Snippet::BADGE_BLACK;
+                    if ($d == 0) { return sprintf($badge, '所有'); }
+                    $group = Group::find($d)->name;
+                    switch ($group) {
+                        case '运营':
+                            $badge = Snippet::BADGE_LIGHT_BLUE;
+                            break;
+                        case '企业':
+                            $badge = Snippet::BADGE_GREEN;
+                            break;
+                        case '学校':
+                            $badge = Snippet::BADGE_FUCHSIA;
+                            break;
+                        default:
+                            break;
+                        
+                    }
+                    return sprintf($badge, $group);
                 }
             ],
             [
