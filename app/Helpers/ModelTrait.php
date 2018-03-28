@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Policies\Route;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -156,6 +157,8 @@ trait ModelTrait {
     function classIds() {
         
         $user = Auth::user();
+
+        Log::info($user->group);
         $role = $user->group->name;
         if (in_array($role, Constant::SUPER_ROLES)) {
             $schoolId = $this->schoolId();
