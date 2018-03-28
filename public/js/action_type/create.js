@@ -1,0 +1,1 @@
+page.create('formActionType', 'action_types');

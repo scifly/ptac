@@ -2,6 +2,7 @@
 namespace App\Providers;
 
 use App\Models\Action;
+use App\Models\ActionType;
 use App\Models\AlertType;
 use App\Models\App;
 use App\Models\CommType;
@@ -33,6 +34,7 @@ use App\Models\StudentAttendanceSetting;
 use App\Models\SubjectModule;
 use App\Models\Tab;
 use App\Policies\ActionPolicy;
+use App\Policies\ActionTypePolicy;
 use App\Policies\AlertTypePolicy;
 use App\Policies\CommTypePolicy;
 use App\Policies\CompanyPolicy;
@@ -84,6 +86,7 @@ class AuthServiceProvider extends ServiceProvider {
         Route::class => MethodPolicy::class,
         
         Action::class => ActionPolicy::class,
+        ActionType::class => ActionTypePolicy::class,
         AlertType::class => AlertTypePolicy::class,
         App::class => AppPolicy::class,
         CommType::class => CommTypePolicy::class,

@@ -303,6 +303,8 @@ Route::group(['prefix' => 'operators'], function() {
     Route::post('create', $c . '@create');
     Route::post('edit/{id}', $c . '@edit');
 });
+// (运营)系统设置
+Route::group(['prefix' => 'action_types'], routes('ActionTypeController'));
 
 # --------------------------------------------------------------------------------
 // 消息中心

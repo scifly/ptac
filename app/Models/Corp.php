@@ -9,6 +9,7 @@ use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -42,7 +43,7 @@ use Illuminate\Support\Facades\Session;
  * @method static Builder|Corp whereCompanyId($value)
  * @method static Builder|Corp whereDepartmentId($value)
  * @method static Builder|Corp whereMenuId($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property-read Company $company
  * @property-read Collection|Department[] $departments
  * @property-read Collection|Grade[] $grades
