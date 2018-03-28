@@ -156,6 +156,8 @@ trait ModelTrait {
      */
     function classIds($id=0) {
         $user = Auth::user()??User::whereUserid($id);
+        Log::info('111111111111111');
+        Log::info($id);
         $role = $user->group->name;
         if (in_array($role, Constant::SUPER_ROLES)) {
             $schoolId = $this->schoolId();
