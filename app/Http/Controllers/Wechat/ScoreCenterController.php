@@ -12,6 +12,7 @@ use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -118,6 +119,7 @@ class ScoreCenterController extends Controller {
                 }
                 Auth::login(User::whereUserid($userId),true);
                 $datas = $this->exam->examsByEducator();
+                Log::info($datas);
                 if (!$datas) { return '你还没有绑定班级'; }
                 $score = $datas['score'];
                 $className = $datas['className'];
