@@ -1,5 +1,6 @@
 <?php
 include_once 'common.php';
+
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/messages/send', 'MessageController@send');
 Route::auth();
 # 关闭注册功能
-Route::any('register', function() { return redirect('login'); });
+Route::any('register', function () { return redirect('login'); });
 Route::get('logout', 'Auth\LoginController@logout');
 Route::get('/', 'HomeController@index');
 Route::get('/home', 'HomeController@index')->name('home');
@@ -127,7 +128,7 @@ Route::group(['prefix' => 'attendance_machines'], routes('AttendanceMachineContr
 Route::group(['prefix' => 'educator_attendance_settings'], routes('EducatorAttendanceSettingController'));
 Route::group(['prefix' => 'student_attendance_settings'], routes('StudentAttendanceSettingController'));
 // 学生考勤记录
-Route::group(['prefix' => 'student_attendances'], function (){
+Route::group(['prefix' => 'student_attendances'], function () {
     $c = 'StudentAttendanceController';
     Route::get('index', $c . '@index');
     Route::get('stat', $c . '@stat');
@@ -136,7 +137,7 @@ Route::group(['prefix' => 'student_attendances'], function (){
     Route::get('export', $c . '@export');
 });
 // 教职员工考勤记录
-Route::group(['prefix' => 'educator_attendances'], function (){
+Route::group(['prefix' => 'educator_attendances'], function () {
     $c = 'EducatorAttendanceController';
     Route::get('index', $c . '@index');
     Route::get('stat', $c . '@stat');
@@ -144,7 +145,6 @@ Route::group(['prefix' => 'educator_attendances'], function (){
     Route::post('detail', $c . '@detail');
     Route::get('export', $c . '@export');
 });
-
 /** 课程表管理 */
 // 课程表设置
 Route::group(['prefix' => 'events'], routes('EventController'));
@@ -206,11 +206,11 @@ Route::group(['prefix' => 'conference_participants'], function () {
 });
 // 申诉
 /** 用户中心 */
-Route::get('users/profile','UserController@profile');
-Route::get('users/reset','UserController@reset');
-Route::post('users/reset','UserController@reset');
-Route::get('users/messages','UserController@messages');
-Route::get('users/events','UserController@event');
+Route::get('users/profile', 'UserController@profile');
+Route::get('users/reset', 'UserController@reset');
+Route::post('users/reset', 'UserController@reset');
+Route::get('users/messages', 'UserController@messages');
+Route::get('users/events', 'UserController@event');
 // 个人通讯录
 // 消息中心
 Route::group(['prefix' => 'messages'], routes('MessageController'));
@@ -220,7 +220,7 @@ Route::group(['prefix' => 'messages'], function () {
     Route::post('index', $c . '@index');
     Route::get('send', $c . '@send');
     Route::any('uploadFile', $c . '@uploadFile');
-
+    
 });
 // 日历
 // 个人信息
@@ -267,14 +267,7 @@ Route::get('apps/menu/{id}', 'AppController@menu');
 // 图标管理 - 图标设置.图标类型管理
 Route::group(['prefix' => 'icons'], routes('IconController'));
 Route::group(['prefix' => 'icon_types'], routes('IconTypeController'));
-// 消息类型设置 - 消息类型管理
-Route::group(['prefix' => 'message_types'], routes('MessageTypeController'));
-// 通信方式设置 - 通信方式管理
-Route::group(['prefix' => 'comm_types'], routes('CommTypeController'));
-// 警告类型设置 - 警告类型管理
-Route::group(['prefix' => 'alert_types'], routes('AlertTypeController'));
 // 运营者设置 - 企业设置
-Route::group(['prefix' => 'department_types'], routes('DepartmentTypeController'));
 Route::group(['prefix' => 'departments'], routeItem('DepartmentController'));
 Route::group(['prefix' => 'departments'], function () {
     $c = 'DepartmentController';
@@ -298,14 +291,18 @@ Route::group(['prefix' => 'menus'], function () {
 });
 // 管理员
 Route::group(['prefix' => 'operators'], routes('OperatorController'));
-Route::group(['prefix' => 'operators'], function() {
+Route::group(['prefix' => 'operators'], function () {
     $c = 'OperatorController';
     Route::post('create', $c . '@create');
     Route::post('edit/{id}', $c . '@edit');
 });
 // (运营)系统设置
 Route::group(['prefix' => 'action_types'], routes('ActionTypeController'));
-
+Route::group(['prefix' => 'message_types'], routes('MessageTypeController'));
+Route::group(['prefix' => 'comm_types'], routes('CommTypeController'));
+Route::group(['prefix' => 'alert_types'], routes('AlertTypeController'));
+Route::group(['prefix' => 'department_types'], routes('DepartmentTypeController'));
+Route::group(['prefix' => 'menu_types'], routes('MenuTypeController'));
 # --------------------------------------------------------------------------------
 // 消息中心
 $c = 'Wechat\MessageCenterController';
@@ -346,14 +343,11 @@ Route::post('wechat/score/student_detail', $c . '@subjectDetail');
 Route::any('wechat/score/show', $c . '@show');
 Route::get('wechat/score/analysis', $c . '@analysis');
 Route::get('wechat/score/cus_total', $c . '@cusTotal');
-
-
 /** Broadcasting test */
 Route::get('event', function () {
     event(new \App\Events\ContactImportTrigger([
         'user' => Auth::user(),
-        'type' => 'educator'
+        'type' => 'educator',
     ]));
 });
-
 Route::get('listen', 'TestController@listen');

@@ -1,0 +1,1 @@
+page.create('formMenuType', 'menu_types');

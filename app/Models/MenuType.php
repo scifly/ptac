@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
+use App\Facades\DatatableFacade as Datatable;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -41,35 +42,7 @@ class MenuType extends Model {
      * @return HasMany
      */
     function menus() { return $this->hasMany('App\Models\Menu'); }
-
-    function typeList($type) {
-        
-        $list = $this->pluck('name', 'id')->toArray();
-        $types = collect($this->where('enabled', 1)->get(['name'])->toArray())
-            ->flatten()->all();
-        if (!in_array($type, $types)) {
-            return false;
-        }
-        $allowedTypeList = [array_search('其他', $list) => '其他'];
-        switch ($type) {
-            case '根':
-                $allowedTypeList[array_search('运营', $list)] = '运营';
-                break;
-            case '运营':
-                $allowedTypeList[array_search('企业', $list)] = '企业';
-                break;
-            case '企业':
-                $allowedTypeList[array_search('学校', $list)] = '学校';
-                break;
-            default:
-                break;
-
-        }
-
-        return $allowedTypeList;
-
-    }
-
+    
     /**
      * 保存菜单类型
      *
@@ -114,6 +87,28 @@ class MenuType extends Model {
 
         return $menuType->removable($menuType) ? $menuType->delete() : false;
 
+    }
+    
+    function datatable() {
+    
+        $columns = [
+            ['db' => 'MenuType.id', 'dt' => 0],
+            ['db' => 'MenuType.name', 'dt' => 1],
+            ['db' => 'MenuType.remark', 'dt' => 2],
+            ['db' => 'MenuType.created_at', 'dt' => 3],
+            ['db' => 'MenuType.updated_at', 'dt' => 4],
+            [
+                'db' => 'MenuType.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                }
+            ]
+        ];
+    
+        return Datatable::simple(
+            $this->getModel(), $columns
+        );
+        
     }
 
 }

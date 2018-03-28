@@ -20,6 +20,7 @@ use App\Models\Group;
 use App\Models\Icon;
 use App\Models\IconType;
 use App\Models\Menu;
+use App\Models\MenuType;
 use App\Models\MessageType;
 use App\Models\PollQuestionnaire;
 use App\Models\PollQuestionnaireSubject;
@@ -49,6 +50,7 @@ use App\Policies\GroupPolicy;
 use App\Policies\IconPolicy;
 use App\Policies\IconTypePolicy;
 use App\Policies\MenuPolicy;
+use App\Policies\MenuTypePolicy;
 use App\Policies\MessageTypePolicy;
 use App\Policies\MethodPolicy;
 use App\Policies\AppPolicy;
@@ -104,6 +106,7 @@ class AuthServiceProvider extends ServiceProvider {
         Icon::class => IconPolicy::class,
         IconType::class => IconTypePolicy::class,
         Menu::class => MenuPolicy::class,
+        MenuType::class => MenuTypePolicy::class,
         MessageType::class => MessageTypePolicy::class,
         PollQuestionnaire::class => PollQuestionnairePolicy::class,
         PollQuestionnaireSubject::class => PollQuestionnaireSubjectPolicy::class,

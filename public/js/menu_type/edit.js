@@ -1,0 +1,1 @@
+page.edit('formMenuType', 'menu_types');

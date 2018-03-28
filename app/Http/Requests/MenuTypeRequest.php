@@ -3,7 +3,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ActionTypeRequest extends FormRequest {
+class MenuTypeRequest extends FormRequest {
     
     /**
      * Determine if the user is authorized to make this request.
@@ -20,11 +20,12 @@ class ActionTypeRequest extends FormRequest {
     public function rules() {
         
         return [
-            'name'         => 'required|string|between:2,60|unique:action_types,name,' .
-                              $this->input('id') . ',id',
-            'remark'       => 'nullable|string',
-            'enabled'      => 'required|boolean',
+            'name'    => 'required|string|between:2,60|unique:menu_types,name,' .
+                $this->input('id') . ',id',
+            'remark'  => 'nullable|string',
+            'enabled' => 'required|boolean',
         ];
         
     }
+    
 }

@@ -135,7 +135,10 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('menu.create_edit', 'App\Http\ViewComposers\MenuComposer');
         View::composer('menu.index', 'App\Http\ViewComposers\MenuIndexComposer');
         View::composer('menu.menu_tabs', 'App\Http\ViewComposers\MenuTabComposer');
-    
+        
+        View::composer('menu_type.create_edit', 'App\Http\ViewComposers\MenuTypeComposer');
+        View::composer('menu_type.index', 'App\Http\ViewComposers\MenuTypeIndexComposer');
+
         View::composer('icon.create_edit', 'App\Http\ViewComposers\IconComposer');
         View::composer('icon.index', 'App\Http\ViewComposers\IconIndexComposer');
     
