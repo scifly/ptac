@@ -12,33 +12,15 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-warning'])
-                        {!! Form::text('name', null, [
-                            'class' => 'form-control text-blue',
-                            'placeholder' => '(请输入警告类型名称)',
-                            'required' => 'true',
-                            'data-parsley-length' => '[2, 60]'
-                        ]) !!}
-                    </div>
+                    {!! Form::text('name', null, [
+                        'class' => 'form-control text-blue',
+                        'placeholder' => '(请输入Http请求类型名称)',
+                        'required' => 'true',
+                        'data-parsley-length' => '[2, 60]'
+                    ]) !!}
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('english_name', '英文名', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-language'])
-                        {!! Form::text('english_name', null, [
-                            'class' => 'form-control text-blue',
-                            'placeholder' => '(请输入英文名称)',
-                            'required' => 'true',
-                            'data-parsley-length' => '[2, 60]'
-                        ]) !!}
-                    </div>
-                </div>
-            </div>
+            @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
                 'value' => $at['enabled'] ?? null
