@@ -37,7 +37,9 @@ class DepartmentController extends Controller {
         
         if (Request::method() === 'POST') {
             return response()->json(
-                $this->department->tree()
+                $this->department->tree(
+                    $this->department->rootDepartmentId(true)
+                )
             );
         }
 
