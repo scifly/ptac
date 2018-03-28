@@ -186,10 +186,10 @@ class Exam extends Model {
      *
      * @return array|bool
      */
-    function examsByEducator($user_id) {
+    function examsByEducator() {
         
         $scores = $classNames = $classIds = [];
-        $classes = Squad::whereEnabled(Constant::ENABLED)->whereIn('id', $this->classIds($user_id))->get();
+        $classes = Squad::whereEnabled(Constant::ENABLED)->whereIn('id', $this->classIds())->get();
         foreach ($classes as $k => $c) {
             $exams = Exam::whereEnabled(Constant::ENABLED)->get();
             foreach ($exams as $key => $e) {
