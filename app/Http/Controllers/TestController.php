@@ -43,7 +43,7 @@ class TestController extends Controller {
      */
     public function index() {
 
-        dd(Request::getUri());
+        dd(Request::path());
         
         dd(implode(',', [1,2,3]));
         $start = '2018-03-01';
