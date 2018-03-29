@@ -41,12 +41,15 @@ class AttendanceController extends Controller {
      */
     public function index() {
         
+        
         $corpId = 'wxe75227cead6b8aec';
         $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIEU';
         $agentId = 1000007;
         $userId = Session::get('userId') ?? null;
         $code = Request::input('code');
-        if (empty($code)) {
+        if (!$code) {
+            $acronym = explode('/', Request::path())[0];
+            $corp =
             $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/lists');
             
             return redirect($codeUrl);

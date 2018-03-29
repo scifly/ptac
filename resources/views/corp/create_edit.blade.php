@@ -23,6 +23,22 @@
                     </div>
                 </div>
             </div>
+            <div class="form-group">
+                {!! Form::label('acronym', '缩写', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        @include('partials.icon_addon', ['class' => 'fa-weixin'])
+                        {!! Form::text('acronym', null, [
+                            'class' => 'form-control text-blue',
+                            'placeholder' => '(不超过20个小写字母)',
+                            'required' => 'true',
+                            'minlength' => '3',
+                        ]) !!}
+                    </div>
+                </div>
+            </div>
             @if (Auth::user()->group->name == '运营')
                 @include('partials.single_select', [
                     'label' => '所属运营者',

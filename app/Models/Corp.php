@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Session;
  *
  * @property int $id
  * @property string $name 企业名称
+ * @property string $acronym 企业名称缩写（首字母缩略词）
  * @property string $corpid 企业号id
  * @property string $contact_sync_secret "通讯录同步"应用Secret
  * @property Carbon|null $created_at
@@ -39,6 +40,7 @@ use Illuminate\Support\Facades\Session;
  * @method static Builder|Corp whereEnabled($value)
  * @method static Builder|Corp whereId($value)
  * @method static Builder|Corp whereName($value)
+ * @method static Builder|Corp whereAcronym($value)
  * @method static Builder|Corp whereUpdatedAt($value)
  * @method static Builder|Corp whereCompanyId($value)
  * @method static Builder|Corp whereDepartmentId($value)
@@ -57,7 +59,8 @@ class Corp extends Model {
     use ModelTrait;
 
     protected $fillable = [
-        'name', 'company_id', 'corpid', 'contact_sync_secret',
+        'name', 'acronym', 'company_id',
+        'corpid', 'contact_sync_secret',
         'menu_id', 'department_id', 'enabled',
     ];
 
@@ -213,18 +216,19 @@ class Corp extends Model {
                     return sprintf(Snippet::ICON, 'fa-weixin') . $d;
                 }
             ],
+            ['db' => 'Corp.acronym', 'dt' => 2],
             [
-                'db' => 'Company.name as companyname', 'dt' => 2,
+                'db' => 'Company.name as companyname', 'dt' => 3,
                 'formatter' => function ($d) {
                     return sprintf(Snippet::ICON, 'fa-building') . $d;
                 }
             ],
-            ['db' => 'Corp.corpid', 'dt' => 3],
-            ['db' => 'Corp.contact_sync_secret', 'dt' => 4],
-            ['db' => 'Corp.created_at', 'dt' => 5],
-            ['db' => 'Corp.updated_at', 'dt' => 6],
+            ['db' => 'Corp.corpid', 'dt' => 4],
+            ['db' => 'Corp.contact_sync_secret', 'dt' => 5],
+            ['db' => 'Corp.created_at', 'dt' => 6],
+            ['db' => 'Corp.updated_at', 'dt' => 7],
             [
-                'db' => 'Corp.enabled', 'dt' => 7,
+                'db' => 'Corp.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
