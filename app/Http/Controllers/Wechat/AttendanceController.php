@@ -19,67 +19,48 @@ use Illuminate\View\View;
 use Throwable;
 
 /**
- *  微信考勤
+ * 微信考勤
  *
  * Class AttendanceController
  * @package App\Http\Controllers\Wechat
  */
 class AttendanceController extends Controller {
     
+    protected $sa;
+    
+    function __construct(StudentAttendance $sa) {
+        
+        $this->sa = $sa;
+        
+    }
+    
     /**
      * 考勤记录列表
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|string
+     * @return Factory|View|string
      */
     public function index() {
+        
         $corpId = 'wxe75227cead6b8aec';
         $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIEU';
         $agentId = 1000007;
-        $userId = Session::get('userId') ? Session::get('userId') : null;
+        $userId = Session::get('userId') ?? null;
         $code = Request::input('code');
-        if (empty($code) && empty($userId)) {
+        if (empty($code)) {
             $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/lists');
+            
             return redirect($codeUrl);
-        }elseif(!empty($code) && empty($userId)){
+        } else {
             $accessToken = Wechat::getAccessToken($corpId, $secret);
             $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
             $userId = $userInfo['UserId'];
-            Session::put('userId',$userId);
-        }
-        $user = User::whereUserid($userId)->first();
-        #判断是否为教职工
-        $educator = false;
-        if (!$user) {
-            return '<h4>你暂不是教职员工或监护人</h4>';
-        }
-        if ($user->group->name != '教职员工' && $user->group->name != '监护人') {
-            return '<h4>你暂不是教职员工或监护人</h4>';
-        }
-        if ($user->group->name == '教职员工') {
-            $educator = true;
-        }
-        #如果为教职工
-        if ($educator) {
-            return view('wechat.attendance_records.edu_attendance');
-        }
-        # 当月第一天
-        $beginTime = date('Y-m-01', strtotime(date("Y-m-d"))) . ' 00:00:00';
-        # 当月最后一天
-        $endTime = date('Y-m-d', strtotime("$beginTime +1 month -1 day"));
-        $endTime = $endTime . ' 23:59:59';
-        $students = User::whereUserid($userId)->first()->custodian->students;
-        foreach ($students as $k => $s) {
-            $data = $this->getDays($s->id, $beginTime, $endTime);
-            $s->abnormal = count($data['adays']);
-            $s->normal = count($data['ndays']);
-            $s->schoolname = Squad::whereId($s->class_id)->first()->grade->school->name;
-            $s->studentname = User::whereId($s->user_id)->first()->realname;
-            $s->class_id = Squad::whereId($s->class_id)->first()->name;
+            Session::put('userId', $userId);
         }
         
         return view('wechat.attendance_records.list', [
-            'students' => $students,
+            'students' => $this->sa->wIndex($userId),
         ]);
+        
     }
     
     /**
@@ -89,6 +70,7 @@ class AttendanceController extends Controller {
      * @return Factory|JsonResponse|View
      */
     public function records($id = null) {
+        
         if (Request::isMethod('post')) {
             if (array_key_exists('ym', Request::all())) {
                 $ym = Request::get('ym');
@@ -249,6 +231,7 @@ class AttendanceController extends Controller {
                 '请加入相应的考勤规则！'
             );
             $this->result['data'] = $datas;
+            
             return response()->json($this->result);
         } else {
             $datas = $this->fltcharts($input, $data);
@@ -258,6 +241,7 @@ class AttendanceController extends Controller {
                 '请加入相应的考勤规则！'
             );
             $this->result['data'] = $datas;
+            
             return response()->json($this->result);
         }
     }
@@ -300,7 +284,9 @@ class AttendanceController extends Controller {
             ->where('day', $weekDay)
             ->first();
         #这个星期这个年级没有设置对应的规则
-        if (!$rule) { return false; }
+        if (!$rule) {
+            return false;
+        }
         #同一个学生这段时间打了多次记录 取这段时间最晚的一条记录
         $attendances = StudentAttendance::where('sas_id', $rule->id)
             ->whereIn('student_id', $studentIds)
@@ -321,7 +307,7 @@ class AttendanceController extends Controller {
         $data['view'] = $this->attendList(
             $studentIds, $attendances->where('status', 1),
             $attendances->where('status', 0), $attendances);
-
+        
         return !empty($data) ? $data : false;
         
     }
@@ -361,6 +347,7 @@ class AttendanceController extends Controller {
         $data['view'] = $this->attendList(
             $studentIds, $attendances->where('status', 1),
             $attendances->where('status', 0), $attendances);
+        
         return !empty($data) ? $data : false;
     }
     

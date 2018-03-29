@@ -317,7 +317,7 @@ class Student extends Model {
         );
         if ($stored) {
             $spreadsheet = IOFactory::load(
-                $this->uploadedFile($filename)
+                $this->uploadedFilePath($filename)
             );
             $students = $spreadsheet->getActiveSheet()->toArray(
                 null, true, true, true

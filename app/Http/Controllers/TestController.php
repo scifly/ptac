@@ -1,23 +1,16 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Facades\Wechat;
 use App\Helpers\ModelTrait;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Grade;
-use App\Models\Group;
-use App\Models\Squad;
-use App\Models\Student;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Request;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -49,13 +42,8 @@ class TestController extends Controller {
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
     public function index() {
-      
-        $corp = Corp::find(3);
-        var_dump($corp->schools);
-        var_dump($corp->grades);
-        var_dump($corp->teams);
-        var_dump($corp->departments);
-        die;
+
+        dd(Request::getUri());
         
         dd(implode(',', [1,2,3]));
         $start = '2018-03-01';

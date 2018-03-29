@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
@@ -140,15 +141,15 @@ class Media extends Model {
         return $media->removable($media) ? $media->delete() : false;
 
     }
-
+    
     /**
      * 文件上传公共方法
      *
      * @param UploadedFile $file
-     * @param int $remark
+     * @param string $remark
      * @return array|bool
      */
-    function upload($file, $remark = 0) {
+    function upload($file, $remark = '') {
 
         if ($file->isValid()) {
             // 获取文件相关信息
@@ -164,26 +165,20 @@ class Media extends Model {
             $filename = uniqid() . '.' . $ext;
             // 使用新建的uploads本地存储空间（目录）
             if (Storage::disk('uploads')->put($filename, file_get_contents($realPath))) {
-                $filePath = 'uploads/' .
-                    date('Y') . '/' .
-                    date('m') . '/' .
-                    date('d') . '/' .
-                    $filename;
-                $mediaId = self::insertGetId([
+                $filePath = $this->uploadedFilePath($filename);
+                $media = $this->create([
                     'path'          => $filePath,
                     'remark'        => $remark,
                     'media_type_id' => $type,
-                    'enabled'       => '1',
+                    'enabled'       => Constant::ENABLED,
                 ]);
 
                 return [
-                    'id'       => $mediaId,
+                    'id'       => $media->id,
                     'path'     => $filePath,
                     'type'     => $ext,
                     'filename' => $originalName,
                 ];
-            } else {
-                return false;
             }
         }
 

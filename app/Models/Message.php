@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -467,7 +468,7 @@ class Message extends Model {
         $mobiles = [];
         $userDatas = [];
         if ($touser) {
-//             $userIds = explode('|', $touser);
+            // $userIds = explode('|', $touser);
             foreach ($touser as $i) {
                 $user = User::find($i);
                 $m = Mobile::whereUserId($i)->where('enabled', 1)->first();
@@ -488,6 +489,51 @@ class Message extends Model {
 
         }
         return $result = ['mobiles' => $mobiles, 'users' => $userDatas];
+    }
+    
+    /**
+     * 上传媒体文件
+     *
+     * @return array
+     */
+    function upload() {
+    
+        # 上传到本地后台
+        $media = new Media();
+        $result = [];
+        $file = Request::file('uploadFile');
+        abort_if(
+            empty($file),
+            HttpStatusCode::NOT_ACCEPTABLE,
+            '您还未选择文件！'
+        );
+        $uploadedFile = $media->upload($file, '消息中心');
+        abort_if(
+            !$uploadedFile,
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            '文件上传失败'
+        );
+        $result['message'] = '上传成功！';
+        
+        # 上传到企业号后台
+        list($corpid, $secret) = $this->tokenParams();
+        $message = json_decode(
+            Wechat::uploadMedia(
+                Wechat::getAccessToken($corpid, $secret),
+                Request::input('type'),
+                ['media' => curl_file_create($uploadedFile['path'])]
+            )
+        );
+        abort_if(
+            $message->{'errcode'} != 0,
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            '上传微信服务器失败！'
+        );
+        $uploadedFile['media_id'] = $message->media_id;
+        $result['data'] = $uploadedFile;
+        
+        return $result;
+        
     }
 
 }

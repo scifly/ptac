@@ -186,27 +186,9 @@ class MessageController extends Controller {
      */
     public function uploadFile() {
         
-        $file = Request::file('uploadFile');
-        abort_if(empty($file), HttpStatusCode::NOT_ACCEPTABLE, '您还未选择文件！');
-        $type = Request::input('type');
-        $result['data'] = [];
-        $mes = $this->media->upload($file, '消息中心');
-        abort_if(!$mes, HttpStatusCode::INTERNAL_SERVER_ERROR, '文件上传失败');
-        $this->result['message'] = '上传成功！';
-        $path = $mes['path'];
-        $data = [
-            "media" => curl_file_create($path)
-        ];
-        $crop = Corp::whereName('万浪软件')->first();
-        $app = App::whereAgentid('999')->first();
-        $token = Wechat::getAccessToken($crop->corpid, $app->secret);
-        $status = Wechat::uploadMedia($token, $type, $data);
-        $message = json_decode($status);
-        abort_if($message->errcode != 0, HttpStatusCode::INTERNAL_SERVER_ERROR, '微信服务器上传失败！');
-        $mes['media_id'] = $message->media_id;
-        $this->result['data'] = $mes;
-        
-        return response()->json($this->result);
+        return response()->json(
+            $this->message->upload()
+        );
         
     }
     

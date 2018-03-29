@@ -356,14 +356,17 @@ class User extends Authenticatable {
                     'avatar_url'   => '',
                     'isleader'     => 0,
                 ]);
+                
                 # 保存手机号码
                 $mobile = new Mobile();
                 $mobile->store($data, $user);
                 unset($mobile);
+                
                 # 保存用户所属部门数据
                 $du = new DepartmentUser();
                 $du->store($data, $user);
                 unset($du);
+                
                 # 创建企业号成员
                 $this->createWechatUser($user->id);
             });

@@ -453,7 +453,7 @@ class Educator extends Model {
         $stored = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
         if ($stored) {
             $spreadsheet = IOFactory::load(
-                $this->uploadedFile($filename)
+                $this->uploadedFilePath($filename)
             );
             $educators = $spreadsheet->getActiveSheet()->toArray(
                 null, true, true, true

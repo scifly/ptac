@@ -387,7 +387,7 @@ trait ModelTrait {
      * @param $filename
      * @return string
      */
-    public function uploadedFile($filename): string {
+    function uploadedFilePath($filename): string {
         
         return 'public/uploads/'
             . date('Y') . '/' . date('m') . '/' . date('d') . '/'
@@ -402,7 +402,7 @@ trait ModelTrait {
      * @param $id
      * @return string
      */
-    public function singleSelectList(array $items, $id) {
+    function singleSelectList(array $items, $id) {
         
         $html = '<select class="form-control select2" id="%s" name="%s" style="width: %s">';
         foreach ($items as $key => $value) {
@@ -411,6 +411,25 @@ trait ModelTrait {
         $html .= '</select>';
         
         return sprintf($html, $id, $id, '100%;');
+        
+    }
+    
+    /**
+     * 获取当前请求对应的企业号id和“通讯录同步”Secret
+     *
+     * @return array
+     */
+    function tokenParams() {
+        
+        $menu = new Menu();
+        $corpMenuId = $menu->menuId(session('menuId'), '企业');
+        abort_if(!$corpMenuId, HttpStatusCode::BAD_REQUEST, __('messages.bad_request'));
+        $corp = Corp::whereMenuId($corpMenuId)->first();
+        
+        return [
+            $corp->corpid,
+            $corp->contact_sync_secret
+        ];
         
     }
     

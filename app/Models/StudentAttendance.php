@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Wechat;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
@@ -318,6 +319,44 @@ class StudentAttendance extends Model {
         
     }
 
+    function wIndex() {
+    
+        
+        $user = User::whereUserid($userId)->first();
+        #判断是否为教职工
+        $educator = false;
+        if (!$user) {
+            return '<h4>你暂不是教职员工或监护人</h4>';
+        }
+        if ($user->group->name != '教职员工' && $user->group->name != '监护人') {
+            return '<h4>你暂不是教职员工或监护人</h4>';
+        }
+        if ($user->group->name == '教职员工') {
+            $educator = true;
+        }
+        #如果为教职工
+        if ($educator) {
+            return view('wechat.attendance_records.edu_attendance');
+        }
+        # 当月第一天
+        $beginTime = date('Y-m-01', strtotime(date("Y-m-d"))) . ' 00:00:00';
+        # 当月最后一天
+        $endTime = date('Y-m-d', strtotime("$beginTime +1 month -1 day"));
+        $endTime = $endTime . ' 23:59:59';
+        $students = User::whereUserid($userId)->first()->custodian->students;
+        foreach ($students as $k => $s) {
+            $data = $this->getDays($s->id, $beginTime, $endTime);
+            $s->abnormal = count($data['adays']);
+            $s->normal = count($data['ndays']);
+            $s->schoolname = Squad::whereId($s->class_id)->first()->grade->school->name;
+            $s->studentname = User::whereId($s->user_id)->first()->realname;
+            $s->class_id = Squad::whereId($s->class_id)->first()->name;
+        }
+        
+        return $students;
+        
+    }
+    
     /**
      * 获取指定学生的最新考勤数据
      *
