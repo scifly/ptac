@@ -99,10 +99,10 @@ class User extends Authenticatable {
      */
     protected $fillable = [
         'group_id', 'username', 'password',
-        'email', 'realname', 'gender', 'avatar_url',
-        'userid', 'english_name', 'isleader', 
-        'position', 'telephone', 'order', 
-        'mobile', 'enabled',
+        'email', 'realname', 'gender',
+        'avatar_url', 'userid', 'english_name',
+        'isleader', 'position', 'telephone',
+        'order', 'mobile', 'enabled',
     ];
     
     const SELECT_HTML = '<select class="form-control select2" style="width: 100%;" id="ID" name="ID">';
