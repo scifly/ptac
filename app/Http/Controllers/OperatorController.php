@@ -1,13 +1,13 @@
 <?php
 namespace App\Http\Controllers;
 
-
-use App\Http\Requests\OperatorRequest;
-use App\Models\User;
 use Exception;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Request;
 use Throwable;
+use App\Models\User;
+use App\Helpers\HttpStatusCode;
+use Illuminate\Http\JsonResponse;
+use App\Http\Requests\OperatorRequest;
+use Illuminate\Support\Facades\Request;
 
 /**
  * 超级用户管理
@@ -52,6 +52,9 @@ class OperatorController extends Controller {
      */
     public function create() {
         
+        $this->authorize(
+            'create', User::class
+        );
         if (Request::method() == 'POST') {
             return $this->user->csList();
         }
@@ -86,6 +89,7 @@ class OperatorController extends Controller {
     public function edit($id) {
         
         $user = $this->user->find($id);
+        $this->authorize('edit', $user);
         if (Request::method() == 'POST') {
             return $this->user->csList();
         }
@@ -93,7 +97,6 @@ class OperatorController extends Controller {
         return $this->output([
             'user' => $user
         ]);
-        
         
     }
     
@@ -109,6 +112,7 @@ class OperatorController extends Controller {
     public function update(OperatorRequest $request, $id) {
         
         $user = $this->user->find($id);
+        abort_if(!$user, HttpStatusCode::NOT_FOUND, '找不到该用户记录');
         
         return $this->result(
             $user->modify(
@@ -128,7 +132,7 @@ class OperatorController extends Controller {
     public function destroy($id) {
     
         $user = $this->user->find($id);
-        
+        $this->authorize('destroy', $user);
         return $this->result(
             $user->remove($id)
         );

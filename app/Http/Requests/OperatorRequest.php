@@ -1,8 +1,12 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Helpers\Constant;
+use App\Models\Group;
 use App\Rules\Mobiles;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 
 class OperatorRequest extends FormRequest {
     
@@ -11,7 +15,21 @@ class OperatorRequest extends FormRequest {
      *
      * @return bool
      */
-    public function authorize() { return true; }
+    public function authorize() {
+        
+        $role = Auth::user()->group->name;
+        if (in_array($role, Constant::SUPER_ROLES)) {
+            switch ($role) {
+                case '运营': return true;
+                case '企业': return Group::find(Request::input('group_id'))->name != '运营';
+                case '学校': return Group::find(Request::input('group_id'))->name == '学校';
+                default: break;
+            }
+        }
+        
+        return false;
+        
+    }
     
     /**
      * Get the validation rules that apply to the request.

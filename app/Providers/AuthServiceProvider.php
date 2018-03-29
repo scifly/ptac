@@ -36,6 +36,7 @@ use App\Models\StudentAttendance;
 use App\Models\StudentAttendanceSetting;
 use App\Models\SubjectModule;
 use App\Models\Tab;
+use App\Models\User;
 use App\Policies\ActionPolicy;
 use App\Policies\ActionTypePolicy;
 use App\Policies\AlertTypePolicy;
@@ -63,6 +64,7 @@ use App\Policies\ConferenceQueuePolicy;
 use App\Policies\CorpPolicy;
 use App\Policies\CommonPolicy;
 use App\Policies\CustodianPolicy;
+use App\Policies\OperatorPolicy;
 use App\Policies\PollQuestionnairePolicy;
 use App\Policies\PollQuestionnaireSubjectChoicePolicy;
 use App\Policies\PollQuestionnaireSubjectPolicy;
@@ -127,6 +129,7 @@ class AuthServiceProvider extends ServiceProvider {
         Tab::class => TabPolicy::class,
         StudentAttendance::class => StudentAttendancePolicy::class,
         EducatorAttendance::class => EducatorAttendancePolicy::class,
+        User::class => OperatorPolicy::class,
     ];
     
     /**
