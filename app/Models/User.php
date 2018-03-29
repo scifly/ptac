@@ -567,7 +567,7 @@ class User extends Authenticatable {
         $schoolGroupId = Group::whereName('学校')->first()->id;
         $condition = '';
         $menu = new Menu();
-        $departmentType = Menu::find($menu->rootMenuId(true))->department->departmentType->name;
+        $departmentType = Menu::find($menu->rootMenuId(true))->menuType->name;
         
         switch ($departmentType) {
             case '根':
