@@ -4,6 +4,7 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use App\Models\Group;
+use App\Models\Menu;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,24 +14,29 @@ class OperatorComposer {
     
     public function compose(View $view) {
     
-        $rootGroupId = Group::whereName('运营')->first()->id;
-        $corpGroupId = Group::whereName('企业')->first()->id;
-        $schoolGroupId = Group::whereName('学校')->first()->id;
+        $menu = new Menu();
+        $menuType = Menu::find($menu->rootMenuId(true))->menuType->name;
+        $rootGId = Group::whereName('运营')->first()->id;
+        $corpGId = Group::whereName('企业')->first()->id;
+        $schoolGId = Group::whereName('学校')->first()->id;
     
         $groups = [];
-        switch (Auth::user()->group->name) {
-            case '运营':
+        switch ($menuType) {
+            case '根':
                 $groups = [
-                    $rootGroupId => '运营',
-                    $corpGroupId => '企业',
-                    $schoolGroupId => '学校'
+                    $rootGId => '运营',
+                    $corpGId => '企业',
+                    $schoolGId => '学校'
                 ];
                 break;
             case '企业':
                 $groups = [
-                    $corpGroupId => '企业',
-                    $schoolGroupId => '学校'
+                    $corpGId => '企业',
+                    $schoolGId => '学校'
                 ];
+                break;
+            case '学校':
+                $groups = [$schoolGId => '学校'];
                 break;
             default:
                 break;

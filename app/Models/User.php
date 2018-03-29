@@ -560,24 +560,23 @@ class User extends Authenticatable {
                 ],
             ],
         ];
-        $user = Auth::user();
         $sql = 'User.group_id IN (%s)';
-        $rootGroupId = Group::whereName('运营')->first()->id;
-        $corpGroupId = Group::whereName('企业')->first()->id;
-        $schoolGroupId = Group::whereName('学校')->first()->id;
+        $rootGId = Group::whereName('运营')->first()->id;
+        $corpGId = Group::whereName('企业')->first()->id;
+        $schoolGId = Group::whereName('学校')->first()->id;
         $condition = '';
         $menu = new Menu();
-        $departmentType = Menu::find($menu->rootMenuId(true))->menuType->name;
+        $menuType = Menu::find($menu->rootMenuId(true))->menuType->name;
         
-        switch ($departmentType) {
+        switch ($menuType) {
             case '根':
-                $condition = sprintf($sql, implode(',', [$rootGroupId, $corpGroupId, $schoolGroupId]));
+                $condition = sprintf($sql, implode(',', [$rootGId, $corpGId, $schoolGId]));
                 break;
             case '企业':
-                $condition = sprintf($sql, implode(',', [$corpGroupId, $schoolGroupId]));
+                $condition = sprintf($sql, implode(',', [$corpGId, $schoolGId]));
                 break;
             case '学校':
-                $condition = sprintf($sql, implode(',', [$schoolGroupId]));
+                $condition = sprintf($sql, implode(',', [$schoolGId]));
                 break;
             default:
                 break;
