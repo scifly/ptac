@@ -321,31 +321,24 @@ class StudentAttendance extends Model {
 
     function wIndex() {
     
-        
-        $user = User::whereUserid($userId)->first();
+        $userid = session('userid');
+        $user = User::whereUserid($userid)->first();
         #判断是否为教职工
-        $educator = false;
-        if (!$user) {
-            return '<h4>你暂不是教职员工或监护人</h4>';
-        }
-        if ($user->group->name != '教职员工' && $user->group->name != '监护人') {
-            return '<h4>你暂不是教职员工或监护人</h4>';
-        }
-        if ($user->group->name == '教职员工') {
-            $educator = true;
+        if (!$user || !in_array($user->group->name, ['教职员工', '监护人'])) {
+            return '<h4>您无权访问此页面</h4>';
         }
         #如果为教职工
-        if ($educator) {
+        if ($user->educator) {
             return view('wechat.attendance_records.edu_attendance');
         }
         # 当月第一天
-        $beginTime = date('Y-m-01', strtotime(date("Y-m-d"))) . ' 00:00:00';
+        $startTime = date('Y-m-01', strtotime(date("Y-m-d"))) . ' 00:00:00';
         # 当月最后一天
-        $endTime = date('Y-m-d', strtotime("$beginTime +1 month -1 day"));
+        $endTime = date('Y-m-t', strtotime($startTime)) . ' 23:59:59';
         $endTime = $endTime . ' 23:59:59';
-        $students = User::whereUserid($userId)->first()->custodian->students;
+        $students = User::whereUserid($userid)->first()->custodian->students;
         foreach ($students as $k => $s) {
-            $data = $this->getDays($s->id, $beginTime, $endTime);
+            $data = $this->getDays($s->id, $startTime, $endTime);
             $s->abnormal = count($data['adays']);
             $s->normal = count($data['ndays']);
             $s->schoolname = Squad::whereId($s->class_id)->first()->grade->school->name;

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Wechat;
 use App\Facades\Wechat;
 use App\Helpers\HttpStatusCode;
 use App\Http\Controllers\Controller;
+use App\Models\App;
+use App\Models\Corp;
 use App\Models\Grade;
 use App\Models\Semester;
 use App\Models\Squad;
@@ -28,6 +30,8 @@ class AttendanceController extends Controller {
     
     protected $sa;
     
+    const APP_NAME = '考勤中心';
+    
     function __construct(StudentAttendance $sa) {
         
         $this->sa = $sa;
@@ -40,28 +44,29 @@ class AttendanceController extends Controller {
      * @return Factory|View|string
      */
     public function index() {
-        
-        
-        $corpId = 'wxe75227cead6b8aec';
-        $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIEU';
-        $agentId = 1000007;
-        $userId = Session::get('userId') ?? null;
+    
+        $acronym = explode('/', Request::path())[0];
+        $corpid = Corp::whereAcronym($acronym)->first()->corpid;
+        $app = App::whereCorpId($corpid)->where('name', self::APP_NAME)->first();
+        $agentid = $app->agentid;
+        $secret = $app->secret;
+    
         $code = Request::input('code');
         if (!$code) {
-            $acronym = explode('/', Request::path())[0];
-            $corp =
-            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/lists');
-            
-            return redirect($codeUrl);
+            return redirect(
+                Wechat::getCodeUrl($corpid, $agentid, Request::url())
+            );
         } else {
-            $accessToken = Wechat::getAccessToken($corpId, $secret);
-            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-            $userId = $userInfo['UserId'];
-            Session::put('userId', $userId);
+            $accessToken = Wechat::getAccessToken($corpid, $secret);
+            $userInfo = json_decode(
+                Wechat::getUserInfo($accessToken, $code),
+                JSON_UNESCAPED_UNICODE
+            );
+            Session::put('userid', $userInfo['UserId']);
         }
         
         return view('wechat.attendance_records.list', [
-            'students' => $this->sa->wIndex($userId),
+            'students' => $this->sa->wIndex(),
         ]);
         
     }

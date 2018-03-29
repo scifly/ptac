@@ -43,8 +43,10 @@ class TestController extends Controller {
      */
     public function index() {
 
-        dd(Request::url());
-        
+        $startTime = date('Y-m-01 00:00:00', strtotime(date('Y-m-d')));
+        $endTime = date('Y-m-t 23:59:59', strtotime($startTime));
+        echo $startTime . '<br />';
+        echo $endTime . '<br />';
         dd(implode(',', [1,2,3]));
         $start = '2018-03-01';
         $end = '2018-03-07';
