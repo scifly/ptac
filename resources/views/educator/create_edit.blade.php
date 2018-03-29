@@ -44,22 +44,6 @@
                     </div>
                 </div>
             </div>
-            <!-- 微信号 -->
-            <div class="form-group">
-                {{ Form::label('user[wechatid]', '微信号', [
-                    'class' => 'col-sm-3 control-label'
-                ]) }}
-                <div class="col-sm-6">
-                    <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-weixin'])
-                        {{ Form::text('user[wechatid]', null, [
-                            'class' => 'form-control text-blue',
-                            'data-parsley-type' => 'alphanum',
-                            'data-parsley-length' => '[2, 255]'
-                        ]) }}
-                    </div>
-                </div>
-            </div>
             <!-- 性别 -->
             @include('partials.enabled', [
                 'id' => 'user[gender]',

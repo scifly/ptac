@@ -75,7 +75,6 @@ class Operator extends Model {
                     'isleader' => 0,
                     'english_name' => $user['english_name'],
                     'telephone' => $user['telephone'],
-                    'wechatid' => '',
                     'enabled' => $user['enabled'],
                 ];
                 $u = User::create($data);
@@ -231,7 +230,6 @@ class Operator extends Model {
                     'isleader' => 0,
                     'english_name' => $user['english_name'],
                     'telephone' => $user['telephone'],
-                    'wechatid' => '',
                     'enabled' => $user['enabled'],
                 ]);
 

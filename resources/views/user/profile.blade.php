@@ -89,27 +89,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
-                            {{ Form::label('wechatid', '微信号', [
-                                'class' => 'col-sm-3 control-label'
-                            ]) }}
-                            <div class="col-sm-6">
-                                <div class="input-group">
-                                    @include('partials.icon_addon', ['class' => 'fa-weixin'])
-                                    {{ Form::text('wechatid', null, [
-                                        'class' => 'form-control text-blue',
-                                        'readonly' => 'true',
-                                        'data-parsley-type' => 'alphanum',
-                                        'data-parsley-length' => '[2, 255]'
-                                    ]) }}
-                                    <a class="edit_input"
-                                       style="position: absolute;top: 0;right: -25px;line-height:34px" title="编辑"
-                                       href="#">
-                                        <i class="fa fa-pencil"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
                         <!-- 性别 -->
                         @include('partials.enabled', [
                             'id' => 'gender',

@@ -159,19 +159,6 @@
                     </div>
                 </div>
             </div>
-            <!-- 微信号 -->
-            <div class="form-group">
-                {!! Form::label('wechatid', '微信号',['class' => 'col-sm-4 control-label']) !!}
-                <div class="col-sm-2">
-                    {!! Form::text('wechatid', null, [
-                        'class' => 'form-control text-blue',
-                        'placeholder' => '(小写字母和数字)',
-                        'required' => 'true',
-                        'data-parsley-type' => 'alphanum',
-                        'maxlength' => '255'
-                    ]) !!}
-                </div>
-            </div>
             <!-- 状态 -->
             @include('partials.enabled', [
                 'id' => 'enabled',

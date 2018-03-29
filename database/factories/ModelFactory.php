@@ -162,7 +162,6 @@ $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
         'avatar_url' => 'http://www.baidu.com',
         'remember_token' => '454564fdafdafadfsa',
         'email' => '18513094620@qq.com',
-        'wechatid' => 'fdsfds45454',
         'userid' => uniqid('wx_'),
         'enabled' => 1,
     ];

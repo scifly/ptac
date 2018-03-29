@@ -62,7 +62,6 @@ class ManageImportEducator implements ShouldQueue {
                             'avatar_url' => '00001.jpg',
                             'userid'     => uniqid('educator_'),
                             'isleader'   => 0,
-                            'wechatid'   => '',
                             'enabled'    => 1,
                         ]);
                         # 创建教职员工记录

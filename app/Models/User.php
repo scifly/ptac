@@ -40,7 +40,6 @@ use Throwable;
  * @property int $gender 性别
  * @property string $realname 真实姓名
  * @property string $avatar_url 头像URL
- * @property string|null $wechatid 微信号
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
@@ -83,7 +82,6 @@ use Throwable;
  * @method static Builder|User whereUpdatedAt($value)
  * @method static Builder|User whereUserid($value)
  * @method static Builder|User whereUsername($value)
- * @method static Builder|User whereWechatid($value)
  * @mixin Eloquent
  * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Passport\Client[] $clients
  * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Passport\Token[] $tokens
@@ -102,10 +100,9 @@ class User extends Authenticatable {
     protected $fillable = [
         'group_id', 'username', 'password',
         'email', 'realname', 'gender', 'avatar_url',
-        'wechatid', 'userid', 'english_name',
-        'isleader', 'position',
-        'telephone', 'order', 'mobile',
-        'avatar_mediaid', 'enabled',
+        'userid', 'english_name', 'isleader', 
+        'position', 'telephone', 'order', 
+        'mobile', 'enabled',
     ];
     
     const SELECT_HTML = '<select class="form-control select2" style="width: 100%;" id="ID" name="ID">';
@@ -347,18 +344,17 @@ class User extends Authenticatable {
                 # 创建用户
                 $user = $this->create([
                     'username'     => $data['username'],
+                    'userid'       => uniqid('manager_'),
                     'password'     => bcrypt($data['password']),
                     'group_id'     => $data['group_id'],
                     'email'        => $data['email'],
                     'realname'     => $data['realname'],
                     'gender'       => $data['gender'],
-                    'avatar_url'   => '',
-                    'userid'       => uniqid('manager_'),
-                    'isleader'     => 0,
                     'english_name' => $data['english_name'],
                     'telephone'    => $data['telephone'],
-                    'wechatid'     => $data['wechatid'],
                     'enabled'      => $data['enabled'],
+                    'avatar_url'   => '',
+                    'isleader'     => 0,
                 ]);
                 # 保存手机号码
                 $mobile = new Mobile();
@@ -404,7 +400,6 @@ class User extends Authenticatable {
                     'gender'       => $data['gender'],
                     'english_name' => $data['english_name'],
                     'telephone'    => $data['telephone'],
-                    'wechatid'     => $data['wechatid'],
                     'enabled'      => $data['enabled'],
                 ]);
             });

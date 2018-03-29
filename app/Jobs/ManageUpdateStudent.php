@@ -82,7 +82,6 @@ class ManageUpdateStudent implements ShouldQueue {
                                         'avatar_url' => '00001.jpg',
                                         'userid'     => uniqid('custodian_'),
                                         'isleader'   => 0,
-                                        'wechatid'   => '',
                                         'enabled'    => 1,
                                     ]);
                                     # 创建监护人

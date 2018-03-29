@@ -95,7 +95,6 @@ class Custodian extends Model {
                     'telephone'    => $data['user']['telephone'],
                     'enabled'      => $data['user']['enabled'],
                     'avatar_url'   => '00001.jpg',
-                    'wechatid'     => '',
                     'isleader'     => 0,
                 ]);
 

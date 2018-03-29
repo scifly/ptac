@@ -159,7 +159,6 @@ class Student extends Model {
                     'telephone'    => $data['user']['telephone'],
                     'enabled'      => $data['user']['enabled'],
                     'avatar_url'   => '',
-                    'wechatid'     => '',
                     'isleader'     => 0,
                 ]);
 
