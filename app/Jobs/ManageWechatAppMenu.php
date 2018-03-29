@@ -29,8 +29,17 @@ class ManageWechatAppMenu implements ShouldQueue {
      */
     public function handle() {
         
-        $accessToken = Wechat::getAccessToken($this->app->corp_id, $this->app->secret, $this->app->agentid);
-        return Wechat::createMenu($accessToken, $this->app->agentid, json_decode($this->app->menu));
+        $accessToken = Wechat::getAccessToken(
+            $this->app->corp_id,
+            $this->app->secret,
+            $this->app->agentid
+        );
+        
+        return Wechat::createMenu(
+            $accessToken,
+            $this->app->agentid,
+            json_decode($this->app->menu)
+        );
         
     }
     

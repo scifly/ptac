@@ -1,6 +1,5 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        {{--@include('partials.list_header')--}}
         <span id="breadcrumb" style="color: #999; font-size: 13px;">{!! $breadcrumb !!}</span>
         <div class="box-tools pull-right">
             @if(isset($buttons))
