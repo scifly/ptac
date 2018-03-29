@@ -566,8 +566,11 @@ class User extends Authenticatable {
         $corpGroupId = Group::whereName('企业')->first()->id;
         $schoolGroupId = Group::whereName('学校')->first()->id;
         $condition = '';
-        switch ($user->group->name) {
-            case '运营':
+        $menu = new Menu();
+        $departmentType = Menu::find($menu->rootMenuId(true))->department->departmentType->name;
+        
+        switch ($departmentType) {
+            case '根':
                 $condition = sprintf($sql, implode(',', [$rootGroupId, $corpGroupId, $schoolGroupId]));
                 break;
             case '企业':
@@ -579,7 +582,7 @@ class User extends Authenticatable {
             default:
                 break;
         }
-        
+    
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition
         );

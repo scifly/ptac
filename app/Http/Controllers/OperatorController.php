@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\OperatorRequest;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -64,6 +65,8 @@ class OperatorController extends Controller {
      *
      * @param OperatorRequest $request
      * @return JsonResponse|string
+     * @throws Throwable
+     * @throws Exception
      */
     public function store(OperatorRequest $request) {
         
@@ -100,13 +103,17 @@ class OperatorController extends Controller {
      * @param OperatorRequest $request
      * @param $id
      * @return JsonResponse|string
+     * @throws Exception
+     * @throws Throwable
      */
     public function update(OperatorRequest $request, $id) {
         
         $user = $this->user->find($id);
         
         return $this->result(
-            $user->modify($request->all(), $id)
+            $user->modify(
+                $request->all(), $id
+            )
         );
         
     }
