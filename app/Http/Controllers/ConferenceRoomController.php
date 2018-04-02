@@ -21,7 +21,7 @@ class ConferenceRoomController extends Controller {
     protected $cr;
     
     function __construct(ConferenceQueue $cr) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->cr = $cr;
         

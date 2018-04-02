@@ -5,18 +5,18 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
 class DepartmentTypeRequest extends FormRequest {
-
+    
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
     public function authorize() {
-    
+        
         return Auth::user()->group->name == '运营';
-    
+        
     }
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
@@ -30,5 +30,5 @@ class DepartmentTypeRequest extends FormRequest {
             'enabled' => 'required|boolean',
         ];
     }
-
+    
 }

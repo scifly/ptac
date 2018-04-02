@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
@@ -10,7 +9,7 @@ use Illuminate\Contracts\View\View;
 class EventIndexComposer {
     
     use ModelTrait;
-
+    
     public function compose(View $view) {
         
         $schoolId = $this->schoolId();
@@ -26,8 +25,8 @@ class EventIndexComposer {
             ->pluck('name', 'id');
         $view->with([
             'educators' => $educatorUsers,
-            'subjects' => $subjects,
-            'uris' => $this->uris()
+            'subjects'  => $subjects,
+            'uris'      => $this->uris(),
         ]);
         
     }

@@ -21,12 +21,12 @@ class ConsumptionRequest extends FormRequest {
         
         return [
             'student_id' => 'required|integer',
-            'location' => 'nullable|string|between:2,255',
-            'machineid' => 'nullable|string|between:2,255',
-            'ctype' => 'required|boolean',
-            'amount' => 'required|numeric',
-            'ctime' => 'required|date',
-            'merchant' => 'required|string|between:2,255'
+            'location'   => 'nullable|string|between:2,255',
+            'machineid'  => 'nullable|string|between:2,255',
+            'ctype'      => 'required|boolean',
+            'amount'     => 'required|numeric',
+            'ctime'      => 'required|date',
+            'merchant'   => 'required|string|between:2,255',
         ];
         
     }

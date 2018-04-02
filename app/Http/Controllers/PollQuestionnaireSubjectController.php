@@ -20,7 +20,7 @@ class PollQuestionnaireSubjectController extends Controller {
     protected $pqs;
     
     function __construct(PollQuestionnaireSubject $pqs) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->pqs = $pqs;
         
@@ -68,11 +68,11 @@ class PollQuestionnaireSubjectController extends Controller {
      * @throws AuthorizationException
      */
     public function store(PqSubjectRequest $request) {
-    
+        
         $this->authorize(
             'cs', PollQuestionnaireSubject::class
         );
-    
+        
         return $this->result(
             $this->pqs->create($request->all())
         );
@@ -91,7 +91,7 @@ class PollQuestionnaireSubjectController extends Controller {
         $this->authorize('eud', $pqs);
         
         return $this->output([
-            'pqs' => $pqs
+            'pqs' => $pqs,
         ]);
         
     }
@@ -105,10 +105,10 @@ class PollQuestionnaireSubjectController extends Controller {
      * @throws AuthorizationException
      */
     public function update(PqSubjectRequest $request, $id) {
-    
+        
         $pqs = $this->pqs->find($id);
         $this->authorize('eud', $pqs);
-    
+        
         return $this->result(
             $pqs->update($request->all())
         );

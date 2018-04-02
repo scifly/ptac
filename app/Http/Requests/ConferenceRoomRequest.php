@@ -5,7 +5,7 @@ use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ConferenceRoomRequest extends FormRequest {
-
+    
     use ModelTrait;
     
     /**
@@ -14,14 +14,14 @@ class ConferenceRoomRequest extends FormRequest {
      * @return bool
      */
     public function authorize() { return true; }
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array
      */
     public function rules() {
-
+        
         return [
             'name'      => 'required|string|between:2,60|unique:conference_rooms,name,' .
                 $this->input('id') . ',id,' .
@@ -30,15 +30,14 @@ class ConferenceRoomRequest extends FormRequest {
             'capacity'  => 'required|integer',
             'enabled'   => 'required|boolean',
         ];
-
+        
     }
-
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
         $input['school_id'] = $this->schoolId();
-
         $this->replace($input);
-
+        
     }
 }

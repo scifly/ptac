@@ -197,13 +197,7 @@ class Squad extends Model {
                 },
             ],
             [
-                'db'        => 'School.name as schoolname', 'dt' => 3,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-university') . $d;
-                },
-            ],
-            [
-                'db'        => 'Squad.educator_ids', 'dt' => 4,
+                'db'        => 'Squad.educator_ids', 'dt' => 3,
                 'formatter' => function ($d) {
                     if (empty($d)) { return ''; }
                     $educatorIds = explode(',', $d);
@@ -221,10 +215,10 @@ class Squad extends Model {
                     return implode(', ', $educators);
                 },
             ],
-            ['db' => 'Squad.created_at', 'dt' => 5],
-            ['db' => 'Squad.updated_at', 'dt' => 6],
+            ['db' => 'Squad.created_at', 'dt' => 4],
+            ['db' => 'Squad.updated_at', 'dt' => 5],
             [
-                'db'        => 'Squad.enabled', 'dt' => 7,
+                'db'        => 'Squad.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
@@ -238,15 +232,7 @@ class Squad extends Model {
                 'conditions' => [
                     'Grade.id = Squad.grade_id',
                 ],
-            ],
-            [
-                'table'      => 'schools',
-                'alias'      => 'School',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'School.id = Grade.school_id',
-                ],
-            ],
+            ]
         ];
         $condition = 'Squad.id IN (' . implode(',', $this->classIds()) . ')';
         

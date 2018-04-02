@@ -4,21 +4,21 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class EventRequest extends FormRequest {
-
+    
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
     public function authorize() { return true; }
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array
      */
     public function rules() {
-
+        
         return [
             'title'    => 'required|string|between:1,40',
             'remark'   => 'required',
@@ -26,11 +26,11 @@ class EventRequest extends FormRequest {
             'contact'  => 'required|string',
             'url'      => 'required|string',
         ];
-
+        
     }
-
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
         if (!isset($input['start'])) {
             $input['start'] = "1970-01-01 00:00:00";
@@ -38,9 +38,8 @@ class EventRequest extends FormRequest {
         if (!isset($input['end'])) {
             $input['end'] = "1970-01-01 00:00:00";
         }
-
         $this->replace($input);
-
+        
     }
-
+    
 }

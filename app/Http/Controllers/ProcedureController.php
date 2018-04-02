@@ -20,10 +20,10 @@ class ProcedureController extends Controller {
     protected $procedure;
     
     function __construct(Procedure $procedure) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->procedure = $procedure;
-    
+        
     }
     
     /**

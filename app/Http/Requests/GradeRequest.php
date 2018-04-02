@@ -40,7 +40,6 @@ class GradeRequest extends FormRequest {
             $input['department_id'] = 0;
         }
         $input['school_id'] = $this->schoolId();
-        
         $this->replace($input);
         
     }

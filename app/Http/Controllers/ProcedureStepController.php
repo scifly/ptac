@@ -20,10 +20,10 @@ class ProcedureStepController extends Controller {
     protected $ps;
     
     function __construct(ProcedureStep $ps) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->ps = $ps;
-    
+        
     }
     
     /**
@@ -83,7 +83,7 @@ class ProcedureStepController extends Controller {
         abort_if(!$ps, HttpStatusCode::NOT_FOUND);
         
         return $this->output([
-            'ps' => $ps
+            'ps' => $ps,
         ]);
         
     }
@@ -117,7 +117,7 @@ class ProcedureStepController extends Controller {
         
         $ps = ProcedureStep::find($id);
         abort_if(!$ps, HttpStatusCode::NOT_FOUND);
-
+        
         return $this->result(
             $ps->remove($id)
         );

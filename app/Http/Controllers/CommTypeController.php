@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-
 use App\Http\Requests\CommTypeRequest;
 use App\Models\CommType;
 use Exception;
@@ -17,14 +16,14 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class CommTypeController extends Controller {
-
-    protected $ct;
-
-    function __construct(CommType $ct) {
     
+    protected $ct;
+    
+    function __construct(CommType $ct) {
+        
         $this->middleware(['auth', 'checkrole']);
         $this->ct = $ct;
-
+        
     }
     
     /**
@@ -91,9 +90,9 @@ class CommTypeController extends Controller {
         
         $ct = $this->ct->find($id);
         $this->authorize('eud', $ct);
-
+        
         return $this->output([
-            'ct' => $ct
+            'ct' => $ct,
         ]);
         
     }
@@ -110,7 +109,7 @@ class CommTypeController extends Controller {
         
         $ct = $this->ct->find($id);
         $this->authorize('eud', $ct);
-
+        
         return $this->result(
             $ct->update($request->all())
         );
@@ -128,7 +127,7 @@ class CommTypeController extends Controller {
         
         $ct = $this->ct->find($id);
         $this->authorize('eud', $ct);
-
+        
         return $this->result(
             $ct->delete()
         );

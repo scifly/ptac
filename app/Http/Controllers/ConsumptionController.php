@@ -31,7 +31,7 @@ class ConsumptionController extends Controller {
      * @throws Throwable
      */
     public function index() {
-    
+        
         if (Request::get('draw')) {
             return response()->json(
                 $this->consumption->datatable()
@@ -39,7 +39,7 @@ class ConsumptionController extends Controller {
         }
         
         return $this->output();
-    
+        
     }
     
     /**
@@ -65,7 +65,7 @@ class ConsumptionController extends Controller {
      * @throws AuthorizationException
      */
     public function stat(Request $request) {
-
+        
         $this->authorize(
             'stat',
             new ConsumptionStat($request::all())
@@ -97,17 +97,16 @@ class ConsumptionController extends Controller {
      * @throws Exception
      */
     public function export() {
-    
+        
         $this->authorize(
             'export', ConsumptionStat::class
         );
-    
         $detail = Request::query('detail');
         
         return !isset($detail)
             ? $this->consumption->export()
             : $this->consumption->export($detail, Request::all());
-    
+        
     }
     
 }

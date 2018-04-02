@@ -20,7 +20,7 @@ class SchoolTypeController extends Controller {
     protected $st;
     
     function __construct(SchoolType $st) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->st = $st;
         
@@ -68,11 +68,11 @@ class SchoolTypeController extends Controller {
      * @throws AuthorizationException
      */
     public function store(SchoolTypeRequest $request) {
-    
+        
         $this->authorize(
             'cs', SchoolType::class
         );
-    
+        
         return $this->result(
             $this->st->store($request->all())
         );

@@ -40,7 +40,6 @@ class MenuRequest extends FormRequest {
             $input['position'] = 0;
         }
         $input['menu_type_id'] = MenuType::whereName('其他')->first()->id;
-        
         $this->replace($input);
         
     }

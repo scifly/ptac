@@ -21,7 +21,7 @@ class TabController extends Controller {
     protected $tab, $menu;
     
     function __construct(Tab $tab, Menu $menu) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->tab = $tab;
         $this->menu = $menu;
@@ -62,6 +62,7 @@ class TabController extends Controller {
         foreach ($tabMenus as $menu) {
             $selectedMenus[$menu->id] = $menu->name;
         }
+        
         return $this->output([
             'tab'           => $tab,
             'menus'         => $this->menu->leaves(1),
@@ -80,7 +81,7 @@ class TabController extends Controller {
      * @throws Throwable
      */
     public function update(TabRequest $request, $id) {
-    
+        
         $tab = Tab::find($id);
         $this->authorize('eu', $tab);
         

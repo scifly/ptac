@@ -1,19 +1,23 @@
 <?php
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
-use App\Facades\Wechat;
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
-use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Query\Builder;
+use Throwable;
+use Carbon\Carbon;
+use App\Helpers\Snippet;
+use App\Helpers\Constant;
+use Illuminate\View\View;
+use App\Helpers\ModelTrait;
+use App\Helpers\HttpStatusCode;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
+use App\Facades\DatatableFacade as Datatable;
 
 /**
  * App\Models\StudentAttendance 学生考勤记录
@@ -99,11 +103,11 @@ class StudentAttendance extends Model {
         $student = Student::whereCardNumber($data['card_number'])->first();
         abort_if(!$student, HttpStatusCode::NOT_FOUND, __('messages.student_not_found'));
         $class = $student->squad;
-        abort_if(!$class, HttpStatusCode::NOT_FOUND, __('messages.student_not_found'));
+        abort_if(!$class, HttpStatusCode::NOT_FOUND, __('messages.class_not_found'));
         $grade = $class->grade;
-        abort_if(!$grade, HttpStatusCode::NOT_FOUND, __('messages.student_not_found'));
+        abort_if(!$grade, HttpStatusCode::NOT_FOUND, __('messages.grade_not_found'));
         $school = $grade->school;
-        abort_if(!$school, HttpStatusCode::NOT_FOUND, __('messages.student_not_found'));
+        abort_if(!$school, HttpStatusCode::NOT_FOUND, __('messages.school_not_found'));
         $dateTime = strtotime($data['punch_time']);
         $day = Constant::DAYS[date('w', $dateTime)];
         $strDateTime = date('Y-m-d', $dateTime);
@@ -318,35 +322,202 @@ class StudentAttendance extends Model {
         );
         
     }
-
+    
+    /**
+     * 考勤中心首页
+     *
+     * @return Factory|View
+     */
     function wIndex() {
     
-        $userid = session('userid');
-        $user = User::whereUserid($userid)->first();
+        $user = Auth::user();
         #判断是否为教职工
-        if (!$user || !in_array($user->group->name, ['教职员工', '监护人'])) {
-            return '<h4>您无权访问此页面</h4>';
-        }
-        #如果为教职工
+        abort_if(
+            !$user || !in_array($user->group->name, ['教职员工', '监护人']),
+            HttpStatusCode::UNAUTHORIZED,
+            '<h4>您无权访问此页面</h4>'
+        );
         if ($user->educator) {
             return view('wechat.attendance_records.edu_attendance');
         }
-        # 当月第一天
-        $startTime = date('Y-m-01', strtotime(date("Y-m-d"))) . ' 00:00:00';
-        # 当月最后一天
-        $endTime = date('Y-m-t', strtotime($startTime)) . ' 23:59:59';
-        $endTime = $endTime . ' 23:59:59';
-        $students = User::whereUserid($userid)->first()->custodian->students;
-        foreach ($students as $k => $s) {
-            $data = $this->getDays($s->id, $startTime, $endTime);
-            $s->abnormal = count($data['adays']);
-            $s->normal = count($data['ndays']);
-            $s->schoolname = Squad::whereId($s->class_id)->first()->grade->school->name;
-            $s->studentname = User::whereId($s->user_id)->first()->realname;
-            $s->class_id = Squad::whereId($s->class_id)->first()->name;
+        $students = $user->custodian->students;
+        foreach ($students as $student) {
+            $data = $this->wStat($student->id);
+            $student->abnormal = count($data['adays']);
+            $student->normal = count($data['ndays']);
+            $student->schoolname = $student->class->grade->school->name;
+            $student->studentname = $student->user->realname;
+            $student->class_id = $student->squad->name;;
         }
         
-        return $students;
+        return view('wechat.attendance_records.list', [
+            'students' => $students,
+        ]);
+        
+    }
+    
+    /**
+     * 返回指定学生的考勤记录
+     *
+     * @param null $studentId
+     * @return JsonResponse|View
+     */
+    function wRecords($studentId = null) {
+    
+        if (Request::isMethod('post')) {
+            if (array_key_exists('ym', Request::all())) {
+                $begin = Request::get('ym') . '-01';
+                $response = ['datas' => $this->wStat(
+                    Request::get('id'),
+                    $begin, date('Y-m-t',
+                    strtotime($begin)))
+                ];
+            } elseif (array_key_exists('years', Request::all())) {
+                $start = Request::get('years') . '-01';
+                $response = ['date' => $this->wStat(
+                    Request::get('id'),
+                    $start,
+                    date('Y-m-t', strtotime($start))
+                )];
+            } else {
+                $date = Request::get('date');
+                $intoAttendance = $this->whereStudentId(Request::get('id'))
+                    ->whereDate('punch_time', $date)
+                    ->where('inorout', 1)
+                    ->orderBy('punch_time', 'ASC')
+                    ->get();
+                $outAttendance = $this->whereStudentId(Request::get('id'))
+                    ->whereDate('punch_time', $date)
+                    ->where('inorout', 0)
+                    ->orderBy('punch_time', 'desc')
+                    ->get();
+                $response = [
+                    'time' => $date,
+                    'into' => $intoAttendance,
+                    'out' => $outAttendance
+                ];
+            }
+        
+            return response()->json($response);
+        }
+        # 当天时间
+        $time = date('Y-m-d', time());
+        $into = $this->whereDate('punch_time', $time)
+            ->where('student_id', $studentId)
+            ->where('inorout', 1)
+            ->orderBy('punch_time', 'ASC')
+            ->get();
+        $out = $this->whereDate('punch_time', $time)
+            ->where('student_id', $studentId)
+            ->where('inorout', 0)
+            ->orderBy('punch_time', 'ASC')
+            ->get();
+        $data = $this->wStat($studentId);
+        
+        return view('wechat.attendance_records.attendance_records', [
+            'id'   => $studentId,
+            'data' => $data,
+            'days' => json_encode($data, JSON_UNESCAPED_UNICODE),
+            'time' => $time,
+            'into' => $into,
+            'out'  => $out,
+        ]);
+        
+    }
+    
+    /**
+     * 学生考勤
+     *
+     * @return JsonResponse
+     * @throws \Throwable
+     */
+    function wChart() {
+    
+        #判断是否有条件
+        $input = Request::all();
+        $user = Auth::user();
+        abort_if(
+            !$user->educator,
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            '暂未找到您教师的身份！'
+        );
+        #找到与教职员工相关的所有班级ids
+        $classIds = $this->classIds($user->educator->school_id);
+        abort_if(
+            empty(array_diff($classIds, [0])),
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            '您尚未绑定任何班级'
+        );
+        $classes = Squad::whereIn('id', $classIds)->get();
+        $data['squadnames'] = [];
+        $gradeIds = $this->gradeIds($user->educator->school_id);
+        foreach ($classes as $class) {
+            $data['squadnames'][] = [
+                'title' => $class->name,
+                'value' => $class->id,
+            ];
+        }
+        $data['squadnames'] = array_unique(
+            $data['squadnames'], SORT_REGULAR
+        );
+        #根据年级分组规则
+        $rules = StudentAttendanceSetting::whereIn('grade_id', $gradeIds)->get();
+        $data['rulenames'] = [];
+        foreach ($rules as $r) {
+            $data['rulenames'][] = [
+                'title' => $r->name, 'value' => $r->id,
+            ];
+        }
+        #饼图数据填充
+        if (!isset($input['squad'], $input['time'], $input['rule'])) {
+            $data = $this->defcharts($classIds, $data);
+            abort_if(
+                !$data,
+                HttpStatusCode::INTERNAL_SERVER_ERROR,
+                '请加入相应的考勤规则！'
+            );
+        } else {
+            $data = $this->fltcharts($input, $data);
+            abort_if(
+                !$data,
+                HttpStatusCode::INTERNAL_SERVER_ERROR,
+                '请加入相应的考勤规则！'
+            );
+        }
+        
+        return response()->json([
+            'data' => $data,
+        ]);
+    
+    }
+    
+    /**
+     * 返回指定班级对应的年级考勤规则
+     *
+     * @param $classId
+     * @return JsonResponse
+     */
+    function wRules($classId) {
+    
+        # 当前年级所有考勤规则，不分学期
+        $gradeId = Squad::find($classId)->grade_id;
+        $rules = StudentAttendanceSetting::whereGradeId($gradeId)->get();
+        $data = [];
+        foreach ($rules as $r) {
+            $data[] = [
+                'title' => $r->name,
+                'value' => $r->id,
+            ];
+        }
+        abort_if(
+            empty($data),
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            '该年级下未设置考勤规则！'
+        );
+    
+        return response()->json([
+            'data' => $data,
+        ]);
         
     }
     
@@ -504,6 +675,251 @@ class StudentAttendance extends Model {
         
         session(['sa_details' => $rows]);
         
+    }
+    
+    /**
+     * 获取指定学生的考勤数据（异常和正常）
+     *
+     * @param $studentId
+     * @param $start
+     * @param $end
+     * @return array
+     */
+    private function wStat($studentId, $start = null, $end = null) {
+    
+        # 当月第一天
+        $start = $start ?? date('Y-m-01 00:00:00', strtotime(date('Y-m-d')));
+        # 当月最后一天
+        $end = $end ?? date('Y-m-t 23:59:59', strtotime($start));
+        $ids = $aDays = $nDays = [];
+        # 查询考勤异常的数据
+        $abnormals = $this->whereStudentId($studentId)
+            ->whereBetween('punch_time', [$start, $end])
+            ->where('status', 0)->get();
+        foreach ($abnormals as $a) {
+            # 查询考勤异常当天的所有数据
+            $date = date('Y-m-d', strtotime($a->punch_time));
+            $attendances = $this->whereDate('punch_time', $date)
+                ->whereBetween('punch_time', [$start, $end])
+                ->where('student_id', $studentId)->get();
+            foreach ($attendances as $attendance) {
+                $ids[] = $attendance->id;
+                $aDays[] = date('Y-m-d', strtotime($attendance->punch_time));
+            }
+            $aDays = array_unique($aDays);
+        }
+        # 查询考勤正常天数的数据
+        $normals = $this->whereNotIn('id', $ids)
+            ->whereBetween('punch_time', [$start, $end])
+            ->where('student_id', $studentId)->get();
+        foreach ($normals as $n) {
+            $nDays[] = date('Y-m-d', strtotime($n->punch_time));
+        }
+        $nDays = array_unique($nDays);
+        
+        return [
+            'adays' => $aDays,
+            'ndays' => $nDays,
+            'asum' => count($aDays),
+            'nsum' => count($nDays)
+        ];
+        
+    }
+    
+    /**
+     * 饼图默认数据填入
+     *
+     * @param $classIds
+     * @param $data
+     * @return bool|JsonResponse
+     * @throws \Throwable
+     */
+    private function defcharts($classIds, $data) {
+        
+        #如果条件为空 默认当天 该老师对应的第一个班级，第一个规则
+        $squad = Squad::whereId($classIds[0])->first();
+        $grade = $squad->grade;
+        $school = $grade->school;
+        $schoolSemesters = Semester::whereSchoolId($school->id)->where('enabled', 1)->get();
+        $students = $squad->students;
+        $studentIds = [];
+        $date = date('Y-m-d', time());
+        foreach ($students as $student) {
+            $studentIds[] = $student->id;
+        }
+        $weekArray = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+        $weekDay = $weekArray[date("w", time())];
+        #找出对应的学期 根据当前时间
+        foreach ($schoolSemesters as $se) {
+            if ($se->start_date <= $date && $se->end_date >= $date) {
+                $semester = $se->id;
+            }
+        }
+        if (!isset($semester)) {
+            #没有找到打卡对应的学期
+            $semester = '';
+        }
+        $rule = StudentAttendanceSetting::where('grade_id', $grade->id)
+            ->where('semester_id', $semester)
+            ->where('day', $weekDay)
+            ->first();
+        #这个星期这个年级没有设置对应的规则
+        if (!$rule) {
+            return false;
+        }
+        #同一个学生这段时间打了多次记录 取这段时间最晚的一条记录
+        $attendances = $this->where('sas_id', $rule->id)
+            ->whereIn('student_id', $studentIds)
+            ->whereNotNull('sas_id')
+            ->whereDate('punch_time', $date)
+            ->orderBy('punch_time', 'desc')
+            ->get()
+            ->unique('student_id');
+        $normalRecords = $attendances->where('status', 1)->count();
+        $abnormalRecords = $attendances->where('status', 0)->count();
+        $noRecords = count($studentIds) - $normalRecords - $abnormalRecords;
+        $data['charts'] = [
+            ['name' => '打卡', 'value' => $normalRecords],
+            ['name' => '异常', 'value' => $abnormalRecords],
+            ['name' => '未打卡', 'value' => $noRecords],
+        ];
+        #处理列表页
+        $data['view'] = $this->attendList(
+            $studentIds, $attendances->where('status', 1),
+            $attendances->where('status', 0), $attendances);
+        
+        return !empty($data) ? $data : false;
+        
+    }
+    
+    /**
+     * 微信 教师端学生考勤列表
+     *
+     * @param $studentIds
+     * @param $normalAttend
+     * @param $abnormalAttend
+     * @param $attendances
+     * @return mixed
+     * @throws Throwable
+     */
+    private function attendList($studentIds, $normalAttend, $abnormalAttend, $attendances) {
+        
+        //正常的学生列表
+        $normalList = [];
+        foreach ($normalAttend as $normal) {
+            $student = $normal->student;
+            $username = $student->user->realname;
+            #对应的监护人
+            $cusName = [];
+            $cusPhone = [];
+            $custodians = $student->custodians;
+            foreach ($custodians as $custodian) {
+                $cusName[] = $custodian->user->realname;
+                foreach ($custodian->user->mobiles as $mobile) {
+                    $cusPhone[] = $mobile->mobile;
+                }
+            }
+            $normalList[] = [
+                'username'   => $username,
+                'cusname'    => $cusName,
+                'cusphone'   => $cusPhone,
+                'punch_time' => $normal->punch_time,
+            ];
+            
+        }
+        //异常的学生列表
+        $abnormalList = [];
+        foreach ($abnormalAttend as $normal) {
+            $student = $normal->student;
+            $username = $student->user->realname;
+            #对应的监护人
+            $cusName = [];
+            $cusPhone = [];
+            $custodians = $student->custodians;
+            foreach ($custodians as $custodian) {
+                $cusName[] = $custodian->user->realname;
+                foreach ($custodian->user->mobiles as $mobile) {
+                    $cusPhone[] = $mobile->mobile;
+                }
+            }
+            $abnormalList[] = [
+                'username'   => $username,
+                'cusname'    => $cusName,
+                'cusphone'   => $cusPhone,
+                'punch_time' => $normal->punch_time,
+            ];
+        }
+        //未打卡的学生列表
+        $ids = [];
+        $noStuList = [];
+        foreach ($attendances as $attend) {
+            $ids[] = $attend->student_id;
+        }
+        $stuIds = array_diff($studentIds, $ids);
+        $stues = Student::whereIn('id', $stuIds)->get();
+        foreach ($stues as $s) {
+            $username = $s->user->realname;
+            $custodians = $s->custodians;
+            $cusName = [];
+            $cusPhone = [];
+            foreach ($custodians as $custodian) {
+                $cusName[] = $custodian->user->realname;
+                foreach ($custodian->user->mobiles as $mobile) {
+                    $cusPhone[] = $mobile->mobile;
+                }
+            }
+            $noStuList[] = [
+                'username' => $username,
+                'cusname'  => $cusName,
+                'cusphone' => $cusPhone,
+            ];
+        }
+        $data = view('wechat.attendance_records.edu_lists', [
+            'normallist'   => $normalList,
+            'abnormallist' => $abnormalList,
+            'nostulist'    => $noStuList,
+        ])->render();
+        
+        return $data;
+    }
+    
+    /**
+     * 饼图筛选填入数据
+     *
+     * @param $input
+     * @param $data
+     * @return bool|JsonResponse
+     * @throws Throwable
+     */
+    private function fltcharts($input, $data) {
+        #传过来的值包含班级id 规则id 日期
+        $squad = Squad::whereId($input['squad'])->first();
+        $students = $squad->students;
+        $studentIds = [];
+        foreach ($students as $student) {
+            $studentIds[] = $student->id;
+        }
+        $attendances = $this->where('sas_id', $input['rule'])
+            ->whereIn('student_id', $studentIds)
+            ->whereNotNull('sas_id')
+            ->whereDate('punch_time', $input['date'])
+            ->orderBy('punch_time', 'desc')
+            ->get()
+            ->unique('student_id');
+        $normalRecords = $attendances->where('status', 1)->count();
+        $abnormalRecords = $attendances->where('status', 0)->count();
+        $noRecords = count($studentIds) - $normalRecords - $abnormalRecords;
+        $data['charts'] = [
+            ['name' => '打卡', 'value' => $normalRecords],
+            ['name' => '异常', 'value' => $abnormalRecords],
+            ['name' => '未打卡', 'value' => $noRecords],
+        ];
+        #处理列表页
+        $data['view'] = $this->attendList(
+            $studentIds, $attendances->where('status', 1),
+            $attendances->where('status', 0), $attendances);
+        
+        return !empty($data) ? $data : false;
     }
     
 }

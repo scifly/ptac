@@ -24,7 +24,7 @@ class WsmArticleRequest extends FormRequest {
         ];
         
     }
-
+    
     public function wantsJson() { return true; }
     
     protected function prepareForValidation() {
@@ -40,7 +40,6 @@ class WsmArticleRequest extends FormRequest {
             $input['thumbnail_media_id'] = $input['media_ids'][0];
             $input['media_ids'] = implode(',', $input['media_ids']);
         }
-        
         $this->replace($input);
     }
     

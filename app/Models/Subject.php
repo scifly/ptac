@@ -249,13 +249,7 @@ class Subject extends Model {
                 },
             ],
             [
-                'db'        => 'School.name as schoolname', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-university') . $d;
-                },
-            ],
-            [
-                'db'        => 'Subject.isaux', 'dt' => 3,
+                'db'        => 'Subject.isaux', 'dt' => 2,
                 'formatter' => function ($d) {
                     return $d
                         ? sprintf(Snippet::BADGE_GREEN, '是')
@@ -263,12 +257,12 @@ class Subject extends Model {
     
                 },
             ],
-            ['db' => 'Subject.max_score', 'dt' => 4],
-            ['db' => 'Subject.pass_score', 'dt' => 5],
-            ['db' => 'Subject.created_at', 'dt' => 6],
-            ['db' => 'Subject.updated_at', 'dt' => 7],
+            ['db' => 'Subject.max_score', 'dt' => 3],
+            ['db' => 'Subject.pass_score', 'dt' => 4],
+            ['db' => 'Subject.created_at', 'dt' => 5],
+            ['db' => 'Subject.updated_at', 'dt' => 6],
             [
-                'db'        => 'Subject.enabled', 'dt' => 8,
+                'db'        => 'Subject.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $status = $d ? Snippet::DT_ON : Snippet::DT_OFF;

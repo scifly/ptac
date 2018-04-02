@@ -69,7 +69,7 @@ class WapSiteModuleController extends Controller {
         return $this->result(
             $this->wsm->store($request)
         );
-    
+        
     }
     
     /**
@@ -85,7 +85,7 @@ class WapSiteModuleController extends Controller {
         abort_if(!$wsm, HttpStatusCode::NOT_FOUND);
         
         return $this->output([
-            'wsm' => $wsm,
+            'wsm'   => $wsm,
             'media' => Media::find($wsm->media_id),
         ]);
         
@@ -105,7 +105,7 @@ class WapSiteModuleController extends Controller {
         
         return $this->output([
             'wapSiteModule' => $wsm,
-            'media' => Media::find($wsm->media_id),
+            'media'         => Media::find($wsm->media_id),
         ]);
         
     }

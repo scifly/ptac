@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
@@ -8,11 +7,11 @@ use App\Models\Semester;
 use Illuminate\Contracts\View\View;
 
 class StudentAttendanceSettingComposer {
-
+    
     use ModelTrait;
-
+    
     public function compose(View $view) {
-
+        
         $days = [
             '星期一' => '星期一',
             '星期二' => '星期二',
@@ -27,14 +26,16 @@ class StudentAttendanceSettingComposer {
             ->where('school_id', $schoolId)
             ->pluck('name', 'id')
             ->toArray();
-        if (empty($grades)) {$grades[] = '' ;}
+        if (empty($grades)) {
+            $grades[] = '';
+        }
         $view->with([
-            'grades' => $grades,
+            'grades'    => $grades,
             'semesters' => Semester::whereSchoolId($schoolId)->pluck('name', 'id'),
-            'days' => $days,
-            'uris' => $this->uris()
+            'days'      => $days,
+            'uris'      => $this->uris(),
         ]);
-
+        
     }
-
+    
 }

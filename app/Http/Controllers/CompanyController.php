@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-
 use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
 use Exception;
@@ -17,11 +16,11 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class CompanyController extends Controller {
-
-    protected $company;
-
-    function __construct(Company $company) {
     
+    protected $company;
+    
+    function __construct(Company $company) {
+        
         $this->middleware(['auth', 'checkrole']);
         $this->company = $company;
         
@@ -34,7 +33,7 @@ class CompanyController extends Controller {
      * @throws Throwable
      */
     public function index() {
-
+        
         if (Request::get('draw')) {
             return response()->json(
                 $this->company->datatable()
@@ -91,7 +90,7 @@ class CompanyController extends Controller {
         
         $company = $this->company->find($id);
         $this->authorize('eud', $company);
-
+        
         return $this->output([
             'company' => $company,
         ]);
@@ -110,7 +109,7 @@ class CompanyController extends Controller {
         
         $company = $this->company->find($id);
         $this->authorize('eud', $company);
-
+        
         return $this->result(
             $company->modify($request->all(), $id, true)
         );
@@ -125,10 +124,10 @@ class CompanyController extends Controller {
      * @throws Exception
      */
     public function destroy($id) {
-    
+        
         $company = $this->company->find($id);
         $this->authorize('eud', $company);
-
+        
         return $this->result(
             $company->remove($id, true)
         );

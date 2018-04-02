@@ -23,7 +23,7 @@ class ActionRequest extends FormRequest {
      * @return array
      */
     public function rules() {
-
+        
         return [
             'name'            => 'required|string|between:2,255',
             'method'          => 'required|string|between:2,255',
@@ -35,7 +35,7 @@ class ActionRequest extends FormRequest {
             'enabled'         => 'required|boolean',
             'action_type_ids' => 'nullable|string|between:1,60',
         ];
-
+        
     }
     
     protected function prepareForValidation() {

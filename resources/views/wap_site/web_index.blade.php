@@ -3,7 +3,6 @@
     <h1>添加新年级</h1>
 @endsection
 @section('content')
-
     <div class="row">
         <div class="col-xs-12">
             <!--微网站管理-->
@@ -16,7 +15,8 @@
                                 <!-- 轮播（Carousel）指标 -->
                                 <ol class="carousel-indicators">
                                     @foreach($medias as $k => $v)
-                                            <li data-target="#myCarousel" data-slide-to="{{$k}}" @if($k==0) class="active" @endif></li>
+                                        <li data-target="#myCarousel" data-slide-to="{{$k}}"
+                                            @if($k==0) class="active" @endif></li>
                                     @endforeach
                                 </ol>
                                 <!-- 轮播（Carousel）项目 -->

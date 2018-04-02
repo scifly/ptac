@@ -11,21 +11,21 @@ use Illuminate\Support\Facades\Request;
 class SchoolRequest extends FormRequest {
     
     use ModelTrait;
-
+    
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
     public function authorize() { return true; }
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array
      */
     public function rules() {
-
+        
         return [
             'name'           => 'required|string|between:6,255|unique:schools,name,' .
                 $this->input('id') . ',id',
@@ -37,11 +37,11 @@ class SchoolRequest extends FormRequest {
             'school_type_id' => 'required|integer',
             'enabled'        => 'required|boolean',
         ];
-
+        
     }
-
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
         if (Request::method() == 'POST') {
             if (!isset($input['department_id'])) {
@@ -55,7 +55,6 @@ class SchoolRequest extends FormRequest {
             $input['department_id'] = $school->department_id;
             $input['menu_id'] = $school->menu_id;
         }
-        
         if (!isset($input['school_type_id'])) {
             $input['school_type_id'] = School::find($this->schoolId())->school_type_id;
         }
@@ -64,7 +63,7 @@ class SchoolRequest extends FormRequest {
                 ->topDeptId())->first()->id;
         }
         $this->replace($input);
-
+        
     }
-
+    
 }

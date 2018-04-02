@@ -39,10 +39,10 @@ class ExamRequest extends FormRequest {
         if (isset($input['subject_ids'])) {
             $input['subject_ids'] = implode(',', $input['subject_ids']);
         }
-        if(!isset($input['max_scores'])){
+        if (!isset($input['max_scores'])) {
             $input['max_scores'] = '150';
         }
-        if(!isset($input['pass_scores'])){
+        if (!isset($input['pass_scores'])) {
             $input['pass_scores'] = '90';
         }
         $this->replace($input);

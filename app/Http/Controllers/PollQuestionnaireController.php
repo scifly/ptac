@@ -68,7 +68,7 @@ class PollQuestionnaireController extends Controller {
      * @throws AuthorizationException
      */
     public function store(PqRequest $request) {
-    
+        
         $this->authorize(
             'cs', PollQuestionnaire::class
         );

@@ -17,14 +17,14 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class ActionController extends Controller {
-
+    
     protected $action;
-
+    
     function __construct(Action $action) {
-
+        
         $this->middleware(['auth', 'checkrole']);
         $this->action = $action;
-
+        
     }
     
     /**
@@ -35,16 +35,16 @@ class ActionController extends Controller {
      * @throws Throwable
      */
     public function index() {
-
+        
         if (Request::get('draw')) {
             return response()->json(
                 $this->action->datatable()
             );
         }
         abort_if(!$this->action->scan(), HttpStatusCode::NOT_FOUND);
-
+        
         return $this->output();
-
+        
     }
     
     /**
@@ -55,14 +55,14 @@ class ActionController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-
+        
         $action = $this->action->find($id);
         $this->authorize('eu', $action);
-
+        
         return $this->output([
             'action' => $action,
         ]);
-
+        
     }
     
     /**
@@ -74,14 +74,14 @@ class ActionController extends Controller {
      * @throws AuthorizationException
      */
     public function update(ActionRequest $request, $id) {
-
+        
         $action = $this->action->find($id);
         $this->authorize('eu', $action);
-
+        
         return $this->result(
             $action->update($request->all())
         );
-
+        
     }
     
 }

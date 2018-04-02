@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
@@ -8,11 +7,11 @@ use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 
 class EventComposer {
-
+    
     use ModelTrait;
-
+    
     public function compose(View $view) {
-
+        
         $schoolId = $this->schoolId();
         $educators = Educator::whereSchoolId($schoolId)
             ->where('enabled', 1)
@@ -24,13 +23,12 @@ class EventComposer {
         $subjects = Subject::whereSchoolId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id');
-
         $view->with([
             'educators' => $educatorUsers,
-            'subjects' => $subjects,
-            'uris' => $this->uris()
+            'subjects'  => $subjects,
+            'uris'      => $this->uris(),
         ]);
-
+        
     }
-
+    
 }

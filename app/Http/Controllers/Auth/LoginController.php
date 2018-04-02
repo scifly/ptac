@@ -8,7 +8,6 @@ use App\Models\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller {
     
@@ -58,6 +57,7 @@ class LoginController extends Controller {
         }
         if (Auth::id()) {
             $this->result['url'] = $returnUrl ? $returnUrl : '/';
+            
             return response()->json($this->result);
         }
         $input = $request->input('input');
@@ -66,10 +66,10 @@ class LoginController extends Controller {
         # 用户名登录
         if (User::whereUsername($input)->first()) {
             $field = 'username';
-        # 邮箱登录
+            # 邮箱登录
         } elseif (User::whereEmail($input)->first()) {
             $field = 'email';
-        # 手机号码登录
+            # 手机号码登录
         } else {
             # 获取用户的默认手机号码
             $mobile = Mobile::whereMobile($input)->where('isdefault', 1)->first();
@@ -88,6 +88,7 @@ class LoginController extends Controller {
             $rememberMe
         )) {
             $this->result['url'] = $returnUrl ? $returnUrl : '/';
+            
             return response()->json($this->result);
         }
         

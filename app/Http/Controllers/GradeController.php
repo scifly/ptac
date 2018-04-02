@@ -87,11 +87,10 @@ class GradeController extends Controller {
         
         $grade = Grade::find($id);
         $this->authorize('eud', $grade);
-        
         $selectedEducators = [];
         if ($grade->educator_ids != '0') {
             $selectedEducators = $this->educator->educatorList(
-                explode(",", rtrim($grade->educator_ids,","))
+                explode(",", rtrim($grade->educator_ids, ","))
             );
         }
         
@@ -129,7 +128,7 @@ class GradeController extends Controller {
      * @throws Exception
      */
     public function destroy($id) {
-       
+        
         $grade = Grade::find($id);
         $this->authorize('eud', $grade);
         

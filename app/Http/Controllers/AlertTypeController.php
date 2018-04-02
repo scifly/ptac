@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-
 use App\Http\Requests\AlertTypeRequest;
 use App\Models\AlertType;
 use Exception;
@@ -17,11 +16,11 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class AlertTypeController extends Controller {
-
-    protected $at;
-
-    function __construct(AlertType $at) {
     
+    protected $at;
+    
+    function __construct(AlertType $at) {
+        
         $this->middleware(['auth', 'checkrole']);
         $this->at = $at;
         
@@ -52,10 +51,11 @@ class AlertTypeController extends Controller {
      * @throws Throwable
      */
     public function create() {
-    
+        
         $this->authorize(
             'cs', AlertType::class
         );
+        
         return $this->output();
         
     }
@@ -68,15 +68,15 @@ class AlertTypeController extends Controller {
      * @throws AuthorizationException
      */
     public function store(AlertTypeRequest $request) {
-    
+        
         $this->authorize(
             'cs', AlertType::class
         );
-    
+        
         return $this->result(
             $this->at->create($request->all())
         );
-
+        
     }
     
     /**
@@ -90,7 +90,7 @@ class AlertTypeController extends Controller {
         
         $at = $this->at->find($id);
         $this->authorize('eud', $at);
-
+        
         return $this->output([
             'at' => $at,
         ]);
@@ -109,11 +109,11 @@ class AlertTypeController extends Controller {
         
         $at = $this->at->find($id);
         $this->authorize('eud', $at);
-
+        
         return $this->result(
             $at->update($request->all())
         );
-
+        
     }
     
     /**
@@ -131,7 +131,7 @@ class AlertTypeController extends Controller {
         return $this->result(
             $at->delete()
         );
-
+        
     }
     
 }

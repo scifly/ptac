@@ -17,11 +17,11 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class DepartmentController extends Controller {
-
-    protected $department;
-
-    function __construct(Department $department) {
     
+    protected $department;
+    
+    function __construct(Department $department) {
+        
         $this->middleware(['auth', 'checkrole']);
         $this->department = $department;
         
@@ -42,7 +42,7 @@ class DepartmentController extends Controller {
                 )
             );
         }
-
+        
         return $this->output();
         
     }
@@ -93,7 +93,7 @@ class DepartmentController extends Controller {
         
         $department = $this->department->find($id);
         $this->authorize('seud', $department);
-
+        
         return $this->output([
             'department' => $department,
         ]);
@@ -130,7 +130,7 @@ class DepartmentController extends Controller {
         
         $department = $this->department->find($id);
         $this->authorize('seud', $department);
-
+        
         return $this->result(
             $department->modify($request->all(), $id, true)
         );
@@ -174,7 +174,7 @@ class DepartmentController extends Controller {
                 $department->move($id, $parentId, true)
             );
         }
-
+        
         return abort(HttpStatusCode::NOT_ACCEPTABLE);
         
     }
@@ -196,5 +196,5 @@ class DepartmentController extends Controller {
         }
         
     }
-
+    
 }

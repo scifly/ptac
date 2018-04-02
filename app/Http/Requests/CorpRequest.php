@@ -23,10 +23,10 @@ class CorpRequest extends FormRequest {
         
         return [
             'name'                => 'required|string|between:3,120|unique:corps,name,' .
-                                     $this->input('id') . ',id,' .
-                                     'company_id,' . $this->input('company_id'),
+                $this->input('id') . ',id,' .
+                'company_id,' . $this->input('company_id'),
             'acronym'             => 'required|string|between:3,20|unique:corps,acronym,' .
-                                     $this->input('id') . ',id',
+                $this->input('id') . ',id',
             'department_id'       => 'required|integer',
             'menu_id'             => 'required|integer',
             'corpid'              => 'required|string|max:18',

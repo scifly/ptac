@@ -26,7 +26,7 @@ class MajorRequest extends FormRequest {
             'remark'      => 'required|string|max:255|nullable',
             'school_id'   => 'required|integer',
             'enabled'     => 'required|boolean',
-            'subject_ids' =>'required',
+            'subject_ids' => 'required',
         ];
     }
     
@@ -34,7 +34,6 @@ class MajorRequest extends FormRequest {
         
         $input = $this->all();
         $input['school_id'] = $this->schoolId();
-        
         $this->replace($input);
         
     }

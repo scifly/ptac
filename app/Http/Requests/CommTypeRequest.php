@@ -12,9 +12,9 @@ class CommTypeRequest extends FormRequest {
      * @return bool
      */
     public function authorize() {
-    
+        
         return Auth::user()->group->name == '运营';
-    
+        
     }
     
     /**
@@ -23,13 +23,13 @@ class CommTypeRequest extends FormRequest {
      * @return array
      */
     public function rules() {
-
+        
         return [
             'name'   => 'required|string|unique:comm_types,name,' .
                 $this->input('id') . ',id',
             'remark' => 'required|string',
         ];
-
+        
     }
-
+    
 }

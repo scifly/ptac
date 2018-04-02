@@ -125,17 +125,19 @@ trait ModelTrait {
     /**
      * 返回对当前用户可见的所有年级Id
      *
+     * @param null $schoolId
      * @return array
      */
-    function gradeIds() {
+    function gradeIds($schoolId = null) {
         
         $user = Auth::user();
+        $schoolId = $schoolId ?? $this->schoolId();
         $role = $user->group->name;
         if (in_array($role, Constant::SUPER_ROLES)) {
-            $schoolId = $this->schoolId();
-            $gradeIds = School::find($schoolId)->grades->pluck('id')->toArray();
+            $gradeIds = School::find($schoolId)
+                ->grades->pluck('id')->toArray();
         } else {
-            $departmentIds = $this->departmentIds($user->id);
+            $departmentIds = $this->departmentIds($user->id, $schoolId);
             $gradeIds = [];
             foreach ($departmentIds as $id) {
                 $department = Department::find($id);
@@ -152,13 +154,15 @@ trait ModelTrait {
     /**
      * 获取对当前用户可见的所有班级Id
      *
+     * @param null $schoolId
      * @return array
      */
-    function classIds() {
+    function classIds($schoolId = null) {
+        
         $user = Auth::user();
+        $schoolId = $schoolId ?? $this->schoolId();
         $role = $user->group->name;
         if (in_array($role, Constant::SUPER_ROLES)) {
-            $schoolId = $this->schoolId();
             $grades = School::find($schoolId)->grades;
             $classIds = [];
             foreach ($grades as $grade) {
@@ -168,7 +172,7 @@ trait ModelTrait {
                 }
             }
         } else {
-            $departmentIds = $this->departmentIds($user->id);
+            $departmentIds = $this->departmentIds($user->id, $schoolId);
             $classIds = [];
             foreach ($departmentIds as $id) {
                 $department = Department::find($id);
@@ -186,16 +190,20 @@ trait ModelTrait {
      * 获取对当前用户可见的、指定学校的联系人id
      *
      * @param string $type - 联系人类型: custodian, student, educator
+     * @param User|null $user
+     * @param null $schoolId
      * @return array
      */
-    function contactIds($type) {
-        $user = Auth::user();
+    function contactIds($type, User $user = null, $schoolId = null) {
+        
+        $user = $user ?? Auth::user();
+        $schoolId = $schoolId ?? $this->schoolId();
         $role = $user->group->name;
         $method = $type . 'Ids';
         if (method_exists($this, $method)) {
             if (in_array($role, Constant::SUPER_ROLES)) {
                 $contactIds = $this->$method(
-                    School::find($this->schoolId())->department_id
+                    School::find($schoolId)->department_id
                 );
             } else {
                 $departments = $user->departments;
@@ -282,14 +290,15 @@ trait ModelTrait {
      * 返回对指定用户可见的所有部门Id
      *
      * @param $userId
+     * @param null $schoolId
      * @return array
      */
-    function departmentIds($userId) {
+    function departmentIds($userId, $schoolId = null) {
         
         $departmentIds = [];
         $user = User::find($userId);
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {
-            $department = School::find($this->schoolId())->department;
+            $department = School::find($schoolId ?? $this->schoolId())->department;
             $departmentIds[] = $department->id;
             
             return array_unique(

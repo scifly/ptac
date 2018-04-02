@@ -1,21 +1,24 @@
-page.index('scores');
+page.index('scores', [
+    {className: 'text-center', targets: [1, 2, 3, 4, 5, 6, 7, 8, 10, 11]},
+    {className: 'text-right', targets: [9]}
+]);
 page.initSelect2();
 page.initMinimalIcheck();
 page.loadCss(page.plugins.send_css.css);
-var $score = $('#score');
-var $send = $('#send');
-var $send_main = $('#send_main');
-var $exam_id = $('#exam_id');
-var $token = $('#csrf_token');
-var $close_send = $('#close-send');
-var $browse = $('#btn-browse');
-var $score_send = $('#btn-send-message');
 
-var $import = $('#import');
-var $importPupils = $('#import-pupils');
-var $file = $('#confirm-import');
-var $statistics = $('#statistics');
-var $exam = $('#exam');
+var $score = $('#score'),
+    $send = $('#send'),
+    $send_main = $('#send_main'),
+    $exam_id = $('#exam_id'),
+    $token = $('#csrf_token'),
+    $close_send = $('#close-send'),
+    $browse = $('#btn-browse'),
+    $score_send = $('#btn-send-message'),
+    $import = $('#import'),
+    $importPupils = $('#import-pupils'),
+    $file = $('#confirm-import'),
+    $statistics = $('#statistics'),
+    $exam = $('#exam');
 
 $send.on('click', function() {
     $score.hide();
@@ -26,17 +29,16 @@ $close_send.on('click', function() {
     $send_main.hide();
 });
 
-
 $exam_id.on('change',function(){
     var id = $(this).val();
-    var formData = new FormData();
-    formData.append('_token', $token.attr('content'));
-    formData.append('exam', id);
     $.ajax({
         url: page.siteRoot() + "scores/send",
         type: 'POST',
         cache: false,
-        data: formData,
+        data: {
+            _token: $token.attr('content'),
+            exam: id
+        },
         processData: false,
         contentType: false,
         success: function (result) {
@@ -52,7 +54,7 @@ $exam_id.on('change',function(){
             $('#squad_id').html(html1);
             page.initSelect2();
             var html2 = '<label><input  type="checkbox" class="minimal" value="-1">总分</label>';
-            $.each(result.subjects, function (index, obj) {
+            $.each(result['subjects'], function (index, obj) {
                 var datacon = obj;
                 html2 +='<label>'+
                     '<input type="checkbox" class="minimal" value="'+datacon.id
@@ -71,26 +73,27 @@ $exam_id.on('change',function(){
 $browse.on('click', function() {
     var exam = $('#exam_id').val();
     var squad = $('#squad_id').val();
-    var subject = new Array();
-    var project = new Array();
+    var subject = [];
+    var project = [];
     $('#subject-list .checked').each(function(){
         subject.push($(this).find('.minimal').val());
     });
+    // language=JQuery-CSS
     $('#project-list .checked').each(function(){
         project.push($(this).find('.minimal').val());
     });
-    var formData = new FormData();
-    formData.append('_token', $token.attr('content'));
-    formData.append('exam', exam);
-    formData.append('squad', squad);
-    formData.append('subject', subject);
-    formData.append('project', project);
     $('.overlay').show();
     $.ajax({
         url: page.siteRoot() + "scores/send",
         type: 'POST',
         cache: false,
-        data: formData,
+        data: {
+            _token: $token.attr('content'),
+            exam: exam,
+            squad: squad,
+            subject: subject,
+            project: project
+        },
         processData: false,
         contentType: false,
         success: function (result) {
@@ -104,7 +107,7 @@ $browse.on('click', function() {
                     '<input type="checkbox" class="minimal">'+
                     '</label>'+
                     '</td>'+
-                    '<td>'+data.custodian+'</td>'+
+                    '<td>'+data['custodian']+'</td>'+
                     '<td>'+data.name
 
                     +'</td>'+
@@ -121,10 +124,11 @@ $browse.on('click', function() {
 
 });
 function table_checkAll(){
-    $('#table-checkAll').on('ifChecked', function(event){
+    var $tableCheckAll = $('#table-checkAll');
+    $tableCheckAll.on('ifChecked', function(){
         $('#send-table tbody').find('input.minimal').iCheck('check');
     });
-    $('#table-checkAll').on('ifUnchecked', function(event){
+    $tableCheckAll.on('ifUnchecked', function(){
         $('#send-table tbody').find('input.minimal').iCheck('uncheck');
     });
 }
@@ -156,10 +160,8 @@ $score_send.on('click',function(){
 	        	$('.overlay').hide();
 	            page.inform("操作成功",result.message, page.success);
 	        },
-	        error: function (result) {
-	        	$('.overlay').hide();
-	            page.inform("操作失败",'出现异常！', page.failure);
-	
+	        error: function (e) {
+                page.errorHandler(e);
 	        }
 	    });
 	}else{

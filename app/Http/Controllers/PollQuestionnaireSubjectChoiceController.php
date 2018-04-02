@@ -68,11 +68,11 @@ class PollQuestionnaireSubjectChoiceController extends Controller {
      * @throws AuthorizationException
      */
     public function store(PqChoiceRequest $request) {
-    
+        
         $this->authorize(
             'cs', PollQuestionnaireSubjectChoice::class
         );
-    
+        
         return $this->result(
             $this->pqsc->create($request->all())
         );
@@ -105,10 +105,10 @@ class PollQuestionnaireSubjectChoiceController extends Controller {
      * @throws AuthorizationException
      */
     public function update(PqChoiceRequest $request, $id) {
-    
+        
         $pqsc = $this->pqsc->find($id);
         $this->authorize('eud', $pqsc);
-    
+        
         return $this->result(
             $pqsc->update($request->all())
         );

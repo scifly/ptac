@@ -23,11 +23,11 @@ class MenuController extends Controller {
     protected $menu, $mt;
     
     function __construct(Menu $menu, MenuTab $mt) {
-
+        
         $this->middleware(['auth', 'checkrole']);
         $this->menu = $menu;
         $this->mt = $mt;
-
+        
     }
     
     /**
@@ -43,9 +43,9 @@ class MenuController extends Controller {
                 $this->menu->rootMenuId(true)
             );
         }
-
+        
         return $this->output();
-
+        
     }
     
     /**
@@ -56,15 +56,15 @@ class MenuController extends Controller {
      * @throws Throwable
      */
     public function create($id) {
-
+        
         $this->authorize(
             'css', Menu::class
         );
         
         return $this->output([
-            'parentId'   => $id,
+            'parentId' => $id,
         ]);
-
+        
     }
     
     /**
@@ -76,7 +76,7 @@ class MenuController extends Controller {
      * @throws Throwable
      */
     public function store(MenuRequest $request) {
-
+        
         $this->authorize(
             'css', Menu::class
         );
@@ -84,7 +84,7 @@ class MenuController extends Controller {
         return $this->result(
             $this->menu->store($request)
         );
-
+        
     }
     
     /**
@@ -95,7 +95,7 @@ class MenuController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-
+        
         $menu = $this->menu->find($id);
         $this->authorize('eudmr', $menu);
         # 获取已选定的卡片
@@ -104,12 +104,12 @@ class MenuController extends Controller {
         foreach ($menuTabs as $tab) {
             $selectedTabs[$tab->id] = $tab->name;
         }
-
+        
         return $this->output([
             'menu'         => $menu,
             'selectedTabs' => $selectedTabs,
         ]);
-
+        
     }
     
     /**
@@ -122,18 +122,18 @@ class MenuController extends Controller {
      * @throws Throwable
      */
     public function update(MenuRequest $request, $id) {
-
+        
         $menu = $this->menu->find($id);
         $this->authorize(
             'eudmr', $menu
         );
-
+        
         return $this->result(
             $menu->modify($request, $id)
         );
-
+        
     }
-
+    
     /**
      * 更新菜单所处位置
      *
@@ -142,7 +142,7 @@ class MenuController extends Controller {
      * @return JsonResponse
      */
     public function move($id, $parentId = null) {
-
+        
         abort_if(
             !$this->menu->find($id) || !$this->menu->find($parentId),
             HttpStatusCode::NOT_FOUND,
@@ -153,12 +153,12 @@ class MenuController extends Controller {
                 $this->menu->move($id, $parentId, true)
             );
         }
-
+        
         return abort(
             HttpStatusCode::NOT_ACCEPTABLE,
             '非法操作'
         );
-
+        
     }
     
     /**
@@ -170,14 +170,14 @@ class MenuController extends Controller {
      * @throws Throwable
      */
     public function destroy($id) {
-
+        
         $menu = $this->menu->find($id);
         $this->authorize('eudmr', $menu);
-
+        
         return $this->result(
             $menu->remove($id)
         );
-
+        
     }
     
     /**
@@ -186,7 +186,7 @@ class MenuController extends Controller {
      * @throws AuthorizationException
      */
     public function sort() {
-
+        
         $this->authorize(
             'css', Menu::class
         );
@@ -198,7 +198,7 @@ class MenuController extends Controller {
                 $menu->save();
             }
         }
-
+        
     }
     
     /**
@@ -209,7 +209,7 @@ class MenuController extends Controller {
      * @throws Throwable
      */
     public function menuTabs($id) {
-
+        
         $menu = $this->menu->find($id);
         $this->authorize('eudmr', $menu);
         $tabRanks = MenuTab::whereMenuId($id)
@@ -220,12 +220,12 @@ class MenuController extends Controller {
         foreach ($tabRanks as $rank) {
             $tabs[] = Tab::find($rank['tab_id']);
         }
-
+        
         return $this->output([
-            'tabs' => $tabs,
-            'menuId' => $id
+            'tabs'   => $tabs,
+            'menuId' => $id,
         ]);
-
+        
     }
     
     /**
@@ -237,15 +237,15 @@ class MenuController extends Controller {
      * @throws Throwable
      */
     public function rankTabs($id) {
-
+        
         $menu = $this->menu->find($id);
         $this->authorize('eudmr', $menu);
         $ranks = Request::get('data');
-
+        
         return $this->result(
             $this->mt->storeTabRanks($id, $ranks)
         );
-
+        
     }
     
 }

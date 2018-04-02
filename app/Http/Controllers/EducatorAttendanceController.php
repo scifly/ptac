@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\EducatorAttendance;
@@ -15,7 +14,7 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class EducatorAttendanceController extends Controller {
-
+    
     protected $ea;
     
     function __construct(EducatorAttendance $ea) {
@@ -50,7 +49,7 @@ class EducatorAttendanceController extends Controller {
      * @throws Throwable
      */
     public function stat() {
-    
+        
         $this->authorize(
             'sde', EducatorAttendance::class
         );

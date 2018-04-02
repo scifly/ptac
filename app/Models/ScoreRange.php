@@ -112,37 +112,21 @@ class ScoreRange extends Model {
         $columns = [
             ['db' => 'ScoreRange.id', 'dt' => 0],
             ['db' => 'ScoreRange.name', 'dt' => 1],
+            ['db' => 'ScoreRange.start_score', 'dt' => 2],
+            ['db' => 'ScoreRange.end_score', 'dt' => 3],
+            ['db' => 'ScoreRange.created_at', 'dt' => 4],
+            ['db' => 'ScoreRange.updated_at', 'dt' => 5],
             [
-                'db' => 'School.name as schoolname', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-university') . $d;
-                }
-            ],
-            ['db' => 'ScoreRange.start_score', 'dt' => 3],
-            ['db' => 'ScoreRange.end_score', 'dt' => 4],
-            ['db' => 'ScoreRange.created_at', 'dt' => 5],
-            ['db' => 'ScoreRange.updated_at', 'dt' => 6],
-            [
-                'db' => 'ScoreRange.enabled', 'dt' => 7,
+                'db' => 'ScoreRange.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
-        $joins = [
-            [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'LEFT',
-                'conditions' => [
-                    'School.id = ScoreRange.school_id',
-                ],
-            ],
-        ];
         $condition = 'ScoreRange.school_id = ' . $this->schoolId();
         
         return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
+            $this->getModel(), $columns, null, $condition
         );
 
     }

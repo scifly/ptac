@@ -20,7 +20,7 @@ class ExamController extends Controller {
     protected $exam;
     
     function __construct(Exam $exam) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->exam = $exam;
         

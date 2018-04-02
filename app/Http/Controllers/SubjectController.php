@@ -97,7 +97,6 @@ class SubjectController extends Controller {
         
         $subject = Subject::find($id);
         $this->authorize('rud', $subject);
-        
         $gradeIds = explode(',', $subject['grade_ids']);
         $selectedGrades = [];
         foreach ($gradeIds as $gradeId) {

@@ -333,9 +333,9 @@ $c = 'Wechat\AttendanceController';
 Route::get('lists', $c . '@index');
 Route::get('attendance_records/{id}', $c . '@records');
 Route::post('attendance_records/{id?}', $c . '@records');
-Route::post('attendance_charts', $c . '@stuChart');
-Route::get('attendance_rules/{id}', $c . '@getRules');
-Route::get('attendance_date', $c . '@dateRules');
+Route::post('attendance_charts', $c . '@chart');
+Route::get('attendance_rules/{id}', $c . '@rules');
+Route::get('attendance_date', $c . '@validateRule');
 // 成绩中心
 $c = 'Wechat\ScoreCenterController';
 Route::any('wechat/score/score_lists', $c . '@index');

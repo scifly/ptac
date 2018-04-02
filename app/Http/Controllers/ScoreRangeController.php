@@ -24,7 +24,7 @@ class ScoreRangeController extends Controller {
     protected $subject;
     
     function __construct(ScoreRange $sr, Subject $subject) {
-    
+        
         $this->middleware(['auth']);
         $this->sr = $sr;
         $this->subject = $subject;
@@ -68,11 +68,11 @@ class ScoreRangeController extends Controller {
      * @return JsonResponse|Response|string
      */
     public function store(ScoreRangeRequest $request) {
-
+        
         return $this->result(
             $this->sr->store($request->all())
         );
-
+        
     }
     
     /**
@@ -86,9 +86,9 @@ class ScoreRangeController extends Controller {
         
         $sr = $this->sr->find($id);
         $this->authorize('rud', $sr);
-
+        
         return $this->output([
-            'sr' => $sr,
+            'sr'               => $sr,
             'selectedSubjects' => $this->subject->selectedSubjects($sr->subject_ids),
         ]);
         
@@ -103,10 +103,10 @@ class ScoreRangeController extends Controller {
      * @throws AuthorizationException
      */
     public function update(ScoreRangeRequest $request, $id) {
-
+        
         $sr = $this->sr->find($id);
         $this->authorize('rud', $sr);
-
+        
         return $this->result(
             $sr->update($request->all())
         );
@@ -124,7 +124,7 @@ class ScoreRangeController extends Controller {
         
         $sr = $this->sr->find($id);
         $this->authorize('rud', $sr);
-
+        
         return $this->result(
             $sr->delete()
         );

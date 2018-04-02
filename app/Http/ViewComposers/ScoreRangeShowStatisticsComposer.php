@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
@@ -11,16 +10,16 @@ use Illuminate\Contracts\View\View;
 class ScoreRangeShowStatisticsComposer {
     
     use ModelTrait;
-
+    
     public function compose(View $view) {
-
+        
         $view->with([
-            'grades' => Grade::pluck('name', 'id'),
+            'grades'  => Grade::pluck('name', 'id'),
             'classes' => Squad::pluck('name', 'id'),
-            'exams' => Exam::pluck('name', 'id'),
-            'uris' => $this->uris()
+            'exams'   => Exam::pluck('name', 'id'),
+            'uris'    => $this->uris(),
         ]);
         
     }
-
+    
 }

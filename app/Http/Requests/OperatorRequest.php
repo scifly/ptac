@@ -20,10 +20,14 @@ class OperatorRequest extends FormRequest {
         $role = Auth::user()->group->name;
         if (in_array($role, Constant::SUPER_ROLES)) {
             switch ($role) {
-                case '运营': return true;
-                case '企业': return Group::find(Request::input('group_id'))->name != '运营';
-                case '学校': return Group::find(Request::input('group_id'))->name == '学校';
-                default: break;
+                case '运营':
+                    return true;
+                case '企业':
+                    return Group::find(Request::input('group_id'))->name != '运营';
+                case '学校':
+                    return Group::find(Request::input('group_id'))->name == '学校';
+                default:
+                    break;
             }
         }
         
@@ -40,7 +44,7 @@ class OperatorRequest extends FormRequest {
         
         return [
             'username'              => 'required|string|between:6,255|unique:users,username,' .
-                                       $this->input('id') . ',id',
+                $this->input('id') . ',id',
             'group_id'              => 'required|integer',
             'corp_id'               => 'nullable|integer',
             'school_id'             => 'nullable|integer',
@@ -48,7 +52,7 @@ class OperatorRequest extends FormRequest {
             'english_name'          => 'nullable|string|between:2,64',
             'gender'                => 'required|boolean',
             'email'                 => 'nullable|email|unique:users,email,' .
-                                       $this->input('id') . ',id',
+                $this->input('id') . ',id',
             'password'              => 'string|min:6|confirmed',
             'password_confirmation' => 'string|min:6',
             'mobile.*'              => ['required', new Mobiles()],

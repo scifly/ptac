@@ -147,7 +147,7 @@ class CheckRole {
     private function allowedActions(array $actions, $id) {
         
         return array_map(
-            function($str) use($id) {
+            function ($str) use ($id) {
                 return sprintf($str, $id);
             },
             $actions

@@ -11,7 +11,6 @@ use App\Models\Student;
 use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
@@ -52,6 +51,7 @@ class ScoreCenterController extends Controller {
         $code = Request::input('code');
         if (empty($code) && empty($userId)) {
             $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/wechat/score/score_lists');
+            
             return redirect($codeUrl);
         } elseif (!empty($code) && empty($userId)) {
             $accessToken = Wechat::getAccessToken($corpId, $secret);
@@ -83,8 +83,9 @@ class ScoreCenterController extends Controller {
                             $start, $pageSize
                         );
                     }
+                    
                     return response()->json([
-                        'data' => $exams,
+                        'data'      => $exams,
                         'studentId' => $studentId,
                     ]);
                 }
@@ -117,10 +118,13 @@ class ScoreCenterController extends Controller {
                             $start, $pageSize
                         );
                     }
+                    
                     return response()->json(['data' => $exams]);
                 }
                 $datas = $this->exam->examsByEducator();
-                if (!$datas) { return '你还没有绑定班级'; }
+                if (!$datas) {
+                    return '你还没有绑定班级';
+                }
                 $score = $datas['score'];
                 $className = $datas['className'];
                 if (sizeof($score) != 0) {
@@ -252,7 +256,7 @@ class ScoreCenterController extends Controller {
         $student = Request::input('student');
         if ($classId && $examId) {
             $data = $this->score->getExamClass($examId, $classId, $student);
-
+            
             return view('wechat.score.detail', [
                 'data'    => $data,
                 'classId' => $classId,

@@ -43,7 +43,7 @@ use Illuminate\Support\Facades\Auth;
  * @mixin Eloquent
  * @property-read Grade $grade
  * @property-read Semester $semester
- * @property-read \App\Models\StudentAttendance $studentAttendance
+ * @property-read StudentAttendance $studentAttendance
  */
 class StudentAttendanceSetting extends Model {
     

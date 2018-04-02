@@ -24,7 +24,7 @@ class ProcedureLogController extends Controller {
     protected $pl, $media;
     
     function __construct(ProcedureLog $pl, Media $media) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->pl = $pl;
         $this->media = $media;
@@ -56,7 +56,7 @@ class ProcedureLogController extends Controller {
         return $this->output();
         
     }
-
+    
     /**
      * 待审核的流程审批列表
      *
@@ -74,11 +74,12 @@ class ProcedureLogController extends Controller {
                 ->pluck('id')
                 ->toArray();
             $where = 'ProcedureLog.id in (' . implode(',', $ids) . ') and FIND_IN_SET(' . $userId . ',ProcedureStep.approver_user_ids)';
+            
             return response()->json($this->pl->datatable($where));
         }
-
+        
         return $this->output();
-
+        
     }
     
     /**

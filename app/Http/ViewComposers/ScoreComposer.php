@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
@@ -11,7 +10,7 @@ use Illuminate\Contracts\View\View;
 class ScoreComposer {
     
     use ModelTrait;
-
+    
     public function compose(View $view) {
         $schoolId = $this->schoolId();
         $school = School::whereId($schoolId)->first();
@@ -19,7 +18,7 @@ class ScoreComposer {
         $squadIds = [];
         $examarr = [];
         $squads = $school->classes;
-        foreach ($squads as $squad){
+        foreach ($squads as $squad) {
             $squadIds[] = $squad->id;
         }
         #获取学校下所有学生
@@ -29,29 +28,33 @@ class ScoreComposer {
                 $students[$stu->id] = $stu->student_number . '-' . $stu->user->realname;
             }
         }
-        
         #显示的考试
         $examAll = Exam::whereEnabled(1)->get();
-        foreach ($examAll as $item){
+        foreach ($examAll as $item) {
             #筛选出属于本校的考试
-            if(empty(array_diff(explode(',', $item->class_ids), $squadIds))){
+            if (empty(array_diff(explode(',', $item->class_ids), $squadIds))) {
                 $examarr[$item->id] = $item->name;
             }
         }
         $subjects = Subject::whereEnabled(1)
             ->whereSchoolId($schoolId)
             ->pluck('name', 'id');
-        if (empty($exams)) {$exams[] = '' ;}
-        if (empty($subjects)) {$subjects[] = '' ;}
-        if (empty($students)) {$students[] = '' ;}
-        
+        if (empty($exams)) {
+            $exams[] = '';
+        }
+        if (empty($subjects)) {
+            $subjects[] = '';
+        }
+        if (empty($students)) {
+            $students[] = '';
+        }
         $view->with([
             'subjects' => $subjects,
-            'exams' => $examarr,
+            'exams'    => $examarr,
             'students' => $students,
-            'uris' => $this->uris()
+            'uris'     => $this->uris(),
         ]);
         
     }
-
+    
 }

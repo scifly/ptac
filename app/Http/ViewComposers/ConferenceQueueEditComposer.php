@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
@@ -17,13 +16,13 @@ class ConferenceQueueEditComposer {
     function __construct(Educator $educator) { $this->educator = $educator; }
     
     public function compose(View $view) {
-
+        
         $view->with([
             'selectedEducators' => $this->educator->educatorList(
                 ConferenceQueue::find(Request::route('id'))->educator_ids),
-            'uris' => $this->uris()
+            'uris'              => $this->uris(),
         ]);
-
+        
     }
-
+    
 }

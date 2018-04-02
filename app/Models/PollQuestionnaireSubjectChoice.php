@@ -39,7 +39,6 @@ class PollQuestionnaireSubjectChoice extends Model {
 
     protected $fillable = [
         'pqs_id', 'choice', 'seq_no', 
-        'created_at', 'updated_at'
     ];
     
     /**
@@ -63,8 +62,10 @@ class PollQuestionnaireSubjectChoice extends Model {
             ['db' => 'PqSubject.subject', 'dt' => 1],
             ['db' => 'PollQuestionnaireChoice.choice', 'dt' => 2],
             ['db' => 'PollQuestionnaireChoice.seq_no', 'dt' => 3],
+            ['db' => 'PollQuestionnaireChoice.created_at', 'dt' => 4],
+            ['db' => 'PollQuestionnaireChoice.updated_at', 'dt' => 5],
             [
-                'db' => 'PollQuestionnaireChoice.id as choice_id', 'dt' => 4,
+                'db' => 'PollQuestionnaireChoice.id as choice_id', 'dt' => 6,
                 'formatter' => function ($d) {
                     $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $d);
                     $delLink = sprintf(Snippet::DT_LINK_DEL, $d);

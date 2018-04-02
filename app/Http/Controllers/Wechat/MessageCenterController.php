@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Wechat;
 use App\Facades\Wechat;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
+use App\Helpers\WechatTrait;
 use App\Http\Controllers\Controller;
 use App\Models\App;
 use App\Models\CommType;
@@ -31,7 +32,10 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
 class MessageCenterController extends Controller {
-
+    
+    use WechatTrait;
+    
+    const APP = '消息中心';
     protected $message, $user, $department, $media, $student, $mr, $du;
     
     /**
@@ -58,9 +62,9 @@ class MessageCenterController extends Controller {
         $this->student = $student;
         $this->mr = $mr;
         $this->du = $du;
-
+        
     }
-
+    
     /**
      * 消息列表
      *
@@ -69,85 +73,17 @@ class MessageCenterController extends Controller {
     public function index() {
         
         #获取用户信息
-        $corpId = 'wxe75227cead6b8aec';
-        $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
-        $agentId = 3;
-        $userId = Session::get('userId') ? Session::get('userId') : null;
-        $code = Request::input('code');
-        if (empty($code) && empty($userId)) {
-            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/message_center');
-
-            return redirect($codeUrl);
-        } elseif (!empty($code) && empty($userId)) {
-            $accessToken = Wechat::getAccessToken($corpId, $secret);
-            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-            $userId = $userInfo['UserId'];
-            Session::put('userId', $userId);
-        }
-        Session::put('userId', $userId);
-        $user = User::whereUserid($userId)->first();
-        if (Request::isMethod('post')) {
-            $keywords = Request::get('keywords');
-            $type = Request::get('type');
-            if (!empty($keywords)) {
-                switch ($type) {
-                    case 'send':
-                        // $sendMessages = [];
-                        $sendMessages = Message::whereSUserId($user->id)
-                            ->where('content', 'like', '%' . $keywords . '%')
-                            ->orWhere('title', 'like', '%' . $keywords . '%')
-                            ->get();
-                        if (sizeof($sendMessages) != 0) {
-                            foreach ($sendMessages as $s) {
-                                $s['r_user_id'] = User::whereId($s['r_user_id'])->first()->realname;
-                            }
-                        }
-                        return response(['sendMessages' => $sendMessages, 'type' => $type]);
-                        break;
-                    case 'receive':
-                        // $receiveMessages = [];
-                        $receiveMessages = Message::whereRUserId($user->id)
-                            ->where('content', 'like', '%' . $keywords . '%')
-                            ->orWhere('title', 'like', '%' . $keywords . '%')
-                            ->get();
-                        if (sizeof($receiveMessages) != 0) {
-                            foreach ($receiveMessages as $r) {
-                                $r['s_user_id'] = User::whereId($r['s_user_id'])->first()->realname;
-                            }
-                        }
-
-                        return response(['type' => $type, 'receiveMessages' => $receiveMessages]);
-                        break;
-                    default:
-                        break;
-                }
-
-            }
-
-        }
-        #判断是否为教职工
-        $educator = false;
-        if (empty($user)) {
-            return '<h4>你暂不是教职员工或监护人</h4>';
-        }
-        if ($user->group->name != '教职员工' && $user->group->name != '监护人') {
-            return '<h4>你暂不是教职员工或监护人</h4>';
-        }
-        if ($user->group->name == '教职员工') {
-            $educator = true;
-        }
-        $sendMessages = $this->message->where('s_user_id', $user->id)->get()->unique('msl_id')->sortByDesc('created_at')->groupBy('message_type_id');
-        $receiveMessages = $this->message->where('r_user_id', $user->id)->get()->sortByDesc('created_at')->groupBy('message_type_id');
-        $count = $this->message->where('r_user_id', $user->id)->where('read', '0')->count();
-
+        $this->getUserid(self::APP);
+        list($received, $sent, $count, $educator) = $this->message->wIndex();
+        
         return view('wechat.message_center.index', [
-            'receiveMessages' => $receiveMessages,
-            'sendMessages'    => $sendMessages,
+            'receiveMessages' => $received,
+            'sendMessages'    => $sent,
             'count'           => $count,
             'educator'        => $educator,
         ]);
     }
-
+    
     /**
      * 发送消息页面
      *
@@ -159,7 +95,7 @@ class MessageCenterController extends Controller {
             $keywords = Request::get('keywords');
             if (empty($keywords)) {
                 $lists = $this->initLists($userId);
-
+                
                 return response()->json([
                     'department' => $lists['department'],
                     'graLists'   => $lists['graLists'],
@@ -176,16 +112,16 @@ class MessageCenterController extends Controller {
                 }
                 $users = User::whereIn('id', $userIds)
                     ->where('realname', 'like', '%' . $keywords . '%')->get();
-                if($users){
-                    return response()->json(['statusCode'=> HttpStatusCode::OK, 'user'=> $users]);
+                if ($users) {
+                    return response()->json(['statusCode' => HttpStatusCode::OK, 'user' => $users]);
                 }
             }
-
+            
         }
         #教师可发送消息
         #取的和教师关联的学校的部门id
         $lists = $this->initLists($userId);
-
+        
         return view('wechat.message_center.create', [
             'department' => $lists['department'],
             'graLists'   => $lists['graLists'],
@@ -193,7 +129,63 @@ class MessageCenterController extends Controller {
             'users'      => $lists['users'],
         ]);
     }
-
+    
+    /**
+     * 初始化发送对象列表
+     * @param $userId
+     * @return array
+     */
+    private function initLists($userId) {
+        
+        $user = User::where('userid', $userId)->first();
+        $educator = Educator::where('user_id', $user->id)->first();
+        $school = $educator->school;
+        $departmentId = Department::where('name', $school->name)->first()->id;
+        $department = Department::whereId($departmentId)->first();
+        #找出教师关联的班级
+        $classes = $educator->classes;
+        #找出教师关联的年级 且判断是否为年级主任
+        $gradeId = [];
+        $squadId = [];
+        $classId = [];
+        #年级主任对应的年级
+        $grades = Grade::whereEnabled(1)->where('school_id', $school->id)->get();
+        foreach ($grades as $gra) {
+            if (in_array($educator->id, explode(',', $gra->educator_ids))) {
+                $gradeId[] = $gra->department_id;
+            }
+        }
+        #班级主任对应的班级id, 需要排除年级下的班级
+        $squads = Squad::whereEnabled(1)->get();
+        foreach ($squads as $sq) {
+            $grade = $sq->grade;
+            if (!in_array($educator->id, explode(',', $grade->educator_ids))
+                && in_array($educator->id, explode(',', $sq->educator_ids))) {
+                $squadId[] = $sq->department_id;
+            }
+        }
+        #找出科任老师对应的班级ids 排除属于班主任对应的班级和属于年级主任对应的班级
+        foreach ($classes as $squad) {
+            $grade = $squad->grade;
+            if (!in_array($educator->id, explode(',', $grade->educator_ids))
+                && !in_array($educator->id, explode(',', $squad->educator_ids))) {
+                $classId[] = $squad->department_id;
+            }
+        }
+        $data = [
+            #年级列表
+            'graLists'   => Department::whereIn('id', $gradeId)->get(),
+            #班级列表
+            'claLists'   => Department::whereIn('id', array_merge($squadId, $classId))->get(),
+            #初始人员列表
+            'users'      => false,
+            #学校对应的部门
+            'department' => $department,
+        ];
+        
+        return $data;
+    }
+    
     /**
      * 消息发送操作
      *
@@ -202,258 +194,13 @@ class MessageCenterController extends Controller {
      * @throws \Throwable
      */
     public function store() {
-     
+        
         return $this->result(
             $this->frontStore()
         );
         
     }
-
-    /**
-     * 消息编辑页面
-     *
-     * @param $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function edit($id) {
-        
-        $message = $this->message->find($id);
-        abort_if(!$message, HttpStatusCode::NOT_FOUND);
-        
-        return view('wechat.message_center.create', [
-            'message' => $message,
-        ]);
-        
-    }
-
-    /**
-     * 更新已读状态
-     *
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Exception
-     * @throws \Throwable
-     */
-    public function updateStatus($id) {
-        
-        //操作 msl表 和 message表 暂时放在控制器
-        return $this->result(
-            $this->modifyReaded($id)
-        );
-        
-    }
-
-    /**
-     * 消息详情页面展示
-     *
-     * @param $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function show( $id ) {
-        $userId = Session::get('userId');
-        $user = $this->user->where('userid', $userId)->first();
-        $message = $this->message->find($id);
-        if (json_decode($message->content) != null) {
-            $content = json_decode($message->content, true);
-            if (array_key_exists("content", $content)) {
-                $message->content = $content['content'];
-            } elseif (array_key_exists("articles", $content)) {
-                $message->content = $content['articles'][0]['content'];
-            } else {
-                $message->content = '';
-            }
-        }
-        $edit = ($user->id == $message->s_user_id ? true : false);
-
-        return view('wechat.message_center.show', [
-            'message' => $message,
-            'edit' => $edit,
-            'show' => true
-        ]);
-    }
-
-    /**
-     * 删除指定消息
-     *
-     * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse|null
-     * @throws \Exception
-     */
-    public function destroy($id) {
-        
-        $message = $this->message->find($id);
-        abort_if(!$message, HttpStatusCode::NOT_FOUND);
-        
-        //只能删除查看的记录 不能删除多媒体文件 多媒体文件路径被多个记录存入
-        return $this->result(
-            $message->delete()
-        );
-        
-    }
-
-    /**
-     * 消息回复
-     *
-     */
-    public function replay(){
-        
-        $userId = Session::get('userId');
-        $user = $this->user->where('userid', $userId)->first();
-        $input = Request::all();
-        $input['user_id'] = $user->id;
-        
-        return $this->result(
-            $this->mr->store($input)
-        );
-        
-    }
-
-    /**
-     * 消息回复列表
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function replayList(){
-        
-        $userId = Session::get('userId');
-        $user = $this->user->where('userid', $userId)->first();
-        $input = Request::all();
-        $message = $this->message->find($input['id']);
-        $lists = MessageReply::where('msl_id', $input['msl_id'])->get();
-        if ($user->id == $message->s_user_id){
-            foreach ($lists as $list){
-                $list->name = $list->user->realname;
-            }
-        } else {
-            $lists = MessageReply::where('msl_id', $input['msl_id'])->where('user_id', $user->id)->get();
-            foreach ($lists as $list){
-                $list->name = $list->user->realname;
-            }
-        }
-        
-        return $this->result($lists, $lists);
-        
-    }
-
-    /**
-     * 消息回复删除
-     *
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse
-     * @throws Exception
-     */
-    public function replayDestroy($id){
-        
-        $mr = MessageReply::find($id);
-        abort_if(!$mr, HttpStatusCode::NOT_FOUND);
-
-        return $this->result(
-            $mr->delete()
-        );
-        
-    }
-
-    /**
-     *上传图片和视频
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function upload() {
-
-        $type = Request::input('type');
-        if (empty($type)) {
-            $data = $this->media->upload(Request::file('file'), '前端消息中心');
-            return $this->result($data, $data);
-        }
-        if ($type == 'mpnews') { $type = 'image'; }
-        $file = Request::file('file');
-        if (empty($file)) {
-            abort(HttpStatusCode::NOT_ACCEPTABLE, '您还未选择文件！');
-        } else {
-            $result['data'] = [];
-            $mes = $this->media->upload($file, ' 前端消息中心');
-            if ($mes) {
-                $this->result['message'] = '上传成功！';
-                $path = $mes['path'];
-                $data = ["media" => curl_file_create($path)];
-                $crop = Corp::whereName('万浪软件')->first();
-                $app = App::whereAgentid('999')->first();
-                $token = Wechat::getAccessToken($crop->corpid, $app->secret);
-                $status = Wechat::uploadMedia($token, $type, $data);
-                $message = json_decode($status);
-                if ($message->errcode == 0) {
-                    $mes['media_id'] = $message->media_id;
-                    $this->result['data'] = $mes;
-                } else {
-                    abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '微信服务器上传失败！');
-                }
-            } else {
-                abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '文件上传失败！');
-            }
-        }
-        
-        return response()->json($this->result);
-        
-    }
-
-    /**
-     * 获取下一级部门列表
-     *
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Throwable
-     */
-    public function getNextDept($id) {
-        
-        $userId = Session::get('userId');
-        #判断传过来的id是否为学校id
-        $department = Department::whereId($id)->first();
-        if ($department->department_type_id == 4) {
-            $lists = $this->initLists($userId);
-            $data = view('wechat.message_center.select', [
-                'graLists' => $lists['graLists'],
-                'claLists' => $lists['claLists'],
-                'users'    => $lists['users'],
-            ])->render();
-
-        } else {
-            $users = $department->users;
-            $nextDepts = Department::where('parent_id', $id)->get();
-            $data = view('wechat.message_center.select', ['departments' => $nextDepts, 'users' => $users])->render();
-        }
     
-        return $this->result($data, $data);
-        
-    }
-
-    /**
-     * 更新是否已读并且更新对应msl记录
-     *
-     * @param $id
-     * @return bool
-     * @throws Exception
-     * @throws \Throwable
-     */
-    private function modifyReaded($id) {
-        
-        $message = $this->message->find($id);
-        abort_if(!$message, HttpStatusCode::NOT_FOUND);
-        try {
-            DB::transaction(function () use ($message, $id) {
-                $message->read = 1;
-                $message->save();
-                $msl = MessageSendingLog::whereId($message->msl_id)->first();
-                $msl->read_count = $msl->read_count + 1;
-                
-                return $msl->save() ? true : false;
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-
-        return true;
-    }
-
     /**
      *
      * 服务器端数据保存 后期用队列处理
@@ -462,7 +209,7 @@ class MessageCenterController extends Controller {
      * @throws \Throwable
      */
     private function frontStore() {
-
+        
         $user = $this->user->where('userid', Session::get('userId'))->first();
         $input = Request::all();
         $userIds = [];
@@ -475,7 +222,6 @@ class MessageCenterController extends Controller {
         if ($input['content'] == '0') {
             $input['content'] = '';
         }
-    
         if (!empty($input['department_ids'])) {
             #获取该部门下包括子部门的user
             $users = $this->department->getPartyUser($input['department_ids']);
@@ -520,7 +266,7 @@ class MessageCenterController extends Controller {
                         ];
                         $this->message->create($messageData);
                     }
-
+                    
                     #调用短信接口
                     return $this->frontSendSms($input);
                 });
@@ -558,7 +304,7 @@ class MessageCenterController extends Controller {
                             's_user_id'       => $user->id,
                             'r_user_id'       => $receiveUserId,
                             'message_type_id' => MessageType::whereName('消息通知')->first()->id,
-                            'read'          => 0,
+                            'read'            => 0,
                             'sent'            => 0,
                         ];
                         $message = $this->message->create($messageData);
@@ -579,10 +325,25 @@ class MessageCenterController extends Controller {
                 throw $e;
             }
         }
-
+        
         return true;
     }
-
+    
+    /**
+     * 短信消息发送
+     *
+     * @param $input
+     * @return bool
+     */
+    private function frontSendSms($input) {
+        
+        #调用短信接口
+        $code = $this->message->sendSms($input['user_ids'], $input['department_ids'], $input['content']);
+        
+        return $code > 0;
+        
+    }
+    
     /**
      * 前端应用消息推送 微信端
      *
@@ -651,76 +412,256 @@ class MessageCenterController extends Controller {
         return $status->errcode == 0;
         
     }
-
+    
     /**
-     * 短信消息发送
+     * 消息编辑页面
      *
-     * @param $input
-     * @return bool
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    private function frontSendSms($input) {
+    public function edit($id) {
         
-        #调用短信接口
-        $code = $this->message->sendSms($input['user_ids'], $input['department_ids'], $input['content']);
+        $message = $this->message->find($id);
+        abort_if(!$message, HttpStatusCode::NOT_FOUND);
         
-        return $code > 0;
+        return view('wechat.message_center.create', [
+            'message' => $message,
+        ]);
         
     }
     
     /**
-     * 初始化发送对象列表
-     * @param $userId
-     * @return array
+     * 更新已读状态
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     * @throws \Throwable
      */
-    private function initLists($userId){
+    public function updateStatus($id) {
         
-        $user = User::where('userid', $userId)->first();
-        $educator = Educator::where('user_id', $user->id)->first();
-        $school = $educator->school;
-        $departmentId = Department::where('name', $school->name)->first()->id;
-        $department = Department::whereId($departmentId)->first();
-        #找出教师关联的班级
-        $classes = $educator->classes;
-        #找出教师关联的年级 且判断是否为年级主任
-        $gradeId = [];
-        $squadId = [];
-        $classId = [];
-        #年级主任对应的年级
-        $grades = Grade::whereEnabled(1)->where('school_id', $school->id)->get();
-        foreach ($grades as $gra) {
-            if (in_array($educator->id, explode(',', $gra->educator_ids))) {
-                $gradeId[] = $gra->department_id;
+        //操作 msl表 和 message表 暂时放在控制器
+        return $this->result(
+            $this->modifyReaded($id)
+        );
+        
+    }
+    
+    /**
+     * 更新是否已读并且更新对应msl记录
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     * @throws \Throwable
+     */
+    private function modifyReaded($id) {
+        
+        $message = $this->message->find($id);
+        abort_if(!$message, HttpStatusCode::NOT_FOUND);
+        try {
+            DB::transaction(function () use ($message, $id) {
+                $message->read = 1;
+                $message->save();
+                $msl = MessageSendingLog::whereId($message->msl_id)->first();
+                $msl->read_count = $msl->read_count + 1;
+                
+                return $msl->save() ? true : false;
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 消息详情页面展示
+     *
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function show($id) {
+        $userId = Session::get('userId');
+        $user = $this->user->where('userid', $userId)->first();
+        $message = $this->message->find($id);
+        if (json_decode($message->content) != null) {
+            $content = json_decode($message->content, true);
+            if (array_key_exists("content", $content)) {
+                $message->content = $content['content'];
+            } elseif (array_key_exists("articles", $content)) {
+                $message->content = $content['articles'][0]['content'];
+            } else {
+                $message->content = '';
             }
         }
-        #班级主任对应的班级id, 需要排除年级下的班级
-        $squads = Squad::whereEnabled(1)->get();
-        foreach ($squads as $sq) {
-            $grade = $sq->grade;
-            if (!in_array($educator->id, explode(',', $grade->educator_ids))
-                && in_array($educator->id, explode(',', $sq->educator_ids))) {
-                $squadId[] = $sq->department_id;
+        $edit = ($user->id == $message->s_user_id ? true : false);
+        
+        return view('wechat.message_center.show', [
+            'message' => $message,
+            'edit'    => $edit,
+            'show'    => true,
+        ]);
+    }
+    
+    /**
+     * 删除指定消息
+     *
+     * @param $id
+     * @return bool|\Illuminate\Http\JsonResponse|null
+     * @throws \Exception
+     */
+    public function destroy($id) {
+        
+        $message = $this->message->find($id);
+        abort_if(!$message, HttpStatusCode::NOT_FOUND);
+        
+        //只能删除查看的记录 不能删除多媒体文件 多媒体文件路径被多个记录存入
+        return $this->result(
+            $message->delete()
+        );
+        
+    }
+    
+    /**
+     * 消息回复
+     *
+     */
+    public function replay() {
+        
+        $userId = Session::get('userId');
+        $user = $this->user->where('userid', $userId)->first();
+        $input = Request::all();
+        $input['user_id'] = $user->id;
+        
+        return $this->result(
+            $this->mr->store($input)
+        );
+        
+    }
+    
+    /**
+     * 消息回复列表
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function replayList() {
+        
+        $userId = Session::get('userId');
+        $user = $this->user->where('userid', $userId)->first();
+        $input = Request::all();
+        $message = $this->message->find($input['id']);
+        $lists = MessageReply::where('msl_id', $input['msl_id'])->get();
+        if ($user->id == $message->s_user_id) {
+            foreach ($lists as $list) {
+                $list->name = $list->user->realname;
+            }
+        } else {
+            $lists = MessageReply::where('msl_id', $input['msl_id'])->where('user_id', $user->id)->get();
+            foreach ($lists as $list) {
+                $list->name = $list->user->realname;
             }
         }
-        #找出科任老师对应的班级ids 排除属于班主任对应的班级和属于年级主任对应的班级
-        foreach ($classes as $squad) {
-            $grade = $squad->grade;
-            if (!in_array($educator->id, explode(',', $grade->educator_ids))
-                && !in_array($educator->id, explode(',', $squad->educator_ids))) {
-                $classId[] = $squad->department_id;
+        
+        return $this->result($lists, $lists);
+        
+    }
+    
+    /**
+     * 消息回复删除
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     * @throws Exception
+     */
+    public function replayDestroy($id) {
+        
+        $mr = MessageReply::find($id);
+        abort_if(!$mr, HttpStatusCode::NOT_FOUND);
+        
+        return $this->result(
+            $mr->delete()
+        );
+        
+    }
+    
+    /**
+     *上传图片和视频
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function upload() {
+        
+        $type = Request::input('type');
+        if (empty($type)) {
+            $data = $this->media->upload(Request::file('file'), '前端消息中心');
+            
+            return $this->result($data, $data);
+        }
+        if ($type == 'mpnews') {
+            $type = 'image';
+        }
+        $file = Request::file('file');
+        if (empty($file)) {
+            abort(HttpStatusCode::NOT_ACCEPTABLE, '您还未选择文件！');
+        } else {
+            $result['data'] = [];
+            $mes = $this->media->upload($file, ' 前端消息中心');
+            if ($mes) {
+                $this->result['message'] = '上传成功！';
+                $path = $mes['path'];
+                $data = ["media" => curl_file_create($path)];
+                $crop = Corp::whereName('万浪软件')->first();
+                $app = App::whereAgentid('999')->first();
+                $token = Wechat::getAccessToken($crop->corpid, $app->secret);
+                $status = Wechat::uploadMedia($token, $type, $data);
+                $message = json_decode($status);
+                if ($message->errcode == 0) {
+                    $mes['media_id'] = $message->media_id;
+                    $this->result['data'] = $mes;
+                } else {
+                    abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '微信服务器上传失败！');
+                }
+            } else {
+                abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '文件上传失败！');
             }
         }
-        $data = [
-            #年级列表
-            'graLists'   => Department::whereIn('id', $gradeId)->get(),
-            #班级列表
-            'claLists'   => Department::whereIn('id', array_merge($squadId, $classId))->get(),
-            #初始人员列表
-            'users'      => false,
-            #学校对应的部门
-            'department' => $department,
-        ];
-
-        return $data;
+        
+        return response()->json($this->result);
+        
+    }
+    
+    /**
+     * 获取下一级部门列表
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
+    public function getNextDept($id) {
+        
+        $userId = Session::get('userId');
+        #判断传过来的id是否为学校id
+        $department = Department::whereId($id)->first();
+        if ($department->department_type_id == 4) {
+            $lists = $this->initLists($userId);
+            $data = view('wechat.message_center.select', [
+                'graLists' => $lists['graLists'],
+                'claLists' => $lists['claLists'],
+                'users'    => $lists['users'],
+            ])->render();
+            
+        } else {
+            $users = $department->users;
+            $nextDepts = Department::where('parent_id', $id)->get();
+            $data = view('wechat.message_center.select', [
+                'departments' => $nextDepts,
+                'users'       => $users,
+            ])->render();
+        }
+        
+        return $this->result($data, $data);
+        
     }
     
 }

@@ -19,12 +19,12 @@ class MessageRequest extends FormRequest {
 //            'content' => 'required|string|max:255',
 //            'serviceid' => 'required|string|max:255',
             'message_id' => 'required|integer',
-            'url' => 'required|string|max:255',
+            'url'        => 'required|string|max:255',
 //            'message_type_id' => 'required|integer',
         ];
         
     }
-
+    
     protected function prepareForValidation() {
         $input = $this->all();
         if (isset($input['media_ids'])) {
@@ -41,7 +41,6 @@ class MessageRequest extends FormRequest {
         $input['media_ids'] = 1;
         $input['s_user_id'] = 1;
         $input['message_type_id'] = 5;
-        
         $this->replace($input);
         
     }

@@ -19,10 +19,10 @@ class MessageTypeController extends Controller {
     protected $mt;
     
     function __construct(MessageType $mt) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->mt = $mt;
-    
+        
     }
     
     /**
@@ -91,7 +91,7 @@ class MessageTypeController extends Controller {
         $this->authorize('eud', $mt);
         
         return $this->output([
-            'mt' => $mt
+            'mt' => $mt,
         ]);
         
     }

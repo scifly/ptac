@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Helpers\HttpStatusCode;
@@ -22,16 +21,16 @@ use Throwable;
 class EducatorController extends Controller {
     
     protected $educator, $department, $school;
-
+    
     public function __construct(Educator $educator, Department $department, School $school) {
-
+        
         $this->middleware(['auth', 'checkrole']);
         $this->educator = $educator;
         $this->department = $department;
         $this->school = $school;
-
+        
     }
-
+    
     /**
      * 教职员工列表
      *
@@ -39,17 +38,17 @@ class EducatorController extends Controller {
      * @throws \Throwable
      */
     public function index() {
-
+        
         if (Request::get('draw')) {
             return response()->json(
                 $this->educator->datatable()
             );
         }
-
+        
         return $this->output();
-
+        
     }
-
+    
     /**
      * 创建教职员工
      *
@@ -57,7 +56,7 @@ class EducatorController extends Controller {
      * @throws \Throwable
      */
     public function create() {
-
+        
         $this->authorize('c', Educator::class);
         if (Request::method() === 'POST') {
             return response()->json(
@@ -66,11 +65,11 @@ class EducatorController extends Controller {
                 )
             );
         }
-
+        
         return $this->output();
-
+        
     }
-
+    
     /**
      * 保存教职员工
      *
@@ -79,17 +78,17 @@ class EducatorController extends Controller {
      * @throws \Throwable
      */
     public function store(EducatorRequest $request) {
-
+        
         $this->authorize(
             'c', Educator::class
         );
-
+        
         return $this->result(
             $this->educator->store($request)
         );
-
+        
     }
-
+    
     /**
      * 教职员工详情
      *
@@ -98,14 +97,14 @@ class EducatorController extends Controller {
      * @throws \Throwable
      */
     public function show($id) {
-
+        
         $educator = Educator::find($id);
         $this->authorize('rud', $educator);
-
+        
         return $this->output(['educator' => $educator]);
-
+        
     }
-
+    
     /**
      * 编辑教职员工
      *
@@ -114,7 +113,7 @@ class EducatorController extends Controller {
      * @throws \Throwable
      */
     public function edit($id) {
-
+        
         $educator = Educator::find($id);
         $this->authorize('rud', $educator);
         if (Request::method() === 'POST') {
@@ -131,15 +130,15 @@ class EducatorController extends Controller {
         $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
         
         return $this->output([
-            'mobiles' => $educator->user->mobiles,
-            'educator' => $educator,
-            'selectedTeams' => $selectedTeams,
+            'mobiles'               => $educator->user->mobiles,
+            'educator'              => $educator,
+            'selectedTeams'         => $selectedTeams,
             'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
-            'selectedDepartments' => $selectedDepartments,
+            'selectedDepartments'   => $selectedDepartments,
         ]);
-
+        
     }
-
+    
     /**
      * 教职员工充值
      *
@@ -148,16 +147,16 @@ class EducatorController extends Controller {
      * @throws \Throwable
      */
     public function recharge($id) {
-
+        
         $educator = Educator::find($id);
         $this->authorize('rud', $educator);
-
+        
         return $this->output([
             'educator' => $educator,
         ]);
-
+        
     }
-
+    
     /**
      * 更新教职员工
      *
@@ -168,16 +167,16 @@ class EducatorController extends Controller {
      * @throws Throwable
      */
     public function update(EducatorRequest $request, $id) {
-
+        
         $educator = Educator::find($id);
         $this->authorize('rud', $educator);
-
+        
         return $this->result(
             $educator->modify($request)
         );
-
+        
     }
-
+    
     /**
      * 更新教职员工充值
      *
@@ -186,17 +185,16 @@ class EducatorController extends Controller {
      * @throws AuthorizationException
      */
     public function rechargeStore($id) {
-
+        
         $educator = Educator::find($id);
         $this->authorize('rud', $educator);
-
         $recharge = Request::get('recharge');
         $educator->sms_quote += $recharge;
-
+        
         return $this->result(
             $educator->save()
         );
-
+        
     }
     
     /**
@@ -209,14 +207,14 @@ class EducatorController extends Controller {
      * @throws Exception
      */
     public function destroy($id) {
-
+        
         $educator = Educator::find($id);
         $this->authorize('rud', $educator);
-
+        
         return $this->result(
             $educator->remove($id, true)
         );
-
+        
     }
     
     /**
@@ -228,7 +226,7 @@ class EducatorController extends Controller {
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
     public function import() {
-
+        
         $this->authorize(
             'c', Educator::class
         );
@@ -239,7 +237,6 @@ class EducatorController extends Controller {
                 HttpStatusCode::INTERNAL_SERVER_ERROR,
                 '您还没选择文件！'
             );
-            
             // 文件是否上传成功
             if ($file->isValid()) {
                 return response()->json(
@@ -247,9 +244,9 @@ class EducatorController extends Controller {
                 );
             }
         }
-
+        
         return abort(HttpStatusCode::METHOD_NOT_ALLOWED);
-
+        
     }
     
     /**
@@ -261,18 +258,17 @@ class EducatorController extends Controller {
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function export() {
-
+        
         $this->authorize(
             'c', Educator::class
         );
-        
         $range = Request::query('range');
         $departmentId = Request::query('department_id');
         
         return $this->educator->export(
             $range, $departmentId
         );
-
+        
     }
-
+    
 }

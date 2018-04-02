@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
@@ -9,7 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 
 class AppIndexComposer {
-
+    
     use ModelTrait;
     
     protected $corp;
@@ -17,7 +16,7 @@ class AppIndexComposer {
     function __construct(Corp $corp) { $this->corp = $corp; }
     
     public function compose(View $view) {
-
+        
         $corpId = $this->corp->corpId();
         $corp = Corp::find($corpId);
         $apps = App::whereCorpId($corpId)->get()->toArray();
@@ -25,13 +24,13 @@ class AppIndexComposer {
         $view->with([
             'corp' => $corp,
             'apps' => $apps,
-            'uris' => $this->uris()
+            'uris' => $this->uris(),
         ]);
-
+        
     }
-
+    
     private function formatDateTime(&$apps) {
-
+        
         Carbon::setLocale('zh');
         for ($i = 0; $i < sizeof($apps); $i++) {
             if ($apps[$i]['created_at']) {
@@ -42,9 +41,9 @@ class AppIndexComposer {
                 $dt = Carbon::createFromFormat('Y-m-d H:i:s', $apps[$i]['updated_at']);
                 $apps[$i]['updated_at'] = $dt->diffForhumans();
             }
-
+            
         }
-
+        
     }
-
+    
 }

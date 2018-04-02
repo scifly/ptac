@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
@@ -10,17 +9,16 @@ use App\Models\Team;
 use Illuminate\Contracts\View\View;
 
 class EducatorComposer {
-
+    
     use ModelTrait;
-
+    
     public function compose(View $view) {
-
+        
         $schoolId = $this->schoolId();
         $school = School::find($schoolId);
-
         $squads = $school->classes->where('enabled', 1)
             ->pluck('name', 'id')->toArray();
-        $squads[0]='(请选择)';
+        $squads[0] = '(请选择)';
         ksort($squads);
         $subjects = Subject::whereSchoolId($schoolId)
             ->where('enabled', 1)
@@ -36,16 +34,16 @@ class EducatorComposer {
             ->where('enabled', 1)
             ->pluck('name', 'id')
             ->toArray();
-        $subjects[0]='(请选择)';
+        $subjects[0] = '(请选择)';
         ksort($subjects);
         $view->with([
-            'squads' => $squads,
+            'squads'   => $squads,
             'subjects' => $subjects,
-            'groups' => $groups,
-            'teams' => $teams,
-            'uris' => $this->uris()
+            'groups'   => $groups,
+            'teams'    => $teams,
+            'uris'     => $this->uris(),
         ]);
         
     }
-
+    
 }

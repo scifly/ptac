@@ -12,9 +12,9 @@ class MessageTypeRequest extends FormRequest {
      * @return bool
      */
     public function authorize() {
-    
+        
         return Auth::user()->group->name == '运营';
-    
+        
     }
     
     public function rules() {

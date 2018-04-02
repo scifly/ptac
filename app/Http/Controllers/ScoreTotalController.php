@@ -20,7 +20,7 @@ class ScoreTotalController extends Controller {
     protected $st;
     
     function __construct(ScoreTotal $st) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->st = $st;
         
@@ -63,7 +63,7 @@ class ScoreTotalController extends Controller {
         return $this->result(
             $this->st->stat($examId)
         );
-    
+        
     }
     
 }

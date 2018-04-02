@@ -20,10 +20,10 @@ class ActionTypeRequest extends FormRequest {
     public function rules() {
         
         return [
-            'name'         => 'required|string|between:2,60|unique:action_types,name,' .
-                              $this->input('id') . ',id',
-            'remark'       => 'nullable|string',
-            'enabled'      => 'required|boolean',
+            'name'    => 'required|string|between:2,60|unique:action_types,name,' .
+                $this->input('id') . ',id',
+            'remark'  => 'nullable|string',
+            'enabled' => 'required|boolean',
         ];
         
     }

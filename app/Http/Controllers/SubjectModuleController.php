@@ -20,7 +20,7 @@ class SubjectModuleController extends Controller {
     protected $sm;
     
     function __construct(SubjectModule $sm) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->sm = $sm;
         
@@ -72,6 +72,7 @@ class SubjectModuleController extends Controller {
         $this->authorize(
             'cs', SubjectModule::class
         );
+        
         return $this->result(
             $this->sm->create($request->all())
         );
@@ -105,7 +106,7 @@ class SubjectModuleController extends Controller {
      * @throws AuthorizationException
      */
     public function update(SubjectModuleRequest $request, $id) {
-    
+        
         $sm = $this->sm->find($id);
         $this->authorize('eud', $sm);
         
@@ -123,7 +124,7 @@ class SubjectModuleController extends Controller {
      * @throws Exception
      */
     public function destroy($id) {
-    
+        
         $sm = $this->sm->find($id);
         $this->authorize('eud', $sm);
         

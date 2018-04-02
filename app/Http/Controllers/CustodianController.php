@@ -78,8 +78,8 @@ class CustodianController extends Controller {
             if (Request::input('field') == 'grade') {
                 list($classes, $classId) = $this->grade->classList($id);
                 $this->result['html'] = [
-                    'classes' => $classes,
-                    'students' => $this->class->studentList($classId)
+                    'classes'  => $classes,
+                    'students' => $this->class->studentList($classId),
                 ];
             } else {
                 $this->result['html']['students'] = $this->class->studentList($id);
@@ -140,7 +140,7 @@ class CustodianController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-    
+        
         $custodian = $this->custodian->find($id);
         $this->authorize('seud', $custodian);
         if (Request::method() === 'POST') {
@@ -155,12 +155,13 @@ class CustodianController extends Controller {
             if (Request::input('field') == 'grade') {
                 list($classes, $classId) = $this->grade->classList($id);
                 $this->result['html'] = [
-                    'classes' => $classes,
-                    'students' => $this->class->studentList($classId)
+                    'classes'  => $classes,
+                    'students' => $this->class->studentList($classId),
                 ];
             } else {
                 $this->result['html']['students'] = $this->class->studentList($id);
             }
+            
             return response()->json($this->result);
         }
         $relations = CustodianStudent::whereCustodianId($id)->get();
@@ -220,7 +221,7 @@ class CustodianController extends Controller {
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function export() {
-
+        
         $this->authorize(
             'cse', Custodian::class
         );

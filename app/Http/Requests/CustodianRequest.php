@@ -27,7 +27,7 @@ class CustodianRequest extends FormRequest {
             'user.email'    => 'nullable|email|unique:users,email,' .
                 $this->input('user_id') . ',id',
             'mobile.*'      => ['required', new Mobiles()],
-            'student_ids'   => 'required'
+            'student_ids'   => 'required',
         ];
         
         return $rules;

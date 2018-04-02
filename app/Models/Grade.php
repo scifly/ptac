@@ -216,13 +216,7 @@ class Grade extends Model {
                 },
             ],
             [
-                'db'        => 'School.name as schoolname', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-university') . $d;
-                },
-            ],
-            [
-                'db'        => 'Grade.educator_ids', 'dt' => 3,
+                'db'        => 'Grade.educator_ids', 'dt' => 2,
                 'formatter' => function ($d) {
                     if (empty($d)) {
                         return '';
@@ -239,23 +233,13 @@ class Grade extends Model {
                     return implode(', ', $educators);
                 },
             ],
-            ['db' => 'Grade.created_at', 'dt' => 4],
-            ['db' => 'Grade.updated_at', 'dt' => 5],
+            ['db' => 'Grade.created_at', 'dt' => 3],
+            ['db' => 'Grade.updated_at', 'dt' => 4],
             [
-                'db'        => 'Grade.enabled', 'dt' => 6,
+                'db'        => 'Grade.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
-            ],
-        ];
-        $joins = [
-            [
-                'table'      => 'schools',
-                'alias'      => 'School',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'School.id = Grade.school_id',
-                ],
             ],
         ];
         $condition = 'School.id = ' . $this->schoolId();
@@ -264,7 +248,7 @@ class Grade extends Model {
         }
         
         return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
+            $this->getModel(), $columns, null, $condition
         );
         
     }

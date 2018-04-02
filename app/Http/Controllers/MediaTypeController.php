@@ -95,7 +95,7 @@ class MediaTypeController extends Controller {
         $this->authorize('eud', $mt);
         
         return $this->output([
-            'mt' => $mt
+            'mt' => $mt,
         ]);
         
     }

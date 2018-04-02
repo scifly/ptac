@@ -42,7 +42,6 @@ class TabRequest extends FormRequest {
         if (!isset($input['menu_ids'])) {
             $input['menu_ids'] = [];
         }
-        
         $this->replace($input);
         
     }

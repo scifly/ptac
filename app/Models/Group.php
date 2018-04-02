@@ -193,46 +193,41 @@ class Group extends Model {
                     return sprintf(Snippet::ICON, 'fa-meh-o') . $d;
                 }
             ],
+            ['db' => 'Groups.remark', 'dt' => 2],
+            ['db' => 'Groups.created_at', 'dt' => 3],
+            ['db' => 'Groups.updated_at', 'dt' => 4],
             [
-                'db' => 'School.name as schoolname', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-university') . $d;
-                }
-            ],
-            ['db' => 'Groups.remark', 'dt' => 3],
-            ['db' => 'Groups.created_at', 'dt' => 4],
-            ['db' => 'Groups.updated_at', 'dt' => 5],
-            [
-                'db' => 'Groups.enabled', 'dt' => 6,
+                'db' => 'Groups.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
-        $joins = [
-            [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
-                'conditions' => [
-                    'School.id = Groups.school_id'
-                ]
-            ]
-        ];
         $condition = '';
         $user = Auth::user();
+        $joins = [];
         switch ($user->group->name) {
             case '运营':
                 break;
             case '企业':
                 $corpId = Corp::whereDepartmentId($user->topDeptId())
                     ->first()->id;
-                $joins[] = [
-                    'table' => 'corps',
-                    'alias' => 'Corp',
-                    'type' => 'INNER',
-                    'conditions' => [
-                        'Corp.id = School.corp_id'
+                $joins = [
+                    [
+                        'table' => 'schools',
+                        'alias' => 'School',
+                        'type' => 'INNER',
+                        'conditions' => [
+                            'School.id = Groups.school_id'
+                        ]
+                    ],
+                    [
+                        'table' => 'corps',
+                        'alias' => 'Corp',
+                        'type' => 'INNER',
+                        'conditions' => [
+                            'Corp.id = School.corp_id'
+                        ]
                     ]
                 ];
                 $condition = 'Corp.id = ' . $corpId;
@@ -244,9 +239,13 @@ class Group extends Model {
                 break;
         }
         if (empty($condition)) {
-            return Datatable::simple($this->getModel(), $columns, $joins);
+            return Datatable::simple(
+                $this->getModel(), $columns
+            );
         }
-        return Datatable::simple($this->getModel(), $columns, $joins, $condition);
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
 
     }
 

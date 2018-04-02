@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-
 use App\Http\Requests\GroupRequest;
 use App\Models\Group;
 use App\Models\Menu;
@@ -22,7 +21,7 @@ class GroupController extends Controller {
     protected $group, $menu;
     
     function __construct(Group $group, Menu $menu) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->group = $group;
         $this->menu = $menu;
@@ -42,7 +41,7 @@ class GroupController extends Controller {
                 $this->group->datatable()
             );
         }
-
+        
         return $this->output();
         
     }
@@ -54,16 +53,17 @@ class GroupController extends Controller {
      * @throws Throwable
      */
     public function create() {
-
+        
         $this->authorize(
             'cs', Group::class
         );
         if (Request::method() === 'POST') {
             $schoolId = Request::query('schoolId');
             $menuId = School::find($schoolId)->menu_id;
+            
             return $this->menu->schoolTree($menuId);
         }
-
+        
         return $this->output();
         
     }
@@ -77,11 +77,11 @@ class GroupController extends Controller {
      * @throws Throwable
      */
     public function store(GroupRequest $request) {
-    
+        
         $this->authorize(
             'cs', Group::class
         );
-    
+        
         return $this->result(
             $this->group->store($request->all())
         );
@@ -102,6 +102,7 @@ class GroupController extends Controller {
         if (Request::method() === 'POST') {
             $schoolId = Request::query('schoolId');
             $menuId = School::find($schoolId)->menu_id;
+            
             return $this->menu->schoolTree($menuId);
         }
         

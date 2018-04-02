@@ -4,31 +4,30 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class GroupRequest extends FormRequest {
-
+    
     public function authorize() { return true; }
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array
      */
     public function rules() {
-
+        
         return [
-            'name'   => 'required|string|between:2,255|unique:groups,name,' .
+            'name'     => 'required|string|between:2,255|unique:groups,name,' .
                 $this->input('id') . ',id',
-            'remark' => 'required|string|between:2,20',
+            'remark'   => 'required|string|between:2,20',
             'menu_ids' => 'required',
             'actionId' => 'required',
             // 'tabId' => 'required',
         ];
-
+        
     }
-
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
-
         if (isset($input['tabs'])) {
             $tabIds = null;
             foreach ($input['tabs'] as $k => $v) {
@@ -43,9 +42,8 @@ class GroupRequest extends FormRequest {
             }
             $input['actionId'] = $actionIds;
         }
-
         $this->replace($input);
-
+        
     }
-
+    
 }

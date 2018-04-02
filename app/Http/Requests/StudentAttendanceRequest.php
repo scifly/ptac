@@ -21,12 +21,12 @@ class StudentAttendanceRequest extends FormRequest {
         
         return [
             'card_number' => 'required|string|between:5,32',
-            'punch_time' => 'required|date',
-            'inorout'    => 'required|integer',
-            'media_id'   => 'required|integer',
-            'longitude'  => 'required|numeric',
-            'latitude'   => 'required|numeric',
-            'machineid'  => 'required|string|between:2,20'
+            'punch_time'  => 'required|date',
+            'inorout'     => 'required|integer',
+            'media_id'    => 'required|integer',
+            'longitude'   => 'required|numeric',
+            'latitude'    => 'required|numeric',
+            'machineid'   => 'required|string|between:2,20',
         ];
         
     }
@@ -39,7 +39,6 @@ class StudentAttendanceRequest extends FormRequest {
         $input['latitude'] = $input['latitude'] ?? 0;
         $input['attendance_machine_id'] = $input['attendId'];
         $input['media_id'] = 0;
-        
         $this->replace($input);
         
     }

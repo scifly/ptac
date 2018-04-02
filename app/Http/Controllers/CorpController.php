@@ -16,14 +16,14 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class CorpController extends Controller {
-
+    
     protected $corp;
-
+    
     function __construct(Corp $corp) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->corp = $corp;
-
+        
     }
     
     /**
@@ -51,15 +51,15 @@ class CorpController extends Controller {
      * @throws Throwable
      */
     public function create() {
-
+        
         $this->authorize(
             'create', Corp::class
         );
-
+        
         return $this->output();
         
     }
-
+    
     /**
      * 保存企业
      *
@@ -68,11 +68,11 @@ class CorpController extends Controller {
      * @throws AuthorizationException
      */
     public function store(CorpRequest $request) {
-
+        
         $this->authorize(
             'create', Corp::class
         );
-
+        
         return $this->result(
             $this->corp->store($request->all(), true)
         );
@@ -90,13 +90,13 @@ class CorpController extends Controller {
         
         $corp = $this->corp->find($id);
         $this->authorize('veud', $corp);
-
+        
         return $this->output([
             'corp' => $corp,
         ]);
         
     }
-
+    
     /**
      * 更新企业
      *
@@ -109,7 +109,7 @@ class CorpController extends Controller {
         
         $corp = $this->corp->find($id);
         $this->authorize('veud', $corp);
-
+        
         return $this->result(
             $corp->modify($request->all(), $id, true)
         );
@@ -127,7 +127,7 @@ class CorpController extends Controller {
         
         $corp = $this->corp->find($id);
         $this->authorize('veud', $corp);
-
+        
         return $this->result(
             $corp->remove($id, true)
         );

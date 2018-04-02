@@ -26,7 +26,7 @@ class AlertTypeRequest extends FormRequest {
         
         return [
             'name'         => 'required|string|between:2,60|unique:alert_types,name,' .
-                              $this->input('id') . ',id',
+                $this->input('id') . ',id',
             'english_name' => 'required|string',
             'enabled'      => 'required|boolean',
         ];

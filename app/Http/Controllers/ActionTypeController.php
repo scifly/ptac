@@ -94,7 +94,7 @@ class ActionTypeController extends Controller {
         $this->authorize('eud', $at);
         
         return $this->output([
-            'at' => $at
+            'at' => $at,
         ]);
         
     }
@@ -108,7 +108,7 @@ class ActionTypeController extends Controller {
      * @throws AuthorizationException
      */
     public function update(ActionType $request, $id) {
-    
+        
         $at = $this->at->find($id);
         $this->authorize('eud', $at);
         
@@ -126,14 +126,14 @@ class ActionTypeController extends Controller {
      * @throws AuthorizationException
      */
     public function destroy($id) {
-    
+        
         $at = $this->at->find($id);
         $this->authorize('eud', $at);
-    
+        
         return $this->result(
             $at->remove($id)
         );
-    
+        
     }
     
 }

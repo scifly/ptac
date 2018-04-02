@@ -16,14 +16,14 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class SemesterController extends Controller {
-
-    protected $semester;
-
-    function __construct(Semester $semester) {
     
+    protected $semester;
+    
+    function __construct(Semester $semester) {
+        
         $this->middleware(['auth', 'checkrole']);
         $this->semester = $semester;
-    
+        
     }
     
     /**
@@ -76,9 +76,9 @@ class SemesterController extends Controller {
         return $this->result(
             Semester::create($request->all())
         );
-
+        
     }
-   
+    
     /**
      * 编辑学期
      *

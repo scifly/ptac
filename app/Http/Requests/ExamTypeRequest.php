@@ -31,7 +31,6 @@ class ExamTypeRequest extends FormRequest {
         
         $input = $this->all();
         $input['school_id'] = $this->schoolId();
-        
         $this->replace($input);
         
     }

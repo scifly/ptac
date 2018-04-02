@@ -19,7 +19,7 @@ class ExamTypeController extends Controller {
     protected $et;
     
     function __construct(ExamType $et) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->et = $et;
         
@@ -67,7 +67,7 @@ class ExamTypeController extends Controller {
      * @throws AuthorizationException
      */
     public function store(ExamTypeRequest $request) {
-     
+        
         $this->authorize(
             'c', ExamType::class
         );

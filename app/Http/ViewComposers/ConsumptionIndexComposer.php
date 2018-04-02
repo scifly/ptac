@@ -1,20 +1,32 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use Illuminate\Contracts\View\View;
 
 class ConsumptionIndexComposer {
-
+    
     use ModelTrait;
-
+    
     public function compose(View $view) {
-
+        
         $view->with([
-            'uris' => $this->uris(),
+            'buttons' => [
+                'stat'   => [
+                    'id'    => 'stat',
+                    'label' => '统计',
+                    'icon'  => 'fa fa-bar-chart',
+                ],
+                'export' => [
+                    'id'    => 'export',
+                    'label' => '批量导出',
+                    'icon'  => 'fa fa-arrow-circle-down',
+                ],
+            ],
+            'titles'  => ['#', '学生', '消费地点', '消费机ID', '类型', '金额', '时间'],
+            'uris'    => $this->uris(),
         ]);
-
+        
     }
-
+    
 }

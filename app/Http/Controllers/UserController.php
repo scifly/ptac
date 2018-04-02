@@ -3,9 +3,9 @@ namespace App\Http\Controllers;
 
 use App\Helpers\HttpStatusCode;
 use App\Http\Requests\UserRequest;
+use App\Models\Event;
 use App\Models\Message;
 use App\Models\User;
-use App\Models\Event;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
@@ -31,16 +31,16 @@ class UserController extends Controller {
         $this->event = $event;
         
     }
-
+    
     /**
      * 修改个人信息
      *
      * @throws \Throwable
      */
     public function profile() {
-
+        
         return $this->output();
-
+        
     }
     
     /**
@@ -49,56 +49,56 @@ class UserController extends Controller {
      * @throws Throwable
      */
     public function reset() {
-
+        
         if (Request::isMethod('post')) {
             $password = Request::input('password');
             $pwd = bcrypt(Request::input('pwd'));
             $user = User::find(Auth::id());
             abort_if(
-                !Hash::check($password,$user->password),
+                !Hash::check($password, $user->password),
                 HttpStatusCode::BAD_REQUEST
             );
             if ($user->update(['password' => $pwd])) {
                 return response()->json($this->result);
             }
         }
-
+        
         return $this->output();
-
+        
     }
     
     /**
      * 我的消息
      * @throws \Throwable
      */
-    public function messages(){
-
+    public function messages() {
+        
         if (Request::get('draw')) {
             return response()->json(
                 $this->message->datatable()
             );
         }
-
+        
         return $this->output();
-
+        
     }
-
+    
     /**
      * 待办事项
      * @throws Throwable
      */
-    public function event(){
-
+    public function event() {
+        
         if (Request::get('draw')) {
             return response()->json(
                 $this->event->datatable()
             );
         }
-
+        
         return $this->output();
-
+        
     }
-
+    
     /**
      * 上传用户头像
      *
@@ -106,7 +106,7 @@ class UserController extends Controller {
      * @return JsonResponse
      */
     public function uploadAvatar($id) {
-
+        
         $file = Request::file('avatar');
         $check = $this->checkFile($file);
         abort_if(
@@ -135,29 +135,14 @@ class UserController extends Controller {
         //TODO:需要处理默认头像、图片缓存问题
         if ($id < 1) {
             $this->result['fileName'] = $fileName;
+            
             return response()->json($this->result);
         }
-
-        return $this->saveImg($id, $fileName);
-
-    }
-
-    /**
-     * 更新用户
-     * @param UserRequest $request
-     * @param $id
-     * @return JsonResponse|string
-     */
-    public function update(UserRequest $request, $id){
         
-        $user = User::find($id);
-        abort_if(!$user, HttpStatusCode::NOT_FOUND);
-
-        return $this->result(
-            $this->user->modify($request->all(), $id, false)
-        );
+        return $this->saveImg($id, $fileName);
+        
     }
-
+    
     /**
      * 验证文件是否上传成功
      *
@@ -206,6 +191,24 @@ class UserController extends Controller {
         
         return response()->json($this->result);
         
+    }
+    
+    /**
+     * 更新用户
+     *
+     * @param UserRequest $request
+     * @param $id
+     * @return JsonResponse|string
+     * @throws Throwable
+     */
+    public function update(UserRequest $request, $id) {
+        
+        $user = User::find($id);
+        abort_if(!$user, HttpStatusCode::NOT_FOUND);
+        
+        return $this->result(
+            $this->user->modify($request->all(), $id, false)
+        );
     }
     
 }

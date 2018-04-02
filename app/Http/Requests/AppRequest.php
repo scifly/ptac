@@ -19,7 +19,7 @@ class AppRequest extends FormRequest {
      * @return array
      */
     public function rules() {
-
+        
         return [
             'name'                 => 'required|string|max:36|unique:apps,name,' .
                 $this->input('id') . ',id,' .
@@ -32,17 +32,16 @@ class AppRequest extends FormRequest {
             'isreportenter'        => 'required|boolean',
             'home_url'             => 'required|string|max:255',
         ];
-
+        
     }
     
     protected function prepareForValidation() {
-    
+        
         $input = $this->all();
         $corp = new Corp();
         $input['corp_id'] = $corp->corpId();
-
         $this->replace($input);
-
+        
     }
     
 }

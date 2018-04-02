@@ -19,7 +19,7 @@ class EducatorAttendanceSettingController extends Controller {
     protected $eas;
     
     function __construct(EducatorAttendanceSetting $eas) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->eas = $eas;
         

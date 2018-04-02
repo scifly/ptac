@@ -19,7 +19,7 @@ class AttendanceMachineController extends Controller {
     protected $am;
     
     function __construct(AttendanceMachine $am) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->am = $am;
         
@@ -32,7 +32,7 @@ class AttendanceMachineController extends Controller {
      * @throws \Throwable
      */
     public function index() {
-
+        
         if (Request::get('draw')) {
             return response()->json(
                 $this->am->datatable()
@@ -54,7 +54,7 @@ class AttendanceMachineController extends Controller {
         $this->authorize(
             'c', AttendanceMachine::class
         );
-
+        
         return $this->output();
         
     }
@@ -67,11 +67,11 @@ class AttendanceMachineController extends Controller {
      * @throws AuthorizationException
      */
     public function store(AttendanceMachineRequest $request) {
-
+        
         $this->authorize(
             'c', AttendanceMachine::class
         );
-
+        
         return $this->result(
             $this->am->create($request->all())
         );

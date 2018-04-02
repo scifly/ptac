@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -13,7 +12,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-
 
 /**
  * App\Models\Team 教职员工组
@@ -101,36 +99,20 @@ class Team extends Model {
         $columns = [
             ['db' => 'Team.id', 'dt' => 0],
             ['db' => 'Team.name', 'dt' => 1],
+            ['db' => 'Team.remark', 'dt' => 2],
+            ['db' => 'Team.created_at', 'dt' => 3],
+            ['db' => 'Team.updated_at', 'dt' => 4],
             [
-                'db' => 'School.name as schoolname', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-university') . $d;
-                }
-            ],
-            ['db' => 'Team.remark', 'dt' => 3],
-            ['db' => 'Team.created_at', 'dt' => 4],
-            ['db' => 'Team.updated_at', 'dt' => 5],
-            [
-                'db' => 'Team.enabled', 'dt' => 6,
+                'db' => 'Team.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
-        $joins = [
-            [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
-                'conditions' => [
-                    'School.id = Team.school_id',
-                ],
-            ],
-        ];
         $condition = 'Team.school_id = ' . $this->schoolId();
         
         return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
+            $this->getModel(), $columns, null, $condition
         );
 
     }

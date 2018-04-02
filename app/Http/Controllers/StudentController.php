@@ -80,11 +80,11 @@ class StudentController extends Controller {
      * @throws Throwable
      */
     public function store(StudentRequest $request) {
-    
+        
         $this->authorize(
             'csie', Student::class
         );
-    
+        
         return $this->result(
             $this->student->store(
                 $request->all()
@@ -133,7 +133,7 @@ class StudentController extends Controller {
         
         return $this->output([
             'student' => $student,
-            'user' => $student->user,
+            'user'    => $student->user,
             'mobiles' => $student->user->mobiles,
         ]);
         
@@ -149,7 +149,7 @@ class StudentController extends Controller {
      * @throws Throwable
      */
     public function update(StudentRequest $request, $id) {
-    
+        
         $student = $this->student->find($id);
         $this->authorize('seud', $student);
         
@@ -170,7 +170,7 @@ class StudentController extends Controller {
      * @throws Throwable
      */
     public function destroy($id) {
-    
+        
         $student = $this->student->find($id);
         $this->authorize('seud', $student);
         
@@ -182,18 +182,17 @@ class StudentController extends Controller {
     
     /**
      * 导入学籍
-     * 
+     *
      * @return JsonResponse
      * @throws AuthorizationException
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
     public function import() {
-    
+        
         $this->authorize(
             'csie', Student::class
         );
-    
         if (Request::isMethod('post')) {
             $file = Request::file('file');
             abort_if(
@@ -221,7 +220,7 @@ class StudentController extends Controller {
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function export() {
-    
+        
         $this->authorize(
             'csie', Student::class
         );

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
@@ -13,9 +12,9 @@ use Illuminate\Support\Facades\Auth;
 class ConferenceQueueComposer {
     
     use ModelTrait;
-
+    
     public function compose(View $view) {
-
+        
         $schoolId = $this->schoolId();
         $conferenceRooms = ConferenceRoom::whereSchoolId($schoolId)
             ->pluck('name', 'id')
@@ -47,13 +46,12 @@ class ConferenceQueueComposer {
                 }
                 break;
         }
-
         $view->with([
             'conferenceRooms' => $conferenceRooms,
-            'educators' => $educators,
-            'uris' => $this->uris()
+            'educators'       => $educators,
+            'uris'            => $this->uris(),
         ]);
-
+        
     }
-
+    
 }

@@ -533,27 +533,10 @@ class Educator extends Model {
         $columns = [
             ['db' => 'Educator.id', 'dt' => 0],
             ['db' => 'User.realname as username', 'dt' => 1],
-            ['db' => 'School.name', 'dt' => 2],
+            ['db' => 'Educator.created_at', 'dt' => 2],
+            ['db' => 'Educator.updated_at', 'dt' => 3],
             [
-                'db'        => 'Educator.sms_quote', 'dt' => 3,
-                'formatter' => function ($row) {
-                    $educator = self::find($row['id']);
-                    if (!$educator) {
-                        return '';
-                    }
-                    $user = User::find($educator->user_id);
-                    if (!$user) {
-                        return '';
-                    }
-                    $mobiles = $user->mobiles->pluck('mobile')->toArray();
-                    
-                    return implode(', ', $mobiles);
-                },
-            ],
-            ['db' => 'Educator.created_at', 'dt' => 4],
-            ['db' => 'Educator.updated_at', 'dt' => 5],
-            [
-                'db'        => 'Educator.enabled', 'dt' => 6,
+                'db'        => 'Educator.enabled', 'dt' => 4,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $status = $d ? Snippet::DT_ON : Snippet::DT_OFF;
@@ -580,14 +563,6 @@ class Educator extends Model {
                 'type'       => 'INNER',
                 'conditions' => [
                     'User.id = Educator.user_id',
-                ],
-            ],
-            [
-                'table'      => 'schools',
-                'alias'      => 'School',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'School.id = Educator.school_id',
                 ],
             ],
         ];

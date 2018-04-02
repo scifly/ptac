@@ -1,11 +1,8 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Facades\Wechat;
 use App\Helpers\HttpStatusCode;
 use App\Http\Requests\MessageRequest;
-use App\Models\App;
-use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Media;
 use App\Models\Message;
@@ -67,7 +64,6 @@ class MessageController extends Controller {
     public function message() {
         
         // return $this->output();
-        
     }
     
     /**

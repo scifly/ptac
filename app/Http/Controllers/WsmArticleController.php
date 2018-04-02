@@ -148,6 +148,5 @@ class WsmArticleController extends Controller {
         );
         
     }
-
     
 }

@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-
 use App\Http\Requests\IconRequest;
 use App\Models\Icon;
 use Exception;
@@ -21,10 +20,10 @@ class IconController extends Controller {
     protected $icon;
     
     function __construct(Icon $icon) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->icon = $icon;
-    
+        
     }
     
     /**
@@ -56,6 +55,7 @@ class IconController extends Controller {
         $this->authorize(
             'cs', Icon::class
         );
+        
         return $this->output();
         
     }

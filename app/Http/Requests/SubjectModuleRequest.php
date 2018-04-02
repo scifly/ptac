@@ -18,7 +18,7 @@ class SubjectModuleRequest extends FormRequest {
      * @return array
      */
     public function rules() {
-
+        
         return [
             'name'   => 'required|string|between:2,20|unique:subject_modules,name,' .
                 $this->input('id') . ',id,' .
@@ -26,7 +26,7 @@ class SubjectModuleRequest extends FormRequest {
                 'weight,' . $this->input('weight'),
             'weight' => 'required|numeric',
         ];
-
+        
     }
     
 }

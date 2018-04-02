@@ -20,7 +20,7 @@ class OrderController extends Controller {
     protected $order;
     
     function __construct(Order $order) {
-    
+        
         $this->middleware(['auth']);
         $this->order = $order;
         
@@ -87,7 +87,7 @@ class OrderController extends Controller {
         
         $order = $this->order->find($id);
         abort_if(!$order, HttpStatusCode::NOT_FOUND);
-    
+        
         return $order->update(
             $request->all()
         );
@@ -105,7 +105,7 @@ class OrderController extends Controller {
         
         $order = $this->order->find($id);
         abort_if(!$order, HttpStatusCode::NOT_FOUND);
-    
+        
         return $this->result(
             $order->delete()
         );

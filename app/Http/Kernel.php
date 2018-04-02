@@ -50,7 +50,7 @@ class Kernel extends HttpKernel {
             ShareErrorsFromSession::class,
             VerifyCsrfToken::class,
             SubstituteBindings::class,
-            CreateFreshApiToken::class
+            CreateFreshApiToken::class,
         ],
         'api' => [
             'throttle:60,1',
@@ -73,6 +73,6 @@ class Kernel extends HttpKernel {
         'can'        => Authorize::class,
         'guest'      => RedirectIfAuthenticated::class,
         'throttle'   => ThrottleRequests::class,
-        'checkrole'  => CheckRole::class
+        'checkrole'  => CheckRole::class,
     ];
 }

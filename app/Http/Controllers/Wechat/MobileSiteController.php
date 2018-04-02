@@ -73,6 +73,7 @@ class MobileSiteController extends Controller {
                 }
             }
         }
+        
         return abort(HttpStatusCode::BAD_REQUEST, '请求无效');
         
     }

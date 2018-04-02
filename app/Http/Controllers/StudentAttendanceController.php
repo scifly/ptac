@@ -2,8 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Grade;
-use App\Models\Media;
-use App\Models\School;
 use App\Models\Student;
 use App\Models\StudentAttendance;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -67,6 +65,7 @@ class StudentAttendanceController extends Controller {
                     Request::input('id')
                 );
                 $this->result['html']['classes'] = $classes;
+                
                 return response()->json($this->result);
             } else {
                 return response()->json(
@@ -109,13 +108,13 @@ class StudentAttendanceController extends Controller {
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function export() {
-    
+        
         $this->authorize(
             'sde', StudentAttendance::class
         );
         
         return $this->sa->export();
-    
+        
     }
     
 }

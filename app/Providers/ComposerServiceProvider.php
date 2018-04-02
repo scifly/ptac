@@ -13,197 +13,240 @@ class ComposerServiceProvider extends ServiceProvider {
      */
     public function boot() {
     
-        View::composer('app.edit', 'App\Http\ViewComposers\AppComposer');
-        View::composer('app.index', 'App\Http\ViewComposers\AppIndexComposer');
-    
-        View::composer('action.index', 'App\Http\ViewComposers\ActionIndexComposer');
-    
-        View::composer('alert_type.create_edit', 'App\Http\ViewComposers\AlertTypeComposer');
-        View::composer('alert_type.index', 'App\Http\ViewComposers\AlertTypeIndexComposer');
-    
-        View::composer('action_type.create_edit', 'App\Http\ViewComposers\ActionTypeComposer');
-        View::composer('action_type.index', 'App\Http\ViewComposers\ActionTypeIndexComposer');
-    
-        View::composer('attachment_type.create_edit', 'App\Http\ViewComposers\AttachmentTypeComposer');
-        View::composer('attachment_type.index', 'App\Http\ViewComposers\AttachmentTypeIndexComposer');
-    
-        View::composer(
-            ['company.index', 'company.create_edit'],
-            'App\Http\ViewComposers\CompanyComposer'
-        );
-
-        View::composer(
-            ['comm_type.index', 'comm_type.create_edit'],
-            'App\Http\ViewComposers\CommTypeComposer'
-        );
-
-        View::composer('educator.index', 'App\Http\ViewComposers\EducatorIndexComposer');
-        View::composer('educator.create_edit', 'App\Http\ViewComposers\EducatorComposer');
-        View::composer('educator.recharge', 'App\Http\ViewComposers\EducatorComposer');
+        $ns = 'App\Http\ViewComposers\\';
         
-        View::composer(
-            ['educator_attendance_setting.create_edit', 'educator_attendance_setting.index'],
-            'App\Http\ViewComposers\EducatorAttendanceSettingComposer'
-        );
-        View::composer('educator_attendance.index', 'App\Http\ViewComposers\EducatorAttendanceIndexComposer');
-        View::composer('educator_attendance.stat', 'App\Http\ViewComposers\EducatorAttendanceStatComposer');
-        
-        View::composer('consumption.index', 'App\Http\ViewComposers\ConsumptionIndexComposer');
-        View::composer('consumption.show', 'App\Http\ViewComposers\ConsumptionStatComposer');
+        # 功能 - Action
+        View::composer('action.index', $ns . 'ActionIndexComposer');
+        View::composer('action.create_edit', $ns . 'ActionComposer');
+    
+        # 功能类型 - ActionType
+        View::composer('action_type.index', $ns . 'ActionTypeIndexComposer');
+        View::composer('action_type.create_edit', $ns . 'ActionTypeComposer');
+    
+        # 警告类型 - AlertType
+        View::composer('alert_type.index', $ns . 'AlertTypeIndexComposer');
+        View::composer('alert_type.create_edit', $ns . 'AlertTypeComposer');
+    
+        # 企业应用 - App
+        View::composer('app.index', $ns . 'AppIndexComposer');
+        View::composer('app.edit', $ns . 'AppComposer');
+    
+        # 附件类型 - AttachmentType
+        View::composer('attachment_type.index', $ns . 'AttachmentTypeIndexComposer');
+        View::composer('attachment_type.create_edit', $ns . 'AttachmentTypeComposer');
 
-        View::composer('student_attendance_setting.create_edit', 'App\Http\ViewComposers\StudentAttendanceSettingComposer');
-        View::composer('student_attendance_setting.index', 'App\Http\ViewComposers\StudentAttendanceSettingIndexComposer');
-        View::composer('student_attendance.index', 'App\Http\ViewComposers\StudentAttendanceIndexComposer');
-        View::composer('student_attendance.stat', 'App\Http\ViewComposers\StudentAttendanceStatComposer');
+        # 考勤机 - AttendanceMachine
+        View::composer('attendance_machine.index', $ns . 'AttendanceMachineViewComposer');
+        View::composer('attendance_machine.create_edit', $ns . 'AttendanceMachineComposer');
     
-        View::composer(
-            ['student.index','student.show'],
-            'App\Http\ViewComposers\StudentIndexComposer');
-        View::composer('student.create_edit', 'App\Http\ViewComposers\StudentComposer');
+        # 通信类型 - CommType
+        View::composer('comm_type.index', $ns . 'ViewComposerIndexComposer');
+        View::composer('comm_type.create_edit', $ns . 'CommTypeComposer');
     
-        View::composer('custodian.index', 'App\Http\ViewComposers\CustodianIndexComposer');
-        View::composer('custodian.create_edit', 'App\Http\ViewComposers\CustodianComposer');
-        View::composer('custodian.relationship', 'App\Http\ViewComposers\CustodianRelationshipComposer');
+        # 套餐类型 - ComboType
+        View::composer('combo_type', $ns . 'ComboTypeIndexComposer');
+        View::composer('combo_type.create_edit', $ns . 'ComboTypeComposer');
     
-        View::composer('subject.create_edit', 'App\Http\ViewComposers\SubjectComposer');
-        View::composer('subject.index', 'App\Http\ViewComposers\SubjectIndexComposer');
+        # 运营者 - Company
+        View::composer('company.index', $ns . 'CompanyIndexComposer');
+        View::composer('company.create_edit', $ns . 'CompanyComposer');
     
-        View::composer('subject_module.create_edit', 'App\Http\ViewComposers\SubjectModuleComposer');
-        View::composer('subject_module.index', 'App\Http\ViewComposers\SubjectModuleIndexComposer');
+        # 与会者 - ConferenceParticipant
+        View::composer('conference_participant.index', $ns . 'ConferenceParticipantIndexComposer');
     
-        View::composer('group.create_edit', 'App\Http\ViewComposers\GroupComposer');
-        View::composer('group.create', 'App\Http\ViewComposers\GroupCreateComposer');
-        View::composer('group.edit', 'App\Http\ViewComposers\GroupEditComposer');
-        View::composer('group.index', 'App\Http\ViewComposers\GroupIndexComposer');
+        # 会议 - ConferenceQueue
+        View::composer('conference_queue.index', $ns . 'ConferenceQueueIndexComposer');
+        View::composer('conference_queue.create_edit', $ns . 'ConferenceQueueComposer');
+        View::composer('conference_queue.edit', $ns . 'ConferenceQueueEditComposer');
     
-        View::composer('procedure.create_edit', 'App\Http\ViewComposers\ProcedureComposer');
-        View::composer('procedure.index', 'App\Http\ViewComposers\ProcedureIndexComposer');
+        # 会议室 - ConferenceRoom
+        View::composer('conference_room.index', $ns . 'ConferenceRoomIndexComposer');
+        View::composer('conference_room.create_edit', $ns . 'ConferenceRoomComposer');
     
-        View::composer('procedure_step.create_edit', 'App\Http\ViewComposers\ProcedureStepComposer');
-        View::composer('procedure_step.index', 'App\Http\ViewComposers\ProcedureStepIndexComposer');
+        # 学生消费 - Consumption
+        View::composer('consumption.index', $ns . 'ConsumptionIndexComposer');
+        View::composer('consumption.show', $ns . 'ConsumptionStatComposer');
     
-        View::composer(
-            ['poll_questionnaire.create_edit', 'poll_questionnaire.index'],
-            'App\Http\ViewComposers\PollQuestionnaireComposer'
-        );
+        # 微信企业 - Corp
+        View::composer('corp.index', $ns . 'CorpIndexComposer');
+        View::composer('corp.create_edit', $ns . 'CorpComposer');
     
-        View::composer('pq_subject.create_edit', 'App\Http\ViewComposers\PqSubjectComposer');
-        View::composer('pq_subject.index', 'App\Http\ViewComposers\PqSubjectIndexComposer');
+        # 通讯录.监护人 - Custodian
+        View::composer('custodian.index', $ns . 'CustodianIndexComposer');
+        View::composer('custodian.create_edit', $ns . 'CustodianComposer');
+        View::composer('custodian.relationship', $ns . 'CustodianRelationshipComposer');
     
-        View::composer('pq_choice.create_edit', 'App\Http\ViewComposers\PqChoiceComposer');
-        View::composer('pq_choice.index', 'App\Http\ViewComposers\PqChoiceIndexComposer');
+        # 部门 - Department
+        View::composer('department.index', $ns . 'DepartmentIndexComposer');
+        View::composer('department.create_edit', $ns . 'DepartmentComposer');
     
-        View::composer('score_range.create_edit', 'App\Http\ViewComposers\ScoreRangeComposer');
-        View::composer('score_range.index', 'App\Http\ViewComposers\ScoreRangeIndexComposer');
-        View::composer('score_range.show_statistics', 'App\Http\ViewComposers\ScoreRangeShowStatisticsComposer');
+        # 部门类型 - DepartmentType
+        View::composer('department_type.index', $ns . 'DepartmentTypeIndexComposer');
+        View::composer('department_type.create_edit', $ns . 'DepartmentTypeComposer');
     
-        View::composer('score.create_edit', 'App\Http\ViewComposers\ScoreComposer');
-        View::composer('score.index', 'App\Http\ViewComposers\ScoreIndexComposer');
-        View::composer('score.analysis', 'App\Http\ViewComposers\ScoreAnalysisComposer');
+        # 教职员工考勤 - EducatorAttendance
+        View::composer('educator_attendance.index', $ns . 'EducatorAttendanceIndexComposer');
+        View::composer('educator_attendance.stat', $ns . 'EducatorAttendanceStatComposer');
     
-        View::composer('event.index', 'App\Http\ViewComposers\EventIndexComposer');
-        View::composer('event.show', 'App\Http\ViewComposers\EventComposer');
+        # 教职员工考勤设置 - EducatorAttendanceSetting
+        View::composer('educator_attendance_setting.index', $ns . 'EducatorAttendanceSettingIndexComposer');
+        View::composer('educator_attendance_setting.create_edit', $ns . 'EducatorAttendanceSettingComposer');
     
-        View::composer('exam.create_edit', 'App\Http\ViewComposers\ExamComposer');
-        View::composer('exam.index', 'App\Http\ViewComposers\ExamIndexComposer');
+        # 通讯录.教职员工 - Educator
+        View::composer('educator.index', $ns . 'EducatorIndexComposer');
+        View::composer('educator.create_edit', $ns . 'EducatorComposer');
+        View::composer('educator.recharge', $ns . 'EducatorComposer');
     
-        View::composer(
-            ['exam_type.create_edit', 'exam_type.index'],
-            'App\Http\ViewComposers\ExamTypeComposer'
-        );
+        # 日历 - Event
+        View::composer('event.index', $ns . 'EventIndexComposer');
+        View::composer('event.show', $ns . 'EventComposer');
     
-        View::composer(
-            ['conference_room.create_edit', 'conference_room.index'],
-            'App\Http\ViewComposers\ConferenceRoomComposer'
-        );
+        # 考试 - Exam
+        View::composer('exam.index', $ns . 'ExamIndexComposer');
+        View::composer('exam.create_edit', $ns . 'ExamComposer');
     
-        View::composer('conference_queue.create_edit', 'App\Http\ViewComposers\ConferenceQueueComposer');
-        View::composer('conference_queue.edit', 'App\Http\ViewComposers\ConferenceQueueEditComposer');
-        View::composer('conference_queue.index', 'App\Http\ViewComposers\ConferenceQueueIndexComposer');
+        # 考试类型 - ExamType
+        View::composer('exam_type.index', $ns . 'ExamTypeIndexComposer');
+        View::composer('exam_type.create_edit', $ns . 'ExamTypeComposer');
     
-        View::composer('conference_participant.index', 'App\Http\ViewComposers\ConferenceParticipantIndexComposer');
+        # 年级 - Grade
+        View::composer('grade.index', $ns . 'GradeIndexComposer');
+        View::composer('grade.create_edit', $ns . 'GradeComposer');
     
-        View::composer('message.create_edit', 'App\Http\ViewComposers\MessageComposer');
-        View::composer('message.index', 'App\Http\ViewComposers\MessageIndexComposer');
+        # 角色/权限 - Group
+        View::composer('group.index', $ns . 'GroupIndexComposer');
+        View::composer('group.create_edit', $ns . 'GroupComposer');
+        View::composer('group.create', $ns . 'GroupCreateComposer');
+        View::composer('group.edit', $ns . 'GroupEditComposer');
     
-        View::composer('message_type.index', 'App\Http\ViewComposers\MessageTypeIndexComposer');
-        View::composer('message_type.create_edit', 'App\Http\ViewComposers\MessageTypeIndexComposer');
+        # 图标 - Icon
+        View::composer('icon.index', $ns . 'IconIndexComposer');
+        View::composer('icon.create_edit', $ns . 'IconComposer');
     
-        View::composer(
-            ['combo_type.create_edit', 'combo_type.index'],
-            'App\Http\ViewComposers\ComboTypeComposer'
-        );
+        # 专业 - Major
+        View::composer('major.index', $ns . 'MajorIndexComposer');
+        View::composer('major.create_edit', $ns . 'MajorComposer');
     
-        View::composer('wap_site.create_edit', 'App\Http\ViewComposers\WapSiteComposer');
-        View::composer('wap_site.index', 'App\Http\ViewComposers\WapSiteIndexComposer');
-        
-        View::composer('media_type.create_edit', 'App\Http\ViewComposers\MediaTypeComposer');
-        View::composer('media_type.index', 'App\Http\ViewComposers\MediaTypeIndexComposer');
-        
-        View::composer('menu.create_edit', 'App\Http\ViewComposers\MenuComposer');
-        View::composer('menu.index', 'App\Http\ViewComposers\MenuIndexComposer');
-        View::composer('menu.menu_tabs', 'App\Http\ViewComposers\MenuTabComposer');
-        
-        View::composer('menu_type.create_edit', 'App\Http\ViewComposers\MenuTypeComposer');
-        View::composer('menu_type.index', 'App\Http\ViewComposers\MenuTypeIndexComposer');
-
-        View::composer('icon.create_edit', 'App\Http\ViewComposers\IconComposer');
-        View::composer('icon.index', 'App\Http\ViewComposers\IconIndexComposer');
+        # 媒体类型 - MediaType
+        View::composer('media_type.create_edit', $ns . 'MediaTypeComposer');
+        View::composer('media_type.index', $ns . 'MediaTypeIndexComposer');
     
-        View::composer('tab.index', 'App\Http\ViewComposers\TabIndexComposer');
-        View::composer('tab.create_edit', 'App\Http\ViewComposers\TabComposer');
+        # 菜单 - Menu
+        View::composer('menu.index', $ns . 'MenuIndexComposer');
+        View::composer('menu.create_edit', $ns . 'MenuComposer');
+        View::composer('menu.menu_tabs', $ns . 'MenuTabComposer');
     
-        View::composer('wap_site_module.create_edit', 'App\Http\ViewComposers\WapSiteModuleComposer');
-        View::composer('wap_site_module.index', 'App\Http\ViewComposers\WapSiteModuleIndexComposer');
+        # 菜单类型 - MenuType
+        View::composer('menu_type.index', $ns . 'MenuTypeIndexComposer');
+        View::composer('menu_type.create_edit', $ns . 'MenuTypeComposer');
     
-        View::composer('wsm_article.create_edit', 'App\Http\ViewComposers\WsmArticleComposer');
-        View::composer('wsm_article.index', 'App\Http\ViewComposers\WsmArticleIndexComposer');
+        # 消息中心 - MessageCenter
+        View::composer('wechat.message_center.index', $ns . 'MessageCenterComposer');
     
-        View::composer('action.create_edit', 'App\Http\ViewComposers\ActionComposer');
+        # 消息 - Message
+        View::composer('message.create_edit', $ns . 'MessageComposer');
+        View::composer('message.index', $ns . 'MessageIndexComposer');
     
+        # 消息类型 - MessageType
+        View::composer('message_type.index', $ns . 'MessageTypeIndexComposer');
+        View::composer('message_type.create_edit', $ns . 'MessageTypeIndexComposer');
     
-        View::composer('school.create_edit', 'App\Http\ViewComposers\SchoolComposer');
-        View::composer('school.index', 'App\Http\ViewComposers\SchoolIndexComposer');
-        View::composer('school.show', 'App\Http\ViewComposers\SchoolShowComposer');
-
-        View::composer(['school_type.index','school_type.create_edit'],
-            'App\Http\ViewComposers\SchoolTypeIndexComposer');
-
-        View::composer('corp.index', 'App\Http\ViewComposers\CorpIndexComposer');
-        View::composer('corp.create_edit', 'App\Http\ViewComposers\CorpComposer');
-        
-        View::composer('grade.create_edit', 'App\Http\ViewComposers\GradeComposer');
-        View::composer('grade.index', 'App\Http\ViewComposers\GradeIndexComposer');
-
-        View::composer('class.create_edit', 'App\Http\ViewComposers\SquadComposer');
-        View::composer('class.index', 'App\Http\ViewComposers\SquadIndexComposer');
-
-        View::composer('major.create_edit', 'App\Http\ViewComposers\MajorComposer');
-        View::composer('major.index', 'App\Http\ViewComposers\MajorIndexComposer');
-
-        View::composer('team.create_edit', 'App\Http\ViewComposers\TeamComposer');
-        View::composer('team.index', 'App\Http\ViewComposers\TeamIndexComposer');
-
-        View::composer('department.create_edit', 'App\Http\ViewComposers\DepartmentComposer');
-        View::composer('department.index', 'App\Http\ViewComposers\DepartmentIndexComposer');
-        
-        View::composer(['department_type.index', 'department_type.create_edit'],
-            'App\Http\ViewComposers\DepartmentTypeIndexComposer');
-
-        View::composer(
-            ['attendance_machine.create_edit', 'attendance_machine.index'],
-            'App\Http\ViewComposers\AttendanceMachineComposer'
-        );
-
-        View::composer(
-            ['semester.create_edit', 'semester.index'],
-            'App\Http\ViewComposers\SemesterComposer'
-        );
-
-        View::composer('operator.index', 'App\Http\ViewComposers\OperatorIndexComposer');
-        View::composer('operator.create_edit', 'App\Http\ViewComposers\OperatorComposer');
-        
-        View::composer('wechat.message_center.index', 'App\Http\ViewComposers\MessageCenterComposer');
+        # 超级用户 - Operator
+        View::composer('operator.index', $ns . 'OperatorIndexComposer');
+        View::composer('operator.create_edit', $ns . 'OperatorComposer');
+    
+        # 投票问卷 - PollQuestionnaire
+        View::composer('poll_questionnaire.index', $ns . 'PollQuestionnaireIndexComposer');
+        View::composer('poll_questionnaire.create_edit', $ns . 'PollQuestionnaireComposer');
+    
+        # 投票问卷问题选项 - PollQuestionnaireSubjectChoice
+        View::composer('pq_choice.create_edit', $ns . 'PqChoiceComposer');
+        View::composer('pq_choice.index', $ns . 'PqChoiceIndexComposer');
+    
+        # 投票问卷题目 - PollQuestionnaireSubject
+        View::composer('pq_subject.create_edit', $ns . 'PqSubjectComposer');
+        View::composer('pq_subject.index', $ns . 'PqSubjectIndexComposer');
+    
+        # 审批流程 - Procedure
+        View::composer('procedure.index', $ns . 'ProcedureIndexComposer');
+        View::composer('procedure.create_edit', $ns . 'ProcedureComposer');
+    
+        # 审批流程步骤 - ProcedureStep
+        View::composer('procedure_step.index', $ns . 'ProcedureStepIndexComposer');
+        View::composer('procedure_step.create_edit', $ns . 'ProcedureStepComposer');
+    
+        # 审批流程类型 - ProcedureType
+        View::composer('procedure_type.index', $ns . 'ProcedureTypeIndexComposer');
+        View::composer('procedure_type.create_edit', $ns . 'ProcedureTypeComposer');
+    
+        # 学校 - School
+        View::composer('school.index', $ns . 'SchoolIndexComposer');
+        View::composer('school.create_edit', $ns . 'SchoolComposer');
+        View::composer('school.show', $ns . 'SchoolShowComposer');
+    
+        # 学校类型 - SchoolType
+        View::composer('school_type.index', $ns . 'SchoolTypeIndexComposer');
+        View::composer('school_type.create_edit', $ns . 'SchoolTypeComposer');
+    
+        # 分数 - Score
+        View::composer('score.index', $ns . 'ScoreIndexComposer');
+        View::composer('score.create_edit', $ns . 'ScoreComposer');
+        View::composer('score.analysis', $ns . 'ScoreAnalysisComposer');
+    
+        # 分数统计项 - ScoreRange
+        View::composer('score_range.index', $ns . 'ScoreRangeIndexComposer');
+        View::composer('score_range.create_edit', $ns . 'ScoreRangeComposer');
+        View::composer('score_range.show_statistics', $ns . 'ScoreRangeShowStatisticsComposer');
+    
+        # 学期 - Semester
+        View::composer('semester.index', $ns . 'SemesterIndexComposer');
+        View::composer('semester.create_edit', $ns . 'SemesterComposer');
+    
+        # 班级 - Squad
+        View::composer('class.index', $ns . 'SquadIndexComposer');
+        View::composer('class.create_edit', $ns . 'SquadComposer');
+    
+        # 学生考勤 - StudentAttendance
+        View::composer('student_attendance.index', $ns . 'StudentAttendanceIndexComposer');
+        View::composer('student_attendance.stat', $ns . 'StudentAttendanceStatComposer');
+    
+        # 学生考勤设置 - StudentAttendanceSetting
+        View::composer('student_attendance_setting.create_edit', $ns . 'StudentAttendanceSettingComposer');
+        View::composer('student_attendance_setting.index', $ns . 'StudentAttendanceSettingIndexComposer');
+    
+        # 通讯录.学生
+        View::composer('student.index', $ns . 'StudentIndexComposer');
+        View::composer('student.create_edit', $ns . 'StudentComposer');
+        View::composer('student.show', $ns . 'StudentShowComposer');
+    
+        # 科目 - Subject
+        View::composer('subject.index', $ns . 'SubjectIndexComposer');
+        View::composer('subject.create_edit', $ns . 'SubjectComposer');
+    
+        # 科目次分类 - SubjectModule
+        View::composer('subject_module.index', $ns . 'SubjectModuleIndexComposer');
+        View::composer('subject_module.create_edit', $ns . 'SubjectModuleComposer');
+    
+        # 卡片 - Tab
+        View::composer('tab.index', $ns . 'TabIndexComposer');
+        View::composer('tab.create_edit', $ns . 'TabComposer');
+    
+        # 教职员工组 - Team
+        View::composer('team.index', $ns . 'TeamIndexComposer');
+        View::composer('team.create_edit', $ns . 'TeamComposer');
+    
+        # 微网站 - WapSite
+        View::composer('wap_site.index', $ns . 'WapSiteIndexComposer');
+        View::composer('wap_site.create_edit', $ns . 'WapSiteComposer');
+    
+        # 微网站栏目 - WapSiteModule
+        View::composer('wap_site_module.index', $ns . 'WapSiteModuleIndexComposer');
+        View::composer('wap_site_module.create_edit', $ns . 'WapSiteModuleComposer');
+    
+        # 微网站文章 - WsmArticle
+        View::composer('wsm_article.index', $ns . 'WsmArticleIndexComposer');
+        View::composer('wsm_article.create_edit', $ns . 'WsmArticleComposer');
+    
     }
     
     /**

@@ -1,13 +1,13 @@
 <?php
 namespace App\Http\Requests;
 
-
 use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AttendanceMachineRequest extends FormRequest {
+    
     use ModelTrait;
-
+    
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -34,13 +34,13 @@ class AttendanceMachineRequest extends FormRequest {
         ];
         
     }
-
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
         $input['school_id'] = $this->schoolId();
         $this->replace($input);
-
+        
     }
-
+    
 }

@@ -24,7 +24,7 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class HomeController extends Controller {
-
+    
     const PAGEJS = 'js/home/page.js';
     const ROOT_MENU_ID = 1;
     
@@ -35,16 +35,16 @@ class HomeController extends Controller {
         $this->middleware(['auth', 'checkrole']);
         $this->tab = $tab;
         $this->mt = $mt;
-
+        
     }
-
+    
     /**
      * 后台首页
      *
      * @throws Throwable
      */
     public function index() {
-    
+        
         $menuId = Request::query('menuId');
         $menu = Menu::find($menuId);
         if (!$menu) {
@@ -55,11 +55,12 @@ class HomeController extends Controller {
                 ->id;
             session(['menuId' => $menuId]);
             $menu = new Menu();
+            
             return view('home.home', [
-                'menu' => $menu->menuHtml($menu->rootMenuId()),
+                'menu'    => $menu->menuHtml($menu->rootMenuId()),
                 'content' => view('home.' . $view),
-                'js' => self::PAGEJS,
-                'user' => Auth::user()
+                'js'      => self::PAGEJS,
+                'user'    => Auth::user(),
             ]);
         } else {
             if (!session('menuId') || session('menuId') !== $menuId) {
@@ -78,21 +79,54 @@ class HomeController extends Controller {
             if (Request::ajax()) {
                 return response()->json([
                     'statusCode' => HttpStatusCode::OK,
-                    'title' => '首页',
-                    'uri' => Request::path(),
-                    'html' => view('home.' . $view)->render()
+                    'title'      => '首页',
+                    'uri'        => Request::path(),
+                    'html'       => view('home.' . $view)->render(),
                 ]);
             }
-
+            
             return view('home.home', [
-                'menu' => $menu->menuHtml($menu->rootMenuId()),
-                'menuId' => $menuId,
+                'menu'    => $menu->menuHtml($menu->rootMenuId()),
+                'menuId'  => $menuId,
                 'content' => view('home.' . $view),
-                'js' => self::PAGEJS,
+                'js'      => self::PAGEJS,
             ]);
-
+            
         }
-
+        
+    }
+    
+    /**
+     * @return array
+     */
+    private static function getVars(): array {
+        
+        $user = Auth::user();
+        switch ($user->group->name) {
+            case '运营':
+                $view = 'company';
+                $parentMenuId = self::ROOT_MENU_ID;
+                break;
+            case '企业':
+                $view = 'corp';
+                $parentMenuId = Corp::whereDepartmentId($user->topDeptId())
+                    ->first()->menu_id;
+                break;
+            case '学校':
+                $view = 'school';
+                $parentMenuId = School::whereDepartmentId($user->topDeptId())
+                    ->first()->menu_id;
+                break;
+            default:
+                $view = 'school';
+                $topDeptId = $user->topDeptId();
+                $parentMenuId = School::whereDepartmentId($user->schoolDeptId($topDeptId))
+                    ->first()->menu_id;
+                break;
+        }
+        
+        return [$view, $parentMenuId];
+        
     }
     
     /**
@@ -104,14 +138,13 @@ class HomeController extends Controller {
      * @throws Throwable
      */
     public function menu($id) {
-
+        
         if (!session('menuId') || session('menuId') !== $id) {
             session(['menuId' => $id]);
             session(['menuChanged' => true]);
         } else {
             Session::forget('menuChanged');
         }
-
         # 获取卡片列表
         $tabIds = $this->mt->tabIdsByMenuId($id);
         $isTabLegit = !empty($tabIds) ?? false;
@@ -120,7 +153,9 @@ class HomeController extends Controller {
         # 封装当前用户可以访问的卡片数组
         $tabArray = [];
         foreach ($tabIds as $tabId) {
-            if (!in_array($tabId, $allowedTabIds)) { continue; }
+            if (!in_array($tabId, $allowedTabIds)) {
+                continue;
+            }
             $tab = Tab::find($tabId);
             if (!empty($tab->action->route)) {
                 $tabArray[] = [
@@ -152,10 +187,12 @@ class HomeController extends Controller {
         # 获取并返回wrapper-content层中的html内容
         if (Request::ajax()) {
             $this->result['html'] = view('partials.site_content', ['tabs' => $tabArray])->render();
+            
             return response()->json($this->result);
         }
         # 获取菜单列表
         $menu = new Menu();
+        
         return view('home.page', [
             'menu'   => $menu->menuHtml($menu->rootMenuId()),
             'tabs'   => $tabArray,
@@ -163,39 +200,6 @@ class HomeController extends Controller {
             'js'     => self::PAGEJS,
         ]);
         
-    }
-
-    /**
-     * @return array
-     */
-    private static function getVars(): array {
-
-        $user = Auth::user();
-        switch ($user->group->name) {
-            case '运营':
-                $view = 'company';
-                $parentMenuId = self::ROOT_MENU_ID;
-                break;
-            case '企业':
-                $view = 'corp';
-                $parentMenuId = Corp::whereDepartmentId($user->topDeptId())
-                    ->first()->menu_id;
-                break;
-            case '学校':
-                $view = 'school';
-                $parentMenuId = School::whereDepartmentId($user->topDeptId())
-                    ->first()->menu_id;
-                break;
-            default:
-                $view = 'school';
-                $topDeptId = $user->topDeptId();
-                $parentMenuId = School::whereDepartmentId($user->schoolDeptId($topDeptId))
-                    ->first()->menu_id;
-                break;
-        }
-
-        return [$view, $parentMenuId];
-
     }
     
 }

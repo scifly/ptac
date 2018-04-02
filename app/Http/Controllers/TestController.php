@@ -2,13 +2,11 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ModelTrait;
-use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Grade;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
-use Illuminate\Support\Facades\Request;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use ReflectionClass;
@@ -42,19 +40,18 @@ class TestController extends Controller {
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
     public function index() {
-
+        
         $startTime = date('Y-m-01 00:00:00', strtotime(date('Y-m-d')));
         $endTime = date('Y-m-t 23:59:59', strtotime($startTime));
         echo $startTime . '<br />';
         echo $endTime . '<br />';
-        dd(implode(',', [1,2,3]));
+        dd(implode(',', [1, 2, 3]));
         $start = '2018-03-01';
         $end = '2018-03-07';
         $d1 = Carbon::createFromTimestamp(strtotime($start));
         $d2 = Carbon::createFromTimestamp(strtotime($end));
         dd($d1->addDay()->toDateString());
         dd($d2->diffInDays($d1));
-    
         // $students = Student::with('user:id,realname')->get()->pluck('user.realname', 'id');
         $grade = new Grade();
         list($classes) = $grade->classList(1);
@@ -70,40 +67,41 @@ class TestController extends Controller {
             . '1718165aab8bd87e514.xlsx';
         $spreadsheet = IOFactory::load($inputFileName);
         $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
-        var_dump($sheetData);exit;
+        var_dump($sheetData);
+        exit;
         try {
             $client = new Client();
             $reponse = $client->post(
                 'http://sandbox.ddd/ptac/public/api/login', [
                     'form_params' => [
                         'username' => 'haoyuhang',
-                        'password' => '#ilikeit09'
-                    ]
+                        'password' => '#ilikeit09',
+                    ],
                 ]
             );
             $token = json_decode($reponse->getBody()->getContents())->{'token'};
             $response = $client->post(
                 'http://sandbox.ddd/ptac/public/api/upload_consumption', [
-                    'headers' => [
+                    'headers'     => [
                         'Authorization' => 'Bearer ' . $token,
                     ],
                     'form_params' => [
                         'student_id' => 4,
-                        'location' => '食堂',
-                        'machineid' => 'm123456',
-                        'ctype' => 0,
-                        'amount' => 25.50,
-                        'ctime' => '2018-03-15 14:25:30',
-                        'merchant' => '青椒肉丝套饭'
-                    ]
+                        'location'   => '食堂',
+                        'machineid'  => 'm123456',
+                        'ctype'      => 0,
+                        'amount'     => 25.50,
+                        'ctime'      => '2018-03-15 14:25:30',
+                        'merchant'   => '青椒肉丝套饭',
+                    ],
                 ]
             );
             dd(json_decode($reponse->getBody(), true));
-        } catch (ClientException $e ) {
+        } catch (ClientException $e) {
             echo $e->getResponse()->getStatusCode();
             echo $e->getResponse()->getBody()->getContents();
         }
-    
+        
     }
     
     public function listen() {
@@ -153,6 +151,7 @@ class TestController extends Controller {
             $level += 1;
             $this->getLevel($parent->id, $level);
         }
+        
         return $level;
         
     }

@@ -16,7 +16,7 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class SchoolController extends Controller {
-
+    
     protected $school;
     
     function __construct(School $school) {
@@ -68,7 +68,7 @@ class SchoolController extends Controller {
      * @throws AuthorizationException
      */
     public function store(SchoolRequest $request) {
-    
+        
         $this->authorize(
             'cs', School::class
         );
@@ -89,12 +89,12 @@ class SchoolController extends Controller {
      * @throws Throwable
      */
     public function show($id) {
-    
+        
         $school = $this->school->find($id);
         $this->authorize('seu', $school);
         
         return $this->output([
-            'school' => $school
+            'school' => $school,
         ]);
         
     }

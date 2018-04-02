@@ -18,10 +18,10 @@ class AppController extends Controller {
     protected $app;
     
     function __construct(App $app) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->app = $app;
-
+        
     }
     
     /**
@@ -31,7 +31,7 @@ class AppController extends Controller {
      * @throws \Throwable
      */
     public function index() {
-
+        
         if (Request::method() == 'POST') {
             return $this->app->store();
         }
@@ -51,11 +51,11 @@ class AppController extends Controller {
         
         $app = $this->app->find($id);
         $this->authorize('eum', $app);
-
+        
         return $this->output(['app' => $app]);
         
     }
-
+    
     /**
      * 更新微信应用
      *
@@ -68,11 +68,11 @@ class AppController extends Controller {
         
         $app = $this->app->find($id);
         $this->authorize('eum', $app);
-
+        
         return $this->result(
             $app->modify($request->all(), $id)
         );
-
+        
     }
     
     /**
@@ -86,7 +86,6 @@ class AppController extends Controller {
         
         $app = $this->app->find($id);
         $this->authorize('eum', $app);
-
         $menu = "[
             {
                 \"name\": \"\u6d4b\u8bd5\",
@@ -140,9 +139,9 @@ class AppController extends Controller {
                 ]
             }
         ]";
-
+        
         return $this->output(['menu' => json_decode($menu)]);
-
+        
     }
-
+    
 }

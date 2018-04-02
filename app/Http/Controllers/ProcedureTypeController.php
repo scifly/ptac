@@ -20,7 +20,7 @@ class ProcedureTypeController extends Controller {
     protected $pt;
     
     function __construct(ProcedureType $pt) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->pt = $pt;
         
@@ -68,11 +68,11 @@ class ProcedureTypeController extends Controller {
      * @throws AuthorizationException
      */
     public function store(ProcedureTypeRequest $request) {
-    
+        
         $this->authorize(
             'cs', ProcedureType::class
         );
-    
+        
         return $this->result(
             $this->pt->store($request->all())
         );

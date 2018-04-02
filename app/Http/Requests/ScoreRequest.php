@@ -28,7 +28,7 @@ class ScoreRequest extends FormRequest {
         ];
         
     }
-
+    
     protected function prepareForValidation() {
         
         $input = $this->all();

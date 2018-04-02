@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
@@ -9,11 +8,11 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
 class ActionComposer {
-
+    
     use ModelTrait;
-
+    
     public function compose(View $view) {
-
+        
         $actionTypeIds = explode(
             ',', Action::find(Request::route('id'))->action_type_ids
         );
@@ -23,11 +22,11 @@ class ActionComposer {
             $selectedActionTypes[$actionTypeId] = $actionType['name'];
         }
         $view->with([
-            'actionTypes' => ActionType::pluck('name', 'id'),
+            'actionTypes'         => ActionType::pluck('name', 'id'),
             'selectedActionTypes' => $selectedActionTypes ?? null,
-            'uris' => $this->uris()
+            'uris'                => $this->uris(),
         ]);
-
+        
     }
-
+    
 }

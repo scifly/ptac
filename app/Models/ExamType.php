@@ -111,17 +111,11 @@ class ExamType extends Model {
         $columns = [
             ['db' => 'ExamType.id', 'dt' => 0],
             ['db' => 'ExamType.name', 'dt' => 1],
+            ['db' => 'ExamType.remark', 'dt' => 2],
+            ['db' => 'ExamType.created_at', 'dt' => 3],
+            ['db' => 'ExamType.updated_at', 'dt' => 4],
             [
-                'db' => 'School.name as schoolname', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-university') . $d;
-                }
-            ],
-            ['db' => 'ExamType.remark', 'dt' => 3],
-            ['db' => 'ExamType.created_at', 'dt' => 4],
-            ['db' => 'ExamType.updated_at', 'dt' => 5],
-            [
-                'db' => 'ExamType.enabled', 'dt' => 6,
+                'db' => 'ExamType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },

@@ -24,11 +24,11 @@ class EducatorAttendanceRequest extends FormRequest {
     public function rules() {
         
         return [
-            'user_id' => 'required|integer',
+            'user_id'    => 'required|integer',
             'punch_time' => 'required|date',
-            'longitude' => 'required|numeric',
-            'latitude' => 'required|numeric',
-            'inorout' => 'required|integer',
+            'longitude'  => 'required|numeric',
+            'latitude'   => 'required|numeric',
+            'inorout'    => 'required|integer',
         ];
         
     }
@@ -38,7 +38,6 @@ class EducatorAttendanceRequest extends FormRequest {
         $input = $this->all();
         $input['longitude'] = $input['longitude'] ?? 0;
         $input['latitude'] = $input['latitude'] ?? 0;
-        
         $this->replace($input);
         
     }

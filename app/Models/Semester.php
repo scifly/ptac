@@ -75,16 +75,10 @@ class Semester extends Model {
         $columns = [
             ['db' => 'Semester.id', 'dt' => 0],
             ['db' => 'Semester.name as semestername', 'dt' => 1],
-            [
-                'db' => 'School.name as schoolname', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-university') . $d;
-                }
-            ],
-            ['db' => 'Semester.start_date', 'dt' => 3],
-            ['db' => 'Semester.end_date', 'dt' => 4],
-            ['db' => 'Semester.created_at', 'dt' => 5],
-            ['db' => 'Semester.updated_at', 'dt' => 6],
+            ['db' => 'Semester.start_date', 'dt' => 2],
+            ['db' => 'Semester.end_date', 'dt' => 3],
+            ['db' => 'Semester.created_at', 'dt' => 4],
+            ['db' => 'Semester.updated_at', 'dt' => 5],
             [
                 'db' => 'Semester.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
@@ -92,20 +86,10 @@ class Semester extends Model {
                 },
             ],
         ];
-        $joins = [
-            [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
-                'conditions' => [
-                    'School.id = Semester.school_id',
-                ],
-            ],
-        ];
         $condition = 'Semester.school_id = ' . $this->schoolId();
     
         return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
+            $this->getModel(), $columns, null, $condition
         );
 
     }

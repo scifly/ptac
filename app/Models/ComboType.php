@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -77,35 +76,21 @@ class ComboType extends Model {
                     return $d . '%';
                 }
             ],
+            ['db' => 'ComboType.months', 'dt' => 4],
+            ['db' => 'ComboType.created_at', 'dt' => 5],
+            ['db' => 'ComboType.updated_at', 'dt' => 6],
             [
-                'db' => 'School.name as schoolname', 'dt' => 4,
-                'formatter' => function($d) {
-                    return sprintf(Snippet::ICON, 'fa-university') . $d;
-                }
-            ],
-            ['db' => 'ComboType.months', 'dt' => 5],
-            ['db' => 'ComboType.created_at', 'dt' => 6],
-            ['db' => 'ComboType.updated_at', 'dt' => 7],
-            [
-                'db' => 'ComboType.enabled', 'dt' => 8,
+                'db' => 'ComboType.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
-        $joins = [
-            [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
-                'conditions' => [
-                    'School.id = ComboType.school_id',
-                ],
-            ],
-        ];
         $condition = 'ComboType.school_id = ' . $this->schoolId();
         
-        return Datatable::simple($this->getModel(), $columns, $joins, $condition);
+        return Datatable::simple(
+            $this->getModel(), $columns, null, $condition
+        );
 
     }
 

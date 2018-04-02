@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-
 use App\Http\Requests\DepartmentTypeRequest;
 use App\Models\DepartmentType;
 use Exception;
@@ -17,14 +16,14 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class DepartmentTypeController extends Controller {
-
+    
     protected $dt;
     
     function __construct(DepartmentType $dt) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->dt = $dt;
-
+        
     }
     
     /**
@@ -34,15 +33,15 @@ class DepartmentTypeController extends Controller {
      * @throws Throwable
      */
     public function index() {
-
+        
         if (Request::get('draw')) {
             return response()->json(
                 $this->dt->datatable()
             );
         }
-
+        
         return $this->output();
-
+        
     }
     
     /**
@@ -52,13 +51,13 @@ class DepartmentTypeController extends Controller {
      * @throws Throwable
      */
     public function create() {
-
+        
         $this->authorize(
             'cs', DepartmentType::class
         );
         
         return $this->output();
-
+        
     }
     
     /**
@@ -69,7 +68,7 @@ class DepartmentTypeController extends Controller {
      * @throws AuthorizationException
      */
     public function store(DepartmentTypeRequest $request) {
-    
+        
         $this->authorize(
             'cs', DepartmentType::class
         );
@@ -77,7 +76,7 @@ class DepartmentTypeController extends Controller {
         return $this->result(
             $this->dt->store($request->all())
         );
-
+        
     }
     
     /**
@@ -88,14 +87,14 @@ class DepartmentTypeController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-
+        
         $dt = $this->dt->find($id);
         $this->authorize('eud', $dt);
-
+        
         return $this->output([
             'departmentType' => $dt,
         ]);
-
+        
     }
     
     /**
@@ -107,14 +106,14 @@ class DepartmentTypeController extends Controller {
      * @throws AuthorizationException
      */
     public function update(DepartmentTypeRequest $request, $id) {
-
+        
         $dt = $this->dt->find($id);
         $this->authorize('eud', $dt);
         
         return $this->result(
             $dt->modify($request->all(), $id)
         );
-
+        
     }
     
     /**
@@ -125,14 +124,14 @@ class DepartmentTypeController extends Controller {
      * @throws Exception
      */
     public function destroy($id) {
-
+        
         $dt = $this->dt->find($id);
         $this->authorize('eud', $dt);
         
         return $this->result(
             $dt->remove($id)
         );
-
+        
     }
-
+    
 }

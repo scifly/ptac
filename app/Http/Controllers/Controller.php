@@ -23,6 +23,15 @@ class Controller extends BaseController {
         'message'    => '操作成功',
     ];
     
+    public function getUserInfo() {
+        
+        $code = Request::query('code');
+        $url = 'http://weixin.028lk.com/wap_sites/webindex?code=' . $code;
+        
+        return $code ? redirect($url) : 'no code !';
+        
+    }
+    
     /**
      * 输出view
      *
@@ -31,7 +40,7 @@ class Controller extends BaseController {
      * @throws Throwable
      */
     protected function output(array $params = []) {
-
+        
         # 获取功能对象
         $method = Request::route()->getActionMethod();
         $controller = class_basename(Request::route()->controller);
@@ -41,7 +50,6 @@ class Controller extends BaseController {
             HttpStatusCode::NOT_FOUND,
             __('messages.nonexistent_action')
         );
-
         # 获取功能对应的View
         $view = $action->view;
         abort_if(
@@ -49,11 +57,9 @@ class Controller extends BaseController {
             HttpStatusCode::NOT_FOUND,
             __('messages.misconfigured_action')
         );
-
         # 获取功能对应的菜单/卡片对象
         $menu = Menu::find(session('menuId'));
         $tab = Tab::find(session('tabId'));
-
         # 如果请求类型为Ajax
         if (Request::ajax()) {
             $tab = Tab::find(Request::get('tabId'));
@@ -71,10 +77,11 @@ class Controller extends BaseController {
                 } else {
                     return response()->json([
                         'statusCode' => HttpStatusCode::UNAUTHORIZED,
-                        'mId' => Request::get('menuId'),
-                        'tId' => Request::get('tabId')
+                        'mId'        => Request::get('menuId'),
+                        'tId'        => Request::get('tabId'),
                     ]);
                 }
+                
                 return response()->json([
                     'statusCode' => HttpStatusCode::OK,
                     'html'       => view($view, $params)->render(),
@@ -87,12 +94,13 @@ class Controller extends BaseController {
             Session::forget('tabId');
             $menu = Menu::find(session('menuId'));
             $params['breadcrumb'] = $menu->name . ' / ' . $action->name;
+            
             return response()->json([
                 'statusCode' => HttpStatusCode::OK,
-                'title' => $params['breadcrumb'],
-                'uri' => Request::path(),
-                'html' => view($view, $params)->render(),
-                'js' => $action->js
+                'title'      => $params['breadcrumb'],
+                'uri'        => Request::path(),
+                'html'       => view($view, $params)->render(),
+                'js'         => $action->js,
             ]);
         }
         # 如果是非Ajax请求，且用户已登录
@@ -100,15 +108,16 @@ class Controller extends BaseController {
             # 如果请求的内容需要在卡片中展示
             if ($tab) {
                 return response()->redirectTo('pages/' . session('menuId'));
-            # 如果请求的内容需要直接在Wrapper层（不包含卡片）中显示
+                # 如果请求的内容需要直接在Wrapper层（不包含卡片）中显示
             } else {
                 $params['breadcrumb'] = $menu->name . ' / ' . $action->name;
+                
                 return view('home.page', [
-                    'menu' => $menu->menuHtml($menu->rootMenuId()),
-                    'tabs' => [],
+                    'menu'    => $menu->menuHtml($menu->rootMenuId()),
+                    'tabs'    => [],
                     'content' => view($view, $params)->render(),
-                    'menuId' => session('menuId'),
-                    'js' => 'js/home/page.js',
+                    'menuId'  => session('menuId'),
+                    'js'      => 'js/home/page.js',
                 ]);
             }
         }
@@ -117,15 +126,15 @@ class Controller extends BaseController {
             session(['menuId' => Request::query('menuId')]);
             session(['tabId' => Request::query('tabId')]);
             session(['tabUrl' => Request::path()]);
+            
             return response()->redirectTo('pages/' . session('menuId'));
         }
-
+        
         # 如果用户没有登录
         return Response()->redirectToRoute('login');
         
     }
-
-
+    
     /**
      * 返回操作结果提示信息
      *
@@ -145,25 +154,16 @@ class Controller extends BaseController {
         if (Request::ajax()) {
             return $result
                 ? response()->json([
-                        'statusCode' => $statusCode,
-                        'message' => $message
-                    ])
+                    'statusCode' => $statusCode,
+                    'message'    => $message,
+                ])
                 : abort($statusCode, $message);
         }
-
+        
         return $result
             ? $statusCode . ' : ' . $message
             : abort($statusCode, $message);
         
     }
     
-    public function getUserInfo() {
-        
-        $code = Request::query('code');
-        $url = 'http://weixin.028lk.com/wap_sites/webindex?code=' . $code;
-    
-        return $code ? redirect($url) : 'no code !';
-        
-    }
-
 }

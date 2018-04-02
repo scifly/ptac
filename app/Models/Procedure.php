@@ -134,32 +134,18 @@ class Procedure extends Model {
         $columns = [
             ['db' => 'Procedures.id', 'dt' => 0],
             ['db' => 'ProcedureType.name as proceduretypename', 'dt' => 1],
+            ['db' => 'Procedures.name', 'dt' => 2],
+            ['db' => 'Procedures.remark', 'dt' => 3],
+            ['db' => 'Procedures.created_at', 'dt' => 4],
+            ['db' => 'Procedures.updated_at', 'dt' => 5],
             [
-                'db' => 'School.name as schoolname', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-university') . $d;
-                }
-            ],
-            ['db' => 'Procedures.name', 'dt' => 3],
-            ['db' => 'Procedures.remark', 'dt' => 4],
-            ['db' => 'Procedures.created_at', 'dt' => 5],
-            ['db' => 'Procedures.updated_at', 'dt' => 6],
-            [
-                'db' => 'Procedures.enabled', 'dt' => 7,
+                'db' => 'Procedures.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row);
                 },
             ],
         ];
         $joins = [
-            [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
-                'conditions' => [
-                    'School.id = Procedures.school_id',
-                ],
-            ],
             [
                 'table' => 'procedure_types',
                 'alias' => 'ProcedureType',

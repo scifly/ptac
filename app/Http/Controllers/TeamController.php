@@ -20,10 +20,10 @@ class TeamController extends Controller {
     protected $team;
     
     public function __construct(Team $team) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->team = $team;
-    
+        
     }
     
     /**

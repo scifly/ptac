@@ -20,7 +20,7 @@ class StudentAttendanceSettingController extends Controller {
     protected $sas;
     
     function __construct(StudentAttendanceSetting $sas) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->sas = $sas;
         
@@ -68,7 +68,7 @@ class StudentAttendanceSettingController extends Controller {
      * @throws AuthorizationException
      */
     public function store(StudentAttendanceSettingRequest $request) {
-    
+        
         $this->authorize(
             'cs', StudentAttendanceSetting::class
         );

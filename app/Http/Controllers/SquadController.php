@@ -21,7 +21,7 @@ class SquadController extends Controller {
     protected $class, $educator;
     
     public function __construct(Squad $class, Educator $educator) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->class = $class;
         $this->educator = $educator;
@@ -57,6 +57,7 @@ class SquadController extends Controller {
         $this->authorize(
             'cs', Squad::class
         );
+        
         return $this->output();
         
     }
@@ -69,7 +70,7 @@ class SquadController extends Controller {
      * @throws AuthorizationException
      */
     public function store(SquadRequest $request) {
-    
+        
         $this->authorize(
             'cs', Squad::class
         );
@@ -96,13 +97,13 @@ class SquadController extends Controller {
         $selectedEducators = [];
         if ($class->educator_ids != '0') {
             $selectedEducators = $this->educator->educatorList(
-                explode(",", rtrim($class->educator_ids,","))
+                explode(",", rtrim($class->educator_ids, ","))
             );
         }
         
         return $this->output([
             'class'             => $class,
-            'selectedEducators' => $selectedEducators
+            'selectedEducators' => $selectedEducators,
         ]);
         
     }

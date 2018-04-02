@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
@@ -9,7 +8,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
 class MenuComposer {
-
+    
     use ModelTrait;
     
     protected $icon;
@@ -17,7 +16,7 @@ class MenuComposer {
     function __construct(Icon $icon) { $this->icon = $icon; }
     
     public function compose(View $view) {
-
+        
         $role = Auth::user()->group->name;
         $tabs = null;
         switch ($role) {
@@ -39,11 +38,11 @@ class MenuComposer {
                 break;
         }
         $view->with([
-            'tabs' => $tabs,
+            'tabs'  => $tabs,
             'icons' => $this->icon->icons(),
-            'uris' => $this->uris()
+            'uris'  => $this->uris(),
         ]);
-
+        
     }
-
+    
 }

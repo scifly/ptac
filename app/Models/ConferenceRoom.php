@@ -116,37 +116,21 @@ class ConferenceRoom extends Model {
         $columns = [
             ['db' => 'ConferenceRoom.id', 'dt' => 0],
             ['db' => 'ConferenceRoom.name', 'dt' => 1],
+            ['db' => 'ConferenceRoom.capacity', 'dt' => 2],
+            ['db' => 'ConferenceRoom.remark', 'dt' => 3],
+            ['db' => 'ConferenceRoom.created_at', 'dt' => 4],
+            ['db' => 'ConferenceRoom.updated_at', 'dt' => 5],
             [
-                'db' => 'School.name as schoolname', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa fa-university') . $d;
-                }
-            ],
-            ['db' => 'ConferenceRoom.capacity', 'dt' => 3],
-            ['db' => 'ConferenceRoom.remark', 'dt' => 4],
-            ['db' => 'ConferenceRoom.created_at', 'dt' => 5],
-            ['db' => 'ConferenceRoom.updated_at', 'dt' => 6],
-            [
-                'db' => 'ConferenceRoom.enabled', 'dt' => 7,
+                'db' => 'ConferenceRoom.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
-        $joins = [
-            [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
-                'conditions' => [
-                    'School.id = ConferenceRoom.school_id',
-                ],
-            ],
-        ];
         $condition = 'ConferenceRoom.school_id = ' . $this->schoolId();
         
         return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
+            $this->getModel(), $columns, null, $condition
         );
 
     }

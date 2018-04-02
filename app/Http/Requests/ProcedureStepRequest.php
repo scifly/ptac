@@ -4,14 +4,14 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ProcedureStepRequest extends FormRequest {
-
+    
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
     public function authorize() { return true; }
-
+    
     /**
      * Get the validation rules that apply to the request.
      *
@@ -32,9 +32,9 @@ class ProcedureStepRequest extends FormRequest {
         ];
         
     }
-
+    
     protected function prepareForValidation() {
-
+        
         $input = $this->all();
         if (isset($input['approver_user_ids'])) {
             $input['approver_user_ids'] = implode(',', $input['approver_user_ids']);
@@ -42,7 +42,6 @@ class ProcedureStepRequest extends FormRequest {
         if (isset($input['related_user_ids'])) {
             $input['related_user_ids'] = implode(',', $input['related_user_ids']);
         }
-        
         $this->replace($input);
         
     }

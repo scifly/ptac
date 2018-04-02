@@ -19,7 +19,7 @@ class MajorController extends Controller {
     protected $major;
     
     function __construct(Major $major) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->major = $major;
         
@@ -70,7 +70,7 @@ class MajorController extends Controller {
         );
         
     }
-
+    
     /**
      * 编辑专业
      *

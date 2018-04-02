@@ -7,6 +7,7 @@ use App\Helpers\Constant;
 use App\Helpers\Snippet;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -31,7 +32,7 @@ use Illuminate\Support\Facades\Auth;
  * @method static Builder|PollQuestionnaireSubject whereSubject($value)
  * @method static Builder|PollQuestionnaireSubject whereSubjectType($value)
  * @method static Builder|PollQuestionnaireSubject whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property-read PollQuestionnaireAnswer $pollquestionnaireAnswer
  * @property-read PollQuestionnaire $pollquestionnaire
  * @property-read Collection|PollQuestionnaireSubjectChoice[] $pollquestionnairechoice
@@ -122,8 +123,10 @@ class PollQuestionnaireSubject extends Model {
                     return self::SUBJECT_TYPES[$d];
                 },
             ],
+            ['db' => 'PollQuestionnaire.created_at', 'dt' => 4],
+            ['db' => 'PollQuestionnaire.updated_at', 'dt' => 5],
             [
-                'db' => 'PollQuestionnaireSubject.id as subject_id', 'dt' => 4,
+                'db' => 'PollQuestionnaireSubject.id as subject_id', 'dt' => 6,
                 'formatter' => function ($d) {
                     $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $d);
                     $delLink = sprintf(Snippet::DT_LINK_DEL, $d);

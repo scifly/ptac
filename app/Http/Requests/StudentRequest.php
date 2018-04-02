@@ -22,14 +22,14 @@ class StudentRequest extends FormRequest {
         
         return [
             'card_number'    => 'required|alphanum|between:2,32|unique:students,card_number,' .
-                                $this->input('user_id') . ',user_id',
+                $this->input('user_id') . ',user_id',
             'user.realname'  => 'required|string',
             'user.gender'    => 'required|boolean',
             'user.email'     => 'nullable|email|unique:users,email,' .
-                                $this->input('user_id') . ',id',
+                $this->input('user_id') . ',id',
             'mobile.*'       => ['required', new Mobiles()],
             'student_number' => 'required|alphanum|between:2,32|unique:students,student_number,' .
-                                $this->input('user_id') . ',user_id',
+                $this->input('user_id') . ',user_id',
             'birthday'       => 'required',
         ];
         

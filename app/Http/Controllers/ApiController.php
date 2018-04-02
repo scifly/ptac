@@ -4,16 +4,11 @@ namespace App\Http\Controllers;
 use App\Helpers\HttpStatusCode;
 use App\Http\Requests\ConsumptionRequest;
 use App\Http\Requests\StudentAttendanceRequest;
-use App\Models\AttendanceMachine;
 use App\Models\Consumption;
 use App\Models\EducatorAttendance;
-use App\Models\Semester;
-use App\Models\Student;
 use App\Models\StudentAttendance;
-use App\Models\StudentAttendanceSetting;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class ApiController extends Controller {
@@ -38,11 +33,11 @@ class ApiController extends Controller {
      * @return JsonResponse
      */
     public function login() {
-    
+        
         if (Auth::id() || Auth::attempt([
-            'username' => request('username'),
-            'password' => request('password')
-        ])) {
+                'username' => request('username'),
+                'password' => request('password'),
+            ])) {
             $user = Auth::user();
             $this->result['token'] = $user->createToken('ptac')->accessToken;
             $statusCode = HttpStatusCode::OK;
@@ -55,7 +50,7 @@ class ApiController extends Controller {
             $this->result,
             $statusCode
         );
-    
+        
     }
     
     /**
@@ -65,13 +60,13 @@ class ApiController extends Controller {
      * @return JsonResponse|string
      */
     public function studentConsumption(ConsumptionRequest $request) {
-    
+        
         return $this->result(
             $this->consumption->store(
                 $request->all()
             )
         );
-    
+        
     }
     
     /**
@@ -91,6 +86,12 @@ class ApiController extends Controller {
         
     }
     
+    /**
+     * 教职员工考勤记录
+     *
+     * @param EducatorAttendance $request
+     * @return JsonResponse|string
+     */
     public function educatorAttendance(EducatorAttendance $request) {
         
         return $this->result(

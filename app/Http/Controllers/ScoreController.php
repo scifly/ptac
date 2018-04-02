@@ -20,16 +20,16 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class ScoreController extends Controller {
-
+    
     protected $score;
     
     public function __construct(Score $score) {
-
+        
         $this->middleware(['auth', 'checkrole']);
         $this->score = $score;
-
+        
     }
-
+    
     /**
      * 成绩列表
      *
@@ -37,17 +37,16 @@ class ScoreController extends Controller {
      * @throws \Throwable
      */
     public function index() {
-
+        
         if (Request::get('draw')) {
             return response()->json(
                 $this->score->datatable()
             );
         }
-
+        
         return $this->output();
-
+        
     }
-
     
     /**
      * 录入成绩
@@ -60,7 +59,7 @@ class ScoreController extends Controller {
         return $this->output();
         
     }
-
+    
     /**
      * 保存成绩
      *
@@ -68,7 +67,7 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function store(ScoreRequest $request) {
-
+        
         $input = $request->all();
         $subject = Subject::whereId($input['subject_id'])->first();
         abort_if(
@@ -76,7 +75,7 @@ class ScoreController extends Controller {
             HttpStatusCode::NOT_ACCEPTABLE,
             '该科目最高分为' . $subject->max_score
         );
-    
+        
         return $this->result(
             $this->score->store($request->all())
         );
@@ -117,7 +116,7 @@ class ScoreController extends Controller {
         abort_if(
             $input['score'] > $subject->max_score,
             HttpStatusCode::NOT_ACCEPTABLE,
-            '该科目最高分为'. $subject->max_score
+            '该科目最高分为' . $subject->max_score
         );
         
         return $this->result(
@@ -163,9 +162,10 @@ class ScoreController extends Controller {
             $squad = Request::input('squad');
             $subject = Request::input('subject');
             $project = Request::input('project');
-            if ($exam && $squad ) {
+            if ($exam && $squad) {
                 $score = new Score();
                 $result = $score->scores($exam, $squad, explode(',', $subject), explode(',', $project));
+                
                 return response()->json($result);
             } else {
                 $ids = Exam::whereId($exam)->first();
@@ -176,17 +176,17 @@ class ScoreController extends Controller {
                     ->get()
                     ->toArray();
                 $result = [
-                    'classes' => $classes,
+                    'classes'  => $classes,
                     'subjects' => $subjects,
                 ];
-
+                
                 return response()->json($result);
             }
-
+            
         }
         
         return abort(HttpStatusCode::METHOD_NOT_ALLOWED);
-
+        
     }
     
     /**
@@ -194,17 +194,17 @@ class ScoreController extends Controller {
      *
      */
     public function send_message() {
-
+        
         if (Request::method() === 'POST') {
             $data = Request::input('data');
             $score = new Score();
+            
             return response()->json($score->sendMessage(json_decode($data)));
         }
         
         return abort(HttpStatusCode::METHOD_NOT_ALLOWED);
-
+        
     }
-    
     
     /**
      * 导入学生考试成绩
@@ -212,7 +212,7 @@ class ScoreController extends Controller {
      * @throws \PHPExcel_Exception
      */
     public function import() {
-
+        
         $input = Request::all();
         $file = Request::file('file');
         if (empty($file)) {
@@ -220,16 +220,18 @@ class ScoreController extends Controller {
                 'statusCode' => 500,
                 'message'    => '您还没选择文件！',
             ];
+            
             return response()->json($result);
         }
         // 文件是否上传成功
         if ($file->isValid()) {
             $result = $this->score->upload($file, $input);
+            
             return response()->json($result);
         }
-    
+        
         return response()->json(['statusCode' => 500, 'message' => '上传失败！']);
-
+        
     }
     
     /**
@@ -238,16 +240,17 @@ class ScoreController extends Controller {
      * @param $id
      * @return mixed
      */
-    public function statistics($id){
+    public function statistics($id) {
         
         #先判断这个考试录入分数没有
-        if(!Score::whereExamId($id)->first()){
+        if (!Score::whereExamId($id)->first()) {
             return response()->json(['message' => '本次考试还未录入成绩！', 'statusCode' => 500]);
         }
+        
         return $this->result(
             $this->score->statistics($id)
         );
-       
+        
     }
     
     /**
@@ -282,7 +285,7 @@ class ScoreController extends Controller {
      *
      * @throws Throwable
      */
-    public function analysis(){
+    public function analysis() {
         return $this->output();
     }
     
@@ -290,7 +293,7 @@ class ScoreController extends Controller {
      * 成绩分析表格数据填充
      * @throws Throwable
      */
-    public function analydata(){
+    public function analydata() {
         
         $input = Request::all();
         $view = Score::analysis($input);
@@ -304,22 +307,22 @@ class ScoreController extends Controller {
      * @param $examId
      * @return JsonResponse
      */
-    public function listdatas($examId){
+    public function listdatas($examId) {
         
         $exam = Exam::whereId($examId)->first();
         $squadIds = explode(',', $exam->class_ids);
         $subjectIds = explode(',', $exam->subject_ids);
         #找出这个考试对应的学生
         $students = [];
-        foreach ($squadIds as $squadId){
+        foreach ($squadIds as $squadId) {
             $squ = Squad::whereId($squadId)->first();
-            foreach ($squ->students as $student){
+            foreach ($squ->students as $student) {
                 $students[$student->id] = $student->student_number . '-' . $student->user->realname;
             }
         }
         #找出这个考试对应的科目
         $subjects = [];
-        foreach ($subjectIds as $subjectId){
+        foreach ($subjectIds as $subjectId) {
             $sub = Subject::whereId($subjectId)->first();
             $subjects[$sub->id] = $sub->name;
         }
@@ -332,15 +335,15 @@ class ScoreController extends Controller {
         foreach ($subjects as $key => $value) {
             $subjectHtml .= '<option value="' . $key . '">' . $value . '</option>';
         }
-
+        
         return response()->json([
             'statusCode' => HttpStatusCode::OK,
-            'students' => $studentHtml,
-            'subjects' => $subjectHtml,
+            'students'   => $studentHtml,
+            'subjects'   => $subjectHtml,
         ]);
         
     }
-
+    
     /**
      * 导出成绩模板
      *
@@ -349,8 +352,8 @@ class ScoreController extends Controller {
     public function exports() {
         $examId = Request::get('examId');
         $exam = Exam::whereId($examId)->first();
-        $subjectIds = explode(',',$exam->subject_ids);
-        $subjects = Subject::whereIn('id',$subjectIds)->get();
+        $subjectIds = explode(',', $exam->subject_ids);
+        $subjects = Subject::whereIn('id', $subjectIds)->get();
         $title = ['班级', '学号', '姓名'];
         foreach ($subjects as $s) {
             $title[] = $s->name;
@@ -372,22 +375,22 @@ class ScoreController extends Controller {
         /** @noinspection PhpUndefinedMethodInspection */
         Excel::create(iconv('UTF-8', 'GBK', 'scores'), function ($excel) use ($data) {
             /** @noinspection PhpUndefinedMethodInspection */
-            $excel->sheet('score', function($sheet) use ($data) {
+            $excel->sheet('score', function ($sheet) use ($data) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 $sheet->rows($data);
                 /** @noinspection PhpUndefinedMethodInspection */
-                $sheet->setWidth(array(
-                    'A'     =>  15,
-                    'B'     =>  15,
-                    'C'     =>  15,
-                    'D'     =>  10,
-                    'E'     =>  10,
-                    'F'     =>  10,
-                ));
-
+                $sheet->setWidth([
+                    'A' => 15,
+                    'B' => 15,
+                    'C' => 15,
+                    'D' => 10,
+                    'E' => 10,
+                    'F' => 10,
+                ]);
+                
             });
-        },'UTF-8')->export('xls');
-
+        }, 'UTF-8')->export('xls');
+        
     }
     
     /**
@@ -402,7 +405,7 @@ class ScoreController extends Controller {
         $students = [];
         if ($squad) {
             $stus = $squad->students;
-            foreach ($stus as $item){
+            foreach ($stus as $item) {
                 $students[$item->id] = $item->student_number . '-' . $item->user->realname;
             }
         }
@@ -413,8 +416,8 @@ class ScoreController extends Controller {
         }
         
         return $this->result($students, $html);
-    
+        
     }
-
+    
 }
 

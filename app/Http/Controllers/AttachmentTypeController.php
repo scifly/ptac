@@ -11,7 +11,7 @@ use Throwable;
 
 /**
  * 附件类型
- * 
+ *
  * Class AttachmentTypeController
  * @package App\Http\Controllers
  */
@@ -95,7 +95,7 @@ class AttachmentTypeController extends Controller {
         $this->authorize('eud', $at);
         
         return $this->output([
-            'mt' => $at
+            'mt' => $at,
         ]);
         
     }
@@ -139,6 +139,5 @@ class AttachmentTypeController extends Controller {
         );
         
     }
-    
     
 }

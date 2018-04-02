@@ -15,11 +15,11 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class ConferenceParticipantController extends Controller {
-
-    protected $cp;
-
-    function __construct(ConferenceParticipant $cp) {
     
+    protected $cp;
+    
+    function __construct(ConferenceParticipant $cp) {
+        
         $this->middleware(['auth', 'checkrole']);
         $this->cp = $cp;
         

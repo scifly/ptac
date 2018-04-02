@@ -31,9 +31,9 @@ class SemesterRequest extends FormRequest {
             'start_date' => 'required|date|before:end_date',
             'end_date'   => 'required|date|after:start_date',
             'enabled'    => 'required|boolean',
-            'startend' => [
-                'required', new StartEnd(), new Overlaid()
-            ]
+            'startend'   => [
+                'required', new StartEnd(), new Overlaid(),
+            ],
         ];
         
     }
@@ -41,12 +41,11 @@ class SemesterRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-
-        $start = substr($input['start_date'],0,10);
-        $end = substr($input['end_date'],0,10);
+        $start = substr($input['start_date'], 0, 10);
+        $end = substr($input['end_date'], 0, 10);
         $input['school_id'] = $this->schoolId();
         $input['startend'] = [
-            $start, $end, 'semester', $input['id'] ?? null
+            $start, $end, 'semester', $input['id'] ?? null,
         ];
         $this->replace($input);
         

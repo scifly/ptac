@@ -16,6 +16,7 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class MenuTypeController extends Controller {
+    
     protected $mt;
     
     function __construct(MenuType $mt) {
@@ -94,7 +95,7 @@ class MenuTypeController extends Controller {
         $this->authorize('eud', $mt);
         
         return $this->output([
-            'mt' => $mt
+            'mt' => $mt,
         ]);
         
     }

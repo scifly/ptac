@@ -22,7 +22,7 @@ class EventController extends Controller {
     protected $event;
     
     function __construct(Event $event) {
-    
+        
         $this->middleware(['auth', 'checkrole']);
         $this->event = $event;
         
@@ -35,18 +35,18 @@ class EventController extends Controller {
      * @throws Throwable
      */
     public function index() {
-
+        
         $events = $this->event
             ->whereUserId(Auth::id())
             ->where('enabled', '0')
             ->get()
             ->toArray();
-
+        
         return $this->output([
             'events'  => $events,
             'userId'  => Auth::id(),
             'isAdmin' => Auth::user()->group->name == '运营',
-            'show' => true,
+            'show'    => true,
         ]);
         
     }
@@ -91,7 +91,6 @@ class EventController extends Controller {
         
         //判断当前用户权限
         $event = $this->event->find($id);
-        
         $row = Request::all();
         abort_if(
             !in_array(Auth::user()->group->name, Constant::SUPER_ROLES) && $row['ispublic'] == 1,
@@ -100,7 +99,7 @@ class EventController extends Controller {
         );
         
         return $this->output([
-             'event' => $event,
+            'event' => $event,
         ]);
     }
     
@@ -166,7 +165,7 @@ class EventController extends Controller {
                 'contact', 'url', 'start',
                 'end', 'ispublic', 'iscourse',
                 'educator_id', 'subject_id', 'alertable',
-                'alert_mins', 'user_id', 'enabled'
+                'alert_mins', 'user_id', 'enabled',
             ])
             ->toArray();
         $event['start'] = $listJson['start'];
@@ -178,7 +177,6 @@ class EventController extends Controller {
             '结束时间必须大于开始时间！'
         );
         // 根据角色验证重复冲突
-        
         if ($this->event->isValidateTime($event['user_id'], $event['educator_id'], $event['start'], $event['end'])) {
             abort(HttpStatusCode::NOT_ACCEPTABLE, '时间有冲突！');
         }
@@ -209,7 +207,7 @@ class EventController extends Controller {
         if ($this->event->isValidateTime($event->user_id, $event->educator_id, $event->start, $event->end, $event->id)) {
             abort(HttpStatusCode::NOT_ACCEPTABLE, '时间有冲突！');
         }
-
+        
         return $this->result(
             $event->save()
         );

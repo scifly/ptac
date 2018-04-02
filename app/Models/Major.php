@@ -176,14 +176,9 @@ class Major extends Model {
                     return sprintf(Snippet::ICON, 'fa-graduation-cap') . $d;
                 }
             ],
-            [
-                'db' => 'School.name as schoolname', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-university') . $d;
-                }
-            ],
-            ['db' => 'Major.remark', 'dt' => 3],
-            ['db' => 'Major.created_at', 'dt' => 4],
+            ['db' => 'Major.remark', 'dt' => 2],
+            ['db' => 'Major.created_at', 'dt' => 3],
+            ['db' => 'Major.updated_at', 'dt' => 4],
             [
                 'db' => 'Major.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
