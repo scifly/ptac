@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use Eloquent;
+use Illuminate\Validation\Rule;
 use Throwable;
 use Carbon\Carbon;
 use App\Helpers\Snippet;
@@ -365,22 +366,29 @@ class StudentAttendance extends Model {
      */
     function wDetail($studentId = null) {
     
-        if (Request::isMethod('post')) {
-            if (array_key_exists('ym', Request::all())) {
-                $start = Request::get('ym') . '-01';
-                $response = ['data' => $this->wStat(
-                    Request::get('id'),
-                    $start, date('Y-m-t', strtotime($start)))
+        $user = Auth::user();
+        if (Request::method() == 'POST') {
+            $id = Request::input('id');
+            $type = Request::input('type');
+            $date = Request::input('date');
+            Request::validate([
+                'id' => 'required|integer',
+                'type' => ['required', 'string', Rule::in(['month', 'day']),],
+                'date' => 'required|date'
+            ]);
+            abort_if(
+                !in_array($id, $this->contactIds('student', $user, $user->educator->school_id)),
+                HttpStatusCode::NOT_ACCEPTABLE,
+                __('messages.invalid_argument')
+            );
+            if ($type == 'month') {
+                $response = [
+                    'data' => $this->wStat(
+                        Request::get('id'),
+                        $date, date('Y-m-t', strtotime($date))
+                    )
                 ];
-            } elseif (array_key_exists('year', Request::all())) {
-                $start = Request::get('year') . '-01';
-                $response = ['date' => $this->wStat(
-                    Request::get('id'),
-                    $start,
-                    date('Y-m-t', strtotime($start))
-                )];
             } else {
-                $date = Request::get('date');
                 $ins = $this->whereStudentId(Request::get('id'))
                     ->whereDate('punch_time', $date)
                     ->where('inorout', 1)

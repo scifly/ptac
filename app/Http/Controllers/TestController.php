@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ModelTrait;
 use App\Models\Department;
 use App\Models\Grade;
+use App\Models\User;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -35,40 +36,9 @@ class TestController extends Controller {
         '/wap_sites/update/%s',
     ];
     
-    /**
-     * @throws Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
-     */
     public function index() {
-        
-        $startTime = date('Y-m-01 00:00:00', strtotime(date('Y-m-d')));
-        $endTime = date('Y-m-t 23:59:59', strtotime($startTime));
-        echo $startTime . '<br />';
-        echo $endTime . '<br />';
-        dd(implode(',', [1, 2, 3]));
-        $start = '2018-03-01';
-        $end = '2018-03-07';
-        $d1 = Carbon::createFromTimestamp(strtotime($start));
-        $d2 = Carbon::createFromTimestamp(strtotime($end));
-        dd($d1->addDay()->toDateString());
-        dd($d2->diffInDays($d1));
-        // $students = Student::with('user:id,realname')->get()->pluck('user.realname', 'id');
-        $grade = new Grade();
-        list($classes) = $grade->classList(1);
-        dd($classes);
-        $inputFileName = $filePath =
-            'uploads/'
-            . date('Y')
-            . '/'
-            . date('m')
-            . '/'
-            . date('d')
-            . '/'
-            . '1718165aab8bd87e514.xlsx';
-        $spreadsheet = IOFactory::load($inputFileName);
-        $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
-        var_dump($sheetData);
-        exit;
+
+        $values = User::all()->groupBy('group_id')->toArray();
         try {
             $client = new Client();
             $reponse = $client->post(

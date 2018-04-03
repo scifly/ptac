@@ -52,10 +52,6 @@
                           style="display:inline-block">{{ $i->studentAttendancesetting->name }}</span>
                     <span class="kaoqin-detail-status c-83db74">{{ $in->status == 1 ? '正常' : '异常' }}</span>
                     <span class="time">{{ substr($in->punch_time, 11) }}</span>
-                    {{--@else--}}
-                    {{--<span class="js-kaoqin-status-morning" style="display:inline-block">暂无数据</span>--}}
-                    {{--<span class="kaoqin-detail-status c-83db74">{{ '暂无数据' }}</span>--}}
-                    {{--<span class="time">暂无数据</span>--}}
                 @endif
             </div>
         @endforeach
@@ -105,104 +101,58 @@
         $("[data-date = " + date + "]").addClass('picker-calendar-day-abnormal')
     });
 
-    $('.picker-calendar-year-picker a').click(function () {
-        var sYear = $year.html(),
-            sMonth = $month.html();
-        $.ajax({
-            type: 'POST',
-            dataType: 'json',
-            url: 'detail',
-            data: {
-                id: id,
-                ym: sYear + '-' + months[sMonth],
-                _token: token
-            },
-            success: function (result) {
-                var str = '';
+    // 按月统计
+    $(document).on(
+        'click',
+        '.picker-calendar-year-picker a, .picker-calendar-month-picker a',
+        function () {
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: 'detail',
+                data: {
+                    id: id,
+                    date: sYear + '-' + months[sMonth] + '-01',
+                    type: 'month',
+                    _token: token
+                },
+                success: function (result) {
+                    var str = '';
 
-                $.each(result['data']['nDays'], function () {
-                    var date = sYear + '-' + (parseInt(months[sMonth]) - 1) + '-' + parseInt(this.substring(8, 10));
-                    $("[data-date = " + date + "]").addClass('picker-calendar-day-normal');
-                });
-                $.each(result['data']['aDays'], function () {
-                    var date = y + '-' + (parseInt(months[sMonth]) - 1) + '-' + parseInt(this.substring(8, 10));
-                    $("[data-date = " + date + "]").addClass('picker-calendar-day-abnormal');
-                });
-                $('.picker-calendar-month-current .picker-calendar-day').eq(11).addClass('picker-calendar-day-leave');
-                str +=
-                    '<tr>' +
-                        '<td>' +
-                            '<div class="kaoqin-date-circle okstatus"></div>' +
-                            '<span class="pl10">正常:</span>' +
-                            '<span>' + result['data']['nSum'] + '天</span>' +
-                        '</td>' +
-                        '<td>' +
-                            '<div class="kaoqin-date-circle notstatus"></div>' +
-                            '<span class="pl10">异常:</span>' +
-                            '<span>' + result['data']['aSum'] + '天</span>' +
-                        '</td>' +
-                        '<td>' +
-                            '<div class="kaoqin-date-circle reststatus"></div>' +
-                            '<span class="pl10">请假:</span>' +
-                            '<span>0 天</span>' +
-                        '</td>' +
-                    '</tr>';
-                $('.kaoqin-tongji tbody').html(str);
-            }
-        });
-    });
+                    $.each(result['data']['nDays'], function () {
+                        var date = sYear + '-' + (parseInt(months[sMonth]) - 1) + '-' + parseInt(this.substring(8, 10));
+                        $("[data-date = " + date + "]").addClass('picker-calendar-day-normal');
+                    });
+                    $.each(result['data']['aDays'], function () {
+                        var date = y + '-' + (parseInt(months[sMonth]) - 1) + '-' + parseInt(this.substring(8, 10));
+                        $("[data-date = " + date + "]").addClass('picker-calendar-day-abnormal');
+                    });
+                    $('.picker-calendar-month-current .picker-calendar-day').eq(11).addClass('picker-calendar-day-leave');
+                    str +=
+                        '<tr>' +
+                            '<td>' +
+                                '<div class="kaoqin-date-circle okstatus"></div>' +
+                                '<span class="pl10">正常:</span>' +
+                                '<span>' + result['data']['nSum'] + '天</span>' +
+                            '</td>' +
+                            '<td>' +
+                                '<div class="kaoqin-date-circle notstatus"></div>' +
+                                '<span class="pl10">异常:</span>' +
+                                '<span>' + result['data']['aSum'] + '天</span>' +
+                            '</td>' +
+                            '<td>' +
+                                '<div class="kaoqin-date-circle reststatus"></div>' +
+                                '<span class="pl10">请假:</span>' +
+                                '<span>0 天</span>' +
+                            '</td>' +
+                        '</tr>';
+                    $('.kaoqin-tongji tbody').html(str);
+                }
+            });
+        }
+    );
 
-    // 点击月份
-    $('.picker-calendar-month-picker a').click(function () {
-        var sYear = $('.current-year-value').html(),
-            sMonth = $('.current-month-value').html(),
-            iMonth = parseInt(months[sMonth]);
-        var years = sYear + '-' + sMonth;
-        $.ajax({
-            type: 'post',
-            dataType: 'json',
-            url: 'detail',
-            data: {
-                id: id,
-                years: years,
-                _token: $('#csrf_token').attr('content')
-            },
-            success: function (result) {
-                var str = '';
-
-                $.each(result['date']['nDays'], function () {
-                    var tmp = sYear + '-' + (iMonth - 1) + '-' + parseInt((this.substring(8, 10)));
-                    $("[data-date = " + tmp + " ]").addClass('picker-calendar-day-normal');
-                });
-                $.each(result['date']['aDays'], function () {
-                    var tmp = sYear + '-' + (iMonth - 1) + '-' + parseInt((this.substring(8, 10)));
-                    $("[data-date = " + tmp + " ]").addClass('picker-calendar-day-abnormal');
-                });
-                str +=
-                    '<tr>' +
-                        '<td>' +
-                            '<div class="kaoqin-date-circle okstatus"></div>' +
-                            '<span class="pl10">正常:</span>' +
-                            '<span>' + result['date']['nSum'] + ' 天</span>' +
-                        '</td>' +
-                        '<td>' +
-                            '<div class="kaoqin-date-circle notstatus"></div>' +
-                            '<span class="pl10">异常:</span>' +
-                            '<span>' + result['date']['aSum'] + ' 天</span>' +
-                        '</td>' +
-                        '<td>' +
-                            '<div class="kaoqin-date-circle reststatus"></div>' +
-                            '<span class="pl10">请假:</span>' +
-                            '<span>0天</span>' +
-                        '</td>' +
-                    '</tr>';
-                $('.kaoqin-tongji tbody').html(str);
-            }
-        });
-
-    });
-
-    // 点击日期
+    // 按天统计
     $('.picker-calendar-day').click(function () {
         var year = $(this).attr('data-year'), 
             month = pad(parseInt($(this).attr('data-month')) + 1, 2),
@@ -215,51 +165,50 @@
             data: {
                 id: id,
                 date: year + '-' + month + '-' + day,
+                type: 'day',
                 _token: token
             },
             success: function (result) {
                 var str = '',
-                    status = '';
+                    status = '',
+                    punch_time = '',
+                    template =
+                        '<div class="mt20 history-list-con" style="">' +
+                            '<span class="js-kaoqin-status-morning" style="display:inline-block">%direction%</span>' +
+                            '<span class="kaoqin-detail-status c-83db74">%status%</span>' +
+                            '<span class="time">%punch_time%</span>' +
+                        '</div>';
 
                 str += '<div class="js-kaoqin-detail-date kaoqin-detail-date">' + result['date'] + '</div>';
                 if (result['ins'].length > 0) {
                     for (var i = 0; i < result['ins'].length; i++) {
                         status = result['ins'][i]['status'] === 1 ? '正常' : '异常';
-                        str +=
-                            '<div class="mt20 history-list-con" style="">' +
-                                '<span class="js-kaoqin-status-morning" style="display:inline-block">上班</span>' +
-                                '<span class="kaoqin-detail-status c-83db74">' + status + '</span>' +
-                                '<span class="time">' + result['ins'][i]['punch_time'] + '</span>' +
-                            '</div>';
+                        punch_time = result['ins'][i]['punch_time'];
+                        str += template
+                            .replace('%direction%', '上班')
+                            .replace('%status%', status)
+                            .replace('%punch_time%', punch_time);
                     }
                 } else {
-                    str +=
-                        '<div class="mt20 history-list-con" style="">' +
-                            '<span class="js-kaoqin-status-morning" style="display:inline-block">上班</span>' +
-                            '<span class="kaoqin-detail-status c-83db74">' + '暂无数据' + '</span>' +
-                            '<span class="time">' + '暂无' + '</span>' +
-                        '</div>';
+                    str += template
+                        .replace('%direction%', '上班')
+                        .replace('%status%', 'n/a')
+                        .replace('%punch_time%', 'n/a');
                 }
                 if (result['outs'].length > 0) {
                     for (var j = 0; j < result['outs'].length; j++) {
-                        var out = result['outs'][j];
-                        str += ' <div class="mt20 history-list-con" style="">' +
-                            '<span class="js-kaoqin-status-morning" style="display:inline-block">下班</span>';
-                        if (out.status === 1) {
-                            str += '<span class="kaoqin-detail-status c-83db74">' + '正常' + '</span>';
-                        } else {
-                            str += '<span class="kaoqin-detail-status c-83db74">' + '异常' + '</span>';
-
-                        }
-                        str += '<span class="time">' + out.punch_time + '</span>' +
-                            '</div>';
+                        status = result['outs'][i]['status'] === 1 ? '正常' : '异常';
+                        punch_time = result['outs'][i]['punch_time'];
+                        str += template
+                            .replace('%direction%', '下班')
+                            .replace('%status%', status)
+                            .replace('%punch_time%', punch_time);
                     }
                 } else {
-                    str += ' <div class="mt20 history-list-con" style="">' +
-                        '<span class="js-kaoqin-status-morning" style="display:inline-block">下班</span>' +
-                        '<span class="kaoqin-detail-status c-83db74">' + '暂无数据' + '</span>' +
-                        '<span class="time">' + '暂无' + '</span>' +
-                        '</div>';
+                    str += template
+                        .replace('%direction%', '下班')
+                        .replace('%status%', 'n/a')
+                        .replace('%punch_time%', 'n/a');
                 }
                 $('.kaoqin-day-detail').html(str)
             }
