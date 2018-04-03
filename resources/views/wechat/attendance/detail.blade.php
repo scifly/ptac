@@ -49,7 +49,8 @@
             <div class="mt20 history-list-con" style="">
                 @if(sizeof($into) != 0)
                     <span class="js-kaoqin-status-morning"
-                          style="display:inline-block">{{ $i->studentAttendancesetting->name }}</span>
+                          style="display:inline-block">{{ $i->studentAttendancesetting->name }}
+                    </span>
                     <span class="kaoqin-detail-status c-83db74">{{ $in->status == 1 ? '正常' : '异常' }}</span>
                     <span class="time">{{ substr($in->punch_time, 11) }}</span>
                 @endif
@@ -58,7 +59,7 @@
         @foreach($outs as $out)
             <div class="mt20 history-list-con" style="">
                 @if(sizeof($outs) != 0)
-                    <span class="js-kaoqin-status-morning" style="display:inline-block">下班</span>
+                    <span class="js-kaoqin-status-morning" style="display:inline-block">放学</span>
                     <span class="kaoqin-detail-status c-83db74">{{ $out->status == 1 ?'正常' : '异常' }}</span>
                     <span class="time">{{ substr($out->punch_time,11) }}</span>
                 @endif

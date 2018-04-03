@@ -393,7 +393,7 @@ class StudentAttendance extends Model {
                     ->whereDate('punch_time', $date)
                     ->orderBy('punch_time', 'ASC')
                     ->groupBy('inorout')
-                    ->get()->toArray();
+                    ->get();
                 $response = [
                     'date' => $date,
                     'ins'  => $attendances[1],

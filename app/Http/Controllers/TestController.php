@@ -38,8 +38,8 @@ class TestController extends Controller {
     
     public function index() {
 
-        $result = User::whereDate('created_at', '2018-03-27')->first()->toArray();
-        dd($result);
+        $values = User::whereEnabled(1)->groupBy('group_id')->get();
+        dd($values);
         try {
             $client = new Client();
             $reponse = $client->post(
