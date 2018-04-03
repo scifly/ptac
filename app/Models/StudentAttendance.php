@@ -389,36 +389,26 @@ class StudentAttendance extends Model {
                     )
                 ];
             } else {
-                $ins = $this->whereStudentId(Request::get('id'))
+                $attendances = $this->whereStudentId(Request::get('id'))
                     ->whereDate('punch_time', $date)
-                    ->where('inorout', 1)
                     ->orderBy('punch_time', 'ASC')
-                    ->get();
-                $outs = $this->whereStudentId(Request::get('id'))
-                    ->whereDate('punch_time', $date)
-                    ->where('inorout', 0)
-                    ->orderBy('punch_time', 'DESC')
-                    ->get();
+                    ->groupBy('inorout')
+                    ->get()->toArray();
                 $response = [
                     'date' => $date,
-                    'ins'  => $ins,
-                    'outs' => $outs
+                    'ins'  => $attendances[1],
+                    'outs' => $attendances[0]
                 ];
             }
         
             return response()->json($response);
         }
         $today = date('Y-m-d', time());
-        $ins = $this->whereDate('punch_time', $today)
+        $attendances = $this->whereDate('punch_time', $today)
             ->where('student_id', $studentId)
-            ->where('inorout', 1)
             ->orderBy('punch_time', 'ASC')
-            ->get();
-        $outs = $this->whereDate('punch_time', $today)
-            ->where('student_id', $studentId)
-            ->where('inorout', 0)
-            ->orderBy('punch_time', 'ASC')
-            ->get();
+            ->groupBy('inorout')
+            ->get()->toArray();
         $data = $this->wStat($studentId);
         
         return view(self::VIEW_NS . 'detail', [
@@ -426,8 +416,8 @@ class StudentAttendance extends Model {
             'data' => $data,
             'days' => json_encode($data, JSON_UNESCAPED_UNICODE),
             'date' => $today,
-            'ins'  => $ins,
-            'outs' => $outs,
+            'ins'  => $attendances[1],
+            'outs' => $attendances[0],
         ]);
         
     }
