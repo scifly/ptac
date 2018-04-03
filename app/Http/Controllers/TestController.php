@@ -4,12 +4,10 @@ namespace App\Http\Controllers;
 use App\Helpers\ModelTrait;
 use App\Models\Department;
 use App\Models\Grade;
-use App\Models\Menu;
 use App\Models\User;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
-use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use ReflectionClass;
@@ -40,10 +38,7 @@ class TestController extends Controller {
     
     public function index() {
 
-        $values = DB::table('menus')
-            ->groupBy('menu_type_id')
-            ->having('menu_type_id', '>', 0)
-            ->get();
+        $values = User::all()->groupBy('group_id');
         dd($values);
         try {
             $client = new Client();
