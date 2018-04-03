@@ -40,7 +40,12 @@ class TestController extends Controller {
     public function index() {
 
         $values = Menu::whereEnabled(1)->get()->groupBy('menu_type_id');
-        dd($values);
+        $menus = $values[5];
+        /** @var Menu $menu */
+        foreach ($menus as $menu) {
+            echo $menu->menuType->name . '<br />';
+        };
+        die;
         try {
             $client = new Client();
             $reponse = $client->post(
