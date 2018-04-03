@@ -40,7 +40,7 @@ class TestController extends Controller {
     
     public function index() {
 
-        $values = DB::table('users')
+        $values = DB::table('menus')
             ->groupBy('menu_type_id')
             ->having('menu_type_id', '>', 0)
             ->get();
