@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ModelTrait;
 use App\Models\Department;
 use App\Models\Grade;
+use App\Models\Menu;
 use App\Models\User;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
@@ -38,8 +39,8 @@ class TestController extends Controller {
     
     public function index() {
 
-        $values = User::whereEnabled(1)->get()->groupBy('group_id');
-        dd($values[1]);
+        $values = Menu::whereEnabled(1)->get()->groupBy('menu_type_id');
+        dd($values);
         try {
             $client = new Client();
             $reponse = $client->post(
