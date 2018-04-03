@@ -40,7 +40,7 @@ class TestController extends Controller {
     
     public function index() {
 
-        $values = DB::table('menus')->groupBy('menu_type_id')->get();
+        $values = DB::table('menus')->groupBy('menu_type_id', 'id')->get();
         dd($values);
         try {
             $client = new Client();
