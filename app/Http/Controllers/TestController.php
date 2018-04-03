@@ -39,7 +39,7 @@ class TestController extends Controller {
     
     public function index() {
 
-        $values = Menu::whereEnabled(1)->groupBy(['menu_type_id', 'id'])->get();
+        $values = Menu::whereEnabled(1)->groupBy('menu_type_id')->having('id', '>', 1)->get();
         dd($values);
         try {
             $client = new Client();
