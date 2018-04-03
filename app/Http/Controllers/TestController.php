@@ -9,6 +9,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use ReflectionClass;
@@ -39,7 +40,7 @@ class TestController extends Controller {
     
     public function index() {
 
-        $values = Menu::whereEnabled(1)->groupBy('menu_type_id')->having('id', '>', 1)->get();
+        $values = DB::table('menus')->groupBy('menu_type_id')->get();
         dd($values);
         try {
             $client = new Client();
