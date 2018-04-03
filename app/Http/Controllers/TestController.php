@@ -39,6 +39,7 @@ class TestController extends Controller {
     public function index() {
 
         $values = User::all()->groupBy('group_id')->toArray();
+        dd($values);
         try {
             $client = new Client();
             $reponse = $client->post(
