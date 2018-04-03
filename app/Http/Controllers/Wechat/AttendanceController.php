@@ -23,7 +23,7 @@ class AttendanceController extends Controller {
     use WechatTrait;
     
     const APP = '考勤中心';
-    const WEEK_DAYS = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+    
     protected $sa;
     
     function __construct(StudentAttendance $sa) {
@@ -51,9 +51,9 @@ class AttendanceController extends Controller {
      * @param null $studentId
      * @return Factory|JsonResponse|View
      */
-    public function records($studentId = null) {
+    public function detail($studentId = null) {
         
-        return $this->sa->wRecords($studentId);
+        return $this->sa->wDetail($studentId);
         
     }
     
@@ -72,36 +72,20 @@ class AttendanceController extends Controller {
      * 返回指定班级对应的年级考勤规则
      *
      * @param $classId
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function rules($classId) {
+    public function rule($classId) {
         
-        return $this->sa->wRules($classId);
+        return $this->sa->wRule($classId);
         
     }
     
     /**
      * 判断日期和规则是否匹配
      */
-    public function validateRule() {
+    public function check() {
         
-        $input = Request::all();
-        if (isset($input['date'], $input['rule'])) {
-            #获取规则的星期
-            $ruleDay = StudentAttendanceSetting::find($input['rule'])->day;
-            $weekDay = self::WEEK_DAYS[date("w", strtotime($input['date']))];
-            $this->result['message'] = '';
-            
-            return $ruleDay == $weekDay
-                ? response()->json($this->result)
-                : abort(
-                    HttpStatusCode::INTERNAL_SERVER_ERROR,
-                    '请选择和规则对应的星期！'
-                );
-        }
-        $this->result['message'] = '';
-        
-        return response()->json($this->result);
+        return $this->sa->wCheck();
         
     }
     

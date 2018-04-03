@@ -4,7 +4,7 @@ namespace App\Http\ViewComposers;
 use App\Helpers\ModelTrait;
 use Illuminate\Contracts\View\View;
 
-class ExamTypeComposer {
+class ExamTypeIndexComposer {
     
     use ModelTrait;
     

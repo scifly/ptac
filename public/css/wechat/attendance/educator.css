@@ -3,36 +3,43 @@ body, html {
     width: 100%;
     overflow-x: hidden;
 }
-body{
+
+body {
     margin: 0;
-    padding:0;
+    padding: 0;
     background-color: #fff;
-    font-family: "微软雅黑";
+    font-family: "微软雅黑", serif;
 }
-a{
+
+a {
     color: #333;
 }
-.main{
+
+.main {
     height: 100%;
     width: 100%;
     background-color: #fff;
 }
+
 .multi-role {
     background: #fff;
     position: relative;
 }
+
 .multi-role .switchclass-item {
-    padding: 0px;
-    padding-right: 0;
+    padding: 0;
     display: -webkit-box;
     line-height: 30px;
     border-bottom: 5px solid #f8f8f8;
     text-align: center;
 }
-.multi-role .switchclass-item .switchclass-title{
-    -webkit-box-flex: 1;position: relative;
+
+.multi-role .switchclass-item .switchclass-title {
+    -webkit-box-flex: 1;
+    position: relative;
 }
-.title-name{
+
+.title-name {
     font-size: 18px;
     color: #686868;
     width: 100%;
@@ -43,9 +50,11 @@ a{
     float: left;
     position: relative;
 }
-.switchclass-head{
+
+.switchclass-head {
     width: 100%;
 }
+
 .icons-choose {
     text-align: center;
     color: #1aad19;
@@ -53,19 +62,20 @@ a{
     margin: -1px;
     position: absolute;
     right: 15px;
-    top: 0px;
+    top: 0;
     line-height: 30px;
 }
-.icons-choose a{
+
+.icons-choose a {
     font-size: 20px;
     color: #1aad19;
 }
 
 .kaoqin-tongji {
     width: 100%;
-    margin-left:5%;
-    /*text-align: center;*/
+    margin-left: 5%;
 }
+
 .kaoqin-tongji td {
     display: inline-block;
     width: 32%;
@@ -73,9 +83,9 @@ a{
     line-height: 48px;
     font-size: 14px;
 }
+
 .kaoqin-date-circle {
     float: left;
-    margin-top: 2px;
     width: 15px;
     height: 15px;
     border-radius: 50%;
@@ -83,22 +93,26 @@ a{
     margin-top: 17px;
     margin-right: 2px;
 }
+
 .okstatus {
     background-color: #83db74;
 }
+
 .notstatus {
     background-color: #fdde52;
 }
+
 .reststatus {
     background-color: #fc7f4e;
 }
 
-.list{
+.list {
     padding: 15px;
 }
-.list-item{
+
+.list-item {
     width: 100%;
-    border:1px solid #ddd;
+    border: 1px solid #ddd;
     min-height: 120px;
     background-color: #fff;
     border-radius: 5px;
@@ -106,16 +120,18 @@ a{
     color: #333;
     margin-bottom: 15px;
 }
-.list-item .username,.list-item .parent,.list-item .mobile,.list-item .otherinfo{
-    padding:0px 20px;
+
+.list-item .username, .list-item .parent, .list-item .mobile, .list-item .otherinfo {
+    padding: 0 20px;
     font-size: 15px;
 }
-.list-item .username{
+
+.list-item .username {
     font-size: 18px;
     margin-top: 8px;
-    /*padding: 20px;*/
 }
-.list-item .parent,.list-item .mobile,.list-item .otherinfo{
+
+.list-item .parent, .list-item .mobile, .list-item .otherinfo {
     color: #777;
     margin-top: 2px;
 }

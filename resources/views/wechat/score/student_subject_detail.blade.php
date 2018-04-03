@@ -310,7 +310,7 @@
             }
         });
         // if(tmp != name){
-        //     getdata();
+        //     attendances();
         // }
 
     })
