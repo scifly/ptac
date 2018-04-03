@@ -392,8 +392,7 @@ class StudentAttendance extends Model {
                 $attendances = $this->whereStudentId(Request::get('id'))
                     ->whereDate('punch_time', $date)
                     ->orderBy('punch_time', 'ASC')
-                    ->groupBy('inorout')
-                    ->get();
+                    ->get()->groupBy('inorout');
                 $response = [
                     'date' => $date,
                     'ins'  => $attendances[1],
@@ -407,8 +406,7 @@ class StudentAttendance extends Model {
         $attendances = $this->whereDate('punch_time', $today)
             ->where('student_id', $studentId)
             ->orderBy('punch_time', 'ASC')
-            ->groupBy('inorout')
-            ->get()->toArray();
+            ->get()->groupBy('inorout');
         $data = $this->wStat($studentId);
         
         return view(self::VIEW_NS . 'detail', [

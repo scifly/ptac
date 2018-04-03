@@ -38,8 +38,8 @@ class TestController extends Controller {
     
     public function index() {
 
-        $values = User::whereEnabled(1)->groupBy('group_id')->get();
-        dd($values);
+        $values = User::whereEnabled(1)->get()->groupBy('group_id');
+        dd($values[1]);
         try {
             $client = new Client();
             $reponse = $client->post(
