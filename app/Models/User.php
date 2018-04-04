@@ -351,6 +351,7 @@ class User extends Authenticatable {
                     'english_name' => $data['english_name'],
                     'telephone'    => $data['telephone'],
                     'enabled'      => $data['enabled'],
+                    'synced'       => $data['synced'],
                     'avatar_url'   => '',
                     'isleader'     => 0,
                 ]);
