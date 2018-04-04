@@ -4,7 +4,6 @@ namespace App\Jobs;
 use App\Events\ContactSyncTrigger;
 use App\Facades\Wechat;
 use App\Models\Corp;
-use App\Models\DepartmentUser;
 use App\Models\School;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
@@ -60,10 +59,9 @@ class ManageWechatMember implements ShouldQueue {
                 $this->sync($corp->corpid, $corp->contact_sync_secret);
                 break;
             case '学校':
-                $departmentId = DepartmentUser::whereUserId($user->id)->first()->department_id;
-                // $departmentIds = $user->departments->pluck('id')->toArray();
+                $departmentIds = $user->departments->pluck('id')->toArray();
                 $corp = Corp::find(
-                    School::whereDepartmentId($departmentId)->first()->corp_id
+                    School::whereDepartmentId($departmentIds[0])->first()->corp_id
                 );
                 $this->sync($corp->corpid, $corp->contact_sync_secret);
                 break;
