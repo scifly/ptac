@@ -96,7 +96,7 @@ class ManageWechatMember implements ShouldQueue {
      */
     private function sync($corpId, $secret): void {
         
-        $token = Wechat::getAccessToken($corpId, $secret);
+        $token = Wechat::getAccessToken($corpId, $secret, true);
         $data = [];
         switch ($this->action) {
             case 'create':
