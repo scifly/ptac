@@ -19,6 +19,7 @@ class UserCreated {
      * @param array $data
      */
     public function __construct(array $data) {
+        
         $this->data = $data;
         
     }
@@ -29,6 +30,9 @@ class UserCreated {
      * @return Channel|array
      */
     public function broadcastOn() {
+        
         return new PrivateChannel('channel-name');
+        
     }
+    
 }

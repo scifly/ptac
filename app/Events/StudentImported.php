@@ -1,7 +1,6 @@
 <?php
 namespace App\Events;
 
-
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -11,9 +10,9 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
 
 class StudentImported implements ShouldBroadcast {
-
+    
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
+    
     public $data;
     
     /**
@@ -24,22 +23,21 @@ class StudentImported implements ShouldBroadcast {
      * @internal param App $app
      */
     public function __construct(array $data) {
-
+        
         $this->data = $data;
-
+        
     }
-
+    
     /**
      * Get the channels the event should broadcast on.
      *
      * @return Channel|array
      */
     public function broadcastOn() {
-        return new PrivateChannel('student.'. Auth::id());
+        return new PrivateChannel('student.' . Auth::id());
     }
     
-    public function broadcastWith()
-    {
+    public function broadcastWith() {
         return ['user_id' => '132'];
     }
 }

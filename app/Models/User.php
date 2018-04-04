@@ -323,7 +323,9 @@ class User extends Authenticatable {
      */
     function deleteWechatUser($id) {
         
-        event(new UserDeleted(self::find($id)->userid));
+        event(new UserDeleted([
+            'userid' => self::find($id)->userid
+        ]));
         
     }
     
