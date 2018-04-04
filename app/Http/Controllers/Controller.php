@@ -5,6 +5,7 @@ use App\Helpers\HttpStatusCode;
 use App\Models\Action;
 use App\Models\Menu;
 use App\Models\Tab;
+use Exception;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -168,8 +169,16 @@ class Controller extends BaseController {
     
     protected function test() {
         
-        dd(get_called_class());
+        dd($this->GetCallingMethodName());
         
+    }
+    
+    private function GetCallingMethodName(){
+        $e = new Exception();
+        $trace = $e->getTrace();
+        //position 0 would be the line that called this function so we ignore it
+        $last_call = $trace[1];
+        print_r($last_call);
     }
     
 }
