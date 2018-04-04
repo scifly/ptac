@@ -350,8 +350,6 @@ Route::get('lists', $c . '@index');
 Route::get('detail/{id}', $c . '@detail');
 Route::post('detail/{id?}', $c . '@detail');
 Route::post('chart', $c . '@chart');
-Route::get('rule/{id}', $c . '@rule');
-Route::get('check', $c . '@check');
 
 /** 成绩中心 */
 $c = 'Wechat\ScoreCenterController';

@@ -1,14 +1,11 @@
 <?php
 namespace App\Http\Controllers\Wechat;
 
-use App\Helpers\HttpStatusCode;
 use App\Helpers\WechatTrait;
 use App\Http\Controllers\Controller;
 use App\Models\StudentAttendance;
-use App\Models\StudentAttendanceSetting;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 use Throwable;
 
@@ -65,27 +62,6 @@ class AttendanceController extends Controller {
     public function chart() {
         
         return $this->sa->wChart();
-        
-    }
-    
-    /**
-     * 返回指定班级对应的年级考勤规则
-     *
-     * @param $classId
-     * @return JsonResponse
-     */
-    public function rule($classId) {
-        
-        return $this->sa->wRule($classId);
-        
-    }
-    
-    /**
-     * 判断日期和规则是否匹配
-     */
-    public function check() {
-        
-        return $this->sa->wCheck();
         
     }
     

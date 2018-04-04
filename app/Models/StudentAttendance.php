@@ -368,7 +368,7 @@ class StudentAttendance extends Model {
     
         $user = Auth::user();
         if (Request::method() == 'POST') {
-            $id = Request::input('id');
+            $studentId = Request::input('id');
             $type = Request::input('type');
             $date = Request::input('date');
             Request::validate([
@@ -377,7 +377,7 @@ class StudentAttendance extends Model {
                 'date' => 'required|date'
             ]);
             abort_if(
-                !in_array($id, $this->contactIds('student', $user, $user->educator->school_id)),
+                !in_array($studentId, $this->contactIds('student', $user, $user->educator->school_id)),
                 HttpStatusCode::NOT_ACCEPTABLE,
                 __('messages.invalid_argument')
             );
@@ -389,33 +389,30 @@ class StudentAttendance extends Model {
                     )
                 ];
             } else {
-                $attendances = $this->whereStudentId(Request::get('id'))
-                    ->whereDate('punch_time', $date)
-                    ->orderBy('punch_time', 'ASC')
-                    ->get()->groupBy('inorout');
+                list($ins, $outs) = $this->attendances($studentId, $date);
                 $response = [
                     'date' => $date,
-                    'ins'  => $attendances[1],
-                    'outs' => $attendances[0]
+                    'ins'  => $ins,
+                    'outs' => $outs
                 ];
             }
         
             return response()->json($response);
         }
         $today = date('Y-m-d', time());
-        $attendances = $this->whereDate('punch_time', $today)
-            ->where('student_id', $studentId)
-            ->orderBy('punch_time', 'ASC')
-            ->get()->groupBy('inorout');
+        list($ins, $outs) = $this->attendances($studentId, $today);
         $data = $this->wStat($studentId);
-        
+    
+        if (Request::ajax() && Request::method() == 'GET') {
+            return response()->json(['days' => $data]);
+        }
+    
         return view(self::VIEW_NS . 'detail', [
             'id'   => $studentId,
             'data' => $data,
-            'days' => json_encode($data, JSON_UNESCAPED_UNICODE),
             'date' => $today,
-            'ins'  => $attendances[1],
-            'outs' => $attendances[0],
+            'ins'  => $ins,
+            'outs' => $outs,
         ]);
         
     }
@@ -424,12 +421,19 @@ class StudentAttendance extends Model {
      * 学生考勤饼图
      *
      * @return JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     function wChart() {
     
-        # 判断角色
         $input = Request::all();
+        if (isset($input['check'])) {
+            return $this->wCheck();
+        }
+        if (isset($input['classId'])) {
+            return $this->wRule($input['classId']);
+        }
+        
+        # 角色判断
         $user = Auth::user();
         abort_if(
             !$user->educator,
@@ -437,7 +441,7 @@ class StudentAttendance extends Model {
             '你不是教职员工'
         );
         
-        # 找到与教职员工相关的所有班级ids
+        # 对当前用户可见的所有班级ids
         $classIds = $this->classIds($user->educator->school_id);
         abort_if(
             empty(array_diff($classIds, [0])),
@@ -445,23 +449,23 @@ class StudentAttendance extends Model {
             '你尚未绑定任何班级'
         );
         $classes = Squad::whereIn('id', $classIds)->get();
-        $data['squadnames'] = [];
+        $data['classNames'] = [];
         foreach ($classes as $class) {
-            $data['squadnames'][] = [
+            $data['classNames'][] = [
                 'title' => $class->name,
                 'value' => $class->id,
             ];
         }
-        $data['squadnames'] = array_unique(
-            $data['squadnames'], SORT_REGULAR
+        $data['classNames'] = array_unique(
+            $data['classNames'], SORT_REGULAR
         );
         
         # 根据年级分组规则
         $gradeIds = $this->gradeIds($user->educator->school_id);
         $rules = StudentAttendanceSetting::whereIn('grade_id', $gradeIds)->get();
-        $data['rulenames'] = [];
+        $data['ruleNames'] = [];
         foreach ($rules as $r) {
-            $data['rulenames'][] = [
+            $data['ruleNames'][] = [
                 'title' => $r->name, 'value' => $r->id,
             ];
         }
@@ -495,7 +499,7 @@ class StudentAttendance extends Model {
      * @param $classId
      * @return JsonResponse
      */
-    function wRule($classId) {
+    private function wRule($classId) {
     
         # 当前年级所有考勤规则，不分学期
         $gradeId = Squad::find($classId)->grade_id;
@@ -524,7 +528,7 @@ class StudentAttendance extends Model {
      * 
      * @return JsonResponse
      */
-    function wCheck() {
+    private function wCheck() {
     
         $input = Request::all();
         $result = [
@@ -812,6 +816,24 @@ class StudentAttendance extends Model {
             $attendances->where('status', 0), $attendances);
         
         return !empty($data) ? $data : false;
+        
+    }
+    
+    /**
+     * 获取指定学生指定日期的所有考勤记录
+     *
+     * @param $studentId
+     * @param $date
+     * @return array
+     */
+    private function attendances($studentId, $date) {
+        
+        $attendances = $this->whereStudentId($studentId)
+            ->whereDate('punch_time', $date)
+            ->orderBy('punch_time', 'ASC')
+            ->get()->groupBy('inorout');
+        
+        return [$attendances[1], $attendances[0]];
         
     }
     

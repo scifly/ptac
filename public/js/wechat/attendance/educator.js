@@ -49,8 +49,8 @@ function attendances(data) {
         success: function (result) {
             console.log(result.data);
             if (result.statusCode === 200) {
-                onClassChange(result['data']['squadnames']);
-                onRuleChange(result['data']['rulenames']);
+                onClassChange(result['data']['classNames']);
+                onRuleChange(result['data']['ruleNames']);
                 showPie(result['data']['charts'], ['打卡', '异常', '未打卡']);
                 $('.status-value').each(function (i) {
                     $(this).html(result['data']['charts'][i]['value']);
@@ -78,9 +78,13 @@ function onClassChange(squads) {
         var classId = $(this).attr('data-values');
         var $rule = $('#rule');
         $.ajax({
-            type: 'GET',
-            data: token,
-            url: 'rule/' + classId,
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                _token: token,
+                classId: classId,
+            },
+            url: 'chart',
             success: function (result) {
                 if (result.statusCode === 200) {
                     $rule.select("update", {items: result.data});
@@ -156,13 +160,14 @@ function onDateChange() {
 // 验证考勤规则
 function checkRule() {
     $.ajax({
-        type: 'GET',
+        type: 'POST',
         data: {
             _token: token,
             date: $('#start-date').val(),
-            rule: $('#rule').attr('data-values')
+            rule: $('#rule').attr('data-values'),
+            check: true
         },
-        url: 'check',
+        url: 'chart',
         success: function (result) {
             if (result.statusCode !== 200) {
                 $.alert(result['message']);

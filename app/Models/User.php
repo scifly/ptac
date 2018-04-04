@@ -563,6 +563,7 @@ class User extends Authenticatable {
         $condition = '';
         $menu = new Menu();
         $menuType = Menu::find($menu->rootMenuId(true))->menuType->name;
+        unset($menu);
         
         switch ($menuType) {
             case '根':

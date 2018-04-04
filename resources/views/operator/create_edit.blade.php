@@ -141,8 +141,7 @@
                         @include('partials.icon_addon', ['class' => 'fa-envelope-o'])
                         {{ Form::text('email', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '(请输入电子邮件地址)',
-                            'required' => 'true',
+                            'placeholder' => '(请输入电子邮件地址, 可选)',
                             'type' => 'email',
                             'maxlength' => '255',
                             'data-parsley-type'=>"email"
@@ -160,7 +159,7 @@
                         @include('partials.icon_addon', ['class' => 'fa-phone'])
                         {{ Form::text('telephone', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '请输入座机号码(可选}',
+                            'placeholder' => '(请输入座机号码, 可选)',
                         ]) }}
                     </div>
                 </div>
