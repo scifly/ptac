@@ -98,25 +98,19 @@ class ManageWechatMember implements ShouldQueue {
     private function sync($corpId, $secret): void {
         
         $token = Wechat::getAccessToken($corpId, $secret, true);
-        $data = ['user' => Auth::user()];
-        switch ($this->action) {
-            case 'create':
-                $result = json_decode(Wechat::createUser($token, $this->data));
-                if ($result->{'errcode'} == 0) {
-                    $user = User::whereUserid($this->data['userid'])->first();
-                    $user->update(['synced' => 1]);
-                    $data['message'] = '已同步到企业微信后台';
-                } else {
-                    $data['message'] = $result->{'errmsg'};
-                }
-                break;
-            case 'update':
-                Wechat::updateUser($token, $this->data);
-                break;
-            default:
-                Wechat::delUser($token, $this->data);
-                break;
+        $data = [
+            'user' => Auth::user(),
+            'message' => __('messages.wechat_synced')
+        ];
+        $result = json_decode(Wechat::createUser($token, $this->data));
+        if ($this->action == 'create' && $result->{'errcode'} == 0) {
+            $user = User::whereUserid($this->data['userid'])->first();
+            $user->update(['synced' => 1]);
         }
+        if ($result->{'errcode'} != 0) {
+            $data['message'] = $result->{'errmsg'};
+        }
+        
         event(new ContactSyncTrigger($data));
     
     }
