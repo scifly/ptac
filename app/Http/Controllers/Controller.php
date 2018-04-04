@@ -154,9 +154,10 @@ class Controller extends BaseController {
     
         $e = new Exception();
         $trace = $e->getTrace();
+        $class = get_called_class();
         unset($e);
         $title = self::ACTIONS[$trace[1]['function']]
-            . Tab::whereController(lcfirst(get_called_class()))->first()->name;
+            . Tab::whereController($class[sizeof($class) - 1])->first()->name;
         $statusCode = $result
             ? HttpStatusCode::OK
             : HttpStatusCode::INTERNAL_SERVER_ERROR;
