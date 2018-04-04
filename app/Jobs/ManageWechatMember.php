@@ -43,6 +43,8 @@ class ManageWechatMember implements ShouldQueue {
     public function handle() {
         
         $corp = new Corp();
+        $corpId = $corp->corpId();
+        
         $corp = $corp::whereName('万浪软件')->first();
         $corpId = $corp->corpid;
         // $app = App::whereCorpId($corp->id)->where('name', '企业通讯录')->first();
