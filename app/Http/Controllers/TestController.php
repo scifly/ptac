@@ -39,7 +39,7 @@ class TestController extends Controller {
     
     public function index() {
 
-        $this->wtf();
+        dd(get_called_class());
         
         try {
             $client = new Client();
