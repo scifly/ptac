@@ -39,7 +39,7 @@ class TestController extends Controller {
     
     public function index() {
 
-        dd($this->test());
+        dd(debug_backtrace());
         
         try {
             $client = new Client();
