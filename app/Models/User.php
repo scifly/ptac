@@ -100,7 +100,7 @@ class User extends Authenticatable {
         'email', 'realname', 'gender',
         'avatar_url', 'userid', 'english_name',
         'isleader', 'position', 'telephone',
-        'order', 'mobile', 'enabled',
+        'order', 'mobile', 'enabled', 'synced'
     ];
     
     const SELECT_HTML = '<select class="form-control select2" style="width: 100%;" id="ID" name="ID">';
