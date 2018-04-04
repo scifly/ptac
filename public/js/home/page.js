@@ -349,6 +349,7 @@ var page = {
             url: url,
             data: data,
             success: function (result) {
+                console.log(result);
                 $('.overlay').hide();
                 switch (requestType) {
                     case 'POST':        // create
