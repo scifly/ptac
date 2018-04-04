@@ -1017,6 +1017,9 @@ var app = new Vue({
                 alert('you got it!!!');
                 // page.inform('导入成功', '学生队列导入成功', page.success)
             }
+        }).listen('ContactSyncTrigger', function (e) {
+            console.log(e.data['message']);
+            page.inform('同步结果', e.data['message'], page.info);
         });
     }
 });
