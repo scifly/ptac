@@ -40,7 +40,7 @@ class TestController extends Controller {
     public function index() {
 
         $user = User::whereUserid('manager_5ac4627304da4')->first();
-        dd($user->departments->toArray());
+        dd($user->departments->pluck('id')->toArray());
         die;
         try {
             $client = new Client();
