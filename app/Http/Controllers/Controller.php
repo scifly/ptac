@@ -166,4 +166,10 @@ class Controller extends BaseController {
         
     }
     
+    protected function test() {
+        
+        dd(get_called_class());
+        
+    }
+    
 }
