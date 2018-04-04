@@ -35,6 +35,13 @@ Route::get('event', function () {
         'type' => 'educator',
     ]));
 });
+Route::get('event1', function () {
+    event(new \App\Events\ContactSyncTrigger([
+        'user' => Auth::user(),
+        'message' => 'working',
+    ]));
+});
+
 Route::get('listen', 'TestController@listen');
 
 /** 菜单入口路由 */
