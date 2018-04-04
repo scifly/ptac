@@ -168,18 +168,11 @@ class Controller extends BaseController {
     }
     
     protected function test() {
-        
-        $this->GetCallingMethodName();
-        
-    }
     
-    private function GetCallingMethodName(){
         $e = new Exception();
         $trace = $e->getTrace();
-        //position 0 would be the line that called this function so we ignore it
-        dd($trace);
-        $last_call = $trace[1];
-        dd($last_call);
+        dd($trace[1]['function']);
+        
     }
     
 }
