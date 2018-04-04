@@ -177,6 +177,7 @@ class Controller extends BaseController {
         $e = new Exception();
         $trace = $e->getTrace();
         //position 0 would be the line that called this function so we ignore it
+        dd($trace);
         $last_call = $trace[1];
         dd($last_call);
     }
