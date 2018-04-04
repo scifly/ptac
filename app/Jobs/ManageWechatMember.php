@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * 企业号会员管理
@@ -97,7 +98,7 @@ class ManageWechatMember implements ShouldQueue {
     private function sync($corpId, $secret): void {
         
         $token = Wechat::getAccessToken($corpId, $secret, true);
-        $data = [];
+        $data = ['user' => Auth::user()];
         switch ($this->action) {
             case 'create':
                 $result = json_decode(Wechat::createUser($token, $this->data));
