@@ -118,7 +118,7 @@ class DepartmentUser extends Model {
             case '运营':
                 $du['department_id'] = Department::whereDepartmentTypeId(
                     DepartmentType::whereName('根')->first()->id
-                );
+                )->first()->id;
                 break;
             case '企业':
                 $du['department_id'] = Corp::find($data['corp_id'])->department_id;
