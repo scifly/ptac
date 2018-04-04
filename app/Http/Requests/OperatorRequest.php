@@ -57,6 +57,7 @@ class OperatorRequest extends FormRequest {
             'password_confirmation' => 'string|min:6',
             'mobile.*'              => ['required', new Mobiles()],
             'enabled'               => 'required|boolean',
+            'synced'               => 'required|boolean',
         ];
         
     }
@@ -80,6 +81,9 @@ class OperatorRequest extends FormRequest {
                 }
             }
         }
+        $input['avatar_url'] = '';
+        $input['synced'] = 0;
+        
         $this->replace($input);
         
     }
