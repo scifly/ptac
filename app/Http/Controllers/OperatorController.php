@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
- * 超级用户管理
+ * 超级用户
  *
  * Class OperatorController
  * @package App\Http\Controllers

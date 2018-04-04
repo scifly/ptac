@@ -24,6 +24,12 @@ class Controller extends BaseController {
         'message'    => '操作成功',
     ];
     
+    const ACTIONS = [
+        'store' => '保存',
+        'update' => '更新',
+        'destroy' => '删除'
+    ];
+    
     public function getUserInfo() {
         
         $code = Request::query('code');
@@ -145,7 +151,12 @@ class Controller extends BaseController {
      * @return JsonResponse|string
      */
     protected function result($result, String $success = null, String $failure = null) {
-        
+    
+        $e = new Exception();
+        $trace = $e->getTrace();
+        unset($e);
+        $title = self::ACTIONS[$trace[1]['function']]
+            . Tab::whereController(lcfirst(get_called_class()))->first()->name;
         $statusCode = $result
             ? HttpStatusCode::OK
             : HttpStatusCode::INTERNAL_SERVER_ERROR;
@@ -157,6 +168,7 @@ class Controller extends BaseController {
                 ? response()->json([
                     'statusCode' => $statusCode,
                     'message'    => $message,
+                    'title'      => $title
                 ])
                 : abort($statusCode, $message);
         }
@@ -164,14 +176,6 @@ class Controller extends BaseController {
         return $result
             ? $statusCode . ' : ' . $message
             : abort($statusCode, $message);
-        
-    }
-    
-    protected function test() {
-    
-        $e = new Exception();
-        $trace = $e->getTrace();
-        dd($trace[1]['function'] . ':' . get_called_class());
         
     }
     
