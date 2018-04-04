@@ -354,7 +354,7 @@ class User extends Authenticatable {
                     'avatar_url'   => '',
                     'isleader'     => 0,
                 ]);
-                
+
                 # 保存手机号码
                 $mobile = new Mobile();
                 $mobile->store($data, $user);

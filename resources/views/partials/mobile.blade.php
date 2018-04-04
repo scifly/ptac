@@ -33,7 +33,6 @@
                                            type="hidden"
                                            value='{{ $mobile->id }}'
                                     />
-
                                 </div>
                             </td>
                             <td class="text-center">

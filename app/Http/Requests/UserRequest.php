@@ -33,6 +33,7 @@ class UserRequest extends FormRequest {
                 'avatar_url' => 'required|url',
                 'userid'     => 'required|string|unique:users,userid,' .
                     $this->input('id') . ',id',
+                'synced'     => 'required|boolean',
                 'enabled'    => 'required|boolean',
             ];
         }
@@ -45,6 +46,7 @@ class UserRequest extends FormRequest {
         
         $input = $this->all();
         $input['avatar_url'] = ''; # 需从企业微信后台同步
+        $input['synced'] = 0; # 需从企业微信后台同步
         $this->replace($input);
         
     }
