@@ -191,7 +191,7 @@ class Corp extends Model {
                 $menu = new Menu();
                 $corpMenuId = $menu->menuId(session('menuId'), '企业');
                 unset($menu);
-                return $corpMenuId ? $this->whereMenuId($corpMenuId)->first()->id : 1;
+                return $corpMenuId ? $this->whereMenuId($corpMenuId)->first()->id : null;
             case '学校':
                 $departmentId = $user->topDeptId();
                 return School::whereDepartmentId($departmentId)->first()->corp_id;
