@@ -46,6 +46,9 @@ const app = new Vue({
                     alert('you got it!!!');
                     // page.inform('导入成功', '学生队列导入成功', page.success)
                 }
+            })
+            .listen('ContactSyncTrigger', (e) => {
+                page.inform('同步结果', e.data['message'], page.info);
             });
     }
 });

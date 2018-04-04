@@ -44,7 +44,7 @@
 </div>
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
 <script src="{{ URL::asset('js/jquery-ui.min.js') }}"></script>
-{{--<script src="{{ URL::asset('js/app.js') }}"></script>--}}
+<script src="{{ URL::asset('js/app.js') }}"></script>
 <script src="{{ URL::asset('js/bootstrap.min.js') }}"></script>
 <script src="{{ URL::asset('js/adminlte.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/gritter/js/jquery.gritter.min.js') }}"></script>
@@ -52,7 +52,5 @@
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.extra.js') }}"></script>
 <script src="{{ URL::asset($js) }}"></script>
-
-{{--<script src="{{ URL::asset('js/plugins/select2/js/i18n/zh-CN.js') }}"></script>--}}
 </body>
 </html>

@@ -1,9 +1,12 @@
 <?php
 namespace App\Jobs;
 
+use App\Events\ContactSyncTrigger;
 use App\Facades\Wechat;
 use App\Models\App;
 use App\Models\Corp;
+use App\Models\School;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -42,20 +45,70 @@ class ManageWechatMember implements ShouldQueue {
      */
     public function handle() {
         
-        $corp = new Corp();
-        $corpId = $corp->corpId();
+        $user = User::whereUserid($this->data['userid'])->first();
+        switch ($user->group->name) {
+            case '运营':
+                $corps = Corp::all();
+                foreach ($corps as $corp) {
+                    $this->sync($corp->corpid, $corp->contact_sync_secret);
+                }
+                break;
+            case '企业':
+                $departmentIds = $user->departments->toArray();
+                $corp = Corp::whereDepartmentId($departmentIds[0])->first();
+                $this->sync($corp->corpid, $corp->contact_sync_secret);
+                break;
+            case '学校':
+                $departmentIds = $user->departments->toArray();
+                $corp = Corp::find(
+                    School::whereDepartmentId($departmentIds[0])->first()->corp_id
+                );
+                $this->sync($corp->corpid, $corp->contact_sync_secret);
+                break;
+            case '学生':
+                $corp = Corp::find($user->student->squad->grade->school->corp_id);
+                $this->sync($corp->corpid, $corp->contact_sync_secret);
+                break;
+            case '监护人':
+                $students = $user->custodian->students;
+                $corpIds = [];
+                foreach ($students as $student) {
+                    $corpIds[] = $student->squad->grade->school->corp_id;
+                }
+                $corpIds = array_unique($corpIds);
+                foreach ($corpIds as $corpId) {
+                    $corp = Corp::find($corpId);
+                    $this->sync($corp->corpid, $corp->contact_sync_secret);
+                }
+                break;
+            default: # 教职员工或其他角色:
+                $corp = Corp::find($user->educator->school->corp_id);
+                $this->sync($corp->corpid, $corp->contact_sync_secret);
+                break;
+        }
         
-        $corp = $corp::whereName('万浪软件')->first();
-        $corpId = $corp->corpid;
-        // $app = App::whereCorpId($corp->id)->where('name', '企业通讯录')->first();
-        $contactSync = App::whereAgentid('999')->first();
-        $secret = $contactSync->secret;
-        // $secret = 'IoiSOIsOGrdps03Lx_h5V3cCvMl3ibu-FyqqAsy-qLM';
-        // $agentId = $app->agentid;
+    }
+    
+    /**
+     * 同步企业微信会员
+     *
+     * @param $corpId
+     * @param $secret
+     */
+    private function sync($corpId, $secret): void {
+        
         $token = Wechat::getAccessToken($corpId, $secret);
+        $data = [];
         switch ($this->action) {
             case 'create':
-                Wechat::createUser($token, $this->data);
+                $result = json_decode(Wechat::createUser($token, $this->data));
+                if ($result->{'errcode'} == 0) {
+                    $user = User::whereUserid($this->data['userid'])->first();
+                    $user->update(['synced' => 1]);
+                    $data['message'] = '已同步到企业微信后台';
+                } else {
+                    $data['message'] = $result->{'errmsg'};
+                }
                 break;
             case 'update':
                 Wechat::updateUser($token, $this->data);
@@ -64,7 +117,8 @@ class ManageWechatMember implements ShouldQueue {
                 Wechat::delUser($token, $this->data);
                 break;
         }
-        
+        event(new ContactSyncTrigger($data));
+    
     }
     
 }
