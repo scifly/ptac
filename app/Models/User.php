@@ -141,13 +141,6 @@ class User extends Authenticatable {
     function student() { return $this->hasOne('App\Models\Student'); }
     
     /**
-     * 获取指定用户对应的管理/操作员对象
-     *
-     * @return HasOne
-     */
-    function operator() { return $this->hasOne('App\Models\Operator'); }
-    
-    /**
      * 获取指定用户的所有订单对象
      *
      * @return HasMany

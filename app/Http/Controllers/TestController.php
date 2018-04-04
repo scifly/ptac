@@ -39,12 +39,8 @@ class TestController extends Controller {
     
     public function index() {
 
-        $values = Menu::whereEnabled(1)->get()->groupBy('menu_type_id');
-        $menus = $values[5];
-        /** @var Menu $menu */
-        foreach ($menus as $menu) {
-            echo $menu->menuType->name . '<br />';
-        };
+        $user = User::find(13);
+        dd($user->mobiles);
         die;
         try {
             $client = new Client();
