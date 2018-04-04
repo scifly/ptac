@@ -362,7 +362,7 @@ var page = {
                         break;
                 }
                 page.inform(
-                    '操作结果', result.message,
+                    result.title, result.message,
                     result.statusCode === 200 ? page.success : page.failure
                 );
             },
