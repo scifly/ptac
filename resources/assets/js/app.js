@@ -48,6 +48,7 @@ const app = new Vue({
                 }
             })
             .listen('ContactSyncTrigger', (e) => {
+                console.log(e.data['message']);
                 page.inform('同步结果', e.data['message'], page.info);
             });
     }
