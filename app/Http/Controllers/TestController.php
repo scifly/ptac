@@ -39,8 +39,8 @@ class TestController extends Controller {
     
     public function index() {
 
-        $user = User::whereUserid('manager_5ac4627304da4')->first();
-        dd($user->departments->pluck('id')->toArray());
+        $this->wtf();
+        
         try {
             $client = new Client();
             $reponse = $client->post(
@@ -73,6 +73,12 @@ class TestController extends Controller {
             echo $e->getResponse()->getStatusCode();
             echo $e->getResponse()->getBody()->getContents();
         }
+        
+    }
+    
+    private function wtf() {
+        
+        dd(debug_backtrace());
         
     }
     
