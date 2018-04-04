@@ -54,12 +54,12 @@ class ManageWechatMember implements ShouldQueue {
                 }
                 break;
             case '企业':
-                $departmentIds = $user->departments->toArray();
+                $departmentIds = $user->departments->pluck('id')->toArray();
                 $corp = Corp::whereDepartmentId($departmentIds[0])->first();
                 $this->sync($corp->corpid, $corp->contact_sync_secret);
                 break;
             case '学校':
-                $departmentIds = $user->departments->toArray();
+                $departmentIds = $user->departments->pluck('id')->toArray();
                 $corp = Corp::find(
                     School::whereDepartmentId($departmentIds[0])->first()->corp_id
                 );

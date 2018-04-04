@@ -41,7 +41,6 @@ class TestController extends Controller {
 
         $user = User::whereUserid('manager_5ac4627304da4')->first();
         dd($user->departments->pluck('id')->toArray());
-        die;
         try {
             $client = new Client();
             $reponse = $client->post(
