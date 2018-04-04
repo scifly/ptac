@@ -169,7 +169,7 @@ class Controller extends BaseController {
     
     protected function test() {
         
-        dd($this->GetCallingMethodName());
+        $this->GetCallingMethodName();
         
     }
     
@@ -178,7 +178,7 @@ class Controller extends BaseController {
         $trace = $e->getTrace();
         //position 0 would be the line that called this function so we ignore it
         $last_call = $trace[1];
-        print_r($last_call);
+        dd($last_call);
     }
     
 }
