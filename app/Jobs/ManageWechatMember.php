@@ -3,7 +3,6 @@ namespace App\Jobs;
 
 use App\Events\ContactSyncTrigger;
 use App\Facades\Wechat;
-use App\Models\App;
 use App\Models\Corp;
 use App\Models\School;
 use App\Models\User;

@@ -2,6 +2,7 @@
 namespace App\Facades;
 
 use App\Models\App;
+use App\Models\Corp;
 use Illuminate\Support\Facades\Facade;
 
 class Wechat extends Facade {
@@ -125,20 +126,26 @@ class Wechat extends Facade {
     const URL_BATCH_SEND_SMS = "http://sdk2.028lk.com:9880/sdk2/BatchSend2.aspx?CorpID=%s&Pwd=%s&Mobile=%s&Content=%s&Cell=%s&SendTime=%s";
     # 接收短信回复
     const URL_GET_RESPONSE_SMS = "http://sdk2.028lk.com:9880/sdk2/Get.aspx?CorpID=%s&Pwd=%s";
-
+    
     /**
      * 获取access_token
      *
      * @param string $corpId 企业号ID
      * @param string $secret 应用secret
+     * @param bool $contactSync
      * @return bool|mixed
      */
-    static function getAccessToken($corpId, $secret) {
-        $app = App::whereSecret($secret)->first();
+    static function getAccessToken($corpId, $secret, $contactSync = false) {
+        
+        if (!$contactSync) {
+            $app = App::whereSecret($secret)->first();
+        } else {
+            $app = Corp::whereContactSyncSecret($secret)->first();
+        }
         if ($app['expire_at'] < time() || !isset($app['expire_at'])) {
             $token = self::curlGet(sprintf(self::URL_GET_ACCESSTOKEN, $corpId, $secret));
             $result = json_decode($token);
-
+    
             if ($result) {
                 $accessToken = $result->{'access_token'};
                 $app->update([
