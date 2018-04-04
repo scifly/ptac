@@ -171,7 +171,7 @@ class Controller extends BaseController {
     
         $e = new Exception();
         $trace = $e->getTrace();
-        dd($trace[1]['function']);
+        dd($trace[1]['function'] . ':' . get_called_class());
         
     }
     
