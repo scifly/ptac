@@ -39,7 +39,7 @@ class TestController extends Controller {
     
     public function index() {
 
-        $user = User::find(13);
+        $user = User::whereUserid('manager_5ac4627304da4')->first();
         dd($user->mobiles);
         die;
         try {
