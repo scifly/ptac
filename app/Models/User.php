@@ -435,12 +435,12 @@ class User extends Authenticatable {
         }
         try {
             DB::transaction(function () use ($id, $user) {
+                # 删除企业号成员
+                User::deleteWechatUser($id);
                 # custodian删除指定user绑定的部门记录
                 DepartmentUser::whereUserId($id)->delete();
                 # 删除与指定user绑定的手机记录
                 Mobile::whereUserId($id)->delete();
-                # 删除企业号成员
-                User::deleteWechatUser($id);
                 # 删除user
                 $user->delete();
             });
