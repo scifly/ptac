@@ -39,8 +39,7 @@ class TestController extends Controller {
     
     public function index() {
 
-        dd(debug_backtrace());
-        
+        $this->test();
         try {
             $client = new Client();
             $reponse = $client->post(
