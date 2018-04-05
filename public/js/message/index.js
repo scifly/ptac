@@ -407,12 +407,10 @@ $send.on('click', function () {
     var content = '';
     var media_id = '';
     switch (type) {
-        case 'text':
-            //文本
+        case 'text': // 文本
             content = {text: $('#messageText').val()};
             break;
-        case 'mpnews':
-            //图文
+        case 'mpnews': // 图文
             var articles = {
                 title: $('.show_imagetext_title').text(),
                 content: $('.show_imagetext_content').html(),
@@ -423,18 +421,15 @@ $send.on('click', function () {
             content = {articles: articles};
             media_id = $('.show_imagetext_media_id').val();
             break;
-        case 'image':
-            //图片
+        case 'image': // 图片
             content = {media_id: $('#image_media_id').val()};
             media_id = $('#image-media-id').val();
             break;
-        case 'voice':
-            //音频
+        case 'voice': // 音频
             content = {media_id: $('#voice_media_id').val()};
             media_id = $('#voice-media-id').val();
             break;
-        case 'video':
-            //视频
+        case 'video': // 视频
             var video = {
                 media_id: $('#video_media_id').val(),
                 title: $('.show_video_title').text(),
@@ -442,28 +437,28 @@ $send.on('click', function () {
             };
             content = {video: video};
             media_id = $('#video-media-id').val();
-
             break;
-        case 'sms':
-            //短信
+        case 'sms': // 短信
             content = {sms: $('#contentSms').val()};
+            break;
+        default:
             break;
     }
 
     if (appIds.toString() === '') {
-        alert('应用不能为空');
+        page.inform('发送消息', '应用不能为空', page.failure);
         return false
     }
     if (selectedDepartmentIds === '') {
-        alert('对象不能为空');
+        page.inform('发送消息', '对象不能为空', page.failure);
         return false
     }
     if (content['text'] === '') {
-        alert('内容不能为空');
+        page.inform('发送消息', '内容不能为空', page.failure);
         return false
     }
     if (content['sms'] === '') {
-        alert('内容不能为空');
+        page.inform('发送消息', '内容不能为空', page.failure);
         return false
     }
     $.ajax({
@@ -478,17 +473,11 @@ $send.on('click', function () {
             media_id: media_id,
             _token: $token.attr('content')
         },
-
         success: function (result) {
-            if (result.statusCode === 200) {
-                page.inform("操作成功", result.message, page.success);
-            } else {
-                page.inform("操作失败", result.message, page.failure);
-            }
+            page.inform(result.title, result.message, page.success);
         },
-        error: function (result) {
-            console.log(result);
-            page.inform("操作失败", result.message, page.failure);
+        error: function (e) {
+            page.errorHandler(e);
         }
     });
 });

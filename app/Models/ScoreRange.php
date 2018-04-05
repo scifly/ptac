@@ -137,7 +137,7 @@ class ScoreRange extends Model {
      * @param $request
      * @return \Illuminate\Http\JsonResponse
      */
-    function statistics($request) {
+    function stat($request) {
         
         //查询班级
         if ($request['type'] == 'grade') {

@@ -76,7 +76,7 @@ var tree = {
                 data: {_token: tree.csrfToken()},
                 success: function (result) {
                     page.inform(
-                        '操作结果', result.message,
+                        '删除节点', result.message,
                         result.statusCode === 200 ? page.success : page.failure
                     );
                     $.when(tree.sort(table)).done($tree.jstree().refresh());
@@ -154,7 +154,7 @@ var tree = {
                     tree.sort(table);
                 } else {
                     page.inform(
-                        '操作结果', result.message,
+                        result.title, result.message,
                         result.statusCode === 200 ? page.success : page.failure
                     );
                     $('#tree').jstree().refresh();

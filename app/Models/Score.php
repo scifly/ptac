@@ -233,7 +233,7 @@ class Score extends Model {
      * @param $exam_id
      * @return boolean
      */
-    function statistics($exam_id) {
+    function stat($exam_id) {
         
         $exam = Exam::whereId($exam_id)->first();
         #找到考试对应的科目存到数组 ids

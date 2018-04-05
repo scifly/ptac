@@ -240,7 +240,7 @@ class ScoreController extends Controller {
      * @param $id
      * @return mixed
      */
-    public function statistics($id) {
+    public function stat($id) {
         
         #先判断这个考试录入分数没有
         if (!Score::whereExamId($id)->first()) {
@@ -248,7 +248,7 @@ class ScoreController extends Controller {
         }
         
         return $this->result(
-            $this->score->statistics($id)
+            $this->score->stat($id)
         );
         
     }

@@ -78,20 +78,14 @@ var group = function(action) {
                     );
                 },
                 error:function (e) {
-                    var obj = JSON.parse(e.responseText);
-                    var errors = obj.errors;
-                    // page.inform('出现异常', obj['message'], page.failure);
-                    for(var j in errors){
-                        page.inform('出现异常', errors[j], page.failure);
-                        return false;
-                    }
+                    page.errorHandler(e);
                 }
             });
         }
     }).on('form:submit', function() { return false; });
     $schoolId.on('change', function() { loadTree(); });
     $('.collapsed-box').boxWidget('collapse');
-    $(document).on('ifChecked', '.tabs', function(e) {
+    $(document).on('ifChecked', '.tabs', function() {
         var $actionContainer = $(this).parentsUntil($('.box .box-default'), '.box-header').next();
         var checkAll = true;
         $actionContainer.find('input').each(function() {

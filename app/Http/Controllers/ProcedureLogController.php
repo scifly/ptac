@@ -160,7 +160,7 @@ class ProcedureLogController extends Controller {
      *
      * @return JsonResponse
      */
-    public function decision() {
+    public function approve() {
         
         return $this->result(true);
         
@@ -171,7 +171,7 @@ class ProcedureLogController extends Controller {
      *
      * @return JsonResponse
      */
-    public function uploadMedias() {
+    public function upload() {
         
         $files = Request::file('medias');
         if (empty($files)) {
@@ -199,7 +199,7 @@ class ProcedureLogController extends Controller {
      * @return JsonResponse
      * @throws Exception
      */
-    public function deleteMedias($id) {
+    public function delete($id) {
         
         $path_arr = explode("/", Media::find($id)->path);
         Storage::disk('uploads')->delete($path_arr[5]);

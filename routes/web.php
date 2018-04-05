@@ -212,12 +212,12 @@ Route::group(['prefix' => 'procedure_logs'], function () {
     $c = 'ProcedureLogController';
     Route::get('index', $c . '@index');
     Route::get('pending', $c . '@pending');
-    Route::get('show/{firstLogId}', $c . '@show');
+    Route::get('show/{id}', $c . '@show');
     Route::get('create', $c . '@create');
     Route::post('store', $c . '@store');
-    Route::post('decision', $c . '@decision');
-    Route::post('uploadMedias', $c . '@uploadMedias');
-    Route::get('deleteMedias/{id}', $c . '@deleteMedias');
+    Route::post('approve', $c . '@approve');
+    Route::post('upload', $c . '@upload');
+    Route::get('delete/{id}', $c . '@delete');
 });
 
 # 会议助手

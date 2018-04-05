@@ -16,7 +16,7 @@ function save_input(input_obj) {
             data: $form.serialize(),
             success: function(result) {
                 page.inform(
-                    '操作结果', result.message,
+                    result.title, result.message,
                     result.statusCode === 200 ? page.success : page.failure
                 );
             },

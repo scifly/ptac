@@ -183,7 +183,6 @@ var page = {
         var obj = JSON.parse(e.responseText);
         var message = '';
         $('.overlay').hide();
-        console.log(obj);
         switch (obj['statusCode']) {
             case 406:
                 var errors = obj['errors'];
@@ -349,7 +348,6 @@ var page = {
             url: url,
             data: data,
             success: function (result) {
-                console.log(result);
                 $('.overlay').hide();
                 switch (requestType) {
                     case 'POST':        // create
@@ -412,7 +410,7 @@ var page = {
                 $('input[type="search"]').attr('placeholder', '多关键词请用空格分隔');
                 $('.overlay').hide();
             }).on('error.dt', function (e, settings, techNote, message) {
-                page.inform('出现异常', message, page.failure);
+                page.inform('加载列表', message, page.failure);
             });
             $('input[type="search"]').on('keyup', function () {
                 dt.search(this.value, true).draw();
@@ -603,7 +601,10 @@ var page = {
                     customRangeLabel: "自定义",
                     weekLabel: "W",
                     daysOfWeek: ["日", "一", "二", "三", "四", "五", "六"],
-                    monthNames: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+                    monthNames: [
+                        "一月", "二月", "三月", "四月", "五月", "六月",
+                        "七月", "八月", "九月", "十月", "十一月", "十二月"
+                    ],
                     firstDay: 1
                 },
                 ranges: {

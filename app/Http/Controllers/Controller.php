@@ -24,21 +24,6 @@ class Controller extends BaseController {
         'message'    => '操作成功',
     ];
     
-    const ACTIONS = [
-        'store' => '保存',
-        'update' => '更新',
-        'destroy' => '删除'
-    ];
-    
-    public function getUserInfo() {
-        
-        $code = Request::query('code');
-        $url = 'http://weixin.028lk.com/wap_sites/webindex?code=' . $code;
-        
-        return $code ? redirect($url) : 'no code !';
-        
-    }
-    
     /**
      * 输出view
      *
@@ -141,7 +126,6 @@ class Controller extends BaseController {
         return Response()->redirectToRoute('login');
         
     }
-    
     /**
      * 返回操作结果提示信息
      *
@@ -153,11 +137,13 @@ class Controller extends BaseController {
     protected function result($result, String $success = null, String $failure = null) {
     
         $e = new Exception();
-        $trace = $e->getTrace();
+        $method = $e->getTrace()[1]['function'];
         $path = explode('\\' , get_called_class());
+        $controller = $path[sizeof($path) - 1];
         unset($e);
-        $title = self::ACTIONS[$trace[1]['function']]
-            . Tab::whereController($path[sizeof($path) - 1])->first()->name;
+        $title = Action::whereMethod($method)
+            ->where('controller', $controller)
+            ->first()->name;
         $statusCode = $result
             ? HttpStatusCode::OK
             : HttpStatusCode::INTERNAL_SERVER_ERROR;
@@ -177,6 +163,15 @@ class Controller extends BaseController {
         return $result
             ? $statusCode . ' : ' . $message
             : abort($statusCode, $message);
+        
+    }
+    
+    public function getUserInfo() {
+        
+        $code = Request::query('code');
+        $url = 'http://weixin.028lk.com/wap_sites/webindex?code=' . $code;
+        
+        return $code ? redirect($url) : 'no code !';
         
     }
     

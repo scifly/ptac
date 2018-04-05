@@ -204,11 +204,11 @@
                     student = $studentId.find("option:selected").text().split('-'),
                     studentId = $studentId.val();
                 if (relationship === '') {
-                    page.inform('错误', '监护关系不能为空', page.failure);
+                    page.inform('保存监护关系', '监护关系不能为空', page.failure);
                     return false
                 }
                 if (student === '' || studentId === '') {
-                    page.inform('错误', '被监护人不能为空', page.failure);
+                    page.inform('保存监护关系', '被监护人不能为空', page.failure);
                     return false
                 }
                 var $studentIds = [];
@@ -219,7 +219,7 @@
                 if ($studentIds.length !== 0) {
                     var index = $.inArray(studentId, $studentIds);
                     if (index >= 0) {
-                        page.inform('错误', '已有该学生的监护关系！', page.failure);
+                        page.inform('保存监护关系', '已有该学生的监护关系！', page.failure);
                         return false;
                     }
                 }
@@ -275,7 +275,7 @@
             },
             onConfirmImportClick: function (table) {
                 $('#confirm-import').off('click').on('click', function () {
-                    page.inform("温馨提示", '正在导入中...', page.info);
+                    page.inform("导入通讯录", '正在导入中...', page.info);
                     var formData = new FormData();
                     formData.append('file', $('#fileupload')[0].files[0]);
                     formData.append('_token', $('#csrf_token').attr('content'));
@@ -287,7 +287,7 @@
                         processData: false,
                         success: function (result) {
                             page.inform(
-                                '操作结果', result.message,
+                                '导入通讯录', result.message,
                                 result.error === 0 ? page.success : page.failure
                             );
                         },

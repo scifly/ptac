@@ -137,7 +137,7 @@ class ScoreRangeController extends Controller {
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function showStatistics() {
+    public function show() {
         
         return $this->output();
         
@@ -149,9 +149,9 @@ class ScoreRangeController extends Controller {
      * @param HttpRequest $request
      * @return JsonResponse
      */
-    public function statistics(HttpRequest $request) {
+    public function stat(HttpRequest $request) {
         
-        return $this->sr->statistics($request);
+        return $this->sr->stat($request);
         
     }
     

@@ -25,6 +25,12 @@ class ManageWechatMember implements ShouldQueue {
     
     protected $data, $action;
     
+    const ACTIONS = [
+        'create' => '创建',
+        'update' => '更新',
+        'delete' => '删除',
+    ];
+    
     /**
      * Create a new job instance.
      *
@@ -100,6 +106,7 @@ class ManageWechatMember implements ShouldQueue {
         $token = Wechat::getAccessToken($corpId, $secret, true);
         $data = [
             'user' => Auth::user(),
+            'title' => self::ACTIONS[$this->action] . '企业微信会员',
             'message' => __('messages.wechat_synced')
         ];
         $result = json_decode(Wechat::createUser($token, $this->data));
