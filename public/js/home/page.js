@@ -329,7 +329,7 @@ var page = {
             });
         };
         $('#data-table tbody').on('click', 'tr', function () {
-            var id = $(this).find('td').eq(0).text();
+            var id = parseInt($(this).find('td').eq(0).text());
             var index = $.inArray(id, selected);
             if (index === -1) {
                 selected.push(id);
@@ -337,7 +337,6 @@ var page = {
                 selected.splice(index, 1)
             }
             $(this).toggleClass('selected');
-            console.log(selected);
         });
         $.getMultiScripts([plugins.datatable.js]).done(function () {
             showTable();
