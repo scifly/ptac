@@ -2,8 +2,8 @@ var plugins = {
     datatable: {
         css: 'js/plugins/datatables/datatables.min.css',
         js: 'js/plugins/datatables/datatables.min.js',
-        multiJs: 'js/plugins/datatables/dataTables/dataTables.select.min.js',
-        multiCss: 'js/plugins/datatables/dataTables/select.dataTables.select.min.css'
+        multiJs: 'js/plugins/datatables/dataTables.select.min.js',
+        multiCss: 'js/plugins/datatables/select.dataTables.select.min.css'
     },
     select2: {
         css: 'js/plugins/select2/css/select2.min.css',
