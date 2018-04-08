@@ -34,10 +34,16 @@ class AppController extends Controller {
         
         if (Request::method() == 'POST') {
             return $this->app->store();
+        } else {
+            if (Request::query('corpId')) {
+                return $this->app->appList(
+                    Request::query('corpId')
+                );
+            }
+            return $this->output();
         }
-        
-        return $this->output();
-        
+    
+    
     }
     
     /**

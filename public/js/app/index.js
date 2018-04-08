@@ -1,5 +1,5 @@
-var $sync = $('#sync');
-var $form = $('#formApp');
+var $form = $('#formApp'),
+    $corpId = $('#corp_id');
 var sync = function () {
     $('.overlay').show();
     $.ajax({
@@ -47,14 +47,35 @@ var sync = function () {
             $('.overlay').hide();
             page.inform('操作结果', '已完成指定应用同步', page.success);
         },
-        error: function() {}
+        error: function(e) {
+            page.errorHandler(e);
+        }
     });
 };
+
+// 选择企业
+$corpId.on('change', function() {
+    $.ajax({
+        type: 'GET',
+        dataType: 'json',
+        url: page.siteRoot() + 'apps/index' + '?corpId=' + $corpId.val(),
+        success: function (result) {
+            $('table tbody').html(result['apps']);
+        },
+        error: function(e) {
+            page.errorHandler(e);
+        }
+    });
+});
+
+// 同步应用
 $form.parsley().on('form:validated', function () {
     if($('.parsley-error').length === 0) { sync(); }
 }).on('form:submit', function () {
     return false;
 });
+
+// 编辑应用
 $(document).off('click', '.fa-pencil');
 $(document).on('click', '.fa-pencil', function() {
     var $this = $(this);
@@ -64,6 +85,8 @@ $(document).on('click', '.fa-pencil', function() {
     page.getTabContent($activeTabPane, 'apps/edit/' + id);
     $(document).off('click', '.btn-primary');
 });
+
+// 同步菜单
 $(document).on('click', '.fa-exchange', function() {
     var $this = $(this);
     var $tr = $this.parentsUntil('tbody').eq(2);

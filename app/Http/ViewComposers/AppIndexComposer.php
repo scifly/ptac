@@ -20,13 +20,10 @@ class AppIndexComposer {
         
         $user = Auth::user();
         if ($user->group->name === '运营') {
-            $apps = [];
-            $corps = Corp::all();
-            foreach ($corps as $corp) {
-                $apps = array_merge($apps, App::whereCorpId($corp->id)->get()->toArray());
-            }
+            $corps = Corp::all()->toArray();
+            $apps = App::whereCorpId($corps)->get()->toArray();
             $view->with([
-                'corps' => $corps->pluck('name', 'id')->toArray(),
+                'corps' => Corp::all()->pluck('name', 'id')->toArray(),
                 'apps' => $apps,
                 'uris' => $this->uris()
             ]);

@@ -171,7 +171,60 @@ class App extends Model {
         return $updated ? $app : false;
 
     }
-
+    
+    /**
+     * 返回指定企业对应的应用列表
+     *
+     * @param $corpId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    function appList($corpId) {
+        
+        $apps = App::whereCorpId($corpId)->get()->toArray();
+        if (empty($apps)) {
+            return response()->json([
+                'apps' => '<tr id="na"><td colspan="8" style="text-align: center;">( n/a )</td></tr>'
+            ]);
+        }
+        $tr =
+            '<tr id="app%s">
+                <td>%s</td>
+                <td class="text-center">%s</td>
+                <td class="text-center">%s</td>
+                <td class="text-center"><img style="width: 16px; height: 16px;" src="%s"/></td>
+                <td>%s</td>
+                <td class="text-center">%s</td>
+                <td class="text-center">%s</td>
+                <td class="text-right">
+                    %s
+                    &nbsp;&nbsp;
+                    <a href="#"><i class="fa fa-pencil" title="修改"></i></a>
+                    &nbsp;&nbsp;
+                    <a href="#"><i class="fa fa-exchange" title="同步菜单"></i></a>
+                </td>
+            </tr>';
+        $html = '';
+        foreach ($apps as $app) {
+            $html .= sprintf(
+                $tr,
+                $app['agentid'],
+                $app['id'],
+                $app['agentid'],
+                $app['name'],
+                $app['square_logo_url'],
+                $app['description'],
+                $app['enabled']
+                    ? '<i class="fa fa-circle text-green" title="已启用"></i>'
+                    : '<i class="fa fa-circle text-gray" title="未启用"></i>'
+            );
+        }
+        
+        return response()->json([
+            'apps' => $html
+        ]);
+        
+    }
+    
     /**
      * 将日期时间转换为人类友好的格式
      *

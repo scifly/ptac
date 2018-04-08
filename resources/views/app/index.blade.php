@@ -11,12 +11,6 @@
         <div class="form-inline">
             <!-- 所属企业 -->
             @if (isset($corps))
-                {{--@include('partials.single_select', [--}}
-                    {{--'id' => 'corp_id',--}}
-                    {{--'label' => '所属企业',--}}
-                    {{--'icon' => 'fa fa-weixin',--}}
-                    {{--'items' => $corps--}}
-                {{--])--}}
                 <div class="form-group" style="margin-right: 10px">
                     {!! Form::label('corp_id', '所属企业：', [
                         'class' => 'control-label',
