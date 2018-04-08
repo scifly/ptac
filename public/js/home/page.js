@@ -304,22 +304,11 @@ var page = {
                 order: [[0, 'desc']],
                 stateSave: true,
                 autoWidth: true,
-                // select: {style: 'multi'},
                 columnDefs: options,
                 scrollX: true,
-                language: {
-                    url: '../files/ch.json'/*,
-                    buttons: {
-                        selectAll: '全选',
-                        selectNone: '取消全选'
-                    }*/
-                },
-                // buttons: [
-                //     'selectAll',
-                //     'selectNone'
-                // ],
+                language: {url: '../files/ch.json'},
                 lengthMenu: [[15, 25, 50, -1], [15, 25, 50, '所有']],
-                dom: '<"row"<"col-md-6"l><"col-sm-4"f><"col-sm-2"B>>rt<"row"<"col-sm-6"i><"col-sm-6"p>>',
+                // dom: '<"row"<"col-md-6"l><"col-sm-4"f><"col-sm-2"B>>rt<"row"<"col-sm-6"i><"col-sm-6"p>>',
                 // buttons: ['pdf', 'csv']
             };
             page.loadCss(plugins.datatable.css);
@@ -331,21 +320,11 @@ var page = {
                 // $('.buttons-pdf').addClass('btn-sm');
                 // $('.buttons-csv').addClass('btn-sm');
                 // $('.paginate_button').each(function() { $(this).addClass('btn-sm'); })
-                // $('.dt-buttons').addClass('pull-right');
-                // $('.buttons-select-all').addClass('btn-sm');
-                // $('.buttons-select-none').addClass('btn-sm');
                 $('input[type="search"]').attr('placeholder', '多关键词请用空格分隔');
                 $('.overlay').hide();
             }).on('error.dt', function (e, settings, techNote, message) {
                 page.inform('加载列表', message, page.failure);
-            });/*.on('select.dt', function () {
-                var rows = dt.rows({selected: true}).data();
-                var ids = [];
-                $.each(rows, function () {
-                    ids.push(this[0]);
-                });
-                console.log(ids.length);
-            });*/
+            });
             $('input[type="search"]').on('keyup', function () {
                 dt.search(this.value, true).draw();
             });
