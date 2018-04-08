@@ -303,7 +303,7 @@ var page = {
                 order: [[0, 'desc']],
                 stateSave: true,
                 autoWidth: true,
-                select: {style: 'multi'},
+                // select: {style: 'multi'},
                 columnDefs: options,
                 scrollX: true,
                 language: {
@@ -337,22 +337,20 @@ var page = {
                 $('.overlay').hide();
             }).on('error.dt', function (e, settings, techNote, message) {
                 page.inform('加载列表', message, page.failure);
-            }).on('select.dt', function () {
+            });/*.on('select.dt', function () {
                 var rows = dt.rows({selected: true}).data();
                 var ids = [];
                 $.each(rows, function () {
                     ids.push(this[0]);
                 });
                 console.log(ids.length);
-            });
+            });*/
             $('input[type="search"]').on('keyup', function () {
                 dt.search(this.value, true).draw();
             });
         };
         $.getMultiScripts([plugins.datatable.js]).done(function () {
-            $.getMultiScripts([plugins.datatable.multiJs]).done(function() {
-                showTable();
-            })
+            showTable();
         });
     },
     index: function (table, options) {
