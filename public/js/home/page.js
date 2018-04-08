@@ -336,7 +336,7 @@ var page = {
                 $.each(rows, function () {
                     ids.push(this[0]);
                 });
-                alert(ids.length);
+                console.log(ids.length);
             });
             $('input[type="search"]').on('keyup', function () {
                 dt.search(this.value, true).draw();
