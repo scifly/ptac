@@ -276,17 +276,6 @@ var page = {
     },
     initDatatable: function (table, options) {
         var selected = [];
-        $('#data-table tbody').on('click', 'tr', function () {
-            var id = $(this).find('td').eq(0).text();
-            var index = $.inArray(id, selected);
-            if (index === -1) {
-                selected.push(id);
-            } else {
-                selected.splice(index, 1)
-            }
-            $(this).toggleClass('selected');
-            console.log(selected);
-        });
         var showTable = function () {
             var $datatable = $('#data-table');
             var columns = $datatable.find('thead tr th').length;
@@ -306,6 +295,7 @@ var page = {
                     }
                 },
                 rowCallback: function (row, data) {
+                    console.log(selected);
                     if ($.inArray(data[0], selected) !== -1) {
                         $(row).addClass('selected');
                     }
@@ -338,6 +328,17 @@ var page = {
                 dt.search(this.value, true).draw();
             });
         };
+        $('#data-table tbody').on('click', 'tr', function () {
+            var id = $(this).find('td').eq(0).text();
+            var index = $.inArray(id, selected);
+            if (index === -1) {
+                selected.push(id);
+            } else {
+                selected.splice(index, 1)
+            }
+            $(this).toggleClass('selected');
+            console.log(selected);
+        });
         $.getMultiScripts([plugins.datatable.js]).done(function () {
             showTable();
         });
