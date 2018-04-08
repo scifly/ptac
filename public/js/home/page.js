@@ -324,7 +324,11 @@ var page = {
                 dt.search(this.value, true).draw();
             });
         };
-        $.getMultiScripts([plugins.datatable.js, plugins.datatable.multiJs]).done(function () { showTable(); });
+        $.getMultiScripts([plugins.datatable.js]).done(function () {
+            $.getMultiScripts([plugins.datatable.multiJs]).done(function() {
+                showTable();
+            })
+        });
     },
     index: function (table, options) {
         this.unbindEvents();
