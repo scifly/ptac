@@ -55,11 +55,13 @@ var sync = function () {
 
 // 选择企业
 $corpId.on('change', function() {
+    $('.overlay').show();
     $.ajax({
         type: 'GET',
         dataType: 'json',
         url: page.siteRoot() + 'apps/index' + '?corpId=' + $corpId.val(),
         success: function (result) {
+            $('.overlay').hide();
             $('table tbody').html(result['apps']);
         },
         error: function(e) {
