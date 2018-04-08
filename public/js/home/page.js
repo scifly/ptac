@@ -289,6 +289,7 @@ var page = {
                 options.push(statusCol);
             }
             var params = {
+                select: true,
                 processing: true,
                 serverSide: true,
                 ajax: {
