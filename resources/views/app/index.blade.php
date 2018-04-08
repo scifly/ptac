@@ -17,7 +17,7 @@
                     {{--'icon' => 'fa fa-weixin',--}}
                     {{--'items' => $corps--}}
                 {{--])--}}
-                <div class="form-group">
+                <div class="form-group" style="margin-right: 10px">
                     {!! Form::label('corp_id', '所属企业', [
                         'class' => 'control-label',
                     ]) !!}
@@ -26,7 +26,7 @@
                             <i class="fa fa-weixin" style="width: 20px;"></i>
                         </div>
                         {!! Form::select('corp_id', $corps, null, [
-                            'class' => 'form-control select2',
+                            'class' => 'form-control select2 input-sm',
                             'style' => 'width: 100%;'
                         ]) !!}
                     </div>
@@ -36,7 +36,7 @@
                     {!! Form::label('corp_id', '所属企业：', [
                         'class' => 'control-label',
                     ]) !!}
-                    {!! Form::text('name', $corp->name, [
+                    {!! Form::label('name', $corp->name, [
                         'class' => 'control-label',
                         'style' => 'font-weight: normal;'
                     ]) !!}
