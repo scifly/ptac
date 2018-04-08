@@ -296,6 +296,7 @@ var page = {
                 order: [[0, 'desc']],
                 stateSave: true,
                 autoWidth: true,
+                select: {style: 'multi'},
                 columnDefs: options,
                 scrollX: true,
                 language: {url: '../files/ch.json'},
