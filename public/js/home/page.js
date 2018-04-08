@@ -277,8 +277,15 @@ var page = {
     initDatatable: function (table, options) {
         var selected = [];
         $('#data-table tbody').on('click', 'tr', function () {
-            console.log($(this).find('td').eq(0).text());
+            var id = $(this).find('td').eq(0).text();
+            var index = $.inArray(id, selected);
+            if (index === -1) {
+                selected.push(id);
+            } else {
+                selected.splice(index, 1)
+            }
             $(this).toggleClass('selected');
+            console.log(selected);
         });
         var showTable = function () {
             var $datatable = $('#data-table');
@@ -299,7 +306,9 @@ var page = {
                     }
                 },
                 rowCallback: function (row, data) {
-                    console.log(data[0]);
+                    if ($.inArray(data[0], selected)) {
+                        $(row).addClass('selected');
+                    }
                 },
                 order: [[0, 'desc']],
                 stateSave: true,
