@@ -299,7 +299,8 @@ var page = {
                     }
                 },
                 rowCallback: function (row, data) {
-
+                    console.log(row);
+                    console.log(data);
                 },
                 order: [[0, 'desc']],
                 stateSave: true,
