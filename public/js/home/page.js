@@ -320,7 +320,7 @@ var page = {
             });
             $('input[type="search"]').on('keyup', function () {
                 dt.search(this.value, true).draw();
-            }).on('select.dt', function(e) { alert('wtf'); });
+            });
         };
         $.getMultiScripts([plugins.datatable.js, plugins.datatable.multiJs]).done(function () { showTable(); });
     },
