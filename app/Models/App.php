@@ -213,6 +213,8 @@ class App extends Model {
                 $app['name'],
                 $app['square_logo_url'],
                 $app['description'],
+                $app['created_at'],
+                $app['updated_at'],
                 $app['enabled']
                     ? '<i class="fa fa-circle text-green" title="已启用"></i>'
                     : '<i class="fa fa-circle text-gray" title="未启用"></i>'
