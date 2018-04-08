@@ -275,6 +275,11 @@ var page = {
         });
     },
     initDatatable: function (table, options) {
+        var selected = [];
+        $('#data-table tbody').on('click', 'tr', function () {
+            var id = this.children[0].text();
+            alert(id);
+        });
         var showTable = function () {
             var $datatable = $('#data-table');
             var columns = $datatable.find('thead tr th').length;
@@ -292,6 +297,9 @@ var page = {
                     error: function (e) {
                         page.errorHandler(e);
                     }
+                },
+                rowCallback: function (row, data) {
+
                 },
                 order: [[0, 'desc']],
                 stateSave: true,
@@ -331,7 +339,7 @@ var page = {
             }).on('error.dt', function (e, settings, techNote, message) {
                 page.inform('加载列表', message, page.failure);
             }).on('select.dt', function () {
-                var rows = dt.rows({selected: true, page:'all'}).data();
+                var rows = dt.rows({selected: true}).data();
                 var ids = [];
                 $.each(rows, function () {
                     ids.push(this[0]);
