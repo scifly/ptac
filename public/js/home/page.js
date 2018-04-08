@@ -331,7 +331,7 @@ var page = {
             }).on('error.dt', function (e, settings, techNote, message) {
                 page.inform('加载列表', message, page.failure);
             }).on('select.dt', function () {
-                var rows = table.rows({selected: true}).data();
+                var rows = dt.rows({selected: true}).data();
                 var ids = [];
                 $.each(rows, function () {
                     ids.push(this[0]);
