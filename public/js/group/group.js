@@ -72,10 +72,7 @@ var group = function(action) {
                 url: url,
                 data: $form.serialize(),
                 success: function(result) {
-                    page.inform(
-                        '操作结果', result.message,
-                        result.statusCode === 200 ? page.success : page.failure
-                    );
+                    page.inform(result.title, result.message, page.success);
                 },
                 error:function (e) {
                     page.errorHandler(e);

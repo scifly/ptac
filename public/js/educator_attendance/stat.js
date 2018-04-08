@@ -1,13 +1,13 @@
 var table = 'educator_attendances';
 page.initBackBtn(table);
 page.loadCss('css/attendance/stat.css');
-page.loadCss(page.plugins.daterangepicker.css);
+page.loadCss(plugins.daterangepicker.css);
 
 /** 加载图表插件 */
-$.getMultiScripts([page.plugins.echarts.js], page.siteRoot());
+$.getMultiScripts([plugins.echarts.js]);
 
 /** 加载考勤管理公共插件 */
-$.getMultiScripts(['js/common/attendance/common.js'], page.siteRoot());
+$.getMultiScripts(['js/common/attendance/common.js']);
 
 /** 初始化时间范围选择插件 */
 page.initDateRangePicker();

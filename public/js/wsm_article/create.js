@@ -1,8 +1,8 @@
 page.create('formWsmArticle', 'wsm_articles');
-// page.loadCss(page.plugins.ueditor_all.css);
-page.loadCss(page.plugins.fileinput.css);
-$.getMultiScripts([page.plugins.fileinput.js], page.siteRoot());
-$.getMultiScripts([page.plugins.ueditor_config.js, page.plugins.ueditor_all.js], page.siteRoot()).done(function () {
+// page.loadCss(plugins.ueditor_all.css);
+page.loadCss(plugins.fileinput.css);
+$.getMultiScripts([plugins.fileinput.js]);
+$.getMultiScripts([plugins.ueditor_config.js, plugins.ueditor_all.js]).done(function () {
     // var editor = UE.getEditor('container').render('container');//初始化富文本编辑器
     // $(function () {
     UE.delEditor('container');

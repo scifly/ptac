@@ -5,11 +5,11 @@ $(function() {
         var password = $('#password').val();
 
         if(username.length ===0 || $.trim(username) === ""){
-            page.inform('操作结果', '用户名不能为空!', page.failure);
+            page.inform('登录', '用户名不能为空!', page.failure);
             return false;
         }
         if(password.length ===0 || $.trim(password) === ''){
-            page.inform('操作结果', '密码不能为空!', page.failure);
+            page.inform('登录', '密码不能为空!', page.failure);
             return false;
         }
         var paths = window.location.href.split('?returnUrl=');

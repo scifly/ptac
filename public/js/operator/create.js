@@ -40,7 +40,7 @@ $(document).on('change', '#corp_id', function () {
     }
 })
 
-$.getMultiScripts(['js/contact.select.js'], page.siteRoot()).done(
+$.getMultiScripts(['js/contact.select.js']).done(
     function () {
         var cr = $.contactRange();
         cr.create('operators');

@@ -7,8 +7,8 @@ function datetime($initTime) {
     })
 }
 if (!($.fn.timepicker)) {
-    page.loadCss(page.plugins.timepicker.css);
-    $.getMultiScripts([page.plugins.timepicker.js, page.plugins.timepicker.jscn], page.siteRoot())
+    page.loadCss(plugins.timepicker.css);
+    $.getMultiScripts([plugins.timepicker.js, plugins.timepicker.jscn])
         .done(function() {
             datetime($(".start-time"));
             datetime( $(".end-time"));

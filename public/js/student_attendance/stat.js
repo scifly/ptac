@@ -2,18 +2,18 @@ var table = 'student_attendances';
 page.initSelect2();
 page.initBackBtn(table);
 page.loadCss('css/attendance/stat.css');
-page.loadCss(page.plugins.daterangepicker.css);
+page.loadCss(plugins.daterangepicker.css);
 /** 加载图表插件 */
-$.getMultiScripts([page.plugins.echarts.js], page.siteRoot());
+$.getMultiScripts([plugins.echarts.js]);
 
 /** 初始化时间范围选择插件 */
 page.initDateRangePicker();
 
 /** 加载考勤统计公共插件 */
-$.getMultiScripts(['js/common/attendance/common.js'], page.siteRoot());
+$.getMultiScripts(['js/common/attendance/common.js']);
 
 /** 初始化年级选择事件监听 */
-$.getMultiScripts(['js/contact.select.js'], page.siteRoot()).done(
+$.getMultiScripts(['js/contact.select.js']).done(
     function () {
         var cr = $.contactRange();
         cr.onGradeChange(table, 'stat');

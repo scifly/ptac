@@ -15,7 +15,7 @@
                     data['class_id'] = $('#class_id').val();
                 }
                 if ($range.html().indexOf('fa-calendar') !== -1) {
-                    page.inform('错误', '请选择日期范围', page.failure);
+                    page.inform('考勤统计', '请选择日期范围', page.failure);
                     return false;
                 }
                 $('.overlay').show();

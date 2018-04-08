@@ -4,7 +4,7 @@ page.index('scores', [
 ]);
 page.initSelect2();
 page.initMinimalIcheck();
-page.loadCss(page.plugins.send_css.css);
+page.loadCss(plugins.send_css.css);
 
 var $score = $('#score'),
     $send = $('#send'),
@@ -158,7 +158,7 @@ $score_send.on('click',function(){
 	        contentType: false,
 	        success: function (result) {
 	        	$('.overlay').hide();
-	            page.inform("操作成功",result.message, page.success);
+	            page.inform(result.title, result.message, page.success);
 	        },
 	        error: function (e) {
                 page.errorHandler(e);
@@ -208,15 +208,10 @@ $import.on('click', function () {
             contentType: false,
             processData: false,
             success: function (result) {
-                page.inform(
-                    '操作结果', result.message,
-                    result.statusCode === 200 ? page.success : page.failure
-                );
+                page.inform(result.title, result.message, page.success);
             },
-            error: function (result) {
-                console.log(result);
-                page.inform("操作失败", result.message, page.failure);
-
+            error: function (e) {
+                page.errorHandler(e);
             }
         });
     });
@@ -240,14 +235,10 @@ $statistics.on('click', function () {
                     page.getTabContent($activeTabPane, 'scores/index');
                     $('.modal-backdrop').hide();
                 }
-                page.inform(
-                    '操作结果', result.message,
-                    result.statusCode === 200 ? page.success : page.failure
-                );
+                page.inform(result.title, result.message, page.success);
             },
-            error: function (result) {
-                $('.overlay').hide();
-                page.inform("操作失败", result.message, page.failure);
+            error: function (e) {
+                page.errorHandler(e);
             }
         });
     });

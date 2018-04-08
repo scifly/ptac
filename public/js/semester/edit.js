@@ -1,5 +1,5 @@
 page.edit('formSemester', 'semesters');
-page.loadCss(page.plugins.timepicker.css);
+page.loadCss(plugins.timepicker.css);
 
 function datetime($initTime) {
     $initTime.datetimepicker({
@@ -10,7 +10,7 @@ function datetime($initTime) {
 }
 
 if (!($.fn.timepicker)) {
-    $.getMultiScripts([page.plugins.timepicker.js, page.plugins.timepicker.jscn], page.siteRoot())
+    $.getMultiScripts([plugins.timepicker.js, plugins.timepicker.jscn])
         .done(function () {
             datetime($(".start_date"));
             datetime($(".end_date"));

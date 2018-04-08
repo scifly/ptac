@@ -8,105 +8,108 @@ var page = {
     success: 'img/confirm.png',
     failure: 'img/error.png',
     info: 'img/info.png',
-    plugins: {
-        datatable: {
-            css: 'js/plugins/datatables/datatables.min.css',
-            js: 'js/plugins/datatables/datatables.min.js'
-        },
-        select2: {
-            css: 'js/plugins/select2/css/select2.min.css',
-            js: 'js/plugins/select2/js/select2.full.min.js',
-            jscn: 'js/plugins/select2/js/i18n/zh-CN.js'
-        },
-        icheck: {
-            css: 'js/plugins/icheck/all.css',
-            js: 'js/plugins/icheck/icheck.min.js',
-            selector: 'input[type="checkbox"].minimal, input[type="radio"].minimal',
-            params: {
-                checkboxClass: 'icheckbox_square-blue',
-                radioClass: 'iradio_minimal-blue'
-            }
-        },
-        jstree: {
-            css: 'js/plugins/jstree/dist/themes/default/style.min.css',
-            js: 'js/plugins/jstree/dist/jstree.min.js'
-        },
-        fullcalendar: {
-            css: 'js/plugins/fullcalendar/fullcalendar.min.css',
-            js: 'js/plugins/fullcalendar/fullcalendar.min.js'
-        },
-        fullcalendar_moment: {
-            js: 'js/plugins/fullcalendar/lib/moment.min.js'
-        },
-        fullcalendar_locale: {
-            js: 'js/plugins/fullcalendar/locale/zh-cn.js'
-        },
-        fileinput: {
-            css: 'js/plugins/fileinput/css/fileinput.min.css',
-            js: 'js/plugins/fileinput/js/fileinput.min.js'
-        },
-        fileinput_locale: {
-            js: 'js/plugins/fileinput/js/locales/zh.js'
-        },
-        fileinput_theme: {
-            css: 'js/plugins/fileinput/themes/explorer/theme.css',
-            js: 'js/plugins/fileinput/themes/explorer/theme.js'
-        },
-        jqueryui: {
-            css: 'js/plugins/jqueryui/jquery-ui.min.css',
-            js: 'js/plugins/jqueryui/jquery-ui.min.js'
-        },
-        ueditor_config: {
-            js: 'js/plugins/UEditor/ueditor.config.js'
-        },
-        ueditor_all: {
-            css: 'js/plugins/UEditor/themes/default/css/ueditor.css',
-            js: 'js/plugins/UEditor/ueditor.all.js'
-        },
-        datepicker: {
-            css: 'js/plugins/datepicker/datepicker3.css',
-            js: 'js/plugins/datepicker/bootstrap-datepicker.js'
-        },
-        timepicker: {
-            css: 'js/plugins/jqueryui/css/jquery-ui.css',
-            js: 'js/plugins/jqueryui/js/jquery-ui-timepicker-addon.js',
-            jscn: 'js/plugins/jqueryui/js/datepicker-zh-CN.js'
-        },
-        moment: {
-            js: 'js/plugins/moment/min/moment.min.js',
-        },
-        daterangepicker: {
-            css: 'js/plugins/daterangepicker/daterangepicker.css',
-            js: 'js/plugins/daterangepicker/daterangepicker.js',
-            moment: 'js/plugins/daterangepicker/moment.min.js'
-        },
-        echarts: {
-            js: 'js/plugins/echarts.simple.min.js',
-        },
-        echarts_common: {
-            js: 'js/plugins/echarts.common.min.js',
-        },
-        minimal_icheck: {
-            css: 'js/plugins/icheck/all.css',
-            js: 'js/plugins/icheck/icheck.min.js',
-            selector: 'input[type="checkbox"].minimal, input[type="radio"].minimal',
-            params: {
-                checkboxClass: 'icheckbox_minimal-blue',
-                radioClass: 'iradio_minimal-blue'
-            }
-        },
-        send_css: {
-            css: 'js/score/send.css'
-        },
-        analysis_css: {
-            css: 'js/score/analysis.css'
-        }
-    },
+    // plugins: {
+    //     datatable: {
+    //         css: 'js/plugins/datatables/datatables.min.css',
+    //         js: 'js/plugins/datatables/datatables.min.js',
+    //         multiJs: 'js/plugins/datatables/dataTables/dataTables.select.min.js',
+    //         multiCss: 'js/plugins/datatables/dataTables/select.dataTables.select.min.css'
+    //     },
+    //     select2: {
+    //         css: 'js/plugins/select2/css/select2.min.css',
+    //         js: 'js/plugins/select2/js/select2.full.min.js',
+    //         jscn: 'js/plugins/select2/js/i18n/zh-CN.js'
+    //     },
+    //     icheck: {
+    //         css: 'js/plugins/icheck/all.css',
+    //         js: 'js/plugins/icheck/icheck.min.js',
+    //         selector: 'input[type="checkbox"].minimal, input[type="radio"].minimal',
+    //         params: {
+    //             checkboxClass: 'icheckbox_square-blue',
+    //             radioClass: 'iradio_minimal-blue'
+    //         }
+    //     },
+    //     jstree: {
+    //         css: 'js/plugins/jstree/dist/themes/default/style.min.css',
+    //         js: 'js/plugins/jstree/dist/jstree.min.js'
+    //     },
+    //     fullcalendar: {
+    //         css: 'js/plugins/fullcalendar/fullcalendar.min.css',
+    //         js: 'js/plugins/fullcalendar/fullcalendar.min.js'
+    //     },
+    //     fullcalendar_moment: {
+    //         js: 'js/plugins/fullcalendar/lib/moment.min.js'
+    //     },
+    //     fullcalendar_locale: {
+    //         js: 'js/plugins/fullcalendar/locale/zh-cn.js'
+    //     },
+    //     fileinput: {
+    //         css: 'js/plugins/fileinput/css/fileinput.min.css',
+    //         js: 'js/plugins/fileinput/js/fileinput.min.js'
+    //     },
+    //     fileinput_locale: {
+    //         js: 'js/plugins/fileinput/js/locales/zh.js'
+    //     },
+    //     fileinput_theme: {
+    //         css: 'js/plugins/fileinput/themes/explorer/theme.css',
+    //         js: 'js/plugins/fileinput/themes/explorer/theme.js'
+    //     },
+    //     jqueryui: {
+    //         css: 'js/plugins/jqueryui/jquery-ui.min.css',
+    //         js: 'js/plugins/jqueryui/jquery-ui.min.js'
+    //     },
+    //     ueditor_config: {
+    //         js: 'js/plugins/UEditor/ueditor.config.js'
+    //     },
+    //     ueditor_all: {
+    //         css: 'js/plugins/UEditor/themes/default/css/ueditor.css',
+    //         js: 'js/plugins/UEditor/ueditor.all.js'
+    //     },
+    //     datepicker: {
+    //         css: 'js/plugins/datepicker/datepicker3.css',
+    //         js: 'js/plugins/datepicker/bootstrap-datepicker.js'
+    //     },
+    //     timepicker: {
+    //         css: 'js/plugins/jqueryui/css/jquery-ui.css',
+    //         js: 'js/plugins/jqueryui/js/jquery-ui-timepicker-addon.js',
+    //         jscn: 'js/plugins/jqueryui/js/datepicker-zh-CN.js'
+    //     },
+    //     moment: {
+    //         js: 'js/plugins/moment/min/moment.min.js',
+    //     },
+    //     daterangepicker: {
+    //         css: 'js/plugins/daterangepicker/daterangepicker.css',
+    //         js: 'js/plugins/daterangepicker/daterangepicker.js',
+    //         moment: 'js/plugins/daterangepicker/moment.min.js'
+    //     },
+    //     echarts: {
+    //         js: 'js/plugins/echarts.simple.min.js',
+    //     },
+    //     echarts_common: {
+    //         js: 'js/plugins/echarts.common.min.js',
+    //     },
+    //     minimal_icheck: {
+    //         css: 'js/plugins/icheck/all.css',
+    //         js: 'js/plugins/icheck/icheck.min.js',
+    //         selector: 'input[type="checkbox"].minimal, input[type="radio"].minimal',
+    //         params: {
+    //             checkboxClass: 'icheckbox_minimal-blue',
+    //             radioClass: 'iradio_minimal-blue'
+    //         }
+    //     },
+    //     send_css: {
+    //         css: 'js/score/send.css'
+    //     },
+    //     analysis_css: {
+    //         css: 'js/score/analysis.css'
+    //     }
+    // },
     backToList: function (table) {
         var $activeTabPane = $('#tab_' + page.getActiveTabId());
         page.getTabContent($activeTabPane, table + '/index');
     },
     inform: function (title, text, image) {
+        title = title || '提示';
         $.gritter.add({title: title, text: text, image: page.siteRoot() + image});
     },
     siteRoot: function () {
@@ -309,7 +312,7 @@ var page = {
                         $('.overlay').hide();
                         // 移除当前页面的datatable.css
                         // if (!$('#data-table').length) {
-                        //     $('link[href="' + page.siteRoot() + page.plugins.datatable.css +'"]').remove();
+                        //     $('link[href="' + page.siteRoot() + plugins.datatable.css +'"]').remove();
                         // }
                     });
                     // 更新浏览器抬头
@@ -360,10 +363,7 @@ var page = {
                     default:
                         break;
                 }
-                page.inform(
-                    result.title, result.message,
-                    result.statusCode === 200 ? page.success : page.failure
-                );
+                page.inform(result.title, result.message, page.success);
             },
             error: function (e) {
                 page.errorHandler(e);
@@ -399,7 +399,7 @@ var page = {
                 // dom: '<"row"<"col-md-6"l><"col-sm-4"f><"col-sm-2"B>>rt<"row"<"col-sm-6"i><"col-sm-6"p>>',
                 // buttons: ['pdf', 'csv']
             };
-            page.loadCss(page.plugins.datatable.css);
+            page.loadCss(plugins.datatable.css);
             $('.overlay').show();
             $.fn.dataTable.ext.errMode = 'none';
             var dt = $datatable.DataTable(params).on('init.dt', function () {
@@ -416,7 +416,7 @@ var page = {
                 dt.search(this.value, true).draw();
             });
         };
-        $.getMultiScripts([page.plugins.datatable.js], page.siteRoot()).done(function () { showTable(); });
+        $.getMultiScripts([plugins.datatable.js]).done(function () { showTable(); });
     },
     index: function (table, options) {
         this.unbindEvents();
@@ -481,10 +481,10 @@ var page = {
     },
     initSelect2: function (options) {
         if (!($.fn.select2)) {
-            page.loadCss(page.plugins.select2.css);
-            $.getMultiScripts([page.plugins.select2.js], page.siteRoot())
+            page.loadCss(plugins.select2.css);
+            $.getMultiScripts([plugins.select2.js])
                 .done(function () {
-                    $.getMultiScripts([page.plugins.select2.jscn], page.siteRoot()).done(function () {
+                    $.getMultiScripts([plugins.select2.jscn]).done(function () {
                         $('select').select2(typeof options !== 'undefined' ? options : {language: "zh-CN"});
                     });
                 });
@@ -495,14 +495,14 @@ var page = {
     initICheck: function (object) {
         var init = function (object) {
             if (typeof object === 'undefined') {
-                $(page.plugins.icheck.selector).iCheck(page.plugins.icheck.params);
+                $(plugins.icheck.selector).iCheck(plugins.icheck.params);
             } else {
-                object.find(page.plugins.icheck.selector).iCheck(page.plugins.icheck.params);
+                object.find(plugins.icheck.selector).iCheck(plugins.icheck.params);
             }
         };
         if (!($.fn.iCheck)) {
-            page.loadCss(page.plugins.icheck.css);
-            $.getMultiScripts([page.plugins.icheck.js], page.siteRoot())
+            page.loadCss(plugins.icheck.css);
+            $.getMultiScripts([plugins.icheck.js])
                 .done(function () {
                     init(object);
                 });
@@ -513,14 +513,14 @@ var page = {
     initMinimalIcheck: function (object) {
         var init = function (object) {
             if (typeof object === 'undefined') {
-                $(page.plugins.minimal_icheck.selector).iCheck(page.plugins.minimal_icheck.params);
+                $(plugins.minimal_icheck.selector).iCheck(plugins.minimal_icheck.params);
             } else {
-                object.find(page.plugins.minimal_icheck.selector).iCheck(page.plugins.minimal_icheck.params);
+                object.find(plugins.minimal_icheck.selector).iCheck(plugins.minimal_icheck.params);
             }
         };
         if (!($.fn.iCheck)) {
-            page.loadCss(page.plugins.minimal_icheck.css);
-            $.getMultiScripts([page.plugins.minimal_icheck.js], page.siteRoot())
+            page.loadCss(plugins.minimal_icheck.css);
+            $.getMultiScripts([plugins.minimal_icheck.js])
                 .done(function () {
                     init(object);
                 });
@@ -531,7 +531,7 @@ var page = {
     initParsley: function ($form, requestType, url) {
         $form.parsley().on('form:validated', function () {
             if ($('.parsley-error').length === 0) {
-                page.ajaxRequest(requestType, page.siteRoot() + url, $form.serialize(), $form[0]);
+                page.ajaxRequest(requestType + url, $form.serialize(), $form[0]);
             }
         }).on('form:submit', function () {
             return false;
@@ -587,7 +587,7 @@ var page = {
         if (typeof selector === 'undefined') {
             selector = 'daterange';
         }
-        page.loadCss(page.plugins.daterangepicker.css);
+        page.loadCss(plugins.daterangepicker.css);
         $('#' + selector).daterangepicker(
             {
                 locale: {
@@ -645,10 +645,10 @@ var page = {
     },
     initDateRangePicker: function (selector) {
         $.getScript(
-            page.siteRoot() + page.plugins.daterangepicker.moment,
+            page.siteRoot() + plugins.daterangepicker.moment,
             function () {
                 $.getScript(
-                    page.siteRoot() + page.plugins.daterangepicker.js,
+                    page.siteRoot() + plugins.daterangepicker.js,
                     function () { page.dateRange(selector); }
                 )
             }
@@ -666,6 +666,7 @@ var page = {
     }
 };
 $.getMultiScripts = function (arr, path) {
+    path = page.siteRoot() + path || '';
     var _arr = $.map(arr, function (scr) {
         return $.getScript((path || "") + scr);
     });

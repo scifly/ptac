@@ -33,7 +33,7 @@ class UserController extends Controller {
     }
     
     /**
-     * 修改个人信息
+     * 个人信息
      *
      * @throws \Throwable
      */
@@ -45,6 +45,7 @@ class UserController extends Controller {
     
     /**
      * 重置密码
+     *
      * @return JsonResponse
      * @throws Throwable
      */
@@ -69,6 +70,7 @@ class UserController extends Controller {
     
     /**
      * 我的消息
+     *
      * @throws \Throwable
      */
     public function messages() {
@@ -85,9 +87,10 @@ class UserController extends Controller {
     
     /**
      * 待办事项
+     *
      * @throws Throwable
      */
-    public function event() {
+    public function events() {
         
         if (Request::get('draw')) {
             return response()->json(
@@ -98,6 +101,28 @@ class UserController extends Controller {
         return $this->output();
         
     }
+    
+    /**
+     * 更新用户
+     *
+     * @param UserRequest $request
+     * @param $id
+     * @return JsonResponse|string
+     * @throws Throwable
+     */
+    public function update(UserRequest $request, $id) {
+        
+        $user = User::find($id);
+        abort_if(!$user, HttpStatusCode::NOT_FOUND);
+        
+        return $this->result(
+            $this->user->modify(
+                $request->all(), $id, false
+            )
+        );
+        
+    }
+    
     
     /**
      * 上传用户头像
@@ -192,23 +217,4 @@ class UserController extends Controller {
         return response()->json($this->result);
         
     }
-    
-    /**
-     * 更新用户
-     *
-     * @param UserRequest $request
-     * @param $id
-     * @return JsonResponse|string
-     * @throws Throwable
-     */
-    public function update(UserRequest $request, $id) {
-        
-        $user = User::find($id);
-        abort_if(!$user, HttpStatusCode::NOT_FOUND);
-        
-        return $this->result(
-            $this->user->modify($request->all(), $id, false)
-        );
-    }
-    
 }

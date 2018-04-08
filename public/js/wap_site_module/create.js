@@ -1,7 +1,7 @@
 page.create('formWapSiteModule', 'wap_site_modules');
 
-page.loadCss(page.plugins.fileinput.css);
-$.getMultiScripts([page.plugins.fileinput.js], page.siteRoot()).done(function () {
+page.loadCss(plugins.fileinput.css);
+$.getMultiScripts([plugins.fileinput.js]).done(function () {
 
     var $pre = $('.preview');
     var $uploadFile = $('#uploadFile');

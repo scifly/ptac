@@ -1,5 +1,5 @@
-page.loadCss(page.plugins.fullcalendar.css);
-$.getMultiScripts([page.plugins.fullcalendar.js, page.plugins.fullcalendar_moment.js, page.plugins.jqueryui.js], page.siteRoot()) .done(function() {
+page.loadCss(plugins.fullcalendar.css);
+$.getMultiScripts([plugins.fullcalendar.js, plugins.fullcalendar_moment.js, plugins.jqueryui.js]) .done(function() {
 $(function () {
     //后台传过来的user_id
     var id = $('input[name="user_id"]').val();
@@ -85,14 +85,9 @@ $(function () {
                     url: '../events/drag_events',
                     data: copiedEventObject,
                     success: function (result) {
-                        if (result.statusCode === 200) {
                             //重新获取events
-                            $('#calendar').fullCalendar('refetchEvents');
-                        }
-                        page.inform(
-                            '操作结果', result.message,
-                            result.statusCode === 200 ? page.success : page.failure
-                        );
+                        $('#calendar').fullCalendar('refetchEvents');
+                        page.inform(result.title, result.message, page.success);
                     }
                 });
             });

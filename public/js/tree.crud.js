@@ -100,7 +100,7 @@ var tree = {
             var $cip = $('#cip');
             $cip.after('<link/>', {
                 rel: 'stylesheet', type: 'type/css',
-                href: page.siteRoot() + page.plugins.jqueryui.css
+                href: page.siteRoot() + plugins.jqueryui.css
             });
             for (var i = 0; i < $tabs.length; i++) {
                 ranks[$tabs[i].id] = i;
@@ -164,8 +164,8 @@ var tree = {
     },
     initJsTree: function(callback) {
         if (!($.fn.jstree)) {
-            page.loadCss(page.plugins.jstree.css);
-            $.getMultiScripts([page.plugins.jstree.js], page.siteRoot())
+            page.loadCss(plugins.jstree.css);
+            $.getMultiScripts([plugins.jstree.js])
                 .done(function () { callback(); })
         } else { callback(); }
     },

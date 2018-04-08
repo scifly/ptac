@@ -5,7 +5,8 @@ page.initSelect2({
 page.initDatatable('messages');
 page.loadCss('css/message/message.css');
 
-var $message = $('#message'),
+var title = title,
+    $message = $('#message'),
     $objects = $('#objects'),
     $imageText = $('#imagetext'),
     $addAttachment = $('#add-attachment'),
@@ -62,7 +63,7 @@ $cancelVideo.on('click', function () {
 });
 //部门树以及联系人加载
 if (typeof contacts === 'undefined') {
-    $.getMultiScripts(['js/message/contacts.tree.js'], page.siteRoot())
+    $.getMultiScripts(['js/message/contacts.tree.js'])
         .done(function () {
             contacts.init('messages/index');
         });
@@ -79,6 +80,7 @@ function getSmsLength() {
         $contentSmsLength = $('#content-sms-length'),
         $contentSms = $('.tab-pane.active #contentSms'),
         surp_length = '';
+    
     $contentSmsLength.text('已输入0个字符， 还可输入' + sms_maxlength + '个字符');
     $contentSms.attr('maxlength', sms_maxlength);
     $contentSms.bind("input propertychange", function () {
@@ -121,7 +123,7 @@ function uploadFile(obj) {
             break;
     }
 
-    page.inform("温馨提示", '正在上传中...', page.info);
+    page.inform(title, '文件上传中...', page.info);
     var formData = new FormData();
 
     formData.append('uploadFile', $fileType[0].files[0]);
@@ -140,7 +142,7 @@ function uploadFile(obj) {
         success: function (result) {
             $('.overlay').hide();
             if (result.statusCode) {
-                page.inform("操作结果", result.message, page.success);
+                page.inform(result.title, result.message, page.success);
                 var html = '<form id="uploadForm" enctype="multipart/form-data">';
                 switch (type) {
                     case 'image':
@@ -194,7 +196,7 @@ function uploadFile(obj) {
                 }
 
             } else {
-                page.inform("操作结果", result.message, page.failure);
+                page.inform(result.title, result.message, page.failure);
             }
         }
     })
@@ -242,10 +244,10 @@ function uploadCover() {
     var extension = $fileCover[0].files[0].name.split('.');
     extension = extension[extension.length - 1].toUpperCase();
     if (extension !== 'JPG' && extension !== 'PNG') {
-        page.inform('提示', '请上传JPG或PNG格式的图片', page.info);
+        page.inform(title, '请上传JPG或PNG格式的图片', page.info);
         return false;
     }
-    page.inform("提示", '正在上传中...', page.info);
+    page.inform(title, '图片上传中...', page.info);
 
     $('.overlay').show();
     //请求接口
@@ -259,23 +261,19 @@ function uploadCover() {
         },
         success: function (result) {
             $('.overlay').hide();
-            if (result.statusCode) {
-                page.inform("操作结果", result.message, page.success);
-                var html =
-                    '<form id="uploadForm" enctype="multipart/form-data">' +
-                        '<div class="show-cover" style="position: relative; height: 130px; width: 130px; background-image: url(../../' + result.data.path + '); background-size: cover;">' +
-                            '<input type="hidden" value="' + result.data.media_id + '" name="media_id" />' +
-                            '<input type="hidden" value="' + result.data.id + '" name="news-media-id" />' +
-                            '<input type="hidden" value="image" name="type" />' +
-                            '<input type="file" id="file-cover" onchange="uploadCover(this)" name="input-cover" accept="image/*"/>' +
-                            '<i class="fa fa-close cover-del" id="cover"></i>' +
-                        '</div>' +
-                    '</form>';
-                $('#cover').html(html);
-                removeCover();
-            } else {
-                page.inform("操作结果", result.message, page.failure);
-            }
+            page.inform(result.title, result.message, page.success);
+            var html =
+                '<form id="uploadForm" enctype="multipart/form-data">' +
+                    '<div class="show-cover" style="position: relative; height: 130px; width: 130px; background-image: url(../../' + result.data.path + '); background-size: cover;">' +
+                        '<input type="hidden" value="' + result.data.media_id + '" name="media_id" />' +
+                        '<input type="hidden" value="' + result.data.id + '" name="news-media-id" />' +
+                        '<input type="hidden" value="image" name="type" />' +
+                        '<input type="file" id="file-cover" onchange="uploadCover(this)" name="input-cover" accept="image/*"/>' +
+                        '<i class="fa fa-close cover-del" id="cover"></i>' +
+                    '</div>' +
+                '</form>';
+            $('#cover').html(html);
+            removeCover();
         },
         error: function (e) {
             page.errorHandler(e);
@@ -303,17 +301,17 @@ $saveImageText.click(function () {
         $cover = $('#cover'),
         title = $imageTextTitle.val();
     if (title === '') {
-        page.inform('提示', '请输入标题', page.info);
+        page.inform(title, '请输入标题', page.info);
         return false;
     }
     var content = $imageTextTitle.val();
     if (content === '') {
-        page.inform('提示', '请编辑内容', page.info);
+        page.inform(title, '请编辑内容', page.info);
         return false;
     }
     var picurl = $cover.find('.show').find('.show-cover');
     if (!picurl) {
-        page.inform('提示', '请添加封面图', page.info);
+        page.inform(title, '请添加封面图', page.info);
         return false;
     } else {
         picurl = picurl.replace('url("', '').replace('")', '');
@@ -446,19 +444,19 @@ $send.on('click', function () {
     }
 
     if (appIds.toString() === '') {
-        page.inform('发送消息', '应用不能为空', page.failure);
+        page.inform(title, '应用不能为空', page.failure);
         return false
     }
     if (selectedDepartmentIds === '') {
-        page.inform('发送消息', '对象不能为空', page.failure);
+        page.inform(title, '对象不能为空', page.failure);
         return false
     }
     if (content['text'] === '') {
-        page.inform('发送消息', '内容不能为空', page.failure);
+        page.inform(title, '内容不能为空', page.failure);
         return false
     }
     if (content['sms'] === '') {
-        page.inform('发送消息', '内容不能为空', page.failure);
+        page.inform(title, '短信内容不能为空', page.failure);
         return false
     }
     $.ajax({

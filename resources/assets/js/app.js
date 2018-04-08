@@ -38,14 +38,14 @@ const app = new Vue({
         Echo.private('user.' + document.getElementById('userId').value)
             .listen('ContactImportTrigger', (e) => {
                 if (e.data['type'] === 'educator') {
-                    page.inform('导入成功', '教职员工队列导入成功', page.success)
+                    page.inform('导入通讯录', '教职员工队列导入成功', page.success)
                 }
                 if (e.data['type'] === 'student') {
-                    page.inform('导入成功', '学生队列导入成功', page.success)
+                    page.inform('导入通讯录', '学生队列导入成功', page.success)
                 }
             })
             .listen('ContactSyncTrigger', (e) => {
-                page.inform('同步结果', e.data['message'], page.info);
+                page.inform('同步企业微信会员', e.data['message'], page.info);
             });
     }
 });

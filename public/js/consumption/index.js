@@ -14,7 +14,7 @@ $stat.on('click', function() {
 $export.on('click', function () {
     var $dt = $('data-table').DataTable();
     if (!$dt.data().count()) {
-        page.inform('操作结果', '没有数据可导出', page.failure);
+        page.inform('学生消费记录', '没有数据可导出', page.failure);
     } else {
         window.location = page.siteRoot() + 'consumptions/export';
     }

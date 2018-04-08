@@ -1,7 +1,7 @@
 page.initSelect2();
 page.initMinimalIcheck();
-page.loadCss(page.plugins.analysis_css.css);
-$.getMultiScripts([page.plugins.echarts_common.js], page.siteRoot());
+page.loadCss(plugins.analysis_css.css);
+$.getMultiScripts([plugins.echarts_common.js]);
 
 var $token = $('#csrf_token');
 var $checkTest = $('#byTest');
@@ -57,7 +57,7 @@ $show_data.off('click').click(function () {
                     close_data();
                     getdata();
                 } else {
-                    page.inform('操作结果', result.message, page.failure);
+                    page.inform(result.title, result.message, page.failure);
                 }
             }
         });
@@ -79,7 +79,7 @@ $show_data.off('click').click(function () {
                     close_data();
                     getstudentdata();
                 } else {
-                    page.inform('操作结果', result.message, page.failure);
+                    page.inform(result.title, result.message, page.failure);
                 }
             }
         });
@@ -106,10 +106,9 @@ function getdata() {
     var title = $('#sumscore').prev().text();
 
     var $data = $('#sumscore tbody tr td');
-    var length = $data.length;
 
-    var arrayTime = new Array();
-    var legendData = new Array();
+    var arrayTime = [];
+    var legendData = [];
     var sum = $data.eq(1).text();
     $data.each(function (i, vo) {
         if (i === 0 || i === 1) {

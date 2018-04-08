@@ -364,7 +364,7 @@
                     case 'educators':
                         formId = 'formEducator';
                         cr.onAddClassClick();
-                        $.getMultiScripts(['js/department.tree.js'], page.siteRoot())
+                        $.getMultiScripts(['js/department.tree.js'])
                             .done(function() { dept.init('educators/create'); });
                         break;
                     case 'operators':
@@ -394,7 +394,7 @@
                     case 'educators':
                         formId = 'formEducator';
                         cr.onAddClassClick();
-                        $.getMultiScripts(['js/department.tree.js'], page.siteRoot())
+                        $.getMultiScripts(['js/department.tree.js'])
                             .done(function() { dept.init('educators/edit/' + id); });
                         break;
                     default:

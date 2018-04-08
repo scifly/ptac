@@ -15,14 +15,10 @@ function save_input(input_obj) {
             url: page.siteRoot() + 'schools/update/' + id,
             data: $form.serialize(),
             success: function(result) {
-                page.inform(
-                    result.title, result.message,
-                    result.statusCode === 200 ? page.success : page.failure
-                );
+                page.inform(result.title, result.message, page.success);
             },
             error: function (e) { page.errorHandler(e); }
         });
         input_obj.attr("readonly","readonly");
     })
 }
-

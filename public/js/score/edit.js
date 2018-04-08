@@ -7,13 +7,11 @@ function getData($examId) {
         data: {'_token': $('#csrf_token').attr('content')},
         url: '../listdatas/' + $examId,
         success: function (result) {
-            if (result.statusCode === 200) {
-                $('#subject_id').html(result.subjects);
-                $('#student_id').html(result.students);
-            }
+            $('#subject_id').html(result['subjects']);
+            $('#student_id').html(result['students']);
         },
-        error: function () {
-            page.inform('提示', '请检查考试设置！', page.failure);
+        error: function (e) {
+            page.errorHandler(e);
         }
     });
 }

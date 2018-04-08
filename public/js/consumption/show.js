@@ -43,7 +43,7 @@ var $stat = $('#stat'),
     $aCharge = $('#a_charge');
 $stat.on('click', function () {
     if ($range.html().indexOf('fa-calendar') !== -1) {
-        page.inform('错误', '请选择日期范围', page.failure);
+        page.inform('学生消费记录', '请选择日期范围', page.failure);
         return false;
     }
     $('.overlay').show();
@@ -73,7 +73,7 @@ $stat.on('click', function () {
             } else {
                 $charge.hide();
             }
-            page.inform('操作结果', '统计成功', page.success);
+            page.inform(result['title'], result['message'], page.success);
         },
         error: function(e) {
             page.errorHandler(e);

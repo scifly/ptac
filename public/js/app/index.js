@@ -45,7 +45,7 @@ var sync = function () {
                 $tr.html(app);
             }
             $('.overlay').hide();
-            page.inform('操作结果', '已完成指定应用同步', page.success);
+            page.inform('同步应用', '操作成功', page.success);
         },
         error: function(e) {
             page.errorHandler(e);

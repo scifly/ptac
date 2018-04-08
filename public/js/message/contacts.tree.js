@@ -149,7 +149,7 @@ var contacts = {
             })
         };
         if (typeof tree === 'undefined') {
-            $.getMultiScripts(['js/tree.crud.js'], page.siteRoot())
+            $.getMultiScripts(['js/tree.crud.js'])
                 .done(function() { loadTree(); });
         } else { loadTree(); }
     },
@@ -236,22 +236,22 @@ var contacts = {
         };
         if (!($.fn.jstree) || !($.fn.select2) || !($.fn.iCheck)) {
             var scripts = [
-                page.plugins.jstree.js,
-                page.plugins.select2.js,
-                page.plugins.icheck.js
+                plugins.jstree.js,
+                plugins.select2.js,
+                plugins.icheck.js
             ];
-            $.getMultiScripts(scripts, page.siteRoot())
+            $.getMultiScripts(scripts)
                 .done(function() {
                     var $cip = $('#cip');
                     $cip.after($("<link/>", {
                         rel: "stylesheet", type: "text/css",
-                        href: page.siteRoot() + page.plugins.jstree.css
+                        href: page.siteRoot() + plugins.jstree.css
                     })).after($("<link/>", {
                         rel: "stylesheet", type: "text/css",
-                        href: page.siteRoot() + page.plugins.select2.css
+                        href: page.siteRoot() + plugins.select2.css
                     })).after($("<link/>", {
                         rel: "stylesheet", type: "text/css",
-                        href: page.siteRoot() + page.plugins.icheck.css
+                        href: page.siteRoot() + plugins.icheck.css
                     }));
                     init(uri);
                 });

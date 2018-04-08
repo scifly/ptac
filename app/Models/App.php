@@ -5,11 +5,13 @@ namespace App\Models;
 
 use App\Events\AppUpdated;
 use App\Facades\Wechat;
+use App\Helpers\HttpStatusCode;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -93,6 +95,7 @@ class App extends Model {
         $corpid = $this->corp->find($corp_id)->corpid;
         $token = Wechat::getAccessToken($corpid, $secret);
         $corpApp = json_decode(Wechat::getApp($token, $agentid));
+        $response = [];
         if (isset($corpApp->name)) {
             $app = self::whereAgentid($agentid)->where('corp_id', $corp_id)->first();
             if (!$app) {
@@ -142,12 +145,14 @@ class App extends Model {
                 ]);
             }
         } else {
-            $response = response()->json([
-                'error' => $corpApp->errmsg
-            ]);
+            abort_if(
+                $corpApp->{'errcode'},
+                HttpstatusCode::INTERNAL_SERVER_ERROR,
+                $corpApp->{'errmsg'}
+            );
         }
 
-        return $response;
+        return response()->json($response);
 
     }
 
@@ -176,7 +181,7 @@ class App extends Model {
      * 返回指定企业对应的应用列表
      *
      * @param $corpId
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     function appList($corpId) {
         
