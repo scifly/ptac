@@ -205,6 +205,7 @@ class App extends Model {
             </tr>';
         $html = '';
         foreach ($apps as $app) {
+            $this->formatDateTime($app);
             $html .= sprintf(
                 $tr,
                 $app['agentid'],
