@@ -8,102 +8,6 @@ var page = {
     success: 'img/confirm.png',
     failure: 'img/error.png',
     info: 'img/info.png',
-    // plugins: {
-    //     datatable: {
-    //         css: 'js/plugins/datatables/datatables.min.css',
-    //         js: 'js/plugins/datatables/datatables.min.js',
-    //         multiJs: 'js/plugins/datatables/dataTables/dataTables.select.min.js',
-    //         multiCss: 'js/plugins/datatables/dataTables/select.dataTables.select.min.css'
-    //     },
-    //     select2: {
-    //         css: 'js/plugins/select2/css/select2.min.css',
-    //         js: 'js/plugins/select2/js/select2.full.min.js',
-    //         jscn: 'js/plugins/select2/js/i18n/zh-CN.js'
-    //     },
-    //     icheck: {
-    //         css: 'js/plugins/icheck/all.css',
-    //         js: 'js/plugins/icheck/icheck.min.js',
-    //         selector: 'input[type="checkbox"].minimal, input[type="radio"].minimal',
-    //         params: {
-    //             checkboxClass: 'icheckbox_square-blue',
-    //             radioClass: 'iradio_minimal-blue'
-    //         }
-    //     },
-    //     jstree: {
-    //         css: 'js/plugins/jstree/dist/themes/default/style.min.css',
-    //         js: 'js/plugins/jstree/dist/jstree.min.js'
-    //     },
-    //     fullcalendar: {
-    //         css: 'js/plugins/fullcalendar/fullcalendar.min.css',
-    //         js: 'js/plugins/fullcalendar/fullcalendar.min.js'
-    //     },
-    //     fullcalendar_moment: {
-    //         js: 'js/plugins/fullcalendar/lib/moment.min.js'
-    //     },
-    //     fullcalendar_locale: {
-    //         js: 'js/plugins/fullcalendar/locale/zh-cn.js'
-    //     },
-    //     fileinput: {
-    //         css: 'js/plugins/fileinput/css/fileinput.min.css',
-    //         js: 'js/plugins/fileinput/js/fileinput.min.js'
-    //     },
-    //     fileinput_locale: {
-    //         js: 'js/plugins/fileinput/js/locales/zh.js'
-    //     },
-    //     fileinput_theme: {
-    //         css: 'js/plugins/fileinput/themes/explorer/theme.css',
-    //         js: 'js/plugins/fileinput/themes/explorer/theme.js'
-    //     },
-    //     jqueryui: {
-    //         css: 'js/plugins/jqueryui/jquery-ui.min.css',
-    //         js: 'js/plugins/jqueryui/jquery-ui.min.js'
-    //     },
-    //     ueditor_config: {
-    //         js: 'js/plugins/UEditor/ueditor.config.js'
-    //     },
-    //     ueditor_all: {
-    //         css: 'js/plugins/UEditor/themes/default/css/ueditor.css',
-    //         js: 'js/plugins/UEditor/ueditor.all.js'
-    //     },
-    //     datepicker: {
-    //         css: 'js/plugins/datepicker/datepicker3.css',
-    //         js: 'js/plugins/datepicker/bootstrap-datepicker.js'
-    //     },
-    //     timepicker: {
-    //         css: 'js/plugins/jqueryui/css/jquery-ui.css',
-    //         js: 'js/plugins/jqueryui/js/jquery-ui-timepicker-addon.js',
-    //         jscn: 'js/plugins/jqueryui/js/datepicker-zh-CN.js'
-    //     },
-    //     moment: {
-    //         js: 'js/plugins/moment/min/moment.min.js',
-    //     },
-    //     daterangepicker: {
-    //         css: 'js/plugins/daterangepicker/daterangepicker.css',
-    //         js: 'js/plugins/daterangepicker/daterangepicker.js',
-    //         moment: 'js/plugins/daterangepicker/moment.min.js'
-    //     },
-    //     echarts: {
-    //         js: 'js/plugins/echarts.simple.min.js',
-    //     },
-    //     echarts_common: {
-    //         js: 'js/plugins/echarts.common.min.js',
-    //     },
-    //     minimal_icheck: {
-    //         css: 'js/plugins/icheck/all.css',
-    //         js: 'js/plugins/icheck/icheck.min.js',
-    //         selector: 'input[type="checkbox"].minimal, input[type="radio"].minimal',
-    //         params: {
-    //             checkboxClass: 'icheckbox_minimal-blue',
-    //             radioClass: 'iradio_minimal-blue'
-    //         }
-    //     },
-    //     send_css: {
-    //         css: 'js/score/send.css'
-    //     },
-    //     analysis_css: {
-    //         css: 'js/score/analysis.css'
-    //     }
-    // },
     backToList: function (table) {
         var $activeTabPane = $('#tab_' + page.getActiveTabId());
         page.getTabContent($activeTabPane, table + '/index');
@@ -400,6 +304,7 @@ var page = {
                 // buttons: ['pdf', 'csv']
             };
             page.loadCss(plugins.datatable.css);
+            page.loadCss(plugins.datatable.multiCss);
             $('.overlay').show();
             $.fn.dataTable.ext.errMode = 'none';
             var dt = $datatable.DataTable(params).on('init.dt', function () {
@@ -416,7 +321,7 @@ var page = {
                 dt.search(this.value, true).draw();
             });
         };
-        $.getMultiScripts([plugins.datatable.js]).done(function () { showTable(); });
+        $.getMultiScripts([plugins.datatable.js, plugins.datatable.multiJs]).done(function () { showTable(); });
     },
     index: function (table, options) {
         this.unbindEvents();
