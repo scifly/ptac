@@ -317,6 +317,8 @@ var page = {
                 $('.overlay').hide();
             }).on('error.dt', function (e, settings, techNote, message) {
                 page.inform('加载列表', message, page.failure);
+            }).on('select.dt', function () {
+                alert('wtf');
             });
             $('input[type="search"]').on('keyup', function () {
                 dt.search(this.value, true).draw();
