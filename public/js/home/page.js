@@ -303,7 +303,7 @@ var page = {
                     url: '../files/ch.json',
                     buttons: {
                         selectAll: '全选',
-                        selectNone: '全不选'
+                        selectNone: '取消全选'
                     }
                 },
                 buttons: [
@@ -331,6 +331,12 @@ var page = {
             }).on('error.dt', function (e, settings, techNote, message) {
                 page.inform('加载列表', message, page.failure);
             }).on('select.dt', function () {
+                var rows = table.rows({selected: true}).data();
+                var ids = [];
+                $.each(rows, function () {
+                    ids.push(this[0]);
+                });
+                alert(ids.length);
             });
             $('input[type="search"]').on('keyup', function () {
                 dt.search(this.value, true).draw();
