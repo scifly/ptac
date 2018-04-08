@@ -11,18 +11,32 @@
         <div class="form-inline">
             <!-- 所属企业 -->
             @if (isset($corps))
-                @include('partials.single_select', [
-                    'id' => 'corp_id',
-                    'label' => '所属企业',
-                    'icon' => 'fa fa-weixin',
-                    'items' => $corps
-                ])
+                {{--@include('partials.single_select', [--}}
+                    {{--'id' => 'corp_id',--}}
+                    {{--'label' => '所属企业',--}}
+                    {{--'icon' => 'fa fa-weixin',--}}
+                    {{--'items' => $corps--}}
+                {{--])--}}
+                <div class="form-group">
+                    {!! Form::label('corp_id', '所属企业', [
+                        'class' => 'control-label',
+                    ]) !!}
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-weixin" style="width: 20px;"></i>
+                        </div>
+                        {!! Form::select('corp_id', $corps, null, [
+                            'class' => 'form-control select2',
+                            'style' => 'width: 100%;'
+                        ]) !!}
+                    </div>
+                </div>
             @else
                 <div class="form-group" style="margin-right: 10px">
                     {!! Form::label('corp_id', '所属企业：', [
                         'class' => 'control-label',
                     ]) !!}
-                    {!! Form::label('name', $corp->name, [
+                    {!! Form::text('name', $corp->name, [
                         'class' => 'control-label',
                         'style' => 'font-weight: normal;'
                     ]) !!}
