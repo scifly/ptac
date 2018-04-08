@@ -278,6 +278,7 @@ var page = {
         var selected = [];
         $('#data-table tbody').on('click', 'tr', function () {
             console.log($(this).find('td').eq(0).text());
+            $(this).toggleClass('selected');
         });
         var showTable = function () {
             var $datatable = $('#data-table');
@@ -289,7 +290,6 @@ var page = {
                 options.push(statusCol);
             }
             var params = {
-                select: true,
                 processing: true,
                 serverSide: true,
                 ajax: {
@@ -308,16 +308,16 @@ var page = {
                 columnDefs: options,
                 scrollX: true,
                 language: {
-                    url: '../files/ch.json',
+                    url: '../files/ch.json'/*,
                     buttons: {
                         selectAll: '全选',
                         selectNone: '取消全选'
-                    }
+                    }*/
                 },
-                buttons: [
-                    'selectAll',
-                    'selectNone'
-                ],
+                // buttons: [
+                //     'selectAll',
+                //     'selectNone'
+                // ],
                 lengthMenu: [[15, 25, 50, -1], [15, 25, 50, '所有']],
                 dom: '<"row"<"col-md-6"l><"col-sm-4"f><"col-sm-2"B>>rt<"row"<"col-sm-6"i><"col-sm-6"p>>',
                 // buttons: ['pdf', 'csv']
@@ -331,9 +331,9 @@ var page = {
                 // $('.buttons-pdf').addClass('btn-sm');
                 // $('.buttons-csv').addClass('btn-sm');
                 // $('.paginate_button').each(function() { $(this).addClass('btn-sm'); })
-                $('.dt-buttons').addClass('pull-right');
-                $('.buttons-select-all').addClass('btn-sm');
-                $('.buttons-select-none').addClass('btn-sm');
+                // $('.dt-buttons').addClass('pull-right');
+                // $('.buttons-select-all').addClass('btn-sm');
+                // $('.buttons-select-none').addClass('btn-sm');
                 $('input[type="search"]').attr('placeholder', '多关键词请用空格分隔');
                 $('.overlay').hide();
             }).on('error.dt', function (e, settings, techNote, message) {
