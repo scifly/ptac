@@ -277,7 +277,7 @@ var page = {
     initDatatable: function (table, options) {
         var selected = [];
         $('#data-table tbody').on('click', 'tr', function () {
-            console.log(this.children.eq(0).text());
+            console.log(this.children);
         });
         var showTable = function () {
             var $datatable = $('#data-table');
