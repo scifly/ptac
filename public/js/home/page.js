@@ -323,6 +323,9 @@ var page = {
                 // $('.buttons-pdf').addClass('btn-sm');
                 // $('.buttons-csv').addClass('btn-sm');
                 // $('.paginate_button').each(function() { $(this).addClass('btn-sm'); })
+                $('.dt-buttons').addClass('pull-right');
+                $('.buttons-select-all').addClass('btn-sm');
+                $('.buttons-select-none').addClass('btn-sm');
                 $('input[type="search"]').attr('placeholder', '多关键词请用空格分隔');
                 $('.overlay').hide();
             }).on('error.dt', function (e, settings, techNote, message) {
