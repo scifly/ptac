@@ -6,6 +6,7 @@ use App\Models\App;
 use App\Models\Corp;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 
 class AppIndexComposer {
     
@@ -17,15 +18,29 @@ class AppIndexComposer {
     
     public function compose(View $view) {
         
-        $corpId = $this->corp->corpId();
-        $corp = Corp::find($corpId);
-        $apps = App::whereCorpId($corpId)->get()->toArray();
-        $this->formatDateTime($apps);
-        $view->with([
-            'corp' => $corp,
-            'apps' => $apps,
-            'uris' => $this->uris(),
-        ]);
+        $user = Auth::user();
+        if ($user->group->name === '运营') {
+            $apps = [];
+            $corps = Corp::all();
+            foreach ($corps as $corp) {
+                $apps = array_merge($apps, App::whereCorpId($corp->id)->get()->toArray());
+            }
+            $view->with([
+                'corps' => $corps->pluck('name', 'id')->toArray(),
+                'apps' => $apps,
+                'uris' => $this->uris()
+            ]);
+        } else {
+            $corpId = $this->corp->corpId();
+            $corp = Corp::find($corpId);
+            $apps = App::whereCorpId($corpId)->get()->toArray();
+            $this->formatDateTime($apps);
+            $view->with([
+                'corp' => $corp,
+                'apps' => $apps,
+                'uris' => $this->uris(),
+            ]);
+        }
         
     }
     

@@ -8,12 +8,15 @@ use Illuminate\Events\Dispatcher;
 class StudentEventSubscriber {
     
     public function onStudentImported($event) {
+        
         ManageImportStudent::dispatch($event->data)->onQueue('import');
     
     }
     
     public function onStudentUpdated($event) {
+        
         ManageUpdateStudent::dispatch($event->data)->onQueue('import');
+        
     }
 
     /**

@@ -10,15 +10,24 @@
         ]) !!}
         <div class="form-inline">
             <!-- 所属企业 -->
-            <div class="form-group" style="margin-right: 10px">
-                {!! Form::label('corp_id', '所属企业：', [
-                    'class' => 'control-label',
-                ]) !!}
-                {!! Form::label('name', $corp->name, [
-                    'class' => 'control-label',
-                    'style' => 'font-weight: normal;'
-                ]) !!}
-            </div>
+            @if (isset($corps))
+                @include('partials.single_select', [
+                    'id' => 'corp_id',
+                    'label' => '所属企业',
+                    'icon' => 'fa fa-weixin',
+                    'items' => $corps
+                ])
+            @else
+                <div class="form-group" style="margin-right: 10px">
+                    {!! Form::label('corp_id', '所属企业：', [
+                        'class' => 'control-label',
+                    ]) !!}
+                    {!! Form::label('name', $corp->name, [
+                        'class' => 'control-label',
+                        'style' => 'font-weight: normal;'
+                    ]) !!}
+                </div>
+            @endif
             <!-- 企业应用ID -->
             <div class="form-group" style="margin-right: 10px">
                 {!! Form::label('agentid', '应用AgentId：', [
@@ -70,7 +79,7 @@
                     <td colspan="8" style="text-align: center">( n/a )</td>
                 </tr>
             @else
-                @foreach($apps as $app)
+                @foreach ($apps as $app)
                     <tr id="app{{ $app['agentid'] }}">
                         <td>{{ $app['id'] }}</td>
                         <td class="text-center">{{ $app['agentid'] }}</td>

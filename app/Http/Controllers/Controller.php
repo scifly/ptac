@@ -129,13 +129,14 @@ class Controller extends BaseController {
     /**
      * 返回操作结果提示信息
      *
-     * @param $result
+     * @param bool $result
      * @param String $success
      * @param String $failure
      * @return JsonResponse|string
      */
-    protected function result($result, String $success = null, String $failure = null) {
+    protected function result(bool $result, String $success = null, String $failure = null) {
     
+        # 获取功能名称
         $e = new Exception();
         $method = $e->getTrace()[1]['function'];
         $path = explode('\\' , get_called_class());
@@ -144,12 +145,18 @@ class Controller extends BaseController {
         $title = Action::whereMethod($method)
             ->where('controller', $controller)
             ->first()->name;
+        
+        # 获取Http状态码
         $statusCode = $result
             ? HttpStatusCode::OK
             : HttpStatusCode::INTERNAL_SERVER_ERROR;
+        
+        # 获取状态消息
         $message = $result
             ? ($success ?? __('messages.ok'))
             : ($failure ?? __('messages.fail'));
+        
+        # 输出状态码及消息
         if (Request::ajax()) {
             return $result
                 ? response()->json([

@@ -203,12 +203,8 @@
                     $studentId = $('#' + cr.options.studentId),
                     student = $studentId.find("option:selected").text().split('-'),
                     studentId = $studentId.val();
-                if (relationship === '') {
+                if (!$.trim(relationship) || !$.trim(student) || !$.trim(studentId)) {
                     page.inform('保存监护关系', '监护关系不能为空', page.failure);
-                    return false
-                }
-                if (student === '' || studentId === '') {
-                    page.inform('保存监护关系', '被监护人不能为空', page.failure);
                     return false
                 }
                 var $studentIds = [];
@@ -256,7 +252,7 @@
                 $(document).off('click', '#' + cr.options.confirm);
                 $(document).on('click', '#' + cr.options.confirm, function () {
                     if (typeof relationship === 'undefined') {
-                        var range = parseInt($($('.checked').children()[0]).val()),
+                        var range = parseInt($($('.checked').children[0]).val()),
                             url = page.siteRoot() + table + '/export?range=' + range,
                             $ranges = $('#' + cr.options.ranges),
                             $gradeId = $('#' + cr.options.gradeId),

@@ -16,15 +16,16 @@ var sync = function () {
                 '<a href="#"><i class="fa fa-pencil" title="修改"></i></a>\n\n&nbsp;&nbsp;\n' +
                 '<a href="#"><i class="fa fa-exchange" title="同步菜单"></i></a>';
             if(result['action'] === 'create') {
-                app = '<tr id="app"' + data['agentid'] + '">' +
-                    '<td>' + data['id'] + '</td>' +
-                    '<td class="text-center">' + data['agentid'] + '</td>' +
-                    '<td>' + data['name'] + '</td>' +
-                    '<td class="text-center"><img style="width: 16px; height: 16px;" src="' + data['square_logo_url'] + '"/></td>' +
-                    '<td>' + data['description'] + '</td>' +
-                    '<td class="text-center">' + data['created_at'] + '</td>' +
-                    '<td class="text-center">' + data['updated_at'] + '</td>' +
-                    '<td class="text-right">' + status + '</td>' +
+                app =
+                    '<tr id="app"' + data['agentid'] + '">' +
+                        '<td>' + data['id'] + '</td>' +
+                        '<td class="text-center">' + data['agentid'] + '</td>' +
+                        '<td>' + data['name'] + '</td>' +
+                        '<td class="text-center"><img style="width: 16px; height: 16px;" src="' + data['square_logo_url'] + '"/></td>' +
+                        '<td>' + data['description'] + '</td>' +
+                        '<td class="text-center">' + data['created_at'] + '</td>' +
+                        '<td class="text-center">' + data['updated_at'] + '</td>' +
+                        '<td class="text-right">' + status + '</td>' +
                     '</tr>';
                 var $na = $('#na');
                 if(typeof $na !== 'undefined') {

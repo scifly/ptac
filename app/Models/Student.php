@@ -302,7 +302,7 @@ class Student extends Model {
      * 导入
      *
      * @param UploadedFile $file
-     * @return array
+     * @return bool
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
@@ -341,14 +341,11 @@ class Student extends Model {
             $data['user'] = Auth::user();
             $data['type'] = 'student';
             event(new ContactImportTrigger($data));
-            
-            return [
-                'statusCode' => HttpStatusCode::OK,
-                'message'    => '上传成功',
-            ];
+
+            return true;
         }
         
-        return abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '上传失败');
+        return false;
         
     }
     
@@ -510,7 +507,8 @@ class Student extends Model {
     }
     
     /**
-     *  检查每行数据 是否符合导入数据
+     * 检查每行数据 是否符合导入数据
+     *
      * @param array $data
      */
     private function validateData(array $data) {
