@@ -18,7 +18,7 @@
                     {{--'items' => $corps--}}
                 {{--])--}}
                 <div class="form-group" style="margin-right: 10px">
-                    {!! Form::label('corp_id', '所属企业', [
+                    {!! Form::label('corp_id', '所属企业：', [
                         'class' => 'control-label',
                     ]) !!}
                     <div class="input-group">
