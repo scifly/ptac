@@ -665,8 +665,8 @@ var page = {
         return vars;
     }
 };
-$.getMultiScripts = function (arr, path) {
-    path = page.siteRoot() + path || '';
+$.getMultiScripts = function (arr) {
+    var path = page.siteRoot();
     var _arr = $.map(arr, function (scr) {
         return $.getScript((path || "") + scr);
     });
