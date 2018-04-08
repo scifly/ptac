@@ -299,7 +299,17 @@ var page = {
                 select: {style: 'multi'},
                 columnDefs: options,
                 scrollX: true,
-                language: {url: '../files/ch.json'},
+                language: {
+                    url: '../files/ch.json',
+                    buttons: {
+                        selectAll: '全选',
+                        selectNone: '全不选'
+                    }
+                },
+                buttons: [
+                    'selectAll',
+                    'selectNone'
+                ],
                 lengthMenu: [[15, 25, 50, -1], [15, 25, 50, '所有']]
                 // dom: '<"row"<"col-md-6"l><"col-sm-4"f><"col-sm-2"B>>rt<"row"<"col-sm-6"i><"col-sm-6"p>>',
                 // buttons: ['pdf', 'csv']
@@ -318,7 +328,6 @@ var page = {
             }).on('error.dt', function (e, settings, techNote, message) {
                 page.inform('加载列表', message, page.failure);
             }).on('select.dt', function () {
-                alert('wtf');
             });
             $('input[type="search"]').on('keyup', function () {
                 dt.search(this.value, true).draw();
