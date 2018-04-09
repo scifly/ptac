@@ -276,6 +276,7 @@ var page = {
     },
     initDatatable: function (table, options) {
         var selected = [],
+            deselected = [],
             $tbody = $('#data-table tbody'),
             selectAll = false,
             deselectAll = true,
@@ -349,8 +350,19 @@ var page = {
         });
         $selectAll.on('click', function () {
             selectAll = true;
-            var $rows = $tbody.find('tr');
+            deselectAll = false;
+            selected.push(0);
+            console.log(selected);
+            var $rows = $('#data-table tbody tr');
             $.each($rows, function () { $(this).addClass('selected'); })
+        });
+        $deselectAll.on('click', function () {
+            selectAll = false;
+            deselectAll = true;
+            selected = [];
+            console.log(selected);
+            var $rows = $('#data-table tbody tr');
+            $.each($rows, function () { $(this).removeClass('selected'); })
         });
         $.getMultiScripts([plugins.datatable.js]).done(function () {
             showTable();
