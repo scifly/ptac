@@ -275,7 +275,8 @@ var page = {
         });
     },
     initDatatable: function (table, options) {
-        var selected = [],
+        var rowIds = [],
+            selected = [],
             $tbody = $('#data-table tbody'),
             $selectAll = $('#select-all'),
             $deselectAll = $('#deselect-all'),
@@ -320,13 +321,14 @@ var page = {
             page.loadCss(plugins.datatable.multiCss);
             $('.overlay').show();
             $.fn.dataTable.ext.errMode = 'none';
-            var dt = $datatable.DataTable(params).on('init.dt', function (e, settings, json) {
+            var dt = $datatable.DataTable(params).on('init.dt', function (e, settings, data) {
                 // $('.dt-buttons').addClass('pull-right');
                 // $('.buttons-pdf').addClass('btn-sm');
                 // $('.buttons-csv').addClass('btn-sm');
                 // $('.paginate_button').each(function() { $(this).addClass('btn-sm'); })
                 $('input[type="search"]').attr('placeholder', '多关键词请用空格分隔');
-                console.log(json);
+                rowIds = data['ids'];
+                console.log(rowIds);
                 $('.overlay').hide();
             }).on('error.dt', function (e, settings, techNote, message) {
                 page.inform('加载列表', message, page.failure);
@@ -348,10 +350,10 @@ var page = {
         $selectAll.on('click', function () {
             var $rows = $('#data-table tbody tr');
             $.each($rows, function () { $(this).addClass('selected'); })
+            selected = rowIds;
         });
         $deselectAll.on('click', function () {
             selected = [];
-            console.log(selected);
             var $rows = $('#data-table tbody tr');
             $.each($rows, function () { $(this).removeClass('selected'); })
         });
