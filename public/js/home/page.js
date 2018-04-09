@@ -307,13 +307,13 @@ var page = {
                         $(row).addClass('selected');
                     }
                 },
-                fnInitComplete: function () {
-                    $('input[type="search"]').off('keyup').on('keyup', function (e) {
-                        if (e.keyCode === 13) {
-                            dt.search(this.value, true).draw();
-                        }
-                    });
-                },
+                // fnInitComplete: function () {
+                //     $('input[type="search"]').off('keyup').on('keyup', function (e) {
+                //         if (e.keyCode === 13) {
+                //             dt.search(this.value, true).draw();
+                //         }
+                //     });
+                // },
                 order: [[0, 'desc']],
                 stateSave: true,
                 autoWidth: true,
@@ -333,6 +333,11 @@ var page = {
                 // $('.buttons-pdf').addClass('btn-sm');
                 // $('.buttons-csv').addClass('btn-sm');
                 // $('.paginate_button').each(function() { $(this).addClass('btn-sm'); })
+                $('input[type="search"]').off('keyup').on('keyup', function (e) {
+                    if (e.keyCode === 13) {
+                        dt.search(this.value, true).draw();
+                    }
+                });
                 $('input[type="search"]').attr('placeholder', '多关键词请用空格分隔');
                 rowIds = data['ids'];
                 console.log(rowIds);
