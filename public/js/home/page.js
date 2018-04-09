@@ -332,15 +332,15 @@ var page = {
                 $('.overlay').hide();
             }).on('error.dt', function (e, settings, techNote, message) {
                 page.inform('加载列表', message, page.failure);
-            }).on('search.dt', function (e, settings, data) {
-                console.log(data);
+            }).on('search.dt', function (e, settings) {
+                console.log(e.key);
             });
-            // $('input[type="search"]').keypress(function (e) {
-            //     alert('wtf');
-            //     if (e.which === 13) {
-            //         dt.search(this.value, true).draw();
-            //     }
-            // });
+            $('input[type="search"]').keypress(function (e) {
+                alert('wtf');
+                if (e.key === 13) {
+                    dt.search(this.value, true).draw();
+                }
+            });
         };
         $tbody.on('click', 'tr', function () {
             var id = parseInt($(this).find('td').eq(0).text());
