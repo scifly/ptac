@@ -333,12 +333,14 @@ var page = {
                 // $('.buttons-pdf').addClass('btn-sm');
                 // $('.buttons-csv').addClass('btn-sm');
                 // $('.paginate_button').each(function() { $(this).addClass('btn-sm'); })
-                $('input[type="search"]').off('keyup').on('keyup', function (e) {
+                var $search = $('input[type="search"]');
+                $search.off('keyup').on('keyup', function (e) {
+                    console.log(e.keyCode);
                     if (e.keyCode === 13) {
                         dt.search(this.value, true).draw();
                     }
                 });
-                $('input[type="search"]').attr('placeholder', '多关键词请用空格分隔');
+                $search.attr('placeholder', '多关键词请用空格分隔');
                 rowIds = data['ids'];
                 console.log(rowIds);
                 $('.overlay').hide();
