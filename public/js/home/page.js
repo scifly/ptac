@@ -347,7 +347,7 @@ var page = {
                         selected.splice($.inArray(this, selected), 1);
                     }
                 });
-                console.log(selected);
+                console.log('selected: ' + selected);
             });
         };
         $tbody.on('click', 'tr', function () {
@@ -358,18 +358,24 @@ var page = {
             } else {
                 selected.splice(index, 1)
             }
-            console.log(selected);
             $(this).toggleClass('selected');
+            console.log('selected: ' + selected);
         });
         $selectAll.on('click', function () {
             var $rows = $('#data-table tbody tr');
-            $.each($rows, function () { $(this).addClass('selected'); });
+            $.each($rows, function () {
+                $(this).addClass('selected');
+            });
             selected = rowIds;
+            console.log('selected: ' + selected);
         });
         $deselectAll.on('click', function () {
             selected = [];
             var $rows = $('#data-table tbody tr');
-            $.each($rows, function () { $(this).removeClass('selected'); })
+            $.each($rows, function () {
+                $(this).removeClass('selected');
+            });
+            console.log('selected: ' + selected);
         });
         $.getMultiScripts([plugins.datatable.js]).done(function () {
             showTable();
