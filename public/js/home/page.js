@@ -333,11 +333,11 @@ var page = {
             }).on('error.dt', function (e, settings, techNote, message) {
                 page.inform('加载列表', message, page.failure);
             }).on('search.dt', function (e, settings) {
-                console.log(e.key);
+                console.log(e);
             });
-            $('input[type="search"]').keypress(function (e) {
+            $('input[type="search"]').keyup(function (e) {
                 alert('wtf');
-                if (e.key === 13) {
+                if (e.keyCode === 13) {
                     dt.search(this.value, true).draw();
                 }
             });
