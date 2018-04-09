@@ -333,12 +333,12 @@ var page = {
             }).on('error.dt', function (e, settings, techNote, message) {
                 page.inform('加载列表', message, page.failure);
             });
-            $('input[type="search"]').keypress(function (e) {
-                alert('wtf');
-                if (e.which === 13) {
-                    dt.search(this.value, true).draw();
-                }
-            });
+            // $('input[type="search"]').keypress(function (e) {
+            //     alert('wtf');
+            //     if (e.which === 13) {
+            //         dt.search(this.value, true).draw();
+            //     }
+            // });
         };
         $tbody.on('click', 'tr', function () {
             var id = parseInt($(this).find('td').eq(0).text());
