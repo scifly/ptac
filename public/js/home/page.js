@@ -326,19 +326,28 @@ var page = {
                 // $('.buttons-pdf').addClass('btn-sm');
                 // $('.buttons-csv').addClass('btn-sm');
                 // $('.paginate_button').each(function() { $(this).addClass('btn-sm'); })
-                var $search = $('input[type="search"]');
-                $search.off().on('keyup', function (e) {
+                $('input[type="search"]').off().on('keyup', function (e) {
                     if (e.keyCode === 13) {
                         dt.search(this.value, true).draw();
                     }
                 }).attr('placeholder', '多关键词请用空格分隔');
-                rowIds = data['ids'];
-                console.log(rowIds);
                 $('.overlay').hide();
             }).on('error.dt', function (e, settings, techNote, message) {
                 page.inform('加载列表', message, page.failure);
             }).on('xhr.dt', function (e, settings, data) {
-                console.log(data.ids);
+                rowIds = data['ids'];
+                var differences = [];
+                $.grep(selected, function(el) {
+                    if ($.inArray(el, rowIds) === -1) {
+                        differences.push(el);
+                    }
+                });
+                $.each(differences, function () {
+                    if ($.inArray(this, rowIds) === -1) {
+                        selected.splice($.inArray(this, selected), 1);
+                    }
+                });
+                console.log(selected);
             });
         };
         $tbody.on('click', 'tr', function () {
