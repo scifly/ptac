@@ -296,6 +296,7 @@ var page = {
             var params = {
                 processing: true,
                 serverSide: true,
+                searching: false,
                 ajax: {
                     url: page.siteRoot() + table + '/index' + page.getQueryString(),
                     error: function (e) {
@@ -334,9 +335,7 @@ var page = {
                 // $('.buttons-csv').addClass('btn-sm');
                 // $('.paginate_button').each(function() { $(this).addClass('btn-sm'); })
                 var $search = $('input[type="search"]');
-                $search.off('keypress');
-                $search.off('keyup').on('keyup', function (e) {
-
+                $search.on('keyup', function (e) {
                     if (e.keyCode === 13) {
                         dt.search(this.value, true).draw();
                     }
