@@ -275,11 +275,20 @@ var page = {
         });
     },
     initDatatable: function (table, options) {
-        var selected = [];
+        var selected = [],
+            $tbody = $('#data-table tbody'),
+            selectAll = false,
+            deselectAll = true,
+            $selectAll = $('#select-all'),
+            $deselectAll = $('#deselect-all'),
+            $batchEnable = $('#batch-enable'),
+            $batchDisable = $('#batch-disable'),
+            $batchDelete = $('#batch-delete');
         var showTable = function () {
-            var $datatable = $('#data-table');
-            var columns = $datatable.find('thead tr th').length;
-            var statusCol = {className: 'text-right', targets: [columns - 1]};
+            var $datatable = $('#data-table'),
+                columns = $datatable.find('thead tr th').length,
+                statusCol = {className: 'text-right', targets: [columns - 1]};
+
             if (typeof options === 'undefined') {
                 options = [statusCol];
             } else {
@@ -328,7 +337,7 @@ var page = {
                 dt.search(this.value, true).draw();
             });
         };
-        $('#data-table tbody').on('click', 'tr', function () {
+        $tbody.on('click', 'tr', function () {
             var id = parseInt($(this).find('td').eq(0).text());
             var index = $.inArray(id, selected);
             if (index === -1) {
@@ -337,6 +346,11 @@ var page = {
                 selected.splice(index, 1)
             }
             $(this).toggleClass('selected');
+        });
+        $selectAll.on('click', function () {
+            selectAll = true;
+            var $rows = $tbody.find('tr');
+            $.each($rows, function () { $(this).addClass('selected'); })
         });
         $.getMultiScripts([plugins.datatable.js]).done(function () {
             showTable();

@@ -19,19 +19,19 @@
     @if (isset($batch))
         @can ('act', $uris['batch'])
             <div class="btn-group">
-                <button id="select_all" type="button" class="btn btn-default" title="全选">
+                <button id="select-all" type="button" class="btn btn-default" title="全选">
                     <i class="fa fa-check-circle text-blue"></i>
                 </button>
-                <button id="deselect_all" type="button" class="btn btn-default" title="取消全选">
+                <button id="deselect-all" type="button" class="btn btn-default" title="取消全选">
                     <i class="fa fa-check-circle text-gray"></i>
                 </button>
-                <button id="enable" type="button" class="btn btn-default" title="批量启用">
+                <button id="batch-enable" type="button" class="btn btn-default" title="批量启用">
                     <i class="fa fa-circle text-green"></i>
                 </button>
-                <button id="activate" type="button" class="btn btn-default" title="批量禁用">
+                <button id="batch-disable" type="button" class="btn btn-default" title="批量禁用">
                     <i class="fa fa-circle text-gray"></i>
                 </button>
-                <button id="remove" type="button" class="btn btn-default" title="批量删除">
+                <button id="batch-delete" type="button" class="btn btn-default" title="批量删除">
                     <i class="fa fa-remove text-red"></i>
                 </button>
             </div>
