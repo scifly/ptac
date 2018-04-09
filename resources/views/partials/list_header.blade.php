@@ -22,17 +22,17 @@
                 <button id="select_all" type="button" class="btn btn-default" title="全选">
                     <i class="fa fa-check-circle text-blue"></i>
                 </button>
-                <button id="deselect_all" type="button" class="btn btn-default">
-                    <i class="fa fa-check-circle text-gray" title="取消全选"></i>
+                <button id="deselect_all" type="button" class="btn btn-default" title="取消全选">
+                    <i class="fa fa-check-circle text-gray"></i>
                 </button>
-                <button id="enable" type="button" class="btn btn-default">
-                    <i class="fa fa-circle text-green" title="批量启用"></i>
+                <button id="enable" type="button" class="btn btn-default" title="批量启用">
+                    <i class="fa fa-circle text-green"></i>
                 </button>
-                <button id="activate" type="button" class="btn btn-default">
-                    <i class="fa fa-circle text-gray" title="批量禁用"></i>
+                <button id="activate" type="button" class="btn btn-default" title="批量禁用">
+                    <i class="fa fa-circle text-gray"></i>
                 </button>
-                <button id="remove" type="button" class="btn btn-default">
-                    <i class="fa fa-remove text-red" title="批量删除"></i>
+                <button id="remove" type="button" class="btn btn-default" title="批量删除">
+                    <i class="fa fa-remove text-red"></i>
                 </button>
             </div>
         @endcan
