@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ModelTrait;
+use App\Models\Action;
 use App\Models\Department;
 use App\Models\Grade;
 use App\Models\Menu;
@@ -40,6 +41,12 @@ class TestController extends Controller {
     
     public function index() {
 
+        $action = new Action();
+        try {
+            $action->scan();
+        } catch (\Throwable $e) {
+        }
+        exit;
         $ids = DB::select('SELECT id FROM tabs');
         $result = [];
         
