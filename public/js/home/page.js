@@ -276,10 +276,7 @@ var page = {
     },
     initDatatable: function (table, options) {
         var selected = [],
-            deselected = [],
             $tbody = $('#data-table tbody'),
-            selectAll = false,
-            deselectAll = true,
             $selectAll = $('#select-all'),
             $deselectAll = $('#deselect-all'),
             $batchEnable = $('#batch-enable'),
@@ -306,7 +303,7 @@ var page = {
                 },
                 rowCallback: function (row, data) {
                     console.log(selected);
-                    if ($.inArray(data[0], selected) !== -1 || selectAll) {
+                    if ($.inArray(data[0], selected) !== -1) {
                         $(row).addClass('selected');
                     }
                 },
@@ -324,12 +321,13 @@ var page = {
             page.loadCss(plugins.datatable.multiCss);
             $('.overlay').show();
             $.fn.dataTable.ext.errMode = 'none';
-            var dt = $datatable.DataTable(params).on('init.dt', function () {
+            var dt = $datatable.DataTable(params).on('init.dt', function (e) {
                 // $('.dt-buttons').addClass('pull-right');
                 // $('.buttons-pdf').addClass('btn-sm');
                 // $('.buttons-csv').addClass('btn-sm');
                 // $('.paginate_button').each(function() { $(this).addClass('btn-sm'); })
                 $('input[type="search"]').attr('placeholder', '多关键词请用空格分隔');
+                console.log(e);
                 $('.overlay').hide();
             }).on('error.dt', function (e, settings, techNote, message) {
                 page.inform('加载列表', message, page.failure);
@@ -342,32 +340,17 @@ var page = {
             var id = parseInt($(this).find('td').eq(0).text());
             var index = $.inArray(id, selected);
             if (index === -1) {
-                if (selectAll) {
-                    selectAll = false;
-                    selected = [];
-                }
                 selected.push(id);
             } else {
-                deselected.push(id);
-                if (!selectAll) {
-                    selected.splice(index, 1)
-                } else {
-                    selected = [];
-                }
+                selected.splice(index, 1)
             }
             $(this).toggleClass('selected');
         });
         $selectAll.on('click', function () {
-            selectAll = true;
-            deselectAll = false;
-            selected.push(0);
-            console.log(selected);
             var $rows = $('#data-table tbody tr');
             $.each($rows, function () { $(this).addClass('selected'); })
         });
         $deselectAll.on('click', function () {
-            selectAll = false;
-            deselectAll = true;
             selected = [];
             console.log(selected);
             var $rows = $('#data-table tbody tr');

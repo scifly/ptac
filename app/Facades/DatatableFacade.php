@@ -77,7 +77,10 @@ class DatatableFacade extends Facade {
         $data = DB::select($query);
         $query = "SELECT " . $useTable . ".id FROM " . $from . $where;
         $ids = DB::select($query);
-        Log::debug(json_encode($ids));
+        $rowIds = [];
+        foreach ($ids as $id) {
+            $rowIds[] = $id->id;
+        }
         // Data set length after filtering
         $resFilterLength = DB::select("SELECT FOUND_ROWS() AS t");
         $recordsFiltered = $resFilterLength[0]->t;
@@ -87,6 +90,7 @@ class DatatableFacade extends Facade {
         // Output
         return [
             "draw"            => intval(Request::get('draw')),
+            "ids"             => $ids,
             "recordsTotal"    => intval($recordsTotal),
             "recordsFiltered" => intval($recordsFiltered),
             "data"            => self::data_output($columns, $data),
