@@ -9,6 +9,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use ReflectionClass;
@@ -39,7 +40,8 @@ class TestController extends Controller {
     
     public function index() {
 
-        $this->test();
+        $ids = DB::select('SELECT id FROM tabs');
+        dd($ids);
         try {
             $client = new Client();
             $reponse = $client->post(
