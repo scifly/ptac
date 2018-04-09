@@ -342,11 +342,13 @@ var page = {
                         differences.push(el);
                     }
                 });
+                console.log('diff: ' + differences);
                 $.each(differences, function () {
                     if ($.inArray(this, rowIds) === -1) {
                         selected.splice($.inArray(this, selected), 1);
                     }
                 });
+                console.log('rowIds: ' + rowIds);
                 console.log('selected: ' + selected);
             });
         };
