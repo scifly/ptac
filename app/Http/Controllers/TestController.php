@@ -41,7 +41,13 @@ class TestController extends Controller {
     public function index() {
 
         $ids = DB::select('SELECT id FROM tabs');
-        dd($ids);
+        $result = [];
+        
+        foreach ($ids as $id) {
+            $result[] = $id->id;
+        }
+        dd($result);
+        
         try {
             $client = new Client();
             $reponse = $client->post(
