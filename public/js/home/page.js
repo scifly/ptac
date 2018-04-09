@@ -307,13 +307,6 @@ var page = {
                         $(row).addClass('selected');
                     }
                 },
-                // fnInitComplete: function () {
-                //     $('input[type="search"]').off('keyup').on('keyup', function (e) {
-                //         if (e.keyCode === 13) {
-                //             dt.search(this.value, true).draw();
-                //         }
-                //     });
-                // },
                 order: [[0, 'desc']],
                 stateSave: true,
                 autoWidth: true,
@@ -334,26 +327,17 @@ var page = {
                 // $('.buttons-csv').addClass('btn-sm');
                 // $('.paginate_button').each(function() { $(this).addClass('btn-sm'); })
                 var $search = $('input[type="search"]');
-                $search.off();
-                $search.on('keyup', function (e) {
+                $search.off().on('keyup', function (e) {
                     if (e.keyCode === 13) {
                         dt.search(this.value, true).draw();
                     }
-                });
-                $search.attr('placeholder', '多关键词请用空格分隔');
+                }).attr('placeholder', '多关键词请用空格分隔');
                 rowIds = data['ids'];
                 console.log(rowIds);
                 $('.overlay').hide();
             }).on('error.dt', function (e, settings, techNote, message) {
                 page.inform('加载列表', message, page.failure);
-            }).on('search.dt', function (e, settings) {
-                console.log(e);
             });
-            // $('input[type="search"]').keyup(function (e) {
-            //     if (e.keyCode === 13) {
-            //         dt.search(this.value, true).draw();
-            //     }
-            // });
         };
         $tbody.on('click', 'tr', function () {
             var id = parseInt($(this).find('td').eq(0).text());
