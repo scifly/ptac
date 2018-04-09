@@ -19,8 +19,8 @@
     @if (isset($batch))
         @can ('act', $uris['batch'])
             <div class="btn-group">
-                <button id="select_all" type="button" class="btn btn-default">
-                    <i class="fa fa-check-circle text-blue" title="全选"></i>
+                <button id="select_all" type="button" class="btn btn-default" title="全选">
+                    <i class="fa fa-check-circle text-blue"></i>
                 </button>
                 <button id="deselect_all" type="button" class="btn btn-default">
                     <i class="fa fa-check-circle text-gray" title="取消全选"></i>
