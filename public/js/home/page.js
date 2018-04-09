@@ -345,6 +345,7 @@ var page = {
             } else {
                 selected.splice(index, 1)
             }
+            console.log(selected);
             $(this).toggleClass('selected');
         });
         $selectAll.on('click', function () {
