@@ -307,6 +307,13 @@ var page = {
                         $(row).addClass('selected');
                     }
                 },
+                fnInitComplete: function () {
+                    $('input[type="search"]').off('keyup').on('keyup', function (e) {
+                        if (e.keyCode === 13) {
+                            dt.search(this.value, true).draw();
+                        }
+                    });
+                },
                 order: [[0, 'desc']],
                 stateSave: true,
                 autoWidth: true,
@@ -335,12 +342,11 @@ var page = {
             }).on('search.dt', function (e, settings) {
                 console.log(e);
             });
-            $('input[type="search"]').keyup(function (e) {
-                alert('wtf');
-                if (e.keyCode === 13) {
-                    dt.search(this.value, true).draw();
-                }
-            });
+            // $('input[type="search"]').keyup(function (e) {
+            //     if (e.keyCode === 13) {
+            //         dt.search(this.value, true).draw();
+            //     }
+            // });
         };
         $tbody.on('click', 'tr', function () {
             var id = parseInt($(this).find('td').eq(0).text());
