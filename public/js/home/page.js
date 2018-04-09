@@ -332,8 +332,8 @@ var page = {
                 $('.overlay').hide();
             }).on('error.dt', function (e, settings, techNote, message) {
                 page.inform('加载列表', message, page.failure);
-            }).on('search.dt', function (e, settings) {
-                console.log(e);
+            }).on('search.dt', function (e, settings, data) {
+                console.log(data);
             });
             // $('input[type="search"]').keypress(function (e) {
             //     alert('wtf');
