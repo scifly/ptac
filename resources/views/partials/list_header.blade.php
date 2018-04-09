@@ -20,19 +20,19 @@
         @can ('act', $uris['batch'])
             <div class="btn-group">
                 <button id="select_all" type="button" class="btn btn-default">
-                    <i class="fa fa-check-circle" title="全选"></i>
+                    <i class="fa fa-check-circle text-blue" title="全选"></i>
                 </button>
                 <button id="deselect_all" type="button" class="btn btn-default">
-                    <i class="fa fa-check-circle-o" title="取消全选"></i>
+                    <i class="fa fa-check-circle text-info" title="取消全选"></i>
                 </button>
                 <button id="enable" type="button" class="btn btn-default">
-                    <i class="fa fa-circle" title="批量启用"></i>
+                    <i class="fa fa-circle text-green" title="批量启用"></i>
                 </button>
                 <button id="activate" type="button" class="btn btn-default">
-                    <i class="fa fa-circle-o" title="批量禁用"></i>
+                    <i class="fa fa-circle text-gray" title="批量禁用"></i>
                 </button>
                 <button id="remove" type="button" class="btn btn-default">
-                    <i class="fa fa-remove" title="批量删除"></i>
+                    <i class="fa fa-remove text-red" title="批量删除"></i>
                 </button>
             </div>
         @endcan
