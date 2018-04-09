@@ -91,15 +91,4 @@ class TabController extends Controller {
         
     }
     
-    /**
-     * 批量操作
-     *
-     * @param $action
-     */
-    public function batch($action) {
-    
-    
-    
-    }
-    
 }

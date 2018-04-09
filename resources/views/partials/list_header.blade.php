@@ -17,24 +17,28 @@
         @endforeach
     @endif
     @if (isset($batch))
-        @can ('act', $uris['batch'])
-            <div class="btn-group">
+        <div class="btn-group">
+            @if (Auth::user()->can('act', $uris['update']) || Auth::user()->can('act', $uris['destroy']))
                 <button id="select-all" type="button" class="btn btn-default" title="全选">
                     <i class="fa fa-check-circle text-blue"></i>
                 </button>
                 <button id="deselect-all" type="button" class="btn btn-default" title="取消全选">
                     <i class="fa fa-check-circle text-gray"></i>
                 </button>
+            @endif
+            @can ('act', $uris['update'])
                 <button id="batch-enable" type="button" class="btn btn-default" title="批量启用">
                     <i class="fa fa-circle text-green"></i>
                 </button>
                 <button id="batch-disable" type="button" class="btn btn-default" title="批量禁用">
                     <i class="fa fa-circle text-gray"></i>
                 </button>
+            @endcan
+            @can ('act', $uris['destroy'])
                 <button id="batch-delete" type="button" class="btn btn-default" title="批量删除">
                     <i class="fa fa-remove text-red"></i>
                 </button>
-            </div>
-        @endcan
+            @endcan
+        </div>
     @endif
 </div>
