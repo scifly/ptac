@@ -344,8 +344,9 @@ var page = {
                 });
                 console.log('diff: ' + differences);
                 $.each(differences, function () {
-                    if ($.inArray(this, rowIds) === -1) {
-                        selected.splice($.inArray(this, selected), 1);
+                    var id = this;
+                    if ($.inArray(id, rowIds) === -1) {
+                        selected.splice($.inArray(id, selected), 1);
                     }
                 });
                 console.log('rowIds: ' + rowIds);
