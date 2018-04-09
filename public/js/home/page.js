@@ -306,7 +306,7 @@ var page = {
                 },
                 rowCallback: function (row, data) {
                     console.log(selected);
-                    if ($.inArray(data[0], selected) !== -1) {
+                    if ($.inArray(data[0], selected) !== -1 || selectAll) {
                         $(row).addClass('selected');
                     }
                 },
