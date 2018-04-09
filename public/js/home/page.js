@@ -329,7 +329,8 @@ var page = {
                 var $search = $('input[type="search"]');
                 $search.off().on('keyup', function (e) {
                     if (e.keyCode === 13) {
-                        dt.search(this.value, true).draw();
+                        console.log(dt.search(this.value, true));
+                        // dt.search(this.value, true).draw();
                     }
                 }).attr('placeholder', '多关键词请用空格分隔');
                 rowIds = data['ids'];
@@ -337,7 +338,7 @@ var page = {
                 $('.overlay').hide();
             }).on('error.dt', function (e, settings, techNote, message) {
                 page.inform('加载列表', message, page.failure);
-            });
+            }).on('search.dt', function (e, settings));
         };
         $tbody.on('click', 'tr', function () {
             var id = parseInt($(this).find('td').eq(0).text());
