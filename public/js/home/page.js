@@ -334,6 +334,7 @@ var page = {
                 page.inform('加载列表', message, page.failure);
             });
             $('input[type="search"]').keypress(function (e) {
+                alert('wtf');
                 if (e.which === 13) {
                     dt.search(this.value, true).draw();
                 }
@@ -352,7 +353,7 @@ var page = {
         });
         $selectAll.on('click', function () {
             var $rows = $('#data-table tbody tr');
-            $.each($rows, function () { $(this).addClass('selected'); })
+            $.each($rows, function () { $(this).addClass('selected'); });
             selected = rowIds;
         });
         $deselectAll.on('click', function () {
