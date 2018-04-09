@@ -90,7 +90,7 @@ class DatatableFacade extends Facade {
         // Output
         return [
             "draw"            => intval(Request::get('draw')),
-            "ids"             => $ids,
+            "ids"             => $rowIds,
             "recordsTotal"    => intval($recordsTotal),
             "recordsFiltered" => intval($recordsFiltered),
             "data"            => self::data_output($columns, $data),
