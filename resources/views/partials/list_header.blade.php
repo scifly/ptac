@@ -18,7 +18,7 @@
     @endif
     @if (isset($batch))
         <div class="btn-group">
-            @if (Auth::user()->can('act', $uris['update']) || Auth::user()->can('act', $uris['destroy']))
+            @if ($user->can('act', $uris['update']) || $user->can('act', $uris['destroy']))
                 <button id="select-all" type="button" class="btn btn-default" title="全选">
                     <i class="fa fa-check-circle text-blue"></i>
                 </button>
