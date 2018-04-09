@@ -321,13 +321,13 @@ var page = {
             page.loadCss(plugins.datatable.multiCss);
             $('.overlay').show();
             $.fn.dataTable.ext.errMode = 'none';
-            var dt = $datatable.DataTable(params).on('init.dt', function (e) {
+            var dt = $datatable.DataTable(params).on('init.dt', function (e, settings, json) {
                 // $('.dt-buttons').addClass('pull-right');
                 // $('.buttons-pdf').addClass('btn-sm');
                 // $('.buttons-csv').addClass('btn-sm');
                 // $('.paginate_button').each(function() { $(this).addClass('btn-sm'); })
                 $('input[type="search"]').attr('placeholder', '多关键词请用空格分隔');
-                console.log(e);
+                console.log(json);
                 $('.overlay').hide();
             }).on('error.dt', function (e, settings, techNote, message) {
                 page.inform('加载列表', message, page.failure);
