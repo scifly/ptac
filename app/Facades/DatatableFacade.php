@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 class DatatableFacade extends Facade {
@@ -66,13 +67,17 @@ class DatatableFacade extends Facade {
         $order = self::order($columns);
         $where = self::filter($columns);
         if (isset($condition)) {
-            $where = empty($where) ? ' WHERE ' . $condition : $where . ' AND ' . $condition;
+            $where = empty($where)
+                ? ' WHERE ' . $condition
+                : $where . ' AND ' . $condition;
         }
         // Main query to actually get the data
-        $query = "SELECT SQL_CALC_FOUND_ROWS " .
-            implode(", ", self::pluck($columns, 'db')) .
-            " FROM " . $from . $where . $order . $limit;
+        $fields = implode(", ", self::pluck($columns, 'db'));
+        $query = "SELECT SQL_CALC_FOUND_ROWS " . $fields . " FROM " . $from . $where . $order . $limit;
         $data = DB::select($query);
+        $query = "SELECT " . $useTable . ".id FROM " . $from . $where;
+        $ids = DB::select($query);
+        Log::debug(json_encode($ids));
         // Data set length after filtering
         $resFilterLength = DB::select("SELECT FOUND_ROWS() AS t");
         $recordsFiltered = $resFilterLength[0]->t;

@@ -342,9 +342,18 @@ var page = {
             var id = parseInt($(this).find('td').eq(0).text());
             var index = $.inArray(id, selected);
             if (index === -1) {
+                if (selectAll) {
+                    selectAll = false;
+                    selected = [];
+                }
                 selected.push(id);
             } else {
-                selected.splice(index, 1)
+                deselected.push(id);
+                if (!selectAll) {
+                    selected.splice(index, 1)
+                } else {
+                    selected = [];
+                }
             }
             $(this).toggleClass('selected');
         });
