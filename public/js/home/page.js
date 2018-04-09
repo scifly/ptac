@@ -334,8 +334,9 @@ var page = {
                 // $('.buttons-csv').addClass('btn-sm');
                 // $('.paginate_button').each(function() { $(this).addClass('btn-sm'); })
                 var $search = $('input[type="search"]');
+                $search.off('keypress');
                 $search.off('keyup').on('keyup', function (e) {
-                    console.log(e.keyCode);
+
                     if (e.keyCode === 13) {
                         dt.search(this.value, true).draw();
                     }
