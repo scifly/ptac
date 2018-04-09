@@ -18,12 +18,17 @@
     @endif
     @if (isset($batch))
         <div class="btn-group">
-            <button id="select-all" type="button" class="btn btn-default" title="全选">
-                <i class="fa fa-check-circle text-blue"></i>
-            </button>
-            <button id="deselect-all" type="button" class="btn btn-default" title="取消全选">
-                <i class="fa fa-check-circle text-gray"></i>
-            </button>
+            @if (
+                (isset($uris['update']) && Auth::user()->can('act', $uris['update'])) ||
+                (isset($uris['destroy']) && Auth::user()->can('act', $uris['destroy']))
+            )
+                <button id="select-all" type="button" class="btn btn-default" title="全选">
+                    <i class="fa fa-check-circle text-blue"></i>
+                </button>
+                <button id="deselect-all" type="button" class="btn btn-default" title="取消全选">
+                    <i class="fa fa-check-circle text-gray"></i>
+                </button>
+            @endif
             @if (isset($uris['update']))
                 @can ('act', $uris['update'])
                     <button id="batch-enable" type="button" class="btn btn-default" title="批量启用">
