@@ -345,6 +345,7 @@ var page = {
                 console.log('diff: ' + differences);
                 $.each(differences, function () {
                     var id = this;
+                    console.log($.inArray(id, selected));
                     if ($.inArray(id, rowIds) === -1) {
                         selected.splice($.inArray(id, selected), 1);
                     }
