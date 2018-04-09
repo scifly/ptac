@@ -344,10 +344,8 @@ var page = {
                 });
                 console.log('diff: ' + differences);
                 $.each(differences, function () {
-                    var id = this;
-                    console.log($.inArray(id, selected));
-                    if ($.inArray(id, rowIds) === -1) {
-                        selected.splice($.inArray(id, selected), 1);
+                    if ($.inArray(parseInt(this), rowIds) === -1) {
+                        selected.splice($.inArray(parseInt(this), selected), 1);
                     }
                 });
                 console.log('rowIds: ' + rowIds);
