@@ -24,19 +24,23 @@
             <button id="deselect-all" type="button" class="btn btn-default" title="取消全选">
                 <i class="fa fa-check-circle text-gray"></i>
             </button>
-            @can ('act', $uris['update'])
-                <button id="batch-enable" type="button" class="btn btn-default" title="批量启用">
-                    <i class="fa fa-circle text-green"></i>
-                </button>
-                <button id="batch-disable" type="button" class="btn btn-default" title="批量禁用">
-                    <i class="fa fa-circle text-gray"></i>
-                </button>
-            @endcan
-            @can ('act', $uris['destroy'])
-                <button id="batch-delete" type="button" class="btn btn-default" title="批量删除">
-                    <i class="fa fa-remove text-red"></i>
-                </button>
-            @endcan
+            @if (isset($uris['update']))
+                @can ('act', $uris['update'])
+                    <button id="batch-enable" type="button" class="btn btn-default" title="批量启用">
+                        <i class="fa fa-circle text-green"></i>
+                    </button>
+                    <button id="batch-disable" type="button" class="btn btn-default" title="批量禁用">
+                        <i class="fa fa-circle text-gray"></i>
+                    </button>
+                @endcan
+            @endif
+            @if (isset($uris['destroy']))
+                @can ('act', $uris['destroy'])
+                    <button id="batch-delete" type="button" class="btn btn-default" title="批量删除">
+                        <i class="fa fa-remove text-red"></i>
+                    </button>
+                @endcan
+            @endif
         </div>
     @endif
 </div>
