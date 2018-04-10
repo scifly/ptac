@@ -25,6 +25,7 @@ class TabRequest extends FormRequest {
      */
     public function rules() {
         
+        $abc = 'abc';
         if ($this->attributes->has('ids')) {
             return [
                 'ids' => 'required|array',
