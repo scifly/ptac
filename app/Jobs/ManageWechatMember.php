@@ -52,7 +52,6 @@ class ManageWechatMember implements ShouldQueue {
      */
     public function handle() {
         
-        Log::debug('wtttttf');
         $user = User::whereUserid($this->data['userid'])->first();
         switch ($user->group->name) {
             case '运营':
@@ -111,7 +110,6 @@ class ManageWechatMember implements ShouldQueue {
             'title' => self::ACTIONS[$this->action] . '企业微信会员',
             'message' => __('messages.wechat_synced')
         ];
-        Log::debug('abcd: ' . $response['user']);
         $result = json_decode(Wechat::createUser($token, $this->data));
         if ($this->action == 'create' && $result->{'errcode'} == 0) {
             $user = User::whereUserid($this->data['userid'])->first();
