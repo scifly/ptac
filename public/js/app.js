@@ -1008,14 +1008,11 @@ var app = new Vue({
     // el: '#app',
     created: function created() {
         Echo.private('user.' + document.getElementById('userId').value).listen('ContactImportTrigger', function (e) {
-            console.log(e.data['type']);
             if (e.data['type'] === 'educator') {
-                alert('you nailed it!!!');
-                // page.inform('导入成功', '教职员工队列导入成功', page.success)
+                page.inform('导入通讯录', '教职员工队列导入成功', page.success);
             }
             if (e.data['type'] === 'student') {
-                alert('you got it!!!');
-                // page.inform('导入成功', '学生队列导入成功', page.success)
+                page.inform('导入通讯录', '学生队列导入成功', page.success);
             }
         }).listen('ContactSyncTrigger', function (e) {
             page.inform('同步企业微信会员', e.data['message'], page.info);
