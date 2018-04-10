@@ -114,6 +114,7 @@ class ManageWechatMember implements ShouldQueue {
             $user = User::whereUserid($this->data['userid'])->first();
             $user->update(['synced' => 1]);
         }
+        
         if ($result->{'errcode'} != 0) {
             $response['message'] = $result->{'errmsg'};
         }
