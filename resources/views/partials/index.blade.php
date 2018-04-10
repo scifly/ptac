@@ -7,11 +7,9 @@
                class="display nowrap table table-striped table-bordered table-hover table-condensed">
             <thead>
             <tr class="bg-info">
-                <th>#</th>
                 @foreach ($titles as $title)
                     <th>{!! $title !!}</th>
                 @endforeach
-                <th><i class="fa fa-gear"></i></th>
             </tr>
             </thead>
             <tbody></tbody>

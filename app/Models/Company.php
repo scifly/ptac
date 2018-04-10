@@ -169,12 +169,6 @@ class Company extends Model {
             ['db' => 'Company.updated_at', 'dt' => 4],
             [
                 'db' => 'Company.enabled', 'dt' => 5,
-                'formatter' => function ($d) {
-                    return $d ? Snippet::DT_ON : Snippet::DT_OFF;
-                }
-            ],
-            [
-                'db' => 'Company.enabled as op', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 }
