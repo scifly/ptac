@@ -137,7 +137,7 @@ class OperatorController extends Controller {
     public function destroy($id = null) {
     
         $this->authorize(
-            'delete', User::class
+            'destroy', User::class
         );
         
         return $this->result(
