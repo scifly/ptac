@@ -389,13 +389,13 @@ class DatatableFacade extends Facade {
 
         $user = Auth::user();
         $id = $row['id'];
-        $status = $active ? Snippet::DT_ON : Snippet::DT_OFF;
+        // $status = $active ? Snippet::DT_ON : Snippet::DT_OFF;
         $showLink = sprintf(Snippet::DT_LINK_SHOW, 'show_' . $id);
         $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
         $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
         
         return
-            $status .
+            // $status .
             ($show ? ($user->can('act', self::uris()['show']) ? $showLink : '') : '') .
             ($edit ? ($user->can('act', self::uris()['edit']) ? $editLink : '') : '') .
             ($del ? ($user->can('act', self::uris()['destroy']) ? $delLink : '') : '');
