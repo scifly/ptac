@@ -20,7 +20,7 @@ class Snippet {
     const DT_ON = '<i class="fa fa-circle text-green" title="已启用"></i>';
     const DT_OFF = '<i class="fa fa-circle text-gray" title="未启用"></i>';
     const DT_LINK_EDIT = '<a id="%s" title="编辑" href="#"><i class="fa fa-pencil"></i></a>';
-    const DT_LINK_DEL = '<a id="%s" title="删除" data-toggle="modal"><i class="fa fa-remove"></i></a>';
+    const DT_LINK_DEL = '<a id="%s" title="删除" data-toggle="modal"><i class="fa fa-remove text-red"></i></a>';
     const DT_LINK_SHOW = '<a id="%s" title="详情" data-toggle="modal"><i class="fa fa-bars"></i></a>';
     const DT_SPACE = '&nbsp;';
     const DT_PRIMARY = '<span class="badge badge-info">%s</span>';
