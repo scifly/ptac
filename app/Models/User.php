@@ -302,6 +302,7 @@ class User extends Authenticatable {
         $user = self::find($id);
         $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
         $data = [
+            'userId'       => Auth::id(),
             'userid'       => $user->userid,
             'name'         => $user->realname,
             'english_name' => $user->english_name,

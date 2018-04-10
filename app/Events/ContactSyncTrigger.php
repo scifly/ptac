@@ -32,7 +32,7 @@ class ContactSyncTrigger implements ShouldBroadcast {
     public function broadcastOn() {
         
         Log::debug('realname: ' . Auth::user()->realname);
-        return new PrivateChannel('user.' . $this->data['user']->id);
+        return new PrivateChannel('user.' . $this->data['userId']);
         
     }
     

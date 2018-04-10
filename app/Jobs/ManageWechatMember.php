@@ -107,7 +107,7 @@ class ManageWechatMember implements ShouldQueue {
         
         $token = Wechat::getAccessToken($corpId, $secret, true);
         $response = [
-            'user' => Auth::user(),
+            'userId' => $this->data['userId'],
             'title' => self::ACTIONS[$this->action] . '企业微信会员',
             'message' => __('messages.wechat_synced')
         ];
