@@ -12,6 +12,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 /**
  * 企业号会员管理
@@ -103,6 +104,7 @@ class ManageWechatMember implements ShouldQueue {
      */
     private function sync($corpId, $secret): void {
         
+        Log::debug('wtffdsaklf;djsa');
         $token = Wechat::getAccessToken($corpId, $secret, true);
         $response = [
             'user' => Auth::user(),
