@@ -5,7 +5,7 @@
     <div class="col-sm-6">
         <div class="input-group">
             <div class="input-group-addon">
-                <i class="@if(isset($icon)) {{ $icon }} @else fa fa-list-alt @endif" style="width: 20px;"></i>
+                <i class="{{ $icon ?? 'fa fa-list-alt' }}" style="width: 20px;"></i>
             </div>
             <select multiple="multiple" name="{{ $id }}[]" id="{{ $id }}" class='form-control select2' style="width: 100%;">
                 @foreach ($items as $key => $value)
