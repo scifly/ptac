@@ -28,14 +28,11 @@ class UserEventSubscriber {
      * 将"更新企业号会员"任务提交至work队列
      *
      * @param $event
-     * @return bool
      */
     public function onUserUpdated($event) {
         
         $job = new ManageWechatMember($event->data, 'update');
         $this->dispatch($job);
-        
-        return true;
         
     }
     

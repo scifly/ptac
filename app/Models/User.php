@@ -295,7 +295,7 @@ class User extends Authenticatable {
      * 更新企业号会员
      *
      * @param $id
-     * @return bool
+     * @return void
      */
     function updateWechatUser($id) {
         
@@ -311,7 +311,6 @@ class User extends Authenticatable {
             'enable'       => $user->enabled,
         ];
         event(new UserUpdated($data));
-        return true;
         
     }
     
