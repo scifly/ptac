@@ -390,7 +390,7 @@ class User extends Authenticatable {
             $ids = Request::input('ids');
             $action = Request::input('action');
             $result = $this->whereIn('id', $ids)->update([
-                'enabled' => $action == 'enabled' ? Constant::ENABLED : Constant::DISABLED
+                'enabled' => $action == 'enable' ? Constant::ENABLED : Constant::DISABLED
             ]);
             foreach ($ids as $id) {
                 $this->updateWechatUser($id);
