@@ -3,6 +3,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class TabRequest extends FormRequest {
     
@@ -24,6 +25,15 @@ class TabRequest extends FormRequest {
      */
     public function rules() {
         
+        if ($this->attributes->has('ids')) {
+            return [
+                'ids' => 'required|array',
+                'action' => [
+                    'required', Rule::in(['enable', 'disable', 'delete'])
+                ]
+            ];
+        }
+        
         return [
             'name'      => 'required|string|between:2,255|unique:tabs,name, ' .
                 $this->input('id') . ',id',
@@ -38,11 +48,13 @@ class TabRequest extends FormRequest {
     
     protected function prepareForValidation() {
         
-        $input = $this->all();
-        if (!isset($input['menu_ids'])) {
-            $input['menu_ids'] = [];
+        if ($this->attributes->has('ids')) {
+            $input = $this->all();
+            if (!isset($input['menu_ids'])) {
+                $input['menu_ids'] = [];
+            }
+            $this->replace($input);
         }
-        $this->replace($input);
         
     }
     
