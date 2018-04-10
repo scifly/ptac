@@ -30,7 +30,7 @@ return [
         'database'   => [
             'driver'      => 'database',
             'table'       => 'jobs',
-            'queue'       => '{default, import}',
+            'queue'       => 'default',
             'retry_after' => 90,
         ],
         'beanstalkd' => [
