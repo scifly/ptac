@@ -554,8 +554,8 @@ class User extends Authenticatable {
     
                     return
                         $status .
-                        $user->can('act', $this->uris()['edit']) ? $editLink : '' .
-                        $user->can('act', $this->uris()['destroy']) ? $delLink : '' ;
+                        ($user->can('act', $this->uris()['edit']) ? $editLink : '') .
+                        ($user->can('act', $this->uris()['destroy']) ? $delLink : '') ;
                 },
             ],
             ['db' => 'User.synced', 'dt' => 10]
