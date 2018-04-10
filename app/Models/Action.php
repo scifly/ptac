@@ -153,7 +153,7 @@ class Action extends Model {
                     $id = $row['id'];
                     $status = $d ? Snippet::DT_ON : Snippet::DT_OFF;
                     $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
-                    return $status . str_repeat('&nbsp;', 3) . $editLink;
+                    return $status . $editLink;
                 },
             ],
         ];
