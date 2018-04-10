@@ -13,7 +13,7 @@ class StudentAttendanceSettingIndexComposer {
         $view->with([
             'titles' => [
                 '#', '名称', '所属年级', '学期', '是否公用', '起始时间',
-                '结束时间', '周几', '进或出', '消息模板', '状态',
+                '结束时间', '周几', '进或出', '消息模板', '状态 . 操作',
             ],
             'uris'   => $this->uris(),
         ]);

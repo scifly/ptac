@@ -29,7 +29,7 @@ class CustodianIndexComposer {
                     'icon'  => 'fa fa-arrow-circle-down',
                 ],
             ],
-            'titles'  => ['#', '姓名', '学生', '邮箱', '性别', '手机号码', '创建于', '更新于', '状态'],
+            'titles'  => ['#', '姓名', '学生', '邮箱', '性别', '手机号码', '创建于', '更新于', '状态 . 操作'],
             'grades'  => $grades,
             'classes' => $classes,
             'title'   => '导出监护人',

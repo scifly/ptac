@@ -34,7 +34,7 @@ class StudentIndexComposer {
                     'icon'  => 'fa fa-arrow-circle-down',
                 ],
             ],
-            'titles'         => ['#', '姓名', '性别', '班级', '学号', '卡号', '住校', '手机', '生日', '创建于', '更新于', '状态'],
+            'titles'         => ['#', '姓名', '性别', '班级', '学号', '卡号', '住校', '手机', '生日', '创建于', '更新于', '状态 . 操作'],
             'grades'         => $grades,
             'classes'        => $classes,
             'importTemplate' => 'files/students.xlsx',

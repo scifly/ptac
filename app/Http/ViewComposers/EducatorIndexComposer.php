@@ -27,7 +27,7 @@ class EducatorIndexComposer {
                     'icon'  => 'fa fa-arrow-circle-down',
                 ],
             ],
-            'titles'         => ['#', '姓名', '创建于', '更新于', '状态'],
+            'titles'         => ['#', '姓名', '创建于', '更新于', '状态 . 操作'],
             'departments'    => $departments,
             'importTemplate' => 'files/educators.xlsx',
             'title'          => '导出教职员工',
