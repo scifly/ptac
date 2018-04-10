@@ -80,15 +80,17 @@ class TabController extends Controller {
      * @throws Exception
      * @throws Throwable
      */
-    public function update(TabRequest $request, $id) {
+    public function update(TabRequest $request, $id = null) {
         
-        $tab = Tab::find($id);
-        $this->authorize('eu', $tab);
+        if (isset($id)) {
+            $tab = Tab::find($id);
+            $this->authorize('eu', $tab);
+        }
         
         return $this->result(
             $this->tab->modify($request->all(), $id)
         );
-        
+    
     }
     
 }

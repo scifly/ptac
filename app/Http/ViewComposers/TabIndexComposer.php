@@ -12,8 +12,7 @@ class TabIndexComposer {
     public function compose(View $view) {
         
         $view->with([
-            'batch' => true,
-            'user'  => Auth::user(),
+            'batch' => true, # 需要批量操作
             'titles' => ['#', '名称', '控制器', '角色', '默认功能', '创建于', '更新于', '状态'],
             'uris'  => $this->uris(),
         ]);

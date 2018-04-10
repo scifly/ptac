@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use ReflectionClass;
 use Throwable;
 
@@ -276,20 +277,28 @@ class Tab extends Model {
      * @throws Exception
      * @throws Throwable
      */
-    function modify(array $data, $id) {
+    function modify(array $data, $id = null) {
 
-        $tab = self::find($id);
-        if (!isset($tab)) { return false; }
-        try {
-            DB::transaction(function () use ($data, $id, $tab) {
-                $tab->update($data);
-                $menuIds = $data['menu_ids'];
-                $menuTab = new MenuTab();
-                $menuTab::whereTabId($id)->delete();
-                $menuTab->storeByTabId($id, $menuIds);
-            });
-        } catch (Exception $e) {
-            throw $e;
+        if (isset($id)) {
+            $tab = self::find($id);
+            if (!isset($tab)) { return false; }
+            try {
+                DB::transaction(function () use ($data, $id, $tab) {
+                    $tab->update($data);
+                    $menuIds = $data['menu_ids'];
+                    $menuTab = new MenuTab();
+                    $menuTab::whereTabId($id)->delete();
+                    $menuTab->storeByTabId($id, $menuIds);
+                });
+            } catch (Exception $e) {
+                throw $e;
+            }
+        } else {
+            $ids = Request::input('ids');
+            $action = Request::input('action');
+            $this->whereIn('id', $ids)->update([
+                'enabled' => $action == 'enable' ? Constant::ENABLED : Constant::DISABLED
+            ]);
         }
         
         return true;

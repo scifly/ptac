@@ -321,7 +321,7 @@ var page = {
             page.loadCss(plugins.datatable.multiCss);
             $('.overlay').show();
             $.fn.dataTable.ext.errMode = 'none';
-            var dt = $datatable.DataTable(params).on('init.dt', function (e, settings, data) {
+            var dt = $datatable.DataTable(params).on('init.dt', function () {
                 // $('.dt-buttons').addClass('pull-right');
                 // $('.buttons-pdf').addClass('btn-sm');
                 // $('.buttons-csv').addClass('btn-sm');
@@ -342,14 +342,11 @@ var page = {
                         differences.push(el);
                     }
                 });
-                console.log('diff: ' + differences);
                 $.each(differences, function () {
                     if ($.inArray(parseInt(this), rowIds) === -1) {
                         selected.splice($.inArray(parseInt(this), selected), 1);
                     }
                 });
-                console.log('rowIds: ' + rowIds);
-                console.log('selected: ' + selected);
             });
         };
         $tbody.on('click', 'tr', function () {
@@ -361,7 +358,6 @@ var page = {
                 selected.splice(index, 1)
             }
             $(this).toggleClass('selected');
-            console.log('selected: ' + selected);
         });
         $selectAll.on('click', function () {
             var $rows = $('#data-table tbody tr');
@@ -369,7 +365,6 @@ var page = {
                 $(this).addClass('selected');
             });
             selected = rowIds;
-            console.log('selected: ' + selected);
         });
         $deselectAll.on('click', function () {
             selected = [];
@@ -377,8 +372,58 @@ var page = {
             $.each($rows, function () {
                 $(this).removeClass('selected');
             });
-            console.log('selected: ' + selected);
         });
+        var batch = function (action) {
+            var type = '';
+            switch (action) {
+                case 'enable': type = '启用'; break;
+                case 'disable': type = '禁用'; break;
+                case 'delete': type = '删除'; break;
+                default: break;
+            }
+            if (selected.length === 0) {
+                page.inform('批量' + type, '请选择需要批量' + type + '的记录', page.failure);
+                return false;
+            }
+            $('.overlay').show();
+            $.ajax({
+                type: action !== 'delete' ? 'PUT' : 'DELETE',
+                dataType: 'json',
+                url: page.siteRoot() + table + (action !== 'delete' ? '/update' : '/delete'),
+                data: {
+                    ids: selected,
+                    action: action,
+                    _token: $('#csrf_token').attr('content')
+                },
+                success: function (result) {
+                    $('.overlay').hide();
+                    switch (action) {
+                        case 'enable':
+                        case 'disable':
+                            $('#data-table tbody tr.selected td:last-child >:first-child').each(function() {
+                                $(this).removeClass().addClass(
+                                    'fa fa-circle ' + action === 'enable' ? 'text-green' : 'text-gray'
+                                );
+                            });
+                            break;
+                        case 'delete':
+                            $('#data-table tbody tr.selected').each(function() {
+                                $(this).addClass('text-gray');
+                            });
+                            break;
+                        default:
+                            break;
+                    }
+                    page.inform('批量' + type, result.message, page.success);
+                },
+                error: function (e) {
+                    page.errorHandler(e);
+                }
+            });
+        };
+        $batchEnable.on('click', function() { batch('enable'); });
+        $batchDisable.on('click', function() { batch('disable'); });
+        $batchDelete.on('click', function() { batch('delete'); });
         $.getMultiScripts([plugins.datatable.js]).done(function () {
             showTable();
         });
