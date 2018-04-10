@@ -131,7 +131,7 @@ class PollQuestionnaireSubject extends Model {
                     $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $d);
                     $delLink = sprintf(Snippet::DT_LINK_DEL, $d);
                     return ($this::uris()['edit'] ? $editLink : '')
-                        . ($this::uris()['destroy'] ? Snippet::DT_SPACE . $delLink : '');
+                        . ($this::uris()['destroy'] ? $delLink : '');
                 },
             ],
         ];

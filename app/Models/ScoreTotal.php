@@ -146,9 +146,7 @@ class ScoreTotal extends Model {
                     $id = $row['id'];
                     $status = $d ? Snippet::DT_ON : Snippet::DT_OFF;
                     $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
-                    return
-                        $status . str_repeat(Snippet::DT_SPACE, 3) .
-                        $delLink;
+                    return $status . $delLink;
                 },
             ],
         ];

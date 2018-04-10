@@ -268,11 +268,7 @@ class Subject extends Model {
                     $status = $d ? Snippet::DT_ON : Snippet::DT_OFF;
                     $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
                     $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
-                    
-                    return
-                        $status . str_repeat(Snippet::DT_SPACE, 3) .
-                        $editLink . str_repeat(Snippet::DT_SPACE, 2) .
-                        $delLink;
+                    return $status . $editLink . $delLink;
                 },
             ],
         ];

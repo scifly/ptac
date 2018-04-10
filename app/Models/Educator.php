@@ -541,15 +541,12 @@ class Educator extends Model {
                     $id = $row['id'];
                     $status = $d ? Snippet::DT_ON : Snippet::DT_OFF;
                     $user = Auth::user();
-                    $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id) .
-                        str_repeat(Snippet::DT_SPACE, 2);
-                    $delLink = sprintf(Snippet::DT_LINK_DEL, $id) .
-                        str_repeat(Snippet::DT_SPACE, 2);
+                    $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
+                    $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
                     $rechargeLink = sprintf(Snippet::DT_LINK_RECHARGE, 'recharge_' . $id);
                     
                     return
-                        $status . str_repeat(Snippet::DT_SPACE, 3) .
-                        // ($user->can('act', self::uris()['show']) ? $showLink : '') .
+                        $status .
                         ($user->can('act', self::uris()['edit']) ? $editLink : '') .
                         ($user->can('act', self::uris()['destroy']) ? $delLink : '') .
                         ($user->can('act', self::uris()['recharge']) ? $rechargeLink : '');

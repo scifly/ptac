@@ -166,12 +166,9 @@ class ConferenceQueue extends Model {
                             break;
                         default: break;
                     }
-                    $showLink = str_repeat(Snippet::DT_SPACE, 3) .
-                        sprintf(Snippet::DT_LINK_SHOW, 'show_' . $id);
-                    $editLink = str_repeat(Snippet::DT_SPACE, 3) .
-                        sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
-                    $delLink = str_repeat(Snippet::DT_SPACE, 2) .
-                        sprintf(Snippet::DT_LINK_DEL, $id);
+                    $showLink = sprintf(Snippet::DT_LINK_SHOW, 'show_' . $id);
+                    $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
+                    $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
 
                     return
                         $status .

@@ -185,7 +185,7 @@ class ProcedureLog extends Model {
                     }
                     $id = $row['first_log_id'];
                     $showLink = sprintf(Snippet::DT_LINK_SHOW, $id);
-                    return $status . Snippet::DT_SPACE . $showLink;
+                    return $status . $showLink;
                 },
             ],
         ];
