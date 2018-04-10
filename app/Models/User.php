@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use App\Helpers\Constant;
+use App\Helpers\ModelTrait;
 use Eloquent;
 use Exception;
 use Laravel\Passport\Client;
@@ -89,7 +90,7 @@ use Illuminate\Notifications\DatabaseNotificationCollection;
  */
 class User extends Authenticatable {
     
-    use HasApiTokens, Notifiable;
+    use HasApiTokens, Notifiable, ModelTrait;
     
     protected $table = 'users';
     
@@ -538,17 +539,23 @@ class User extends Authenticatable {
             ['db' => 'User.created_at', 'dt' => 7],
             ['db' => 'User.updated_at', 'dt' => 8],
             [
-                'db' => 'User.synced', 'dt' => 9,
-                'formatter' => function ($d) {
-                    return $d
-                        ? sprintf(Snippet::ICON, 'fa-wechat text-green', '已同步')
-                        : sprintf(Snippet::ICON, 'fa-wechat text-gray', '未同步');
-                }
-            ],
-            [
                 'db'        => 'User.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false, true, true);
+                    $user = Auth::user();
+                    $id = $row['id'];
+                    $status = $d ? Snippet::DT_ON : Snippet::DT_OFF;
+                    $status .= $row['synced']
+                        ? sprintf(Snippet::ICON, 'fa-wechat text-green', '已同步')
+                        : sprintf(Snippet::ICON, 'fa-wechat text-gray', '未同步');
+                    $editLink = str_repeat(Snippet::DT_SPACE, 5) .
+                        sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
+                    $delLink = str_repeat(Snippet::DT_SPACE, 4) .
+                        sprintf(Snippet::DT_LINK_DEL, $id);
+    
+                    return
+                        $status .
+                        $user->can('act', $this->uris()['edit']) ? $editLink : '' .
+                        $user->can('act', $this->uris()['destroy']) ? $delLink : '' ;
                 },
             ],
         ];
