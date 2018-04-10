@@ -1,11 +1,13 @@
 <?php
 namespace App\Events;
 
+use Auth;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class ContactSyncTrigger implements ShouldBroadcast {
     
@@ -29,6 +31,7 @@ class ContactSyncTrigger implements ShouldBroadcast {
      */
     public function broadcastOn() {
         
+        Log::debug('realname: ' . Auth::user()->realname);
         return new PrivateChannel('user.' . $this->data['user']->id);
         
     }
