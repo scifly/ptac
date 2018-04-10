@@ -539,7 +539,7 @@ class User extends Authenticatable {
             ['db' => 'User.created_at', 'dt' => 7],
             ['db' => 'User.updated_at', 'dt' => 8],
             [
-                'db'        => 'User.enabled', 'dt' => 10,
+                'db'        => 'User.enabled', 'dt' => 9,
                 'formatter' => function ($d, $row) {
                     $user = Auth::user();
                     $id = $row['id'];
