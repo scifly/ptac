@@ -306,7 +306,12 @@ Route::group(['prefix' => 'companies'], routes('CompanyController'));
 Route::group(['prefix' => 'corps'], routes('CorpController'));
 # 菜单管理 - action设置.卡片设置.菜单设置
 Route::group(['prefix' => 'actions'], routes('ActionController'));
-Route::group(['prefix' => 'tabs'], routes('TabController'));
+Route::group(['prefix' => 'tabs'], function () {
+    $c = 'TabController';
+    Route::get('index', $c . '@index');
+    Route::get('edit/{id}', $c . '@edit');
+    Route::put('update/{id?}', $c . '@update');
+});
 Route::group(['prefix' => 'menus'], routeItem('MenuController'));
 Route::group(['prefix' => 'menus'], function () {
     $c = 'MenuController';
