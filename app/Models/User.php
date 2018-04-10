@@ -544,9 +544,9 @@ class User extends Authenticatable {
                     $user = Auth::user();
                     $id = $row['id'];
                     $status = $d ? Snippet::DT_ON : Snippet::DT_OFF;
-                    $status .= $row['synced']
+                    $status .= ($row['synced']
                         ? sprintf(Snippet::ICON, 'fa-wechat text-green', '已同步')
-                        : sprintf(Snippet::ICON, 'fa-wechat text-gray', '未同步');
+                        : sprintf(Snippet::ICON, 'fa-wechat text-gray', '未同步'));
                     $editLink = str_repeat(Snippet::DT_SPACE, 5) .
                         sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
                     $delLink = str_repeat(Snippet::DT_SPACE, 4) .
