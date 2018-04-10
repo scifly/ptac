@@ -14,6 +14,8 @@ class Constant {
     const SCHOOL = 3;
     
     const SUPER_ROLES = ['运营', '企业', '学校'];
+
+    const BATCH_OPERATIONS = ['enable', 'disable', 'delete'];
     
     # 企业管理员可访问的运营类功能
     const ALLOWED_CORP_ACTIONS = [

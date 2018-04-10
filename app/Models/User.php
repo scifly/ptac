@@ -421,35 +421,24 @@ class User extends Authenticatable {
     }
     
     /**
-     * 删除用户数据
+     * 删除用户
      *
      * @param $id
      * @return bool
      * @throws Throwable
      */
-    function remove($id) {
+    function remove($id = null) {
         
-        $user = self::find($id);
-        if (!isset($user)) {
-            return false;
+        if (Request::has('ids')) {
+            $ids = Request::input('ids');
+            foreach ($ids as $id) {
+                if (!$this->purge($id)) { return false; }
+            }
+            return true;
+        } else {
+            return $this->purge($id);
         }
-        try {
-            DB::transaction(function () use ($id, $user) {
-                # 删除企业号成员
-                User::deleteWechatUser($id);
-                # custodian删除指定user绑定的部门记录
-                DepartmentUser::whereUserId($id)->delete();
-                # 删除与指定user绑定的手机记录
-                Mobile::whereUserId($id)->delete();
-                # 删除user
-                $user->delete();
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
+    
     }
     
     /**
@@ -596,6 +585,36 @@ class User extends Authenticatable {
         }
         
         return $html . '</select>';
+        
+    }
+    
+    /**
+     * 删除指定用户
+     *
+     * @param $id
+     * @return bool
+     * @throws Throwable
+     */
+    private function purge($id): bool {
+        
+        $user = self::find($id);
+        if (!isset($user)) { return false; }
+        try {
+            DB::transaction(function () use ($id, $user) {
+                # 删除企业号成员
+                User::deleteWechatUser($id);
+                # custodian删除指定user绑定的部门记录
+                DepartmentUser::whereUserId($id)->delete();
+                # 删除与指定user绑定的手机记录
+                Mobile::whereUserId($id)->delete();
+                # 删除user
+                $user->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
         
     }
     

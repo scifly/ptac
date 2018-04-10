@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\OperatorRequest;
 use App\Models\User;
 use Exception;
@@ -73,6 +72,10 @@ class OperatorController extends Controller {
      */
     public function store(OperatorRequest $request) {
         
+        $this->authorize(
+            'store', User::class
+        );
+        
         return $this->result(
             $this->user->store($request->all())
         );
@@ -90,6 +93,7 @@ class OperatorController extends Controller {
         
         $user = $this->user->find($id);
         $this->authorize('edit', $user);
+        
         if (Request::method() == 'POST') {
             return $this->user->csList();
         }
@@ -109,13 +113,14 @@ class OperatorController extends Controller {
      * @throws Exception
      * @throws Throwable
      */
-    public function update(OperatorRequest $request, $id) {
+    public function update(OperatorRequest $request, $id = null) {
         
-        $user = $this->user->find($id);
-        abort_if(!$user, HttpStatusCode::NOT_FOUND, '找不到该用户记录');
+        $this->authorize(
+            'update', User::class
+        );
         
         return $this->result(
-            $user->modify(
+            $this->user->modify(
                 $request->all(), $id
             )
         );
@@ -129,13 +134,14 @@ class OperatorController extends Controller {
      * @return JsonResponse|string
      * @throws Throwable
      */
-    public function destroy($id) {
-        
-        $user = $this->user->find($id);
-        $this->authorize('destroy', $user);
+    public function destroy($id = null) {
+    
+        $this->authorize(
+            'delete', User::class
+        );
         
         return $this->result(
-            $user->remove($id)
+            $this->user->remove($id)
         );
         
     }

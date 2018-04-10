@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Helpers\Constant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
@@ -25,12 +26,12 @@ class TabRequest extends FormRequest {
      * @return array
      */
     public function rules() {
-        
+    
         if (Request::has('ids')) {
             return [
                 'ids' => 'required|array',
                 'action' => [
-                    'required', Rule::in(['enable', 'disable', 'delete'])
+                    'required', Rule::in(Constant::BATCH_OPERATIONS)
                 ]
             ];
         }

@@ -7,6 +7,7 @@ use App\Rules\Mobiles;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Validation\Rule;
 
 class OperatorRequest extends FormRequest {
     
@@ -41,6 +42,15 @@ class OperatorRequest extends FormRequest {
      * @return array
      */
     public function rules() {
+        
+        if (Request::has('ids')) {
+            return [
+                'ids' => 'required|array',
+                'action' => [
+                    'required', Rule::in(Constant::BATCH_OPERATIONS)
+                ]
+            ];
+        }
         
         return [
             'username'              => 'required|string|between:6,255|unique:users,username,' .
