@@ -104,7 +104,7 @@ class ManageWechatMember implements ShouldQueue {
     private function sync($corpId, $secret): void {
         
         $token = Wechat::getAccessToken($corpId, $secret, true);
-        $data = [
+        $response = [
             'user' => Auth::user(),
             'title' => self::ACTIONS[$this->action] . '企业微信会员',
             'message' => __('messages.wechat_synced')
@@ -115,10 +115,10 @@ class ManageWechatMember implements ShouldQueue {
             $user->update(['synced' => 1]);
         }
         if ($result->{'errcode'} != 0) {
-            $data['message'] = $result->{'errmsg'};
+            $response['message'] = $result->{'errmsg'};
         }
         
-        event(new ContactSyncTrigger($data));
+        event(new ContactSyncTrigger($response));
     
     }
     
