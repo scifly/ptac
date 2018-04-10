@@ -32,7 +32,6 @@ class UserEventSubscriber {
      */
     public function onUserUpdated($event) {
         
-        Log::debug('wtf');
         $job = new ManageWechatMember($event->data, 'update');
         $this->dispatch($job);
         
