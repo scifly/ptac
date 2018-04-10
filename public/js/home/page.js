@@ -252,7 +252,7 @@ var page = {
         $.ajax({
             type: requestType,
             dataType: 'json',
-            url: url,
+            url: page.siteRoot() + url,
             data: data,
             success: function (result) {
                 $('.overlay').hide();
