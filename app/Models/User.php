@@ -1,8 +1,11 @@
 <?php
 namespace App\Models;
 
+use App\Helpers\Constant;
 use Eloquent;
 use Exception;
+use Laravel\Passport\Client;
+use Laravel\Passport\Token;
 use Throwable;
 use Carbon\Carbon;
 use App\Helpers\Snippet;
@@ -81,8 +84,8 @@ use Illuminate\Notifications\DatabaseNotificationCollection;
  * @method static Builder|User whereUserid($value)
  * @method static Builder|User whereUsername($value)
  * @mixin Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Passport\Client[] $clients
- * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Passport\Token[] $tokens
+ * @property-read Collection|Client[] $clients
+ * @property-read Collection|Token[] $tokens
  */
 class User extends Authenticatable {
     
@@ -377,46 +380,56 @@ class User extends Authenticatable {
      *
      * @param array $data
      * @param $id
-     * @param bool $fireEvent
      * @return bool
-     * @throws Exception
      * @throws Throwable
      */
-    function modify(array $data, $id, $fireEvent = false) {
+    function modify(array $data, $id = null) {
         
-        $user = $this->find($id);
-        abort_if(!$user, HttpStatusCode::NOT_FOUND, '找不到该用户');
-        try {
-            # 更新用户数据
-            DB::transaction(function () use ($data, $id, $user) {
-                $user->update([
-                    'username'     => $data['username'],
-                    'group_id'     => $data['group_id'],
-                    'email'        => $data['email'],
-                    'realname'     => $data['realname'],
-                    'gender'       => $data['gender'],
-                    'english_name' => $data['english_name'],
-                    'telephone'    => $data['telephone'],
-                    'enabled'      => $data['enabled'],
-                ]);
-            });
-            # 更新手机号码
-            Mobile::whereUserId($user->id)->delete();
-            $mobile = new Mobile();
-            $mobile->store($data, $user);
-            unset($mobile);
-            # 更新部门数据
-            DepartmentUser::whereUserId($user->id)->delete();
-            $du = new DepartmentUser();
-            $du->store($data, $user);
-            unset($du);
-            # 更新企业号成员记录
-            $this->updateWechatUser($user->id);
-        } catch (Exception $e) {
-            throw $e;
+        if (Request::has('ids')) {
+            $ids = Request::input('ids');
+            $action = Request::input('action');
+            $result = $this->whereIn('id', $ids)->update([
+                'enabled' => $action == 'enabled' ? Constant::ENABLED : Constant::DISABLED
+            ]);
+            foreach ($ids as $id) {
+                $this->updateWechatUser($id);
+            }
+            return $result;
+        } else {
+            $user = $this->find($id);
+            abort_if(!$user, HttpStatusCode::NOT_FOUND, '找不到该用户');
+            try {
+                # 更新用户数据
+                DB::transaction(function () use ($data, $id, $user) {
+                    $user->update([
+                        'username'     => $data['username'],
+                        'group_id'     => $data['group_id'],
+                        'email'        => $data['email'],
+                        'realname'     => $data['realname'],
+                        'gender'       => $data['gender'],
+                        'english_name' => $data['english_name'],
+                        'telephone'    => $data['telephone'],
+                        'enabled'      => $data['enabled'],
+                    ]);
+                });
+                # 更新手机号码
+                Mobile::whereUserId($user->id)->delete();
+                $mobile = new Mobile();
+                $mobile->store($data, $user);
+                unset($mobile);
+                # 更新部门数据
+                DepartmentUser::whereUserId($user->id)->delete();
+                $du = new DepartmentUser();
+                $du->store($data, $user);
+                unset($du);
+                # 更新企业号成员记录
+                $this->updateWechatUser($user->id);
+            } catch (Exception $e) {
+                throw $e;
+            }
+    
+            return true;
         }
-        
-        return true;
         
     }
     

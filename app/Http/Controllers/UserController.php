@@ -117,7 +117,7 @@ class UserController extends Controller {
         
         return $this->result(
             $this->user->modify(
-                $request->all(), $id, false
+                $request->all(), $id
             )
         );
         
