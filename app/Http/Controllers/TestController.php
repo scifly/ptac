@@ -40,7 +40,8 @@ class TestController extends Controller {
     ];
     
     public function index() {
-
+    
+        dd(config('queue.driver'));
         $action = new Action();
         try {
             $action->scan();
