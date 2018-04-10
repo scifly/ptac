@@ -187,13 +187,13 @@ class Squad extends Model {
             [
                 'db'        => 'Squad.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-users') . $d;
+                    return sprintf(Snippet::ICON, 'fa-users', '') . $d;
                 },
             ],
             [
                 'db'        => 'Grade.name as gradename', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-object-group') . $d;
+                    return sprintf(Snippet::ICON, 'fa-object-group', '') . $d;
                 },
             ],
             [

@@ -76,7 +76,7 @@ class EducatorAttendanceSetting extends Model {
             [
                 'db' => 'School.name as schoolname ', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-university') . $d;
+                    return sprintf(Snippet::ICON, 'fa-university', '') . $d;
                 }
             ],
             ['db' => 'EducatorAttendanceSetting.start', 'dt' => 3],

@@ -213,14 +213,14 @@ class Corp extends Model {
             [
                 'db' => 'Corp.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-weixin') . $d;
+                    return sprintf(Snippet::ICON, 'fa-weixin', '') . $d;
                 }
             ],
             ['db' => 'Corp.acronym', 'dt' => 2],
             [
                 'db' => 'Company.name as companyname', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-building') . $d;
+                    return sprintf(Snippet::ICON, 'fa-building', '') . $d;
                 }
             ],
             ['db' => 'Corp.corpid', 'dt' => 4],

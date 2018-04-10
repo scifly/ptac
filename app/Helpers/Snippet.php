@@ -51,6 +51,6 @@ HTML;
     const FEMALE = '<i class="fa fa-venus"></i>';
     
     # 卡片图标
-    const ICON = '<i class="fa %s" style="width: 20px;"></i>&nbsp;';
+    const ICON = '<i class="fa %s" style="width: 20px;" title="%s"></i>&nbsp;';
     
 }

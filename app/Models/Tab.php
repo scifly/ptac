@@ -204,7 +204,7 @@ class Tab extends Model {
                     if ($iconId) {
                         return sprintf(Snippet::ICON, Icon::find($iconId)->name, '') . $d;
                     }
-                    return sprintf(Snippet::ICON, 'fa-calendar-check-o text-gray') . $d;
+                    return sprintf(Snippet::ICON, 'fa-calendar-check-o text-gray', '') . $d;
                 }
             ],
             ['db' => 'Tab.controller', 'dt' => 2],
@@ -234,7 +234,7 @@ class Tab extends Model {
             [
                 'db' => 'Action.name as actionname', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-gears') . $d;
+                    return sprintf(Snippet::ICON, 'fa-gears', '') . $d;
                 }
             ],
             ['db' => 'Tab.created_at', 'dt' => 5],

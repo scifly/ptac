@@ -173,7 +173,7 @@ class Major extends Model {
             [
                 'db' => 'Major.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-graduation-cap') . $d;
+                    return sprintf(Snippet::ICON, 'fa-graduation-cap', '') . $d;
                 }
             ],
             ['db' => 'Major.remark', 'dt' => 2],

@@ -139,7 +139,7 @@ class Icon extends Model {
             [
                 'db' => 'Icon.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, $d) . $d;
+                    return sprintf(Snippet::ICON, $d, '') . $d;
                 },
             ],
             ['db' => 'IconType.name as icontypename', 'dt' => 2],

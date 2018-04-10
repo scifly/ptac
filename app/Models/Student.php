@@ -441,7 +441,7 @@ class Student extends Model {
             [
                 'db'        => 'Squad.name as classname', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-users') . $d;
+                    return sprintf(Snippet::ICON, 'fa-users', '') . $d;
                 },
             ],
             ['db' => 'Student.student_number', 'dt' => 4],

@@ -108,7 +108,7 @@ class Action extends Model {
             [
                 'db' => 'Action.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return empty($d) ? '-' : sprintf(Snippet::ICON, 'fa fa-gears') . $d;
+                    return empty($d) ? '-' : sprintf(Snippet::ICON, 'fa fa-gears', '') . $d;
                 },
             ],
             [

@@ -190,7 +190,7 @@ class Group extends Model {
             [
                 'db' => 'Groups.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-meh-o') . $d;
+                    return sprintf(Snippet::ICON, 'fa-meh-o', '') . $d;
                 }
             ],
             ['db' => 'Groups.remark', 'dt' => 2],

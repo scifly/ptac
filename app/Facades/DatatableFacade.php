@@ -396,6 +396,7 @@ class DatatableFacade extends Facade {
             sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
         $delLink = str_repeat(Snippet::DT_SPACE, 4) .
             sprintf(Snippet::DT_LINK_DEL, $id);
+        
         return
             $status .
             ($show ? ($user->can('act', self::uris()['show']) ? $showLink : '') : '') .

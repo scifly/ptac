@@ -74,7 +74,7 @@ class AttendanceMachine extends Model {
             [
                 'db' => 'School.name as schoolname', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-university') . $d;
+                    return sprintf(Snippet::ICON, 'fa-university', '') . $d;
                 }
             ],
             ['db' => 'AttendanceMachine.machineid', 'dt' => 4],

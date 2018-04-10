@@ -538,7 +538,15 @@ class User extends Authenticatable {
             ['db' => 'User.created_at', 'dt' => 7],
             ['db' => 'User.updated_at', 'dt' => 8],
             [
-                'db'        => 'User.enabled', 'dt' => 9,
+                'db' => 'User.updated_at', 'dt' => 9,
+                'formatter' => function ($d) {
+                    return $d
+                        ? sprintf(Snippet::ICON, 'fa-wechat text-green', '已同步')
+                        : sprintf(Snippet::ICON, 'fa-wechat text-gray', '未同步');
+                }
+            ],
+            [
+                'db'        => 'User.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false, true, true);
                 },

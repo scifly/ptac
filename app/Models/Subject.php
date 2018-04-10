@@ -245,7 +245,7 @@ class Subject extends Model {
             [
                 'db'        => 'Subject.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-book') . $d;
+                    return sprintf(Snippet::ICON, 'fa-book', '') . $d;
                 },
             ],
             [
