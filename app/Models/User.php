@@ -538,7 +538,7 @@ class User extends Authenticatable {
             ['db' => 'User.created_at', 'dt' => 7],
             ['db' => 'User.updated_at', 'dt' => 8],
             [
-                'db' => 'User.updated_at', 'dt' => 9,
+                'db' => 'User.synced', 'dt' => 9,
                 'formatter' => function ($d) {
                     return $d
                         ? sprintf(Snippet::ICON, 'fa-wechat text-green', '已同步')
