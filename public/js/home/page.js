@@ -402,7 +402,7 @@ var page = {
                         case 'disable':
                             $('#data-table tbody tr.selected td:last-child >:first-child').each(function() {
                                 $(this).removeClass().addClass(
-                                    'fa fa-circle ' + action === 'enable' ? 'text-green' : 'text-gray'
+                                    'fa fa-circle ' + (action === 'enable' ? 'text-green' : 'text-gray')
                                 );
                             });
                             break;
