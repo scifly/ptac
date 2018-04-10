@@ -3,6 +3,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\Rule;
 
 class TabRequest extends FormRequest {
@@ -25,8 +26,7 @@ class TabRequest extends FormRequest {
      */
     public function rules() {
         
-        $abc = 'abc';
-        if ($this->attributes->has('ids')) {
+        if (Request::has('ids')) {
             return [
                 'ids' => 'required|array',
                 'action' => [
