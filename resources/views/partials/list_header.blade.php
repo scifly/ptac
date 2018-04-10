@@ -11,7 +11,7 @@
         @foreach ($buttons as $button)
             @can('act', $uris[$button['id']])
                 <button id="{{ $button['id'] }}" type="button" class="btn btn-box-tool">
-                    <i class="{{ $button['icon'] }} {{ $button['color'] ?? 'text-blue' }}{{--@if (isset($button['color'])) {{ $button['color']}} @else text-blue @endif--}}">
+                    <i class="{{ $button['icon'] }} {{ $button['color'] ?? 'text-blue' }}">
                         &nbsp;{{ $button['label'] }}
                     </i>
                 </button>
