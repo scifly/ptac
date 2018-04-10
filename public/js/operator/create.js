@@ -38,7 +38,7 @@ $(document).on('change', '#corp_id', function () {
     if ($('#school').is(':visible')) {
         getLists('corp_id')
     }
-})
+});
 
 $.getMultiScripts(['js/contact.select.js']).done(
     function () {
