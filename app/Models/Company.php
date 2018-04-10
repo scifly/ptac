@@ -174,7 +174,7 @@ class Company extends Model {
                 }
             ],
             [
-                'db' => 'Company.enabled', 'dt' => 6,
+                'db' => 'Company.enabled as op', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 }
