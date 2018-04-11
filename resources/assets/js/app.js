@@ -45,7 +45,11 @@ const app = new Vue({
                 }
             })
             .listen('ContactSyncTrigger', (e) => {
-                page.inform(e.data['title'], e.data['message'], page.info);
+                page.inform(
+                    e.data['title'],
+                    e.data['message'],
+                    e.data['statusCode'] === 200 ? page.success : page.failure
+                );
             });
     }
 });
