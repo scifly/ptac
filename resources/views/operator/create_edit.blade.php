@@ -73,7 +73,8 @@
                     'label' => '所属企业',
                     'id' => 'corp_id',
                     'items' => $corps,
-                    'icon' => 'fa fa-weixin'
+                    'icon' => 'fa fa-weixin',
+                    'divId' => 'corp'
                 ])
             @else
                 <div id="corp" class="form-group" style="display: none;">
@@ -93,7 +94,8 @@
                     'label' => '所属学校',
                     'id' => 'school_id',
                     'items' => $schools,
-                    'icon' => 'fa fa-university'
+                    'icon' => 'fa fa-university',
+                    'divId' => 'school'
                 ])
             @else
                 <div id="school" class="form-group" style="display: none;">
