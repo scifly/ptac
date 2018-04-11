@@ -86,7 +86,9 @@
                 );
             },
             lists: function (action, field) {
-                var value = 0;
+                var value = 0,
+                    $corp = $('#' + operator.options.corp),
+                    $school = $('#' + operator.options.school);
                 if (typeof field === 'undefined') {
                     field = operator.options.groupId;
                     value = $('#' + field).val();
