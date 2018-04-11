@@ -68,27 +68,45 @@
                 'icon' => 'fa fa-meh-o'
             ])
             <!-- 所属企业 -->
-            <div id="corp" class="form-group" style="display: none;">
-                {!! Form::label('corp_id', '所属企业', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-weixin'])
+            @if (isset($user['id'], $corps))
+                @include('partials.single_select', [
+                    'label' => '所属企业',
+                    'id' => 'corp_id',
+                    'items' => $corps,
+                    'icon' => 'fa-wexin'
+                ])
+            @else
+                <div id="corp" class="form-group" style="display: none;">
+                    {!! Form::label('corp_id', '所属企业', [
+                        'class' => 'col-sm-3 control-label'
+                    ]) !!}
+                    <div class="col-sm-6">
+                        <div class="input-group">
+                            @include('partials.icon_addon', ['class' => 'fa-weixin'])
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endif
             <!-- 所属学校 -->
-            <div id="school" class="form-group" style="display: none;">
-                {!! Form::label('corp_id', '所属学校', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-university'])
+            @if (isset($user['id'], $schools))
+                @include('partials.single_select', [
+                    'label' => '所属学校',
+                    'id' => 'school_id',
+                    'items' => $schools,
+                    'icon' => 'fa-university'
+                ])
+            @else
+                <div id="school" class="form-group" style="display: none;">
+                    {!! Form::label('corp_id', '所属学校', [
+                        'class' => 'col-sm-3 control-label'
+                    ]) !!}
+                    <div class="col-sm-6">
+                        <div class="input-group">
+                            @include('partials.icon_addon', ['class' => 'fa-university'])
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endif
             <!-- 真实姓名 -->
             <div class="form-group">
                 {!! Form::label('realname', '真实姓名', [

@@ -5,6 +5,7 @@ use App\Http\Requests\OperatorRequest;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
@@ -97,9 +98,12 @@ class OperatorController extends Controller {
         if (Request::method() == 'POST') {
             return $this->user->csList();
         }
+        list($corps, $schools) = $this->user->attributes($user);
         
         return $this->output([
             'user' => $user,
+            'corps' => $corps,
+            'schools' => $schools,
             'mobiles' => $user->mobiles
         ]);
         

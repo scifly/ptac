@@ -439,6 +439,59 @@ class User extends Authenticatable {
     }
     
     /**
+     * 获取指定超级用户的school_id和corp_id
+     *
+     * @param User $operator
+     * @return array
+     */
+    function attributes(User &$operator): array {
+        
+        $user = Auth::user();
+        $corps = $schools = null;
+        switch ($user->group->name) {
+            case '运营':
+                switch ($operator->group->name) {
+                    case '企业':
+                        $departmentId = $operator->departments->pluck('id')->toArray()[0];
+                        $operator->{'corp_id'} = Corp::whereDepartmentId($departmentId)->first()->id;
+                        $corps = Corp::all()->pluck('name', 'id')->toArray();
+                        break;
+                    case '学校':
+                        $departmentId = $operator->departments->pluck('id')->toArray()[0];
+                        $school = School::whereDepartmentId($departmentId)->first();
+                        $operator->{'school_id'} = $school->id;
+                        $operator->{'corp_id'} = $school->corp_id;
+                        $corps = Corp::all()->pluck('name', 'id')->toArray();
+                        $schools = School::whereCorpId($school->corp_id)->pluck('name', 'id')->toArray();
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case '企业':
+                if ($operator->group->name == '学校') {
+                    $departmentId = $operator->departments->pluck('id')->toArray()[0];
+                    $school = School::whereDepartmentId($departmentId)->first();
+                    $operator->{'school_id'} = $school->id;
+                    $operator->{'corp_id'} = $school->corp_id;
+                    $schools = School::whereCorpId($school->corp_id)->pluck('name', 'id')->toArray();
+                }
+                break;
+            case '学校':
+                $departmentId = $operator->departments->pluck('id')->toArray()[0];
+                $school = School::whereDepartmentId($departmentId)->first();
+                $operator->{'school_id'} = $school->id;
+                $operator->{'corp_id'} = $school->corp_id;
+                break;
+            default:
+                break;
+        }
+        
+        return [$corps, $schools];
+        
+    }
+    
+    /**
      * 删除用户
      *
      * @param $id
