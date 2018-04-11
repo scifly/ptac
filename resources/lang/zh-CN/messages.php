@@ -30,4 +30,7 @@ return [
     'user_not_found' => '没有这个用户',
     'educator_not_found' => '没有这个教职员工',
     'wechat_synced' => '已同步到企业微信',
+    'operator' => [
+        'stored' => '保存超级管理员'
+    ]
 ];

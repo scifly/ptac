@@ -100,6 +100,7 @@ class OperatorController extends Controller {
         
         return $this->output([
             'user' => $user,
+            'mobiles' => $user->mobiles
         ]);
         
     }
