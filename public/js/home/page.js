@@ -455,7 +455,7 @@ var page = {
         $('#confirm-delete').on('click', function () {
             page.ajaxRequest(
                 'DELETE',
-                page.siteRoot() + table + '/delete/' + id,
+                table + '/delete/' + id,
                 {_token: $('#csrf_token').attr('content')},
                 table
             );
