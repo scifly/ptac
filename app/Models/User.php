@@ -617,20 +617,24 @@ class User extends Authenticatable {
                 'formatter' => function ($d) {
                     switch ($d) {
                         case '运营':
-                            return sprintf(
-                                Snippet::ICON, 'fa-building text-blue', ''
-                                ) . $d;
+                            $color = 'text-blue';
+                            $class = 'fa-building';
+                            break;
                         case '企业':
-                            return sprintf(
-                                Snippet::ICON, 'fa-weixin text-green', ''
-                                ) . $d;
+                            $color = 'text-green';
+                            $class = 'fa-weixin';
+                            break;
                         case '学校':
-                            return sprintf(
-                                Snippet::ICON, 'fa-university text-purple', ''
-                                ) . $d;
+                            $color = 'text-blue';
+                            $class = 'fa-university';
+                            break;
                         default:
-                            return $d;
+                            $color = '';
+                            $class = '';
+                            break;
                     }
+                    return sprintf(Snippet::ICON, $class . ' ' . $color, '')
+                        . '<span class="' . $color . '">' . $d . '</span>';
                 }
             ],
             ['db' => 'User.avatar_url', 'dt' => 3],
