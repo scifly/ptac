@@ -299,7 +299,9 @@ class User extends Authenticatable {
             'enable'     => $user->enabled,
         ];
         event(new UserCreated($data));
+        
         return true;
+        
     }
     
     /**
@@ -445,7 +447,7 @@ class User extends Authenticatable {
                     # 更新部门数据
                     DepartmentUser::whereUserId($user->id)->delete();
                     $du = new DepartmentUser();
-                    $du->store([
+                    $this->du->store([
                         'department_id' => $this->departmentId($data),
                         'user_id' => $user->id,
                         'enabled' => Constant::ENABLED
