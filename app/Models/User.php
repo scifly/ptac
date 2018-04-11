@@ -612,7 +612,27 @@ class User extends Authenticatable {
         $columns = [
             ['db' => 'User.id', 'dt' => 0],
             ['db' => 'User.username', 'dt' => 1],
-            ['db' => 'Groups.name as role', 'dt' => 2],
+            [
+                'db' => 'Groups.name as role', 'dt' => 2,
+                'formatter' => function ($d) {
+                    switch ($d) {
+                        case '运营':
+                            return sprintf(
+                                Snippet::ICON, 'fa-building text-blue', ''
+                                ) . $d;
+                        case '企业':
+                            return sprintf(
+                                Snippet::ICON, 'fa-weixin text-green', ''
+                                ) . $d;
+                        case '学校':
+                            return sprintf(
+                                Snippet::ICON, 'fa-university text-purple', ''
+                                ) . $d;
+                        default:
+                            return $d;
+                    }
+                }
+            ],
             ['db' => 'User.avatar_url', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
             [
