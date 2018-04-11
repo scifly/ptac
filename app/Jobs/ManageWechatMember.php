@@ -12,6 +12,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 /**
  * 企业号会员管理
@@ -121,6 +122,7 @@ class ManageWechatMember implements ShouldQueue {
             $response['message'] = $result->{'errcode'} . ' : '
                 . Wechat::ERRCODES[intval($result->{'errcode'})];
         }
+        Log::debug('message: ' . $response['message']);
         
         event(new ContactSyncTrigger($response));
     
