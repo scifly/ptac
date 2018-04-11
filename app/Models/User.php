@@ -1,18 +1,18 @@
 <?php
 namespace App\Models;
 
-use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
 use Eloquent;
 use Exception;
-use Laravel\Passport\Client;
-use Laravel\Passport\Token;
 use Throwable;
 use Carbon\Carbon;
 use App\Helpers\Snippet;
+use App\Helpers\Constant;
+use App\Helpers\ModelTrait;
+use Laravel\Passport\Token;
 use App\Events\UserCreated;
 use App\Events\UserDeleted;
 use App\Events\UserUpdated;
+use Laravel\Passport\Client;
 use App\Helpers\HttpStatusCode;
 use Illuminate\Support\Facades\DB;
 use Laravel\Passport\HasApiTokens;
@@ -297,7 +297,7 @@ class User extends Authenticatable {
      * 更新企业号会员
      *
      * @param $id
-     * @return void
+     * @return bool
      */
     function updateWechatUser($id) {
         
@@ -315,12 +315,15 @@ class User extends Authenticatable {
         ];
         event(new UserUpdated($data));
         
+        return true;
+        
     }
     
     /**
      * 删除企业号会员
      *
      * @param $id
+     * @return bool
      */
     function deleteWechatUser($id) {
         
@@ -328,6 +331,8 @@ class User extends Authenticatable {
             'userId' => Auth::id(),
             'userid' => self::find($id)->userid
         ]));
+        
+        return true;
         
     }
     
@@ -377,7 +382,6 @@ class User extends Authenticatable {
                 # 创建企业号成员
                 $this->createWechatUser($user->id);
             });
-
         } catch (Exception $e) {
             throw $e;
         }
@@ -422,26 +426,26 @@ class User extends Authenticatable {
                         'telephone'    => $data['telephone'],
                         'enabled'      => $data['enabled'],
                     ]);
-                });
-                
-                # 更新手机号码
-                Mobile::whereUserId($user->id)->delete();
-                $mobile = new Mobile();
-                $mobile->store($data['mobile'], $user);
-                unset($mobile);
-                
-                # 更新部门数据
-                DepartmentUser::whereUserId($user->id)->delete();
-                $du = new DepartmentUser();
-                $du->store([
-                    'department_id' => $this->departmentId($data),
-                    'user_id' => $user->id,
-                    'enabled' => Constant::ENABLED
-                ]);
-                unset($du);
+                    
+                    # 更新手机号码
+                    Mobile::whereUserId($user->id)->delete();
+                    $mobile = new Mobile();
+                    $mobile->store($data['mobile'], $user);
+                    unset($mobile);
     
-                # 更新企业号成员记录
-                $this->updateWechatUser($user->id);
+                    # 更新部门数据
+                    DepartmentUser::whereUserId($user->id)->delete();
+                    $du = new DepartmentUser();
+                    $du->store([
+                        'department_id' => $this->departmentId($data),
+                        'user_id' => $user->id,
+                        'enabled' => Constant::ENABLED
+                    ]);
+                    unset($du);
+    
+                    # 更新企业号成员记录
+                    $this->updateWechatUser($user->id);
+                });
             } catch (Exception $e) {
                 throw $e;
             }
