@@ -116,6 +116,15 @@ class User extends Authenticatable {
      */
     protected $hidden = ['password', 'remember_token'];
     
+    protected $du;
+    
+    function __construct(array $attributes = []) {
+        
+        parent::__construct($attributes);
+        $this->du = app()->make('App\Models\DepartmentUser');
+        
+    }
+    
     /**
      * 返回指定用户所属的角色对象
      *
