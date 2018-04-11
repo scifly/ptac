@@ -373,7 +373,7 @@ class User extends Authenticatable {
                 # 保存用户所属部门数据
                 $du = new DepartmentUser();
                 $du->store([
-                    'department_id' => $this->departmentId($data['group_id']),
+                    'department_id' => $this->departmentId($data),
                     'user_id' => $data['user_id'],
                     'enabled' => $data['enabled']
                 ]);
