@@ -43,7 +43,7 @@ class TestController extends Controller {
     
         $user = User::find(1);
         $user->test = 'abcdefg';
-        dd($user->test);
+        dd($user->toArray());
         dd(config('queue.default'));
         $action = new Action();
         try {
