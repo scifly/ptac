@@ -14,14 +14,12 @@ class UserEventSubscriber {
      * 将"创建企业号会员"任务提交至work队列
      *
      * @param $event
-     * @return bool
      */
     public function onUserCreated($event) {
-        // $job = new ManageWechatMember($event->data, 'create');
-        // $this->dispatch($job)->onQueue('import');
-        ManageWechatMember::dispatch($event->data, 'create')->onQueue('import');
-        
-        return true;
+
+        $this->dispatch(
+            new ManageWechatMember($event->data, 'create')
+        );
     
     }
     
@@ -32,8 +30,9 @@ class UserEventSubscriber {
      */
     public function onUserUpdated($event) {
         
-        $job = new ManageWechatMember($event->data, 'update');
-        $this->dispatch($job);
+        $this->dispatch(
+            new ManageWechatMember($event->data, 'update')
+        );
         
     }
     
@@ -41,14 +40,12 @@ class UserEventSubscriber {
      * 将"删除企业号会员"任务提交至work队列
      *
      * @param $event
-     * @return bool
      */
     public function onUserDeleted($event) {
         
-        $job = new ManageWechatMember($event->data, 'delete');
-        $this->dispatch($job);
-        
-        return true;
+        $this->dispatch(
+            new ManageWechatMember($event->data, 'delete')
+        );
         
     }
     

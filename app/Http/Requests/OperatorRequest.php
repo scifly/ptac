@@ -43,6 +43,7 @@ class OperatorRequest extends FormRequest {
      */
     public function rules() {
         
+        # 批量操作（启用/禁用/删除）
         if (Request::has('ids')) {
             return [
                 'ids' => 'required|array',

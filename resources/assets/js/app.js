@@ -45,7 +45,7 @@ const app = new Vue({
                 }
             })
             .listen('ContactSyncTrigger', (e) => {
-                page.inform('同步企业微信会员', e.data['message'], page.info);
+                page.inform(e.data['title'], e.data['message'], page.info);
             });
     }
 });

@@ -280,6 +280,7 @@ class User extends Authenticatable {
         $user = self::find($id);
         $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
         $data = [
+            'userId'     => Auth::id(),
             'userid'     => $user->userid,
             'name'       => $user->realname,
             'mobile'     => $mobile,
@@ -323,6 +324,7 @@ class User extends Authenticatable {
     function deleteWechatUser($id) {
         
         event(new UserDeleted([
+            'userId' => Auth::id(),
             'userid' => self::find($id)->userid
         ]));
         
