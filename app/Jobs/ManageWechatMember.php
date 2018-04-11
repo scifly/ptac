@@ -3,6 +3,7 @@ namespace App\Jobs;
 
 use App\Events\ContactSyncTrigger;
 use App\Facades\Wechat;
+use App\Helpers\HttpStatusCode;
 use App\Models\Corp;
 use App\Models\School;
 use App\Models\User;
@@ -106,6 +107,7 @@ class ManageWechatMember implements ShouldQueue {
         $response = [
             'userId' => $this->data['userId'],
             'title' => self::ACTIONS[$this->action] . '企业微信会员',
+            'statusCode' => HttpStatusCode::OK,
             'message' => __('messages.wechat_synced')
         ];
         $result = json_decode(Wechat::createUser($token, $this->data));
@@ -115,6 +117,7 @@ class ManageWechatMember implements ShouldQueue {
         }
         
         if ($result->{'errcode'} != 0) {
+            $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
             $response['message'] = $result->{'errcode'} . ' : '
                 . Wechat::ERRCODES[intval($result->{'errcode'})];
         }

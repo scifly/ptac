@@ -1015,7 +1015,11 @@ var app = new Vue({
                 page.inform('导入通讯录', '学生队列导入成功', page.success);
             }
         }).listen('ContactSyncTrigger', function (e) {
-            page.inform('同步企业微信会员', e.data['message'], page.info);
+            page.inform(
+                e.data['title'],
+                e.data['message'],
+                e.data['statusCode'] === 200 ? page.success : page.failure
+            );
         });
     }
 });
