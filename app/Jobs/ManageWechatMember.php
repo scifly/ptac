@@ -115,7 +115,7 @@ class ManageWechatMember implements ShouldQueue {
         }
         
         if ($result->{'errcode'} != 0) {
-            $response['message'] = $result->{'errmsg'};
+            $response['message'] = $result->{'errcode'} . ' : ' . $result->{'errmsg'};
         }
         
         event(new ContactSyncTrigger($response));
