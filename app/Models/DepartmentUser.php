@@ -75,7 +75,7 @@ class DepartmentUser extends Model {
      * @param array $userIds
      * @return bool
      * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     function storeByDepartmentId($departmentId, array $userIds) {
         

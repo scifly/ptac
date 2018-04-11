@@ -274,6 +274,7 @@ class User extends Authenticatable {
      * 创建企业号会员
      *
      * @param $id
+     * @return bool
      */
     function createWechatUser($id) {
         
@@ -289,7 +290,7 @@ class User extends Authenticatable {
             'enable'     => $user->enabled,
         ];
         event(new UserCreated($data));
-        
+        return true;
     }
     
     /**
@@ -366,16 +367,21 @@ class User extends Authenticatable {
                 
                 # 保存用户所属部门数据
                 $du = new DepartmentUser();
-                $du->store($data, $user);
+                $du->store([
+                    'department_id' => $this->departmentId($data['group_id']),
+                    'user_id' => $data['user_id'],
+                    'enabled' => $data['enabled']
+                ], $user);
                 unset($du);
                 
                 # 创建企业号成员
                 $this->createWechatUser($user->id);
             });
+
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }
@@ -417,21 +423,25 @@ class User extends Authenticatable {
                         'enabled'      => $data['enabled'],
                     ]);
                 });
+                
                 # 更新手机号码
                 Mobile::whereUserId($user->id)->delete();
                 $mobile = new Mobile();
                 $mobile->store($data, $user);
                 unset($mobile);
+                
                 # 更新部门数据
                 DepartmentUser::whereUserId($user->id)->delete();
                 $du = new DepartmentUser();
                 $du->store($data, $user);
                 unset($du);
-                # 更新企业号成员记录
-                $this->updateWechatUser($user->id);
+    
+    
             } catch (Exception $e) {
                 throw $e;
             }
+            # 更新企业号成员记录
+            $this->updateWechatUser($user->id);
     
             return true;
         }
@@ -699,6 +709,29 @@ class User extends Authenticatable {
         }
         
         return true;
+        
+    }
+    
+    /**
+     * 获取超级用户所处的部门id
+     *
+     * @param $data
+     * @return int|mixed|null
+     */
+    private function departmentId($data) {
+    
+        switch (Group::find($data['group_id'])->name) {
+            case '运营':
+                return Department::whereDepartmentTypeId(
+                    DepartmentType::whereName('根')->first()->id
+                )->first()->id;
+            case '企业':
+                return Corp::find($data['corp_id'])->department_id;
+            case '学校':
+                return School::find($data['school_id'])->department_id;
+            default:
+                return null;
+        }
         
     }
     
