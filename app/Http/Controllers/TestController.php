@@ -41,6 +41,9 @@ class TestController extends Controller {
     
     public function index() {
     
+        $user = User::find(1);
+        $user->test = 'abcdefg';
+        dd($user->test);
         dd(config('queue.default'));
         $action = new Action();
         try {

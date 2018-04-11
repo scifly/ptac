@@ -397,6 +397,9 @@
                         $.getMultiScripts(['js/department.tree.js'])
                             .done(function() { dept.init('educators/edit/' + id); });
                         break;
+                    case 'operators':
+                        formId = 'formOperator';
+                        break;
                     default:
                         break;
                 }
