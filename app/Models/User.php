@@ -362,7 +362,7 @@ class User extends Authenticatable {
 
                 # 保存手机号码
                 $mobile = new Mobile();
-                $mobile->store($data, $user);
+                $mobile->store($data['mobile'], $user);
                 unset($mobile);
                 
                 # 保存用户所属部门数据
@@ -371,7 +371,7 @@ class User extends Authenticatable {
                     'department_id' => $this->departmentId($data['group_id']),
                     'user_id' => $data['user_id'],
                     'enabled' => $data['enabled']
-                ], $user);
+                ]);
                 unset($du);
                 
                 # 创建企业号成员
@@ -427,23 +427,27 @@ class User extends Authenticatable {
                 # 更新手机号码
                 Mobile::whereUserId($user->id)->delete();
                 $mobile = new Mobile();
-                $mobile->store($data, $user);
+                $mobile->store($data['mobile'], $user);
                 unset($mobile);
                 
                 # 更新部门数据
                 DepartmentUser::whereUserId($user->id)->delete();
                 $du = new DepartmentUser();
-                $du->store($data, $user);
+                $du->store([
+                    'department_id' => $this->departmentId($data),
+                    'user_id' => $user->id,
+                    'enabled' => Constant::ENABLED
+                ]);
                 unset($du);
     
-    
+                # 更新企业号成员记录
+                $this->updateWechatUser($user->id);
             } catch (Exception $e) {
                 throw $e;
             }
-            # 更新企业号成员记录
-            $this->updateWechatUser($user->id);
     
             return true;
+            
         }
         
     }

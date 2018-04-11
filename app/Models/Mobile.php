@@ -48,13 +48,12 @@ class Mobile extends Model {
     /**
      * 保存手机号码
      *
-     * @param array $data
+     * @param array $mobiles
      * @param User $user
      * @return void
      */
-    function store(array $data, User $user) {
+    function store(array $mobiles, User $user) {
     
-        $mobiles = $data['mobile'];
         self::whereUserId($user->id)->delete();
         foreach ($mobiles as $mobile) {
             Mobile::create([

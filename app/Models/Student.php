@@ -5,6 +5,7 @@ use App\Events\ContactImportTrigger;
 use App\Events\StudentImported;
 use App\Events\StudentUpdated;
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
@@ -163,7 +164,7 @@ class Student extends Model {
                 ]);
 
                 # 创建学籍
-                $this->create([
+                $student = $this->create([
                     'user_id'        => $user->id,
                     'class_id'       => $data['class_id'],
                     'student_number' => $data['student_number'],
@@ -176,12 +177,16 @@ class Student extends Model {
 
                 # 保存手机号码
                 $mobile = new Mobile();
-                $mobile->store($data, $user);
+                $mobile->store($data['mobile'], $user);
                 unset($mobile);
 
                 # 保存用户所处部门
                 $du = new DepartmentUser();
-                $du->store($data, $user);
+                $du->store([
+                    'department_id' => $student->squad->department_id,
+                    'user_id' => $student->user_id,
+                    'enabled' => Constant::ENABLED
+                ]);
                 unset($du);
 
                 # 创建企业号成员
@@ -239,13 +244,17 @@ class Student extends Model {
                 # 更新手机号码
                 Mobile::whereUserId($user->id)->delete();
                 $mobile = new Mobile();
-                $mobile->store($data, $student->user);
+                $mobile->store($data['mobile'], $student->user);
                 unset($mobile);
                 
                 # 更新用户所在部门
                 DepartmentUser::whereUserId($user->id)->delete();
                 $du = new DepartmentUser();
-                $du->store($data, $user);
+                $du->store([
+                    'department_id' => $student->squad->department_id,
+                    'user_id' => $student->user_id,
+                    'enabled' => Constant::ENABLED
+                ]);
                 unset($du);
                 
                 # 更新企业号成员

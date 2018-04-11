@@ -109,7 +109,11 @@ class Custodian extends Model {
                 foreach ($studentIds as $key => $sId) {
                     $student = Student::find($sId);
                     abort_if(!$student, HttpStatusCode::NOT_FOUND, '找不到学生id: ' . $sId . '对应的记录');
-                    $du->store(['department_id' => $student->squad->department_id], $user);
+                    $du->store([
+                        'department_id' => $student->squad->department_id,
+                        'user_id' => $user->id,
+                        'enabled' => Constant::ENABLED
+                    ]);
                     $rses[$sId] = $relationships[$key];
                 }
                 unset($du);
@@ -121,7 +125,7 @@ class Custodian extends Model {
                 
                 # 保存用户手机号码
                 $mobile = new Mobile();
-                $mobile->store($data, $user);
+                $mobile->store($data['mobile'], $user);
                 unset($mobile);
     
                 # 创建企业号成员
@@ -176,7 +180,11 @@ class Custodian extends Model {
                 foreach ($studentIds as $key => $sId) {
                     $student = Student::find($sId);
                     abort_if(!$student, HttpStatusCode::NOT_FOUND, '找不到学生id: ' . $sId . '对应的记录');
-                    $du->store(['department_id' => $student->squad->department_id], $custodian->user);
+                    $du->store([
+                        'department_id' => $student->squad->department_id,
+                        'user_id' => $custodian->user_id,
+                        'enabled' => Constant::ENABLED
+                    ]);
                     $rses[$sId] = $relationships[$key];
                 }
                 unset($du);
@@ -190,7 +198,7 @@ class Custodian extends Model {
                 # 更新用户的手机号码(Mobile)记录
                 Mobile::whereUserId($userId)->delete();
                 $mobile = new Mobile();
-                $mobile->store($data, $custodian->user);
+                $mobile->store($data['mobile'], $custodian->user);
                 unset($mobile);
     
                 # 更新企业号会员数据
