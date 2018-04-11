@@ -625,7 +625,7 @@ class User extends Authenticatable {
                             $class = 'fa-weixin';
                             break;
                         case '学校':
-                            $color = 'text-blue';
+                            $color = 'text-purple';
                             $class = 'fa-university';
                             break;
                         default:
