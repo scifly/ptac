@@ -76,11 +76,11 @@ class Menu extends Model {
     ];
     
     const MENU_TYPES = [
-        '根'  => ['color' => 'darkgray', 'type' => 'root'],
-        '运营' => ['color' => 'darkblue', 'type' => 'company'],
-        '企业' => ['color' => 'darkgreen', 'type' => 'corp'],
-        '学校' => ['color' => 'purple', 'type' => 'school'],
-        '其他' => ['color' => 'black', 'type' => 'other'],
+        '根'  => ['color' => 'text-gray', 'type' => 'root'],
+        '运营' => ['color' => 'text-blue', 'type' => 'company'],
+        '企业' => ['color' => 'text-green', 'type' => 'corp'],
+        '学校' => ['color' => 'text-purple', 'type' => 'school'],
+        '其他' => ['color' => 'text-black', 'type' => 'other'],
     ];
     
     /**
@@ -456,7 +456,7 @@ class Menu extends Model {
             $parentId = isset($menu['parent_id']) ? $menu['parent_id'] : '#';
             $text = sprintf(
                 Snippet::MENU_TEXT,
-                $menu['enabled'] ? self::MENU_TYPES[$type]['color'] : 'lightgray',
+                $menu['enabled'] ? self::MENU_TYPES[$type]['color'] : 'text-gray',
                 $name
             );
             $tree[] = [
