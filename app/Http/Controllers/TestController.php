@@ -41,7 +41,8 @@ class TestController extends Controller {
     
     public function index() {
     
-        $user = User::find(1);
+        $user = User::find(20);
+        dd($user->departments->pluck('id')->first());
         $user->test = 'abcdefg';
         dd($user->toArray());
         dd(config('queue.default'));
