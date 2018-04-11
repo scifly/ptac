@@ -104,7 +104,7 @@
                         field: field,
                         value: value
                     },
-                    url: page.siteRoot() + 'operators/' + action,
+                    url: page.siteRoot() + 'operators/' + action + (action === 'edit' ? '/' + $('#id').val() : ''),
                     success: function (result) {
                         if (field === operator.options.groupId) {
                             $corp.find('.input-group').append(result['corpList']);
