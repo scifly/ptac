@@ -374,7 +374,7 @@ class User extends Authenticatable {
                 $du = new DepartmentUser();
                 $du->store([
                     'department_id' => $this->departmentId($data),
-                    'user_id' => $data['user_id'],
+                    'user_id' => $user->id,
                     'enabled' => $data['enabled']
                 ]);
                 unset($du);
