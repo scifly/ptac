@@ -76,7 +76,7 @@
                        class="display nowrap table table-striped table-bordered table-hover table-condensed">
                     <thead>
                         @foreach($titles as $title)
-                            <th>{!! $title !!}</th>
+                            <th class="text-center">{!! $title !!}</th>
                         @endforeach
                     </thead>
                     <tbody>
