@@ -41,7 +41,7 @@ class GroupComposer {
                 break;
             case '学校':
                 $schools = School::whereMenuId($rootMenuId)
-                    ->first()->pluck('name', 'id')
+                    ->where('enabled', 1)->pluck('name', 'id')
                     ->toArray();
                 break;
             default:
