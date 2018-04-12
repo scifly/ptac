@@ -209,7 +209,7 @@ class Group extends Model {
                 },
             ],
         ];
-        $condition = 'Groups.school_id IS NOT NULL';
+        $condition = 'Groups.school_id IS NOT NULL ';
         $user = Auth::user();
         $joins = [
             [
