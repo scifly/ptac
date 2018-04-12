@@ -68,7 +68,7 @@ class StudentAttendance extends Model {
         '姓名', '监护人', '手机号码', '打卡时间', '进/出'
     ];
     const WEEK_DAYS = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-    const VIEW_NS = self::VIEW_NS . '';
+    const VIEW_NS = 'wechat.attendance.';
     
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
