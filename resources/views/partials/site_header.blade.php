@@ -5,23 +5,23 @@
         <a href="#" class="sidebar-toggle" data-toggle="push-menu">
             <span class="sr-only">Toggle navigation</span>
         </a>
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+            <i class="fa fa-send-o"></i> 四川盛世华唐
+        </a>
         <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
                 <!--提醒-->
-                {{--<li class="dropdown notifications-menu">--}}
-                    {{--@include('partials.site_notification')--}}
-                {{--</li>--}}
-                {{--<!--任务-->--}}
-                {{--<li class="dropdown tasks-menu">--}}
-                    {{--@include('partials.site_task')--}}
-                {{--</li>--}}
+            {{--<li class="dropdown notifications-menu">--}}
+            {{--@include('partials.site_notification')--}}
+            {{--</li>--}}
+            {{--<!--任务-->--}}
+            {{--<li class="dropdown tasks-menu">--}}
+            {{--@include('partials.site_task')--}}
+            {{--</li>--}}
                 <!--用户账号-->
 
-                <li class="dropdown messages-menu open pull-left">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-                        <i class="fa fa-send-o"></i> 四川盛世华唐
-                    </a>
-                </li>
+                {{--<li class="dropdown messages-menu open pull-left">--}}
+                {{--</li>--}}
                 <li class="dropdown user user-menu">
                     @include('partials.site_user')
                 </li>
