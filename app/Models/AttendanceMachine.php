@@ -71,36 +71,20 @@ class AttendanceMachine extends Model {
             ['db' => 'AttendanceMachine.id', 'dt' => 0],
             ['db' => 'AttendanceMachine.name', 'dt' => 1],
             ['db' => 'AttendanceMachine.location', 'dt' => 2],
+            ['db' => 'AttendanceMachine.machineid', 'dt' => 3],
+            ['db' => 'AttendanceMachine.created_at', 'dt' => 4],
+            ['db' => 'AttendanceMachine.updated_at', 'dt' => 5],
             [
-                'db' => 'School.name as schoolname', 'dt' => 3,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-university', '') . $d;
-                }
-            ],
-            ['db' => 'AttendanceMachine.machineid', 'dt' => 4],
-            ['db' => 'AttendanceMachine.created_at', 'dt' => 5],
-            ['db' => 'AttendanceMachine.updated_at', 'dt' => 6],
-            [
-                'db' => 'AttendanceMachine.enabled', 'dt' => 7,
+                'db' => 'AttendanceMachine.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
-        $joins = [
-            [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
-                'conditions' => [
-                    'School.id = AttendanceMachine.school_id',
-                ],
-            ],
-        ];
-        $condition = 'School.id = ' . $this->schoolId();
+        $condition = 'AttendanceMachine.school_id = ' . $this->schoolId();
 
         return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
+            $this->getModel(), $columns, null, $condition
         );
         
     }
