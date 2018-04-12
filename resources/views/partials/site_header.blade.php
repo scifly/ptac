@@ -18,9 +18,9 @@
                 <!--用户账号-->
 
                 <li class="dropdown messages-menu open">
-                    <span class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
                         四川盛世华唐
-                    </span>
+                    </a>
                 </li>
                 <li class="dropdown user user-menu">
                     @include('partials.site_user')
