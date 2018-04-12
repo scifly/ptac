@@ -9,7 +9,8 @@
             <ul class="nav navbar-nav">
                 <li class="dropdown messages-menu open">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-                        <i class="fa fa-send-o" style="margin-right: 15px;"></i>(Here goes the Corp / School name)
+                        <i class="fa fa-send-o" style="margin-right: 15px;"></i>
+                        <b>( Here goes the Corp / School name )</b>
                     </a>
                 </li>
                 <!--用户账号-->
