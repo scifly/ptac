@@ -206,6 +206,7 @@ class Educator extends Model {
                     'english_name' => $user['english_name'],
                     'telephone'    => $user['telephone'],
                     'enabled'      => $user['enabled'],
+                    'synced'       => $user['synced']
                 ]);
                 
                 # 创建教职员工(当角色选择学校管理员时，也同时创建教职员工数据20180207 by wenw)
