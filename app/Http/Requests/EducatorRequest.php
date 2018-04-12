@@ -58,6 +58,7 @@ class EducatorRequest extends FormRequest {
             }
         }
         $input['educator']['school_id'] = $this->schoolId();
+        $input['user']['synced'] = 0;
         $this->replace($input);
         
     }
