@@ -31,7 +31,7 @@
                 group.ifTabUnChecked();
                 group.ifActionChecked();
                 group.ifActionUnChecked();
-                tree.initJsTree(group.loadTree);
+                tree.initJsTree(group.loadTree(action));
             },
             token: function () {
                 return $('#csrf_token').attr('content');
