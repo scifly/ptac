@@ -563,7 +563,10 @@ var page = {
     unbindEvents: function () {
         var selectors = ['.fa-pencil', '.fa-money', '.fa-bars'];
         $('#add-record').unbind('click');
-        $(document).off('click', selectors.join());
+        // $(document).off('click', selectors.join());
+        $(document).off('click', '.fa-pencil');
+        $(document).off('click', '.fa-money');
+        $(document).off('click', '.fa-bars');
         $(document).off('click', '.fa-remove');
         $('#confirm-delete').unbind('click');
         $('#cancel, #record-list').unbind('click');
