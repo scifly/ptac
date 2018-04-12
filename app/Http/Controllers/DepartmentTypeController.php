@@ -92,7 +92,7 @@ class DepartmentTypeController extends Controller {
         $this->authorize('eud', $dt);
         
         return $this->output([
-            'departmentType' => $dt,
+            'dt' => $dt,
         ]);
         
     }

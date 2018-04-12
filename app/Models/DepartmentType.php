@@ -42,16 +42,16 @@ class DepartmentType extends Model {
      * @return HasMany
      */
     function departments() { return $this->hasMany('App\Models\Department'); }
-
+    
     /**
      * 创建部门类型
      *
      * @param array $data
-     * @return $this|Model
+     * @return bool
      */
     function store(array $data) {
 
-        return self::create($data);
+        return self::create($data) ? true : false;
 
     }
 
