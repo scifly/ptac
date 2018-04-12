@@ -5,7 +5,7 @@
         <a href="#" class="sidebar-toggle" data-toggle="push-menu">
             <span class="sr-only">Toggle navigation</span>
         </a>
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+        <a href="#" class="sidebar-toggle" data-toggle="dropdown" aria-expanded="true">
             <i class="fa fa-send-o"></i> 四川盛世华唐
         </a>
         <div class="navbar-custom-menu">
