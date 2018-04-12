@@ -439,13 +439,15 @@ var page = {
         $('#add-record').on('click', function () {
             page.getTabContent($activeTabPane, table + '/create');
         });
-        // 编辑、充值、查看记录
-        var selectors = ['.fa-pencil', '.fa-money', '.fa-bars'];
-        $(document).on('click', selectors.join(), function () {
+        var operation = function () {
             var url = $(this).parents().eq(0).attr('id');
             url = url.replace('_', '/');
             page.getTabContent($activeTabPane, table + '/' + url);
-        });
+        };
+        // 编辑、充值、查看记录
+        $(document).on('click', '.fa-pencil', function () { operation(); });
+        $(document).on('click', '.fa-money', function () { operation(); });
+        $(document).on('click', '.fa-bars', function () { operation(); });
         // 删除记录
         var id;
         $(document).on('click', '.fa-remove', function () {
@@ -561,7 +563,7 @@ var page = {
         page.initParsley($form, requestType, url);
     },
     unbindEvents: function () {
-        var selectors = ['.fa-pencil', '.fa-money', '.fa-bars'];
+        // var selectors = ['.fa-pencil', '.fa-money', '.fa-bars'];
         $('#add-record').unbind('click');
         // $(document).off('click', selectors.join());
         $(document).off('click', '.fa-pencil');
