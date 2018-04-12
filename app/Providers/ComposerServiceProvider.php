@@ -36,7 +36,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('attachment_type.create_edit', $ns . 'AttachmentTypeComposer');
 
         # 考勤机 - AttendanceMachine
-        View::composer('attendance_machine.index', $ns . 'AttendanceMachineViewComposer');
+        View::composer('attendance_machine.index', $ns . 'AttendanceMachineIndexComposer');
         View::composer('attendance_machine.create_edit', $ns . 'AttendanceMachineComposer');
     
         # 通信类型 - CommType
