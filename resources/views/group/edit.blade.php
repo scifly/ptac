@@ -1,3 +1,7 @@
-{!! Form::model($group, ['url'=>'groups/update/'.$group->id,'method' => 'put', 'id' => 'formGroup']) !!}
+{!! Form::model($group, [
+    'method' => 'put',
+    'id' => 'formGroup',
+    'data-parsley-validate' => 'true'
+]) !!}
 @include('group.create_edit')
 {!! Form::close() !!}
