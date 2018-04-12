@@ -439,15 +439,15 @@ var page = {
         $('#add-record').on('click', function () {
             page.getTabContent($activeTabPane, table + '/create');
         });
-        var operation = function () {
-            var url = $(this).parents().eq(0).attr('id');
+        var operation = function (op) {
+            var url = $(op).parents().eq(0).attr('id');
             url = url.replace('_', '/');
             page.getTabContent($activeTabPane, table + '/' + url);
         };
         // 编辑、充值、查看记录
-        $(document).on('click', '.fa-pencil', function () { operation(); });
-        $(document).on('click', '.fa-money', function () { operation(); });
-        $(document).on('click', '.fa-bars', function () { operation(); });
+        $(document).on('click', '.fa-pencil', function () { operation(this); });
+        $(document).on('click', '.fa-money', function () { operation(this); });
+        $(document).on('click', '.fa-bars', function () { operation(this); });
         // 删除记录
         var id;
         $(document).on('click', '.fa-remove', function () {
