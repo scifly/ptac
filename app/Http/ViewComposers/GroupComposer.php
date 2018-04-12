@@ -3,8 +3,12 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use App\Models\Action;
+use App\Models\Corp;
+use App\Models\Menu;
+use App\Models\School;
 use App\Models\Tab;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 
 class GroupComposer {
     
@@ -19,6 +23,31 @@ class GroupComposer {
         
         $tabActions = [];
         $tabs = Tab::whereIn('group_id', [0, 3])->get();
+        $schools = [];
+        $menu = new Menu();
+        $rootMenuId = $menu->rootMenuId(true);
+        switch (Menu::find($rootMenuId)->menuType->name) {
+            case '根':
+                $schools = School::whereEnabled(1)
+                    ->get()->pluck('name', 'id')
+                    ->toArray();
+                break;
+            case '企业':
+                $corp = Corp::whereMenuId($rootMenuId)->first();
+                $schools = School::whereCorpId($corp->id)
+                    ->where('enabled', 1)
+                    ->get()->pluck('name', 'id')
+                    ->toArray();
+                break;
+            case '学校':
+                $schools = School::whereMenuId($rootMenuId)
+                    ->first()->pluck('name', 'id')
+                    ->toArray();
+                break;
+            default:
+                break;
+                
+        }
         foreach ($tabs as $tab) {
             $actions = Action::whereController($tab->controller)
                 ->get(['id', 'name', 'method']);
@@ -39,6 +68,7 @@ class GroupComposer {
         }
         $view->with([
             'tabActions' => $tabActions,
+            'schools'    => $schools,
             'uris'       => $this->uris(),
         ]);
         
