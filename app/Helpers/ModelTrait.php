@@ -11,12 +11,12 @@ use App\Models\User;
 use App\Policies\Route;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use ReflectionClass;
+use ReflectionException;
 
 trait ModelTrait {
     
@@ -25,7 +25,7 @@ trait ModelTrait {
      *
      * @param Model $model
      * @return bool
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     function removable(Model $model) {
         

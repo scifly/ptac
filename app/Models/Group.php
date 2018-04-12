@@ -193,56 +193,57 @@ class Group extends Model {
                     return sprintf(Snippet::ICON, 'fa-meh-o', '') . $d;
                 }
             ],
-            ['db' => 'Groups.remark', 'dt' => 2],
-            ['db' => 'Groups.created_at', 'dt' => 3],
-            ['db' => 'Groups.updated_at', 'dt' => 4],
             [
-                'db' => 'Groups.enabled', 'dt' => 5,
+                'db' => 'School.name as schoolname', 'dt' => 2,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-university', '') . $d;
+                }
+            ],
+            ['db' => 'Groups.remark', 'dt' => 3],
+            ['db' => 'Groups.created_at', 'dt' => 4],
+            ['db' => 'Groups.updated_at', 'dt' => 5],
+            [
+                'db' => 'Groups.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
-        $condition = '';
+        $condition = 'Groups.school_id IS NOT NULL';
         $user = Auth::user();
-        $joins = [];
+        $joins = [
+            [
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'INNER',
+                'conditions' => [
+                    'School.id = Groups.school_id'
+                ]
+            ]
+        ];
         switch ($user->group->name) {
             case '运营':
                 break;
             case '企业':
-                $corpId = Corp::whereDepartmentId($user->topDeptId())
-                    ->first()->id;
-                $joins = [
-                    [
-                        'table' => 'schools',
-                        'alias' => 'School',
-                        'type' => 'INNER',
-                        'conditions' => [
-                            'School.id = Groups.school_id'
-                        ]
-                    ],
-                    [
-                        'table' => 'corps',
-                        'alias' => 'Corp',
-                        'type' => 'INNER',
-                        'conditions' => [
-                            'Corp.id = School.corp_id'
-                        ]
+                $departmentId = $user->departments->pluck('id')->toArray()[0];
+                $corpId = Corp::whereDepartmentId($departmentId)->first()->id;
+                $joins[] = [
+                    'table' => 'corps',
+                    'alias' => 'Corp',
+                    'type' => 'INNER',
+                    'conditions' => [
+                        'Corp.id = School.corp_id'
                     ]
                 ];
-                $condition = 'Corp.id = ' . $corpId;
+                $condition .= 'AND Corp.id = ' . $corpId;
                 break;
             case '学校':
-                $schoolId = School::whereDepartmentId($user->topDeptId())
-                    ->first()->id;
-                $condition = 'School.id = ' . $schoolId;
+                $departmentId = $user->departments->pluck('id')->toArray()[0];
+                $schoolId = School::whereDepartmentId($departmentId)->first()->id;
+                $condition .= 'AND School.id = ' . $schoolId;
                 break;
         }
-        if (empty($condition)) {
-            return Datatable::simple(
-                $this->getModel(), $columns
-            );
-        }
+
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition
         );
