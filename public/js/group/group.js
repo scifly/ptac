@@ -8,23 +8,17 @@
                 schoolId: 'school_id',
                 table: 'groups',
             }, options),
-            create: function () {
-                group.init('create');
-            },
-            edit: function () {
-                group.init('edit');
-            },
-            init: function (action) {
+            init: function () {
                 page.unbindEvents();
                 // load menu tree
-                group.loadTree(action);
+                group.loadTree();
                 page.initICheck();
                 page.initSelect2();
                 page.initBackBtn('groups');
-                group.initForm(action);
+                group.initForm();
                 // on school changed
                 $('#' + group.options.schoolId).on('change', function() {
-                    group.loadTree(action);
+                    group.loadTree();
                 });
                 $('.collapsed-box').boxWidget('collapse');
                 group.ifTabChecked();
@@ -36,19 +30,20 @@
             token: function () {
                 return $('#csrf_token').attr('content');
             },
-            loadTree: function (action) {
+            loadTree: function () {
                 var $menuTree = $('#' + group.options.menuTree),
                     $schoolId = $('#' + group.options.schoolId),
-                    url = page.siteRoot() + group.options.table;
+                    url = page.siteRoot() + group.options.table,
+                    $id = $('#id');
 
                 $.jstree.destroy();
                 $('.overlay').show();
                 $('a[href="#tab02"]').html(page.ajaxLoader());
 
-                if (action === 'create') {
+                if ($id.length === 0) {
                     url += '/create?schoolId=' + $schoolId.val();
                 } else {
-                    url += '/edit/' + $('#id').val() + '?schoolId=' + $schoolId.val();
+                    url += '/edit/' + $id.val() + '?schoolId=' + $schoolId.val();
                 }
                 $menuTree.jstree({
                     core: {
@@ -81,7 +76,7 @@
                 }).on('select_node.jstree', function(node, selected) {
                 }).on('deselect_node.jstree', function (node, selected) {
                 }).on('loaded.jstree', function () {
-                    if (action === 'edit') {
+                    if ($id.length === 1) {
                         var menuIds = $('#menu_ids').val().split(',');
                         $menuTree.jstree().select_node(menuIds);
                     }
@@ -90,14 +85,15 @@
                     $('.overlay').hide();
                 });
             },
-            initForm: function (action) {
+            initForm: function () {
                 var $menuTree = $('#' + group.options.menuTree),
                     $form = $('#' + group.options.formGroup);
 
                 $form.parsley().on('form:validated', function () {
                     if ($('.parsley-error').length === 0) {
-                        var url = page.siteRoot() + group.options.table +
-                            (action === 'create' ? '/store' : ('/update/' + $('#id').val())),
+                        var $id = $('#id'),
+                            url = page.siteRoot() + group.options.table +
+                                ($id.length === 0 ? '/store' : ('/update/' + $id.val())),
                             menuIds = $menuTree.jstree().get_selected();
 
                         $menuTree.find(".jstree-undetermined").each(function (i, element) {
@@ -204,9 +200,6 @@
             }
         };
 
-        return {
-            create: group.create,
-            edit: group.edit
-        }
+        return { init: group.init }
     }
 })(jQuery);
