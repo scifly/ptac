@@ -40,7 +40,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('attendance_machine.create_edit', $ns . 'AttendanceMachineComposer');
     
         # 通信类型 - CommType
-        View::composer('comm_type.index', $ns . 'ViewComposerIndexComposer');
+        View::composer('comm_type.index', $ns . 'CommTypeIndexComposer');
         View::composer('comm_type.create_edit', $ns . 'CommTypeComposer');
     
         # 套餐类型 - ComboType
