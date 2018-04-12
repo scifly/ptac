@@ -385,7 +385,7 @@ class EducatorAttendance extends Model {
                     $eas = $this->whereIn('id', $eaIds)->get();
                     foreach ($eas as $ea) {
                         $results[] = [
-                            'name'       => $ea->student->user->realname,
+                            'name'       => $ea->educator->user->realname,
                             'mobile'     => array_column($ea->student->user->mobiles->toArray(), 'mobile'),
                             'punch_time' => $ea->punch_time,
                             'inorout'    => $ea->inorout ? '进' : '出',
@@ -413,7 +413,6 @@ class EducatorAttendance extends Model {
         foreach ($details as $detail) {
             $rows[] = [
                 $detail['name'],
-                implode(',', $detail['custodian']),
                 implode(',', $detail['mobile']),
                 $detail['punch_time'],
                 $detail['inorout'] ? '进' : '出',
