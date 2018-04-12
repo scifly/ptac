@@ -16,8 +16,12 @@
                     {{--@include('partials.site_task')--}}
                 {{--</li>--}}
                 <!--用户账号-->
-                <li>
-                    whatever
+
+                <li class="dropdown messages-menu open">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                        <i class="fa fa-envelope-o"></i>
+                        <span class="label label-success">4</span>
+                    </a>
                 </li>
                 <li class="dropdown user user-menu">
                     @include('partials.site_user')
