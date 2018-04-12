@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Http\Requests\WapSiteRequest;
 use Carbon\Carbon;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
@@ -41,12 +43,22 @@ use Throwable;
 class WapSite extends Model {
     
     use ModelTrait;
+    
+    protected $department, $media;
 
     protected $fillable = [
         'id', 'school_id', 'site_title',
         'media_ids', 'created_at', 'updated_at',
         'enabled',
     ];
+    
+    function __construct(array $attributes = []) {
+        
+        parent::__construct($attributes);
+        $this->department = app()->make('App\Models\Department');
+        $this->media = app()->make('App\Models\Media');
+        
+    }
     
     /**
      * 获取微网站包含的所有网站模块对象
@@ -138,13 +150,50 @@ class WapSite extends Model {
         try {
             DB::transaction(function () use ($request, $id) {
                 self::removeMedias($request);
-                return self::find($id)->update($request->except('_method', '_token', 'del_ids'));
+                return self::find($id)->update(
+                    $request->except('_method', '_token', 'del_ids')
+                );
             });
         } catch (Exception $e) {
             throw $e;
         }
         
         return true;
+        
+    }
+    
+    /**
+     * 返回微官网首页
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    function wIndex() {
+    
+        $user = Auth::user();
+        abort_if(
+            !$user || in_array($user->group->name, ['运营', '企业']),
+            HttpStatusCode::UNAUTHORIZED,
+            __('messages.unauthorized')
+        );
+        $schoolId = Group::find($user->group_id)->school_id;
+        if (!$schoolId) {
+            $departmentId = DepartmentUser::whereUserId($user->id)->first()->department_id;
+            $department = $this->department->schoolDeptId($departmentId);
+            $schoolId = School::whereDepartmentId($department)->first()->id;
+        }
+        $wapSite = WapSite::whereSchoolId($schoolId)->first();
+        abort_if(
+            !$wapSite,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
+        
+        return view('wechat.wapsite.home', [
+            'wapsite' => $wapSite,
+            'medias'  => $this->media->medias(
+                explode(',', $wapSite->media_ids)
+            ),
+        ]);
         
     }
     

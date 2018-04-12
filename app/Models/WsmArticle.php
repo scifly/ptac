@@ -2,16 +2,21 @@
 
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\ModelTrait;
-use App\Http\Requests\WsmArticleRequest;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Throwable;
+use Carbon\Carbon;
+use Illuminate\View\View;
+use App\Helpers\ModelTrait;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\WsmArticleRequest;
+use Illuminate\Database\Eloquent\Builder;
+use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\WsmArticle 微网站栏目文章
@@ -54,10 +59,19 @@ class WsmArticle extends Model {
         'enabled',
     ];
     
+    protected $media;
+    
+    function __construct(array $attributes = []) {
+        
+        parent::__construct($attributes);
+        $this->media = app()->make('App\Models\Media');
+        
+    }
+    
     /**
      * 返回网站文章所属的微网站模块对象
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     function wapSiteModule() {
 
@@ -77,7 +91,7 @@ class WsmArticle extends Model {
      * @param WsmArticleRequest $request
      * @return bool|mixed
      * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     function store(WsmArticleRequest $request) {
 
@@ -127,7 +141,7 @@ class WsmArticle extends Model {
      * @param $id
      * @return bool|mixed
      * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     function modify(WsmArticleRequest $request, $id) {
         
@@ -192,5 +206,24 @@ class WsmArticle extends Model {
         );
         
     }
-
+    
+    /**
+     * 返回指定栏目文章
+     *
+     * @return Factory|View
+     */
+    function wIndex() {
+    
+        $id = Request::input('id');
+        $article = $this->find($id);
+    
+        return view('wechat.wapsite.article', [
+            'article' => $article,
+            'medias'  => $this->media->medias(
+                explode(',', $article->media_ids)
+            ),
+        ]);
+        
+    }
+    
 }

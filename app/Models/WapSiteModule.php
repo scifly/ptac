@@ -7,11 +7,14 @@ use App\Helpers\ModelTrait;
 use App\Http\Requests\WapSiteModuleRequest;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 use Throwable;
 
 
@@ -120,7 +123,9 @@ class WapSiteModule extends Model {
         try {
             DB::transaction(function () use ($request, $id) {
                 self::removeMedias($request);
-                return self::find($id)->update($request->except('_method', '_token', 'del_id'));
+                return self::find($id)->update(
+                    $request->except('_method', '_token', 'del_id')
+                );
             });
         } catch (Exception $e) {
             throw $e;
@@ -131,6 +136,8 @@ class WapSiteModule extends Model {
     }
 
     /**
+     * 返回微网站栏目列表（后台）
+     *
      * @return array
      */
     function datatable() {
@@ -165,5 +172,24 @@ class WapSiteModule extends Model {
         );
         
     }
-
+    
+    /**
+     * 返回微网站栏目列表（微信）
+     *
+     * @return Factory|View
+     */
+    function wIndex() {
+    
+        $id = Request::input('id');
+        $articles = WsmArticle::whereWsmId($id)->orderByDesc("created_at")->get();
+        $module = $this->find($id);
+    
+        return view('wechat.wapsite.module', [
+            'articles' => $articles,
+            'module'   => $module,
+            'ws'       => true,
+        ]);
+        
+    }
+    
 }
