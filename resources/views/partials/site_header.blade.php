@@ -19,8 +19,7 @@
 
                 <li class="dropdown messages-menu open">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-                        <i class="fa fa-envelope-o"></i> 四川盛世华唐
-                        <span class="label label-success">4</span>
+                        四川盛世华唐
                     </a>
                 </li>
                 <li class="dropdown user user-menu">
