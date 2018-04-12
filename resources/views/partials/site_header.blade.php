@@ -16,6 +16,9 @@
                     {{--@include('partials.site_task')--}}
                 {{--</li>--}}
                 <!--用户账号-->
+                <li>
+                    whatever
+                </li>
                 <li class="dropdown user user-menu">
                     @include('partials.site_user')
                 </li>
