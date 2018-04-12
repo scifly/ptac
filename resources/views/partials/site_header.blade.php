@@ -17,10 +17,9 @@
                 {{--</li>--}}
                 <!--用户账号-->
 
-                <li class="dropdown messages-menu open">
+                <li class="dropdown messages-menu open pull-left">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-                        <i class="fa fa-send-o"></i> 
-                        四川盛世华唐
+                        <i class="fa fa-send-o"></i> 四川盛世华唐
                     </a>
                 </li>
                 <li class="dropdown user user-menu">
