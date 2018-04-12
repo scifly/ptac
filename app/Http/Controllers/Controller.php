@@ -65,7 +65,7 @@ class Controller extends BaseController {
                 }
                 session(['tabUrl' => Request::path()]);
                 if ($menu) {
-                    $params['breadcrumb'] = $menu->name . ' / ' . $tab->name . ' / ' . $action->name;
+                    $params['breadcrumb'] = $action->name;
                 } else {
                     return response()->json([
                         'statusCode' => HttpStatusCode::UNAUTHORIZED,
@@ -84,8 +84,7 @@ class Controller extends BaseController {
             # 如果Http请求的内容需要直接在Wrapper层（不包含卡片）中显示
             session(['menuId' => Request::query('menuId')]);
             Session::forget('tabId');
-            $menu = Menu::find(session('menuId'));
-            $params['breadcrumb'] = $menu->name . ' / ' . $action->name;
+            $params['breadcrumb'] = $action->name;
             
             return response()->json([
                 'statusCode' => HttpStatusCode::OK,
@@ -102,7 +101,7 @@ class Controller extends BaseController {
                 return response()->redirectTo('pages/' . session('menuId'));
                 # 如果请求的内容需要直接在Wrapper层（不包含卡片）中显示
             } else {
-                $params['breadcrumb'] = $menu->name . ' / ' . $action->name;
+                $params['breadcrumb'] = $action->name;
                 
                 return view('home.page', [
                     'menu'    => $menu->menuHtml($menu->rootMenuId()),
