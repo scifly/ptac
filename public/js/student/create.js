@@ -2,9 +2,8 @@
 page.create('formStudent', 'students');
 
 /** 初始化学籍创建页面功能 */
-$.getMultiScripts(['js/contact.select.js']).done(
+$.getMultiScripts(['js/contact.js']).done(
     function () {
-        var cr = $.contactRange();
-        cr.create('students');
+        $.contact().create('students');
     }
 );

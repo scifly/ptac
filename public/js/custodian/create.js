@@ -2,9 +2,8 @@
 page.create('formCustodian', 'custodians');
 
 /** 初始化监护人创建页面功能 */
-$.getMultiScripts(['js/contact.select.js']).done(
+$.getMultiScripts(['js/contact.js']).done(
     function () {
-        var cr = $.contactRange();
-        cr.create('custodians');
+        $.contact().create('custodians');
     }
 );

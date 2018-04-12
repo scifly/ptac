@@ -4,9 +4,8 @@ page.index('educators', [
 ]);
 
 /** 初始化教职员工首页功能 */
-$.getMultiScripts(['js/contact.select.js']).done(
+$.getMultiScripts(['js/contact.js']).done(
     function () {
-        var cr = $.contactRange();
-        cr.index('educators');
+        $.contact().index('educators');
     }
 );

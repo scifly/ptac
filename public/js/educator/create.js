@@ -2,9 +2,8 @@
 page.create('formEducator', 'educators');
 
 /** 初始化教职员工创建页面功能 */
-$.getMultiScripts(['js/contact.select.js']).done(
+$.getMultiScripts(['js/contact.js']).done(
     function () {
-        var cr = $.contactRange();
-        cr.create('educators');
+        $.contact().create('educators');
     }
 );

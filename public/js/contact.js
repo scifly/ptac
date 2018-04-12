@@ -1,6 +1,6 @@
-//# sourceURL=contact.select.js
+//# sourceURL=contact.js
 (function ($) {
-    $.contactRange = function (options) {
+    $.contact = function (options) {
         var cr = {
             options: $.extend({
                 ranges: 'ranges',

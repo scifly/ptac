@@ -13,17 +13,15 @@ page.initDateRangePicker();
 $.getMultiScripts(['js/common/attendance/common.js']);
 
 /** 初始化年级选择事件监听 */
-$.getMultiScripts(['js/contact.select.js']).done(
+$.getMultiScripts(['js/contact.js']).done(
     function () {
-        var cr = $.contactRange();
-        cr.onGradeChange(table, 'stat');
+        $.contact().onGradeChange(table, 'stat');
     }
 );
 /** 初始化统计按钮点击事件 */
 $('#stat').on('click', function () {
     $('#records').find('tbody').html('');
-    var attend = $.attendance();
-    attend.stat(table)
+    $.attendance().stat(table)
 });
 
 /** 初始化导出按钮点击事件 */

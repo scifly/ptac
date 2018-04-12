@@ -2,9 +2,8 @@
 page.index('custodians');
 
 /** 初始化监护人首页功能 */
-$.getMultiScripts(['js/contact.select.js']).done(
+$.getMultiScripts(['js/contact.js']).done(
     function () {
-        var cr = $.contactRange();
-        cr.index('custodians');
+        $.contact().index('custodians');
     }
 );

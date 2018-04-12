@@ -69,9 +69,9 @@
                 });
             },
             loadJs: function (action) {
-                $.getMultiScripts(['js/contact.select.js']).done(
+                $.getMultiScripts(['js/contact.js']).done(
                     function () {
-                        var cr = $.contactRange();
+                        var cr = $.contact();
                         switch (action) {
                             case 'create':
                                 cr.create(operator.options.table);
