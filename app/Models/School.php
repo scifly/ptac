@@ -371,7 +371,8 @@ class School extends Model {
             ],
         ];
         # 仅在企业级显示学校列表
-        $condition = 'Corp.id = ' . Corp::whereDepartmentId(Auth::user()->topDeptId())->first()->id;
+        $rootMenuId = (new Menu())->rootMenuId(true);
+        $condition = 'Corp.id = ' . Corp::whereMenuId($rootMenuId)->first()->id;
         
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition

@@ -97,39 +97,6 @@ class HomeController extends Controller {
     }
     
     /**
-     * @return array
-     */
-    private static function getVars(): array {
-        
-        $user = Auth::user();
-        switch ($user->group->name) {
-            case '运营':
-                $view = 'company';
-                $parentMenuId = self::ROOT_MENU_ID;
-                break;
-            case '企业':
-                $view = 'corp';
-                $parentMenuId = Corp::whereDepartmentId($user->topDeptId())
-                    ->first()->menu_id;
-                break;
-            case '学校':
-                $view = 'school';
-                $parentMenuId = School::whereDepartmentId($user->topDeptId())
-                    ->first()->menu_id;
-                break;
-            default:
-                $view = 'school';
-                $topDeptId = $user->topDeptId();
-                $parentMenuId = School::whereDepartmentId($user->schoolDeptId($topDeptId))
-                    ->first()->menu_id;
-                break;
-        }
-        
-        return [$view, $parentMenuId];
-        
-    }
-    
-    /**
      * 菜单入口
      *
      * @param $id
@@ -199,6 +166,39 @@ class HomeController extends Controller {
             'menuId' => $id,
             'js'     => self::PAGEJS,
         ]);
+        
+    }
+    
+    /**
+     * @return array
+     */
+    private static function getVars(): array {
+        
+        $user = Auth::user();
+        switch ($user->group->name) {
+            case '运营':
+                $view = 'company';
+                $parentMenuId = self::ROOT_MENU_ID;
+                break;
+            case '企业':
+                $view = 'corp';
+                $parentMenuId = Corp::whereDepartmentId($user->topDeptId())
+                    ->first()->menu_id;
+                break;
+            case '学校':
+                $view = 'school';
+                $parentMenuId = School::whereDepartmentId($user->topDeptId())
+                    ->first()->menu_id;
+                break;
+            default:
+                $view = 'school';
+                $topDeptId = $user->topDeptId();
+                $parentMenuId = School::whereDepartmentId($user->schoolDeptId($topDeptId))
+                    ->first()->menu_id;
+                break;
+        }
+        
+        return [$view, $parentMenuId];
         
     }
     
