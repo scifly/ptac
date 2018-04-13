@@ -62,9 +62,9 @@ class WapSiteController extends Controller {
         
         return $this->output([
             'ws'     => $ws,
-            'medias' => $this->media->medias(
-                explode(',', $ws->media_ids)
-            ),
+            'medias' => !empty($ws->media_ids)
+                ? $this->media->medias(explode(',', $ws->media_ids))
+                : null,
         ]);
         
     }
