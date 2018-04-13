@@ -4,9 +4,7 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($ws['id']))
-                {{ Form::hidden('id', $ws['id'], ['id' => 'id']) }}
-            @endif
+            {{ Form::hidden('id', $ws['id'], ['id' => 'id']) }}
             <div class="form-group">
                 {!! Form::label('site_title', '首页抬头', [
                     'class' => 'col-sm-3 control-label'
@@ -26,11 +24,11 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="preview">
-                        @if(!empty($medias))
+                        @if (!empty($medias))
                             @foreach($medias as $media)
                                 <div class="img-item">
                                     <img src="../../{{ $media->path }}" id="{{ $media->id }}">
-                                    <input type="hidden" name="media_ids[]" value="{{$media->id}}"/>
+                                    <input type="hidden" name="media_ids[]" value="{{ $media->id }}"/>
                                     <div class="del-mask">
                                         <i class="delete fa fa-trash"></i>
                                     </div>
