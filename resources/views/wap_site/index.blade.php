@@ -1,12 +1,8 @@
 <div class="box box-default box-solid">
-    @if (!empty($ws['id']))
-        {{ Form::hidden('id', $ws['id'], ['id' => 'id']) }}
-    @endif
-    @if(isset($breadcrumb))
-        <div class="box-header with-border">
-            @include('partials.form_header')
-        </div>
-    @endif
+    {{ Form::hidden('id', $ws['id'], ['id' => 'id']) }}
+    <div class="box-header with-border">
+        @include('partials.form_header')
+    </div>
     <div class="box box-primary" style="margin-top:10px;">
         <div class="box-body box-profile" style="position: relative;padding: 20px;text-align: center;">
             <img class="avater" src='{{ asset("../img/window-icon.png") }}'>
@@ -31,7 +27,7 @@
             </div>
             <div class="col-lg-6 otherinfo-con">
                 <strong class="title">状态</strong>
-                <p class="text-muted">{{$ws->enabled == 1 ? '已启用' : '未启用'}}</p>
+                <p class="text-muted">{{ $ws->enabled ? '已启用' : '未启用' }}</p>
                 <hr>
             </div>
         </div>

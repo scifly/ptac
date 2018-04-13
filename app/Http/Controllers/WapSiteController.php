@@ -1,20 +1,14 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Facades\Wechat;
-use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
-use App\Helpers\RequestTrait;
 use App\Http\Requests\WapSiteRequest;
-use App\Models\ConferenceQueue;
 use App\Models\Media;
 use App\Models\School;
 use App\Models\WapSite;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Storage;
 use Throwable;
 
 /**
