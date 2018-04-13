@@ -42,13 +42,13 @@ class CheckRole {
         $groupId = $user->group_id;
         $role = $user->group->name;
         $menuId = session('menuId');
-        $rootMenuId = $this->menu->rootMenuId();
     
         # 超级用户直接访问所有功能, 如果访问的是首页，则直接通过并进入下个请求
         if ($role == '运营' || $route == '/' || $route == 'home') {
             return $next($request);
         }
     
+        $rootMenuId = $this->menu->rootMenuId();
         # 菜单权限判断
         if (stripos($route, 'pages') > -1) {
             if (in_array($role, ['企业', '学校'])) {
