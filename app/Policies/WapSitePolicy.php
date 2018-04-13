@@ -24,6 +24,18 @@ class WapSitePolicy {
     
     public function edit(User $user, WapSite $ws) {
         
+        return $this->permit($user, $ws);
+        
+    }
+    
+    public function update(User $user, WapSite $ws) {
+        
+        return $this->permit($user, $ws);
+        
+    }
+    
+    private function permit(User $user, WapSite $ws) {
+        
         abort_if(
             !$ws,
             HttpStatusCode::NOT_FOUND,

@@ -54,7 +54,7 @@ class WapSiteController extends Controller {
     public function edit($id) {
         
         $ws = WapSite::find($id);
-        abort_if(!$ws, HttpStatusCode::NOT_FOUND);
+        $this->authorize('edit', $ws);
         
         if (Request::method() == 'POST') {
             return $this->ws->upload();
@@ -81,7 +81,7 @@ class WapSiteController extends Controller {
     public function update(WapSiteRequest $request, $id) {
         
         $ws = WapSite::find($id);
-        abort_if(!$ws, HttpStatusCode::NOT_FOUND);
+        $this->authorize('update', $ws);
         
         return $this->result(
             $ws->modify($request, $id)

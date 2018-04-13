@@ -37,6 +37,7 @@ use App\Models\StudentAttendanceSetting;
 use App\Models\SubjectModule;
 use App\Models\Tab;
 use App\Models\User;
+use App\Models\WapSite;
 use App\Policies\ActionPolicy;
 use App\Policies\ActionTypePolicy;
 use App\Policies\AlertTypePolicy;
@@ -78,6 +79,7 @@ use App\Policies\StudentAttendanceSettingPolicy;
 use App\Policies\StudentPolicy;
 use App\Policies\SubjectModulePolicy;
 use App\Policies\TabPolicy;
+use App\Policies\WapSitePolicy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Laravel\Passport\Passport;
@@ -130,6 +132,7 @@ class AuthServiceProvider extends ServiceProvider {
         StudentAttendance::class => StudentAttendancePolicy::class,
         EducatorAttendance::class => EducatorAttendancePolicy::class,
         User::class => OperatorPolicy::class,
+        WapSite::class => WapSitePolicy::class,
     ];
     
     /**
