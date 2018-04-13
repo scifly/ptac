@@ -56,7 +56,7 @@ class AppController extends Controller {
     public function edit($id) {
         
         $app = $this->app->find($id);
-        $this->authorize('eum', $app);
+        $this->authorize('edit', $app);
         
         return $this->output(['app' => $app]);
         
@@ -73,7 +73,7 @@ class AppController extends Controller {
     public function update(AppRequest $request, $id) {
         
         $app = $this->app->find($id);
-        $this->authorize('eum', $app);
+        $this->authorize('update', $app);
         
         return $this->result(
             $app->modify($request->all(), $id)
@@ -91,7 +91,7 @@ class AppController extends Controller {
     public function menu($id) {
         
         $app = $this->app->find($id);
-        $this->authorize('eum', $app);
+        $this->authorize('sync', $app);
         $menu = "[
             {
                 \"name\": \"\u6d4b\u8bd5\",
