@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Wechat;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
@@ -15,8 +16,11 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
@@ -133,10 +137,46 @@ class WapSite extends Model {
         
         return [
             'ws'     => $ws,
-            'medias' => $this->media->medias(explode(",", $ws->media_ids)),
+            'medias' => $this->media->medias(
+                explode(",", $ws->media_ids)
+            ),
             'show'   => true,
         ];
     
+    }
+    
+    /**
+     * 上传媒体文件
+     *
+     * @return JsonResponse
+     */
+    function upload() {
+    
+        $files = Request::file('img');
+        abort_if(
+            empty($files),
+            HttpStatusCode::NOT_ACCEPTABLE,
+            '您还未选择图片！'
+        );
+        $result['data'] = [];
+        $mes = [];
+        foreach ($files as $key => $file) {
+            $this->validateFile($file, $mes);
+        }
+        $result['message'] = '上传成功！';
+        $result['data'] = $mes;
+        $token = '';
+        if ($mes) {
+            $path = '';
+            foreach ($mes AS $m) {
+                $path = dirname(public_path()) . '/' . $m['path'];
+            }
+            $data = ["media" => curl_file_create($path)];
+            Wechat::uploadMedia($token, 'image', $data);
+        }
+    
+        return response()->json($result);
+        
     }
     
     /**
@@ -222,6 +262,48 @@ class WapSite extends Model {
             }
         }
         
+    }
+    
+    /**
+     * 验证上传文件
+     *
+     * @param UploadedFile $file
+     * @param array $filePaths
+     */
+    private function validateFile(UploadedFile $file, array &$filePaths) {
+    
+        if ($file->isValid()) {
+            // 获取文件相关信息
+            # 文件原名
+            $file->getClientOriginalName();
+            # 扩展名
+            $ext = $file->getClientOriginalExtension();
+            # 临时文件的绝对路径
+            $realPath = $file->getRealPath();
+            # image/jpeg/
+            $file->getClientMimeType();
+            // 上传图片
+            $filename = uniqid() . '.' . $ext;
+            // 使用新建的uploads本地存储空间（目录）
+            if (Storage::disk('uploads')->put($filename, file_get_contents($realPath))) {
+                // $filePath = 'storage/app/uploads/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . $filename;
+                $filePath = 'uploads/' .
+                    date('Y') . '/' .
+                    date('m') . '/' .
+                    date('d') . '/' .
+                    $filename;
+                $mediaId = Media::insertGetId([
+                    'path'          => $filePath,
+                    'remark'        => '微网站轮播图',
+                    'media_type_id' => '1',
+                    'enabled'       => '1',
+                ]);
+                $filePaths[] = [
+                    'id'   => $mediaId,
+                    'path' => $filePath,
+                ];
+            }
+        }
     }
     
 }

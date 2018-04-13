@@ -7,7 +7,7 @@ $.getMultiScripts([plugins.fileinput.js]).done(function() {
     $uploadFile.fileinput({
         language: 'zh',
         theme: 'explorer',
-        uploadUrl: page.siteRoot() + "/wap_sites/uploadImages",
+        uploadUrl: page.siteRoot() + "/wap_sites/edit/" + $('#id').val(),
         uploadAsync: false,
         maxFileCount: 5,
         minImageWidth: 50, //图片的最小宽度
@@ -52,6 +52,8 @@ $.getMultiScripts([plugins.fileinput.js]).done(function() {
     // 点击删除按钮
     $('body').on('click', '.delete', function () {
         $(this).parent().parent().remove();
-        $pre.append('<input type="hidden" name="del_ids[]" value="' + $(this).parent().siblings().attr('id') + '">');
+        $pre.append(
+            '<input type="hidden" name="del_ids[]" value="' + $(this).parent().siblings().attr('id') + '">'
+        );
     })
 });
