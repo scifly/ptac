@@ -78,12 +78,12 @@ class Media extends Model {
      * @return HasMany
      */
     function menus() { return $this->hasMany('App\Models\Menu'); }
-
+    
     /**
      * 根据媒体ID返回媒体对象
      *
      * @param array $ids
-     * @return array
+     * @return array|null
      */
     function medias(array $ids) {
 
