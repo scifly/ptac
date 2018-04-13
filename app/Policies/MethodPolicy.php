@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Helpers\Constant;
+use App\Helpers\PolicyTrait;
 use App\Models\Action;
 use App\Models\ActionGroup;
 use App\Models\Corp;
@@ -14,7 +15,7 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 
 class MethodPolicy {
     
-    use HandlesAuthorization;
+    use HandlesAuthorization, PolicyTrait;
     
     protected $menu;
     
@@ -33,10 +34,7 @@ class MethodPolicy {
     
         $role = $user->group->name;
         if (!in_array($role, Constant::SUPER_ROLES)) {
-            $actionGroup = ActionGroup::whereGroupId($user->group_id)
-                ->where('action_id', Action::whereRoute($route->uri)->first()->id)
-                ->first();
-            return $actionGroup ? true : false;
+            return $this->action($user);
         }
 
         $rootMenuId = $this->menu->rootMenuId();

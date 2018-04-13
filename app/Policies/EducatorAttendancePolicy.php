@@ -3,13 +3,13 @@
 namespace App\Policies;
 
 use App\Helpers\Constant;
-use App\Models\ActionGroup;
+use App\Helpers\PolicyTrait;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class EducatorAttendancePolicy {
     
-    use HandlesAuthorization;
+    use HandlesAuthorization, PolicyTrait;
 
     /**
      * Create a new policy instance.
@@ -26,7 +26,7 @@ class EducatorAttendancePolicy {
             return true;
         }
     
-        return ActionGroup::whereGroupId($user->group_id)->first() ? true : false;
+        return $this->action($user);
         
     }
 }

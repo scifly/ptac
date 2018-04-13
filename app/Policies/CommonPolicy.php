@@ -3,14 +3,17 @@ namespace App\Policies;
 
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
+use App\Helpers\PolicyTrait;
+use App\Models\Action;
 use App\Models\ActionGroup;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Request;
 
 class CommonPolicy {
     
-    use HandlesAuthorization, ModelTrait;
+    use HandlesAuthorization, ModelTrait, PolicyTrait;
     
     /**
      * Create a new policy instance.
@@ -35,8 +38,7 @@ class CommonPolicy {
             case '学校':
                 return in_array($this->schoolId(), $this->schoolIds());
             default:
-                return in_array($this->schoolId(), $this->schoolIds())
-                    && (ActionGroup::whereGroupId($user->group_id)->first() ? true : false);
+                return in_array($this->schoolId(), $this->schoolIds()) && $this->action($user);
         }
         
     }
@@ -63,8 +65,7 @@ class CommonPolicy {
             case '学校':
                 return in_array($schoolId, $this->schoolIds());
             default:
-                return ($user->educator->school_id == $this->schoolId())
-                    && (ActionGroup::whereGroupId($user->group_id)->first() ? true : false);
+                return ($user->educator->school_id == $this->schoolId()) && $this->action($user);
         }
         
     }

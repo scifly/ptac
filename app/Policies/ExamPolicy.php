@@ -3,6 +3,7 @@ namespace App\Policies;
 
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
+use App\Helpers\PolicyTrait;
 use App\Models\ActionGroup;
 use App\Models\Corp;
 use App\Models\Exam;
@@ -13,7 +14,7 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ExamPolicy {
     
-    use HandlesAuthorization, ModelTrait;
+    use HandlesAuthorization, ModelTrait, PolicyTrait;
     
     protected $menu;
     
@@ -52,7 +53,7 @@ class ExamPolicy {
             return true;
         }
         
-        return ActionGroup::whereGroupId($user->group_id)->first() ? true : false;
+        return $this->action($user);
         
     }
     
@@ -105,7 +106,7 @@ class ExamPolicy {
             default:
                 return ($user->educator->school_id == $exam->examType->school_id)
                     && (empty(array_diff(explode(',', $exam->class_ids), $this->classIds())) ? true : false)
-                    && (ActionGroup::whereGroupId($user->group_id)->first() ? true : false);
+                    && $this->action($user);
         }
         
     }

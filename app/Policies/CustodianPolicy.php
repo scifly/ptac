@@ -5,14 +5,17 @@ namespace App\Policies;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
+use App\Helpers\PolicyTrait;
+use App\Models\Action;
 use App\Models\ActionGroup;
 use App\Models\Custodian;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Request;
 
 class CustodianPolicy {
 
-    use HandlesAuthorization, ModelTrait;
+    use HandlesAuthorization, ModelTrait, PolicyTrait;
 
     /**
      * Create a new policy instance.
@@ -30,8 +33,10 @@ class CustodianPolicy {
     function cse(User $user) {
         
         if (in_array($user->group->name, Constant::SUPER_ROLES)) { return true; }
-        
-        return ActionGroup::whereGroupId($user->group_id)->first() ? true : false;
+        $actionId = Action::whereRoute(trim(Request::route()->uri()))->first()->id;
+        $ag = ActionGroup::whereGroupId($user->group_id)->where('action_id', $actionId)->first();
+    
+        return $ag ? true : false;
         
     }
     
@@ -51,8 +56,7 @@ class CustodianPolicy {
         );
         if (in_array($user->group->name, Constant::SUPER_ROLES)) { return true; }
         
-        return in_array($custodian->id, $this->contactIds('custodian'))
-            && (ActionGroup::whereGroupId($user->group_id)->first() ? true : false);
+        return in_array($custodian->id, $this->contactIds('custodian')) && $this->action($user);
         
     }
 

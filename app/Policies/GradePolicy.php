@@ -3,6 +3,7 @@ namespace App\Policies;
 
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
+use App\Helpers\PolicyTrait;
 use App\Models\ActionGroup;
 use App\Models\Corp;
 use App\Models\Grade;
@@ -13,7 +14,7 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 
 class GradePolicy {
     
-    use HandlesAuthorization, ModelTrait;
+    use HandlesAuthorization, ModelTrait, PolicyTrait;
     
     protected $menu;
     
@@ -57,8 +58,7 @@ class GradePolicy {
                 $school = School::whereMenuId($rootMenuId)->first();
                 return $this->schoolId() == $school->id;
             default:
-                return ($user->educator->school_id == $this->schoolId())
-                    && (ActionGroup::whereGroupId($user->group_id)->first() ? true : false);
+                return ($user->educator->school_id == $this->schoolId()) && $this->action($user);
         }
         
         
@@ -101,7 +101,7 @@ class GradePolicy {
                 );
             default:
                 return ($user->educator->school_id == $grade->school_id)
-                    && (ActionGroup::whereGroupId($user->group->id)->first() ? true : false)
+                    && $this->action($user)
                     && (in_array($grade->id, $this->gradeIds()));
         }
     

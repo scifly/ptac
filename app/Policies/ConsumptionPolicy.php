@@ -3,15 +3,18 @@ namespace App\Policies;
 
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
+use App\Helpers\PolicyTrait;
+use App\Models\Action;
 use App\Models\ActionGroup;
 use App\Models\Grade;
 use App\Models\Squad;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Request;
 
 class ConsumptionPolicy {
     
-    use HandlesAuthorization, ModelTrait;
+    use HandlesAuthorization, ModelTrait, PolicyTrait;
     
     /**
      * Create a new policy instance.
@@ -27,8 +30,10 @@ class ConsumptionPolicy {
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {
             return true;
         }
-        
-        return ActionGroup::whereGroupId($user->group_id)->first() ? true : false;
+        $actionId = Action::whereRoute(trim(Request::route()->uri()))->first()->id;
+        $ag = ActionGroup::whereGroupId($user->group_id)->where('action_id', $actionId)->first();
+    
+        return $ag ? true : false;
         
     }
     
@@ -56,10 +61,10 @@ class ConsumptionPolicy {
             return empty(array_diff($studentIds, $this->contactIds('student')))
                 && ($dateRange[1] >= $dateRange[0]);
         }
-        
+    
         return empty(array_diff($studentIds, $this->contactIds('student')))
             && ($dateRange[1] >= $dateRange[0])
-            && (ActionGroup::whereGroupId($user->group_id)->first() ? true : false);
+            && $this->action($user);
         
     }
     
@@ -68,8 +73,8 @@ class ConsumptionPolicy {
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {
             return true;
         }
-    
-        return ActionGroup::whereGroupId($user->group_id)->first() ? true : false;
+        
+        return $ag ? true : false;
         
     }
     

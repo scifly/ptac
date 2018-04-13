@@ -4,6 +4,7 @@ namespace App\Policies;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
+use App\Helpers\PolicyTrait;
 use App\Models\ActionGroup;
 use App\Models\Squad;
 use App\Models\User;
@@ -11,7 +12,7 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 
 class SquadPolicy {
     
-    use HandlesAuthorization, ModelTrait;
+    use HandlesAuthorization, ModelTrait, PolicyTrait;
     
     /**
      * Create a new policy instance.
@@ -28,7 +29,7 @@ class SquadPolicy {
             return true;
         }
         
-        return ActionGroup::whereGroupId($user->group_id) ? true : false;
+        return $this->action($user);
         
     }
     
@@ -47,8 +48,7 @@ class SquadPolicy {
             case '学校':
                 return in_array($class->grade->school_id, $this->schoolIds());
             default:
-                return in_array($class->grade_id, $this->gradeIds())
-                    && (ActionGroup::whereGroupId($user->group_id)->first() ? true : false);
+                return in_array($class->grade_id, $this->gradeIds()) && $this->action($user);
         }
         
     }

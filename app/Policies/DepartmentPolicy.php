@@ -4,14 +4,17 @@ namespace App\Policies;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
+use App\Helpers\PolicyTrait;
+use App\Models\Action;
 use App\Models\ActionGroup;
 use App\Models\Department;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Request;
 
 class DepartmentPolicy {
     
-    use HandlesAuthorization, ModelTrait;
+    use HandlesAuthorization, ModelTrait, PolicyTrait;
     
     /**
      * Create a new policy instance.
@@ -34,8 +37,8 @@ class DepartmentPolicy {
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {
             return true;
         }
-        
-        return ActionGroup::whereGroupId($user->group->id)->first() ? true : false;
+    
+        return $this->action($user);
         
     }
     
@@ -57,9 +60,7 @@ class DepartmentPolicy {
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {
             return true;
         }
-    
-        return (ActionGroup::whereGroupId($user->group->id)->first() ? true : false)
-            && in_array($department->id, $this->departmentIds($user->id));
+        return $this->action($user) && in_array($department->id, $this->departmentIds($user->id));
     
     }
     

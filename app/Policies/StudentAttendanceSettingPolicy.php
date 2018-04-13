@@ -4,6 +4,7 @@ namespace App\Policies;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
+use App\Helpers\PolicyTrait;
 use App\Models\ActionGroup;
 use App\Models\StudentAttendanceSetting;
 use App\Models\User;
@@ -11,7 +12,7 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 
 class StudentAttendanceSettingPolicy {
     
-    use HandlesAuthorization, ModelTrait;
+    use HandlesAuthorization, ModelTrait, PolicyTrait;
     
     /**
      * Create a new policy instance.
@@ -26,7 +27,7 @@ class StudentAttendanceSettingPolicy {
             return true;
         }
         
-        return ActionGroup::whereGroupId($user->group_id)->first() ? true : false;
+        return $this->action($user);
         
     }
     
@@ -45,8 +46,7 @@ class StudentAttendanceSettingPolicy {
             case '学校':
                 return in_array($sas->grade->school_id, $this->schoolIds());
             default:
-                return in_array($sas->grade_id, $this->gradeIds())
-                    && (ActionGroup::whereGroupId($user->group_id)->first() ? true : false);
+                return in_array($sas->grade_id, $this->gradeIds()) && $this->action($user);
         }
         
     }

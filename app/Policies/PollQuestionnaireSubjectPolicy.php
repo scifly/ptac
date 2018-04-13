@@ -3,6 +3,7 @@ namespace App\Policies;
 
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
+use App\Helpers\PolicyTrait;
 use App\Models\ActionGroup;
 use App\Models\PollQuestionnaireSubject;
 use App\Models\User;
@@ -10,7 +11,7 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 
 class PollQuestionnaireSubjectPolicy {
     
-    use HandlesAuthorization, ModelTrait;
+    use HandlesAuthorization, ModelTrait, PolicyTrait;
     
     /**
      * Create a new policy instance.
@@ -31,8 +32,7 @@ class PollQuestionnaireSubjectPolicy {
             case '学校':
                 return in_array($this->schoolId(), $this->schoolIds());
             default:
-                return in_array($this->schoolId(), $this->schoolIds())
-                    && (ActionGroup::whereGroupId($user->group_id)->first() ? true : false);
+                return in_array($this->schoolId(), $this->schoolIds()) && $this->action($user);
         }
         
     }
@@ -53,7 +53,7 @@ class PollQuestionnaireSubjectPolicy {
                 return in_array($this->schoolId(), $this->schoolIds());
             default:
                 return in_array($this->schoolId(), $this->schoolIds())
-                    && (ActionGroup::whereGroupId($user->group_id)->first() ? true : false)
+                    && $this->action($user)
                     && ($user->id == $pqs->pollQuestionnaire->user_id);
         }
         
