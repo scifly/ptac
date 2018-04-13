@@ -1,25 +1,3 @@
-{{--<div class="box box-default box-solid">--}}
-    {{--<div class="box-header with-border">--}}
-        {{--@include('partials.list_header')--}}
-    {{--</div>--}}
-    {{--<div class="box-body">--}}
-        {{--<table id="data-table" style="width: 100%"--}}
-               {{--class="display nowrap table table-striped table-bordered table-hover table-condensed">--}}
-            {{--<thead>--}}
-			{{--<tr class="bg-info">--}}
-                {{--<th>#</th>--}}
-                {{--<th>所属学校</th>--}}
-                {{--<th>首页抬头</th>--}}
-                {{--<th>创建于</th>--}}
-                {{--<th>更新于</th>--}}
-                {{--<th>状态</th>--}}
-            {{--</tr>--}}
-            {{--</thead>--}}
-            {{--<tbody></tbody>--}}
-        {{--</table>--}}
-    {{--</div>--}}
-    {{--@include('partials.form_overlay')--}}
-{{--</div>--}}
 <style>
     .avater {
         width: 150px;
@@ -105,17 +83,12 @@
     <div class="box box-primary" style="margin-top:10px;">
         <div class="box-body box-profile" style="position: relative;padding: 20px;text-align: center;">
             <img class="avater" src='{{ asset("../img/window-icon.png") }}'>
-
             <div class="maininfo">
-                <h3 class="profile-username">{{$ws->site_title}}</h3>
-
+                <h3 class="profile-username">{{ $ws->site_title }}</h3>
             </div>
-
             <a href="#" class="btn btn-primary btn-block btn-bianji" style=""><b>编辑</b></a>
         </div>
-        <!-- /.box-body -->
     </div>
-
     <div class="box box-primary">
         <div class="box-header with-border">
             <h3 class="box-title">其他信息</h3>
@@ -129,12 +102,9 @@
                 </p>
                 <hr>
             </div>
-
             <div class="col-lg-6 otherinfo-con">
                 <strong class="title">状态</strong>
-
                 <p class="text-muted">{{$ws->enabled == 1 ? '已启用' : '未启用'}}</p>
-
                 <hr>
             </div>
         </div>

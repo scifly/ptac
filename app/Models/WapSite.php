@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Http\Requests\WapSiteRequest;
@@ -112,32 +113,30 @@ class WapSite extends Model {
         
     }
     
+    /**
+     * 返回微网站基本信息
+     *
+     * @return array
+     */
     function index() {
     
-    
-    
-    }
-    
-    /**
-     * @param WapSiteRequest $request
-     * @return bool
-     * @throws Exception
-     * @throws Throwable
-     */
-    function store(WapSiteRequest $request) {
-        
-        try {
-            DB::transaction(function () use ($request) {
-                //删除原有的图片
-                self::removeMedias($request);
-                self::create($request->all());
-            });
-        } catch (Exception $e) {
-            throw $e;
+        $ws = self::whereSchoolId($this->schoolId())->where('enabled', Constant::ENABLED)->first();
+        if (!$ws) {
+            $schoolId = $this->schoolId();
+            $ws = $this->create([
+                'school_id' => $schoolId,
+                'site_title' => School::find($schoolId)->name,
+                'media_ids' => '',
+                'enabled' => Constant::DISABLED
+            ]);
         }
         
-        return true;
-        
+        return [
+            'ws'     => $ws,
+            'medias' => $this->media->medias(explode(",", $ws->media_ids)),
+            'show'   => true,
+        ];
+    
     }
     
     /**

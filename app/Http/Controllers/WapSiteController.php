@@ -43,39 +43,8 @@ class WapSiteController extends Controller {
      */
     public function index() {
         
-        $ws = WapSite::whereSchoolId($this->school->schoolId())
-            ->where('enabled', Constant::ENABLED)->first();
-        if (!$ws) {
-            $schoolId = $this->school->schoolId();
-            $ws = $this->ws->create([
-                'school_id' => $schoolId,
-                'site_title' => School::find($schoolId)->name,
-                'media_ids' => '',
-                'enabled' => Constant::DISABLED
-            ]);
-        }
-        $mediaIds = explode(",", $ws->media_ids);
-        
-        return $this->output([
-            'ws'     => $ws,
-            'medias' => $this->media->medias($mediaIds),
-            'show'   => true,
-        ]);
-        
-    }
-    
-    /**
-     * 保存微网站
-     *
-     * @param WapSiteRequest $request
-     * @return JsonResponse
-     * @throws Exception
-     * @throws Throwable
-     */
-    public function store(WapSiteRequest $request) {
-        
-        return $this->result(
-            $this->ws->store($request)
+        return $this->output(
+            $this->ws->index()
         );
         
     }
@@ -94,7 +63,9 @@ class WapSiteController extends Controller {
         
         return $this->output([
             'ws'     => $ws,
-            'medias' => $this->media->medias(explode(',', $ws->media_ids)),
+            'medias' => $this->media->medias(
+                explode(',', $ws->media_ids)
+            ),
         ]);
         
     }
@@ -116,22 +87,6 @@ class WapSiteController extends Controller {
         return $this->result(
             $ws->modify($request, $id)
         );
-        
-    }
-    
-    /**
-     * 删除微网站
-     *
-     * @param $id
-     * @return JsonResponse
-     * @throws Exception
-     */
-    public function destroy($id) {
-        
-        $ws = WapSite::find($id);
-        abort_if(!$ws, HttpStatusCode::NOT_FOUND);
-        
-        return $this->result($ws->delete());
         
     }
     

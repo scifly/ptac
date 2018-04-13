@@ -1,7 +1,6 @@
 page.edit('formWapSite', 'wap_sites');
 page.loadCss(plugins.fileinput.css);
-$.getMultiScripts([plugins.fileinput.js])
-    .done(function() {
+$.getMultiScripts([plugins.fileinput.js]).done(function() {
     var $pre = $('.preview');
     var $uploadFile = $('#uploadFile');
     // 初始化
@@ -26,7 +25,7 @@ $.getMultiScripts([plugins.fileinput.js])
         }
     });
     // 上传成功
-    $uploadFile.on("filebatchuploadsuccess", function (event, data, previewId, index) {
+    $uploadFile.on("filebatchuploadsuccess", function (event, data) {
         // 填充数据
         var response = data.response.data;
         $.each(response, function (index, obj) {
