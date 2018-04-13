@@ -473,11 +473,11 @@ class Menu extends Model {
     }
     
     /**
-     * 获取当前登录用户的根菜单ID
+     * 获取当前登录用户的顶级菜单ID
      *
      * @param bool $subRoot
      *      false 返回当前角色可访问的最顶级菜单id,
-     *      true  返回当前菜单的上级菜单中类型为“学校”或“企业”的id
+     *      true  返回当前角色可访问的最直接顶级(学校或企业)菜单id
      * @return int|mixed
      */
     function rootMenuId($subRoot = false) {

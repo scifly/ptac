@@ -99,11 +99,15 @@ class CheckRole {
         # 校级管理员可访问的企业类功能
         if ($role == '学校') {
             $schoolId = School::whereMenuId($rootMenuId)->first()->id;
-            $wapSiteId = WapSite::whereSchoolId($schoolId)->first()->id;
-            $allowedSchoolActions = array_merge(
-                $this->allowedActions(Constant::ALLOWED_SCHOOL_ACTIONS, $schoolId),
-                $this->allowedActions(Constant::ALLOWED_WAPSITE_ACTIONS, $wapSiteId)
-            );
+            $wapSite = WapSite::whereSchoolId($schoolId)->first();
+            $allowedSchoolActions = [];
+            if ($wapSite) {
+                $wapSiteId = $wapSite->id;
+                $allowedSchoolActions = array_merge(
+                    $this->allowedActions(Constant::ALLOWED_SCHOOL_ACTIONS, $schoolId),
+                    $this->allowedActions(Constant::ALLOWED_WAPSITE_ACTIONS, $wapSiteId)
+                );
+            }
             if (in_array($request->path(), $allowedSchoolActions)) {
                 return $next($request);
             }
