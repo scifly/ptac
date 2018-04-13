@@ -483,8 +483,8 @@ class Menu extends Model {
     function rootMenuId($subRoot = false) {
         
         $user = Auth::user();
-        $menuId = session('menuId');
         $rootMId = Menu::whereMenuTypeId(MenuType::whereName('根')->first()->id)->first()->id;
+        $menuId = session('menuId') ?? $rootMId;
         $smId = self::menuId($menuId);
         $cmId = self::menuId($menuId, '企业');
         switch ($user->group->name) {
