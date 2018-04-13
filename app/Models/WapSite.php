@@ -112,6 +112,12 @@ class WapSite extends Model {
         
     }
     
+    function index() {
+    
+    
+    
+    }
+    
     /**
      * @param WapSiteRequest $request
      * @return bool

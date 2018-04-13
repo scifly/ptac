@@ -5,6 +5,7 @@ use App\Facades\Wechat;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Http\Requests\WapSiteRequest;
+use App\Models\ConferenceQueue;
 use App\Models\Media;
 use App\Models\School;
 use App\Models\WapSite;
@@ -44,7 +45,15 @@ class WapSiteController extends Controller {
         
         $ws = WapSite::whereSchoolId($this->school->schoolId())
             ->where('enabled', Constant::ENABLED)->first();
-        abort_if(!$ws, HttpStatusCode::NOT_FOUND);
+        if (!$ws) {
+            $schoolId = $this->school->schoolId();
+            $ws = $this->ws->create([
+                'school_id' => $schoolId,
+                'site_title' => School::find($schoolId)->name,
+                'media_ids' => '',
+                'enabled' => Constant::DISABLED
+            ]);
+        }
         $mediaIds = explode(",", $ws->media_ids);
         
         return $this->output([
