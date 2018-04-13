@@ -55,7 +55,7 @@ class MenuPolicy {
                 return true;
             case '企业':
             case '学校':
-                return in_array($menu->id, $this->menuIds());
+                return in_array($menu->id, $this->menuIds($menu));
             default:
                 # 校级以下角色没有管理菜单的权限
                 return false;

@@ -59,8 +59,8 @@ class SchoolRequest extends FormRequest {
             $input['school_type_id'] = School::find($this->schoolId())->school_type_id;
         }
         if (!isset($input['corp_id'])) {
-            $input['corp_id'] = Corp::whereDepartmentId(Auth::user()
-                ->topDeptId())->first()->id;
+            $departmentId = Auth::user()->departments->pluck('id')->toArray()[0];
+            $input['corp_id'] = Corp::whereDepartmentId($departmentId)->first()->id;
         }
         $this->replace($input);
         

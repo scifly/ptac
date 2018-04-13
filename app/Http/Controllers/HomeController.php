@@ -28,13 +28,14 @@ class HomeController extends Controller {
     const PAGEJS = 'js/home/page.js';
     const ROOT_MENU_ID = 1;
     
-    protected $tab, $mt;
+    protected $tab, $mt, $menu;
     
-    public function __construct(Tab $tab, MenuTab $mt) {
+    public function __construct(Tab $tab, MenuTab $mt, Menu $menu) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->tab = $tab;
         $this->mt = $mt;
+        $this->menu = $menu;
         
     }
     
@@ -172,33 +173,25 @@ class HomeController extends Controller {
     /**
      * @return array
      */
-    private static function getVars(): array {
+    private function getVars(): array {
         
         $user = Auth::user();
         switch ($user->group->name) {
             case '运营':
                 $view = 'company';
-                $parentMenuId = self::ROOT_MENU_ID;
                 break;
             case '企业':
                 $view = 'corp';
-                $parentMenuId = Corp::whereDepartmentId($user->topDeptId())
-                    ->first()->menu_id;
                 break;
             case '学校':
                 $view = 'school';
-                $parentMenuId = School::whereDepartmentId($user->topDeptId())
-                    ->first()->menu_id;
                 break;
             default:
                 $view = 'school';
-                $topDeptId = $user->topDeptId();
-                $parentMenuId = School::whereDepartmentId($user->schoolDeptId($topDeptId))
-                    ->first()->menu_id;
                 break;
         }
         
-        return [$view, $parentMenuId];
+        return [$view, $this->menu->rootMenuId()];
         
     }
     

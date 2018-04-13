@@ -80,17 +80,16 @@ trait ModelTrait {
     function schoolId() {
         
         $user = Auth::user();
+        
         switch ($user->group->name) {
             case '运营':
             case '企业':
                 $menu = new Menu();
                 $schoolMenuId = $menu->menuId(session('menuId'));
                 unset($menu);
-                
                 return $schoolMenuId ? School::whereMenuId($schoolMenuId)->first()->id : 0;
             case '学校':
-                $departmentId = $user->topDeptId();
-                
+                $departmentId = $user->departments->pluck('id')->toArray()[0];
                 return School::whereDepartmentId($departmentId)->first()->id;
             default:
                 return $user->educator->school_id;
@@ -111,11 +110,12 @@ trait ModelTrait {
             case '运营':
                 return School::all()->pluck('id')->toArray();
             case '企业':
-                $corp = Corp::whereDepartmentId($user->topDeptId())->first();
-                
+                $departmentId = $user->departments->pluck('id')->toArray()[0];
+                $corp = Corp::whereDepartmentId($departmentId)->first();
                 return $corp->schools->pluck('id')->toArray();
             case '学校':
-                return [School::whereDepartmentId($user->topDeptId())->first()->id];
+                $departmentId = $user->departments->pluck('id')->toArray()[0];
+                return [School::whereDepartmentId($departmentId)->first()->id];
             default:
                 return [$user->educator->school_id];
         }
@@ -321,32 +321,28 @@ trait ModelTrait {
     /**
      * 返回指定用户可管理的所有菜单id（校级以下角色没有管理菜单的权限）
      *
+     * @param Menu $menu
      * @return array
      */
-    function menuIds() {
+    function menuIds(Menu $menu) {
         
         $user = Auth::user();
         $role = $user->group->name;
         switch ($role) {
             case '运营':
-                return Menu::all()->pluck('id')->toArray();
+                return $menu::all()->pluck('id')->toArray();
             case '企业':
-                $corp = Corp::whereDepartmentId($user->topDeptId())->first();
-                $menu = new Menu();
+                $departmentId = $user->departments->pluck('id')->toArray()[0];
+                $corp = Corp::whereDepartmentId($departmentId)->first();
                 $menuIds = $menu->subMenuIds($corp->menu_id);
-                unset($menu);
-                
                 return $menuIds;
             case '学校':
-                $school = School::whereDepartmentId($user->topDeptId())->first();
-                $menu = new Menu();
+                $departmentId = $user->departments->pluck('id')->toArray()[0];
+                $school = School::whereDepartmentId($departmentId)->first();
                 $menuIds = $menu->subMenuIds($school->menu_id);
-                unset($menu);
-                
                 return $menuIds;
             default:
                 return [];
-            
         }
         
     }

@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -503,7 +504,7 @@ class Menu extends Model {
      * 获取根节点类型为"学校"的菜单树
      *
      * @param integer $id 指定学校的菜单ID
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     function schoolTree($id) {
         
@@ -535,7 +536,7 @@ class Menu extends Model {
         $user = Auth::user();
         $role = $user->group->name;
         if ($role != '运营') {
-            $menuIds = $this->menuIds();
+            $menuIds = $this->menuIds($this);
             abort_if(
                 !in_array($id, $menuIds) || !in_array($parentId, $menuIds),
                 HttpStatusCode::UNAUTHORIZED,

@@ -6,6 +6,7 @@ use App\Helpers\Constant;
 use App\Models\Action;
 use App\Models\ActionGroup;
 use App\Models\Corp;
+use App\Models\Menu;
 use App\Models\School;
 use App\Models\User;
 use App\Models\WapSite;
@@ -14,13 +15,19 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 class MethodPolicy {
     
     use HandlesAuthorization;
-
+    
+    protected $menu;
+    
     /**
      * Create a new policy instance.
      *
-     * @return void
+     * @param Menu $menu
      */
-    public function __construct() { }
+    public function __construct(Menu $menu) {
+        
+        $this->menu = $menu;
+        
+    }
 
     public function act(User $user, Route $route) {
     
@@ -31,9 +38,11 @@ class MethodPolicy {
                 ->first();
             return $actionGroup ? true : false;
         }
-    
+
+        $rootMenuId = $this->menu->rootMenuId();
+        
         if ($role == '企业' && stripos($route->uri, 'corps') > -1) {
-            $corpId = Corp::whereDepartmentId($user->topDeptId())->first()->id;
+            $corpId = Corp::whereMenuId($rootMenuId)->first()->id;
             $allowedActions = $this->allowedActions(
                 Constant::ALLOWED_CORP_ACTIONS, $corpId
             );
@@ -45,7 +54,7 @@ class MethodPolicy {
             (stripos($route->uri, 'schools') > -1 ||
             stripos($route->uri, 'wap_sites') > -1)
         ) {
-            $schoolId = School::whereDepartmentId($user->topDeptId())->first()->id;
+            $schoolId = School::whereMenuId($rootMenuId)->first()->id;
             $wapsiteId = WapSite::whereSchoolId($schoolId)->first()->id;
             $allowedActions = array_merge(
                 $this->allowedActions(Constant::ALLOWED_SCHOOL_ACTIONS, $schoolId),
