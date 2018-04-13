@@ -24,7 +24,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="preview">
-                        @if (!empty($medias))
+                        @if (isset($medias[0]))
                             @foreach($medias as $media)
                                 <div class="img-item">
                                     <img src="../../{{ $media->path }}" id="{{ $media->id }}">
