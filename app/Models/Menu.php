@@ -486,14 +486,17 @@ class Menu extends Model {
         $rootMId = Menu::whereMenuTypeId(MenuType::whereName('根')->first()->id)->first()->id;
         $menuId = session('menuId') ?? $rootMId;
         $smId = self::menuId($menuId);
-        $cmId = self::menuId($menuId, '企业');
+        $cmId = self::menuId($menuId, '企业'); 
         switch ($user->group->name) {
             case '运营':
                 return !$subRoot ? $rootMId : ($smId ?? ($cmId ?? $rootMId));
             case '企业':
+                $departmentId = $user->departments->pluck('id')->toArray()[0];
+                $cmId = $cmId ?? Corp::whereDepartmentId($departmentId)->menu_id;
                 return !$subRoot ? $cmId : ($smId ?? $cmId);
             case '学校':
-                return $smId;
+                $departmentId = $user->departments->pluck('id')->toArray()[0];
+                return $smId ?? School::whereDepartmentId($departmentId)->menu_id;
             default:
                 return School::find($user->educator->school_id)->menu_id;
         }

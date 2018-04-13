@@ -52,8 +52,7 @@ class HomeController extends Controller {
             list($view, $parentMenuId) = self::getVars();
             $menuId = Menu::whereParentId($parentMenuId)
                 ->whereIn('uri', ['home', '/'])
-                ->first()
-                ->id;
+                ->first()->id;
             session(['menuId' => $menuId]);
             $menu = new Menu();
             
