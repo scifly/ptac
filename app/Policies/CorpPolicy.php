@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Helpers\HttpStatusCode;
+use App\Models\Menu;
 use App\Models\User;
 use App\Models\Corp;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -10,7 +11,15 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 class CorpPolicy {
 
     use HandlesAuthorization;
+    
+    protected $menu;
 
+    function __construct(Menu $menu) {
+        
+        $this->menu = $menu;
+        
+    }
+    
     /**
      * Determine whether the user can create a corp
      *
@@ -39,12 +48,15 @@ class CorpPolicy {
         );
         $role = $user->group->name;
         switch ($role) {
-            case '运营': return true;
+            case '运营':
+                return true;
             case '企业':
                 # userCorp - the Corp to which the user belongs
-                $userCorp = Corp::whereDepartmentId($user->topDeptId())->first();
+                $rootMenuId = $this->menu->rootMenuId();
+                $userCorp = Corp::whereMenuId($rootMenuId)->first();
                 return $userCorp->id == $corp->id;
-            default: return false;
+            default:
+                return false;
         }
 
     }

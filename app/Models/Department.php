@@ -331,6 +331,8 @@ class Department extends Model {
         } else {
             $user = Auth::user();
             if ($user->group->name != '运营') {
+                # todo: this is the trickest one if a user belongs to departments that
+                # todo: have no direct relationships
                 $departments = $this->nodes($user->topDeptId());
             }
         }
@@ -610,6 +612,7 @@ class Department extends Model {
         if (!$user) { return null; }
         $group = $user->group;
         if (isset($group->school_id)) { return 'school'; }
+        # todo: tricky
         $topDepartmentId = $user->topDeptId();
         $departmentType = self::find($topDepartmentId)->departmentType->name;
         switch ($departmentType) {

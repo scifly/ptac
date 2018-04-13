@@ -7,6 +7,7 @@ use App\Models\ConferenceQueue;
 use App\Models\ConferenceRoom;
 use App\Models\Corp;
 use App\Models\Educator;
+use App\Models\Menu;
 use App\Models\School;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -15,13 +16,19 @@ use Illuminate\Support\Facades\Request;
 class ConferenceQueuePolicy {
 
     use HandlesAuthorization;
+    
+    protected $menu;
 
     /**
      * Create a new policy instance.
      *
-     * @return void
+     * @param Menu $menu
      */
-    public function __construct() { }
+    public function __construct(Menu $menu) {
+        
+        $this->menu = $menu;
+        
+    }
 
     public function c(User $user) {
 
@@ -38,6 +45,23 @@ class ConferenceQueuePolicy {
 
     }
 
+    public function edit(User $user, ConferenceQueue $cq) {
+        
+        return $this->permit($user, $cq);
+        
+    }
+    
+    public function update(User $user, ConferenceQueue $cq) {
+        
+        return $this->permit($user, $cq);
+        
+    }
+    
+    public function destroy(User $user, ConferenceQueue $cq) {
+        
+        return $this->permit($user, $cq);
+        
+    }
     /**
      * Determine if the user can (e)dit / (u)pdate / (d)elete the conference_queue
      *
@@ -45,7 +69,7 @@ class ConferenceQueuePolicy {
      * @param ConferenceQueue $cq
      * @return bool
      */
-    public function eud(User $user, ConferenceQueue $cq) {
+    private function permit(User $user, ConferenceQueue $cq) {
 
         abort_if(!$cq, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
         $role = $user->group->name;
@@ -71,11 +95,12 @@ class ConferenceQueuePolicy {
     private function corpPerm(User $user, ConferenceQueue $cq = null) {
 
         list($conferenceRoomId, $educatorIds) = $this->getVars($cq);
-
+    
         # 会议室所属企业
         $crCorpId = ConferenceRoom::find($conferenceRoomId)->school->corp_id;
         # 发起者所属企业
-        $corpId = Corp::whereDepartmentId($user->topDeptId())->first()->id;
+        $rootMenuId = $this->menu->rootMenuId();
+        $corpId = Corp::whereMenuId($rootMenuId)->first()->id;
         # 发起者只能选取所属企业的会议室
         if ($corpId != $crCorpId) { return false; }
         # 发起者只能选取所属企业的教职员工参加会议
@@ -103,7 +128,8 @@ class ConferenceQueuePolicy {
         # 会议室所属学校
         $crSchoolId = ConferenceRoom::find($conferenceRoomId)->school_id;
         # 发起者所属学校
-        $schoolId = School::whereDepartmentId($user->topDeptId())->first()->id;
+        $rootMenuId = $this->menu->rootMenuId();
+        $schoolId = School::whereMenuId($rootMenuId)->first()->id;
         # 发起者只能选取所属学校的会议室
         if ($schoolId != $crSchoolId) { return false; }
         # 发起者只能选取所属学校的教职员工参加会议

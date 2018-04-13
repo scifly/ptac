@@ -55,7 +55,7 @@ class GroupController extends Controller {
     public function create() {
         
         $this->authorize(
-            'cs', Group::class
+            'create', Group::class
         );
         if (Request::method() === 'POST') {
             $schoolId = Request::query('schoolId');
@@ -79,7 +79,7 @@ class GroupController extends Controller {
     public function store(GroupRequest $request) {
         
         $this->authorize(
-            'cs', Group::class
+            'store', Group::class
         );
         
         return $this->result(
@@ -98,7 +98,7 @@ class GroupController extends Controller {
     public function edit($id) {
         
         $group = Group::find($id);
-        $this->authorize('eud', $group);
+        $this->authorize('edit', $group);
         if (Request::method() === 'POST') {
             $schoolId = Request::query('schoolId');
             $menuId = School::find($schoolId)->menu_id;
@@ -124,7 +124,7 @@ class GroupController extends Controller {
     public function update(GroupRequest $request, $id) {
         
         $group = Group::find($id);
-        $this->authorize('eud', $group);
+        $this->authorize('update', $group);
         
         return $this->result(
             $group->modify($request->all(), $id)
@@ -142,7 +142,7 @@ class GroupController extends Controller {
     public function destroy($id) {
         
         $group = Group::find($id);
-        $this->authorize('eud', $group);
+        $this->authorize('destroy', $group);
         
         return $this->result(
             $group->remove($id)

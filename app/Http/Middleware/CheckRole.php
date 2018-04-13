@@ -42,83 +42,52 @@ class CheckRole {
         $groupId = $user->group_id;
         $role = $user->group->name;
         $menuId = session('menuId');
+        $rootMenuId = $this->menu->rootMenuId();
+    
         # 超级用户直接访问所有功能, 如果访问的是首页，则直接通过并进入下个请求
         if ($role == '运营' || $route == '/' || $route == 'home') {
             return $next($request);
         }
+    
         # 菜单权限判断
         if (stripos($route, 'pages') > -1) {
-            switch ($role) {
-                case '企业':
-                    $menuIds = $this->menu->subMenuIds(
-                        Corp::whereDepartmentId($user->topDeptId())
-                            ->first()->menu_id
-                    );
-                    $abort = !in_array($menuId, $menuIds) ?? false;
-                    break;
-                case '学校':
-                    $menuIds = $this->menu->subMenuIds(
-                        School::whereDepartmentId($user->topDeptId())
-                            ->first()->menu_id
-                    );
-                    $abort = !in_array($menuId, $menuIds) ?? false;
-                    break;
-                case '教职员工':
-                    $schoolId = Group::find($user->group_id)->school_id;
-                    if (!$schoolId) {
-                        $deptId = DepartmentUser::whereUserId($user->id)->first()->department_id;
-                        $schoolDept = $this->department->schoolDeptId($deptId);
-                        $schoolId = School::whereDepartmentId($schoolDept)->first()->id;
-                    }
-                    $menuIds = $this->menu->subMenuIds(
-                        School::find($schoolId)->menu_id
-                    );
-                    $abort = !in_array($menuId, $menuIds) ?? false;
-                    break;
-                default:
-                    $groupMenu = GroupMenu::whereMenuId($menuId)
-                        ->where('group_id', $groupId)
-                        ->first();
-                    $abort = !$groupMenu ?? false;
-                    break;
+            if (in_array($role, ['企业', '学校'])) {
+                $menuIds = $this->menu->subMenuIds($rootMenuId);
+                $abort = !in_array($menuId, $menuIds) ?? false;
+            } else {
+                $groupMenu = GroupMenu::whereMenuId($menuId)
+                    ->where('group_id', $groupId)
+                    ->first();
+                $abort = !$groupMenu ?? false;
             }
-            abort_if($abort, HttpStatusCode::FORBIDDEN, __('messages.forbidden'));
+            abort_if(
+                $abort,
+                HttpStatusCode::FORBIDDEN,
+                __('messages.forbidden')
+            );
             
             return $next($request);
         }
+        
         # 功能权限判断
         $controller = Action::whereRoute($route)->first()->controller;
-        switch ($role) {
-            case '企业':
-                $tab = Tab::whereIn('group_id', [0, 2, 3])
-                    ->where('controller', $controller)
-                    ->first();
-                $abort = !$tab ?? false;
-                break;
-            case '学校':
-                $tab = Tab::whereIn('group_id', [0, 3])
-                    ->where('controller', $controller)
-                    ->first();
-                $abort = !$tab ?? false;
-                break;
-            case '教职员工':
-                $tab = Tab::whereIn('group_id', [0, 3])
-                    ->where('controller', $controller)
-                    ->first();
-                $abort = !$tab ?? false;
-                break;
-            default:
-                # 校级以下角色 action权限判断
-                $actionId = Action::whereRoute($route)->first()->id;
-                $groupAction = ActionGroup::whereActionId($actionId)
-                    ->where('group_id', $groupId)
-                    ->first();
-                $abort = !$groupAction ?? false;
-                break;
+        if (in_array($role, ['企业', '学校'])) {
+            $tab = Tab::whereIn('group_id', $role == '企业' ? [0, 2, 3] : [0, 3])
+                ->where('controller', $controller)
+                ->first();
+            $abort = !$tab ?? false;
+        } else {
+            # 校级以下角色 action权限判断
+            $actionId = Action::whereRoute($route)->first()->id;
+            $groupAction = ActionGroup::whereActionId($actionId)
+                ->where('group_id', $groupId)
+                ->first();
+            $abort = !$groupAction ?? false;
         }
+
         # 企业级管理员可访问的运营类功能
         if ($role == '企业') {
-            $corpId = Corp::whereDepartmentId($user->topDeptId())->first()->id;
+            $corpId = Corp::whereMenuId($rootMenuId)->first()->id;
             $allowedCorpActions = $this->allowedActions(
                 Constant::ALLOWED_CORP_ACTIONS, $corpId
             );
@@ -126,19 +95,24 @@ class CheckRole {
                 return $next($request);
             }
         }
+
         # 校级管理员可访问的企业类功能
         if ($role == '学校') {
-            $schoolId = School::whereDepartmentId($user->topDeptId())->first()->id;
-            $wapsiteId = WapSite::whereSchoolId($schoolId)->first()->id;
+            $schoolId = School::whereMenuId($rootMenuId)->first()->id;
+            $wapSiteId = WapSite::whereSchoolId($schoolId)->first()->id;
             $allowedSchoolActions = array_merge(
                 $this->allowedActions(Constant::ALLOWED_SCHOOL_ACTIONS, $schoolId),
-                $this->allowedActions(Constant::ALLOWED_WAPSITE_ACTIONS, $wapsiteId)
+                $this->allowedActions(Constant::ALLOWED_WAPSITE_ACTIONS, $wapSiteId)
             );
             if (in_array($request->path(), $allowedSchoolActions)) {
                 return $next($request);
             }
         }
-        abort_if($abort, HttpStatusCode::FORBIDDEN, __('messages.forbidden'));
+        abort_if(
+            $abort,
+            HttpStatusCode::FORBIDDEN,
+            __('messages.forbidden')
+        );
         
         return $next($request);
         

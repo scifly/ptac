@@ -64,6 +64,15 @@ class Corp extends Model {
         'menu_id', 'department_id', 'enabled',
     ];
 
+    protected $menu;
+    
+    function __construct(array $attributes = []) {
+        
+        parent::__construct($attributes);
+        $this->menu = app()->make('App\Models\Menu');
+        
+    }
+    
     /**
      * 返回对应的部门对象
      *
@@ -182,19 +191,17 @@ class Corp extends Model {
      * @return int|mixed
      */
     function corpId() {
-
-        $user = Auth::user();
+    
         if (!Session::exists('menuId')) { return null; }
+        $user = Auth::user();
         switch ($user->group->name) {
             case '运营':
             case '企业':
-                $menu = new Menu();
-                $corpMenuId = $menu->menuId(session('menuId'), '企业');
-                unset($menu);
+                $corpMenuId = $this->menu->menuId(session('menuId'), '企业');
                 return $corpMenuId ? $this->whereMenuId($corpMenuId)->first()->id : null;
             case '学校':
-                $departmentId = $user->topDeptId();
-                return School::whereDepartmentId($departmentId)->first()->corp_id;
+                $schoolMenuId = $this->menu->menuId(session('menuId'));
+                return School::whereMenuId($schoolMenuId)->first()->corp_id;
             default:
                 return School::find($user->educator->school_id)->corp_id;
         }

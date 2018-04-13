@@ -6,6 +6,7 @@ use App\Helpers\ModelTrait;
 use App\Models\ActionGroup;
 use App\Models\Corp;
 use App\Models\Exam;
+use App\Models\Menu;
 use App\Models\School;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -14,13 +15,29 @@ class ExamPolicy {
     
     use HandlesAuthorization, ModelTrait;
     
+    protected $menu;
+    
     /**
      * Create a new policy instance.
      *
-     * @return void
+     * @param Menu $menu
      */
-    public function __construct() {
-        //
+    public function __construct(Menu $menu) {
+        
+        $this->menu = $menu;
+        
+    }
+    
+    public function create(User $user) {
+        
+        return $this->classPerm($user);
+        
+    }
+    
+    public function store(User $user) {
+    
+        return $this->classPerm($user);
+        
     }
     
     /**
@@ -29,13 +46,37 @@ class ExamPolicy {
      * @param User $user
      * @return bool
      */
-    public function cs(User $user) {
+    private function classPerm(User $user) {
         
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {
             return true;
         }
         
         return ActionGroup::whereGroupId($user->group_id)->first() ? true : false;
+        
+    }
+    
+    public function show(User $user, Exam $exam) {
+        
+        return $this->objectPerm($user, $exam);
+        
+    }
+
+    public function edit(User $user, Exam $exam) {
+        
+        return $this->objectPerm($user, $exam);
+        
+    }
+
+    public function update(User $user, Exam $exam) {
+        
+        return $this->objectPerm($user, $exam);
+        
+    }
+
+    public function destroy(User $user, Exam $exam) {
+        
+        return $this->objectPerm($user, $exam);
         
     }
     
@@ -46,18 +87,20 @@ class ExamPolicy {
      * @param Exam $exam
      * @return bool
      */
-    public function seud(User $user, Exam $exam) {
+    private function objectPerm(User $user, Exam $exam) {
         
         $role = $user->group->name;
+        $rootMenuId = $this->menu->rootMenuId();
         switch ($role) {
-            case '运营': return true;
+            case '运营':
+                return true;
             case '企业':
                 # $userCorp - the Corp to which the user belongs
-                $userCorp = Corp::whereDepartmentId($user->topDeptId())->first();
+                $userCorp = Corp::whereMenuId($rootMenuId)->first();
                 return $exam->examType->school->corp_id == $userCorp->id;
             case '学校':
                 # $userSchool - the School to which the user belongs
-                $userSchool = School::whereDepartmentId($user->topDeptId())->first();
+                $userSchool = School::whereMenuId($rootMenuId)->first();
                 return $exam->examType->school_id == $userSchool->id;
             default:
                 return ($user->educator->school_id == $exam->examType->school_id)

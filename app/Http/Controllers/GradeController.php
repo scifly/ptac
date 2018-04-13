@@ -53,7 +53,9 @@ class GradeController extends Controller {
      */
     public function create() {
         
-        $this->authorize('cs', Grade::class);
+        $this->authorize(
+            'create', Grade::class
+        );
         
         return $this->output();
         
@@ -68,7 +70,9 @@ class GradeController extends Controller {
      */
     public function store(GradeRequest $request) {
         
-        $this->authorize('cs', Grade::class);
+        $this->authorize(
+            'store', Grade::class
+        );
         
         return $this->result(
             $this->grade->store($request->all(), true)
@@ -86,7 +90,7 @@ class GradeController extends Controller {
     public function edit($id) {
         
         $grade = Grade::find($id);
-        $this->authorize('eud', $grade);
+        $this->authorize('edit', $grade);
         $selectedEducators = [];
         if ($grade->educator_ids != '0') {
             $selectedEducators = $this->educator->educatorList(
@@ -112,7 +116,7 @@ class GradeController extends Controller {
     public function update(GradeRequest $request, $id) {
         
         $grade = Grade::find($id);
-        $this->authorize('eud', $grade);
+        $this->authorize('update', $grade);
         
         return $this->result(
             $grade->modify($request->all(), $id, true)
@@ -130,7 +134,7 @@ class GradeController extends Controller {
     public function destroy($id) {
         
         $grade = Grade::find($id);
-        $this->authorize('eud', $grade);
+        $this->authorize('destory', $grade);
         
         return $this->result(
             $grade->remove($id, true)
