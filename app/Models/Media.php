@@ -87,7 +87,7 @@ class Media extends Model {
      */
     function medias(array $ids) {
 
-        $medias = [];
+        $medias = null;
         foreach ($ids as $id) {
             $medias[] = $this->find($id);
         }
