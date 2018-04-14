@@ -160,7 +160,7 @@ class ProcedureLogController extends Controller {
      *
      * @return JsonResponse
      */
-    public function approve() {
+    public function sanction() {
         
         return $this->result(true);
         
