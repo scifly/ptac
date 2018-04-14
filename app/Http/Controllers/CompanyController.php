@@ -72,7 +72,7 @@ class CompanyController extends Controller {
         
         $this->authorize(
             'permit',
-            [Company::class, true]
+            Company::class
         );
         
         return $this->result(
@@ -93,7 +93,7 @@ class CompanyController extends Controller {
     public function edit($id) {
         
         $company = $this->company->find($id);
-        $this->authorize('edit', $company);
+        $this->authorize('permit', [$company, true]);
         
         return $this->output([
             'company' => $company,
