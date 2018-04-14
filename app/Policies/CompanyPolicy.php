@@ -25,7 +25,7 @@ class CompanyPolicy {
      * @param bool $abort
      * @return bool
      */
-    function action(User $user, Company $company = null, $abort = false) {
+    function allow(User $user, Company $company = null, $abort = false) {
         
         abort_if(
             $abort && !$company,

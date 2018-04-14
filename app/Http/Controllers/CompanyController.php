@@ -5,7 +5,8 @@ use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+// use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -31,7 +32,7 @@ class CompanyController extends Controller {
             if ($request->has('id')) {
                 $args = [$this->company->find($request->input('id')), true];
             }
-            $this->authorize('action', $args);
+            $this->authorize('allow', $args);
             
             return $next($request);
         });
