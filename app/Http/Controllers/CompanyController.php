@@ -71,8 +71,8 @@ class CompanyController extends Controller {
     public function store(CompanyRequest $request) {
         
         $this->authorize(
-            'edit',
-            Company::class
+            'permit',
+            [Company::class, true]
         );
         
         return $this->result(
