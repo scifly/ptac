@@ -60,7 +60,10 @@ class Action extends Model {
     
     protected $routes;
 
-    const ACTIONS_WITHOUT_VIEW_AND_JS = ['destroy', 'store', 'update', 'sort', 'move', 'rankTabs'];
+    const ACTIONS_WITHOUT_VIEW_AND_JS = [
+        'destroy', 'store', 'update',
+        'sort', 'move', 'rankTabs', 'sanction'
+    ];
     
     /**
      * 返回当前action包含的卡片
