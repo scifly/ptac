@@ -53,7 +53,7 @@ class CompanyController extends Controller {
     public function create() {
         
         $this->authorize(
-            'create',
+            'permit',
             Company::class
         );
         

@@ -19,35 +19,35 @@ class CompanyPolicy {
         //
     }
     
-    public function create(User $user) {
-        
-        return $this->permit($user);
-        
-    }
-    
-    public function store(User $user) {
-        
-        return $this->permit($user);
-        
-    }
-    
-    public function edit(User $user, Company $company) {
-        
-        return $this->permit($user, $company, true);
-        
-    }
-    
-    public function update(User $user, Company $company) {
-        
-        return $this->permit($user, $company, true);
-        
-    }
-    
-    public function destroy(User $user, Company $company) {
-        
-        return $this->permit($user, $company, true);
-        
-    }
+    // public function create(User $user) {
+    //
+    //     return $this->permit($user);
+    //
+    // }
+    //
+    // public function store(User $user) {
+    //
+    //     return $this->permit($user);
+    //
+    // }
+    //
+    // public function edit(User $user, Company $company) {
+    //
+    //     return $this->permit($user, $company, true);
+    //
+    // }
+    //
+    // public function update(User $user, Company $company) {
+    //
+    //     return $this->permit($user, $company, true);
+    //
+    // }
+    //
+    // public function destroy(User $user, Company $company) {
+    //
+    //     return $this->permit($user, $company, true);
+    //
+    // }
     
     /**
      * 权限判断
@@ -57,11 +57,11 @@ class CompanyPolicy {
      * @param bool $abort
      * @return bool
      */
-    private function permit(User $user, Company $company = null, $abort = false) {
+    public function permit(User $user, Company $company = null, $abort = false) {
         
         abort_if(
             $abort && !$company,
-            HttpStatusCode::NOT_FOUND, 
+            HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
         
