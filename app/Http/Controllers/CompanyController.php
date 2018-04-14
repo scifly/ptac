@@ -6,7 +6,7 @@ use App\Models\Company;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use Throwable;
 
 /**
@@ -25,8 +25,8 @@ class CompanyController extends Controller {
         $this->middleware(function (Request $request, $next) use ($company) {
             $this->company = $company;
             $args = [Company::class];
-            if ($request::has('id')) {
-                $args = [$this->company->find($request::input('id')), true];
+            if ($request->has('id')) {
+                $args = [$this->company->find($request->input('id')), true];
             }
             $this->authorize('action', $args);
             return $next($request);
