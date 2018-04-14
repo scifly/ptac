@@ -22,8 +22,16 @@ class CompanyController extends Controller {
     function __construct(Company $company) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->company = $company;
-        
+        $this->middleware(function (Request $request, $next) use ($company) {
+            $this->company = $company;
+            $args = [Company::class];
+            if ($request::has('id')) {
+                $args = [$this->company->find($request::input('id')), true];
+            }
+            $this->authorize('action', $args);
+            return $next($request);
+        });
+    
     }
     
     /**
@@ -52,10 +60,10 @@ class CompanyController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'action',
-            Company::class
-        );
+        // $this->authorize(
+        //     'action',
+        //     Company::class
+        // );
         
         return $this->output();
         
