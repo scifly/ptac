@@ -175,22 +175,23 @@ class Controller extends BaseController {
     }
     
     /**
-     * @param $request
-     * @param $next
+     * 控制器方法授权
+     *
      * @param Model $model
-     * @return mixed
-     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    protected function approve($request, $next, Model $model) {
+    protected function approve(Model $model) {
         
-        $args = [get_class($model)];
-        /** @var \Illuminate\Http\Request $request */
-        if ($request->has('id')) {
-            $args = [$model->find($request->input('id')), true];
-        }
-        $this->authorize('allow', $args);
-        
-        return $next($request);
+        $this->middleware(function ($request, $next) use ($model) {
+            
+            $args = [get_class($model)];
+            /** @var \Illuminate\Http\Request $request */
+            if ($request->has('id')) {
+                $args = [$model->find($request->input('id')), true];
+            }
+            $this->authorize('allow', $args);
+    
+            return $next($request);
+        });
         
     }
     
