@@ -174,17 +174,22 @@ class Controller extends BaseController {
         
     }
     
-    protected function approve(Model $model) {
-    
-        function (Request $request, $next) use ($model) {
-            $args = [get_class($model)];
-            if ($request->has('id')) {
-                $args = [$model->find($request->input('id')), true];
-            }
-            $this->authorize('allow', $args);
+    /**
+     * @param Request $request
+     * @param $next
+     * @param $model
+     * @return mixed
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    function approve(Request $request, $next, Model $model) {
         
-            return $next($request);
+        $args = [get_class($model)];
+        if ($request->has('id')) {
+            $args = [$model->find($request->input('id')), true];
         }
+        $this->authorize('allow', $args);
+    
+        return $next($request);
         
     }
     
