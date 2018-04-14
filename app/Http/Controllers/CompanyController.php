@@ -37,12 +37,13 @@ class CompanyController extends Controller {
     /**
      * 运营者公司列表
      *
+     * @param Request $request
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function index() {
+    public function index(Request $request) {
         
-        if (Request::get('draw')) {
+        if ($request->get('draw')) {
             return response()->json(
                 $this->company->datatable()
             );
