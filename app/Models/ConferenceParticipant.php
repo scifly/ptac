@@ -59,6 +59,18 @@ class ConferenceParticipant extends Model {
     function conferenceQueue() { return $this->belongsTo('App\Models\ConferenceQueue'); }
     
     /**
+     * 保存与会者记录
+     *
+     * @param array $data
+     * @return bool
+     */
+    function store(array $data) {
+        
+        return $this->create($data) ? true : false;
+        
+    }
+    
+    /**
      * 与会者列表
      *
      * @return array

@@ -24,19 +24,59 @@ class CustodianPolicy {
      */
     public function __construct() { }
     
+    function create(User $user) {
+        
+        return $this->classPerm($user);
+        
+    }
+    
+    function store(User $user) {
+        
+        return $this->classPerm($user);
+        
+    }
+    
+    function export(User $user) {
+        
+        return $this->classPerm($user);
+        
+    }
+    
     /**
      * Determine whether the current user can (c)reate / (s)tore / (e)xport Custodians
      *
      * @param User $user
      * @return bool
      */
-    function cse(User $user) {
+    private function classPerm(User $user) {
         
         if (in_array($user->group->name, Constant::SUPER_ROLES)) { return true; }
-        $actionId = Action::whereRoute(trim(Request::route()->uri()))->first()->id;
-        $ag = ActionGroup::whereGroupId($user->group_id)->where('action_id', $actionId)->first();
+        
+        return $this->action($user);
+        
+    }
     
-        return $ag ? true : false;
+    public function show(User $user, Custodian $custodian) {
+        
+        return $this->objectPerm($user, $custodian);
+        
+    }
+    
+    public function edit(User $user, Custodian $custodian) {
+        
+        return $this->objectPerm($user, $custodian);
+        
+    }
+    
+    public function update(User $user, Custodian $custodian) {
+        
+        return $this->objectPerm($user, $custodian);
+        
+    }
+    
+    public function destroy(User $user, Custodian $custodian) {
+        
+        return $this->objectPerm($user, $custodian);
         
     }
     
@@ -47,7 +87,7 @@ class CustodianPolicy {
      * @param Custodian $custodian
      * @return bool
      */
-    public function seud(User $user, Custodian $custodian) {
+    private function objectPerm(User $user, Custodian $custodian) {
     
         abort_if(
             !$custodian,
@@ -56,7 +96,8 @@ class CustodianPolicy {
         );
         if (in_array($user->group->name, Constant::SUPER_ROLES)) { return true; }
         
-        return in_array($custodian->id, $this->contactIds('custodian')) && $this->action($user);
+        return in_array($custodian->id, $this->contactIds('custodian'))
+            && $this->action($user);
         
     }
 

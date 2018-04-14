@@ -4,8 +4,6 @@ namespace App\Policies;
 
 use App\Helpers\Constant;
 use App\Helpers\PolicyTrait;
-use App\Models\Action;
-use App\Models\ActionGroup;
 use App\Models\Corp;
 use App\Models\Menu;
 use App\Models\School;

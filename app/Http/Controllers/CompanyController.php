@@ -53,7 +53,8 @@ class CompanyController extends Controller {
     public function create() {
         
         $this->authorize(
-            'cs', Company::class
+            'create',
+            Company::class
         );
         
         return $this->output();
@@ -70,11 +71,14 @@ class CompanyController extends Controller {
     public function store(CompanyRequest $request) {
         
         $this->authorize(
-            'cs', Company::class
+            'edit',
+            Company::class
         );
         
         return $this->result(
-            $this->company->store($request->all(), true)
+            $this->company->store(
+                $request->all(), true
+            )
         );
         
     }
@@ -89,7 +93,7 @@ class CompanyController extends Controller {
     public function edit($id) {
         
         $company = $this->company->find($id);
-        $this->authorize('eud', $company);
+        $this->authorize('edit', $company);
         
         return $this->output([
             'company' => $company,
@@ -108,7 +112,7 @@ class CompanyController extends Controller {
     public function update(CompanyRequest $request, $id) {
         
         $company = $this->company->find($id);
-        $this->authorize('eud', $company);
+        $this->authorize('update', $company);
         
         return $this->result(
             $company->modify($request->all(), $id, true)
@@ -126,7 +130,7 @@ class CompanyController extends Controller {
     public function destroy($id) {
         
         $company = $this->company->find($id);
-        $this->authorize('eud', $company);
+        $this->authorize('destroy', $company);
         
         return $this->result(
             $company->remove($id, true)
@@ -135,4 +139,3 @@ class CompanyController extends Controller {
     }
     
 }
-

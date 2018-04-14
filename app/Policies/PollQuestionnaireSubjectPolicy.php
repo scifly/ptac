@@ -4,7 +4,6 @@ namespace App\Policies;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\PolicyTrait;
-use App\Models\ActionGroup;
 use App\Models\PollQuestionnaireSubject;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;

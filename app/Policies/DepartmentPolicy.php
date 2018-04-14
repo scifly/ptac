@@ -5,12 +5,9 @@ use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\PolicyTrait;
-use App\Models\Action;
-use App\Models\ActionGroup;
 use App\Models\Department;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Request;
 
 class DepartmentPolicy {
     
@@ -25,20 +22,62 @@ class DepartmentPolicy {
         //
     }
     
+    public function create(User $user) {
+        
+        return $this->classPerm($user);
+        
+    }
+    
+    public function store(User $user) {
+        
+        return $this->classPerm($user);
+        
+    }
+    
+    public function sort(User $user) {
+        
+        return $this->classPerm($user);
+        
+    }
+    
     /**
-     * Determine whether the current user can (c)reate / (s)tore a Department,
+     * Determine whether the current user can (c)reate / (s)tore / (s)ort Department(s),
      * and (s)ort departments
      *
      * @param User $user
      * @return bool
      */
-    public function css(User $user) {
+    private function classPerm(User $user) {
         
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {
             return true;
         }
     
         return $this->action($user);
+        
+    }
+    
+    public function show(User $user, Department $department) {
+        
+        return $this->objectPerm($user, $department);
+        
+    }
+    
+    public function edit(User $user, Department $department) {
+        
+        return $this->objectPerm($user, $department);
+        
+    }
+    
+    public function update(User $user, Department $department) {
+        
+        return $this->objectPerm($user, $department);
+        
+    }
+    
+    public function destroy(User $user, Department $department) {
+        
+        return $this->objectPerm($user, $department);
         
     }
     
@@ -49,7 +88,7 @@ class DepartmentPolicy {
      * @param Department $department
      * @return bool
      */
-    public function seud(User $user, Department $department) {
+    private function objectPerm(User $user, Department $department) {
         
         abort_if(
             !$department,
@@ -60,7 +99,8 @@ class DepartmentPolicy {
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {
             return true;
         }
-        return $this->action($user) && in_array($department->id, $this->departmentIds($user->id));
+        return $this->action($user)
+            && in_array($department->id, $this->departmentIds($user->id));
     
     }
     

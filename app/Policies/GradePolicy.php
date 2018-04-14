@@ -1,16 +1,17 @@
 <?php
 namespace App\Policies;
 
+use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\PolicyTrait;
-use App\Models\ActionGroup;
 use App\Models\Corp;
 use App\Models\Grade;
 use App\Models\Menu;
 use App\Models\School;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Request;
 
 class GradePolicy {
     
@@ -30,37 +31,29 @@ class GradePolicy {
     }
     
     public function create(User $user) {
-        
-        return $this->classPerm($user);
+    
+        if (in_array($user->group->name, Constant::SUPER_ROLES)) {
+            return true;
+        }
+        return $this->action($user);
         
     }
     
     public function store(User $user) {
         
-        return $this->classPerm($user);
-        
-    }
-    
-    private function classPerm(User $user) {
-        
-        $role = $user->group->name;
-        $rootMenuId = $this->menu->rootMenuId();
-        switch ($role) {
-            case '运营':
-                return true;
-            case '企业':
-                $corp = Corp::whereMenuId($rootMenuId)->first();
-                return in_array(
-                    $this->schoolId(),
-                    $corp->schools->pluck('id')->toArray()
-                );
-            case '学校':
-                $school = School::whereMenuId($rootMenuId)->first();
-                return $this->schoolId() == $school->id;
-            default:
-                return ($user->educator->school_id == $this->schoolId()) && $this->action($user);
+        $schoolId = Request::input('school_id');
+        $departmentId = Request::input('department_id');
+        $educatorIds = Request::input('educator_ids');
+        if (in_array($user->group->name, Constant::SUPER_ROLES)) {
+            return in_array($schoolId, $this->schoolIds())
+                && in_array($departmentId, $this->departmentIds($user->id))
+                && empty(array_diff($educatorIds, $this->contactIds('educator')));
         }
         
+        return in_array($schoolId, $this->schoolIds())
+            && in_array($departmentId, $this->departmentIds($user->id))
+            && empty(array_diff($educatorIds, $this->contactIds('educator')))
+            && $this->action($user);
         
     }
     
@@ -71,8 +64,25 @@ class GradePolicy {
     }
     
     public function update(User $user, Grade $grade) {
-        
-        return $this->objectPerm($user, $grade);
+    
+        abort_if(
+            !$grade,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
+        $schoolId = Request::input('school_id');
+        $departmentId = Request::input('department_id');
+        $educatorIds = Request::input('educator_ids');
+        if (in_array($user->group->name, Constant::SUPER_ROLES)) {
+            return in_array($schoolId, $this->schoolIds())
+                && in_array($departmentId, $this->departmentIds($user->id))
+                && empty(array_diff($educatorIds, $this->contactIds('educator')));
+        }
+    
+        return in_array($schoolId, $this->schoolIds())
+            && in_array($departmentId, $this->departmentIds($user->id))
+            && empty(array_diff($educatorIds, $this->contactIds('educator')))
+            && $this->action($user);
         
     }
     
@@ -89,20 +99,13 @@ class GradePolicy {
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        $role = $user->group->name;
-        $rootMenuId = $this->menu->rootMenuId();
-        switch ($role) {
+        switch ($user->group->name) {
             case '运营': return true;
             case '企业':
-                $corp = Corp::whereMenuId($rootMenuId)->first();
-                return in_array(
-                    $grade->school_id,
-                    $corp->schools->pluck('id')->toArray()
-                );
+            case '学校':
+                return in_array($grade->id, $this->gradeIds());
             default:
-                return ($user->educator->school_id == $grade->school_id)
-                    && $this->action($user)
-                    && (in_array($grade->id, $this->gradeIds()));
+                return $this->action($user) && (in_array($grade->id, $this->gradeIds()));
         }
     
     }

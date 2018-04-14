@@ -15,13 +15,27 @@ class ActionPolicy {
      *
      * @return void
      */
-    public function __construct() {
-        //
+    public function __construct() { }
+    
+    public function edit(User $user, Action $action) {
+        
+        return $this->permit($user, $action);
+        
     }
     
-    public function eu(User $user, Action $action) {
+    public function update(User $user, Action $action) {
         
-        abort_if(!$action, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
+        return $this->permit($user, $action);
+        
+    }
+    
+    private function permit(User $user, Action $action) {
+        
+        abort_if(
+            !$action,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
         
         return $user->group->name == '运营';
         

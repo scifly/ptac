@@ -64,7 +64,7 @@ class CustodianController extends Controller {
     public function create() {
         
         $this->authorize(
-            'cse', Custodian::class
+            'create', Custodian::class
         );
         if (Request::method() === 'POST') {
             abort_if(
@@ -103,7 +103,7 @@ class CustodianController extends Controller {
     public function store(CustodianRequest $request) {
         
         $this->authorize(
-            'cse', Custodian::class
+            'store', Custodian::class
         );
         
         return $this->result(
@@ -124,7 +124,7 @@ class CustodianController extends Controller {
     public function show($id) {
         
         $custodian = $this->custodian->find($id);
-        $this->authorize('seud', $custodian);
+        $this->authorize('show', $custodian);
         
         return $this->output([
             'custodian' => $custodian,
@@ -142,7 +142,7 @@ class CustodianController extends Controller {
     public function edit($id) {
         
         $custodian = $this->custodian->find($id);
-        $this->authorize('seud', $custodian);
+        $this->authorize('edit', $custodian);
         if (Request::method() === 'POST') {
             abort_if(
                 !Request::input('field') ||
@@ -185,7 +185,7 @@ class CustodianController extends Controller {
     public function update(CustodianRequest $request, $id) {
         
         $custodian = $this->custodian->find($id);
-        $this->authorize('seud', $custodian);
+        $this->authorize('update', $custodian);
         
         return $this->result(
             $custodian->modify(
@@ -206,7 +206,7 @@ class CustodianController extends Controller {
     public function destroy($id) {
         
         $custodian = $this->custodian->find($id);
-        $this->authorize('seud', $custodian);
+        $this->authorize('destroy', $custodian);
         
         return $this->result(
             $custodian->remove($id)
@@ -223,7 +223,7 @@ class CustodianController extends Controller {
     public function export() {
         
         $this->authorize(
-            'cse', Custodian::class
+            'export', Custodian::class
         );
         
         return $this->custodian->export();

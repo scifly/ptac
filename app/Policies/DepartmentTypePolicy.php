@@ -19,13 +19,43 @@ class DepartmentTypePolicy {
         //
     }
     
-    public function cs(User $user) {
+    function create(User $user) {
+        
+        return $this->classPerm($user);
+        
+    }
+    
+    function store(User $user) {
+        
+        return $this->classPerm($user);
+        
+    }
+    
+    private function classPerm(User $user) {
         
         return $user->group->name == '运营';
         
     }
     
-    public function eud(User $user, DepartmentType $dt) {
+    function edit(User $user, DepartmentType $dt) {
+        
+        return $this->objectPerm($user, $dt);
+        
+    }
+    
+    function update(User $user, DepartmentType $dt) {
+        
+        return $this->objectPerm($user, $dt);
+        
+    }
+    
+    function destroy(User $user, DepartmentType $dt) {
+        
+        return $this->objectPerm($user, $dt);
+        
+    }
+    
+    private function objectPerm(User $user, DepartmentType $dt) {
         
         abort_if(
             !$dt,

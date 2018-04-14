@@ -58,7 +58,9 @@ class ConferenceParticipantController extends Controller {
         );
         
         return $this->result(
-            ConferenceParticipant::create($request->all())
+            $this->cp->store(
+                $request->all()
+            )
         );
         
     }

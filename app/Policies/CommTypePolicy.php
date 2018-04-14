@@ -19,16 +19,48 @@ class CommTypePolicy {
         //
     }
     
-    public function cs(User $user) {
+    public function create(User $user) {
         
-        return $user->group->name == '运营';
+        return $this->permit($user);
         
     }
     
-    public function eud(User $user, CommType $ct) {
+    public function store(User $user) {
+        
+        return $this->permit($user);
+        
+    }
+    
+    public function edit(User $user, CommType $ct) {
+        
+        return $this->permit($user, $ct, true);
+        
+    }
+    
+    public function update(User $user, CommType $ct) {
+        
+        return $this->permit($user, $ct, true);
+        
+    }
+    
+    public function destroy(User $user, CommType $ct) {
+        
+        return $this->permit($user, $ct,true);
+        
+    }
+    
+    /**
+     * 权限判断
+     *
+     * @param User $user
+     * @param CommType|null $ct
+     * @param bool $abort
+     * @return bool
+     */
+    private function permit(User $user, CommType $ct = null, $abort = false) {
     
         abort_if(
-            !$ct,
+            $abort && !$ct,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );

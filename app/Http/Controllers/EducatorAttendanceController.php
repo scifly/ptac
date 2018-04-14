@@ -51,7 +51,8 @@ class EducatorAttendanceController extends Controller {
     public function stat() {
         
         $this->authorize(
-            'sde', EducatorAttendance::class
+            'create',
+            EducatorAttendance::class
         );
         if (Request::method() === 'POST') {
             return $this->ea->stat();
@@ -70,7 +71,8 @@ class EducatorAttendanceController extends Controller {
     public function detail() {
         
         $this->authorize(
-            'sde', EducatorAttendance::class
+            'detail',
+            EducatorAttendance::class
         );
         if (Request::method() === 'POST') {
             return response()->json(
@@ -93,7 +95,8 @@ class EducatorAttendanceController extends Controller {
     public function export() {
         
         $this->authorize(
-            'sde', EducatorAttendance::class
+            'export',
+            EducatorAttendance::class
         );
         
         return $this->ea->export();

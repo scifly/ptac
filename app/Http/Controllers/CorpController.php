@@ -70,11 +70,13 @@ class CorpController extends Controller {
     public function store(CorpRequest $request) {
         
         $this->authorize(
-            'create', Corp::class
+            'store', Corp::class
         );
         
         return $this->result(
-            $this->corp->store($request->all(), true)
+            $this->corp->store(
+                $request->all(), true
+            )
         );
         
     }
@@ -89,7 +91,7 @@ class CorpController extends Controller {
     public function edit($id) {
         
         $corp = $this->corp->find($id);
-        $this->authorize('veud', $corp);
+        $this->authorize('edit', $corp);
         
         return $this->output([
             'corp' => $corp,
@@ -108,10 +110,12 @@ class CorpController extends Controller {
     public function update(CorpRequest $request, $id) {
         
         $corp = $this->corp->find($id);
-        $this->authorize('veud', $corp);
+        $this->authorize('update', $corp);
         
         return $this->result(
-            $corp->modify($request->all(), $id, true)
+            $corp->modify(
+                $request->all(), $id, true
+            )
         );
         
     }
@@ -126,7 +130,7 @@ class CorpController extends Controller {
     public function destroy($id) {
         
         $corp = $this->corp->find($id);
-        $this->authorize('veud', $corp);
+        $this->authorize('destroy', $corp);
         
         return $this->result(
             $corp->remove($id, true)

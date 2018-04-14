@@ -57,7 +57,7 @@ class DepartmentController extends Controller {
     public function create($id) {
         
         $this->authorize(
-            'css', Department::class
+            'create', Department::class
         );
         
         return $this->output([
@@ -71,8 +71,13 @@ class DepartmentController extends Controller {
      *
      * @param DepartmentRequest $request
      * @return JsonResponse
+     * @throws AuthorizationException
      */
     public function store(DepartmentRequest $request) {
+        
+        $this->authorize(
+            'store', Department::class
+        );
         
         return $this->result(
             $this->department->store(
@@ -92,7 +97,7 @@ class DepartmentController extends Controller {
     public function show($id) {
         
         $department = $this->department->find($id);
-        $this->authorize('seud', $department);
+        $this->authorize('show', $department);
         
         return $this->output([
             'department' => $department,
@@ -110,7 +115,7 @@ class DepartmentController extends Controller {
     public function edit($id) {
         
         $department = $this->department->find($id);
-        $this->authorize('seud', $department);
+        $this->authorize('edit', $department);
         
         return $this->output([
             'department' => $department,
@@ -129,7 +134,7 @@ class DepartmentController extends Controller {
     public function update(DepartmentRequest $request, $id) {
         
         $department = $this->department->find($id);
-        $this->authorize('seud', $department);
+        $this->authorize('update', $department);
         
         return $this->result(
             $department->modify($request->all(), $id, true)
@@ -148,7 +153,7 @@ class DepartmentController extends Controller {
     public function destroy($id) {
         
         $department = $this->department->find($id);
-        $this->authorize('seud', $department);
+        $this->authorize('destroy', $department);
         
         return $this->result($department->remove($id));
         
@@ -185,7 +190,9 @@ class DepartmentController extends Controller {
      */
     public function sort() {
         
-        $this->authorize('css', Department::class);
+        $this->authorize(
+            'sort', Department::class
+        );
         $orders = Request::get('data');
         foreach ($orders as $id => $order) {
             $department = $this->department->find($id);

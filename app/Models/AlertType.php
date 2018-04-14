@@ -28,6 +28,12 @@ use Illuminate\Database\Eloquent\Model;
 class AlertType extends Model {
 
     protected $fillable = ['name', 'english_name', 'enabled'];
+   
+    function store(array $data) {
+        
+        return $this->create($data) ? true : false;
+        
+    }
     
     /**
      * 警告类型列表

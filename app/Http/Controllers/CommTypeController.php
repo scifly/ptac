@@ -53,7 +53,8 @@ class CommTypeController extends Controller {
     public function create() {
         
         $this->authorize(
-            'cs', CommType::class
+            'create',
+            CommType::class
         );
         
         return $this->output();
@@ -70,11 +71,14 @@ class CommTypeController extends Controller {
     public function store(CommTypeRequest $request) {
         
         $this->authorize(
-            'cs', CommType::class
+            'store',
+            CommType::class
         );
         
         return $this->result(
-            CommType::create($request->all())
+            $this->ct->store(
+                $request->all()
+            )
         );
         
     }
@@ -89,7 +93,7 @@ class CommTypeController extends Controller {
     public function edit($id) {
         
         $ct = $this->ct->find($id);
-        $this->authorize('eud', $ct);
+        $this->authorize('edit', $ct);
         
         return $this->output([
             'ct' => $ct,
@@ -108,7 +112,7 @@ class CommTypeController extends Controller {
     public function update(CommTypeRequest $request, $id) {
         
         $ct = $this->ct->find($id);
-        $this->authorize('eud', $ct);
+        $this->authorize('update', $ct);
         
         return $this->result(
             $ct->update($request->all())
@@ -126,7 +130,7 @@ class CommTypeController extends Controller {
     public function destroy($id) {
         
         $ct = $this->ct->find($id);
-        $this->authorize('eud', $ct);
+        $this->authorize('destroy', $ct);
         
         return $this->result(
             $ct->delete()

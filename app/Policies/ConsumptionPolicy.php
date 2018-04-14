@@ -74,7 +74,7 @@ class ConsumptionPolicy {
             return true;
         }
         
-        return $ag ? true : false;
+        return $this->action($user);
         
     }
     

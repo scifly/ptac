@@ -19,15 +19,51 @@ class AlertTypePolicy {
         //
     }
     
-    public function cs(User $user) {
+    public function create(User $user) {
         
-        return $user->group->name == '运营';
+        return $this->permit($user);
         
     }
     
-    public function eud(User $user, AlertType $at) {
+    public function store(User $user) {
         
-        abort_if(!$at, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
+        return $this->permit($user);
+        
+    }
+    
+    public function edit(User $user, AlertType $at) {
+        
+        return $this->permit($user, $at, true);
+        
+    }
+    
+    public function update(User $user, AlertType $at) {
+        
+        return $this->permit($user, $at, true);
+        
+    }
+    
+    public function destroy(User $user, AlertType $at) {
+        
+        return $this->permit($user, $at, true);
+        
+    }
+    
+    /**
+     * 判断权限
+     *
+     * @param User $user
+     * @param AlertType|null $at
+     * @param bool $abort
+     * @return bool
+     */
+    private function permit(User $user, AlertType $at = null, $abort = false) {
+        
+        abort_if(
+            $abort && !$at,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
         
         return $user->group->name == '运营';
         

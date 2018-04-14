@@ -19,16 +19,48 @@ class ActionTypePolicy {
         //
     }
     
-    public function cs(User $user) {
+    public function create(User $user) {
         
-        return $user->group->name == '运营';
+        return $this->permit($user);
         
     }
     
-    public function eud(User $user, ActionType $at) {
+    public function store(User $user) {
+        
+        return $this->permit($user);
+        
+    }
+    
+    public function edit(User $user, ActionType $at) {
+        
+        return $this->permit($user, $at, true);
+        
+    }
+    
+    public function update(User $user, ActionType $at) {
+        
+        return $this->permit($user, $at, true);
+        
+    }
+    
+    public function destroy(User $user, ActionType $at) {
+        
+        return $this->permit($user, $at, true);
+        
+    }
+    
+    /**
+     * 判断权限
+     *
+     * @param User $user
+     * @param ActionType|null $at
+     * @param bool $abort
+     * @return bool
+     */
+    private function permit(User $user, ActionType $at = null, $abort = false) {
         
         abort_if(
-            !$at,
+            $abort && !$at,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
@@ -36,4 +68,5 @@ class ActionTypePolicy {
         return $user->group->name == '运营';
         
     }
+    
 }

@@ -57,7 +57,7 @@ class ActionController extends Controller {
     public function edit($id) {
         
         $action = $this->action->find($id);
-        $this->authorize('eu', $action);
+        $this->authorize('edit', $action);
         
         return $this->output([
             'action' => $action,
@@ -76,7 +76,7 @@ class ActionController extends Controller {
     public function update(ActionRequest $request, $id) {
         
         $action = $this->action->find($id);
-        $this->authorize('eu', $action);
+        $this->authorize('update', $action);
         
         return $this->result(
             $action->update($request->all())

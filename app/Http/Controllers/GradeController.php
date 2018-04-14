@@ -75,7 +75,9 @@ class GradeController extends Controller {
         );
         
         return $this->result(
-            $this->grade->store($request->all(), true)
+            $this->grade->store(
+                $request->all(), true
+            )
         );
         
     }

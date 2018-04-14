@@ -146,7 +146,7 @@ class EventController extends Controller {
     public function destroy($id) {
         
         $event = $this->event->find($id);
-        abort_if(!$event, HttpStatusCode::NOT_FOUND);
+        $this->authorize('destroy', $event);
         
         return $this->result(
             $event->delete()

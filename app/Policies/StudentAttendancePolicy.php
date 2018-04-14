@@ -3,7 +3,6 @@ namespace App\Policies;
 
 use App\Helpers\Constant;
 use App\Helpers\PolicyTrait;
-use App\Models\ActionGroup;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 

@@ -31,7 +31,37 @@ class CorpPolicy {
         return $user->group->name == '运营';
 
     }
+    
+    /**
+     * Determine whether the user can store a corp
+     *
+     * @param User $user
+     * @return bool
+     */
+    public function store(User $user) {
 
+        return $user->group->name == '运营';
+
+    }
+
+    public function edit(User $user, Corp $corp) {
+        
+        return $this->objectPerm($user, $corp);
+        
+    }
+    
+    public function update(User $user, Corp $corp) {
+        
+        return $this->objectPerm($user, $corp);
+        
+    }
+    
+    public function destroy(User $user, Corp $corp) {
+        
+        return $this->objectPerm($user, $corp);
+        
+    }
+    
     /**
      * Determine whether the user can (v)iew/(e)dit/(u)pdate/(d)elete the corp.
      *
@@ -39,7 +69,7 @@ class CorpPolicy {
      * @param  Corp $corp
      * @return bool
      */
-    public function veud(User $user, Corp $corp) {
+    private function objectPerm(User $user, Corp $corp) {
 
         abort_if(
             !$corp,

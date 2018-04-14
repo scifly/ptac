@@ -53,7 +53,7 @@ class DepartmentTypeController extends Controller {
     public function create() {
         
         $this->authorize(
-            'cs', DepartmentType::class
+            'create', DepartmentType::class
         );
         
         return $this->output();
@@ -70,7 +70,7 @@ class DepartmentTypeController extends Controller {
     public function store(DepartmentTypeRequest $request) {
         
         $this->authorize(
-            'cs', DepartmentType::class
+            'store', DepartmentType::class
         );
         
         return $this->result(
@@ -89,7 +89,7 @@ class DepartmentTypeController extends Controller {
     public function edit($id) {
         
         $dt = $this->dt->find($id);
-        $this->authorize('eud', $dt);
+        $this->authorize('edit', $dt);
         
         return $this->output([
             'dt' => $dt,
@@ -108,7 +108,7 @@ class DepartmentTypeController extends Controller {
     public function update(DepartmentTypeRequest $request, $id) {
         
         $dt = $this->dt->find($id);
-        $this->authorize('eud', $dt);
+        $this->authorize('update', $dt);
         
         return $this->result(
             $dt->modify($request->all(), $id)
@@ -126,7 +126,7 @@ class DepartmentTypeController extends Controller {
     public function destroy($id) {
         
         $dt = $this->dt->find($id);
-        $this->authorize('eud', $dt);
+        $this->authorize('destroy', $dt);
         
         return $this->result(
             $dt->remove($id)

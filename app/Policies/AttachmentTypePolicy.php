@@ -19,16 +19,48 @@ class AttachmentTypePolicy {
         //
     }
     
-    public function cs(User $user) {
+    public function create(User $user) {
         
-        return $user->group->name == '运营';
+        return $this->permit($user);
         
     }
     
-    public function eud(User $user, AttachmentType $at) {
+    public function store(User $user) {
+        
+        return $this->permit($user);
+        
+    }
+    
+    public function edit(User $user, AttachmentType $at) {
+        
+        return $this->permit($user, $at, true);
+        
+    }
+    
+    public function update(User $user, AttachmentType $at) {
+        
+        return $this->permit($user, $at, true);
+        
+    }
+    
+    public function destroy(User $user, AttachmentType $at) {
+        
+        return $this->permit($user, $at, true);
+        
+    }
+    
+    /**
+     * 权限判断
+     *
+     * @param User $user
+     * @param AttachmentType|null $at
+     * @param bool $abort
+     * @return bool
+     */
+    private function permit(User $user, AttachmentType $at = null, $abort = false) {
         
         abort_if(
-            !$at,
+            $abort && !$at,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );

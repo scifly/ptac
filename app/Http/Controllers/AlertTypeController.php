@@ -53,7 +53,7 @@ class AlertTypeController extends Controller {
     public function create() {
         
         $this->authorize(
-            'cs', AlertType::class
+            'create', AlertType::class
         );
         
         return $this->output();
@@ -70,11 +70,11 @@ class AlertTypeController extends Controller {
     public function store(AlertTypeRequest $request) {
         
         $this->authorize(
-            'cs', AlertType::class
+            'store', AlertType::class
         );
         
         return $this->result(
-            $this->at->create($request->all())
+            $this->at->store($request->all())
         );
         
     }
@@ -89,7 +89,7 @@ class AlertTypeController extends Controller {
     public function edit($id) {
         
         $at = $this->at->find($id);
-        $this->authorize('eud', $at);
+        $this->authorize('edit', $at);
         
         return $this->output([
             'at' => $at,
@@ -108,7 +108,7 @@ class AlertTypeController extends Controller {
     public function update(AlertTypeRequest $request, $id) {
         
         $at = $this->at->find($id);
-        $this->authorize('eud', $at);
+        $this->authorize('update', $at);
         
         return $this->result(
             $at->update($request->all())
@@ -126,7 +126,7 @@ class AlertTypeController extends Controller {
     public function destroy($id) {
         
         $at = $this->at->find($id);
-        $this->authorize('eud', $at);
+        $this->authorize('destroy', $at);
         
         return $this->result(
             $at->delete()

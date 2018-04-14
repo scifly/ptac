@@ -53,7 +53,7 @@ class AttachmentTypeController extends Controller {
     public function create() {
         
         $this->authorize(
-            'cs', AttachmentType::class
+            'create', AttachmentType::class
         );
         
         return $this->output();
@@ -70,7 +70,7 @@ class AttachmentTypeController extends Controller {
     public function store(AttachmentTypeRequest $request) {
         
         $this->authorize(
-            'cs', AttachmentType::class
+            'store', AttachmentType::class
         );
         
         return $this->result(
@@ -92,7 +92,7 @@ class AttachmentTypeController extends Controller {
     public function edit($id) {
         
         $at = $this->at->find($id);
-        $this->authorize('eud', $at);
+        $this->authorize('edit', $at);
         
         return $this->output([
             'mt' => $at,
@@ -111,7 +111,7 @@ class AttachmentTypeController extends Controller {
     public function update(AttachmentType $request, $id) {
         
         $at = $this->at->find($id);
-        $this->authorize('eud', $at);
+        $this->authorize('update', $at);
         
         return $this->result(
             $at->modify(
@@ -132,7 +132,7 @@ class AttachmentTypeController extends Controller {
     public function destroy($id) {
         
         $at = $this->at->find($id);
-        $this->authorize('eud', $at);
+        $this->authorize('destroy', $at);
         
         return $this->result(
             $at->remove($id)

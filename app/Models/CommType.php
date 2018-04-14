@@ -41,6 +41,18 @@ class CommType extends Model {
     function messages() { return $this->hasMany('App\Models\Message'); }
     
     /**
+     * 保存通信类型
+     * 
+     * @param array $data
+     * @return bool
+     */
+    function store(array $data) {
+        
+        return $this->create($data) ? true : false;
+        
+    }
+    
+    /**
      * 通信方式列表
      *
      * @return array

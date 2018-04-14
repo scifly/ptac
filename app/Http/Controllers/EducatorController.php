@@ -35,7 +35,7 @@ class EducatorController extends Controller {
      * 教职员工列表
      *
      * @return bool|JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function index() {
         
@@ -53,11 +53,14 @@ class EducatorController extends Controller {
      * 创建教职员工
      *
      * @return bool|JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function create() {
         
-        $this->authorize('c', Educator::class);
+        $this->authorize(
+            'create',
+            Educator::class
+        );
         if (Request::method() === 'POST') {
             return response()->json(
                 $this->department->tree(
@@ -75,12 +78,12 @@ class EducatorController extends Controller {
      *
      * @param EducatorRequest $request
      * @return JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function store(EducatorRequest $request) {
         
         $this->authorize(
-            'c', Educator::class
+            'store', Educator::class
         );
         
         return $this->result(
@@ -94,14 +97,16 @@ class EducatorController extends Controller {
      *
      * @param $id
      * @return bool|JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function show($id) {
         
         $educator = Educator::find($id);
-        $this->authorize('rud', $educator);
+        $this->authorize('show', $educator);
         
-        return $this->output(['educator' => $educator]);
+        return $this->output([
+            'educator' => $educator
+        ]);
         
     }
     
@@ -110,12 +115,14 @@ class EducatorController extends Controller {
      *
      * @param $id
      * @return bool|JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function edit($id) {
         
         $educator = Educator::find($id);
-        $this->authorize('rud', $educator);
+        $this->authorize(
+            'edit', $educator
+        );
         if (Request::method() === 'POST') {
             return response()->json($this->department->tree());
         }
@@ -140,24 +147,6 @@ class EducatorController extends Controller {
     }
     
     /**
-     * 教职员工充值
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws \Throwable
-     */
-    public function recharge($id) {
-        
-        $educator = Educator::find($id);
-        $this->authorize('rud', $educator);
-        
-        return $this->output([
-            'educator' => $educator,
-        ]);
-        
-    }
-    
-    /**
      * 更新教职员工
      *
      * @param EducatorRequest $request
@@ -169,11 +158,29 @@ class EducatorController extends Controller {
     public function update(EducatorRequest $request, $id) {
         
         $educator = Educator::find($id);
-        $this->authorize('rud', $educator);
+        $this->authorize('update', $educator);
         
         return $this->result(
             $educator->modify($request)
         );
+        
+    }
+    
+    /**
+     * 教职员工充值
+     *
+     * @param $id
+     * @return bool|JsonResponse
+     * @throws Throwable
+     */
+    public function recharge($id) {
+        
+        $educator = Educator::find($id);
+        $this->authorize('recharge', $educator);
+        
+        return $this->output([
+            'educator' => $educator,
+        ]);
         
     }
     
@@ -187,7 +194,9 @@ class EducatorController extends Controller {
     public function rechargeStore($id) {
         
         $educator = Educator::find($id);
-        $this->authorize('rud', $educator);
+        $this->authorize(
+            'rechargeStore', $educator
+        );
         $recharge = Request::get('recharge');
         $educator->sms_quote += $recharge;
         
@@ -209,7 +218,9 @@ class EducatorController extends Controller {
     public function destroy($id) {
         
         $educator = Educator::find($id);
-        $this->authorize('rud', $educator);
+        $this->authorize(
+            'destroy', $educator
+        );
         
         return $this->result(
             $educator->remove($id, true)
@@ -228,7 +239,8 @@ class EducatorController extends Controller {
     public function import() {
         
         $this->authorize(
-            'c', Educator::class
+            'import',
+            Educator::class
         );
         if (Request::isMethod('post')) {
             $file = Request::file('file');
@@ -260,7 +272,8 @@ class EducatorController extends Controller {
     public function export() {
         
         $this->authorize(
-            'c', Educator::class
+            'export',
+            Educator::class
         );
         $range = Request::query('range');
         $departmentId = Request::query('department_id');

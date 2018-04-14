@@ -14,6 +14,7 @@ use App\Models\Corp;
 use App\Models\Custodian;
 use App\Models\Department;
 use App\Models\DepartmentType;
+use App\Models\Educator;
 use App\Models\EducatorAttendance;
 use App\Models\Exam;
 use App\Models\Grade;
@@ -49,6 +50,7 @@ use App\Policies\ConsumptionStat;
 use App\Policies\DepartmentPolicy;
 use App\Policies\DepartmentTypePolicy;
 use App\Policies\EducatorAttendancePolicy;
+use App\Policies\EducatorPolicy;
 use App\Policies\ExamPolicy;
 use App\Policies\GradePolicy;
 use App\Policies\GroupPolicy;
@@ -109,6 +111,7 @@ class AuthServiceProvider extends ServiceProvider {
         Custodian::class => CustodianPolicy::class,
         Department::class => DepartmentPolicy::class,
         DepartmentType::class => DepartmentTypePolicy::class,
+        Educator::class => EducatorPolicy::class,
         Exam::class => ExamPolicy::class,
         Grade::class => GradePolicy::class,
         Group::class => GroupPolicy::class,
@@ -146,4 +149,5 @@ class AuthServiceProvider extends ServiceProvider {
         Passport::routes();
         
     }
+    
 }

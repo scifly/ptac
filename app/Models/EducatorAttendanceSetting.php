@@ -62,6 +62,18 @@ class EducatorAttendanceSetting extends Model {
      * @return BelongsTo
      */
     function school() { return $this->belongsTo('App\Models\School'); }
+    
+    /**
+     * 保存教职员工考勤设置
+     *
+     * @param array $data
+     * @return bool
+     */
+    function store(array $data) {
+        
+        return $this->create($data) ? true : false;
+        
+    }
 
     /**
      * 教职员工考勤设置列表

@@ -51,7 +51,8 @@ class EducatorAttendanceSettingController extends Controller {
     public function create() {
         
         $this->authorize(
-            'c', EducatorAttendanceSetting::class
+            'create',
+            EducatorAttendanceSetting::class
         );
         
         return $this->output();
@@ -68,11 +69,12 @@ class EducatorAttendanceSettingController extends Controller {
     public function store(EducatorAttendanceSettingRequest $request) {
         
         $this->authorize(
-            'c', EducatorAttendanceSetting::class
+            'store',
+            EducatorAttendanceSetting::class
         );
         
         return $this->result(
-            $this->eas->create($request->all())
+            $this->eas->store($request->all())
         );
         
     }
@@ -87,7 +89,7 @@ class EducatorAttendanceSettingController extends Controller {
     public function show($id) {
         
         $eas = $this->eas->find($id);
-        $this->authorize('rud', $eas);
+        $this->authorize('show', $eas);
         
         return $this->output(['eas' => $eas]);
         
@@ -102,7 +104,7 @@ class EducatorAttendanceSettingController extends Controller {
     public function edit($id) {
         
         $eas = $this->eas->find($id);
-        $this->authorize('rud', $eas);
+        $this->authorize('edit', $eas);
         
         return $this->output(['eas' => $eas]);
         
@@ -119,9 +121,11 @@ class EducatorAttendanceSettingController extends Controller {
     public function update(EducatorAttendanceSettingRequest $request, $id) {
         
         $eas = $this->eas->find($id);
-        $this->authorize('rud', $eas);
+        $this->authorize('update', $eas);
         
-        return $this->result($eas->update($request->all()));
+        return $this->result(
+            $eas->update($request->all())
+        );
         
     }
     
@@ -135,9 +139,11 @@ class EducatorAttendanceSettingController extends Controller {
     public function destroy($id) {
         
         $eas = $this->eas->find($id);
-        $this->authorize('rud', $eas);
+        $this->authorize('destroy', $eas);
         
-        return $this->result($eas->delete());
+        return $this->result(
+            $eas->delete()
+        );
         
     }
     

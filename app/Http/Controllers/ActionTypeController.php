@@ -52,7 +52,7 @@ class ActionTypeController extends Controller {
     public function create() {
         
         $this->authorize(
-            'cs', ActionType::class
+            'create', ActionType::class
         );
         
         return $this->output();
@@ -69,7 +69,7 @@ class ActionTypeController extends Controller {
     public function store(ActionTypeRequest $request) {
         
         $this->authorize(
-            'cs', ActionType::class
+            'store', ActionType::class
         );
         
         return $this->result(
@@ -91,7 +91,7 @@ class ActionTypeController extends Controller {
     public function edit($id) {
         
         $at = $this->at->find($id);
-        $this->authorize('eud', $at);
+        $this->authorize('edit', $at);
         
         return $this->output([
             'at' => $at,
@@ -110,7 +110,7 @@ class ActionTypeController extends Controller {
     public function update(ActionType $request, $id) {
         
         $at = $this->at->find($id);
-        $this->authorize('eud', $at);
+        $this->authorize('update', $at);
         
         return $this->result(
             $at->modify($request->all(), $id)
@@ -128,7 +128,7 @@ class ActionTypeController extends Controller {
     public function destroy($id) {
         
         $at = $this->at->find($id);
-        $this->authorize('eud', $at);
+        $this->authorize('destroy', $at);
         
         return $this->result(
             $at->remove($id)

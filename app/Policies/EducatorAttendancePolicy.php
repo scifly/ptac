@@ -20,7 +20,25 @@ class EducatorAttendancePolicy {
         //
     }
     
-    public function sde(User $user) {
+    function stat(User $user) {
+        
+        return $this->permit($user);
+        
+    }
+    
+    function detail(User $user) {
+        
+        return $this->permit($user);
+        
+    }
+    
+    function export(User $user) {
+        
+        return $this->permit($user);
+        
+    }
+    
+    private function permit(User $user) {
     
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {
             return true;
