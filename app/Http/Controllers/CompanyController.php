@@ -19,21 +19,10 @@ class CompanyController extends Controller {
     
     protected $company;
     
-    /**
-     * CompanyController constructor.
-     * @param Company $company
-     * @throws AuthorizationException
-     */
     function __construct(Company $company) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->company = $company;
-        $args = [Company::class];
-        if (Request::has('id')) {
-            $company = $this->company->find(Request::input('id'));
-            $args = [$company, true];
-        }
-        $this->authorize('action', $args);
         
     }
     
@@ -63,10 +52,10 @@ class CompanyController extends Controller {
      */
     public function create() {
         
-        // $this->authorize(
-        //     'action',
-        //     Company::class
-        // );
+        $this->authorize(
+            'action',
+            Company::class
+        );
         
         return $this->output();
         
@@ -81,10 +70,10 @@ class CompanyController extends Controller {
      */
     public function store(CompanyRequest $request) {
         
-        // $this->authorize(
-        //     'action',
-        //     Company::class
-        // );
+        $this->authorize(
+            'action',
+            Company::class
+        );
         
         return $this->result(
             $this->company->store(
@@ -103,13 +92,13 @@ class CompanyController extends Controller {
      */
     public function edit($id) {
         
-        // $company = $this->company->find($id);
-        // $this->authorize(
-        //     'action', [$company, true]
-        // );
+        $company = $this->company->find($id);
+        $this->authorize(
+            'action', [$company, true]
+        );
         
         return $this->output([
-            'company' => $this->company->find($id),
+            'company' => $company,
         ]);
         
     }
@@ -124,10 +113,10 @@ class CompanyController extends Controller {
      */
     public function update(CompanyRequest $request, $id) {
         
-        // $company = $this->company->find($id);
-        // $this->authorize(
-        //     'action', [$company, true]
-        // );
+        $company = $this->company->find($id);
+        $this->authorize(
+            'action', [$company, true]
+        );
         
         return $this->result(
             $this->company->modify(
@@ -146,10 +135,10 @@ class CompanyController extends Controller {
      */
     public function destroy($id) {
         
-        // $company = $this->company->find($id);
-        // $this->authorize(
-        //     'action', [$company, true]
-        // );
+        $company = $this->company->find($id);
+        $this->authorize(
+            'action', [$company, true]
+        );
         
         return $this->result(
             $this->company->remove($id, true)
