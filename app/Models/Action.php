@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\Constant;
+use App\Helpers\HttpStatusCode;
 use App\Helpers\Snippet;
 use App\Models\ActionType as ActionType;
 use Carbon\Carbon;
@@ -94,6 +95,25 @@ class Action extends Model {
 
         return $actions;
 
+    }
+    
+    /**
+     * 更新功能
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    function modify(array $data, $id) {
+        
+        abort_if(
+            !$this->find($id),
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
+        
+        return $this->update($data);
+        
     }
     
     /**

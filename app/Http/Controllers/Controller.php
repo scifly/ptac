@@ -177,18 +177,18 @@ class Controller extends BaseController {
     /**
      * 控制器方法授权
      *
+     * @param String $action
      * @param Model $model
      */
-    protected function approve(Model $model) {
+    protected function approve(Model $model, $action = 'action') {
         
-        $this->middleware(function ($request, $next) use ($model) {
-            
+        $this->middleware(function ($request, $next) use ($model, $action) {
             $args = [get_class($model)];
             /** @var \Illuminate\Http\Request $request */
             if ($request->has('id')) {
                 $args = [$model->find($request->input('id')), true];
             }
-            $this->authorize('allow', $args);
+            $this->authorize($action, $args);
     
             return $next($request);
         });

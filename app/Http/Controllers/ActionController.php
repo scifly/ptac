@@ -24,6 +24,7 @@ class ActionController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->action = $action;
+        $this->approve($action);
         
     }
     
@@ -56,11 +57,8 @@ class ActionController extends Controller {
      */
     public function edit($id) {
         
-        $action = $this->action->find($id);
-        $this->authorize('edit', $action);
-        
         return $this->output([
-            'action' => $action,
+            'action' => $this->action->find($id),
         ]);
         
     }
@@ -71,15 +69,13 @@ class ActionController extends Controller {
      * @param ActionRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(ActionRequest $request, $id) {
         
-        $action = $this->action->find($id);
-        $this->authorize('update', $action);
-        
         return $this->result(
-            $action->update($request->all())
+            $this->action->modify(
+                $request->all(), $id
+            )
         );
         
     }
