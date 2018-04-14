@@ -5,7 +5,7 @@ use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -25,21 +25,22 @@ class CompanyController extends Controller {
     function __construct(Company $company) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->middleware($this->approve($company));
-        $this->company = $company;
+        $this->middleware(function ($request, $next) use ($company) {
+            $this->company = $company;
+            return $this->approve($request, $next, $company);
+        });
     
     }
     
     /**
      * 运营者公司列表
      *
-     * @param Request $request
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function index(Request $request) {
+    public function index() {
         
-        if ($request->get('draw')) {
+        if (Request::get('draw')) {
             return response()->json(
                 $this->company->datatable()
             );
