@@ -15,39 +15,7 @@ class CompanyPolicy {
      *
      * @return void
      */
-    public function __construct() {
-        //
-    }
-    
-    // public function create(User $user) {
-    //
-    //     return $this->permit($user);
-    //
-    // }
-    //
-    // public function store(User $user) {
-    //
-    //     return $this->permit($user);
-    //
-    // }
-    //
-    // public function edit(User $user, Company $company) {
-    //
-    //     return $this->permit($user, $company, true);
-    //
-    // }
-    //
-    // public function update(User $user, Company $company) {
-    //
-    //     return $this->permit($user, $company, true);
-    //
-    // }
-    //
-    // public function destroy(User $user, Company $company) {
-    //
-    //     return $this->permit($user, $company, true);
-    //
-    // }
+    public function __construct() { }
     
     /**
      * 权限判断
@@ -57,7 +25,7 @@ class CompanyPolicy {
      * @param bool $abort
      * @return bool
      */
-    public function permit(User $user, Company $company = null, $abort = false) {
+    function action(User $user, Company $company = null, $abort = false) {
         
         abort_if(
             $abort && !$company,
