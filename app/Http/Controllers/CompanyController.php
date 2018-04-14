@@ -25,15 +25,7 @@ class CompanyController extends Controller {
     function __construct(Company $company) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->middleware(function (Request $request, $next) use ($company) {
-            $args = [get_class($company)];
-            if ($request->has('id')) {
-                $args = [$this->company->find($request->input('id')), true];
-            }
-            $this->authorize('allow', $args);
-    
-            return $next($request);
-        });
+        $this->middleware($this->approve($company));
         $this->company = $company;
     
     }

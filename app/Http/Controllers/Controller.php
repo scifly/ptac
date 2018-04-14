@@ -6,6 +6,7 @@ use App\Models\Action;
 use App\Models\Menu;
 use App\Models\Tab;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -125,6 +126,7 @@ class Controller extends BaseController {
         return Response()->redirectToRoute('login');
         
     }
+    
     /**
      * 返回操作结果提示信息
      *
@@ -169,6 +171,20 @@ class Controller extends BaseController {
         return $result
             ? $statusCode . ' : ' . $message
             : abort($statusCode, $message);
+        
+    }
+    
+    protected function approve(Model $model) {
+    
+        function (Request $request, $next) use ($model) {
+            $args = [get_class($model)];
+            if ($request->has('id')) {
+                $args = [$model->find($request->input('id')), true];
+            }
+            $this->authorize('allow', $args);
+        
+            return $next($request);
+        }
         
     }
     
