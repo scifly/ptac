@@ -217,7 +217,7 @@ Route::group(['prefix' => 'procedure_logs'], function () {
     Route::get('show/{id}', $c . '@show');
     Route::get('create', $c . '@create');
     Route::post('store', $c . '@store');
-    Route::post('approve', $c . '@approve');
+    Route::post('sanction', $c . '@sanction');
     Route::post('upload', $c . '@upload');
     Route::get('delete/{id}', $c . '@delete');
 });
