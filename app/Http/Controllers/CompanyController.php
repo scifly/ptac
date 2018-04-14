@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Throwable;
@@ -19,6 +18,10 @@ class CompanyController extends Controller {
     
     protected $company;
     
+    /**
+     * CompanyController constructor.
+     * @param Company $company
+     */
     function __construct(Company $company) {
         
         $this->middleware(['auth', 'checkrole']);
@@ -29,6 +32,7 @@ class CompanyController extends Controller {
                 $args = [$this->company->find($request->input('id')), true];
             }
             $this->authorize('action', $args);
+            
             return $next($request);
         });
     
@@ -61,11 +65,6 @@ class CompanyController extends Controller {
      */
     public function create() {
         
-        // $this->authorize(
-        //     'action',
-        //     Company::class
-        // );
-        
         return $this->output();
         
     }
@@ -75,14 +74,8 @@ class CompanyController extends Controller {
      *
      * @param CompanyRequest $request
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store(CompanyRequest $request) {
-        
-        $this->authorize(
-            'action',
-            Company::class
-        );
         
         return $this->result(
             $this->company->store(
@@ -101,13 +94,8 @@ class CompanyController extends Controller {
      */
     public function edit($id) {
         
-        $company = $this->company->find($id);
-        $this->authorize(
-            'action', [$company, true]
-        );
-        
         return $this->output([
-            'company' => $company,
+            'company' => $this->company->find($id),
         ]);
         
     }
@@ -118,14 +106,8 @@ class CompanyController extends Controller {
      * @param CompanyRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(CompanyRequest $request, $id) {
-        
-        $company = $this->company->find($id);
-        $this->authorize(
-            'action', [$company, true]
-        );
         
         return $this->result(
             $this->company->modify(
@@ -143,11 +125,6 @@ class CompanyController extends Controller {
      * @throws Exception
      */
     public function destroy($id) {
-        
-        $company = $this->company->find($id);
-        $this->authorize(
-            'action', [$company, true]
-        );
         
         return $this->result(
             $this->company->remove($id, true)
