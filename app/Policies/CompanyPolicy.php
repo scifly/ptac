@@ -33,7 +33,7 @@ class CompanyPolicy {
             __('messages.not_found')
         );
         
-        return false; //$user->group->name == '运营';
+        return $user->group->name == '运营';
         
     }
     
