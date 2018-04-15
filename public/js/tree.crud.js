@@ -46,8 +46,8 @@ var tree = {
                             return {id: node.id, _token: tree.csrfToken()};
                         }
                     },
-                    error: function (jqXHR, textStatus, errorThrown) {
-
+                    error: function (e) {
+                        page.errorHandler(e);
                     }
                 },
                 plugins: ['contextmenu', 'dnd', 'wholerow', 'unique', 'types'],
