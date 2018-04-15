@@ -28,82 +28,51 @@ class GradePolicy {
         
     }
     
-    public function create(User $user) {
-    
-        if (in_array($user->group->name, Constant::SUPER_ROLES)) {
-            return true;
-        }
-        return $this->action($user);
-        
-    }
-    
-    public function store(User $user) {
-        
-        $schoolId = Request::input('school_id');
-        $departmentId = Request::input('department_id');
-        $educatorIds = Request::input('educator_ids');
-        if (in_array($user->group->name, Constant::SUPER_ROLES)) {
-            return in_array($schoolId, $this->schoolIds())
-                && in_array($departmentId, $this->departmentIds($user->id))
-                && empty(array_diff($educatorIds, $this->contactIds('educator')));
-        }
-        
-        return in_array($schoolId, $this->schoolIds())
-            && in_array($departmentId, $this->departmentIds($user->id))
-            && empty(array_diff($educatorIds, $this->contactIds('educator')))
-            && $this->action($user);
-        
-    }
-    
-    public function edit(User $user, Grade $grade) {
-        
-        return $this->objectPerm($user, $grade);
-        
-    }
-    
-    public function update(User $user, Grade $grade) {
+    /**
+     * 权限判断
+     *
+     * @param User $user
+     * @param Grade|null $grade
+     * @param bool $abort
+     * @return bool
+     */
+    function operation(User $user, Grade $grade = null, $abort = false) {
     
         abort_if(
-            !$grade,
+            $abort && !$grade,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        $schoolId = Request::input('school_id');
-        $departmentId = Request::input('department_id');
-        $educatorIds = Request::input('educator_ids');
-        if (in_array($user->group->name, Constant::SUPER_ROLES)) {
-            return in_array($schoolId, $this->schoolIds())
-                && in_array($departmentId, $this->departmentIds($user->id))
-                && empty(array_diff($educatorIds, $this->contactIds('educator')));
+        if ($user->group->name == '运营') { return true; }
+        $action = explode('/', Request::path())[1];
+        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
+        $isGradeAllowed = $isDepartmentAllowed = $isEducatorAllowed = false;
+        if (in_array($action, ['store', 'update'])) {
+            $departmentId = Request::input('department_id');
+            $educatorIds = Request::input('educator_ids');
+            $isDepartmentAllowed = in_array($departmentId, $this->gradeIds());
+            $isEducatorAllowed = empty(array_diff($educatorIds, $this->contactIds('educator')));
         }
-    
-        return in_array($schoolId, $this->schoolIds())
-            && in_array($departmentId, $this->departmentIds($user->id))
-            && empty(array_diff($educatorIds, $this->contactIds('educator')))
-            && $this->action($user);
-        
-    }
-    
-    public function destroy(User $user, Grade $grade) {
-        
-        return $this->objectPerm($user, $grade);
-        
-    }
-    
-    private function objectPerm(User $user, Grade $grade) {
-    
-        abort_if(
-            !$grade,
-            HttpStatusCode::NOT_FOUND,
-            __('messages.not_found')
-        );
-        switch ($user->group->name) {
-            case '运营': return true;
-            case '企业':
-            case '学校':
-                return in_array($grade->id, $this->gradeIds());
+        if (in_array($action, ['edit', 'update', 'destroy'])) {
+            $isGradeAllowed = in_array($grade->id, $this->gradeIds());
+        }
+        switch ($action) {
+            case 'index':
+            case 'create':
+                return $isSuperRole ? true : $this->action($user);
+            case 'store':
+                return $isSuperRole
+                    ? ($isEducatorAllowed && $isDepartmentAllowed)
+                    : ($isEducatorAllowed && $isDepartmentAllowed && $this->action($user));
+            case 'edit':
+            case 'destroy':
+                return $isSuperRole ? $isGradeAllowed : ($isGradeAllowed && $this->action($user));
+            case 'update':
+                return $isSuperRole
+                    ? ($isGradeAllowed && $isEducatorAllowed && $isDepartmentAllowed)
+                    : ($isGradeAllowed && $isEducatorAllowed && $isDepartmentAllowed && $this->action($user));
             default:
-                return $this->action($user) && (in_array($grade->id, $this->gradeIds()));
+                return false;
         }
     
     }

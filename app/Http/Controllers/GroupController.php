@@ -25,6 +25,7 @@ class GroupController extends Controller {
         $this->middleware(['auth', 'checkrole']);
         $this->group = $group;
         $this->menu = $menu;
+        $this->approve($group);
         
     }
     
@@ -54,9 +55,6 @@ class GroupController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'create', Group::class
-        );
         if (Request::method() === 'POST') {
             $schoolId = Request::query('schoolId');
             $menuId = School::find($schoolId)->menu_id;
@@ -78,12 +76,10 @@ class GroupController extends Controller {
      */
     public function store(GroupRequest $request) {
         
-        $this->authorize(
-            'store', Group::class
-        );
-        
         return $this->result(
-            $this->group->store($request->all())
+            $this->group->store(
+                $request->all()
+            )
         );
         
     }
@@ -97,17 +93,14 @@ class GroupController extends Controller {
      */
     public function edit($id) {
         
-        $group = Group::find($id);
-        $this->authorize('edit', $group);
         if (Request::method() === 'POST') {
             $schoolId = Request::query('schoolId');
             $menuId = School::find($schoolId)->menu_id;
-            
             return $this->menu->schoolTree($menuId);
         }
         
         return $this->output([
-            'group' => $group,
+            'group' => Group::find($id),
         ]);
         
     }
@@ -123,11 +116,10 @@ class GroupController extends Controller {
      */
     public function update(GroupRequest $request, $id) {
         
-        $group = Group::find($id);
-        $this->authorize('update', $group);
-        
         return $this->result(
-            $group->modify($request->all(), $id)
+            $this->group->modify(
+                $request->all(), $id
+            )
         );
         
     }
@@ -141,11 +133,8 @@ class GroupController extends Controller {
      */
     public function destroy($id) {
         
-        $group = Group::find($id);
-        $this->authorize('destroy', $group);
-        
         return $this->result(
-            $group->remove($id)
+            $this->group->remove($id)
         );
         
     }

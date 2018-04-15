@@ -47,9 +47,20 @@ class Group extends Model {
 
     protected $table = 'groups';
 
+    protected $ag, $gm, $gt;
+    
     protected $fillable = [
         'name', 'school_id', 'remark', 'enabled',
     ];
+    
+    function __construct(array $attributes = []) {
+        
+        parent::__construct($attributes);
+        $this->ag = app()->make('App\Models\ActionGroup');
+        $this->gm = app()->make('App\Models\GroupMenu');
+        $this->gt = app()->make('App\Models\GroupTab');
+        
+    }
     
     /**
      * 获取指定角色下的所有用户对象
@@ -105,15 +116,11 @@ class Group extends Model {
                     'school_id' => $data['school_id'],
                 ]);
                 # 功能与角色的对应关系
-                $ag = new ActionGroup();
-                $gm = new GroupMenu();
-                $gt = new GroupTab();
-                $ag->storeByGroupId($group->id, $data['actionId']);
+                $this->ag->storeByGroupId($group->id, $data['action_ids']);
                 # 功能与菜单的对应关系
-                $gm->storeByGroupId($group->id, explode(',', $data['menu_ids']));
+                $this->gm->storeByGroupId($group->id, $data['menu_ids']);
                 # 功能与卡片的对应关系
-                $gt->storeByGroupId($group->id, $data['tabId']);
-                unset($ag, $gm, $gt);
+                $this->gt->storeByGroupId($group->id, $data['tab_ids']);
             });
         } catch (Exception $e) {
             throw $e;
@@ -144,15 +151,11 @@ class Group extends Model {
                     'enabled' => $data['enabled'],
                 ]);
                 # 功能与角色的对应关系
-                $ag = new ActionGroup();
-                $gm = new GroupMenu();
-                $gt = new GroupTab();
-                $ag->storeByGroupId($id, $data['actionId']);
+                $this->ag->storeByGroupId($id, $data['action_ids']);
                 # 功能与菜单的对应关系
-                $gm->storeByGroupId($id, explode(',', $data['menu_ids']));
+                $this->gm->storeByGroupId($id, $data['menu_ids']);
                 # 功能与卡片的对应关系
-                $gt->storeByGroupId($id, $data['tabId']);
-                unset($ag, $gm, $gt);
+                $this->gt->storeByGroupId($id, $data['tab_ids']);
             });
         } catch (Exception $e) {
             throw $e;

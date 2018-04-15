@@ -5,7 +5,6 @@ use App\Http\Requests\GradeRequest;
 use App\Models\Educator;
 use App\Models\Grade;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 
@@ -24,6 +23,7 @@ class GradeController extends Controller {
         $this->middleware(['auth', 'checkrole']);
         $this->grade = $grade;
         $this->educator = $educator;
+        $this->approve($grade);
         
     }
     
@@ -53,10 +53,6 @@ class GradeController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'create', Grade::class
-        );
-        
         return $this->output();
         
     }
@@ -66,13 +62,8 @@ class GradeController extends Controller {
      *
      * @param GradeRequest $request
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store(GradeRequest $request) {
-        
-        $this->authorize(
-            'store', Grade::class
-        );
         
         return $this->result(
             $this->grade->store(
@@ -92,7 +83,6 @@ class GradeController extends Controller {
     public function edit($id) {
         
         $grade = Grade::find($id);
-        $this->authorize('edit', $grade);
         $selectedEducators = [];
         if ($grade->educator_ids != '0') {
             $selectedEducators = $this->educator->educatorList(
@@ -113,15 +103,13 @@ class GradeController extends Controller {
      * @param GradeRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(GradeRequest $request, $id) {
         
-        $grade = Grade::find($id);
-        $this->authorize('update', $grade);
-        
         return $this->result(
-            $grade->modify($request->all(), $id, true)
+            $this->grade->modify(
+                $request->all(), $id, true
+            )
         );
         
     }
@@ -135,11 +123,8 @@ class GradeController extends Controller {
      */
     public function destroy($id) {
         
-        $grade = Grade::find($id);
-        $this->authorize('destory', $grade);
-        
         return $this->result(
-            $grade->remove($id, true)
+            $this->grade->remove($id, true)
         );
         
     }

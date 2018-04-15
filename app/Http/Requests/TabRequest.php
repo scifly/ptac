@@ -50,7 +50,7 @@ class TabRequest extends FormRequest {
     
     protected function prepareForValidation() {
         
-        if ($this->attributes->has('ids')) {
+        if (!$this->attributes->has('ids')) {
             $input = $this->all();
             if (!isset($input['menu_ids'])) {
                 $input['menu_ids'] = [];

@@ -52,6 +52,8 @@ class GroupTab extends Model {
                     $values[] = [
                         'group_id' => $groupId,
                         'tab_id' => $id,
+                        'created_at' => now()->toDateTimeString(),
+                        'updated_at' => now()->toDateTimeString(),
                         'enabled' => Constant::ENABLED,
                     ];
                 }

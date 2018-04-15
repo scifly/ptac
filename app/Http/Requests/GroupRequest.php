@@ -15,12 +15,14 @@ class GroupRequest extends FormRequest {
     public function rules() {
         
         return [
-            'name'     => 'required|string|between:2,255|unique:groups,name,' .
+            'name'       => 'required|string|between:2,255|unique:groups,name,' .
                 $this->input('id') . ',id',
-            'remark'   => 'required|string|between:2,20',
-            'menu_ids' => 'required',
-            'actionId' => 'required',
-            // 'tabId' => 'required',
+            'school_id'  => 'required|integer',
+            'remark'     => 'required|string|between:2,20',
+            'menu_ids'   => 'required|array',
+            'tab_ids'    => 'required|array',
+            'action_ids' => 'required|array',
+            'enabled'    => 'required|integer',
         ];
         
     }
@@ -30,17 +32,20 @@ class GroupRequest extends FormRequest {
         $input = $this->all();
         if (isset($input['tabs'])) {
             $tabIds = null;
-            foreach ($input['tabs'] as $k => $v) {
-                $tabIds[] = $k;
+            foreach ($input['tabs'] as $key => $value) {
+                $tabIds[] = $key;
             }
-            $input['tabId'] = $tabIds;
+            $input['tab_ids'] = $tabIds;
         }
         $actionIds = [];
         if (isset($input['actions'])) {
-            foreach ($input['actions'] as $k => $v) {
-                $actionIds[] = $k;
+            foreach ($input['actions'] as $key => $value) {
+                $actionIds[] = $key;
             }
-            $input['actionId'] = $actionIds;
+            $input['action_ids'] = $actionIds;
+        }
+        if (isset($input['menu_ids'])) {
+            $input['menu_ids'] = explode(',', $input['menu_ids']);
         }
         $this->replace($input);
         

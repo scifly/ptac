@@ -59,6 +59,8 @@ class GroupMenu extends Model {
                     self::create([
                         'group_id' => $groupId,
                         'menu_id' => $id,
+                        'created_at' => now()->toDateTimeString(),
+                        'updated_at' => now()->toDateTimeString(),
                         'enabled' => Constant::ENABLED,
                     ]);
                 }

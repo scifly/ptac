@@ -9,6 +9,7 @@ use App\Models\Menu;
 use App\Models\School;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Request;
 
 class GroupPolicy {
     
@@ -50,29 +51,46 @@ class GroupPolicy {
     
     public function edit(User $user, Group $group) {
         
-        return $this->objectPerm($user, $group);
+        return $this->operation($user, $group);
         
     }
     
     public function update(User $user, Group $group) {
         
-        return $this->objectPerm($user, $group);
+        return $this->operation($user, $group);
         
     }
     
     public function destroy(User $user, Group $group) {
         
-        return $this->objectPerm($user, $group);
+        return $this->operation($user, $group);
         
     }
     
-    private function objectPerm(User $user, Group $group) {
+    private function operation(User $user, Group $group = null, $abort = false) {
         
         abort_if(
-            !$group,
+            $abort && !$group,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
+        if ($user->group->name == '运营') { return true; }
+        $action = explode('/', Request::path())[1];
+        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
+        $isGroupAllowed = $isMenuAllowed = $isTabAllowed = $isActionAllowed = false;
+        if (in_array($action, ['store', 'update'])) {
+            $menuIds = Request::input('menu_ids');
+            $tabIds = Request::input('tab_ids');
+            $actionIds = Request::input('action_ids');
+            $schoolId = Request::input('school_id');
+            $allowedMenuIds = $this->menu->subMenuIds(School::find($schoolId)->menu_id);
+            $isMenuAllowed = empty(array_diff($menuIds, $allowedMenuIds));
+            
+            
+        }
+        if (in_array($action, ['edit', 'update', 'destroy'])) {
+        
+        }
         $role = $user->group->name;
         $rootMenuId = $this->menu->rootMenuId();
         switch ($role) {

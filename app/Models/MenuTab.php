@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-use App\Helpers\Constant;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 use Throwable;
+use Carbon\Carbon;
+use App\Helpers\Constant;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * App\Models\MenuTab
@@ -85,6 +85,8 @@ class MenuTab extends Model {
                     $values[] = [
                         'menu_id' => $menuId,
                         'tab_id' => $tabId,
+                        'created_at' => now()->toDateTimeString(),
+                        'updated_at' => now()->toDateTimeString(),
                         'enabled' => Constant::ENABLED,
                     ];
                 }
