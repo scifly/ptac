@@ -1,13 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Http\Requests\DepartmentTypeRequest;
-use App\Models\DepartmentType;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
+use Throwable;
+use App\Models\DepartmentType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
-use Throwable;
+use App\Http\Requests\DepartmentTypeRequest;
 
 /**
  * 部门类型
@@ -23,6 +22,7 @@ class DepartmentTypeController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->dt = $dt;
+        $this->approve($dt);
         
     }
     
@@ -52,10 +52,6 @@ class DepartmentTypeController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'create', DepartmentType::class
-        );
-        
         return $this->output();
         
     }
@@ -65,13 +61,8 @@ class DepartmentTypeController extends Controller {
      *
      * @param DepartmentTypeRequest $request
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store(DepartmentTypeRequest $request) {
-        
-        $this->authorize(
-            'store', DepartmentType::class
-        );
         
         return $this->result(
             $this->dt->store($request->all())
@@ -88,11 +79,8 @@ class DepartmentTypeController extends Controller {
      */
     public function edit($id) {
         
-        $dt = $this->dt->find($id);
-        $this->authorize('edit', $dt);
-        
         return $this->output([
-            'dt' => $dt,
+            'dt' => $this->dt->find($id),
         ]);
         
     }
@@ -103,15 +91,13 @@ class DepartmentTypeController extends Controller {
      * @param DepartmentTypeRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(DepartmentTypeRequest $request, $id) {
         
-        $dt = $this->dt->find($id);
-        $this->authorize('update', $dt);
-        
         return $this->result(
-            $dt->modify($request->all(), $id)
+            $this->dt->modify(
+                $request->all(), $id
+            )
         );
         
     }
@@ -125,11 +111,8 @@ class DepartmentTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $dt = $this->dt->find($id);
-        $this->authorize('destroy', $dt);
-        
         return $this->result(
-            $dt->remove($id)
+            $this->dt->remove($id)
         );
         
     }

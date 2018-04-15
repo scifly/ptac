@@ -19,46 +19,18 @@ class DepartmentTypePolicy {
         //
     }
     
-    function create(User $user) {
-        
-        return $this->classPerm($user);
-        
-    }
-    
-    function store(User $user) {
-        
-        return $this->classPerm($user);
-        
-    }
-    
-    private function classPerm(User $user) {
-        
-        return $user->group->name == '运营';
-        
-    }
-    
-    function edit(User $user, DepartmentType $dt) {
-        
-        return $this->objectPerm($user, $dt);
-        
-    }
-    
-    function update(User $user, DepartmentType $dt) {
-        
-        return $this->objectPerm($user, $dt);
-        
-    }
-    
-    function destroy(User $user, DepartmentType $dt) {
-        
-        return $this->objectPerm($user, $dt);
-        
-    }
-    
-    private function objectPerm(User $user, DepartmentType $dt) {
+    /**
+     * 权限判断
+     *
+     * @param User $user
+     * @param DepartmentType|null $dt
+     * @param bool $abort
+     * @return bool
+     */
+    function operation(User $user, DepartmentType $dt = null, $abort = false) {
         
         abort_if(
-            !$dt,
+            $abort && !$dt,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
