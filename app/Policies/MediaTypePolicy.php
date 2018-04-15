@@ -19,16 +19,18 @@ class MediaTypePolicy {
         //
     }
     
-    public function cs(User $user) {
-        
-        return $user->group->name == '运营';
-        
-    }
-    
-    public function eud(User $user, MediaType $mt) {
+    /**
+     * 权限判断
+     *
+     * @param User $user
+     * @param MediaType|null $mt
+     * @param bool $abort
+     * @return bool
+     */
+    public function operation(User $user, MediaType $mt = null, $abort = false) {
         
         abort_if(
-            !$mt,
+            $abort && !$mt,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
@@ -36,6 +38,5 @@ class MediaTypePolicy {
         return $user->group->name == '运营';
         
     }
-    
     
 }

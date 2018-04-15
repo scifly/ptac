@@ -19,16 +19,18 @@ class IconTypePolicy {
         //
     }
     
-    public function cs(User $user) {
-        
-        return $user->group->name == '运营';
-        
-    }
-    
-    public function eud(User $user, IconType $it) {
+    /**
+     * 权限判断
+     *
+     * @param User $user
+     * @param IconType|null $it
+     * @param bool $abort
+     * @return bool
+     */
+    public function operation(User $user, IconType $it = null, $abort = false) {
         
         abort_if(
-            !$it,
+            $abort && !$it,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );

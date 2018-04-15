@@ -19,16 +19,10 @@ class SchoolTypePolicy {
         //
     }
     
-    public function cs(User $user) {
-        
-        return $user->group->name == '运营';
-        
-    }
-    
-    public function eud(User $user, SchoolType $st) {
+    public function operation(User $user, SchoolType $st = null, $abort = false) {
         
         abort_if(
-            !$st,
+            $abort && !$st,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );

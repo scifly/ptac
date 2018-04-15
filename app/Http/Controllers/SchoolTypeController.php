@@ -23,6 +23,7 @@ class SchoolTypeController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->st = $st;
+        $this->approve($st);
         
     }
     
@@ -52,10 +53,6 @@ class SchoolTypeController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'cs', SchoolType::class
-        );
-        
         return $this->output();
         
     }
@@ -65,13 +62,8 @@ class SchoolTypeController extends Controller {
      *
      * @param SchoolTypeRequest $request
      * @return JsonResponse|string
-     * @throws AuthorizationException
      */
     public function store(SchoolTypeRequest $request) {
-        
-        $this->authorize(
-            'cs', SchoolType::class
-        );
         
         return $this->result(
             $this->st->store($request->all())
@@ -88,11 +80,8 @@ class SchoolTypeController extends Controller {
      */
     public function edit($id) {
         
-        $st = SchoolType::find($id);
-        $this->authorize('eud', $st);
-        
         return $this->output([
-            'st' => $st,
+            'st' => $this->st->find($id),
         ]);
         
     }
@@ -103,15 +92,13 @@ class SchoolTypeController extends Controller {
      * @param SchoolTypeRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(SchoolTypeRequest $request, $id) {
         
-        $st = SchoolType::find($id);
-        $this->authorize('eud', $st);
-        
         return $this->result(
-            $st->modify($request->all(), $id)
+            $this->st->modify(
+                $request->all(), $id
+            )
         );
         
     }
@@ -125,11 +112,8 @@ class SchoolTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $st = SchoolType::find($id);
-        $this->authorize('eud', $st);
-        
         return $this->result(
-            $st->remove($id)
+            $this->st->remove($id)
         );
         
     }

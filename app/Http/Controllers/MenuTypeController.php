@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\MenuTypeRequest;
 use App\Models\MenuType;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -23,6 +22,7 @@ class MenuTypeController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->mt = $mt;
+        $this->approve($mt);
         
     }
     
@@ -52,10 +52,6 @@ class MenuTypeController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'cs', MenuType::class
-        );
-        
         return $this->output();
         
     }
@@ -65,13 +61,8 @@ class MenuTypeController extends Controller {
      *
      * @param MenuTypeRequest $request
      * @return JsonResponse|string
-     * @throws AuthorizationException
      */
     public function store(MenuTypeRequest $request) {
-        
-        $this->authorize(
-            'cs', MenuType::class
-        );
         
         return $this->result(
             $this->mt->store(
@@ -86,16 +77,12 @@ class MenuTypeController extends Controller {
      *
      * @param $id
      * @return bool|JsonResponse
-     * @throws AuthorizationException
      * @throws Throwable
      */
     public function edit($id) {
         
-        $mt = $this->mt->find($id);
-        $this->authorize('eud', $mt);
-        
         return $this->output([
-            'mt' => $mt,
+            'mt' => $this->mt->find($id),
         ]);
         
     }
@@ -106,15 +93,11 @@ class MenuTypeController extends Controller {
      * @param MenuType $request
      * @param $id
      * @return JsonResponse|string
-     * @throws AuthorizationException
      */
     public function update(MenuType $request, $id) {
         
-        $mt = $this->mt->find($id);
-        $this->authorize('eud', $mt);
-        
         return $this->result(
-            $mt->modify(
+            $this->mt->modify(
                 $request->all(), $id
             )
         );
@@ -126,16 +109,12 @@ class MenuTypeController extends Controller {
      *
      * @param $id
      * @return JsonResponse|string
-     * @throws AuthorizationException
      * @throws Exception
      */
     public function destroy($id) {
         
-        $mt = $this->mt->find($id);
-        $this->authorize('eud', $mt);
-        
         return $this->result(
-            $mt->remove($id)
+            $this->mt->remove($id)
         );
         
     }

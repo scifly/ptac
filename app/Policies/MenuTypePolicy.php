@@ -19,16 +19,18 @@ class MenuTypePolicy {
         //
     }
     
-    public function cs(User $user) {
-        
-        return $user->group->name == '运营';
-        
-    }
-    
-    public function eud(User $user, MenuType $mt) {
+    /**
+     * 权限判断
+     *
+     * @param User $user
+     * @param MenuType|null $mt
+     * @param bool $abort
+     * @return bool
+     */
+    public function operation(User $user, MenuType $mt = null, $abort = false) {
         
         abort_if(
-            !$mt,
+            $abort && !$mt,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
