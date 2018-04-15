@@ -33,7 +33,7 @@ class CustodianController extends Controller {
         $this->student = $student;
         $this->grade = $grade;
         $this->class = $class;
-        $this->approve($custodian, 'sanction');
+        $this->approve($custodian);
         
     }
     
@@ -181,7 +181,7 @@ class CustodianController extends Controller {
     }
     
     /**
-     * 删除指定的监护人
+     * 删除指定监护人
      *
      * @param $id
      * @return JsonResponse
@@ -197,6 +197,8 @@ class CustodianController extends Controller {
     }
     
     /**
+     * 导出监护人
+     *
      * @return array
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception

@@ -53,6 +53,7 @@ class CustodianPolicy {
             $isCustodianAllowed = in_array($custodian->id, $this->contactIds('custodian'));
         }
         switch ($paths[1]) {
+            case 'index':
             case 'create':
             case 'export':
                 return $isSuperRole ? true : $this->action($user);
