@@ -43,7 +43,7 @@ var tree = {
                         type: 'POST',
                         dataType: 'json',
                         data: function (node) {
-                            return {id: node.id, _token: tree.csrfToken()};
+                            return {rootId: node.id, _token: tree.csrfToken()};
                         }
                     },
                     error: function (e) {

@@ -51,14 +51,14 @@ class DepartmentController extends Controller {
     /**
      * 创建部门
      *
-     * @param $id
+     * @param $parentId
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function create($id) {
+    public function create($parentId) {
         
         return $this->output([
-            'parentId' => $id,
+            'parentId' => $parentId,
         ]);
         
     }
