@@ -2,14 +2,15 @@
 
 namespace App\Policies;
 
-use App\Helpers\HttpStatusCode;
+use App\Models\User;
+use App\Models\Group;
+use App\Models\Educator;
+use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use App\Helpers\PolicyTrait;
-use App\Models\Educator;
-use App\Models\Group;
-use App\Models\User;
-use Illuminate\Auth\Access\HandlesAuthorization;
+use App\Helpers\HttpStatusCode;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class EducatorPolicy {
 
@@ -22,163 +23,83 @@ class EducatorPolicy {
      */
     public function __construct() { }
 
-    function create(User $user) {
-    
-        return $this->classPerm($user);
-        
-    }
-    
-    function import(User $user) {
-    
-        return $this->classPerm($user);
-        
-    }
-    
-    function export(User $user) {
-    
-        return $this->classPerm($user);
-        
-    }
-    
-    private function classPerm(User $user) {
-    
-        switch ($user->group->name) {
-            case '运营':
-                return true;
-            case '企业':
-            case '学校':
-                return in_array($this->schoolId(), $this->schoolIds());
-            default:
-                return in_array($this->schoolId(), $this->schoolIds()) && $this->action($user);
-        }
-        
-    }
-    
-    function store(User $user) {
-        
-        $schoolId = Request::input('educator')['school_id'];
-        $groupId = Request::input('educator')['group_id'];
-        $selectedDepartmentIds = Request::input('selectedDepartments');
-        switch ($user->group->name) {
-            case '运营':
-                return true;
-            case '企业':
-                $allowedGroupIds = array_merge(
-                    Group::whereEnabled(1)->whereIn('name', ['企业', '学校'])->get()->pluck('id')->toArray(),
-                    Group::whereEnabled(1)->whereIn('schoolId', $this->schoolIds())
-                );
-                return in_array($schoolId, $this->schoolIds())
-                    && in_array($groupId, $allowedGroupIds)
-                    && empty(array_diff($selectedDepartmentIds, $this->departmentIds($user->id)));
-            case '学校':
-                $allowedGroupIds = array_merge(
-                    [Group::whereName('学校')->first()->id],
-                    Group::whereEnabled(1)->where('school_id', $this->schoolId())->get()->pluck('id')->toArray()
-                );
-                return $schoolId == $this->schoolId()
-                    && in_array($groupId, $allowedGroupIds)
-                    && empty(array_diff($selectedDepartmentIds, $this->departmentIds($user->id)));
-            default:
-                $allowedGroupIds = array_unique([
-                    $user->group->id,
-                    Group::whereName('教职员工')->first()->id
-                ]);
-                return $schoolId == $this->schoolId()
-                    && in_array($groupId, $allowedGroupIds)
-                    && empty(array_diff($selectedDepartmentIds, $this->departmentIds($user->id)))
-                    && $this->action($user);
-        }
-        
-    }
-    
-    function edit(User $user, Educator $educator) {
-        
-        return $this->objectPerm($user, $educator);
-        
-    }
-    
-    function show(User $user, Educator $educator) {
-        
-        return $this->objectPerm($user, $educator);
-        
-    }
-    
-    function destroy(User $user, Educator $educator) {
-        
-        return $this->objectPerm($user, $educator);
-        
-    }
-    
-    function recharge(User $user, Educator $educator) {
-        
-        return $this->objectPerm($user, $educator);
-        
-    }
-    
-    function rechargeStore(User $user, Educator $educator) {
-        
-        return $this->objectPerm($user, $educator);
-        
-    }
-    
-    function update(User $user, Educator $educator) {
+    /**
+     * 权限判断
+     *
+     * @param User $user
+     * @param Educator|null $educator
+     * @param bool $abort
+     * @return bool
+     */
+    function operation(User $user, Educator $educator = null, $abort = false) {
     
         abort_if(
-            !$educator,
+            $abort && !$educator,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        $schoolId = Request::input('educator')['school_id'];
-        $groupId = Request::input('educator')['group_id'];
-        $selectedDepartmentIds = Request::input('selectedDepartments');
-        switch ($user->group->name) {
-            case '运营':
-                return true;
-            case '企业':
-                $allowedGroupIds = array_merge(
-                    Group::whereEnabled(1)->whereIn('name', ['企业', '学校'])->get()->pluck('id')->toArray(),
-                    Group::whereEnabled(1)->whereIn('schoolId', $this->schoolIds())
-                );
-                return in_array($schoolId, $this->schoolIds())
-                    && in_array($groupId, $allowedGroupIds)
-                    && empty(array_diff($selectedDepartmentIds, $this->departmentIds($user->id)));
-            case '学校':
-                $allowedGroupIds = array_merge(
-                    [Group::whereName('学校')->first()->id],
-                    Group::whereEnabled(1)->where('school_id', $this->schoolId())->get()->pluck('id')->toArray()
-                );
-                return $schoolId == $this->schoolId()
-                    && in_array($groupId, $allowedGroupIds)
-                    && empty(array_diff($selectedDepartmentIds, $this->departmentIds($user->id)));
-            default:
-                $allowedGroupIds = array_unique([
-                    $user->group->id,
-                    Group::whereName('教职员工')->first()->id
-                ]);
-                return $schoolId == $this->schoolId()
-                    && in_array($groupId, $allowedGroupIds)
-                    && empty(array_diff($selectedDepartmentIds, $this->departmentIds($user->id)))
-                    && $this->action($user);
+        
+        if ($user->group->name == '运营') { return true; }
+        
+        $action = explode('/', Request::path())[1];
+        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
+        $isGroupAllowed = $isDepartmentAllowed = $isEducatorAllowed = false;
+        
+        if (in_array($action, ['store', 'update'])) {
+            $groupId = Request::input('educator')['group_id'];
+            $selectedDepartmentIds = Request::input('selectedDepartments');
+            switch ($user->group->name) {
+                case '企业':
+                    $allowedGroupIds = array_merge(
+                        Group::whereEnabled(1)->whereIn('name', ['企业', '学校'])->get()->pluck('id')->toArray(),
+                        Group::whereEnabled(1)->whereIn('schoolId', $this->schoolIds())
+                    );
+                    break;
+                case '学校':
+                    $allowedGroupIds = array_merge(
+                        [Group::whereName('学校')->first()->id],
+                        Group::whereEnabled(1)->where('school_id', $this->schoolId())->get()->pluck('id')->toArray()
+                    );
+                    break;
+                default:
+                    $allowedGroupIds = array_unique([
+                        $user->group->id,
+                        Group::whereName('教职员工')->first()->id
+                    ]);
+                    break;
+            }
+            $isDepartmentAllowed = empty(array_diff(
+                $selectedDepartmentIds, $this->departmentIds($user->id))
+            );
+            $isGroupAllowed = in_array($groupId, $allowedGroupIds);
         }
         
-    }
-    
-    private function objectPerm(User $user, Educator $educator) {
-    
-        abort_if(
-            !$educator,
-            HttpStatusCode::NOT_FOUND,
-            __('messages.not_found')
-        );
-        switch ($user->group->name) {
-            case '运营':
-                return true;
-            case '企业':
-            case '学校':
-                return in_array($educator->id, $this->contactIds('educator'));
+        if (in_array($action, ['show', 'edit', 'update', 'destroy', 'recharge', 'rechargeStore'])) {
+            $isEducatorAllowed = in_array($educator->id, $this->contactIds('educator'));
+        }
+        
+        switch ($action) {
+            case 'index':
+            case 'create':
+            case 'import':
+            case 'export':
+                return $isSuperRole ? true : $this->action($user);
+            case 'store':
+                return $isSuperRole
+                    ? ($isGroupAllowed && $isDepartmentAllowed)
+                    : ($isGroupAllowed && $isDepartmentAllowed && $this->action($user));
+            case 'show':
+            case 'edit':
+            case 'destroy':
+            case 'recharge':
+            case 'rechargeStore':
+                return $isSuperRole ? $isEducatorAllowed : ($isEducatorAllowed && $this->action($user));
+            case 'update':
+                return $isSuperRole
+                    ? ($isGroupAllowed && $isEducatorAllowed && $isDepartmentAllowed)
+                    : ($isGroupAllowed && $isEducatorAllowed && $isDepartmentAllowed && $this->action($user));
             default:
-                return in_array($educator->id, $this->contactIds('educator'))
-                    && $this->action($user);
+                return false;
         }
     
     }

@@ -42,17 +42,17 @@ class CustodianPolicy {
             __('messages.not_found')
         );
         if ($user->group->name == '运营') { return true; }
-        $paths = explode(',', Request::path());
+        $action = explode(',', Request::path())[1];
         $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
         $isStudentAllowed = $isCustodianAllowed = false;
-        if (in_array($paths[1], ['store', 'update'])) {
+        if (in_array($action, ['store', 'update'])) {
             $studentIds = explode(',', Request::input('student_ids'));
             $isStudentAllowed = empty(array_diff($studentIds, $this->contactIds('student')));
         }
-        if (in_array($paths[1], ['show', 'edit', 'delete', 'update'])) {
+        if (in_array($action, ['show', 'edit', 'delete', 'update'])) {
             $isCustodianAllowed = in_array($custodian->id, $this->contactIds('custodian'));
         }
-        switch ($paths[1]) {
+        switch ($action) {
             case 'index':
             case 'create':
             case 'export':

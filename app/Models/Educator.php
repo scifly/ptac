@@ -300,11 +300,14 @@ class Educator extends Model {
      * 修改教职员工
      *
      * @param EducatorRequest $request
+     * @param $id
      * @return bool|mixed
      * @throws Exception
-     * @throws \Throwable
      */
-    function modify(EducatorRequest $request) {
+    function modify(EducatorRequest $request, $id) {
+        
+        $educator = $this->find($id);
+        if (!$educator) { return false; }
         try {
             DB::transaction(function () use ($request) {
                 $user = $request->input('user');
