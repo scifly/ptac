@@ -51,18 +51,18 @@ class MenuController extends Controller {
     /**
      * 创建菜单
      *
-     * @param $id integer 上级菜单ID
+     * @param $parentId integer 上级菜单ID
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function create($id) {
+    public function create($parentId) {
         
         $this->authorize(
             'css', Menu::class
         );
         
         return $this->output([
-            'parentId' => $id,
+            'parentId' => $parentId,
         ]);
         
     }

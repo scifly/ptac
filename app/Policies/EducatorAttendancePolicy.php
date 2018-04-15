@@ -20,31 +20,17 @@ class EducatorAttendancePolicy {
         //
     }
     
-    function stat(User $user) {
-        
-        return $this->permit($user);
+    /**
+     * 权限判断
+     *
+     * @param User $user
+     * @return bool
+     */
+    function operation(User $user) {
+    
+        return in_array($user->group->name, Constant::SUPER_ROLES)
+            ? true : $this->action($user);
         
     }
     
-    function detail(User $user) {
-        
-        return $this->permit($user);
-        
-    }
-    
-    function export(User $user) {
-        
-        return $this->permit($user);
-        
-    }
-    
-    private function permit(User $user) {
-    
-        if (in_array($user->group->name, Constant::SUPER_ROLES)) {
-            return true;
-        }
-    
-        return $this->action($user);
-        
-    }
 }

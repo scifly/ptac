@@ -21,6 +21,7 @@ class EducatorAttendanceController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->ea = $ea;
+        $this->approve($ea);
         
     }
     
@@ -45,15 +46,10 @@ class EducatorAttendanceController extends Controller {
     /**
      * 教职员工考勤统计
      *
-     * @throws AuthorizationException
      * @throws Throwable
      */
     public function stat() {
         
-        $this->authorize(
-            'create',
-            EducatorAttendance::class
-        );
         if (Request::method() === 'POST') {
             return $this->ea->stat();
         }
@@ -70,10 +66,6 @@ class EducatorAttendanceController extends Controller {
      */
     public function detail() {
         
-        $this->authorize(
-            'detail',
-            EducatorAttendance::class
-        );
         if (Request::method() === 'POST') {
             return response()->json(
                 $this->ea->detail()
@@ -88,16 +80,10 @@ class EducatorAttendanceController extends Controller {
      * 导出教职员工考勤明细
      *
      * @return mixed
-     * @throws AuthorizationException
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function export() {
-        
-        $this->authorize(
-            'export',
-            EducatorAttendance::class
-        );
         
         return $this->ea->export();
         
