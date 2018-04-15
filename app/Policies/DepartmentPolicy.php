@@ -8,6 +8,7 @@ use App\Helpers\PolicyTrait;
 use App\Models\Department;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Request;
 
 class DepartmentPolicy {
     
@@ -22,85 +23,33 @@ class DepartmentPolicy {
         //
     }
     
-    public function create(User $user) {
-        
-        return $this->classPerm($user);
-        
-    }
-    
-    public function store(User $user) {
-        
-        return $this->classPerm($user);
-        
-    }
-    
-    public function sort(User $user) {
-        
-        return $this->classPerm($user);
-        
-    }
-    
     /**
-     * Determine whether the current user can (c)reate / (s)tore / (s)ort Department(s),
-     * and (s)ort departments
-     *
-     * @param User $user
-     * @return bool
-     */
-    private function classPerm(User $user) {
-        
-        if (in_array($user->group->name, Constant::SUPER_ROLES)) {
-            return true;
-        }
-    
-        return $this->action($user);
-        
-    }
-    
-    public function show(User $user, Department $department) {
-        
-        return $this->objectPerm($user, $department);
-        
-    }
-    
-    public function edit(User $user, Department $department) {
-        
-        return $this->objectPerm($user, $department);
-        
-    }
-    
-    public function update(User $user, Department $department) {
-        
-        return $this->objectPerm($user, $department);
-        
-    }
-    
-    public function destroy(User $user, Department $department) {
-        
-        return $this->objectPerm($user, $department);
-        
-    }
-    
-    /**
-     * Determine whether the current user can (s)how / (e)dit / (u)pdate / (d)estroy a Department
+     * 权限判断
      *
      * @param User $user
      * @param Department $department
+     * @param bool $abort
      * @return bool
      */
-    private function objectPerm(User $user, Department $department) {
+    function operation(User $user, Department $department = null, $abort = false) {
         
         abort_if(
-            !$department,
+            $abort && !$department,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-    
-        if (in_array($user->group->name, Constant::SUPER_ROLES)) {
-            return true;
+        if ($user->group->name == '运营') { return true; }
+        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
+        $action = explode('/', Request::path())[1];
+        if (in_array($action, ['index', 'create', 'store'])) {
+            return $isSuperRole ? true : $this->action($user);
         }
-        return $this->action($user)
-            && in_array($department->id, $this->departmentIds($user->id));
+        if (in_array($action, ['edit', 'show', 'update', 'delete'])) {
+            $isDepartmentAllowed = in_array($department->id, $this->departmentIds($user->id));
+            return $isSuperRole ? $isDepartmentAllowed : ($isDepartmentAllowed && $this->action($user));
+        }
+        
+        return false;
     
     }
     

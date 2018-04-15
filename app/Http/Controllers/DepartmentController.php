@@ -24,6 +24,7 @@ class DepartmentController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->department = $department;
+        $this->approve($department);
         
     }
     
@@ -56,10 +57,6 @@ class DepartmentController extends Controller {
      */
     public function create($id) {
         
-        $this->authorize(
-            'create', Department::class
-        );
-        
         return $this->output([
             'parentId' => $id,
         ]);
@@ -71,13 +68,8 @@ class DepartmentController extends Controller {
      *
      * @param DepartmentRequest $request
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store(DepartmentRequest $request) {
-        
-        $this->authorize(
-            'store', Department::class
-        );
         
         return $this->result(
             $this->department->store(
@@ -96,11 +88,8 @@ class DepartmentController extends Controller {
      */
     public function show($id) {
         
-        $department = $this->department->find($id);
-        $this->authorize('show', $department);
-        
         return $this->output([
-            'department' => $department,
+            'department' => $this->department->find($id),
         ]);
         
     }
@@ -114,11 +103,8 @@ class DepartmentController extends Controller {
      */
     public function edit($id) {
         
-        $department = $this->department->find($id);
-        $this->authorize('edit', $department);
-        
         return $this->output([
-            'department' => $department,
+            'department' => $this->department->find($id),
         ]);
         
     }
@@ -129,15 +115,13 @@ class DepartmentController extends Controller {
      * @param DepartmentRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(DepartmentRequest $request, $id) {
         
-        $department = $this->department->find($id);
-        $this->authorize('update', $department);
-        
         return $this->result(
-            $department->modify($request->all(), $id, true)
+            $this->department->modify(
+                $request->all(), $id, true
+            )
         );
         
     }
@@ -152,10 +136,9 @@ class DepartmentController extends Controller {
      */
     public function destroy($id) {
         
-        $department = $this->department->find($id);
-        $this->authorize('destroy', $department);
-        
-        return $this->result($department->remove($id));
+        return $this->result(
+            $this->department->remove($id)
+        );
         
     }
     
@@ -168,6 +151,7 @@ class DepartmentController extends Controller {
      */
     public function move($id, $parentId = null) {
         
+        # todo: needs to be merged with index
         $department = $this->department->find($id);
         $parentDepartment = $this->department->find($parentId);
         abort_if(
@@ -186,13 +170,9 @@ class DepartmentController extends Controller {
     
     /**
      * 保存部门的排列顺序
-     * @throws AuthorizationException
      */
     public function sort() {
-        
-        $this->authorize(
-            'sort', Department::class
-        );
+        # todo: needs to be merged with index
         $orders = Request::get('data');
         foreach ($orders as $id => $order) {
             $department = $this->department->find($id);
