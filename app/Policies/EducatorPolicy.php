@@ -50,22 +50,24 @@ class EducatorPolicy {
             $selectedDepartmentIds = Request::input('selectedDepartments');
             switch ($user->group->name) {
                 case '企业':
-                    $allowedGroupIds = array_merge(
-                        Group::whereEnabled(1)->whereIn('name', ['企业', '学校'])->get()->pluck('id')->toArray(),
-                        Group::whereEnabled(1)->whereIn('schoolId', $this->schoolIds())
-                    );
+                    $allowedGroupIds = Group::whereEnabled(1)
+                        ->whereIn('name', ['企业', '学校'])
+                        ->orWhereIn('school_id', $this->schoolIds())
+                        ->get()->pluck('id')->toArray();
                     break;
                 case '学校':
-                    $allowedGroupIds = array_merge(
-                        [Group::whereName('学校')->first()->id],
-                        Group::whereEnabled(1)->where('school_id', $this->schoolId())->get()->pluck('id')->toArray()
-                    );
+                    $allowedGroupIds = Group::whereEnabled(1)
+                        ->where('name', '学校')
+                        ->orWhere('school_id', $this->schoolId())
+                        ->get()->pluck('id')->toArray();
                     break;
                 default:
-                    $allowedGroupIds = array_unique([
-                        $user->group->id,
-                        Group::whereName('教职员工')->first()->id
-                    ]);
+                    $allowedGroupIds = array_unique(
+                        Group::whereEnabled(1)
+                            ->where('id', $user->group->id)
+                            ->orWhere('name', '教职员工')
+                            ->get()->pluck('id')->toArray()
+                    );
                     break;
             }
             $isDepartmentAllowed = empty(array_diff(
