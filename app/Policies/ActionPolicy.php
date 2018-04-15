@@ -25,7 +25,7 @@ class ActionPolicy {
      * @param bool $abort
      * @return bool
      */
-    function action(User $user, Action $action = null, $abort = false) {
+    function operation(User $user, Action $action = null, $abort = false) {
         
         abort_if(
             $abort && !$action,

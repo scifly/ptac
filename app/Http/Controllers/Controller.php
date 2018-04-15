@@ -180,7 +180,7 @@ class Controller extends BaseController {
      * @param String $action
      * @param Model $model
      */
-    protected function approve(Model $model, $action = 'action') {
+    protected function approve(Model $model, $action = 'operation') {
         
         $this->middleware(function ($request, $next) use ($model, $action) {
             $args = [get_class($model)];

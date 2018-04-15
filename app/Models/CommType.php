@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Doctrine\Common\Collections\Collection;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use ReflectionException;
 
 /**
  * App\Models\CommType 通信方式
@@ -29,6 +32,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class CommType extends Model {
 
+    use ModelTrait;
+    
     protected $table = 'comm_types';
 
     protected $fillable = ['name', 'remark', 'enabled'];
@@ -49,6 +54,39 @@ class CommType extends Model {
     function store(array $data) {
         
         return $this->create($data) ? true : false;
+        
+    }
+    
+    /**
+     * 更新通信类型
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    function modify(array $data, $id) {
+        
+        $ct = $this->find($id);
+        if (!$ct) { return false; }
+        
+        return $this->update($data);
+        
+    }
+    
+    /**
+     * 移除通信类型
+     *
+     * @param $id
+     * @return bool|null
+     * @throws ReflectionException
+     * @throws Exception
+     */
+    function remove($id) {
+        
+        $ct = $this->find($id);
+        if (!$ct) { return false; }
+        
+        return $this->removable($ct) ? $ct->delete() : false;
         
     }
     

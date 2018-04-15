@@ -1,9 +1,9 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AppRequest;
+use Throwable;
 use App\Models\App;
-use Illuminate\Auth\Access\AuthorizationException;
+use App\Http\Requests\AppRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 
@@ -21,6 +21,7 @@ class AppController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->app = $app;
+        $this->approve($app);
         
     }
     
@@ -43,7 +44,6 @@ class AppController extends Controller {
             return $this->output();
         }
     
-    
     }
     
     /**
@@ -55,10 +55,9 @@ class AppController extends Controller {
      */
     public function edit($id) {
         
-        $app = $this->app->find($id);
-        $this->authorize('edit', $app);
-        
-        return $this->output(['app' => $app]);
+        return $this->output([
+            'app' => $this->app->find($id)
+        ]);
         
     }
     
@@ -68,15 +67,13 @@ class AppController extends Controller {
      * @param AppRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(AppRequest $request, $id) {
         
-        $app = $this->app->find($id);
-        $this->authorize('update', $app);
-        
         return $this->result(
-            $app->modify($request->all(), $id)
+            $this->app->modify(
+                $request->all(), $id
+            )
         );
         
     }
@@ -86,67 +83,13 @@ class AppController extends Controller {
      *
      * @param $id
      * @return bool|JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
-    public function menu($id) {
+    public function sync($id) {
         
-        $app = $this->app->find($id);
-        $this->authorize('sync', $app);
-        $menu = "[
-            {
-                \"name\": \"\u6d4b\u8bd5\",
-                \"sub_button\": [
-                    {
-                        \"type\": \"view\",
-                        \"name\": \"\u968f\u4fbf\",
-                        \"key\": \"https:\/\/www.baidu.com\",
-                        \"sub_button\": [
-                        
-                        ],
-                        \"url\": \"https:\/\/www.baidu.com\"
-                    },
-                    {
-                        \"type\": \"view\",
-                        \"name\": \"\u6d4b\u8bd5\",
-                        \"key\": \"https:\/\/www.baidu.com\",
-                        \"sub_button\": [
-                        
-                        ],
-                        \"url\": \"https:\/\/www.baidu.com\"
-                    }
-                ]
-            },
-            {
-                \"name\": \"\u6d4b\u8bd5\",
-                \"sub_button\": [
-                    {
-                        \"type\": \"view\",
-                        \"name\": \"\u767e\u5ea6\",
-                        \"key\": \"http:\/\/www.baidu.com\",
-                        \"sub_button\": [
-                        
-                        ],
-                        \"url\": \"http:\/\/www.baidu.com\"
-                    }
-                ]
-            },
-            {
-                \"name\": \"\u6d4b\u8bd5\",
-                \"sub_button\": [
-                    {
-                        \"type\": \"view\",
-                        \"name\": \"\u767e\u5ea6\",
-                        \"key\": \"http:\/\/www.baidu.com\",
-                        \"sub_button\": [
-                        
-                        ],
-                        \"url\": \"http:\/\/www.baidu.com\"
-                    }
-                ]
-            }
-        ]";
-        
-        return $this->output(['menu' => json_decode($menu)]);
+        return $this->output([
+            'menu' => $this->app->find($id)->menu
+        ]);
         
     }
     

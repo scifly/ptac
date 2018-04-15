@@ -19,36 +19,6 @@ class AttachmentTypePolicy {
         //
     }
     
-    public function create(User $user) {
-        
-        return $this->permit($user);
-        
-    }
-    
-    public function store(User $user) {
-        
-        return $this->permit($user);
-        
-    }
-    
-    public function edit(User $user, AttachmentType $at) {
-        
-        return $this->permit($user, $at, true);
-        
-    }
-    
-    public function update(User $user, AttachmentType $at) {
-        
-        return $this->permit($user, $at, true);
-        
-    }
-    
-    public function destroy(User $user, AttachmentType $at) {
-        
-        return $this->permit($user, $at, true);
-        
-    }
-    
     /**
      * 权限判断
      *
@@ -57,7 +27,7 @@ class AttachmentTypePolicy {
      * @param bool $abort
      * @return bool
      */
-    private function permit(User $user, AttachmentType $at = null, $abort = false) {
+    function operation(User $user, AttachmentType $at = null, $abort = false) {
         
         abort_if(
             $abort && !$at,

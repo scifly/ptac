@@ -23,6 +23,7 @@ class AttachmentTypeController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->at = $at;
+        $this->approve($at);
         
     }
     
@@ -52,10 +53,6 @@ class AttachmentTypeController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'create', AttachmentType::class
-        );
-        
         return $this->output();
         
     }
@@ -65,13 +62,8 @@ class AttachmentTypeController extends Controller {
      *
      * @param AttachmentTypeRequest $request
      * @return JsonResponse|string
-     * @throws AuthorizationException
      */
     public function store(AttachmentTypeRequest $request) {
-        
-        $this->authorize(
-            'store', AttachmentType::class
-        );
         
         return $this->result(
             $this->at->store(
@@ -86,16 +78,12 @@ class AttachmentTypeController extends Controller {
      *
      * @param $id
      * @return bool|JsonResponse
-     * @throws AuthorizationException
      * @throws Throwable
      */
     public function edit($id) {
         
-        $at = $this->at->find($id);
-        $this->authorize('edit', $at);
-        
         return $this->output([
-            'mt' => $at,
+            'at' => $this->at->find($id),
         ]);
         
     }
@@ -106,15 +94,11 @@ class AttachmentTypeController extends Controller {
      * @param AttachmentType $request
      * @param $id
      * @return JsonResponse|string
-     * @throws AuthorizationException
      */
     public function update(AttachmentType $request, $id) {
         
-        $at = $this->at->find($id);
-        $this->authorize('update', $at);
-        
         return $this->result(
-            $at->modify(
+            $this->at->modify(
                 $request->all(), $id
             )
         );
@@ -126,16 +110,12 @@ class AttachmentTypeController extends Controller {
      *
      * @param $id
      * @return JsonResponse|string
-     * @throws AuthorizationException
      * @throws Exception
      */
     public function destroy($id) {
         
-        $at = $this->at->find($id);
-        $this->authorize('destroy', $at);
-        
         return $this->result(
-            $at->remove($id)
+            $this->at->remove($id)
         );
         
     }

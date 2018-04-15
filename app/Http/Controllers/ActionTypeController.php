@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ActionTypeRequest;
 use App\Models\ActionType;
+use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -22,6 +23,7 @@ class ActionTypeController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->at = $at;
+        $this->approve($at);
         
     }
     
@@ -51,10 +53,6 @@ class ActionTypeController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'create', ActionType::class
-        );
-        
         return $this->output();
         
     }
@@ -64,13 +62,8 @@ class ActionTypeController extends Controller {
      *
      * @param ActionTypeRequest $request
      * @return JsonResponse|string
-     * @throws AuthorizationException
      */
     public function store(ActionTypeRequest $request) {
-        
-        $this->authorize(
-            'store', ActionType::class
-        );
         
         return $this->result(
             $this->at->store(
@@ -85,16 +78,12 @@ class ActionTypeController extends Controller {
      *
      * @param $id
      * @return bool|JsonResponse
-     * @throws AuthorizationException
      * @throws Throwable
      */
     public function edit($id) {
         
-        $at = $this->at->find($id);
-        $this->authorize('edit', $at);
-        
         return $this->output([
-            'at' => $at,
+            'at' => $this->at->find($id),
         ]);
         
     }
@@ -105,15 +94,11 @@ class ActionTypeController extends Controller {
      * @param ActionType $request
      * @param $id
      * @return JsonResponse|string
-     * @throws AuthorizationException
      */
     public function update(ActionType $request, $id) {
         
-        $at = $this->at->find($id);
-        $this->authorize('update', $at);
-        
         return $this->result(
-            $at->modify($request->all(), $id)
+            $this->at->modify($request->all(), $id)
         );
         
     }
@@ -123,15 +108,12 @@ class ActionTypeController extends Controller {
      *
      * @param $id
      * @return JsonResponse|string
-     * @throws AuthorizationException
+     * @throws Exception
      */
     public function destroy($id) {
         
-        $at = $this->at->find($id);
-        $this->authorize('destroy', $at);
-        
         return $this->result(
-            $at->remove($id)
+            $this->at->remove($id)
         );
         
     }

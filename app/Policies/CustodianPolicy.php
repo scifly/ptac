@@ -9,7 +9,9 @@ use App\Helpers\PolicyTrait;
 use App\Models\Action;
 use App\Models\ActionGroup;
 use App\Models\Custodian;
+use App\Models\Group;
 use App\Models\User;
+use function GuzzleHttp\default_ca_bundle;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
@@ -24,80 +26,49 @@ class CustodianPolicy {
      */
     public function __construct() { }
     
-    function create(User $user) {
-        
-        return $this->classPerm($user);
-        
-    }
-    
-    function store(User $user) {
-        
-        return $this->classPerm($user);
-        
-    }
-    
-    function export(User $user) {
-        
-        return $this->classPerm($user);
-        
-    }
-    
-    /**
-     * Determine whether the current user can (c)reate / (s)tore / (e)xport Custodians
-     *
-     * @param User $user
-     * @return bool
-     */
-    private function classPerm(User $user) {
-        
-        if (in_array($user->group->name, Constant::SUPER_ROLES)) { return true; }
-        
-        return $this->action($user);
-        
-    }
-    
-    public function show(User $user, Custodian $custodian) {
-        
-        return $this->objectPerm($user, $custodian);
-        
-    }
-    
-    public function edit(User $user, Custodian $custodian) {
-        
-        return $this->objectPerm($user, $custodian);
-        
-    }
-    
-    public function update(User $user, Custodian $custodian) {
-        
-        return $this->objectPerm($user, $custodian);
-        
-    }
-    
-    public function destroy(User $user, Custodian $custodian) {
-        
-        return $this->objectPerm($user, $custodian);
-        
-    }
-    
     /**
      * Determine whether the current user can (s)how / (e)dit / (u)pdate / (d)estory a Custodian
      *
      * @param User $user
      * @param Custodian $custodian
+     * @param bool $abort
      * @return bool
      */
-    private function objectPerm(User $user, Custodian $custodian) {
+    function operation(User $user, Custodian $custodian = null, $abort = false) {
     
         abort_if(
-            !$custodian,
+            $abort && !$custodian,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        if (in_array($user->group->name, Constant::SUPER_ROLES)) { return true; }
-        
-        return in_array($custodian->id, $this->contactIds('custodian'))
-            && $this->action($user);
+        if ($user->group->name == '运营') { return true; }
+        $paths = explode(',', Request::path());
+        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
+        $isStudentAllowed = $isCustodianAllowed = false;
+        if (in_array($paths[1], ['store', 'update'])) {
+            $studentIds = explode(',', Request::input('student_ids'));
+            $isStudentAllowed = empty(array_diff($studentIds, $this->contactIds('student')));
+        }
+        if (in_array($paths[1], ['show', 'edit', 'delete', 'update'])) {
+            $isCustodianAllowed = in_array($custodian->id, $this->contactIds('custodian'));
+        }
+        switch ($paths[1]) {
+            case 'create':
+            case 'export':
+                return $isSuperRole ? true : $this->action($user);
+            case 'store':
+                return $isSuperRole ? $isStudentAllowed : ($isStudentAllowed && $this->action($user));
+            case 'show':
+            case 'edit':
+            case 'delete':
+                return $isSuperRole ? $isCustodianAllowed : ($isCustodianAllowed && $this->action($user));
+            case 'update':
+                return $isSuperRole
+                    ? ($isStudentAllowed && $isCustodianAllowed)
+                    : ($isStudentAllowed && $isCustodianAllowed && $this->action($user));
+            default:
+                return false;
+        }
         
     }
 

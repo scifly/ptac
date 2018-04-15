@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use App\Facades\DatatableFacade as Datatable;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use ReflectionException;
 
 /**
  * App\Models\AttachmentType 附件类型
@@ -29,6 +32,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class AttachmentType extends Model {
 
+    use ModelTrait;
+    
     protected $table = 'attachment_types';
 
     protected $fillable = ['name', 'remark', 'enabled'];
@@ -65,6 +70,23 @@ class AttachmentType extends Model {
         if (!$at) { return false; }
         
         return $at->update($data) ? true : false;
+        
+    }
+    
+    /**
+     * 移除附件类型
+     *
+     * @param $id
+     * @return bool|null
+     * @throws ReflectionException
+     * @throws Exception
+     */
+    function remove($id) {
+        
+        $at = $this->find($id);
+        if (!$at) { return false; }
+        
+        return $this->removable($at) ? $at->delete() : false;
         
     }
     

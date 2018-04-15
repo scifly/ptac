@@ -23,6 +23,7 @@ class ConferenceQueueController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->cq = $cq;
+        $this->approve($cq);
         
     }
     
@@ -61,13 +62,8 @@ class ConferenceQueueController extends Controller {
      *
      * @param ConferenceQueueRequest $request
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store(ConferenceQueueRequest $request) {
-        
-        $this->authorize(
-            'c', ConferenceQueue::class
-        );
         
         return $this->result(
             $this->cq->store($request->all())
@@ -84,11 +80,8 @@ class ConferenceQueueController extends Controller {
      */
     public function show($id) {
         
-        $cq = $this->cq->find($id);
-        $this->authorize('eud', $cq);
-        
         return $this->output([
-            'cq' => $cq,
+            'cq' => $this->cq->find($id),
         ]);
         
     }
@@ -102,10 +95,9 @@ class ConferenceQueueController extends Controller {
      */
     public function edit($id) {
         
-        $cq = $this->cq->find($id);
-        $this->authorize('rud', $cq);
-        
-        return $this->output(['cq' => $cq]);
+        return $this->output([
+            'cq' => $this->cq->find($id)
+        ]);
         
     }
     
@@ -115,15 +107,13 @@ class ConferenceQueueController extends Controller {
      * @param ConferenceQueueRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(ConferenceQueueRequest $request, $id) {
         
-        $cq = $this->cq->find($id);
-        $this->authorize('eud', $cq);
-        
         return $this->result(
-            $cq->modify($request->all(), $id)
+            $this->cq->modify(
+                $request->all(), $id
+            )
         );
         
     }
@@ -137,10 +127,9 @@ class ConferenceQueueController extends Controller {
      */
     public function destroy($id) {
         
-        $cq = $this->cq->find($id);
-        $this->authorize('eud', $cq);
-        
-        return $this->result($cq->remove($id));
+        return $this->result(
+            $this->cq->remove($id)
+        );
         
     }
     

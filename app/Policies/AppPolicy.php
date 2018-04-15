@@ -26,35 +26,18 @@ class AppPolicy {
         
     }
     
-    public function edit(User $user, App $app) {
-        
-        return $this->permit($user, $app);
-        
-    }
-    
-    public function update(User $user, App $app) {
-        
-        return $this->permit($user, $app);
-        
-    }
-    
-    public function sync(User $user, App $app) {
-        
-        return $this->permit($user, $app);
-        
-    }
-    
     /**
      * Determine whether the user can (e)dit/(u)pdate/sync (m)enu of the app
      *
      * @param User $user
      * @param App $app
+     * @param bool $abort
      * @return bool
      */
-    private function permit(User $user, App $app) {
+    function operation(User $user, App $app = null, $abort = false) {
 
         abort_if(
-            !$app,
+            $abort && !$app,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );

@@ -3,14 +3,17 @@
 namespace App\Policies;
 
 use App\Helpers\HttpStatusCode;
+use App\Helpers\ModelTrait;
+use App\Models\Department;
 use App\Models\Menu;
 use App\Models\User;
 use App\Models\Corp;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Request;
 
 class CorpPolicy {
 
-    use HandlesAuthorization;
+    use HandlesAuthorization, ModelTrait;
     
     protected $menu;
 
@@ -21,58 +24,17 @@ class CorpPolicy {
     }
     
     /**
-     * Determine whether the user can create a corp
-     *
-     * @param User $user
-     * @return bool
-     */
-    public function create(User $user) {
-
-        return $user->group->name == '运营';
-
-    }
-    
-    /**
-     * Determine whether the user can store a corp
-     *
-     * @param User $user
-     * @return bool
-     */
-    public function store(User $user) {
-
-        return $user->group->name == '运营';
-
-    }
-
-    public function edit(User $user, Corp $corp) {
-        
-        return $this->objectPerm($user, $corp);
-        
-    }
-    
-    public function update(User $user, Corp $corp) {
-        
-        return $this->objectPerm($user, $corp);
-        
-    }
-    
-    public function destroy(User $user, Corp $corp) {
-        
-        return $this->objectPerm($user, $corp);
-        
-    }
-    
-    /**
      * Determine whether the user can (v)iew/(e)dit/(u)pdate/(d)elete the corp.
      *
      * @param  User $user
      * @param  Corp $corp
+     * @param bool $abort
      * @return bool
      */
-    private function objectPerm(User $user, Corp $corp) {
+    function operation(User $user, Corp $corp = null, $abort = false) {
 
         abort_if(
-            !$corp,
+            $abort && !$corp,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
@@ -81,10 +43,22 @@ class CorpPolicy {
             case '运营':
                 return true;
             case '企业':
+                $paths = explode('/', Request::path());
+                if (in_array($paths[1], ['index', 'create', 'store', 'delete'])) {
+                    return false;
+                }
                 # userCorp - the Corp to which the user belongs
                 $rootMenuId = $this->menu->rootMenuId();
                 $userCorp = Corp::whereMenuId($rootMenuId)->first();
-                return $userCorp->id == $corp->id;
+                if ($paths[1] == 'edit') {
+                    return $userCorp->id == $corp->id;
+                }
+                $departmentId = Request::input('department_id');
+                $department = Department::find($departmentId);
+                if (!$department) { return false; }
+                return ($userCorp->id == $corp->id)
+                    && in_array($departmentId, $this->departmentIds($user->id))
+                    && $department->departmentType->name == '企业';
             default:
                 return false;
         }

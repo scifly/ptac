@@ -23,6 +23,7 @@ class AlertTypeController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->at = $at;
+        $this->approve($at);
         
     }
     
@@ -52,10 +53,6 @@ class AlertTypeController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'create', AlertType::class
-        );
-        
         return $this->output();
         
     }
@@ -65,16 +62,13 @@ class AlertTypeController extends Controller {
      *
      * @param AlertTypeRequest $request
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store(AlertTypeRequest $request) {
         
-        $this->authorize(
-            'store', AlertType::class
-        );
-        
         return $this->result(
-            $this->at->store($request->all())
+            $this->at->store(
+                $request->all()
+            )
         );
         
     }
@@ -88,11 +82,8 @@ class AlertTypeController extends Controller {
      */
     public function edit($id) {
         
-        $at = $this->at->find($id);
-        $this->authorize('edit', $at);
-        
         return $this->output([
-            'at' => $at,
+            'at' => $this->at->find($id),
         ]);
         
     }
@@ -103,15 +94,13 @@ class AlertTypeController extends Controller {
      * @param AlertTypeRequest $request
      * @param $id
      * @return bool|JsonResponse
-     * @throws AuthorizationException
      */
     public function update(AlertTypeRequest $request, $id) {
         
-        $at = $this->at->find($id);
-        $this->authorize('update', $at);
-        
         return $this->result(
-            $at->update($request->all())
+            $this->at->modify(
+                $request->all(), $id
+            )
         );
         
     }
@@ -125,11 +114,8 @@ class AlertTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $at = $this->at->find($id);
-        $this->authorize('destroy', $at);
-        
         return $this->result(
-            $at->delete()
+            $this->at->remove($id)
         );
         
     }

@@ -292,7 +292,7 @@ Route::group(['prefix' => 'classes'], routes('SquadController'));
 # 应用设置 - 微信应用管理
 Route::group(['prefix' => 'apps'], routes('AppController'));
 Route::post('apps/index', 'AppController@index');
-Route::get('apps/menu/{id}', 'AppController@menu');
+Route::get('apps/menu/{id}', 'AppController@sync');
 # 图标管理 - 图标设置.图标类型管理
 Route::group(['prefix' => 'icons'], routes('IconController'));
 Route::group(['prefix' => 'icon_types'], routes('IconTypeController'));

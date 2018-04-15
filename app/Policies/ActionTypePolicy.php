@@ -19,36 +19,6 @@ class ActionTypePolicy {
         //
     }
     
-    public function create(User $user) {
-        
-        return $this->permit($user);
-        
-    }
-    
-    public function store(User $user) {
-        
-        return $this->permit($user);
-        
-    }
-    
-    public function edit(User $user, ActionType $at) {
-        
-        return $this->permit($user, $at, true);
-        
-    }
-    
-    public function update(User $user, ActionType $at) {
-        
-        return $this->permit($user, $at, true);
-        
-    }
-    
-    public function destroy(User $user, ActionType $at) {
-        
-        return $this->permit($user, $at, true);
-        
-    }
-    
     /**
      * 判断权限
      *
@@ -57,7 +27,7 @@ class ActionTypePolicy {
      * @param bool $abort
      * @return bool
      */
-    private function permit(User $user, ActionType $at = null, $abort = false) {
+    function operation(User $user, ActionType $at = null, $abort = false) {
         
         abort_if(
             $abort && !$at,

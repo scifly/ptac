@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CommTypeRequest;
 use App\Models\CommType;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -23,6 +22,7 @@ class CommTypeController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->ct = $ct;
+        $this->approve($ct);
         
     }
     
@@ -52,11 +52,6 @@ class CommTypeController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'create',
-            CommType::class
-        );
-        
         return $this->output();
         
     }
@@ -66,14 +61,8 @@ class CommTypeController extends Controller {
      *
      * @param CommTypeRequest $request
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store(CommTypeRequest $request) {
-        
-        $this->authorize(
-            'store',
-            CommType::class
-        );
         
         return $this->result(
             $this->ct->store(
@@ -92,11 +81,8 @@ class CommTypeController extends Controller {
      */
     public function edit($id) {
         
-        $ct = $this->ct->find($id);
-        $this->authorize('edit', $ct);
-        
         return $this->output([
-            'ct' => $ct,
+            'ct' => $this->ct->find($id),
         ]);
         
     }
@@ -107,15 +93,11 @@ class CommTypeController extends Controller {
      * @param CommTypeRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(CommTypeRequest $request, $id) {
         
-        $ct = $this->ct->find($id);
-        $this->authorize('update', $ct);
-        
         return $this->result(
-            $ct->update($request->all())
+            $this->ct->modify($request->all(), $id)
         );
         
     }
@@ -129,11 +111,8 @@ class CommTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $ct = $this->ct->find($id);
-        $this->authorize('destroy', $ct);
-        
         return $this->result(
-            $ct->delete()
+            $this->ct->remove($id)
         );
         
     }

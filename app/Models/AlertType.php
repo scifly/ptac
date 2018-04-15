@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use ReflectionException;
 
 /**
  * App\Models\AlertType 警告类型
@@ -27,11 +30,52 @@ use Illuminate\Database\Eloquent\Model;
  */
 class AlertType extends Model {
 
+    use ModelTrait;
+    
     protected $fillable = ['name', 'english_name', 'enabled'];
-   
+    
+    /**
+     * 保存警告类型
+     *
+     * @param array $data
+     * @return bool
+     */
     function store(array $data) {
         
         return $this->create($data) ? true : false;
+        
+    }
+    
+    /**
+     * 更新警告类型
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    function modify(array $data, $id) {
+        
+        $at = $this->find($id);
+        if (!$at) { return false; }
+        
+        return $this->update($data);
+        
+    }
+    
+    /**
+     * 删除警告类型
+     *
+     * @param $id
+     * @return bool|null
+     * @throws ReflectionException
+     * @throws Exception
+     */
+    function remove($id) {
+        
+        $at = $this->find($id);
+        if (!$at) { return false; }
+        
+        return $this->removable($at) ? $at->delete() : false;
         
     }
     

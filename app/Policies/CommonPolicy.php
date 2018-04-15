@@ -19,42 +19,6 @@ class CommonPolicy {
      */
     public function __construct() { }
     
-    public function create(User $user) {
-        
-        return $this->permit($user);
-        
-    }
-    
-    public function store(User $user) {
-        
-        return $this->permit($user);
-        
-    }
-    
-    public function edit(User $user, Model $model) {
-        
-        return $this->permit($user, $model, true);
-        
-    }
-    
-    public function show(User $user, Model $model) {
-        
-        return $this->permit($user, $model, true);
-        
-    }
-    
-    public function update(User $user, Model $model) {
-        
-        return $this->permit($user, $model, true);
-        
-    }
-    
-    public function destroy(User $user, Model $model) {
-        
-        return $this->permit($user, $model, true);
-        
-    }
-    
     /**
      * (r)ead, (u)pdate, (d)elete
      *
@@ -63,7 +27,7 @@ class CommonPolicy {
      * @param bool $abort
      * @return bool
      */
-    private function permit(User $user, Model $model = null, $abort = false) {
+    function operation(User $user, Model $model = null, $abort = false) {
         
         abort_if(
             $abort && !$model,

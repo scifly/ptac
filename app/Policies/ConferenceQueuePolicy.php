@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Helpers\HttpStatusCode;
+use App\Helpers\PolicyTrait;
 use App\Models\ConferenceQueue;
 use App\Models\ConferenceRoom;
 use App\Models\Corp;
@@ -15,7 +16,7 @@ use Illuminate\Support\Facades\Request;
 
 class ConferenceQueuePolicy {
 
-    use HandlesAuthorization;
+    use HandlesAuthorization, PolicyTrait;
     
     protected $menu;
 
@@ -30,51 +31,24 @@ class ConferenceQueuePolicy {
         
     }
 
-    public function c(User $user) {
-
-        $role = $user->group->name;
-        if ($role == '运营') { return true; }
-        switch ($role) {
-            case '企业':
-                return $this->corpPerm($user);
-            case '学校':
-                return $this->schoolPerm($user);
-            default:
-                return $this->defaultPerm($user);
-        }
-
-    }
-
-    public function edit(User $user, ConferenceQueue $cq) {
-        
-        return $this->permit($user, $cq);
-        
-    }
-    
-    public function update(User $user, ConferenceQueue $cq) {
-        
-        return $this->permit($user, $cq);
-        
-    }
-    
-    public function destroy(User $user, ConferenceQueue $cq) {
-        
-        return $this->permit($user, $cq);
-        
-    }
     /**
      * Determine if the user can (e)dit / (u)pdate / (d)elete the conference_queue
      *
      * @param User $user
      * @param ConferenceQueue $cq
+     * @param bool $abort
      * @return bool
      */
-    private function permit(User $user, ConferenceQueue $cq) {
+    function operation(User $user, ConferenceQueue $cq = null, $abort = false) {
 
-        abort_if(!$cq, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
-        $role = $user->group->name;
-        if ($role == '运营') { return true; }
-        switch ($role) {
+        abort_if(
+            $abort && !$cq,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
+        switch ($user->group->name) {
+            case '运营':
+                return true;
             case '企业':
                 return $this->corpPerm($user, $cq);
             case '学校':
@@ -95,12 +69,14 @@ class ConferenceQueuePolicy {
     private function corpPerm(User $user, ConferenceQueue $cq = null) {
 
         list($conferenceRoomId, $educatorIds) = $this->getVars($cq);
+        # 判断是否有创建会议的权限
+        if (!isset($conferenceRoomId, $educatorIds)) { return true; }
     
         # 会议室所属企业
         $crCorpId = ConferenceRoom::find($conferenceRoomId)->school->corp_id;
         # 发起者所属企业
-        $rootMenuId = $this->menu->rootMenuId();
-        $corpId = Corp::whereMenuId($rootMenuId)->first()->id;
+        $departmentId = $user->departments->pluck('id')->toArray()[0];
+        $corpId = Corp::whereDepartmentId($departmentId)->first()->id;
         # 发起者只能选取所属企业的会议室
         if ($corpId != $crCorpId) { return false; }
         # 发起者只能选取所属企业的教职员工参加会议
@@ -124,12 +100,14 @@ class ConferenceQueuePolicy {
     private function schoolPerm(User $user, ConferenceQueue $cq = null) {
 
         list($conferenceRoomId, $educatorIds) = $this->getVars($cq);
+        # 判断是否有创建会议的权限
+        if (!isset($conferenceRoomId, $educatorIds)) { return true; }
 
         # 会议室所属学校
         $crSchoolId = ConferenceRoom::find($conferenceRoomId)->school_id;
         # 发起者所属学校
-        $rootMenuId = $this->menu->rootMenuId();
-        $schoolId = School::whereMenuId($rootMenuId)->first()->id;
+        $departmentId = $user->departments->pluck('id')->toArray()[0];
+        $schoolId = School::whereDepartmentId($departmentId)->first()->id;
         # 发起者只能选取所属学校的会议室
         if ($schoolId != $crSchoolId) { return false; }
         # 发起者只能选取所属学校的教职员工参加会议
@@ -153,6 +131,8 @@ class ConferenceQueuePolicy {
     private function defaultPerm(User $user, ConferenceQueue $cq = null) {
 
         list($conferenceRoomId, $educatorIds) = $this->getVars($cq);
+        # 判断是否有创建会议的权限
+        if (!isset($conferenceRoomId, $educatorIds)) { return $this->action($user); }
         $userId = $cq ? $cq->user_id : null;
 
         # 会议室所属学校

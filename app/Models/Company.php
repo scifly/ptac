@@ -2,20 +2,20 @@
 
 namespace App\Models;
 
+use Eloquent;
+use Exception;
+use Carbon\Carbon;
+use App\Helpers\Snippet;
+use App\Helpers\ModelTrait;
 use App\Events\CompanyCreated;
 use App\Events\CompanyDeleted;
 use App\Events\CompanyUpdated;
-use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
-use Carbon\Carbon;
-use Eloquent;
-use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**

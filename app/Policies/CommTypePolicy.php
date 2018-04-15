@@ -19,36 +19,6 @@ class CommTypePolicy {
         //
     }
     
-    public function create(User $user) {
-        
-        return $this->permit($user);
-        
-    }
-    
-    public function store(User $user) {
-        
-        return $this->permit($user);
-        
-    }
-    
-    public function edit(User $user, CommType $ct) {
-        
-        return $this->permit($user, $ct, true);
-        
-    }
-    
-    public function update(User $user, CommType $ct) {
-        
-        return $this->permit($user, $ct, true);
-        
-    }
-    
-    public function destroy(User $user, CommType $ct) {
-        
-        return $this->permit($user, $ct,true);
-        
-    }
-    
     /**
      * 权限判断
      *
@@ -57,7 +27,7 @@ class CommTypePolicy {
      * @param bool $abort
      * @return bool
      */
-    private function permit(User $user, CommType $ct = null, $abort = false) {
+    function operation(User $user, CommType $ct = null, $abort = false) {
     
         abort_if(
             $abort && !$ct,

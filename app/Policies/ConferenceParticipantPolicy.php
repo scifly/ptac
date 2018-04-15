@@ -32,7 +32,7 @@ class ConferenceParticipantPolicy {
      */
     public function store(User $user) {
 
-        // 超级管理员不允许参加任何会议
+        // 超级管理员不得参加任何会议
         if (in_array($user->group->name, self::SUPER_ROLES)) {
             return false;
         }
@@ -53,7 +53,11 @@ class ConferenceParticipantPolicy {
      */
     public function show(User $user, ConferenceParticipant $cp) {
 
-        abort_if(!$cp, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
+        abort_if(
+            !$cp,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
         $role = $user->group->name;
         if (in_array($role, self::SUPER_ROLES)) {
             switch ($role) {

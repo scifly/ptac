@@ -1,13 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CorpRequest;
-use App\Models\Corp;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Request;
 use Throwable;
+use App\Models\Corp;
+use Illuminate\Http\JsonResponse;
+use App\Http\Requests\CorpRequest;
+use Illuminate\Support\Facades\Request;
 
 /**
  * 企业
@@ -23,6 +22,7 @@ class CorpController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->corp = $corp;
+        $this->approve($corp);
         
     }
     
@@ -52,10 +52,6 @@ class CorpController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'create', Corp::class
-        );
-        
         return $this->output();
         
     }
@@ -65,13 +61,8 @@ class CorpController extends Controller {
      *
      * @param CorpRequest $request
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store(CorpRequest $request) {
-        
-        $this->authorize(
-            'store', Corp::class
-        );
         
         return $this->result(
             $this->corp->store(
@@ -90,11 +81,8 @@ class CorpController extends Controller {
      */
     public function edit($id) {
         
-        $corp = $this->corp->find($id);
-        $this->authorize('edit', $corp);
-        
         return $this->output([
-            'corp' => $corp,
+            'corp' => $this->corp->find($id),
         ]);
         
     }
@@ -105,15 +93,11 @@ class CorpController extends Controller {
      * @param CorpRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(CorpRequest $request, $id) {
         
-        $corp = $this->corp->find($id);
-        $this->authorize('update', $corp);
-        
         return $this->result(
-            $corp->modify(
+            $this->corp->modify(
                 $request->all(), $id, true
             )
         );
@@ -129,11 +113,8 @@ class CorpController extends Controller {
      */
     public function destroy($id) {
         
-        $corp = $this->corp->find($id);
-        $this->authorize('destroy', $corp);
-        
         return $this->result(
-            $corp->remove($id, true)
+            $this->corp->remove($id, true)
         );
         
     }

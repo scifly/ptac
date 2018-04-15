@@ -19,36 +19,6 @@ class AlertTypePolicy {
         //
     }
     
-    public function create(User $user) {
-        
-        return $this->permit($user);
-        
-    }
-    
-    public function store(User $user) {
-        
-        return $this->permit($user);
-        
-    }
-    
-    public function edit(User $user, AlertType $at) {
-        
-        return $this->permit($user, $at, true);
-        
-    }
-    
-    public function update(User $user, AlertType $at) {
-        
-        return $this->permit($user, $at, true);
-        
-    }
-    
-    public function destroy(User $user, AlertType $at) {
-        
-        return $this->permit($user, $at, true);
-        
-    }
-    
     /**
      * 判断权限
      *
@@ -57,7 +27,7 @@ class AlertTypePolicy {
      * @param bool $abort
      * @return bool
      */
-    private function permit(User $user, AlertType $at = null, $abort = false) {
+    function operation(User $user, AlertType $at = null, $abort = false) {
         
         abort_if(
             $abort && !$at,

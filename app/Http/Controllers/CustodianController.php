@@ -9,7 +9,6 @@ use App\Models\Grade;
 use App\Models\Squad;
 use App\Models\Student;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -34,6 +33,7 @@ class CustodianController extends Controller {
         $this->student = $student;
         $this->grade = $grade;
         $this->class = $class;
+        $this->approve($custodian, 'sanction');
         
     }
     
@@ -63,9 +63,6 @@ class CustodianController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'create', Custodian::class
-        );
         if (Request::method() === 'POST') {
             abort_if(
                 !Request::input('field') ||
@@ -102,10 +99,6 @@ class CustodianController extends Controller {
      */
     public function store(CustodianRequest $request) {
         
-        $this->authorize(
-            'store', Custodian::class
-        );
-        
         return $this->result(
             $this->custodian->store(
                 $request->all()
@@ -123,11 +116,8 @@ class CustodianController extends Controller {
      */
     public function show($id) {
         
-        $custodian = $this->custodian->find($id);
-        $this->authorize('show', $custodian);
-        
         return $this->output([
-            'custodian' => $custodian,
+            'custodian' => $this->custodian->find($id),
         ]);
         
     }
@@ -141,8 +131,6 @@ class CustodianController extends Controller {
      */
     public function edit($id) {
         
-        $custodian = $this->custodian->find($id);
-        $this->authorize('edit', $custodian);
         if (Request::method() === 'POST') {
             abort_if(
                 !Request::input('field') ||
@@ -165,7 +153,7 @@ class CustodianController extends Controller {
             return response()->json($this->result);
         }
         $relations = CustodianStudent::whereCustodianId($id)->get();
-        
+        $custodian = $this->custodian->find($id);
         return $this->output([
             'mobiles'   => $custodian->user->mobiles,
             'custodian' => $custodian,
@@ -184,11 +172,8 @@ class CustodianController extends Controller {
      */
     public function update(CustodianRequest $request, $id) {
         
-        $custodian = $this->custodian->find($id);
-        $this->authorize('update', $custodian);
-        
         return $this->result(
-            $custodian->modify(
+            $this->custodian->modify(
                 $request->all(), $id
             )
         );
@@ -205,26 +190,18 @@ class CustodianController extends Controller {
      */
     public function destroy($id) {
         
-        $custodian = $this->custodian->find($id);
-        $this->authorize('destroy', $custodian);
-        
         return $this->result(
-            $custodian->remove($id)
+            $this->custodian->remove($id)
         );
         
     }
     
     /**
      * @return array
-     * @throws AuthorizationException
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function export() {
-        
-        $this->authorize(
-            'export', Custodian::class
-        );
         
         return $this->custodian->export();
         
