@@ -380,6 +380,6 @@ Route::get('homework', 'Wechat\HomeWorkController@index');
 
 /** 微网站 */
 $c = 'Wechat\MobileSiteController';
-Route::any('wapsite', $c . '@index');
-Route::any('wapsite/module', $c . '@module');
-Route::any('wapsite/article', $c . '@article');
+Route::any('wlrj/wapsite', $c . '@index');
+Route::any('wlrj/wapsite/module', $c . '@module');
+Route::any('wlrj/wapsite/article', $c . '@article');
