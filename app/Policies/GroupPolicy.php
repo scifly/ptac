@@ -3,17 +3,21 @@ namespace App\Policies;
 
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
+use App\Helpers\ModelTrait;
+use App\Helpers\PolicyTrait;
+use App\Models\Action;
 use App\Models\Corp;
 use App\Models\Group;
 use App\Models\Menu;
 use App\Models\School;
+use App\Models\Tab;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
 class GroupPolicy {
     
-    use HandlesAuthorization;
+    use HandlesAuthorization, ModelTrait;
     
     protected $menu;
     
@@ -28,46 +32,15 @@ class GroupPolicy {
         
     }
     
-    public function create(User $user) {
-        
-        return $this->classPerm($user);
-        
-    }
-    
-    public function store(User $user) {
-        
-        return $this->classPerm($user);
-        
-    }
-    
-    private function classPerm(User $user) {
-    
-        return in_array(
-            $user->group->name,
-            Constant::SUPER_ROLES
-        );
-    
-    }
-    
-    public function edit(User $user, Group $group) {
-        
-        return $this->operation($user, $group);
-        
-    }
-    
-    public function update(User $user, Group $group) {
-        
-        return $this->operation($user, $group);
-        
-    }
-    
-    public function destroy(User $user, Group $group) {
-        
-        return $this->operation($user, $group);
-        
-    }
-    
-    private function operation(User $user, Group $group = null, $abort = false) {
+    /**
+     * 权限判断
+     *
+     * @param User $user
+     * @param Group|null $group
+     * @param bool $abort
+     * @return bool
+     */
+    function operation(User $user, Group $group = null, $abort = false) {
         
         abort_if(
             $abort && !$group,
@@ -75,8 +48,9 @@ class GroupPolicy {
             __('messages.not_found')
         );
         if ($user->group->name == '运营') { return true; }
+        # 仅超级用户（运营/企业/学校）才能进行角色/权限管理
+        if (!in_array($user->group->name, Constant::SUPER_ROLES)) { return false; }
         $action = explode('/', Request::path())[1];
-        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
         $isGroupAllowed = $isMenuAllowed = $isTabAllowed = $isActionAllowed = false;
         if (in_array($action, ['store', 'update'])) {
             $menuIds = Request::input('menu_ids');
@@ -85,26 +59,36 @@ class GroupPolicy {
             $schoolId = Request::input('school_id');
             $allowedMenuIds = $this->menu->subMenuIds(School::find($schoolId)->menu_id);
             $isMenuAllowed = empty(array_diff($menuIds, $allowedMenuIds));
-            
-            
+            $allowedTabIds = Tab::whereIn('group_id', [0, Group::whereName('学校')->first()->id])
+                ->get()->pluck('id')->toArray();
+            $isTabAllowed = empty(array_diff($tabIds, $allowedTabIds));
+            $deniedTabIds = Tab::whereIn('name', ['部门', '角色', '菜单', '超级用户'])
+                ->get()->pluck('id')->toArray();
+            $allowedControllers = Tab::whereIn('id', array_diff($allowedTabIds, $deniedTabIds))
+                ->get()->pluck('controller')->toArray();
+            $allowedActionIds = Action::whereIn('controller', $allowedControllers)
+                ->get()->pluck('id')->toArray();
+            $isActionAllowed = empty(array_diff($actionIds, $allowedActionIds));
         }
         if (in_array($action, ['edit', 'update', 'destroy'])) {
-        
+            $allowedGroupIds = Group::whereIn('school_id', $this->schoolIds())
+                ->get()->pluck('id')->toArray();
+            $isGroupAllowed = in_array($group->id, $allowedGroupIds);
         }
-        $role = $user->group->name;
-        $rootMenuId = $this->menu->rootMenuId();
-        switch ($role) {
-            case '运营': return true;
-            case '企业':
-                $corp = Corp::whereMenuId($rootMenuId)->first();
-                return in_array(
-                    $group->school->id,
-                    $corp->schools->pluck('id')->toArray()
-                );
-            case '学校':
-                $school = School::whereMenuId($rootMenuId)->first();
-                return $school->id == $group->school->id;
-            default: return false;
+        
+        switch ($action) {
+            case 'index':
+            case 'create':
+                return true;
+            case 'store':
+                return $isMenuAllowed && $isTabAllowed && $isActionAllowed;
+            case 'edit':
+            case 'delete':
+                return $isGroupAllowed;
+            case 'update':
+                return $isGroupAllowed && $isMenuAllowed && $isTabAllowed && $isActionAllowed;
+            default:
+                return false;
         }
         
     }
