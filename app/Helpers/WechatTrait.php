@@ -14,19 +14,18 @@ trait WechatTrait {
     function getUserid($app) {
     
         $acronym = explode('/', Request::path())[0];
-        $corpid = Corp::whereAcronym($acronym)->first()->corpid;
-        Log::debug('corpid: ' . $corpid);
-        $app = App::whereCorpId($corpid)->where('name', $app)->first();
+        $corp = Corp::whereAcronym($acronym)->first();
+        $app = App::whereCorpId($corp->id)->where('name', $app)->first();
         $agentid = $app->agentid;
         $secret = $app->secret;
     
         $code = Request::input('code');
         if (!$code) {
             redirect(
-                Wechat::getCodeUrl($corpid, $agentid, Request::url())
+                Wechat::getCodeUrl($corp->corpid, $agentid, Request::url())
             );
         } else {
-            $accessToken = Wechat::getAccessToken($corpid, $secret);
+            $accessToken = Wechat::getAccessToken($corp->corpid, $secret);
             $userInfo = json_decode(
                 Wechat::getUserInfo($accessToken, $code),
                 JSON_UNESCAPED_UNICODE
