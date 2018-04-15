@@ -23,6 +23,7 @@ class ExamController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->exam = $exam;
+        $this->approve($exam);
         
     }
     
@@ -52,11 +53,6 @@ class ExamController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'create',
-            Exam::class
-        );
-        
         return $this->output();
         
     }
@@ -66,14 +62,8 @@ class ExamController extends Controller {
      *
      * @param ExamRequest $request
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store(ExamRequest $request) {
-        
-        $this->authorize(
-            'store',
-            Exam::class
-        );
         
         return $this->result(
             $this->exam->store($request->all())
@@ -90,10 +80,7 @@ class ExamController extends Controller {
      */
     public function show($id) {
         
-        $exam = Exam::find($id);
-        $this->authorize(
-            'show', $exam
-        );
+        $exam = $this->exam->find($id);
         
         return $this->output([
             'exam'     => $exam,
@@ -113,9 +100,6 @@ class ExamController extends Controller {
     public function edit($id) {
         
         $exam = Exam::find($id);
-        $this->authorize(
-            'edit', $exam
-        );
         
         return $this->output([
             'exam'             => $exam,
@@ -130,17 +114,11 @@ class ExamController extends Controller {
      * @param ExamRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(ExamRequest $request, $id) {
         
-        $exam = Exam::find($id);
-        $this->authorize(
-            'update', $exam
-        );
-        
         return $this->result(
-            $exam->modify($request->all(), $id)
+            $this->exam->modify($request->all(), $id)
         );
         
     }
@@ -154,13 +132,8 @@ class ExamController extends Controller {
      */
     public function destroy($id) {
         
-        $exam = Exam::find($id);
-        $this->authorize(
-            'destroy', $exam
-        );
-        
         return $this->result(
-            $exam->delete()
+            $this->exam->remove($id)
         );
         
     }

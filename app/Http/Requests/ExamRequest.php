@@ -21,8 +21,6 @@ class ExamRequest extends FormRequest {
             'exam_type_id' => 'required|integer',
             'class_ids'    => 'required|string',
             'subject_ids'  => 'required|string',
-            // 'max_scores'   => 'required|string|max:20',
-            // 'pass_scores'  => 'required|string|max:20',
             'start_date'   => 'required|date',
             'end_date'     => 'required|date|after:start_date',
             'enabled'      => 'required|boolean',

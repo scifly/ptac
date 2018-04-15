@@ -7,7 +7,9 @@ use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
@@ -44,7 +46,7 @@ use ReflectionException;
  * @method static Builder|Exam whereUpdatedAt($value)
  * @mixin Eloquent
  * @property-read ExamType $examType
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Score[] $score
+ * @property-read Collection|Score[] $score
  */
 class Exam extends Model {
 
@@ -136,7 +138,7 @@ class Exam extends Model {
         $exam = self::find($id);
         if (!$exam) { return false; }
 
-        return $exam->update($data) ? true : false;
+        return $exam->update($data);
 
     }
     
@@ -144,16 +146,17 @@ class Exam extends Model {
      * 删除考试
      *
      * @param $id
-     * @return bool
+     * @return bool|null
      * @throws ReflectionException
+     * @throws Exception
      */
     function remove($id) {
         
-        $exam = self::find($id);
+        $exam = $this->find($id);
         if (!$exam) { return false; }
-
-        return $exam->removable($exam) ? true : false;
-
+        
+        return $this->removable($exam) ? $exam->delete() : false;
+        
     }
     
     /**
