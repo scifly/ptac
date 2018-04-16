@@ -4,15 +4,11 @@ namespace App\Http\Controllers;
 use App\Helpers\ModelTrait;
 use App\Models\Action;
 use App\Models\Department;
-use App\Models\Grade;
-use App\Models\Menu;
 use App\Models\User;
-use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use PhpOffice\PhpSpreadsheet\Exception;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -39,8 +35,9 @@ class TestController extends Controller {
         '/wap_sites/update/%s',
     ];
     
-    public function index() {
+    public function index(Request $request) {
     
+        dd($request->route());
         $user = User::find(20);
         dd($user->departments->pluck('id')->first());
         $user->test = 'abcdefg';
