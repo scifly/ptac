@@ -8,6 +8,7 @@ use App\Models\Menu;
 use App\Models\School;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 
 class OperatorComposer {
     
@@ -39,6 +40,9 @@ class OperatorComposer {
                 $departmentId = $user->departments->pluck('id')->toArray()[0];
                 $corp = Corp::whereDepartmentId($departmentId)->first();
                 $corps = [$corp->id => $corp->name];
+                if (Request::route('id')) {
+                    $schools = School::whereCorpId($corp->id)->get()->pluck('name', 'id')->toArray();
+                }
                 break;
             case '学校':
                 $groups = [$schoolGId => '学校'];
