@@ -22,7 +22,7 @@ class OperatorComposer {
         $corpGId = Group::whereName('企业')->first()->id;
         $schoolGId = Group::whereName('学校')->first()->id;
         $groups = [];
-        $corps = $schools = null;
+        $corp = $school = null;
         switch ($menuType) {
             case '根':
                 $groups = [
@@ -38,21 +38,19 @@ class OperatorComposer {
                 ];
                 $departmentId = $user->departments->pluck('id')->toArray()[0];
                 $corp = Corp::whereDepartmentId($departmentId)->first();
-                $corps = [$corp->id => $corp->name];
                 break;
             case '学校':
                 $groups = [$schoolGId => '学校'];
                 $departmentId = $user->departments->pluck('id')->toArray()[0];
                 $school = School::whereDepartmentId($departmentId)->first();
-                $schools = [$school->id => $school->name];
                 break;
             default:
                 break;
         }
         $view->with([
             'groups'  => $groups,
-            'corps'   => $corps,
-            'schools' => $schools,
+            'corp'    => $corp,
+            'school'  => $school,
             'uris'    => $this->uris(),
         ]);
         
