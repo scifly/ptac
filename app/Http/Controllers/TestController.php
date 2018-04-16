@@ -37,7 +37,7 @@ class TestController extends Controller {
     
     public function index(Request $request) {
     
-        dd($request->route());
+        dd($request->getBaseUrl());
         $user = User::find(20);
         dd($user->departments->pluck('id')->first());
         $user->test = 'abcdefg';
