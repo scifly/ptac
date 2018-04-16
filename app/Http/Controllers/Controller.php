@@ -185,8 +185,8 @@ class Controller extends BaseController {
         $this->middleware(function ($request, $next) use ($model, $action) {
             $args = [get_class($model)];
             /** @var \Illuminate\Http\Request $request */
-            if ($request->has('id')) {
-                $args = [$model->find($request->input('id')), true];
+            if ($request->route('id')) {
+                $args = [$model->find($request->route('id')), true];
             }
             $this->authorize($action, $args);
     
