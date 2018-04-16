@@ -1,16 +1,15 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
-use App\Http\Requests\MenuRequest;
+use Exception;
+use Throwable;
+use App\Models\Tab;
 use App\Models\Menu;
 use App\Models\MenuTab;
-use App\Models\Tab;
-use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
+use App\Helpers\HttpStatusCode;
 use Illuminate\Http\JsonResponse;
+use App\Http\Requests\MenuRequest;
 use Illuminate\Support\Facades\Request;
-use Throwable;
 
 /**
  * 菜单
@@ -27,6 +26,7 @@ class MenuController extends Controller {
         $this->middleware(['auth', 'checkrole']);
         $this->menu = $menu;
         $this->mt = $mt;
+        $this->approve($menu);
         
     }
     
@@ -57,10 +57,6 @@ class MenuController extends Controller {
      */
     public function create($parentId) {
         
-        $this->authorize(
-            'css', Menu::class
-        );
-        
         return $this->output([
             'parentId' => $parentId,
         ]);
@@ -76,10 +72,6 @@ class MenuController extends Controller {
      * @throws Throwable
      */
     public function store(MenuRequest $request) {
-        
-        $this->authorize(
-            'css', Menu::class
-        );
         
         return $this->result(
             $this->menu->store($request)
@@ -97,7 +89,6 @@ class MenuController extends Controller {
     public function edit($id) {
         
         $menu = $this->menu->find($id);
-        $this->authorize('eudmr', $menu);
         # 获取已选定的卡片
         $menuTabs = $menu->tabs;
         $selectedTabs = [];
@@ -123,13 +114,8 @@ class MenuController extends Controller {
      */
     public function update(MenuRequest $request, $id) {
         
-        $menu = $this->menu->find($id);
-        $this->authorize(
-            'eudmr', $menu
-        );
-        
         return $this->result(
-            $menu->modify($request, $id)
+            $this->menu->modify($request, $id)
         );
         
     }
@@ -171,11 +157,8 @@ class MenuController extends Controller {
      */
     public function destroy($id) {
         
-        $menu = $this->menu->find($id);
-        $this->authorize('eudmr', $menu);
-        
         return $this->result(
-            $menu->remove($id)
+            $this->menu->remove($id)
         );
         
     }
@@ -183,13 +166,9 @@ class MenuController extends Controller {
     /**
      * 保存菜单排列顺序
      *
-     * @throws AuthorizationException
      */
     public function sort() {
         
-        $this->authorize(
-            'css', Menu::class
-        );
         $positions = Request::get('data');
         foreach ($positions as $id => $pos) {
             $menu = $this->menu->find($id);
@@ -210,8 +189,7 @@ class MenuController extends Controller {
      */
     public function menuTabs($id) {
         
-        $menu = $this->menu->find($id);
-        $this->authorize('eudmr', $menu);
+        # todo: needs to be moved to index method
         $tabRanks = MenuTab::whereMenuId($id)
             ->get()
             ->sortBy('tab_order')
@@ -237,9 +215,8 @@ class MenuController extends Controller {
      * @throws Throwable
      */
     public function rankTabs($id) {
-        
-        $menu = $this->menu->find($id);
-        $this->authorize('eudmr', $menu);
+    
+        # todo: needs to be moved to index method
         $ranks = Request::get('data');
         
         return $this->result(

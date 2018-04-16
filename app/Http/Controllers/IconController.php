@@ -23,6 +23,7 @@ class IconController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->icon = $icon;
+        $this->approve($icon);
         
     }
     
@@ -52,10 +53,6 @@ class IconController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'cs', Icon::class
-        );
-        
         return $this->output();
         
     }
@@ -65,16 +62,13 @@ class IconController extends Controller {
      *
      * @param IconRequest $request
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store(IconRequest $request) {
         
-        $this->authorize(
-            'cs', Icon::class
-        );
-        
         return $this->result(
-            $this->icon->store($request->all())
+            $this->icon->store(
+                $request->all()
+            )
         );
         
     }
@@ -88,11 +82,8 @@ class IconController extends Controller {
      */
     public function edit($id) {
         
-        $icon = Icon::find($id);
-        $this->authorize('eud', $icon);
-        
         return $this->output([
-            'icon' => $icon,
+            'icon' => Icon::find($id),
         ]);
         
     }
@@ -103,15 +94,13 @@ class IconController extends Controller {
      * @param IconRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(IconRequest $request, $id) {
         
-        $icon = Icon::find($id);
-        $this->authorize('eud', $icon);
-        
         return $this->result(
-            $icon->modify($request->all(), $id)
+            $this->icon->modify(
+                $request->all(), $id
+            )
         );
         
     }
@@ -125,11 +114,8 @@ class IconController extends Controller {
      */
     public function destroy($id) {
         
-        $icon = Icon::find($id);
-        $this->authorize('eud', $icon);
-        
         return $this->result(
-            $icon->remove($id)
+            $this->icon->remove($id)
         );
         
     }

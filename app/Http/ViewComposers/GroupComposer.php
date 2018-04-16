@@ -4,6 +4,7 @@ namespace App\Http\ViewComposers;
 use App\Helpers\ModelTrait;
 use App\Models\Action;
 use App\Models\Corp;
+use App\Models\Group;
 use App\Models\Menu;
 use App\Models\School;
 use App\Models\Tab;
@@ -22,7 +23,7 @@ class GroupComposer {
     public function compose(View $view) {
         
         $tabActions = [];
-        $tabs = Tab::whereIn('group_id', [0, 3])->get();
+        $tabs = Tab::whereIn('group_id', [0, Group::whereName('学校')->first()->id])->get();
         $schools = [];
         $menu = new Menu();
         $rootMenuId = $menu->rootMenuId(true);
