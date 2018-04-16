@@ -32,6 +32,12 @@ class OperatorComposer {
                     $corpGId   => '企业',
                     $schoolGId => '学校',
                 ];
+                if (
+                    Request::route('id') &&
+                    User::find(Request::route('id'))->group->name == '企业'
+                ) {
+                    $corps = Corp::all()->pluck('name', 'id')->toArray();
+                }
                 break;
             case '企业':
                 $groups = [
