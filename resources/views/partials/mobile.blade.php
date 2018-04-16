@@ -26,7 +26,7 @@
                                            value='{{ $mobile->mobile }}'
                                            required
                                            pattern="/^1[0-9]{10}$/"
-                                           style="width: 75%"
+                                           style="width: 100%"
                                     />
                                     <input class="form-control"
                                            name="mobile[{{ $key }}][id]"
@@ -86,7 +86,7 @@
                                        value=''
                                        required
                                        pattern="/^1[0-9]{10}$/"
-                                       style="width: 75%"
+                                       style="width: 100%"
                                 />
                             </div>
                         </td>
