@@ -503,12 +503,23 @@ class User extends Authenticatable {
                 }
                 break;
             case '企业':
-                if ($operator->group->name == '学校') {
-                    $departmentId = $operator->departments->pluck('id')->toArray()[0];
-                    $school = School::whereDepartmentId($departmentId)->first();
-                    $operator->{'school_id'} = $school->id;
-                    $operator->{'corp_id'} = $school->corp_id;
-                    $schools = School::whereCorpId($school->corp_id)->pluck('name', 'id')->toArray();
+                switch ($operator->group->name) {
+                    case '企业':
+                        $departmentId = $operator->departments->pluck('id')->toArray()[0];
+                        $corp = Corp::whereDepartmentId($departmentId)->first();
+                        $operator->{'corp_id'} = $corp->id;
+                        $corps = [$corp->id => $corp->name];
+                        break;
+                    case '学校':
+                        $departmentId = $operator->departments->pluck('id')->toArray()[0];
+                        $school = School::whereDepartmentId($departmentId)->first();
+                        $operator->{'school_id'} = $school->id;
+                        $operator->{'corp_id'} = $school->corp_id;
+                        $corps = Corp::find($school->corp_id)->pluck('name', 'id')->toArray();
+                        $schools = School::whereCorpId($school->corp_id)->pluck('name', 'id')->toArray();
+                        break;
+                    default:
+                        break;
                 }
                 break;
             case '学校':
