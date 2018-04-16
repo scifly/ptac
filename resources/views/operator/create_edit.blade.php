@@ -68,17 +68,14 @@
                 'icon' => 'fa fa-meh-o'
             ])
             <!-- 所属企业 -->
-            @if (isset($corp))
-                <div id="corp" class="form-group">
-                    {!! Form::label('corp_id', '所属企业', [
-                        'class' => 'col-sm-3 control-label'
-                    ]) !!}
-                    <div class="col-sm-6" style="margin-top: 7px;">
-                        {{ Form::hidden('corp_id', $corp->id, ['id' => 'corp_id']) }}
-                        <i class="fa fa-weixin text-green" style="margin-right: 5px;"></i>
-                        <span class="text-green">{{ $corp->name }}</span>
-                    </div>
-                </div>
+            @if (isset($corps))
+                @include('partials.single_select', [
+                    'id' => 'corp_id',
+                    'label' => '所属企业',
+                    'items' => $corps,
+                    'icon' => 'fa fa-weixin',
+                    'divId' => 'corp'
+                ])
             @else
                 <div id="corp" class="form-group" style="display: none;">
                     {!! Form::label('corp_id', '所属企业', [
@@ -93,15 +90,13 @@
             @endif
             <!-- 所属学校 -->
             @if (isset($schools))
-                <div id="school" class="form-group">
-                    {!! Form::label('school_id', '所属学校', [
-                        'class' => 'col-sm-3 control-label'
-                    ]) !!}
-                    <div class="col-sm-6">
-                        {{ Form::hidden('school_id', $school->id, ['id' => 'school_id']) }}
-                        <i class="fa fa-university text-purple">{{ $school->name }}</i>
-                    </div>
-                </div>
+                @include('partials.single_select', [
+                    'id' => 'school_id',
+                    'label' => '所属学校',
+                    'items' => $schools,
+                    'icon' => 'fa fa-university',
+                    'divId' => 'school'
+                ])
             @else
                 <div id="school" class="form-group" style="display: none;">
                     {!! Form::label('corp_id', '所属学校', [
