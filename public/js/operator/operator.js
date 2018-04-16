@@ -53,7 +53,9 @@
                             } else {
                                 operator.lists(action, operator.options.corpId);
                             }
-                            $corp.slideDown();
+                            if (!$corp.is(':visible')) {
+                                $corp.slideDown();
+                            }
                             $school.slideDown();
                             break;
                         default:
