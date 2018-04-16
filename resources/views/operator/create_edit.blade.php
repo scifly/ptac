@@ -87,7 +87,7 @@
                         </div>
                         @foreach ($corps as $key => $value)
                             {{ Form::hidden('corp_id', $key, ['id' => 'corp_id']) }}
-                            <i class="fa fa-weixin"></i>&nbsp; {{ $value }}
+                            {{ $value }}
                         @endforeach
                     </div>
                 @endif
