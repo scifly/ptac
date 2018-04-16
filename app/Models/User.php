@@ -570,7 +570,23 @@ class User extends Authenticatable {
      * @return JsonResponse
      */
     function csList() {
+    
+        function corps() {
         
+            $user = Auth::user();
+            switch ($user->group->name) {
+                case '运营':
+                    return Corp::whereEnabled(1)->pluck('name', 'id')->toArray();
+                case '企业':
+                    $departmentId = $user->departments->pluck('id')->toArray()[0];
+                    $corp = Corp::whereDepartmentId($departmentId)->first();
+                    return [$corp->name => $corp->id];
+                default:
+                    return [];
+            }
+        
+        }
+    
         $field = Request::input('field');
         $value = Request::input('value');
         abort_if(
@@ -598,25 +614,9 @@ class User extends Authenticatable {
             ->where('enabled', 1)->get()
             ->pluck('name', 'id')->toArray() : [];
         $result['schoolList'] = $this->selectList($schools, 'school_id');
-        
+    
         return response()->json($result);
-        
-        function corps() {
-            
-            $user = Auth::user();
-            switch ($user->group->name) {
-                case '运营':
-                    return Corp::whereEnabled(1)->pluck('name', 'id')->toArray();
-                case '企业':
-                    $departmentId = $user->departments->pluck('id')->toArray()[0];
-                    $corp = Corp::whereDepartmentId($departmentId)->first();
-                    return [$corp->name => $corp->id];
-                default:
-                    return [];
-            }
-            
-        }
-        
+    
     }
     
     /**
