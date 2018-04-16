@@ -68,16 +68,16 @@
                 'icon' => 'fa fa-meh-o'
             ])
             <!-- 所属企业 -->
-            @if (isset($user['id'], $corps))
-                @include('partials.single_select', [
-                    'label' => '所属企业',
-                    'id' => 'corp_id',
-                    'items' => $corps,
-                    'icon' => 'fa fa-weixin',
-                    'divId' => 'corp'
-                ])
-            @else
-                <div id="corp" class="form-group" style="display: none;">
+            @if (isset($corps))
+                @if (sizeof($corps) > 1)
+                    @include('partials.single_select', [
+                        'label' => '所属企业',
+                        'id' => 'corp_id',
+                        'items' => $corps,
+                        'icon' => 'fa fa-weixin',
+                        'divId' => 'corp'
+                    ])
+                @else
                     {!! Form::label('corp_id', '所属企业', [
                         'class' => 'col-sm-3 control-label'
                     ]) !!}
@@ -85,20 +85,57 @@
                         <div class="input-group">
                             @include('partials.icon_addon', ['class' => 'fa-weixin'])
                         </div>
+                        @foreach ($corps as $key => $value)
+                            {{ Form::hidden('corp_id', $key, ['id' => 'corp_id']) }}
+                            <i class="fa fa-weixin"></i>&nbsp; {{ $value }}
+                        @endforeach
                     </div>
-                </div>
+                @endif
             @endif
+            {{--@if (isset($user['id'], $corps))--}}
+            {{--@else--}}
+                {{--<div id="corp" class="form-group" style="display: none;">--}}
+                    {{--{!! Form::label('corp_id', '所属企业', [--}}
+                        {{--'class' => 'col-sm-3 control-label'--}}
+                    {{--]) !!}--}}
+                    {{--<div class="col-sm-6">--}}
+                        {{--<div class="input-group">--}}
+                            {{--@include('partials.icon_addon', ['class' => 'fa-weixin'])--}}
+                        {{--</div>--}}
+                    {{--</div>--}}
+                {{--</div>--}}
+            {{--@endif--}}
             <!-- 所属学校 -->
-            @if (isset($user['id'], $schools))
-                @include('partials.single_select', [
-                    'label' => '所属学校',
-                    'id' => 'school_id',
-                    'items' => $schools,
-                    'icon' => 'fa fa-university',
-                    'divId' => 'school'
-                ])
-            @else
-                <div id="school" class="form-group" style="display: none;">
+            {{--@if (isset($user['id'], $schools))--}}
+                {{--@include('partials.single_select', [--}}
+                    {{--'label' => '所属学校',--}}
+                    {{--'id' => 'school_id',--}}
+                    {{--'items' => $schools,--}}
+                    {{--'icon' => 'fa fa-university',--}}
+                    {{--'divId' => 'school'--}}
+                {{--])--}}
+            {{--@else--}}
+                {{--<div id="school" class="form-group" style="display: none;">--}}
+                    {{--{!! Form::label('corp_id', '所属学校', [--}}
+                        {{--'class' => 'col-sm-3 control-label'--}}
+                    {{--]) !!}--}}
+                    {{--<div class="col-sm-6">--}}
+                        {{--<div class="input-group">--}}
+                            {{--@include('partials.icon_addon', ['class' => 'fa-university'])--}}
+                        {{--</div>--}}
+                    {{--</div>--}}
+                {{--</div>--}}
+            {{--@endif--}}
+            @if (isset($schools))
+                @if (sizeof($schools) > 1)
+                    @include('partials.single_select', [
+                        'label' => '所属企业',
+                        'id' => 'school_id',
+                        'items' => $schools,
+                        'icon' => 'fa fa-university',
+                        'divId' => 'school'
+                    ])
+                @else
                     {!! Form::label('corp_id', '所属学校', [
                         'class' => 'col-sm-3 control-label'
                     ]) !!}
@@ -106,8 +143,12 @@
                         <div class="input-group">
                             @include('partials.icon_addon', ['class' => 'fa-university'])
                         </div>
+                        @foreach ($corps as $key => $value)
+                            {{ Form::hidden('school_id', $key, ['id' => 'school_id']) }}
+                            <i class="fa fa-university"></i>&nbsp; {{ $value }}
+                        @endforeach
                     </div>
-                </div>
+                @endif
             @endif
             <!-- 真实姓名 -->
             <div class="form-group">
