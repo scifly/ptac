@@ -117,12 +117,13 @@ class User extends Authenticatable {
      */
     protected $hidden = ['password', 'remember_token'];
     
-    protected $du;
+    protected $du, $menu;
     
     function __construct(array $attributes = []) {
         
         parent::__construct($attributes);
         $this->du = app()->make('App\Models\DepartmentUser');
+        $this->menu = app()->make('App\Models\Menu');
         
     }
     
@@ -478,8 +479,11 @@ class User extends Authenticatable {
         
         $user = Auth::user();
         $corps = $schools = null;
-        switch ($user->group->name) {
-            case '运营':
+        $rootMenu = $this->menu->find(
+            $this->menu->rootMenuId(true)
+        );
+        switch ($rootMenu->menuType->name) {
+            case '根':
                 switch ($operator->group->name) {
                     case '企业':
                         $departmentId = $operator->departments->pluck('id')->toArray()[0];
