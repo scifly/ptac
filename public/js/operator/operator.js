@@ -107,10 +107,10 @@
                     url: page.siteRoot() + 'operators/' + action + (action === 'edit' ? '/' + $('#id').val() : ''),
                     success: function (result) {
                         if (field === operator.options.groupId) {
-                            if (!$corp.is(':visible')) {
+                            var $corpId = $('#' + operator.options.corpId);
+                            if ($corpId.length === 0) {
                                 $corp.find('.input-group').append(result['corpList']);
-                                $('#' + operator.options.corpId).select2();
-                                alert('wtf');
+                                $corpId.select2();
                             }
                             $school.find('.input-group').append(result['schoolList']);
                             $('#' + operator.options.schoolId).select2();
