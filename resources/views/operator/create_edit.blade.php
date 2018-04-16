@@ -84,11 +84,11 @@
                     <div class="col-sm-6">
                         <div class="input-group">
                             @include('partials.icon_addon', ['class' => 'fa-weixin'])
+                            @foreach ($corps as $key => $value)
+                                {{ Form::hidden('corp_id', $key, ['id' => 'corp_id']) }}
+                                {{ $value }}
+                            @endforeach
                         </div>
-                        @foreach ($corps as $key => $value)
-                            {{ Form::hidden('corp_id', $key, ['id' => 'corp_id']) }}
-                            {{ $value }}
-                        @endforeach
                     </div>
                 @endif
             @endif
@@ -142,11 +142,11 @@
                     <div class="col-sm-6">
                         <div class="input-group">
                             @include('partials.icon_addon', ['class' => 'fa-university'])
+                            @foreach ($corps as $key => $value)
+                                {{ Form::hidden('school_id', $key, ['id' => 'school_id']) }}
+                                {{ $value }}
+                            @endforeach
                         </div>
-                        @foreach ($corps as $key => $value)
-                            {{ Form::hidden('school_id', $key, ['id' => 'school_id']) }}
-                            <i class="fa fa-university"></i>&nbsp; {{ $value }}
-                        @endforeach
                     </div>
                 @endif
             @endif
