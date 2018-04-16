@@ -78,16 +78,18 @@
                         'divId' => 'corp'
                     ])
                 @else
-                    {!! Form::label('corp_id', '所属企业', [
-                        'class' => 'col-sm-3 control-label'
-                    ]) !!}
-                    <div class="col-sm-6">
-                        <div class="input-group">
-                            @include('partials.icon_addon', ['class' => 'fa-weixin'])
-                            @foreach ($corps as $key => $value)
-                                {{ Form::hidden('corp_id', $key, ['id' => 'corp_id']) }}
-                                {{ $value }}
-                            @endforeach
+                    <div id="corp" class="form-group">
+                        {!! Form::label('corp_id', '所属企业', [
+                            'class' => 'col-sm-3 control-label'
+                        ]) !!}
+                        <div class="col-sm-6">
+                            <div class="input-group">
+                                @include('partials.icon_addon', ['class' => 'fa-weixin'])
+                                @foreach ($corps as $key => $value)
+                                    {{ Form::hidden('corp_id', $key, ['id' => 'corp_id']) }}
+                                    {{ $value }}
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 @endif
@@ -115,16 +117,16 @@
                     {{--'divId' => 'school'--}}
                 {{--])--}}
             {{--@else--}}
-                {{--<div id="school" class="form-group" style="display: none;">--}}
-                    {{--{!! Form::label('corp_id', '所属学校', [--}}
-                        {{--'class' => 'col-sm-3 control-label'--}}
-                    {{--]) !!}--}}
-                    {{--<div class="col-sm-6">--}}
-                        {{--<div class="input-group">--}}
-                            {{--@include('partials.icon_addon', ['class' => 'fa-university'])--}}
-                        {{--</div>--}}
-                    {{--</div>--}}
-                {{--</div>--}}
+                <div id="school" class="form-group" style="display: none;">
+                    {!! Form::label('corp_id', '所属学校', [
+                        'class' => 'col-sm-3 control-label'
+                    ]) !!}
+                    <div class="col-sm-6">
+                        <div class="input-group">
+                            @include('partials.icon_addon', ['class' => 'fa-university'])
+                        </div>
+                    </div>
+                </div>
             {{--@endif--}}
             @if (isset($schools))
                 @if (sizeof($schools) > 1)
@@ -136,16 +138,18 @@
                         'divId' => 'school'
                     ])
                 @else
-                    {!! Form::label('corp_id', '所属学校', [
-                        'class' => 'col-sm-3 control-label'
-                    ]) !!}
-                    <div class="col-sm-6">
-                        <div class="input-group">
-                            @include('partials.icon_addon', ['class' => 'fa-university'])
-                            @foreach ($corps as $key => $value)
-                                {{ Form::hidden('school_id', $key, ['id' => 'school_id']) }}
-                                {{ $value }}
-                            @endforeach
+                    <div id="school" class="form-group">
+                        {!! Form::label('corp_id', '所属学校', [
+                            'class' => 'col-sm-3 control-label'
+                        ]) !!}
+                        <div class="col-sm-6">
+                            <div class="input-group">
+                                @include('partials.icon_addon', ['class' => 'fa-university'])
+                                @foreach ($corps as $key => $value)
+                                    {{ Form::hidden('school_id', $key, ['id' => 'school_id']) }}
+                                    {{ $value }}
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 @endif
