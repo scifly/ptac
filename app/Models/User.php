@@ -515,8 +515,9 @@ class User extends Authenticatable {
                         $school = School::whereDepartmentId($departmentId)->first();
                         $operator->{'school_id'} = $school->id;
                         $operator->{'corp_id'} = $school->corp_id;
-                        $corps = Corp::find($school->corp_id)->get('name', 'id')->toArray();
-                        $schools = School::whereCorpId($school->corp_id)->pluck('name', 'id')->toArray();
+                        $corp = Corp::find($school->corp_id);
+                        $corps = [$corp->id => $corp->name];
+                        $schools = School::whereCorpId($school->corp_id)->get()->pluck('name', 'id')->toArray();
                         break;
                     default:
                         break;
