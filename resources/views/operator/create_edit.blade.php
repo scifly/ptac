@@ -73,9 +73,9 @@
                     {!! Form::label('corp_id', '所属企业', [
                         'class' => 'col-sm-3 control-label'
                     ]) !!}
-                    <div class="col-sm-6">
+                    <div class="col-sm-6" style="margin-top: 7px;">
                         {{ Form::hidden('corp_id', $corp->id, ['id' => 'corp_id']) }}
-                        <i class="fa fa-weixin text-green">{{ $corp->name }}</i>
+                        <i class="fa fa-weixin text-green" style="margin-right: 5px;"></i>{{ $corp->name }}
                     </div>
                 </div>
             @else
