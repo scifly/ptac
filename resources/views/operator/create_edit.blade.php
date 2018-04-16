@@ -83,13 +83,10 @@
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
                         <div class="col-sm-6">
-                            <div class="input-group">
-                                @include('partials.icon_addon', ['class' => 'fa-weixin'])
-                                @foreach ($corps as $key => $value)
-                                    {{ Form::hidden('corp_id', $key, ['id' => 'corp_id']) }}
-                                    {{ $value }}
-                                @endforeach
-                            </div>
+                            @foreach ($corps as $key => $value)
+                                {{ Form::hidden('corp_id', $key, ['id' => 'corp_id']) }}
+                                <i class="fa fa-weixin"></i>&nbsp;{{ $value }}
+                            @endforeach
                         </div>
                     </div>
                 @endif
@@ -117,16 +114,16 @@
                     {{--'divId' => 'school'--}}
                 {{--])--}}
             {{--@else--}}
-                <div id="school" class="form-group" style="display: none;">
-                    {!! Form::label('corp_id', '所属学校', [
-                        'class' => 'col-sm-3 control-label'
-                    ]) !!}
-                    <div class="col-sm-6">
-                        <div class="input-group">
-                            @include('partials.icon_addon', ['class' => 'fa-university'])
-                        </div>
-                    </div>
-                </div>
+                {{--<div id="school" class="form-group" style="display: none;">--}}
+                    {{--{!! Form::label('corp_id', '所属学校', [--}}
+                        {{--'class' => 'col-sm-3 control-label'--}}
+                    {{--]) !!}--}}
+                    {{--<div class="col-sm-6">--}}
+                        {{--<div class="input-group">--}}
+                            {{--@include('partials.icon_addon', ['class' => 'fa-university'])--}}
+                        {{--</div>--}}
+                    {{--</div>--}}
+                {{--</div>--}}
             {{--@endif--}}
             @if (isset($schools))
                 @if (sizeof($schools) > 1)
@@ -143,13 +140,10 @@
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
                         <div class="col-sm-6">
-                            <div class="input-group">
-                                @include('partials.icon_addon', ['class' => 'fa-university'])
-                                @foreach ($corps as $key => $value)
-                                    {{ Form::hidden('school_id', $key, ['id' => 'school_id']) }}
-                                    {{ $value }}
-                                @endforeach
-                            </div>
+                            @foreach ($schools as $key => $value)
+                                {{ Form::hidden('school_id', $key, ['id' => 'school_id']) }}
+                                <i class="fa fa-university"></i>&nbsp;{{ $value }}
+                            @endforeach
                         </div>
                     </div>
                 @endif
