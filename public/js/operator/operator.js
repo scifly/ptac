@@ -110,6 +110,7 @@
                             if (!$corp.is(':visible')) {
                                 $corp.find('.input-group').append(result['corpList']);
                                 $('#' + operator.options.corpId).select2();
+                                alert('wtf');
                             }
                             $school.find('.input-group').append(result['schoolList']);
                             $('#' + operator.options.schoolId).select2();
