@@ -75,7 +75,8 @@
                     ]) !!}
                     <div class="col-sm-6" style="margin-top: 7px;">
                         {{ Form::hidden('corp_id', $corp->id, ['id' => 'corp_id']) }}
-                        <i class="fa fa-weixin text-green" style="margin-right: 5px;"></i>{{ $corp->name }}
+                        <i class="fa fa-weixin text-green" style="margin-right: 5px;"></i>
+                        <span class="text-green">{{ $corp->name }}</span>
                     </div>
                 </div>
             @else
