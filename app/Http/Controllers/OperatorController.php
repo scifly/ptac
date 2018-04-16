@@ -1,13 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Http\Requests\OperatorRequest;
-use App\Models\User;
 use Exception;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
 use Throwable;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
+use App\Http\Requests\OperatorRequest;
+use Illuminate\Support\Facades\Request;
 
 /**
  * 超级用户
@@ -23,6 +22,7 @@ class OperatorController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->user = $user;
+        $this->approve($user);
         
     }
     
@@ -52,9 +52,6 @@ class OperatorController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'create', User::class
-        );
         if (Request::method() == 'POST') {
             return $this->user->csList();
         }
@@ -73,12 +70,10 @@ class OperatorController extends Controller {
      */
     public function store(OperatorRequest $request) {
         
-        $this->authorize(
-            'store', User::class
-        );
-        
         return $this->result(
-            $this->user->store($request->all())
+            $this->user->store(
+                $request->all()
+            )
         );
         
     }
@@ -93,13 +88,11 @@ class OperatorController extends Controller {
     public function edit($id) {
         
         $user = $this->user->find($id);
-        $this->authorize('edit', $user);
-        
         if (Request::method() == 'POST') {
             return $this->user->csList();
         }
         list($corps, $schools) = $this->user->attributes($user);
-        
+
         return $this->output([
             'user' => $user,
             'corps' => $corps,
@@ -120,10 +113,6 @@ class OperatorController extends Controller {
      */
     public function update(OperatorRequest $request, $id = null) {
         
-        $this->authorize(
-            'update', User::class
-        );
-        
         return $this->result(
             $this->user->modify(
                 $request->all(), $id
@@ -141,10 +130,6 @@ class OperatorController extends Controller {
      */
     public function destroy($id = null) {
     
-        $this->authorize(
-            'destroy', User::class
-        );
-        
         return $this->result(
             $this->user->remove($id)
         );

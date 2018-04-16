@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 消息类型
@@ -22,14 +23,15 @@ class MessageTypeController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->mt = $mt;
+        $this->approve($mt);
         
     }
     
     /**
-     * 消息类型
+     * 消息类型列表
      *
      * @return bool|JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function index() {
         
@@ -47,13 +49,9 @@ class MessageTypeController extends Controller {
      * 创建消息类型
      *
      * @return bool|JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function create() {
-        
-        $this->authorize(
-            'cs', MessageType::class
-        );
         
         return $this->output();
         
@@ -64,13 +62,8 @@ class MessageTypeController extends Controller {
      *
      * @param MessageTypeRequest $request
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store(MessageTypeRequest $request) {
-        
-        $this->authorize(
-            'cs', MessageType::class
-        );
         
         return $this->result(
             $this->mt->store($request->all())
@@ -83,15 +76,12 @@ class MessageTypeController extends Controller {
      *
      * @param $id
      * @return bool|JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function edit($id) {
         
-        $mt = MessageType::find($id);
-        $this->authorize('eud', $mt);
-        
         return $this->output([
-            'mt' => $mt,
+            'mt' => MessageType::find($id),
         ]);
         
     }
@@ -102,15 +92,13 @@ class MessageTypeController extends Controller {
      * @param MessageTypeRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(MessageTypeRequest $request, $id) {
         
-        $mt = MessageType::find($id);
-        $this->authorize('eud', $mt);
-        
         return $this->result(
-            $mt->modify($request->all(), $id)
+            $this->mt->modify(
+                $request->all(), $id
+            )
         );
         
     }
@@ -124,11 +112,8 @@ class MessageTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $mt = MessageType::find($id);
-        $this->authorize('eud', $mt);
-        
         return $this->result(
-            $mt->remove($id)
+            $this->mt->remove($id)
         );
         
     }

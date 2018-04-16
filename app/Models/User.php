@@ -3,6 +3,7 @@ namespace App\Models;
 
 use Eloquent;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Throwable;
 use Carbon\Carbon;
 use App\Helpers\Snippet;
@@ -566,7 +567,7 @@ class User extends Authenticatable {
      * 返回指定角色对应的企业/学校列表HTML
      * 或返回指定企业对应的学校列表HTML
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     function csList() {
         
@@ -584,7 +585,7 @@ class User extends Authenticatable {
         $corpId = 0;
         if ($field == 'group_id') {
             $role = Group::find($value)->name;
-            $corps = Corp::whereEnabled(1)->pluck('name', 'id')->toArray();
+            $corps = corps();
             $result['corpList'] = $this->selectList($corps, 'corp_id');
             if ($role == '学校') {
                 reset($corps);
@@ -599,6 +600,22 @@ class User extends Authenticatable {
         $result['schoolList'] = $this->selectList($schools, 'school_id');
         
         return response()->json($result);
+        
+        function corps() {
+            
+            $user = Auth::user();
+            switch ($user->group->name) {
+                case '运营':
+                    return Corp::whereEnabled(1)->pluck('name', 'id')->toArray();
+                case '企业':
+                    $departmentId = $user->departments->pluck('id')->toArray()[0];
+                    $corp = Corp::whereDepartmentId($departmentId)->first();
+                    return [$corp->name => $corp->id];
+                default:
+                    return [];
+            }
+            
+        }
         
     }
     
