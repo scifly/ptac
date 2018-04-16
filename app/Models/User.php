@@ -580,7 +580,7 @@ class User extends Authenticatable {
                 case '企业':
                     $departmentId = $user->departments->pluck('id')->toArray()[0];
                     $corp = Corp::whereDepartmentId($departmentId)->first();
-                    return [$corp->name => $corp->id];
+                    return [$corp->id => $corp->name];
                 default:
                     return [];
             }
