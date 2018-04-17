@@ -42,7 +42,7 @@ class TestController extends Controller {
         $arrs = array_map(function ($name) {
             return [$name => Group::whereName($name)->first()->id];
         }, $names);
-        dd($arrs);
+        dd(array_flatten($arrs));
         try {
             $client = new Client();
             $reponse = $client->post(
