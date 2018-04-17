@@ -38,10 +38,10 @@ class OperatorComposer {
         switch ($rootMenu->menuType->name) {
             case '根':
                 $groups = groups(['运营', '企业', '学校']);
-                if ($operator->group->name != '运营') {
-                    $corps = Corp::all()->pluck('name', 'id')->toArray();
-                }
                 if (Request::route('id')) {
+                    if ($operator->group->name != '运营') {
+                        $corps = Corp::all()->pluck('name', 'id')->toArray();
+                    }
                     if ($operator->group->name == '学校') {
                         $school = School::whereDepartmentId($departmentId)->first();
                         $schools = School::whereCorpId($school->corp_id)
