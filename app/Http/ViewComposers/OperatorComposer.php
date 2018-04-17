@@ -15,10 +15,17 @@ class OperatorComposer {
     
     use ModelTrait;
     
+    protected $menu;
+    
+    function __construct(Menu $menu) {
+        
+        $this->menu = $menu;
+        
+    }
+    
     public function compose(View $view) {
         
-        $menu = new Menu();
-        $menuType = Menu::find($menu->rootMenuId(true))->menuType->name;
+        $menuType = Menu::find($this->menu->rootMenuId(true))->menuType->name;
         $rootGId = Group::whereName('运营')->first()->id;
         $corpGId = Group::whereName('企业')->first()->id;
         $schoolGId = Group::whereName('学校')->first()->id;

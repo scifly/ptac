@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ModelTrait;
 use App\Models\Action;
 use App\Models\Department;
+use App\Models\Group;
 use App\Models\User;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -36,27 +37,12 @@ class TestController extends Controller {
     ];
     
     public function index(Request $request) {
-    
-        dd($request->route('sid'));
-        $user = User::find(20);
-        dd($user->departments->pluck('id')->first());
-        $user->test = 'abcdefg';
-        dd($user->toArray());
-        dd(config('queue.default'));
-        $action = new Action();
-        try {
-            $action->scan();
-        } catch (\Throwable $e) {
-        }
-        exit;
-        $ids = DB::select('SELECT id FROM tabs');
-        $result = [];
-        
-        foreach ($ids as $id) {
-            $result[] = $id->id;
-        }
-        dd($result);
-        
+
+        $names = ['运营', '企业', '学校'];
+        $arrs = array_map(function ($name) {
+            return [$name => Group::whereName($name)->first()->id];
+        }, $names);
+        dd($arrs);
         try {
             $client = new Client();
             $reponse = $client->post(
