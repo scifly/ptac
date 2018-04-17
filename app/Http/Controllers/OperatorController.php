@@ -91,12 +91,9 @@ class OperatorController extends Controller {
         if (Request::method() == 'POST') {
             return $this->user->csList();
         }
-        list($corps, $schools) = $this->user->attributes($user);
 
         return $this->output([
             'user' => $user,
-            'corps' => $corps,
-            'schools' => $schools,
             'mobiles' => $user->mobiles
         ]);
         
