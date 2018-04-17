@@ -42,6 +42,7 @@ class TestController extends Controller {
         $arrs = array_map(function ($name) {
             return [$name => Group::whereName($name)->first()->id];
         }, $names);
+        $arrs = Group::whereIn('name', ['运营', '企业', '学校'])->get()->pluck('name', 'id')->toArray();
         dd(($arrs));
         try {
             $client = new Client();
