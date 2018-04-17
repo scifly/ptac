@@ -79,21 +79,11 @@ trait ModelTrait {
      */
     function schoolId() {
         
-        $user = Auth::user();
-        
-        switch ($user->group->name) {
-            case '运营':
-            case '企业':
-                $menu = new Menu();
-                $schoolMenuId = $menu->menuId(session('menuId'));
-                unset($menu);
-                return $schoolMenuId ? School::whereMenuId($schoolMenuId)->first()->id : 0;
-            case '学校':
-                $departmentId = $user->departments->pluck('id')->toArray()[0];
-                return School::whereDepartmentId($departmentId)->first()->id;
-            default:
-                return $user->educator->school_id;
-        }
+        $menu = new Menu();
+        $schoolMenuId = $menu->menuId(session('menuId'));
+        unset($menu);
+    
+        return $schoolMenuId ? School::whereMenuId($schoolMenuId)->first()->id : null;
         
     }
     
@@ -110,13 +100,21 @@ trait ModelTrait {
             case '运营':
                 return School::all()->pluck('id')->toArray();
             case '企业':
-                $departmentId = $user->departments->pluck('id')->toArray()[0];
+                $departmentId = head($user->departments->pluck('id')->toArray());
                 $corp = Corp::whereDepartmentId($departmentId)->first();
                 return $corp->schools->pluck('id')->toArray();
             case '学校':
-                $departmentId = $user->departments->pluck('id')->toArray()[0];
+                $departmentId = head($user->departments->pluck('id')->toArray());
                 return [School::whereDepartmentId($departmentId)->first()->id];
             default:
+                $educator = $user->educator;
+                if (!$educator) {
+                    $departmentId = head($user->departments->pluck('id')->toArray());
+                    $department = new Department();
+                    $schoolDepartmentId = $department->schoolDeptId($departmentId);
+                    unset($department);
+                    return [School::whereDepartmentId($schoolDepartmentId)->first()->id];
+                }
                 return [$user->educator->school_id];
         }
         
@@ -332,18 +330,30 @@ trait ModelTrait {
             case '运营':
                 return $menu::all()->pluck('id')->toArray();
             case '企业':
-                $departmentId = $user->departments->pluck('id')->toArray()[0];
+                $departmentId = head($user->departments->pluck('id')->toArray());
                 $corp = Corp::whereDepartmentId($departmentId)->first();
                 $menuIds = $menu->subMenuIds($corp->menu_id);
                 return $menuIds;
             case '学校':
-                $departmentId = $user->departments->pluck('id')->toArray()[0];
+                $departmentId = head($user->departments->pluck('id')->toArray());
                 $school = School::whereDepartmentId($departmentId)->first();
                 $menuIds = $menu->subMenuIds($school->menu_id);
                 return $menuIds;
             default:
                 return [];
         }
+        
+    }
+    
+    /**
+     * 返回指定用户所属的第一个部门id
+     *
+     * @param User $user
+     * @return mixed
+     */
+    function head(User $user) {
+        
+        return head($user->departments->pluck('id')->toArray());
         
     }
     

@@ -23,6 +23,7 @@ class ProcedureController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->procedure = $procedure;
+        $this->approve($procedure);
         
     }
     
@@ -52,10 +53,6 @@ class ProcedureController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'c', Procedure::class
-        );
-        
         return $this->output();
         
     }
@@ -65,16 +62,13 @@ class ProcedureController extends Controller {
      *
      * @param ProcedureRequest $request
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store(ProcedureRequest $request) {
         
-        $this->authorize(
-            'c', Procedure::class
-        );
-        
         return $this->result(
-            $this->procedure->store($request->all())
+            $this->procedure->store(
+                $request->all()
+            )
         );
         
     }
@@ -88,11 +82,8 @@ class ProcedureController extends Controller {
      */
     public function show($id) {
         
-        $procedure = Procedure::find($id);
-        $this->authorize('rud', $procedure);
-        
         return $this->output([
-            'procedure' => $procedure,
+            'procedure' => Procedure::find($id),
         ]);
         
     }
@@ -106,11 +97,8 @@ class ProcedureController extends Controller {
      */
     public function edit($id) {
         
-        $procedure = Procedure::find($id);
-        $this->authorize('rud', $procedure);
-        
         return $this->output([
-            'procedure' => $procedure,
+            'procedure' => $this->procedure->find($id),
         ]);
         
     }
@@ -121,15 +109,13 @@ class ProcedureController extends Controller {
      * @param ProcedureRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(ProcedureRequest $request, $id) {
         
-        $procedure = Procedure::find($id);
-        $this->authorize('rud', $procedure);
-        
         return $this->result(
-            $procedure->modify($request->all(), $id)
+            $this->procedure->modify(
+                $request->all(), $id
+            )
         );
         
     }
@@ -143,11 +129,8 @@ class ProcedureController extends Controller {
      */
     public function destroy($id) {
         
-        $procedure = Procedure::find($id);
-        $this->authorize('rud', $procedure);
-        
         return $this->result(
-            $procedure->remove($id)
+            $this->procedure->remove($id)
         );
         
     }

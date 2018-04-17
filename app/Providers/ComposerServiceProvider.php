@@ -196,7 +196,7 @@ class ComposerServiceProvider extends ServiceProvider {
         # 分数统计项 - ScoreRange
         View::composer('score_range.index', $ns . 'ScoreRangeIndexComposer');
         View::composer('score_range.create_edit', $ns . 'ScoreRangeComposer');
-        View::composer('score_range.show_statistics', $ns . 'ScoreRangeShowStatisticsComposer');
+        View::composer('score_range.stat', $ns . 'ScoreRangeStatComposer');
     
         # 学期 - Semester
         View::composer('semester.index', $ns . 'SemesterIndexComposer');

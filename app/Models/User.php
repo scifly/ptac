@@ -526,7 +526,7 @@ class User extends Authenticatable {
                 case '运营':
                     return Corp::whereEnabled(1)->pluck('name', 'id')->toArray();
                 case '企业':
-                    $departmentId = $user->departments->pluck('id')->toArray()[0];
+                    $departmentId = $this->head($user);
                     $corp = Corp::whereDepartmentId($departmentId)->first();
                     return [$corp->id => $corp->name];
                 default:

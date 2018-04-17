@@ -28,6 +28,7 @@ class ScoreRangeController extends Controller {
         $this->middleware(['auth']);
         $this->sr = $sr;
         $this->subject = $subject;
+        $this->approve($sr);
         
     }
     
@@ -70,7 +71,9 @@ class ScoreRangeController extends Controller {
     public function store(ScoreRangeRequest $request) {
         
         return $this->result(
-            $this->sr->store($request->all())
+            $this->sr->store(
+                $request->all()
+            )
         );
         
     }
@@ -84,12 +87,8 @@ class ScoreRangeController extends Controller {
      */
     public function edit($id) {
         
-        $sr = $this->sr->find($id);
-        $this->authorize('rud', $sr);
-        
         return $this->output([
-            'sr'               => $sr,
-            'selectedSubjects' => $this->subject->selectedSubjects($sr->subject_ids),
+            'sr' => $this->sr->find($id)
         ]);
         
     }
@@ -100,15 +99,13 @@ class ScoreRangeController extends Controller {
      * @param ScoreRangeRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(ScoreRangeRequest $request, $id) {
         
-        $sr = $this->sr->find($id);
-        $this->authorize('rud', $sr);
-        
         return $this->result(
-            $sr->update($request->all())
+            $this->sr->modify(
+                $request->all(), $id
+            )
         );
         
     }
@@ -122,36 +119,25 @@ class ScoreRangeController extends Controller {
      */
     public function destroy($id) {
         
-        $sr = $this->sr->find($id);
-        $this->authorize('rud', $sr);
-        
         return $this->result(
-            $sr->delete()
+            $this->sr->remove($id)
         );
-        
-    }
-    
-    /**
-     * 成绩统计项详情
-     *
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function show() {
-        
-        return $this->output();
         
     }
     
     /**
      * 按统计项进行统计
      *
-     * @param HttpRequest $request
      * @return JsonResponse
+     * @throws Throwable
      */
-    public function stat(HttpRequest $request) {
+    public function stat() {
+
+        if (Request::method() == 'POST') {
+            return $this->sr->stat();
+        }
         
-        return $this->sr->stat($request);
+        return $this->output();
         
     }
     

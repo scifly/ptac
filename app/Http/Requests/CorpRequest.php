@@ -1,12 +1,14 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Helpers\ModelTrait;
 use App\Models\Corp;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
 class CorpRequest extends FormRequest {
-    
+
+    use ModelTrait;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -45,7 +47,7 @@ class CorpRequest extends FormRequest {
             $input['menu_id'] = 0;
         }
         if (!isset($input['company_id'])) {
-            $departmentId = Auth::user()->departments->pluck('id')->toArray()[0];
+            $departmentId = $this->head(Auth::user());
             $corpId = Corp::whereDepartmentId($departmentId)->first()->id;
             $input['company_id'] = Corp::find($corpId)->company_id;
         }

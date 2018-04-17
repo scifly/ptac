@@ -8,6 +8,7 @@ use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -48,6 +49,50 @@ class PollQuestionnaireSubjectChoice extends Model {
         
         return $this->belongsTo('App\Models\PollQuestionnaireSubject', 'pqs_id', 'id');
         
+    }
+    
+    /**
+     * 保存调查问卷题目选项
+     *
+     * @param array $data
+     * @return bool
+     */
+    function store(array $data) {
+    
+        return $this->create($data) ? true : false;
+    
+    }
+    
+    /**
+     * 更新调查问卷题目选项
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    function modify(array $data, $id) {
+    
+        $pqsc = $this->find($id);
+        if (!$pqsc) { return false; }
+        
+        return $this->update($data);
+    
+    }
+    
+    /**
+     * 移除调查问卷题目选项
+     *
+     * @param $id
+     * @return bool|null
+     * @throws Exception
+     */
+    function remove($id) {
+    
+        $pqsc = $this->find($id);
+        if (!$pqsc) { return false; }
+        
+        return $pqsc->delete();
+    
     }
     
     /**

@@ -23,6 +23,7 @@ class PollQuestionnaireController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->pq = $pq;
+        $this->approve($pq);
         
     }
     
@@ -52,10 +53,6 @@ class PollQuestionnaireController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'cs', PollQuestionnaire::class
-        );
-        
         return $this->output();
         
     }
@@ -65,13 +62,8 @@ class PollQuestionnaireController extends Controller {
      *
      * @param PqRequest $request
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store(PqRequest $request) {
-        
-        $this->authorize(
-            'cs', PollQuestionnaire::class
-        );
         
         return $this->result(
             $this->pq->store($request->all())
@@ -88,11 +80,8 @@ class PollQuestionnaireController extends Controller {
      */
     public function show($id) {
         
-        $pq = PollQuestionnaire::find($id);
-        $this->authorize('eud', $pq);
-        
         return $this->output([
-            'pq' => $pq,
+            'pq' => PollQuestionnaire::find($id),
         ]);
         
     }
@@ -105,11 +94,8 @@ class PollQuestionnaireController extends Controller {
      */
     public function edit($id) {
         
-        $pq = PollQuestionnaire::find($id);
-        $this->authorize('eud', $pq);
-        
         return $this->output([
-            'pq' => $pq,
+            'pq' => PollQuestionnaire::find($id),
         ]);
         
     }
@@ -120,15 +106,11 @@ class PollQuestionnaireController extends Controller {
      * @param PqRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(PqRequest $request, $id) {
         
-        $pq = PollQuestionnaire::find($id);
-        $this->authorize('eud', $pq);
-        
         return $this->result(
-            $pq->modify($request->all(), $id)
+            $this->pq->modify($request->all(), $id)
         );
         
     }
@@ -142,11 +124,8 @@ class PollQuestionnaireController extends Controller {
      */
     public function destroy($id) {
         
-        $pq = PollQuestionnaire::find($id);
-        $this->authorize('eud', $pq);
-        
         return $this->result(
-            $pq->remove($id)
+            $this->pq->remove($id)
         );
         
     }

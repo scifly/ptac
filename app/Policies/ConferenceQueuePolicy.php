@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Helpers\HttpStatusCode;
+use App\Helpers\ModelTrait;
 use App\Helpers\PolicyTrait;
 use App\Models\ConferenceQueue;
 use App\Models\ConferenceRoom;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Request;
 
 class ConferenceQueuePolicy {
 
-    use HandlesAuthorization, PolicyTrait;
+    use HandlesAuthorization, ModelTrait, PolicyTrait;
     
     protected $menu;
 
@@ -75,7 +76,7 @@ class ConferenceQueuePolicy {
         # 会议室所属企业
         $crCorpId = ConferenceRoom::find($conferenceRoomId)->school->corp_id;
         # 发起者所属企业
-        $departmentId = $user->departments->pluck('id')->toArray()[0];
+        $departmentId = $this->head($user);
         $corpId = Corp::whereDepartmentId($departmentId)->first()->id;
         # 发起者只能选取所属企业的会议室
         if ($corpId != $crCorpId) { return false; }
@@ -106,7 +107,7 @@ class ConferenceQueuePolicy {
         # 会议室所属学校
         $crSchoolId = ConferenceRoom::find($conferenceRoomId)->school_id;
         # 发起者所属学校
-        $departmentId = $user->departments->pluck('id')->toArray()[0];
+        $departmentId = $this->head($user);
         $schoolId = School::whereDepartmentId($departmentId)->first()->id;
         # 发起者只能选取所属学校的会议室
         if ($schoolId != $crSchoolId) { return false; }

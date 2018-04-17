@@ -41,7 +41,7 @@ use Illuminate\Support\Facades\Auth;
  * @property-read Collection|PollQuestionnaireSubjectChoice[] $poll_questionnaire_choice
  * @property-read PollQuestionnaire $pollQuestionnaire
  * @property-read PollQuestionnaireAnswer $pollQuestionnaireAnswer
- * @property-read Collection|PollQuestionnaireSubjectChoice[] $pollQuestionnaireSubjectChoice
+ * @property-read Collection|PollQuestionnaireSubjectChoice[] $pollQuestionnaireSubjectChoices
  */
 class PollQuestionnaireSubject extends Model {
 
@@ -54,13 +54,10 @@ class PollQuestionnaireSubject extends Model {
         'created_at', 'updated_at'
     ];
     
-    const SINGLE = 0;
-    const MULTIPLE = 1;
-    const FILLBLANK = 2;
     const SUBJECT_TYPES = [
-        self::SINGLE => '单选',
-        self::MULTIPLE => '多选',
-        self::FILLBLANK => '填空'
+        0 => '单选',
+        1 => '多选',
+        2 => '填空'
     ];
 
     /**
@@ -75,7 +72,7 @@ class PollQuestionnaireSubject extends Model {
     /**
      * @return HasMany
      */
-    function pollQuestionnaireSubjectChoice() {
+    function pollQuestionnaireSubjectChoices() {
         
         return $this->hasMany("App\Models\PollQuestionnaireSubjectChoice", 'pqs_id', 'id');
         
@@ -91,6 +88,34 @@ class PollQuestionnaireSubject extends Model {
     }
     
     /**
+     * 保存调查问卷题目
+     *
+     * @param array $data
+     * @return bool
+     */
+    function store(array $data) {
+        
+        return $this->create($data) ? true: false;
+        
+    }
+    
+    /**
+     * 更新调查问卷题目
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    function modify(array $data, $id) {
+        
+        $pqs = $this->find($id);
+        if (!$pqs) { return false; }
+        
+        return $this->update($data);
+        
+    }
+    
+    /**
      * 删除问卷题目
      *
      * @param $id
@@ -99,10 +124,10 @@ class PollQuestionnaireSubject extends Model {
      */
     function remove($id) {
 
-        $pqSubject = $this->find($id);
-        if (!$pqSubject) { return false; }
+        $pqs = $this->find($id);
+        if (!$pqs) { return false; }
         
-        return $this->removable($pqSubject) ? $pqSubject->delete() : false;
+        return $this->removable($pqs) ? $pqs->delete() : false;
 
     }
     

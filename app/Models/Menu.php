@@ -491,11 +491,11 @@ class Menu extends Model {
             case '运营':
                 return !$subRoot ? $rootMId : ($smId ?? ($cmId ?? $rootMId));
             case '企业':
-                $departmentId = $user->departments->pluck('id')->toArray()[0];
+                $departmentId = $this->head($user);
                 $cmId = $cmId ?? Corp::whereDepartmentId($departmentId)->first()->menu_id;
                 return !$subRoot ? $cmId : ($smId ?? $cmId);
             case '学校':
-                $departmentId = $user->departments->pluck('id')->toArray()[0];
+                $departmentId = $this->head($user);
                 return $smId ?? School::whereDepartmentId($departmentId)->first()->menu_id;
             default:
                 return School::find($user->educator->school_id)->menu_id;

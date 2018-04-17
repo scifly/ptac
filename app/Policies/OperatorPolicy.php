@@ -66,7 +66,7 @@ class OperatorPolicy {
                     ? in_array($groupId, [$corpGroupId, $schoolGroupId])
                     : $groupId == $schoolGroupId;
                 if ($corpId) {
-                    $departmentId = $user->departments->pluck('id')->toArray()[0];
+                    $departmentId = $this->head($user);
                     $corp = Corp::whereDepartmentId($departmentId)->first();
                     $isCorpAllowed = $corpId == $corp->id;
                 }

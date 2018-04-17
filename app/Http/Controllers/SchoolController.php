@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SchoolRequest;
 use App\Models\School as School;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -23,6 +22,7 @@ class SchoolController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->school = $school;
+        $this->approve($school);
         
     }
     
@@ -52,10 +52,6 @@ class SchoolController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'cs', School::class
-        );
-        
         return $this->output();
         
     }
@@ -65,13 +61,8 @@ class SchoolController extends Controller {
      *
      * @param SchoolRequest $request
      * @return JsonResponse|string
-     * @throws AuthorizationException
      */
     public function store(SchoolRequest $request) {
-        
-        $this->authorize(
-            'cs', School::class
-        );
         
         return $this->result(
             $this->school->store(
@@ -90,11 +81,8 @@ class SchoolController extends Controller {
      */
     public function show($id) {
         
-        $school = $this->school->find($id);
-        $this->authorize('seu', $school);
-        
         return $this->output([
-            'school' => $school,
+            'school' => $this->school->find($id),
         ]);
         
     }
@@ -108,11 +96,8 @@ class SchoolController extends Controller {
      */
     public function edit($id) {
         
-        $school = School::find($id);
-        $this->authorize('seu', $school);
-        
         return $this->output([
-            'school' => $school,
+            'school' => School::find($id),
         ]);
         
     }
@@ -123,15 +108,13 @@ class SchoolController extends Controller {
      * @param SchoolRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(SchoolRequest $request, $id) {
         
-        $school = School::find($id);
-        $this->authorize('seu', $school);
-        
         return $this->result(
-            $school->modify($request->all(), $id, true)
+            $this->school->modify(
+                $request->all(), $id, true
+            )
         );
         
     }
@@ -145,10 +128,8 @@ class SchoolController extends Controller {
      */
     public function destroy($id) {
         
-        $school = School::find($id);
-        
         return $this->result(
-            $school->remove($id, true)
+            $this->school->remove($id, true)
         );
         
     }

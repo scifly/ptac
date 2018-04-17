@@ -23,6 +23,7 @@ class PollQuestionnaireSubjectChoiceController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->pqsc = $pqsc;
+        $this->approve($pqsc);
         
     }
     
@@ -52,10 +53,6 @@ class PollQuestionnaireSubjectChoiceController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'cs', PollQuestionnaireSubjectChoice::class
-        );
-        
         return $this->output();
         
     }
@@ -65,16 +62,13 @@ class PollQuestionnaireSubjectChoiceController extends Controller {
      *
      * @param PqChoiceRequest $request
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store(PqChoiceRequest $request) {
         
-        $this->authorize(
-            'cs', PollQuestionnaireSubjectChoice::class
-        );
-        
         return $this->result(
-            $this->pqsc->create($request->all())
+            $this->pqsc->store(
+                $request->all()
+            )
         );
         
     }
@@ -87,11 +81,8 @@ class PollQuestionnaireSubjectChoiceController extends Controller {
      */
     public function edit($id) {
         
-        $pqsc = $this->pqsc->find($id);
-        $this->authorize('eud', $pqsc);
-        
         return $this->output([
-            'pqsc' => $pqsc,
+            'pqsc' => $this->pqsc->find($id)
         ]);
         
     }
@@ -102,15 +93,13 @@ class PollQuestionnaireSubjectChoiceController extends Controller {
      * @param PqChoiceRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(PqChoiceRequest $request, $id) {
         
-        $pqsc = $this->pqsc->find($id);
-        $this->authorize('eud', $pqsc);
-        
         return $this->result(
-            $pqsc->update($request->all())
+            $this->pqsc->update(
+                $request->all(), $id
+            )
         );
         
     }
@@ -124,11 +113,8 @@ class PollQuestionnaireSubjectChoiceController extends Controller {
      */
     public function destroy($id) {
         
-        $pqsc = $this->pqsc->find($id);
-        $this->authorize('eud', $pqsc);
-        
         return $this->result(
-            $pqsc->delete()
+            $this->pqsc->remove($id)
         );
         
     }

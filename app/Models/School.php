@@ -76,13 +76,21 @@ use Illuminate\Support\Facades\Auth;
  */
 class School extends Model {
     
-    // todo: needs to be optimized
     use ModelTrait;
+
+    protected $menu;
     
     protected $fillable = [
         'name', 'address', 'school_type_id', 'menu_id', 'signature',
         'corp_id', 'department_id', 'enabled',
     ];
+    
+    function __construct(array $attributes = []) {
+        
+        parent::__construct($attributes);
+        $this->menu = app()->make('App\Models\Menu');
+    
+    }
     
     /**
      * 返回对应的部门对象
@@ -371,7 +379,7 @@ class School extends Model {
             ],
         ];
         # 仅在企业级显示学校列表
-        $rootMenuId = (new Menu())->rootMenuId(true);
+        $rootMenuId = $this->menu->rootMenuId(true);
         $condition = 'Corp.id = ' . Corp::whereMenuId($rootMenuId)->first()->id;
         
         return Datatable::simple(

@@ -43,6 +43,7 @@ class SchoolRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
+        # 保存 - store
         if (Request::method() == 'POST') {
             if (!isset($input['department_id'])) {
                 $input['department_id'] = 0;
@@ -50,6 +51,7 @@ class SchoolRequest extends FormRequest {
             if (!isset($input['menu_id'])) {
                 $input['menu_id'] = 0;
             }
+        # 更新 - update
         } else {
             $school = School::find(Request::input('id'));
             $input['department_id'] = $school->department_id;
@@ -59,7 +61,7 @@ class SchoolRequest extends FormRequest {
             $input['school_type_id'] = School::find($this->schoolId())->school_type_id;
         }
         if (!isset($input['corp_id'])) {
-            $departmentId = Auth::user()->departments->pluck('id')->toArray()[0];
+            $departmentId = $this->head(Auth::user());
             $input['corp_id'] = Corp::whereDepartmentId($departmentId)->first()->id;
         }
         $this->replace($input);

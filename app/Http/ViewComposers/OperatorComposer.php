@@ -33,7 +33,7 @@ class OperatorComposer {
         $groups = [];
         if (Request::route('id')) {
             $operator = User::find(Request::route('id'));
-            $departmentId = $operator->departments->pluck('id')->toArray()[0];
+            $departmentId = $this->head($operator);
         }
         switch ($rootMenu->menuType->name) {
             case '根':

@@ -88,40 +88,6 @@ class Subject extends Model {
     }
     
     /**
-     * 获取指定学校的科目列表
-     *
-     * @param $schoolId
-     * @return Collection
-     */
-    function subjects($schoolId) {
-        
-        return self::whereSchoolId($schoolId)->get()->pluck('id', 'name');
-        
-    }
-    
-    /**
-     * 获取指定成绩统计项包含的科目列表
-     *
-     * @param $ids
-     * @return array
-     */
-    function selectedSubjects($ids) {
-        
-        $ids = explode(',', $ids);
-        $selectedSubjects = [];
-        foreach ($ids as $id) {
-            if ($id == 0) {
-                $selectedSubjects[$id] = '总分';
-            } else {
-                $selectedSubjects[$id] = self::find($id)->name;
-            }
-        }
-        
-        return $selectedSubjects;
-        
-    }
-    
-    /**
      * 保存新的科目记录
      *
      * @param SubjectRequest $request

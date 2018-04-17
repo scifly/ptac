@@ -4,14 +4,15 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 
 /**
  * App\Models\ScoreRange 分数统计范围
@@ -64,9 +65,7 @@ class ScoreRange extends Model {
      */
     function store(array $data) {
         
-        $scoreRange = self::create($data);
-
-        return $scoreRange ? true : false;
+        return $this->create($data) ? true : false;
 
     }
 
@@ -79,10 +78,10 @@ class ScoreRange extends Model {
      */
     function modify(array $data, $id) {
         
-        $scoreRange = self::find($id);
-        if (!$scoreRange) { return false; }
+        $sr = self::find($id);
+        if (!$sr) { return false; }
 
-        return $scoreRange->update($data) ? true : false;
+        return $sr->update($data) ? true : false;
 
     }
     
@@ -95,10 +94,10 @@ class ScoreRange extends Model {
      */
     function remove($id) {
         
-        $scoreRange = self::find($id);
-        if (!$scoreRange) { return false; }
+        $sr = self::find($id);
+        if (!$sr) { return false; }
 
-        return self::removable($scoreRange) ? $scoreRange->delete() : false;
+        return self::removable($sr) ? $sr->delete() : false;
 
     }
     
@@ -134,11 +133,11 @@ class ScoreRange extends Model {
     /**
      * 按分数范围进行统计
      *
-     * @param $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    function stat($request) {
+    function stat() {
         
+        $request = Request::all();
         //查询班级
         if ($request['type'] == 'grade') {
             $classes = DB::table('classes')

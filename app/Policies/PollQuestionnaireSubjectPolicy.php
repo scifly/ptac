@@ -1,12 +1,15 @@
 <?php
 namespace App\Policies;
 
+use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\PolicyTrait;
+use App\Models\PollQuestionnaire;
 use App\Models\PollQuestionnaireSubject;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Request;
 
 class PollQuestionnaireSubjectPolicy {
     
@@ -36,24 +39,43 @@ class PollQuestionnaireSubjectPolicy {
         
     }
     
-    public function eud(User $user, PollQuestionnaireSubject $pqs) {
+    public function operation(User $user, PollQuestionnaireSubject $pqs = null, $abort = false) {
         
         abort_if(
-            !$pqs,
+            $abort && !$pqs,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        $role = $user->group->name;
-        switch ($role) {
-            case '运营':
-                return true;
-            case '企业':
-            case '学校':
-                return in_array($this->schoolId(), $this->schoolIds());
+        if ($user->group->name == '运营') { return true; }
+        $isPqsAllowed = $isPqAllowed = false;
+        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
+        $action = explode('/', Request::path())[1];
+        if (in_array($action, ['store', 'update'])) {
+            $pqId = Request::input('pq_id');
+            $allowedPqIds = PollQuestionnaire::whereSchoolId($this->schoolId())->pluck('id')->toArray();
+            $isPqAllowed = in_array($pqId, $allowedPqIds);
+        }
+        if (in_array($action, ['show', 'edit', 'update', 'delete'])) {
+            $isPqsAllowed = $pqs->pollQuestionnaire->school_id == $this->schoolId();
+        }
+        switch ($action) {
+            case 'index':
+            case 'create':
+                return $isSuperRole ? true : $this->action($user);
+            case 'store':
+                return $isSuperRole ? $isPqAllowed : ($isPqsAllowed && $this->action($user));
+            case 'show':
+            case 'edit':
+            case 'delete':
+                return $isSuperRole
+                    ? $isPqsAllowed
+                    : $this->action($user) && $isPqsAllowed && $pqs->pollQuestionnaire->user_id == $user->id;
+            case 'update':
+                return $isSuperRole
+                    ? $isPqsAllowed && $isPqAllowed
+                    : $this->action($user) && $isPqsAllowed && $isPqAllowed && $pqs->pollQuestionnaire->user_id == $user->id;
             default:
-                return in_array($this->schoolId(), $this->schoolIds())
-                    && $this->action($user)
-                    && ($user->id == $pqs->pollQuestionnaire->user_id);
+                return false;
         }
         
     }

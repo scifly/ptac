@@ -228,7 +228,7 @@ class Group extends Model {
             case '运营':
                 break;
             case '企业':
-                $departmentId = $user->departments->pluck('id')->toArray()[0];
+                $departmentId = $this->head($user);
                 $corpId = Corp::whereDepartmentId($departmentId)->first()->id;
                 $joins[] = [
                     'table' => 'corps',
@@ -241,7 +241,7 @@ class Group extends Model {
                 $condition .= 'AND Corp.id = ' . $corpId;
                 break;
             case '学校':
-                $departmentId = $user->departments->pluck('id')->toArray()[0];
+                $departmentId = $this->head($user);
                 $schoolId = School::whereDepartmentId($departmentId)->first()->id;
                 $condition .= 'AND School.id = ' . $schoolId;
                 break;

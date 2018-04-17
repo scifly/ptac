@@ -2,6 +2,7 @@
 namespace App\Policies;
 
 use App\Helpers\HttpStatusCode;
+use App\Helpers\ModelTrait;
 use App\Helpers\PolicyTrait;
 use App\Models\Corp;
 use App\Models\School;
@@ -11,7 +12,7 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 
 class WapSitePolicy {
     
-    use HandlesAuthorization, PolicyTrait;
+    use HandlesAuthorization, PolicyTrait, ModelTrait;
     
     /**
      * Create a new policy instance.
@@ -46,12 +47,12 @@ class WapSitePolicy {
             case '运营':
                 return true;
             case '企业':
-                $departmentId = $user->departments->pluck('id')->toArray()[0];
+                $departmentId = $this->head($user);
                 $corp = Corp::whereDepartmentId($departmentId)->first();
                 $schooldIds = School::whereCorpId($corp->id)->pluck('id')->toArray();
                 return in_array($ws->school_id, $schooldIds);
             case '学校':
-                $departmentId = $user->departments->pluck('id')->toArray()[0];
+                $departmentId = $this->head($user);
                 $school = School::whereDepartmentId($departmentId)->first();
                 return $ws->school_id == $school->id;
             default:

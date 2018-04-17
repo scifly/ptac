@@ -58,12 +58,6 @@
                     'items' => $corps
                 ])
             @endif
-            {{--@if (isset($school['department_id']))--}}
-                {{--{!! Form::hidden('department_id', $school['department_id']) !!}--}}
-            {{--@endif--}}
-            {{--@if (isset($school['menu_id']))--}}
-                {{--{!! Form::hidden('menu_id', $school['menu_id']) !!}--}}
-            {{--@endif--}}
             @include('partials.enabled', [
                 'id' => 'enabled',
                 'value' => $school['enabled'] ?? null

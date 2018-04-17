@@ -19,16 +19,18 @@ class ProcedureTypePolicy {
         //
     }
     
-    public function cs(User $user) {
-        
-        return $user->group->name == '运营';
-        
-    }
-    
-    public function eud(User $user, ProcedureType $pt) {
+    /**
+     *
+     *
+     * @param User $user
+     * @param ProcedureType|null $pt
+     * @param bool $abort
+     * @return bool
+     */
+    public function operation(User $user, ProcedureType $pt = null, $abort = false) {
         
         abort_if(
-            !$pt,
+            $abort && !$pt,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
