@@ -31,6 +31,7 @@ use App\Models\PollQuestionnaireSubjectChoice;
 use App\Models\ProcedureType;
 use App\Models\School;
 use App\Models\SchoolType;
+use App\Models\ScoreRange;
 use App\Models\Squad;
 use App\Models\Student;
 use App\Models\StudentAttendance;
@@ -75,6 +76,7 @@ use App\Policies\ProcedureTypePolicy;
 use App\Policies\Route;
 use App\Policies\SchoolPolicy;
 use App\Policies\SchoolTypePolicy;
+use App\Policies\ScoreRangePolicy;
 use App\Policies\SquadPolicy;
 use App\Policies\StudentAttendancePolicy;
 use App\Policies\StudentAttendanceSettingPolicy;
@@ -127,6 +129,7 @@ class AuthServiceProvider extends ServiceProvider {
         ProcedureType::class => ProcedureTypePolicy::class,
         School::class => SchoolPolicy::class,
         SchoolType::class => SchoolTypePolicy::class,
+        ScoreRange::class => ScoreRangePolicy::class,
         Squad::class => SquadPolicy::class,
         StudentAttendanceSetting::class => StudentAttendanceSettingPolicy::class,
         Student::class => StudentPolicy::class,

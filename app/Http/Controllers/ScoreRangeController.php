@@ -20,8 +20,7 @@ use Throwable;
  */
 class ScoreRangeController extends Controller {
     
-    protected $sr;
-    protected $subject;
+    protected $sr, $subject;
     
     function __construct(ScoreRange $sr, Subject $subject) {
         
