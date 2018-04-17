@@ -73,7 +73,7 @@
                     'id' => 'corp_id',
                     'label' => '所属企业',
                     'items' => $corps,
-                    'icon' => 'fa fa-weixin',
+                    'icon' => 'fa fa-weixin text-green',
                     'divId' => 'corp'
                 ])
             @else
@@ -83,7 +83,9 @@
                     ]) !!}
                     <div class="col-sm-6">
                         <div class="input-group">
-                            @include('partials.icon_addon', ['class' => 'fa-weixin'])
+                            @include('partials.icon_addon', [
+                                'class' => 'fa-weixin text-green'
+                            ])
                         </div>
                     </div>
                 </div>
@@ -94,7 +96,7 @@
                     'id' => 'school_id',
                     'label' => '所属学校',
                     'items' => $schools,
-                    'icon' => 'fa fa-university',
+                    'icon' => 'fa fa-university text-purple',
                     'divId' => 'school'
                 ])
             @else
@@ -104,7 +106,9 @@
                     ]) !!}
                     <div class="col-sm-6">
                         <div class="input-group">
-                            @include('partials.icon_addon', ['class' => 'fa-university'])
+                            @include('partials.icon_addon', [
+                                'class' => 'fa-university text-purple'
+                            ])
                         </div>
                     </div>
                 </div>

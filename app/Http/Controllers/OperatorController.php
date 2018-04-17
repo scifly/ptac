@@ -86,12 +86,12 @@ class OperatorController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-        
-        $user = $this->user->find($id);
+    
         if (Request::method() == 'POST') {
             return $this->user->csList();
         }
-
+        $user = $this->user->find($id);
+    
         return $this->output([
             'user' => $user,
             'mobiles' => $user->mobiles
