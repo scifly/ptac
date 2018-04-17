@@ -16,27 +16,26 @@
                         <div class="form-group">
                             @if(isset($examarr))
                                 @include('partials.single_select', [
-                                        'id' => 'exam',
-                                        'label' => '选择考试',
-                                        'items' => $examarr
-                                    ])
+                                    'id' => 'exam',
+                                    'label' => '选择考试',
+                                    'items' => $examarr
+                                ])
                             @endif
                         </div>
                         <!-- 班级 -->
                         <div class="form-group">
                             @if(isset($classes))
                                 @include('partials.single_select', [
-                                        'id' => 'classId',
-                                        'label' => '班级',
-                                        'items' => $classes
-                                    ])
+                                    'id' => 'classId',
+                                    'label' => '班级',
+                                    'items' => $classes
+                                ])
                             @endif
                         </div>
                         <div class="form-group">
                             {{ Form::label('import', '选择导入文件', [
                                 'class' => 'control-label col-sm-3'
                             ]) }}
-
                             <div class="col-sm-6">
                                 <input type="file" id="fileupload" accept=".xls,.xlsx" name="file">
                                 <p class="help-block">下载<a href="javascript:void(0)">模板</a></p>
@@ -67,10 +66,10 @@
                     <div class="form-group">
                         @if(isset($examarr))
                             @include('partials.single_select', [
-                                    'id' => 'exam-sta',
-                                    'label' => '选择考试',
-                                    'items' => $examarr
-                                ])
+                                'id' => 'exam-sta',
+                                'label' => '选择考试',
+                                'items' => $examarr
+                            ])
                         @endif
                     </div>
                 </div>

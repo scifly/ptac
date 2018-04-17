@@ -8,7 +8,6 @@
 	            <i class="fa fa-close " id="close-send"></i>
 	        </div>
 		</div>
-
 		<div class="row" style="margin-top: 20px;">
 			<div class="form-horizontal">
 				<div class="col-md-6">
@@ -23,7 +22,6 @@
 					    </div>
 					</div>
 			   	</div>
-
 			   	<div class="col-md-6">
 				    <div class="form-group">
 					    <div class="col-sm-12">

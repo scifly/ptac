@@ -149,14 +149,7 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function send() {
-//        $score = new Score();
-//        $exam = 1;
-//        $squad = 1;
-//        $subject = [1,2];
-//        $project = ['class_rank', 'grade_average', 'class_average'];
-//
-//        $result = $score->scores($exam, $squad, $subject, $project);
-//        return response()->json($result);die;
+        
         if (Request::method() === 'POST') {
             $exam = Request::input('exam');
             $squad = Request::input('squad');

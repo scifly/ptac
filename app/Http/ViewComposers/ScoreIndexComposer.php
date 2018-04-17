@@ -66,8 +66,8 @@ class ScoreIndexComposer {
                     'label' => '批量导入',
                     'icon'  => 'fa fa-arrow-circle-up',
                 ],
-                'statistics' => [
-                    'id'    => 'statistics',
+                'stat' => [
+                    'id'    => 'stat',
                     'label' => ' 排名统计',
                     'icon'  => 'fa fa-bar-chart-o',
                 ],
