@@ -497,7 +497,9 @@ var page = {
             $.getMultiScripts([plugins.select2.js])
                 .done(function () {
                     $.getMultiScripts([plugins.select2.jscn]).done(function () {
-                        $('select').select2(typeof options !== 'undefined' ? options : {language: "zh-CN"});
+                        $('select').select2(
+                            typeof options !== 'undefined' ? options : {language: "zh-CN"}
+                        );
                     });
                 });
         } else {

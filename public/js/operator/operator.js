@@ -104,12 +104,15 @@
                         field: field,
                         value: value
                     },
-                    url: page.siteRoot() + 'operators/' + action + (action === 'edit' ? '/' + $('#id').val() : ''),
+                    url: page.siteRoot() + operator.options.table + '/' + action + (action === 'edit' ? '/' + $('#id').val() : ''),
                     success: function (result) {
                         if (field === operator.options.groupId) {
                             var $corpId = $('#' + operator.options.corpId);
                             if ($corpId.length === 0) {
                                 $corp.find('.input-group').append(result['corpList']);
+                                if ($corpId.find('option').length <= 1) {
+                                    $corpId.prop('disabled', true);
+                                }
                                 $corpId.select2();
                             }
                             $school.find('.input-group').append(result['schoolList']);
@@ -121,6 +124,9 @@
                             $next.remove();
                             $schoolId.remove();
                             $prev.after(result['schoolList']);
+                            if ($schoolId.find('option').length <= 1) {
+                                $schoolId.prop('disabled', true);
+                            }
                             page.initSelect2();
                         }
                         $('.overlay').hide();

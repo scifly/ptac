@@ -61,7 +61,7 @@
                             dataType: 'json',
                             data: function (node) {
                                 return {
-                                    rootId: node.id,
+                                    id: node.id,
                                     _token: group.token()
                                 }
                             }
