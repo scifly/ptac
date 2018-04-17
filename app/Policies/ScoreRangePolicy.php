@@ -24,7 +24,15 @@ class ScoreRangePolicy {
         //
     }
     
-    function operation(User $user, ScoreRange $sr, $abort = false) {
+    /**
+     * 权限判断
+     *
+     * @param User $user
+     * @param ScoreRange|null $sr
+     * @param bool $abort
+     * @return bool
+     */
+    function operation(User $user, ScoreRange $sr = null, $abort = false) {
         
         abort_if(
             $abort && !$sr,
