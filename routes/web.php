@@ -126,8 +126,8 @@ Route::group(['prefix' => 'consumptions'], function () {
 Route::group(['prefix' => 'score_ranges'], routes('ScoreRangeController'));
 Route::group(['prefix' => 'score_ranges'], function () {
     $c = 'ScoreRangeController';
-    Route::get('show_statistics', $c . '@showStatistics');
-    Route::post('statistics', $c . '@statistics');
+    Route::get('stat', $c . '@stat');
+    Route::post('stat', $c . '@stat');
 });
 # 成绩统计/打印
 # 成绩发布
