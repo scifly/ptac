@@ -22,6 +22,7 @@ class AttendanceMachineController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->am = $am;
+        $this->approve($am);
         
     }
     
@@ -51,10 +52,6 @@ class AttendanceMachineController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'c', AttendanceMachine::class
-        );
-        
         return $this->output();
         
     }
@@ -64,16 +61,13 @@ class AttendanceMachineController extends Controller {
      *
      * @param AttendanceMachineRequest $request
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store(AttendanceMachineRequest $request) {
         
-        $this->authorize(
-            'c', AttendanceMachine::class
-        );
-        
         return $this->result(
-            $this->am->create($request->all())
+            $this->am->store(
+                $request->all()
+            )
         );
         
     }
@@ -87,10 +81,9 @@ class AttendanceMachineController extends Controller {
      */
     public function edit($id) {
         
-        $am = $this->am->find($id);
-        $this->authorize('rud', $am);
-        
-        return $this->output(['am' => $am]);
+        return $this->output([
+            'am' => $this->am->find($id)
+        ]);
         
     }
     
@@ -100,15 +93,13 @@ class AttendanceMachineController extends Controller {
      * @param AttendanceMachineRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(AttendanceMachineRequest $request, $id) {
         
-        $am = $this->am->find($id);
-        $this->authorize('rud', $am);
-        
         return $this->result(
-            $am->update($request->all())
+            $this->am->modify(
+                $request->all(), $id
+            )
         );
         
     }
@@ -122,10 +113,9 @@ class AttendanceMachineController extends Controller {
      */
     public function destroy($id) {
         
-        $am = $this->am->find($id);
-        $this->authorize('rud', $am);
-        
-        return $this->result($am->delete());
+        return $this->result(
+            $this->am->remove($id)
+        );
         
     }
     

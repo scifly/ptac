@@ -1,12 +1,14 @@
 <?php
 namespace App\Policies;
 
+use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\PolicyTrait;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Request;
 
 class CommonPolicy {
     
@@ -20,7 +22,7 @@ class CommonPolicy {
     public function __construct() { }
     
     /**
-     * (r)ead, (u)pdate, (d)elete
+     * 公用权限判断
      *
      * @param User $user
      * @param Model $model
@@ -34,15 +36,22 @@ class CommonPolicy {
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        $schoolId = $model->{'school_id'} ?? null;
-        switch ($user->group->name) {
-            case '运营':
-            case '企业':
-            case '学校':
-                return in_array($schoolId, $this->schoolIds());
+        if ($user->group->name == '运营') { return true; }
+        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
+        $action = explode('/', Request::path())[1];
+        switch ($action) {
+            case 'index':
+            case 'create':
+            case 'store':
+                return $isSuperRole ? true : $this->action($user);
+            case 'show':
+            case 'edit':
+            case 'update':
+            case 'delete':
+                $isModelAllowed = in_array($model->{'school_id'}, $this->schoolIds());
+                return $isSuperRole ? $isModelAllowed : ($isModelAllowed && $this->action($user));
             default:
-                return ($user->educator->school_id == $this->schoolId())
-                    && $this->action($user);
+                return false;
         }
         
     }

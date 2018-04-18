@@ -7,11 +7,13 @@ use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use ReflectionException;
 
 /**
  * App\Models\Semester 学期
@@ -62,6 +64,51 @@ class Semester extends Model {
     function studentAttendanceSettings() { 
         
         return $this->hasMany('App\Models\StudentAttendanceSetting'); 
+        
+    }
+    
+    /**
+     * 创建学期
+     *
+     * @param array $data
+     * @return bool
+     */
+    function store(array $data) {
+        
+        return self::create($data) ? true : false;
+        
+    }
+    
+    /**
+     * 更新学期
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    function modify(array $data, $id) {
+        
+        $semester = $this->find($id);
+        if (!$semester) { return false; }
+        
+        return $this->update($data);
+        
+    }
+    
+    /**
+     * 删除学期
+     *
+     * @param $id
+     * @return bool|null
+     * @throws Exception
+     * @throws ReflectionException
+     */
+    function remove($id) {
+        
+        $semester = self::find($id);
+        if (!$semester) { return false; }
+        
+        return $this->removable($semester) ? $semester->delete() : false;
         
     }
     

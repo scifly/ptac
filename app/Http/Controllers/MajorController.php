@@ -22,6 +22,7 @@ class MajorController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->major = $major;
+        $this->approve($major);
         
     }
     
@@ -81,7 +82,6 @@ class MajorController extends Controller {
     public function edit($id) {
         
         $major = Major::find($id);
-        $this->authorize('rud', $major);
         $majorSubjects = $major->subjects;
         $selectedSubjects = [];
         foreach ($majorSubjects as $subject) {
@@ -106,11 +106,10 @@ class MajorController extends Controller {
      */
     public function update(MajorRequest $request, $id) {
         
-        $major = Major::find($id);
-        $this->authorize('rud', $major);
-        
         return $this->result(
-            $major->modify($request, $id)
+            $this->major->modify(
+                $request, $id
+            )
         );
         
     }
@@ -125,11 +124,8 @@ class MajorController extends Controller {
      */
     public function destroy($id) {
         
-        $major = Major::find($id);
-        $this->authorize('rud', $major);
-        
         return $this->result(
-            $major->remove($id)
+            $this->major->remove($id)
         );
         
     }

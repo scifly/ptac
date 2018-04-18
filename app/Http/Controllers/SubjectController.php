@@ -26,6 +26,7 @@ class SubjectController extends Controller {
         $this->subject = $subject;
         $this->major = $major;
         $this->grade = $grade;
+        $this->approve($subject);
         
     }
     
@@ -55,10 +56,6 @@ class SubjectController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'c', Subject::class
-        );
-        
         return $this->output([
             'majors' => $this->major->majorList(),
             'grades' => $this->grade->gradeList(),
@@ -76,10 +73,6 @@ class SubjectController extends Controller {
      */
     public function store(SubjectRequest $request) {
         
-        $this->authorize(
-            'c', Subject::class
-        );
-        
         return $this->result(
             $this->subject->store($request)
         );
@@ -96,7 +89,6 @@ class SubjectController extends Controller {
     public function edit($id) {
         
         $subject = Subject::find($id);
-        $this->authorize('rud', $subject);
         $gradeIds = explode(',', $subject['grade_ids']);
         $selectedGrades = [];
         foreach ($gradeIds as $gradeId) {
@@ -129,10 +121,9 @@ class SubjectController extends Controller {
      */
     public function update(SubjectRequest $request, $id) {
         
-        $subject = Subject::find($id);
-        $this->authorize('rud', $subject);
-        
-        return $this->result($subject->modify($request, $id));
+        return $this->result(
+            $this->subject->modify($request, $id)
+        );
         
     }
     
@@ -146,10 +137,9 @@ class SubjectController extends Controller {
      */
     public function destroy($id) {
         
-        $subject = Subject::find($id);
-        $this->authorize('rud', $subject);
-        
-        return $this->result($subject->remove($id));
+        return $this->result(
+            $this->subject->remove($id)
+        );
         
     }
     

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProcedureTypeRequest;
 use App\Models\ProcedureType;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -23,6 +22,7 @@ class ProcedureTypeController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->pt = $pt;
+        $this->approve($pt);
         
     }
     
@@ -52,10 +52,6 @@ class ProcedureTypeController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'cs', ProcedureType::class
-        );
-        
         return $this->output();
         
     }
@@ -65,13 +61,8 @@ class ProcedureTypeController extends Controller {
      *
      * @param ProcedureTypeRequest $request
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store(ProcedureTypeRequest $request) {
-        
-        $this->authorize(
-            'cs', ProcedureType::class
-        );
         
         return $this->result(
             $this->pt->store($request->all())
@@ -88,11 +79,8 @@ class ProcedureTypeController extends Controller {
      */
     public function edit($id) {
         
-        $pt = ProcedureType::find($id);
-        $this->authorize('cs', $pt);
-        
         return $this->output([
-            'pt' => $pt,
+            'pt' => ProcedureType::find($id),
         ]);
         
     }
@@ -103,15 +91,13 @@ class ProcedureTypeController extends Controller {
      * @param ProcedureTypeRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(ProcedureTypeRequest $request, $id) {
         
-        $pt = ProcedureType::find($id);
-        $this->authorize('cs', $pt);
-        
         return $this->result(
-            $pt->modify($request->all(), $id)
+            $this->pt->modify(
+                $request->all(), $id
+            )
         );
         
     }
@@ -125,11 +111,8 @@ class ProcedureTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $pt = ProcedureType::find($id);
-        $this->authorize('cs', $pt);
-        
         return $this->result(
-            $pt->remove($id)
+            $this->pt->remove($id)
         );
         
     }

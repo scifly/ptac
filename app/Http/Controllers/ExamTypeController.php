@@ -22,6 +22,7 @@ class ExamTypeController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->et = $et;
+        $this->approve($et);
         
     }
     
@@ -51,10 +52,6 @@ class ExamTypeController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'c', ExamType::class
-        );
-        
         return $this->output();
         
     }
@@ -64,13 +61,8 @@ class ExamTypeController extends Controller {
      *
      * @param ExamTypeRequest $request
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store(ExamTypeRequest $request) {
-        
-        $this->authorize(
-            'c', ExamType::class
-        );
         
         return $this->result(
             $this->et->store($request->all())
@@ -87,11 +79,8 @@ class ExamTypeController extends Controller {
      */
     public function edit($id) {
         
-        $et = ExamType::find($id);
-        $this->authorize('rud', $et);
-        
         return $this->output([
-            'et' => $et,
+            'et' => ExamType::find($id)
         ]);
         
     }
@@ -102,15 +91,11 @@ class ExamTypeController extends Controller {
      * @param ExamTypeRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(ExamTypeRequest $request, $id) {
         
-        $et = ExamType::find($id);
-        $this->authorize('rud', $et);
-        
         return $this->result(
-            $et->modify($request->all(), $id)
+            $this->et->modify($request->all(), $id)
         );
         
     }
@@ -124,11 +109,8 @@ class ExamTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $et = ExamType::find($id);
-        $this->authorize('rud', $et);
-        
         return $this->result(
-            $et->remove($id)
+            $this->et->remove($id)
         );
         
     }

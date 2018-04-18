@@ -23,6 +23,7 @@ class TeamController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->team = $team;
+        $this->approve($team);
         
     }
     
@@ -52,10 +53,6 @@ class TeamController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'c', Team::class
-        );
-        
         return $this->output();
         
     }
@@ -65,16 +62,13 @@ class TeamController extends Controller {
      *
      * @param TeamRequest $request
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store(TeamRequest $request) {
         
-        $this->authorize(
-            'c', Team::class
-        );
-        
         return $this->result(
-            $this->team->create($request->all())
+            $this->team->store(
+                $request->all()
+            )
         );
         
     }
@@ -88,11 +82,8 @@ class TeamController extends Controller {
      */
     public function edit($id) {
         
-        $team = Team::find($id);
-        $this->authorize('rud', $team);
-        
         return $this->output([
-            'team' => $team,
+            'team' => Team::find($id),
         ]);
         
     }
@@ -103,15 +94,13 @@ class TeamController extends Controller {
      * @param TeamRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(TeamRequest $request, $id) {
         
-        $team = Team::find($id);
-        $this->authorize('rud', $team);
-        
         return $this->result(
-            $team->update($request->all())
+            $this->team->update(
+                $request->all(), $id
+            )
         );
         
     }
@@ -125,11 +114,8 @@ class TeamController extends Controller {
      */
     public function destroy($id) {
         
-        $team = Team::find($id);
-        $this->authorize('rud', $team);
-        
         return $this->result(
-            $team->remove($id)
+            $this->team->remove($id)
         );
         
     }

@@ -6,9 +6,11 @@ use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use ReflectionException;
 
 /**
  * App\Models\ComboType 套餐类型
@@ -52,6 +54,52 @@ class ComboType extends Model {
      * @return BelongsTo
      */
     function school() { return $this->belongsTo('App\Models\school'); }
+    
+    /**
+     * 保存套餐类型
+     *
+     * @param array $data
+     * @return bool
+     */
+    function store(array $data) {
+        
+        return $this->create($data) ? true : false;
+        
+    }
+    
+    /**
+     * 更新套餐类型
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    function modify(array $data, $id) {
+        
+        $ct = $this->find($id);
+        if (!$ct) { return false; }
+        
+        return $this->update($data);
+        
+    }
+    
+    /**
+     * 移除套餐类型
+     *
+     * @param $id
+     * @return bool|null
+     * @throws ReflectionException
+     * @throws Exception
+     */
+    function remove($id) {
+        
+        $ct = $this->find($id);
+        if (!$ct) { return false; }
+        
+        return $this->removable($ct) ? $ct->delete() : false;
+        
+    }
+    
     
     /**
      * 套餐类型列表

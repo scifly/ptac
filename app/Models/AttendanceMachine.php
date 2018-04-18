@@ -7,10 +7,12 @@ use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use ReflectionException;
 
 /**
  * App\Models\AttendanceMachine 考勤机
@@ -59,6 +61,51 @@ class AttendanceMachine extends Model {
      * @return HasMany
      */
     function studentAttendances() { return $this->hasMany('App\Models\StudentAttendance'); }
+    
+    /**
+     * 保存考勤机
+     *
+     * @param array $data
+     * @return bool
+     */
+    function store(array $data) {
+        
+        return $this->create($data) ? true : false;
+        
+    }
+    
+    /**
+     * 更新考勤机
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    function modify(array $data, $id) {
+        
+        $am = $this->find($id);
+        if (!$am) { return false; }
+        
+        return $this->update($data);
+        
+    }
+    
+    /**
+     * 移除考勤机
+     *
+     * @param $id
+     * @return bool|null
+     * @throws ReflectionException
+     * @throws Exception
+     */
+    function remove($id) {
+    
+        $am = $this->find($id);
+        if (!$am) { return false; }
+    
+        return $this->removable($am) ? $am->delete() : false;
+    
+    }
     
     /**
      * 考勤机列表

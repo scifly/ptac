@@ -7,11 +7,13 @@ use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use ReflectionException;
 
 /**
  * App\Models\EducatorAttendanceSetting 教职员工考勤设置
@@ -72,6 +74,39 @@ class EducatorAttendanceSetting extends Model {
     function store(array $data) {
         
         return $this->create($data) ? true : false;
+        
+    }
+    
+    /**
+     * 更新教职员工考勤设置
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    function modify(array $data, $id) {
+        
+        $eas = $this->find($id);
+        if (!$eas) { return false; }
+        
+        return $this->update($data);
+        
+    }
+    
+    /**
+     * 移除教职员工考勤设置
+     *
+     * @param $id
+     * @return bool|null
+     * @throws ReflectionException
+     * @throws Exception
+     */
+    function remove($id) {
+    
+        $eas = $this->find($id);
+        if (!$eas) { return false; }
+    
+        return $this->removable($eas) ? $eas->delete() : false;
         
     }
 

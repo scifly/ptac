@@ -36,6 +36,7 @@ use App\Models\Squad;
 use App\Models\Student;
 use App\Models\StudentAttendance;
 use App\Models\StudentAttendanceSetting;
+use App\Models\Subject;
 use App\Models\SubjectModule;
 use App\Models\Tab;
 use App\Models\User;
@@ -82,6 +83,7 @@ use App\Policies\StudentAttendancePolicy;
 use App\Policies\StudentAttendanceSettingPolicy;
 use App\Policies\StudentPolicy;
 use App\Policies\SubjectModulePolicy;
+use App\Policies\SubjectPolicy;
 use App\Policies\TabPolicy;
 use App\Policies\WapSitePolicy;
 use Illuminate\Database\Eloquent\Model;
@@ -134,6 +136,7 @@ class AuthServiceProvider extends ServiceProvider {
         StudentAttendanceSetting::class => StudentAttendanceSettingPolicy::class,
         Student::class => StudentPolicy::class,
         SubjectModule::class => SubjectModulePolicy::class,
+        Subject::class => SubjectPolicy::class,
         Tab::class => TabPolicy::class,
         StudentAttendance::class => StudentAttendancePolicy::class,
         Student::class => StudentPolicy::class,

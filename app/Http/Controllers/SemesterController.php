@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SemesterRequest;
 use App\Models\Semester;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -23,6 +22,7 @@ class SemesterController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->semester = $semester;
+        $this->approve($semester);
         
     }
     
@@ -52,10 +52,6 @@ class SemesterController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'c', Semester::class
-        );
-        
         return $this->output();
         
     }
@@ -65,16 +61,13 @@ class SemesterController extends Controller {
      *
      * @param SemesterRequest $request
      * @return JsonResponse|string
-     * @throws AuthorizationException
      */
     public function store(SemesterRequest $request) {
         
-        $this->authorize(
-            'c', Semester::class
-        );
-        
         return $this->result(
-            Semester::create($request->all())
+            $this->semester->store(
+                $request->all()
+            )
         );
         
     }
@@ -88,10 +81,9 @@ class SemesterController extends Controller {
      */
     public function edit($id) {
         
-        $semester = Semester::find($id);
-        $this->authorize('rud', $semester);
-        
-        return $this->output(['semester' => $semester]);
+        return $this->output([
+            'semester' => $this->semester->find($id)
+        ]);
         
     }
     
@@ -101,15 +93,13 @@ class SemesterController extends Controller {
      * @param SemesterRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(SemesterRequest $request, $id) {
         
-        $semester = Semester::find($id);
-        $this->authorize('rud', $semester);
-        
         return $this->result(
-            $semester->update($request->all())
+            $this->semester->modify(
+                $request->all(), $id
+            )
         );
         
     }
@@ -123,11 +113,8 @@ class SemesterController extends Controller {
      */
     public function destroy($id) {
         
-        $semester = Semester::find($id);
-        $this->authorize('rud', $semester);
-        
         return $this->result(
-            $semester->delete()
+            $this->semester->remove($id)
         );
         
     }

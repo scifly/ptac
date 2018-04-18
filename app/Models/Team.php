@@ -73,6 +73,34 @@ class Team extends Model {
     }
     
     /**
+     * 保存教职员工组
+     *
+     * @param array $data
+     * @return bool
+     */
+    function store(array $data) {
+        
+        return $this->create($data) ? true : false;
+        
+    }
+    
+    /**
+     * 更新教职员工组
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    function modify(array $data, $id) {
+        
+        $team = $this->find($id);
+        if (!$team) { return false; }
+        
+        return $this->update($data);
+        
+    }
+    
+    /**
      * 删除教职员工组
      *
      * @param $id
@@ -80,12 +108,11 @@ class Team extends Model {
      * @throws Exception
      */
     function remove($id) {
-        
+    
         $team = $this->find($id);
         if (!$team) { return false; }
-        $removed = $team->removable($team) ? $team->delete() : false;
-        
-        return $removed ?? false;
+    
+        return $this->removable($team) ? $team->delete() : false;
         
     }
     

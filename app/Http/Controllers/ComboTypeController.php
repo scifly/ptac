@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ComboTypeRequest;
 use App\Models\ComboType;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -23,6 +22,7 @@ class ComboTypeController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->ct = $ct;
+        $this->approve($ct);
         
     }
     
@@ -52,10 +52,6 @@ class ComboTypeController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'c', ComboType::class
-        );
-        
         return $this->output();
         
     }
@@ -65,16 +61,13 @@ class ComboTypeController extends Controller {
      *
      * @param ComboTypeRequest $request
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store(ComboTypeRequest $request) {
         
-        $this->authorize(
-            'c', ComboType::class
-        );
-        
         return $this->result(
-            ComboType::create($request->all())
+            $this->ct->store(
+                $request->all()
+            )
         );
         
     }
@@ -88,10 +81,9 @@ class ComboTypeController extends Controller {
      */
     public function edit($id) {
         
-        $ct = $this->ct->find($id);
-        $this->authorize('rud', $ct);
-        
-        return $this->output(['ct' => $ct]);
+        return $this->output([
+            'ct' => $this->ct->find($id)
+        ]);
         
     }
     
@@ -101,15 +93,13 @@ class ComboTypeController extends Controller {
      * @param ComboTypeRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(ComboTypeRequest $request, $id) {
         
-        $ct = $this->ct->find($id);
-        $this->authorize('rud', $ct);
-        
         return $this->result(
-            $ct->update($request->all())
+            $this->ct->modify(
+                $request->all(), $id
+            )
         );
         
     }
@@ -123,10 +113,9 @@ class ComboTypeController extends Controller {
      */
     public function destroy($id) {
         
-        $ct = $this->ct->find($id);
-        $this->authorize('rud', $ct);
-        
-        return $this->result($ct->delete());
+        return $this->result(
+            $this->ct->remove($id)
+        );
         
     }
     
