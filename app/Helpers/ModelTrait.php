@@ -419,7 +419,8 @@ trait ModelTrait {
      */
     function singleSelectList(array $items, $id) {
         
-        $html = '<select class="form-control select2" id="%s" name="%s" style="width: %s">';
+        $html = '<select class="form-control select2" id="%s" name="%s" style="width: %s"' .
+            (sizeof($items) <=1 ? ' disabled ' : '') . '>';
         foreach ($items as $key => $value) {
             $html .= '<option value="' . $key . '">' . $value . '</option>';
         }
