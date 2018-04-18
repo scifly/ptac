@@ -26,6 +26,7 @@ class StudentController extends Controller {
         $this->middleware(['auth', 'checkrole']);
         $this->student = $student;
         $this->grade = $grade;
+        $this->approve($student);
         
     }
     
@@ -215,15 +216,11 @@ class StudentController extends Controller {
     /**
      * 导出学籍
      *
-     * @throws AuthorizationException
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function export() {
         
-        $this->authorize(
-            'csie', Student::class
-        );
         if (Request::method() === 'POST') {
             list($classes) = $this->grade->classList(
                 Request::input('id')

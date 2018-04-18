@@ -8,6 +8,7 @@ use App\Helpers\PolicyTrait;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Request;
 
 class StudentPolicy {
     
@@ -41,6 +42,7 @@ class StudentPolicy {
      *
      * @param User $user
      * @param Student $student
+     * @param bool $abort
      * @return bool
      */
     public function operation(User $user, Student $student = null, $abort = false) {
@@ -50,17 +52,13 @@ class StudentPolicy {
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
+        if ($user->group->name == '运营') { return true; }
+        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
+        $action = explode('/', Request::path())[1];
+        if (in_array($action, ['export'])) {
         
-        $role = $user->group->name;
-        switch ($role) {
-            case '运营':
-                return true;
-            case '企业':
-            case '学校':
-                return in_array($student->id, $this->contactIds('student'));
-            default:
-                return in_array($student->id, $this->contactIds('student')) && $this->action($user);
         }
+        
         
     }
     

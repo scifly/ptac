@@ -368,7 +368,11 @@ class Student extends Model {
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     function export($range, $id = null) {
-        
+
+        abort_if(
+            !in_array($range, [0, 1, 2]),
+            
+        )
         $students = null;
         switch ($range) {
             case self::EXPORT_RANGES['class']:

@@ -36,9 +36,15 @@ class TestController extends Controller {
         '/wap_sites/update/%s',
     ];
     
+    const EXPORT_RANGES = [
+        'class' => 0,
+        'grade' => 1,
+        'all'   => 2
+    ];
+    
     public function index(Request $request) {
 
-        dd(bcrypt('123654'));
+        dd(array_values(self::EXPORT_RANGES));
         $names = ['运营', '企业', '学校'];
         $arrs = array_map(function ($name) {
             return [$name => Group::whereName($name)->first()->id];
