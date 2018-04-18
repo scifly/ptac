@@ -160,7 +160,7 @@ class StudentAttendance extends Model {
             'start_date' => 'required|date',
             'end_date' => 'required|date|greater_than_or_equal_to:start_date'
         ]);
-        $classId = Request::input('class_id') ?? $this->classIds()[0];
+        $classId = Request::input('class_id') ?? head($this->classIds());
         $startDate = Request::input('start_date') ?? date('Y-m-d', strtotime('-7 day'));
         $endDate = Request::input('end_date') ?? date('Y-m-d');
         $days = Carbon::createFromTimestamp(strtotime($startDate))->diffInDays(
@@ -766,9 +766,10 @@ class StudentAttendance extends Model {
     private function defcharts($classIds, $data) {
         
         #如果条件为空 默认当天 该老师对应的第一个班级，第一个规则
-        $class = Squad::whereId($classIds[0])->first();
+        $class = Squad::whereId(head($classIds))->first();
         $grade = $class->grade;
-        $schoolSemesters = Semester::whereSchoolId($grade->school_id)->where('enabled', 1)->get();
+        $schoolSemesters = Semester::whereSchoolId($grade->school_id)
+            ->where('enabled', 1)->get();
         $students = $class->students;
         $studentIds = [];
         $date = date('Y-m-d', time());
@@ -833,7 +834,7 @@ class StudentAttendance extends Model {
             ->orderBy('punch_time', 'ASC')
             ->get()->groupBy('inorout');
         
-        return [$attendances[1], $attendances[0]];
+        return [$attendances[1], head($attendances)];
         
     }
     

@@ -8,10 +8,12 @@ use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use ReflectionException;
 
 /**
  * App\Models\StudentAttendanceSetting 学生考勤设置
@@ -83,7 +85,52 @@ class StudentAttendanceSetting extends Model {
         return $this->hasOne('App\Models\StudentAttendance', 'id', 'sas_id');
         
     }
-
+    
+    /**
+     * 保存学生考勤设置
+     *
+     * @param array $data
+     * @return bool
+     */
+    function store(array $data) {
+        
+        return $this->create($data) ? true: false;
+        
+    }
+    
+    /**
+     * 更新学生考勤设置
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    function modify(array $data, $id) {
+        
+        $sas = $this->find($id);
+        if (!$sas) { return false; }
+        
+        return $this->update($data);
+        
+    }
+    
+    /**
+     * 移除学生考勤设置
+     *
+     * @param $id
+     * @return bool|null
+     * @throws ReflectionException
+     * @throws Exception
+     */
+    function remove($id) {
+    
+        $sas = $this->find($id);
+        if (!$sas) { return false; }
+        
+        return $sas->removable($sas) ? $sas->delete() : false;
+    
+    }
+    
     /**
      * 学生考勤设置记录列表
      *

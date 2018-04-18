@@ -28,6 +28,8 @@ class StudentAttendanceSettingRequest extends FormRequest {
                 'day,' . $this->input('day') . ',' .
                 'semester_id,' . $this->input('semester_id'),
             'msg_template' => 'required|string|between:2,255',
+            'grade_id'     => 'required|integer',
+            'semester_id'  => 'required|integer',
             'start'        => 'required',
             'end'          => 'required',
             'startend' => [

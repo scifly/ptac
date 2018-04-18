@@ -5,9 +5,11 @@ use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\PolicyTrait;
+use App\Models\Semester;
 use App\Models\StudentAttendanceSetting;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Request;
 
 class StudentAttendanceSettingPolicy {
     
@@ -20,32 +22,54 @@ class StudentAttendanceSettingPolicy {
      */
     public function __construct() { }
     
-    public function cs(User $user) {
-        
-        if (in_array($user->group->name, Constant::SUPER_ROLES)) {
-            return true;
-        }
-        
-        return $this->action($user);
-        
-    }
-    
-    public function eud(User $user, StudentAttendanceSetting $sas) {
+    /**
+     * 权限判断
+     *
+     * @param User $user
+     * @param StudentAttendanceSetting|null $sas
+     * @param bool $abort
+     * @return bool
+     */
+    public function operation(User $user, StudentAttendanceSetting $sas = null, $abort = true) {
         
         abort_if(
-            !$sas,
+            $abort && !$sas,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        $role = $user->group->name;
-        switch ($role) {
-            case '运营':
-                return true;
-            case '企业':
-            case '学校':
-                return in_array($sas->grade->school_id, $this->schoolIds());
+        if ($user->group->name == '运营') { return true; }
+        $isSasAllowed = $isGradeAllowed = $isSemesterAllowed = false;
+        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
+        $action = explode('/', Request::path())[1];
+        if (in_array($action, ['store', 'update'])) {
+            $gradeId = Request::input('grade_id');
+            $semesterId = Request::input('semester_id');
+            $isGradeAllowed = in_array($gradeId, $this->gradeIds());
+            $allowedSemesterIds = Semester::whereSchoolId($this->schoolId())
+                ->where('enabled', 1)->get()->pluck('id')->toArray();
+            $isSemesterAllowed = in_array($semesterId, $allowedSemesterIds);
+        }
+        if (in_array($action, ['edit', 'update', 'delete'])) {
+            $isSasAllowed = $sas->grade->school_id == $this->schoolId();
+        }
+        switch ($action) {
+            case 'index':
+            case 'create':
+                return $isSuperRole ? true : $this->action($user);
+            case 'store':
+                return $isSuperRole
+                    ? ($isGradeAllowed && $isSemesterAllowed)
+                    : ($isGradeAllowed && $isSemesterAllowed && $this->action($user));
+            case 'edit':
+            case 'delete':
+                return $isSuperRole ? $isSasAllowed : ($isSasAllowed && $this->action($user));
+            case 'update':
+                return $isSuperRole
+                    ? ($isSasAllowed && $isGradeAllowed && $isSemesterAllowed)
+                    : ($isSasAllowed && $isGradeAllowed && $isSemesterAllowed && $this->action($user));
             default:
-                return in_array($sas->grade_id, $this->gradeIds()) && $this->action($user);
+                return false;
+            
         }
         
     }

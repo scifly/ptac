@@ -43,13 +43,14 @@ class StudentPolicy {
      * @param Student $student
      * @return bool
      */
-    public function seud(User $user, Student $student) {
+    public function operation(User $user, Student $student = null, $abort = false) {
         
         abort_if(
-            !$student,
+            $abort && !$student,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
+        
         $role = $user->group->name;
         switch ($role) {
             case '运营':

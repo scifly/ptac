@@ -1,13 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StudentAttendanceSettingRequest;
-use App\Models\StudentAttendanceSetting;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
+use Throwable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
-use Throwable;
+use App\Models\StudentAttendanceSetting;
+use App\Http\Requests\StudentAttendanceSettingRequest;
 
 /**
  * 学生考勤设置
@@ -23,6 +22,7 @@ class StudentAttendanceSettingController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->sas = $sas;
+        $this->approve($sas);
         
     }
     
@@ -52,10 +52,6 @@ class StudentAttendanceSettingController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'cs', StudentAttendanceSetting::class
-        );
-        
         return $this->output();
         
     }
@@ -65,16 +61,13 @@ class StudentAttendanceSettingController extends Controller {
      *
      * @param StudentAttendanceSettingRequest $request
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store(StudentAttendanceSettingRequest $request) {
         
-        $this->authorize(
-            'cs', StudentAttendanceSetting::class
-        );
-        
         return $this->result(
-            $this->sas->create($request->all())
+            $this->sas->store(
+                $request->all()
+            )
         );
         
     }
@@ -88,11 +81,8 @@ class StudentAttendanceSettingController extends Controller {
      */
     public function edit($id) {
         
-        $sas = $this->sas->find($id);
-        $this->authorize('eud', $sas);
-        
         return $this->output([
-            'sas' => $sas,
+            'sas' => $this->sas->find($id),
         ]);
         
     }
@@ -103,15 +93,13 @@ class StudentAttendanceSettingController extends Controller {
      * @param StudentAttendanceSettingRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(StudentAttendanceSettingRequest $request, $id) {
         
-        $sas = $this->sas->find($id);
-        $this->authorize('eud', $sas);
-        
         return $this->result(
-            $sas->update($request->all())
+            $$this->sas->modify(
+                $request->all(), $id
+            )
         );
         
     }
@@ -125,11 +113,8 @@ class StudentAttendanceSettingController extends Controller {
      */
     public function destroy($id) {
         
-        $sas = $this->sas->find($id);
-        $this->authorize('eud', $sas);
-        
         return $this->result(
-            $sas->delete()
+            $this->sas->remove($id)
         );
         
     }

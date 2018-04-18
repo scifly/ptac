@@ -38,6 +38,7 @@ class TestController extends Controller {
     
     public function index(Request $request) {
 
+        dd(bcrypt('123654'));
         $names = ['运营', '企业', '学校'];
         $arrs = array_map(function ($name) {
             return [$name => Group::whereName($name)->first()->id];
