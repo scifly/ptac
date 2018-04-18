@@ -128,7 +128,8 @@
                         {!! Form::select('class_id', $classes, null, [
                             'class' => 'form-control select2',
                             'id' => 'class_id',
-                            'style' => 'width: 100%;'
+                            'style' => 'width: 100%;',
+                            'disabled' => sizeof($classes) <= 1
                         ]) !!}
                     </div>
                 </div>
