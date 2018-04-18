@@ -7,7 +7,6 @@ use App\Helpers\ModelTrait;
 use App\Helpers\PolicyTrait;
 use App\Models\User;
 use App\Models\WapSiteModule;
-use App\Models\WsmArticle;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
