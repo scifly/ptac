@@ -19,10 +19,11 @@ class TabPolicy {
         //
     }
     
-    public function eu(User $user, Tab $tab) {
+    
+    public function operation(User $user, Tab $tab = null, $abort = false) {
         
         abort_if(
-            !$tab,
+            $abort && !$tab,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );

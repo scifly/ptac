@@ -1,14 +1,14 @@
 <?php
 namespace App\Http\Controllers;
 
+use Exception;
+use Throwable;
+use App\Models\Tab;
+use App\Models\Menu;
 use App\Helpers\HttpStatusCode;
 use App\Http\Requests\TabRequest;
-use App\Models\Menu;
-use App\Models\Tab;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
-use Throwable;
 
 /**
  * 卡片
@@ -25,6 +25,7 @@ class TabController extends Controller {
         $this->middleware(['auth', 'checkrole']);
         $this->tab = $tab;
         $this->menu = $menu;
+        $this->approve($tab);
         
     }
     
@@ -55,18 +56,8 @@ class TabController extends Controller {
      */
     public function edit($id) {
         
-        $tab = Tab::find($id);
-        $this->authorize('eu', $tab);
-        $tabMenus = $tab->menus;
-        $selectedMenus = [];
-        foreach ($tabMenus as $menu) {
-            $selectedMenus[$menu->id] = $menu->name;
-        }
-        
         return $this->output([
-            'tab'           => $tab,
-            'menus'         => $this->menu->leaves(1),
-            'selectedMenus' => $selectedMenus,
+            'tab' => $this->tab->find($id),
         ]);
         
     }
@@ -81,11 +72,6 @@ class TabController extends Controller {
      * @throws Throwable
      */
     public function update(TabRequest $request, $id = null) {
-        
-        if (isset($id)) {
-            $tab = Tab::find($id);
-            $this->authorize('eu', $tab);
-        }
         
         return $this->result(
             $this->tab->modify($request->all(), $id)
