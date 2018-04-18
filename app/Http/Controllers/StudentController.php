@@ -56,9 +56,6 @@ class StudentController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'csie', Student::class
-        );
         if (Request::method() === 'POST') {
             list($classes) = $this->grade->classList(
                 Request::input('id')
@@ -82,10 +79,6 @@ class StudentController extends Controller {
      */
     public function store(StudentRequest $request) {
         
-        $this->authorize(
-            'csie', Student::class
-        );
-        
         return $this->result(
             $this->student->store(
                 $request->all()
@@ -103,11 +96,8 @@ class StudentController extends Controller {
      */
     public function show($id) {
         
-        $student = Student::find($id);
-        $this->authorize('seud', $student);
-        
         return $this->output([
-            'student' => $student,
+            'student' => Student::find($id),
         ]);
         
     }
@@ -120,18 +110,17 @@ class StudentController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-        
-        $student = $this->student->find($id);
-        $this->authorize('seud', $student);
+    
         if (Request::method() === 'POST') {
             list($classes) = $this->grade->classList(
                 Request::input('id')
             );
             $this->result['html']['classes'] = $classes;
-            
+    
             return response()->json($this->result);
         }
-        
+        $student = $this->student->find($id);
+    
         return $this->output([
             'student' => $student,
             'user'    => $student->user,
@@ -151,11 +140,8 @@ class StudentController extends Controller {
      */
     public function update(StudentRequest $request, $id) {
         
-        $student = $this->student->find($id);
-        $this->authorize('seud', $student);
-        
         return $this->result(
-            $student->modify(
+            $this->student->modify(
                 $request->all(), $id
             )
         );
@@ -172,11 +158,8 @@ class StudentController extends Controller {
      */
     public function destroy($id) {
         
-        $student = $this->student->find($id);
-        $this->authorize('seud', $student);
-        
         return $this->result(
-            $student->remove($id)
+            $this->student->remove($id)
         );
         
     }
@@ -185,15 +168,11 @@ class StudentController extends Controller {
      * 导入学籍
      *
      * @return JsonResponse
-     * @throws AuthorizationException
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
     public function import() {
         
-        $this->authorize(
-            'csie', Student::class
-        );
         if (Request::isMethod('post')) {
             $file = Request::file('file');
             abort_if(
@@ -209,7 +188,10 @@ class StudentController extends Controller {
             }
         }
         
-        return abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '上传失败');
+        return abort(
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            '上传失败'
+        );
         
     }
     
@@ -227,12 +209,16 @@ class StudentController extends Controller {
             );
             $this->result['html']['classes'] = $classes;
             
-            return response()->json($this->result);
+            return response()->json(
+                $this->result
+            );
         }
         $range = Request::query('range');
         $id = Request::query('id');
         
-        return $this->student->export($range, $id);
+        return $this->student->export(
+            $range, $id
+        );
         
     }
     
