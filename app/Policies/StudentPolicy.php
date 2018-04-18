@@ -22,23 +22,7 @@ class StudentPolicy {
     public function __construct() { }
     
     /**
-     * (c)reate, (s)tore, (i)mport, (e)xport
-     *
-     * @param User $user
-     * @return bool
-     */
-    public function csie(User $user) {
-    
-        if (in_array($user->group->name, Constant::SUPER_ROLES)) {
-            return true;
-        }
-        
-        return $this->action($user);
-    
-    }
-    
-    /**
-     * (s)how, (e)dit, (u)pdate, (d)estroy
+     * 权限判断
      *
      * @param User $user
      * @param Student $student
@@ -55,10 +39,24 @@ class StudentPolicy {
         if ($user->group->name == '运营') { return true; }
         $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
         $action = explode('/', Request::path())[1];
-        if (in_array($action, ['export'])) {
-        
+        switch ($action) {
+            case 'index':
+            case 'create':
+            case 'store':
+            case 'import':
+            case 'export':
+                return $isSuperRole ? true : $this->action($user);
+            case 'show':
+            case 'edit':
+            case 'update':
+            case 'delete':
+                $schoolId = $student->squad->grade->school_id;
+                return $isSuperRole
+                    ? (in_array($schoolId, $this->schoolIds()))
+                    : (in_array($schoolId, $this->schoolIds()) && $this->action($user));
+            default:
+                return false;
         }
-        
         
     }
     

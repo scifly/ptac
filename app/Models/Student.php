@@ -370,9 +370,10 @@ class Student extends Model {
     function export($range, $id = null) {
 
         abort_if(
-            !in_array($range, [0, 1, 2]),
-            
-        )
+            !in_array($range, array_values(self::EXPORT_RANGES)),
+            HttpstatusCode::NOT_ACCEPTABLE,
+            __('messages.not_acceptable')
+        );
         $students = null;
         switch ($range) {
             case self::EXPORT_RANGES['class']:
