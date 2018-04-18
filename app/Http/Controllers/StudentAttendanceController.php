@@ -25,6 +25,7 @@ class StudentAttendanceController extends Controller {
         $this->sa = $sa;
         $this->student = $student;
         $this->grade = $grade;
+        $this->approve($sa);
         
     }
     
@@ -54,9 +55,6 @@ class StudentAttendanceController extends Controller {
      */
     public function stat() {
         
-        $this->authorize(
-            'sde', StudentAttendance::class
-        );
         if (Request::method() === 'POST') {
             $field = Request::input('field');
             $id = Request::input('id');
@@ -86,9 +84,6 @@ class StudentAttendanceController extends Controller {
      */
     public function detail() {
         
-        $this->authorize(
-            'sde', StudentAttendance::class
-        );
         if (Request::method() === 'POST') {
             return response()->json(
                 $this->sa->detail()
@@ -103,15 +98,10 @@ class StudentAttendanceController extends Controller {
      * 导出学生考勤明细
      *
      * @return mixed
-     * @throws AuthorizationException
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function export() {
-        
-        $this->authorize(
-            'sde', StudentAttendance::class
-        );
         
         return $this->sa->export();
         

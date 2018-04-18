@@ -8,6 +8,7 @@ use App\Helpers\PolicyTrait;
 use App\Models\Squad;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Request;
 
 class SquadPolicy {
     
@@ -32,22 +33,47 @@ class SquadPolicy {
         
     }
     
-    public function eud(User $user, Squad $class) {
+    /**
+     * 权限判断
+     *
+     * @param User $user
+     * @param Squad|null $class
+     * @param bool $abort
+     * @return bool
+     */
+    public function operation(User $user, Squad $class = null, $abort = false) {
         
         abort_if(
-            !$class,
+            $abort && !$class,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        $role = $user->group->name;
-        switch ($role) {
-            case '运营':
-                return true;
-            case '企业':
-            case '学校':
-                return in_array($class->grade->school_id, $this->schoolIds());
+        if ($user->group->name == '运营') { return true; }
+        $isClassAllowed = $isGradeAllowed = $isEducatorAllowed = false;
+        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
+        $action = explode('/', Request::path())[1];
+        if (in_array($action, ['store', 'update'])) {
+            $gradeId = Request::input('grade_id');
+            $educatorIds = explode(',', Request::input('educator_ids'));
+            $isGradeAllowed = in_array($gradeId, $this->gradeIds());
+            $isEducatorAllowed = empty(array_diff($educatorIds, $this->contactIds('educator')));
+        }
+        if (in_array($action, ['edit', 'update', 'delete'])) {
+            $isClassAllowed = in_array($class->grade->school_id, $this->schoolIds());
+        }
+        switch ($action) {
+            case 'index':
+            case 'create':
+                return $isSuperRole ? true : $this->action($user);
+            case 'edit':
+            case 'delete':
+                return $isSuperRole ? $isClassAllowed : ($isClassAllowed && $this->action($user));
+            case 'update':
+                return $isSuperRole
+                    ? ($isClassAllowed && $isGradeAllowed && $isEducatorAllowed)
+                    : ($isClassAllowed && $isGradeAllowed && $isEducatorAllowed && $this->action($user));
             default:
-                return in_array($class->grade_id, $this->gradeIds()) && $this->action($user);
+                return false;
         }
         
     }

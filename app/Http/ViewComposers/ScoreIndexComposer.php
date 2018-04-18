@@ -14,7 +14,7 @@ class ScoreIndexComposer {
     use ModelTrait;
     
     public function compose(View $view) {
-//        $exams = Exam::get()->pluck('name', 'id')->toArray();
+
         $schoolId = $this->schoolId();
         $school = School::whereId($schoolId)->first();
         #获取学校下所有班级 和 考试

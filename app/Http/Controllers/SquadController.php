@@ -25,6 +25,7 @@ class SquadController extends Controller {
         $this->middleware(['auth', 'checkrole']);
         $this->class = $class;
         $this->educator = $educator;
+        $this->approve($class);
         
     }
     
@@ -54,10 +55,6 @@ class SquadController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'cs', Squad::class
-        );
-        
         return $this->output();
         
     }
@@ -67,13 +64,8 @@ class SquadController extends Controller {
      *
      * @param SquadRequest $request
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store(SquadRequest $request) {
-        
-        $this->authorize(
-            'cs', Squad::class
-        );
         
         return $this->result(
             $this->class->store(
@@ -92,18 +84,8 @@ class SquadController extends Controller {
      */
     public function edit($id) {
         
-        $class = Squad::find($id);
-        $this->authorize('eud', $class);
-        $selectedEducators = [];
-        if ($class->educator_ids != '0') {
-            $selectedEducators = $this->educator->educatorList(
-                explode(",", rtrim($class->educator_ids, ","))
-            );
-        }
-        
         return $this->output([
-            'class'             => $class,
-            'selectedEducators' => $selectedEducators,
+            'class' => $this->class->find($id)
         ]);
         
     }
@@ -114,15 +96,13 @@ class SquadController extends Controller {
      * @param SquadRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(SquadRequest $request, $id) {
         
-        $class = Squad::find($id);
-        $this->authorize('eud', $class);
-        
         return $this->result(
-            $this->class->modify($request->all(), $id, true)
+            $this->class->modify(
+                $request->all(), $id, true
+            )
         );
         
     }
@@ -136,11 +116,10 @@ class SquadController extends Controller {
      */
     public function destroy($id) {
         
-        $class = Squad::find($id);
-        $this->authorize('eud', $class);
-        
         return $this->result(
-            $class->remove($id, true)
+            $this->class->remove(
+                $id, true
+            )
         );
         
     }

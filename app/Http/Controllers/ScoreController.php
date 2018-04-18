@@ -77,7 +77,9 @@ class ScoreController extends Controller {
         );
         
         return $this->result(
-            $this->score->store($request->all())
+            $this->score->store(
+                $request->all()
+            )
         );
         
     }
