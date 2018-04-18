@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use ReflectionException;
 use Throwable;
 
 
@@ -132,6 +133,23 @@ class WapSiteModule extends Model {
         }
         
         return true;
+        
+    }
+    
+    /**
+     * 移除网站栏目
+     *
+     * @param $id
+     * @return bool|null
+     * @throws ReflectionException
+     * @throws Exception
+     */
+    function remove($id) {
+        
+        $wsm = $this->find($id);
+        if (!$wsm) { return false; }
+        
+        return $this->removable($wsm) ? $wsm->delete() : false;
         
     }
 

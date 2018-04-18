@@ -41,6 +41,8 @@ use App\Models\SubjectModule;
 use App\Models\Tab;
 use App\Models\User;
 use App\Models\WapSite;
+use App\Models\WapSiteModule;
+use App\Models\WsmArticle;
 use App\Policies\ActionPolicy;
 use App\Policies\ActionTypePolicy;
 use App\Policies\AlertTypePolicy;
@@ -85,7 +87,9 @@ use App\Policies\StudentPolicy;
 use App\Policies\SubjectModulePolicy;
 use App\Policies\SubjectPolicy;
 use App\Policies\TabPolicy;
+use App\Policies\WapSiteModulePolicy;
 use App\Policies\WapSitePolicy;
+use App\Policies\WsmArticlePolicy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Laravel\Passport\Passport;
@@ -143,6 +147,8 @@ class AuthServiceProvider extends ServiceProvider {
         EducatorAttendance::class => EducatorAttendancePolicy::class,
         User::class => OperatorPolicy::class,
         WapSite::class => WapSitePolicy::class,
+        WapSiteModule::class => WapSiteModulePolicy::class,
+        WsmArticle::class => WsmArticlePolicy::class,
     ];
     
     /**

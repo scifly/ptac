@@ -159,7 +159,23 @@ class WsmArticle extends Model {
         return true;
         
     }
-
+    
+    /**
+     * 移除网站文章
+     *
+     * @param $id
+     * @return bool|null
+     * @throws Exception
+     */
+    function remove($id) {
+        
+        $wsma = $this->find($id);
+        if (!$wsma) { return false; }
+        
+        return $wsma->delete();
+        
+    }
+    
     /**
      * 微网站文章列表
      *

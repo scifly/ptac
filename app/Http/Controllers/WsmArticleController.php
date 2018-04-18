@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\WsmArticleRequest;
 use App\Models\Media;
 use App\Models\WsmArticle;
@@ -25,6 +24,7 @@ class WsmArticleController extends Controller {
         $this->middleware(['auth', 'checkrole']);
         $this->wsma = $wsma;
         $this->media = $media;
+        $this->approve($wsma);
         
     }
     
@@ -84,7 +84,6 @@ class WsmArticleController extends Controller {
     public function show($id) {
         
         $article = WsmArticle::find($id);
-        abort_if(!$article, HttpStatusCode::NOT_FOUND);
         
         return $this->output([
             'article' => $article,
@@ -103,7 +102,6 @@ class WsmArticleController extends Controller {
     public function edit($id) {
         
         $article = WsmArticle::find($id);
-        abort_if(!$article, HttpStatusCode::NOT_FOUND);
         
         return $this->output([
             'article' => $article,
@@ -122,11 +120,10 @@ class WsmArticleController extends Controller {
      */
     public function update(WsmArticleRequest $request, $id) {
         
-        $article = WsmArticle::find($id);
-        abort_if(!$article, HttpStatusCode::NOT_FOUND);
-        
         return $this->result(
-            $article->modify($request, $id)
+            $this->wsma->modify(
+                $request, $id
+            )
         );
         
     }
@@ -140,11 +137,8 @@ class WsmArticleController extends Controller {
      */
     public function destroy($id) {
         
-        $article = WsmArticle::find($id);
-        abort_if(!$article, HttpStatusCode::NOT_FOUND);
-        
         return $this->result(
-            $article->delete()
+            $this->wsma->remove($id)
         );
         
     }

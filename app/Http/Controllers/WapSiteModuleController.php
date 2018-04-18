@@ -24,6 +24,7 @@ class WapSiteModuleController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->wsm = $wsm;
+        $this->approve($wsm);
         
     }
     
@@ -73,25 +74,6 @@ class WapSiteModuleController extends Controller {
     }
     
     /**
-     * 微网站栏目详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function show($id) {
-        
-        $wsm = $this->wsm->find($id);
-        abort_if(!$wsm, HttpStatusCode::NOT_FOUND);
-        
-        return $this->output([
-            'wsm'   => $wsm,
-            'media' => Media::find($wsm->media_id),
-        ]);
-        
-    }
-    
-    /**
      * 编辑微网站栏目
      *
      * @param $id
@@ -101,7 +83,6 @@ class WapSiteModuleController extends Controller {
     public function edit($id) {
         
         $wsm = $this->wsm->find($id);
-        abort_if(!$wsm, HttpStatusCode::NOT_FOUND);
         
         return $this->output([
             'wapSiteModule' => $wsm,
@@ -121,11 +102,8 @@ class WapSiteModuleController extends Controller {
      */
     public function update(WapSiteModuleRequest $request, $id) {
         
-        $wsm = $this->wsm->find($id);
-        abort_if(!$wsm, HttpStatusCode::NOT_FOUND);
-        
         return $this->result(
-            $wsm->modify($request, $id)
+            $this->wsm->modify($request, $id)
         );
         
     }
@@ -139,11 +117,8 @@ class WapSiteModuleController extends Controller {
      */
     public function destroy($id) {
         
-        $wsm = $this->wsm->find($id);
-        abort_if(!$wsm, HttpStatusCode::NOT_FOUND);
-        
         return $this->result(
-            $wsm->delete()
+            $this->wsm->remove($id)
         );
         
     }
