@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SubjectModuleRequest;
 use App\Models\SubjectModule;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -23,6 +22,7 @@ class SubjectModuleController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->sm = $sm;
+        $this->approve($sm);
         
     }
     
@@ -52,10 +52,6 @@ class SubjectModuleController extends Controller {
      */
     public function create() {
         
-        $this->authorize(
-            'cs', SubjectModule::class
-        );
-        
         return $this->output();
         
     }
@@ -65,16 +61,13 @@ class SubjectModuleController extends Controller {
      *
      * @param SubjectModuleRequest $request
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store(SubjectModuleRequest $request) {
         
-        $this->authorize(
-            'cs', SubjectModule::class
-        );
-        
         return $this->result(
-            $this->sm->create($request->all())
+            $this->sm->store(
+                $request->all()
+            )
         );
         
     }
@@ -88,11 +81,8 @@ class SubjectModuleController extends Controller {
      */
     public function edit($id) {
         
-        $sm = $this->sm->find($id);
-        $this->authorize('eud', $sm);
-        
         return $this->output([
-            'sm' => $sm,
+            'sm' => $this->sm->find($id),
         ]);
         
     }
@@ -103,15 +93,13 @@ class SubjectModuleController extends Controller {
      * @param SubjectModuleRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function update(SubjectModuleRequest $request, $id) {
         
-        $sm = $this->sm->find($id);
-        $this->authorize('eud', $sm);
-        
         return $this->result(
-            $sm->update($request->all())
+            $this->sm->modify(
+                $request->all(), $id
+            )
         );
         
     }
@@ -125,11 +113,8 @@ class SubjectModuleController extends Controller {
      */
     public function destroy($id) {
         
-        $sm = $this->sm->find($id);
-        $this->authorize('eud', $sm);
-        
         return $this->result(
-            $sm->delete()
+            $this->sm->remove($id)
         );
         
     }

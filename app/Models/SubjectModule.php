@@ -6,9 +6,11 @@ use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use ReflectionException;
 
 /**
  * App\Models\SubjectModule 科目次分类
@@ -46,6 +48,51 @@ class SubjectModule extends Model {
      * @return BelongsTo
      */
     function subject() { return $this->belongsTo('App\Models\Subject'); }
+    
+    /**
+     * 保存科目次分类
+     *
+     * @param array $data
+     * @return bool
+     */
+    function store(array $data) {
+        
+        return $this->create($data) ? true : false;
+        
+    }
+    
+    /**
+     * 更新科目次分类
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    function modify(array $data, $id) {
+        
+        $sm = $this->find($id);
+        if (!$sm) { return false; }
+        
+        return $this->update($data);
+        
+    }
+    
+    /**
+     * 移除科目次分类
+     *
+     * @param $id
+     * @return bool
+     * @throws ReflectionException
+     * @throws Exception
+     */
+    function remove($id) {
+    
+        $sm = $this->find($id);
+        if (!$sm) { return false; }
+        
+        return $this->removable($sm) ? $sm->delete() : false;
+        
+    }
     
     /**
      * 科目次分类列表

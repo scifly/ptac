@@ -24,6 +24,7 @@ class SubjectModuleRequest extends FormRequest {
                 $this->input('id') . ',id,' .
                 'subject_id,' . $this->input('subject_id') . ',' .
                 'weight,' . $this->input('weight'),
+            'subject_id' => 'required|integer',
             'weight' => 'required|numeric',
         ];
         

@@ -40,6 +40,7 @@ use Illuminate\Support\Facades\Auth;
  * @property int $department_id 对应的部门ID
  * @property-read Collection|AttendanceMachine[] $attendanceMachines
  * @property-read Collection|Squad[] $classes
+ * @property-read Collection|SubjectModule[] $subjectModules
  * @property-read Collection|ConferenceRoom[] $conferenceRooms
  * @property-read Corp $corp
  * @property-read Department $department
@@ -232,6 +233,20 @@ class School extends Model {
         return $this->hasManyThrough(
             'App\Models\Squad', 'App\Models\Grade',
             'school_id', 'grade_id'
+        );
+        
+    }
+    
+    /**
+     * 通过Subject中间对象获取所有的科目次分类对象
+     *
+     * @return HasManyThrough
+     */
+    function subjectModules() {
+        
+        return $this->hasManyThrough(
+            'App\Models\SubjectModule', 'App\Models\Subject',
+            'school_id', 'subject_id'
         );
         
     }

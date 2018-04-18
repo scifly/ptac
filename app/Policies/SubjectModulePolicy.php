@@ -5,9 +5,11 @@ use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\PolicyTrait;
+use App\Models\School;
 use App\Models\SubjectModule;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Request;
 
 class SubjectModulePolicy {
     
@@ -22,32 +24,50 @@ class SubjectModulePolicy {
         //
     }
     
-    public function cs(User $user) {
-        
-        if (in_array($user->group->name, Constant::SUPER_ROLES)) {
-            return true;
-        }
-        
-        return $this->action($user);
-        
-    }
-    
-    public function eud(User $user, SubjectModule $sm) {
+    /**
+     * 权限判断
+     *
+     * @param User $user
+     * @param SubjectModule|null $sm
+     * @param bool $abort
+     * @return bool
+     */
+    public function operation(User $user, SubjectModule $sm = null, $abort = false) {
         
         abort_if(
-            !$sm,
+            $abort && !$sm,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        $role = $user->group->name;
-        switch ($role) {
-            case '运营':
-                return true;
-            case '企业':
-            case '学校':
-                return in_array($sm->subject->school_id, $this->schoolIds());
+        if ($user->group->name == '运营') { return true; }
+        $isSmAllowed = $isSubjectAllowed = false;
+        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
+        $action = explode('/', Request::path())[1];
+        if (in_array($action, ['store', 'update'])) {
+            $subjectId = Request::input('subject_id');
+            $allowedSubjectIds = School::find($this->schoolId())
+                ->subjectModules->pluck('id')->toArray();
+            $isSubjectAllowed = in_array($subjectId, $allowedSubjectIds);
+        }
+        if (in_array($action, ['edit', 'update', 'delete'])) {
+            $isSmAllowed = $sm->subject->school_id == $this->schoolId();
+        }
+        switch ($action) {
+            case 'index':
+            case 'create':
+                return $isSuperRole ? true : $this->action($user);
+            case 'store':
+                return $isSuperRole ? $isSubjectAllowed : ($isSubjectAllowed && $this->action($user));
+            case 'edit':
+            case 'delete':
+                return $isSuperRole ? $isSmAllowed : ($isSmAllowed && $this->action($user));
+            case 'update':
+                return $isSuperRole
+                    ? ($isSmAllowed && $isSubjectAllowed)
+                    : ($isSmAllowed && $isSubjectAllowed && $this->action($user));
             default:
-                return in_array($sm->subject->school_id, $this->schoolIds()) && $this->action($user);
+                return false;
+            
         }
         
     }
