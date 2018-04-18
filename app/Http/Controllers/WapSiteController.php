@@ -19,14 +19,13 @@ use Throwable;
  */
 class WapSiteController extends Controller {
     
-    protected $ws, $media, $school;
+    protected $ws;
     
-    public function __construct(WapSite $ws, Media $media, School $school) {
+    public function __construct(WapSite $ws) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->ws = $ws;
-        $this->media = $media;
-        $this->school = $school;
+        $this->approve($ws);
         
     }
     
@@ -52,19 +51,13 @@ class WapSiteController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-        
-        $ws = WapSite::find($id);
-        $this->authorize('edit', $ws);
-        
+    
         if (Request::method() == 'POST') {
             return $this->ws->upload();
         }
-        
+    
         return $this->output([
-            'ws'     => $ws,
-            'medias' => !empty($ws->media_ids)
-                ? $this->media->medias(explode(',', $ws->media_ids))
-                : null,
+            'ws' => WapSite::find($id),
         ]);
         
     }
@@ -80,14 +73,10 @@ class WapSiteController extends Controller {
      */
     public function update(WapSiteRequest $request, $id) {
         
-        $ws = WapSite::find($id);
-        $this->authorize('update', $ws);
-        
         return $this->result(
-            $ws->modify($request, $id)
+            $this->ws->modify($request, $id)
         );
         
     }
     
 }
-

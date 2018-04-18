@@ -1,14 +1,14 @@
 <?php
 namespace App\Policies;
 
+use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\PolicyTrait;
-use App\Models\Corp;
-use App\Models\School;
 use App\Models\User;
 use App\Models\WapSite;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Request;
 
 class WapSitePolicy {
     
@@ -23,41 +23,32 @@ class WapSitePolicy {
         //
     }
     
-    public function edit(User $user, WapSite $ws) {
-        
-        return $this->permit($user, $ws);
-        
-    }
-    
-    public function update(User $user, WapSite $ws) {
-        
-        return $this->permit($user, $ws);
-        
-    }
-    
-    private function permit(User $user, WapSite $ws) {
+    /**
+     * 权限判断
+     *
+     * @param User $user
+     * @param WapSite|null $ws
+     * @param bool $abort
+     * @return bool
+     */
+    function operation(User $user, WapSite $ws = null, $abort = false) {
         
         abort_if(
-            !$ws,
+            $abort && !$ws,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        
-        switch ($user->group->name) {
-            case '运营':
-                return true;
-            case '企业':
-                $departmentId = $this->head($user);
-                $corp = Corp::whereDepartmentId($departmentId)->first();
-                $schooldIds = School::whereCorpId($corp->id)->pluck('id')->toArray();
-                return in_array($ws->school_id, $schooldIds);
-            case '学校':
-                $departmentId = $this->head($user);
-                $school = School::whereDepartmentId($departmentId)->first();
-                return $ws->school_id == $school->id;
+        if ($user->group->name == '运营') { return true; }
+        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
+        $action = explode('/', Request::path())[1];
+        switch ($action) {
+            case 'index':
+                return $isSuperRole && $user->group->name != '学校';
+            case 'edit':
+            case 'update':
+                return $isSuperRole && in_array($ws->school_id, $this->schoolIds());
             default:
-                $school = $user->educator->school;
-                return $ws->school_id == $school->id && $this->action($user);
+                return false;
         }
         
     }
