@@ -68,7 +68,7 @@ class ConsumptionPolicy {
         
     }
     
-    public function export(User $user) {
+    function export(User $user) {
     
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {
             return true;

@@ -104,6 +104,7 @@ class ComposerServiceProvider extends ServiceProvider {
         # 考试 - Exam
         View::composer('exam.index', $ns . 'ExamIndexComposer');
         View::composer('exam.create_edit', $ns . 'ExamComposer');
+        View::composer('exam.show', $ns . 'ExamShowComposer');
     
         # 考试类型 - ExamType
         View::composer('exam_type.index', $ns . 'ExamTypeIndexComposer');

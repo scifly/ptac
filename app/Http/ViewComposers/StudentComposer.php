@@ -6,6 +6,7 @@ use App\Models\Grade;
 use App\Models\Squad;
 use App\Models\Student;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Request;
 
 class StudentComposer {
     
@@ -26,9 +27,17 @@ class StudentComposer {
             ->where('enabled', 1)
             ->pluck('name', 'id')
             ->toArray();
+        $mobiles = $user = null;
+        if (Request::route('id')) {
+            $student = Student::find(Request::route('id'));
+            $user = $student->user;
+            $mobiles = $student->user->mobiles;
+        }
         $view->with([
             'grades'  => $grades,
             'classes' => $classes,
+            'user'    => $user,
+            'mobiles' => $mobiles,
             'uris'    => $this->uris(),
         ]);
         

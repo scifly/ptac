@@ -18,10 +18,14 @@ class ScoreTotalRequest extends FormRequest {
      * @return array
      */
     public function rules() {
+        
         return [
-            'score'       => 'required|numeric|max:1000',
-            'subject_ids' => 'required|string',
+            'score'          => 'required|numeric|max:1000',
+            'exam_id'        => 'required|integer',
+            'subject_ids'    => 'required|string',
+            'na_subject_ids' => 'required|string',
         ];
+        
     }
     
 }

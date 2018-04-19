@@ -1,15 +1,15 @@
 <?php
 namespace App\Http\Controllers;
 
-use Exception;
-use Throwable;
-use App\Models\Tab;
+use App\Helpers\HttpStatusCode;
+use App\Http\Requests\MenuRequest;
 use App\Models\Menu;
 use App\Models\MenuTab;
-use App\Helpers\HttpStatusCode;
+use App\Models\Tab;
+use Exception;
 use Illuminate\Http\JsonResponse;
-use App\Http\Requests\MenuRequest;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 菜单
@@ -74,7 +74,9 @@ class MenuController extends Controller {
     public function store(MenuRequest $request) {
         
         return $this->result(
-            $this->menu->store($request)
+            $this->menu->store(
+                $request
+            )
         );
         
     }
@@ -88,17 +90,8 @@ class MenuController extends Controller {
      */
     public function edit($id) {
         
-        $menu = $this->menu->find($id);
-        # 获取已选定的卡片
-        $menuTabs = $menu->tabs;
-        $selectedTabs = [];
-        foreach ($menuTabs as $tab) {
-            $selectedTabs[$tab->id] = $tab->name;
-        }
-        
         return $this->output([
-            'menu'         => $menu,
-            'selectedTabs' => $selectedTabs,
+            'menu' => $this->menu->find($id),
         ]);
         
     }
@@ -115,7 +108,9 @@ class MenuController extends Controller {
     public function update(MenuRequest $request, $id) {
         
         return $this->result(
-            $this->menu->modify($request, $id)
+            $this->menu->modify(
+                $request, $id
+            )
         );
         
     }
@@ -215,7 +210,7 @@ class MenuController extends Controller {
      * @throws Throwable
      */
     public function rankTabs($id) {
-    
+        
         # todo: needs to be moved to index method
         $ranks = Request::get('data');
         

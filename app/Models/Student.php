@@ -19,9 +19,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -87,6 +89,14 @@ class Student extends Model {
         'remark', 'enabled',
     ];
     
+    protected $grade;
+    
+    function __construct(array $attributes = []) {
+        
+        parent::__construct($attributes);
+        $this->grade = app()->make('App\Models\Grade');
+        
+    }
     
     /**
      * 返回指定学生所属的班级对象
@@ -308,7 +318,37 @@ class Student extends Model {
     }
     
     /**
-     * 导入
+     * 导入学籍
+     *
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     */
+    function import() {
+    
+        if (Request::isMethod('post')) {
+            $file = Request::file('file');
+            abort_if(
+                empty($file),
+                HttpStatusCode::INTERNAL_SERVER_ERROR,
+                '您还没选择文件！'
+            );
+            // 文件是否上传成功
+            if ($file->isValid()) {
+                return response()->json(
+                    $this->upload($file)
+                );
+            }
+        }
+    
+        return abort(
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            '上传失败'
+        );
+        
+    }
+    
+    /**
+     * 上传学籍excel文件
      *
      * @param UploadedFile $file
      * @return bool
@@ -361,13 +401,14 @@ class Student extends Model {
     /**
      * 导出学籍
      *
-     * @param $range - 导出范围
-     * @param null|integer $id - 班级/年级id
      * @return mixed
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    function export($range, $id = null) {
+    function export() {
+    
+        $range = Request::query('range');
+        $id = Request::query('id');
 
         abort_if(
             !in_array($range, array_values(self::EXPORT_RANGES)),
@@ -409,6 +450,23 @@ class Student extends Model {
         return $this->excel($records);
         
     }
+    
+    /**
+     * 获取指定年级对应的班级列表
+     *
+     * @return JsonResponse
+     */
+    function classList() {
+    
+        list($classes) = $this->grade->classList(
+            Request::input('id')
+        );
+        $result['html']['classes'] = $classes;
+    
+        return response()->json($result);
+        
+    }
+    
     
     /**
      * 返回年级和班级列表

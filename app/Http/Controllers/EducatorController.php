@@ -109,25 +109,13 @@ class EducatorController extends Controller {
     public function edit($id) {
         
         if (Request::method() === 'POST') {
-            return response()->json($this->department->tree());
+            return response()->json(
+                $this->department->tree()
+            );
         }
-        $selectedTeams = [];
-        $educator = $this->educator->find($id);
-        foreach ($educator->teams as $v) {
-            $selectedTeams[$v->id] = $v->name;
-        }
-        $selectedDepartmentIds = [];
-        foreach ($educator->user->departments as $department) {
-            $selectedDepartmentIds[] = $department->id;
-        }
-        $selectedDepartments = $this->department->selectedNodes($selectedDepartmentIds);
         
         return $this->output([
-            'mobiles'               => $educator->user->mobiles,
-            'educator'              => $educator,
-            'selectedTeams'         => $selectedTeams,
-            'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
-            'selectedDepartments'   => $selectedDepartments,
+            'educator' => $this->educator->find($id),
         ]);
         
     }
@@ -143,7 +131,9 @@ class EducatorController extends Controller {
     public function update(EducatorRequest $request, $id) {
         
         return $this->result(
-            $this->educator->modify($request, $id)
+            $this->educator->modify(
+                $request, $id
+            )
         );
         
     }

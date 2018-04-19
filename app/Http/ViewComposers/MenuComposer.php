@@ -3,9 +3,11 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use App\Models\Icon;
+use App\Models\Menu;
 use App\Models\Tab;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 
 class MenuComposer {
     
@@ -37,9 +39,15 @@ class MenuComposer {
             default:
                 break;
         }
+        $selectedTabs = [];
+        if (Request::route('id')) {
+            $selectedTabs = Menu::find(Request::route('id'))
+                ->tabs->pluck('name', 'id')->toArray();
+        }
         $view->with([
             'tabs'  => $tabs,
             'icons' => $this->icon->icons(),
+            'selectedTabs' => $selectedTabs,
             'uris'  => $this->uris(),
         ]);
         

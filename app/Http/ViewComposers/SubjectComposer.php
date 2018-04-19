@@ -4,19 +4,37 @@ namespace App\Http\ViewComposers;
 use App\Helpers\ModelTrait;
 use App\Models\Grade;
 use App\Models\Major;
+use App\Models\Subject;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Request;
 
 class SubjectComposer {
     
     use ModelTrait;
     
+    protected $major, $grade;
+    
+    function __construct(Major $major, Grade $grade) {
+        
+        $this->major = $major;
+        $this->grade = $grade;
+        
+    }
+    
     public function compose(View $view) {
         
-        $schoolId = $this->schoolId();
+        $selectedGrades = $selectedMajors = [];
+        if (Request::route('id')) {
+            $subject = Subject::find(Request::route('id'));
+            $selectedMajors = $subject->majors->pluck('name', 'id')->toArray();
+            $selectedGrades = $subject->grades->pluck('name', 'id')->toArray();
+        }
         $view->with([
-            'grades' => Grade::whereSchoolId($schoolId)->pluck('name', 'id'),
-            'majors' => Major::whereSchoolId($schoolId)->pluck('name', 'id'),
-            'uris'   => $this->uris(),
+            'grades'         => $this->grade->gradeList(),
+            'majors'         => $this->major->majorList(),
+            'selectedGrades' => $selectedGrades,
+            'selectedMajors' => $selectedMajors,
+            'uris'           => $this->uris(),
         ]);
         
     }

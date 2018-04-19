@@ -3,6 +3,8 @@ namespace App\Models;
 
 use Eloquent;
 use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Request;
 use Throwable;
 use Carbon\Carbon;
 use App\Helpers\Snippet;
@@ -41,6 +43,16 @@ class Custodian extends Model {
         '手机号码', '创建于', '更新于',
     ];
     protected $fillable = ['user_id'];
+    
+    protected $grade, $squad;
+    
+    function __construct(array $attributes = []) {
+        
+        parent::__construct($attributes);
+        $this->grade = app()->make('App\Models\Grade');
+        $this->squad = app()->make('App\Models\Squad');
+    
+    }
     
     /**
      * 返回对应的用户对象
@@ -273,6 +285,36 @@ class Custodian extends Model {
         }
         
         return $this->excel($records);
+        
+    }
+    
+    /**
+     * 返回指定年级和班级对应的学生列表
+     *
+     * @return JsonResponse
+     */
+    function studentList() {
+    
+        abort_if(
+            !Request::input('field') ||
+            !Request::input('id') ||
+            !in_array(Request::input('field'), ['grade', 'class']),
+            HttpStatusCode::NOT_ACCEPTABLE,
+            __('messages.not_acceptable')
+        );
+        $id = Request::input('id');
+        $result = [];
+        if (Request::input('field') == 'grade') {
+            list($classes, $classId) = $this->grade->classList($id);
+            $result['html'] = [
+                'classes'  => $classes,
+                'students' => $this->squad->studentList($classId),
+            ];
+        } else {
+            $result['html']['students'] = $this->squad->studentList($id);
+        }
+    
+        return response()->json($result);
         
     }
     

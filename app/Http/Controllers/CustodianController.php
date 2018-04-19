@@ -1,13 +1,8 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\CustodianRequest;
 use App\Models\Custodian;
-use App\Models\CustodianStudent;
-use App\Models\Grade;
-use App\Models\Squad;
-use App\Models\Student;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -21,18 +16,12 @@ use Throwable;
  */
 class CustodianController extends Controller {
     
-    protected $custodian, $student, $grade, $class;
+    protected $custodian;
     
-    function __construct(
-        Custodian $custodian, Student $student,
-        Grade $grade, Squad $class
-    ) {
+    function __construct(Custodian $custodian) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->custodian = $custodian;
-        $this->student = $student;
-        $this->grade = $grade;
-        $this->class = $class;
         $this->approve($custodian);
         
     }
@@ -64,25 +53,7 @@ class CustodianController extends Controller {
     public function create() {
         
         if (Request::method() === 'POST') {
-            abort_if(
-                !Request::input('field') ||
-                !Request::input('id') ||
-                !in_array(Request::input('field'), ['grade', 'class']),
-                HttpStatusCode::NOT_ACCEPTABLE,
-                __('messages.not_acceptable')
-            );
-            $id = Request::input('id');
-            if (Request::input('field') == 'grade') {
-                list($classes, $classId) = $this->grade->classList($id);
-                $this->result['html'] = [
-                    'classes'  => $classes,
-                    'students' => $this->class->studentList($classId),
-                ];
-            } else {
-                $this->result['html']['students'] = $this->class->studentList($id);
-            }
-            
-            return response()->json($this->result);
+            return $this->custodian->studentList();
         }
         
         return $this->output();
@@ -132,32 +103,11 @@ class CustodianController extends Controller {
     public function edit($id) {
         
         if (Request::method() === 'POST') {
-            abort_if(
-                !Request::input('field') ||
-                !Request::input('id') ||
-                !in_array(Request::input('field'), ['grade', 'class']),
-                HttpStatusCode::NOT_ACCEPTABLE,
-                __('messages.not_acceptable')
-            );
-            $id = Request::input('id');
-            if (Request::input('field') == 'grade') {
-                list($classes, $classId) = $this->grade->classList($id);
-                $this->result['html'] = [
-                    'classes'  => $classes,
-                    'students' => $this->class->studentList($classId),
-                ];
-            } else {
-                $this->result['html']['students'] = $this->class->studentList($id);
-            }
-            
-            return response()->json($this->result);
+            return $this->custodian->studentList();
         }
-        $relations = CustodianStudent::whereCustodianId($id)->get();
-        $custodian = $this->custodian->find($id);
+        
         return $this->output([
-            'mobiles'   => $custodian->user->mobiles,
-            'custodian' => $custodian,
-            'relations' => $relations,
+            'custodian' => $this->custodian->find($id),
         ]);
         
     }

@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 
 /**
  * App\Models\Group 角色
@@ -47,7 +48,7 @@ class Group extends Model {
 
     protected $table = 'groups';
 
-    protected $ag, $gm, $gt;
+    protected $ag, $gm, $gt, $menu;
     
     protected $fillable = [
         'name', 'school_id', 'remark', 'enabled',
@@ -59,6 +60,7 @@ class Group extends Model {
         $this->ag = app()->make('App\Models\ActionGroup');
         $this->gm = app()->make('App\Models\GroupMenu');
         $this->gt = app()->make('App\Models\GroupTab');
+        $this->menu = app()->make('App\Models\Menu');
         
     }
     
@@ -179,6 +181,20 @@ class Group extends Model {
         
         return self::removable($group) ? $group->delete() : false;
 
+    }
+    
+    /**
+     * 返回指定学校的菜单树
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    function menuTree() {
+    
+        $schoolId = Request::query('schoolId');
+        $menuId = School::find($schoolId)->menu_id;
+        
+        return $this->menu->schoolTree($menuId);
+        
     }
     
     /**

@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ConferenceParticipantRequest;
 use App\Models\ConferenceParticipant;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -22,6 +21,7 @@ class ConferenceParticipantController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->cp = $cp;
+        $this->approve($cp);
         
     }
     
@@ -48,14 +48,8 @@ class ConferenceParticipantController extends Controller {
      *
      * @param ConferenceParticipantRequest $request
      * @return JsonResponse
-     * @throws AuthorizationException
      */
     public function store(ConferenceParticipantRequest $request) {
-        
-        $this->authorize(
-            'store',
-            ConferenceParticipant::class
-        );
         
         return $this->result(
             $this->cp->store(
@@ -74,11 +68,8 @@ class ConferenceParticipantController extends Controller {
      */
     public function show($id) {
         
-        $cp = $this->cp->find($id);
-        $this->authorize('show', $cp);
-        
         return $this->output([
-            'cp' => $cp,
+            'cp' => $this->cp->find($id),
         ]);
         
     }

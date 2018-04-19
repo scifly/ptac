@@ -1,14 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Http\Requests\SubjectRequest;
-use App\Models\Grade;
-use App\Models\Major;
-use App\Models\Subject;
 use Exception;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Request;
 use Throwable;
+use App\Models\Subject;
+use Illuminate\Http\JsonResponse;
+use App\Http\Requests\SubjectRequest;
+use Illuminate\Support\Facades\Request;
 
 /**
  * 科目
@@ -18,14 +16,12 @@ use Throwable;
  */
 class SubjectController extends Controller {
     
-    protected $subject, $major, $grade;
+    protected $subject;
     
-    function __construct(Subject $subject, Major $major, Grade $grade) {
+    function __construct(Subject $subject) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->subject = $subject;
-        $this->major = $major;
-        $this->grade = $grade;
         $this->approve($subject);
         
     }
@@ -56,10 +52,7 @@ class SubjectController extends Controller {
      */
     public function create() {
         
-        return $this->output([
-            'majors' => $this->major->majorList(),
-            'grades' => $this->grade->gradeList(),
-        ]);
+        return $this->output();
         
     }
     
@@ -88,24 +81,8 @@ class SubjectController extends Controller {
      */
     public function edit($id) {
         
-        $subject = Subject::find($id);
-        $gradeIds = explode(',', $subject['grade_ids']);
-        $selectedGrades = [];
-        foreach ($gradeIds as $gradeId) {
-            $grade = Grade::find($gradeId);
-            $selectedGrades[$gradeId] = $grade['name'];
-        }
-        $selectedMajors = [];
-        foreach ($subject->majors as $major) {
-            $selectedMajors[$major->id] = $major->name;
-        }
-        
         return $this->output([
-            'subject'        => $subject,
-            'selectedGrades' => $selectedGrades,
-            'selectedMajors' => $selectedMajors,
-            'majors'         => $this->major->majorList(),
-            'grades'         => $this->grade->gradeList(),
+            'subject' => Subject::find($id),
         ]);
         
     }

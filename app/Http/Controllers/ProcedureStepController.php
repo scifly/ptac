@@ -23,6 +23,7 @@ class ProcedureStepController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->ps = $ps;
+        $this->approve($ps);
         
     }
     
@@ -79,11 +80,8 @@ class ProcedureStepController extends Controller {
      */
     public function edit($id) {
         
-        $ps = ProcedureStep::find($id);
-        abort_if(!$ps, HttpStatusCode::NOT_FOUND);
-        
         return $this->output([
-            'ps' => $ps,
+            'ps' => ProcedureStep::find($id),
         ]);
         
     }
@@ -97,11 +95,10 @@ class ProcedureStepController extends Controller {
      */
     public function update(ProcedureStepRequest $request, $id) {
         
-        $ps = ProcedureStep::find($id);
-        abort_if(!$ps, HttpStatusCode::NOT_FOUND);
-        
         return $this->result(
-            $ps->modify($request->all(), $id)
+            $this->ps->modify(
+                $request->all(), $id
+            )
         );
         
     }
@@ -115,11 +112,8 @@ class ProcedureStepController extends Controller {
      */
     public function destroy($id) {
         
-        $ps = ProcedureStep::find($id);
-        abort_if(!$ps, HttpStatusCode::NOT_FOUND);
-        
         return $this->result(
-            $ps->remove($id)
+            $this->ps->remove($id)
         );
         
     }

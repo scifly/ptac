@@ -82,17 +82,8 @@ class GradeController extends Controller {
      */
     public function edit($id) {
         
-        $grade = Grade::find($id);
-        $selectedEducators = [];
-        if ($grade->educator_ids != '0') {
-            $selectedEducators = $this->educator->educatorList(
-                explode(",", rtrim($grade->educator_ids, ","))
-            );
-        }
-        
         return $this->output([
-            'grade'             => $grade,
-            'selectedEducators' => $selectedEducators,
+            'grade' => Grade::find($id),
         ]);
         
     }
@@ -124,7 +115,9 @@ class GradeController extends Controller {
     public function destroy($id) {
         
         return $this->result(
-            $this->grade->remove($id, true)
+            $this->grade->remove(
+                $id, true
+            )
         );
         
     }

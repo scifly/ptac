@@ -97,7 +97,9 @@ class CommTypeController extends Controller {
     public function update(CommTypeRequest $request, $id) {
         
         return $this->result(
-            $this->ct->modify($request->all(), $id)
+            $this->ct->modify(
+                $request->all(), $id
+            )
         );
         
     }

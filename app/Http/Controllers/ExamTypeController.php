@@ -95,7 +95,9 @@ class ExamTypeController extends Controller {
     public function update(ExamTypeRequest $request, $id) {
         
         return $this->result(
-            $this->et->modify($request->all(), $id)
+            $this->et->modify(
+                $request->all(), $id
+            )
         );
         
     }

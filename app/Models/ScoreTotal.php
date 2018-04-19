@@ -192,7 +192,12 @@ class ScoreTotal extends Model {
      * @throws Exception
      */
     function stat($examId) {
-        
+    
+        abort_if(
+            !Exam::find($examId),
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
         $exam = Exam::find($examId);
         $role = Auth::user()->group->name;
         

@@ -57,12 +57,7 @@ class StudentController extends Controller {
     public function create() {
         
         if (Request::method() === 'POST') {
-            list($classes) = $this->grade->classList(
-                Request::input('id')
-            );
-            $this->result['html']['classes'] = $classes;
-            
-            return response()->json($this->result);
+            return $this->student->classList();
         }
         
         return $this->output();
@@ -112,19 +107,11 @@ class StudentController extends Controller {
     public function edit($id) {
     
         if (Request::method() === 'POST') {
-            list($classes) = $this->grade->classList(
-                Request::input('id')
-            );
-            $this->result['html']['classes'] = $classes;
-    
-            return response()->json($this->result);
+            return $this->student->classList();
         }
-        $student = $this->student->find($id);
     
         return $this->output([
-            'student' => $student,
-            'user'    => $student->user,
-            'mobiles' => $student->user->mobiles,
+            'student' => $this->student->find($id),
         ]);
         
     }
@@ -173,25 +160,7 @@ class StudentController extends Controller {
      */
     public function import() {
         
-        if (Request::isMethod('post')) {
-            $file = Request::file('file');
-            abort_if(
-                empty($file),
-                HttpStatusCode::INTERNAL_SERVER_ERROR,
-                '您还没选择文件！'
-            );
-            // 文件是否上传成功
-            if ($file->isValid()) {
-                return response()->json(
-                    $this->student->upload($file)
-                );
-            }
-        }
-        
-        return abort(
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            '上传失败'
-        );
+        return $this->student->import();
         
     }
     
@@ -204,21 +173,10 @@ class StudentController extends Controller {
     public function export() {
         
         if (Request::method() === 'POST') {
-            list($classes) = $this->grade->classList(
-                Request::input('id')
-            );
-            $this->result['html']['classes'] = $classes;
-            
-            return response()->json(
-                $this->result
-            );
+            return $this->student->classList();
         }
-        $range = Request::query('range');
-        $id = Request::query('id');
         
-        return $this->student->export(
-            $range, $id
-        );
+        return $this->student->export();
         
     }
     

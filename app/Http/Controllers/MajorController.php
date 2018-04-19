@@ -81,16 +81,8 @@ class MajorController extends Controller {
      */
     public function edit($id) {
         
-        $major = Major::find($id);
-        $majorSubjects = $major->subjects;
-        $selectedSubjects = [];
-        foreach ($majorSubjects as $subject) {
-            $selectedSubjects[$subject->id] = $subject->name;
-        }
-        
         return $this->output([
-            'major'            => $major,
-            'selectedSubjects' => $selectedSubjects,
+            'major' => Major::find($id),
         ]);
         
     }

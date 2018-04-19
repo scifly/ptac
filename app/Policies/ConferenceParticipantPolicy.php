@@ -2,8 +2,10 @@
 
 namespace App\Policies;
 
+use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
+use App\Helpers\PolicyTrait;
 use App\Models\ConferenceParticipant;
 use App\Models\ConferenceQueue;
 use App\Models\ConferenceRoom;
@@ -13,7 +15,7 @@ use Illuminate\Support\Facades\Request;
 
 class ConferenceParticipantPolicy {
 
-    use HandlesAuthorization, ModelTrait;
+    use HandlesAuthorization, ModelTrait, PolicyTrait;
 
     const SUPER_ROLES = ['运营', '企业', '学校'];
 
@@ -23,56 +25,42 @@ class ConferenceParticipantPolicy {
      * @return void
      */
     public function __construct() { }
-
+    
     /**
-     * Determine whether users can participate the designated conference
+     * 权限判断
      *
      * @param User $user
+     * @param ConferenceParticipant|null $cp
+     * @param bool $abort
      * @return bool
      */
-    public function store(User $user) {
-
-        // 超级管理员不得参加任何会议
-        if (in_array($user->group->name, self::SUPER_ROLES)) {
-            return false;
-        }
-        $educatorId = Request::input('educator_id');
-        $conferenceQueueId = Request::input('conference_queue_id');
-        $educatorIds = explode(',', ConferenceQueue::find($conferenceQueueId)->educator_ids);
-
-        return in_array($educatorId, $educatorIds);
-
-    }
-
-    /**
-     * Determine whether the current user can view the detail of the conference participant
-     *
-     * @param User $user
-     * @param ConferenceParticipant $cp
-     * @return bool
-     */
-    public function show(User $user, ConferenceParticipant $cp) {
-
+    function operation(User $user, ConferenceParticipant $cp = null, $abort = false) {
+    
         abort_if(
-            !$cp,
+            $abort && !$cp,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        $role = $user->group->name;
-        if (in_array($role, self::SUPER_ROLES)) {
-            switch ($role) {
-                case '运营': return true;
-                case '企业':
-                case '学校':
-                    $conferenceRoomId = ConferenceQueue::find($cp->conference_queue_id)->conference_room_id;
-                    $schoolId = ConferenceRoom::find($conferenceRoomId)->school->id;
-                    return $schoolId == $this->schoolId();
-                default: return false;
-            }
+        $action = explode('/', Request::path())[1];
+        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
+        switch ($action) {
+            case 'index':
+                return $isSuperRole ? true : $this->action($user);
+            case 'store':
+                if ($isSuperRole) { return false; }
+                $educatorId = Request::input('educator_id');
+                $conferenceQueueId = Request::input('conference_queue_id');
+                $educatorIds = explode(',', ConferenceQueue::find($conferenceQueueId)->educator_ids);
+                return in_array($educatorId, $educatorIds);
+            case 'show':
+                return $isSuperRole
+                    ? $cp->conferenceQueue->conferenceRoom->school_id == $this->schoolId()
+                    : ConferenceQueue::find($cp->conference_queue_id)->user_id == $user->id;
+            default:
+                return false;
+                
         }
-
-        return ConferenceQueue::find($cp->conference_queue_id)->user_id == $user->id;
-
+        
     }
-
+    
 }

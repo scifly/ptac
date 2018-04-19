@@ -63,13 +63,12 @@ class StudentAttendanceController extends Controller {
                     Request::input('id')
                 );
                 $this->result['html']['classes'] = $classes;
-                
+    
                 return response()->json($this->result);
-            } else {
-                return response()->json(
-                    $this->sa->stat()
-                );
             }
+            return response()->json(
+                $this->sa->stat()
+            );
         }
         
         return $this->output();

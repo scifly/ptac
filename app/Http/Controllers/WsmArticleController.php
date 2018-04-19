@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\WsmArticleRequest;
-use App\Models\Media;
 use App\Models\WsmArticle;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -17,13 +16,12 @@ use Throwable;
  */
 class WsmArticleController extends Controller {
     
-    protected $wsma, $media;
+    protected $wsma;
     
-    function __construct(WsmArticle $wsma, Media $media) {
+    function __construct(WsmArticle $wsma) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->wsma = $wsma;
-        $this->media = $media;
         $this->approve($wsma);
         
     }
@@ -83,11 +81,8 @@ class WsmArticleController extends Controller {
      */
     public function show($id) {
         
-        $article = WsmArticle::find($id);
-        
         return $this->output([
-            'article' => $article,
-            'medias'  => $this->media->medias(explode(',', $article->media_ids)),
+            'article' => WsmArticle::find($id),
         ]);
         
     }
@@ -101,11 +96,8 @@ class WsmArticleController extends Controller {
      */
     public function edit($id) {
         
-        $article = WsmArticle::find($id);
-        
         return $this->output([
-            'article' => $article,
-            'medias'  => $this->media->medias(explode(',', $article->media_ids)),
+            'article' => WsmArticle::find($id)
         ]);
         
     }

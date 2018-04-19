@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ExamRequest;
 use App\Models\Exam;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -66,7 +65,9 @@ class ExamController extends Controller {
     public function store(ExamRequest $request) {
         
         return $this->result(
-            $this->exam->store($request->all())
+            $this->exam->store(
+                $request->all()
+            )
         );
         
     }
@@ -80,12 +81,8 @@ class ExamController extends Controller {
      */
     public function show($id) {
         
-        $exam = $this->exam->find($id);
-        
         return $this->output([
-            'exam'     => $exam,
-            'classes'  => $exam->classes($exam->class_ids),
-            'subjects' => $exam->subjects(),
+            'exam' => $this->exam->find($id)
         ]);
         
     }
@@ -99,12 +96,8 @@ class ExamController extends Controller {
      */
     public function edit($id) {
         
-        $exam = Exam::find($id);
-        
         return $this->output([
-            'exam'             => $exam,
-            'selectedClasses'  => $exam->classes($exam->class_ids),
-            'selectedSubjects' => $exam->subjects($exam->subject_ids),
+            'exam' => Exam::find($id),
         ]);
     }
     
@@ -118,7 +111,9 @@ class ExamController extends Controller {
     public function update(ExamRequest $request, $id) {
         
         return $this->result(
-            $this->exam->modify($request->all(), $id)
+            $this->exam->modify(
+                $request->all(), $id
+            )
         );
         
     }

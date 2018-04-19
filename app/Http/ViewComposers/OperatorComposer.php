@@ -85,7 +85,12 @@ class OperatorComposer {
             default:
                 break;
         }
+        $mobiles = [];
+        if (Request::route('id')) {
+            $mobiles = User::find(Request::route('id'))->mobiles;
+        }
         $view->with([
+            'mobiles' => $mobiles,
             'groups'  => $groups,
             'corps'   => $corps,
             'schools' => $schools,

@@ -3,16 +3,23 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use App\Models\WapSite;
+use App\Models\WapSiteModule;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Request;
 
 class WapSiteModuleComposer {
     
     use ModelTrait;
     
     public function compose(View $view) {
-        $schoolId = $this->schoolId();
+        
+        $media = null;
+        if (Request::route('id')) {
+            $media = WapSiteModule::find(Request::route('id'))->media;
+        }
         $view->with([
-            'wapSites' => WapSite::whereSchoolId($schoolId)->pluck('site_title', 'id'),
+            'wapSites' => WapSite::whereSchoolId($this->schoolId())->pluck('site_title', 'id'),
+            'media'    => $media,
             'uris'     => $this->uris(),
         ]);
         

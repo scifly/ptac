@@ -85,8 +85,7 @@ class WapSiteModuleController extends Controller {
         $wsm = $this->wsm->find($id);
         
         return $this->output([
-            'wapSiteModule' => $wsm,
-            'media'         => Media::find($wsm->media_id),
+            'wsm' => $wsm,
         ]);
         
     }
@@ -103,7 +102,9 @@ class WapSiteModuleController extends Controller {
     public function update(WapSiteModuleRequest $request, $id) {
         
         return $this->result(
-            $this->wsm->modify($request, $id)
+            $this->wsm->modify(
+                $request, $id
+            )
         );
         
     }

@@ -81,7 +81,7 @@ class Exam extends Model {
      * @param $classIds
      * @return array
      */
-    function classes($classIds) {
+    function selectedClasses($classIds) {
         
         $classIds = explode(",", $classIds);
         $selectedClasses = [];
@@ -100,7 +100,7 @@ class Exam extends Model {
      * @param $subjectIds
      * @return array
      */
-    function subjects($subjectIds = null) {
+    function selectedSubjects($subjectIds = null) {
 
         $subjectIds = explode(",", $subjectIds);
         $selectedSubjects = [];

@@ -2,10 +2,13 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
+use App\Models\Custodian;
+use App\Models\CustodianStudent;
 use App\Models\Grade;
 use App\Models\Squad;
 use App\Models\Student;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Request;
 
 class CustodianComposer {
     
@@ -26,8 +29,7 @@ class CustodianComposer {
         $records = Student::with('user:id,realname')
             ->where('class_id', key($classes))
             ->where('enabled', 1)
-            ->get()
-            ->toArray();
+            ->get()->toArray();
         $students = [];
         foreach ($records as $record) {
             if (!isset($record['user'])) {
@@ -35,10 +37,17 @@ class CustodianComposer {
             }
             $students[$record['id']] = $record['user']['realname'] . '(' . $record['card_number'] . ')';
         }
+        $mobiles = $relations = [];
+        if (Request::route('id') && Request::method() == 'GET') {
+            $mobiles = Custodian::find(Request::route('id'))->user->mobiles;
+            $relations = CustodianStudent::whereCustodianId(Request::route('id'))->get();
+        }
         $view->with([
             'grades'       => $grades,
             'classes'      => $classes,
             'students'     => $students,
+            'mobiles'      => $mobiles,
+            'relations'    => $relations,
             'title'        => '新增监护关系',
             'uris'         => $this->uris(),
             'relationship' => true,
