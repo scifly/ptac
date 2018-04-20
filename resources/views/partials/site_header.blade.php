@@ -9,8 +9,8 @@
             <ul class="nav navbar-nav">
                 <li class="dropdown messages-menu open">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-                        <i class="fa fa-send-o" style="margin-right: 15px;"></i>
-                        <b>( Here goes the Corp / School name )</b>
+                        <i class="fa {!! $department['icon'] ?? 'fa-send-o' !!}" style="margin-right: 15px;"></i>
+                        <b>{!! $department['department'] ?? '家校通运营' !!}</b>
                     </a>
                 </li>
                 <!--用户账号-->

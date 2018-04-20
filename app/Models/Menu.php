@@ -642,6 +642,32 @@ class Menu extends Model {
     }
     
     /**
+     * 获取指定菜单对应的部门图标及名称
+     *
+     * @param $id
+     * @return array
+     */
+    function department($id) {
+        
+        $icon = $name = null;
+        $departmentMenuId = $this->menuId($id);
+        
+        if ($departmentMenuId) {
+            $icon = 'fa-university';
+            $name = $this->find($departmentMenuId)->name;
+        } else {
+            $departmentMenuId = $this->menuId($id, '企业');
+            if ($departmentMenuId) {
+                $icon = 'fa-weixin';
+                $name = $this->find($departmentMenuId)->name;
+            }
+        }
+        
+        return ['icon' => $icon, 'name' => $name];
+        
+    }
+    
+    /**
      * 获取指定菜单的完整路径
      *
      * @param $id

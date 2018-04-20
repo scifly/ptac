@@ -164,6 +164,7 @@ class HomeController extends Controller {
             'menu'   => $menu->menuHtml($menu->rootMenuId()),
             'tabs'   => $tabArray,
             'menuId' => $id,
+            'department' => $this->menu->department($id),
             'js'     => self::PAGEJS,
         ]);
         
