@@ -154,7 +154,7 @@ class HomeController extends Controller {
         # 获取并返回wrapper-content层中的html内容
         if (Request::ajax()) {
             $this->result['html'] = view('partials.site_content', ['tabs' => $tabArray])->render();
-            
+            $this->result['department'] = $this->menu->department($id);
             return response()->json($this->result);
         }
         # 获取菜单列表
