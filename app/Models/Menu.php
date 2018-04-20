@@ -422,7 +422,6 @@ class Menu extends Model {
                     $menu->save();
                 }
             }
-            return true;
         } else {
             # 移动菜单
             abort_if(
@@ -434,8 +433,9 @@ class Menu extends Model {
                 $moved = $this->move($id, $parentId, true);
                 abort_if(!$moved, HttpStatusCode::BAD_REQUEST, __('messages.bad_request'));
             }
-            return true;
         }
+        
+        return '';
     
     }
     
