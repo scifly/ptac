@@ -618,7 +618,7 @@ class User extends Authenticatable {
                 'formatter' => function ($d, $row) {
                     $user = Auth::user();
                     $id = $row['id'];
-                    $status = $d ? Snippet::DT_ON : Snippet::DT_OFF;
+                    $status = Snippet::status($d);
                     $status .= ($row['synced']
                         ? sprintf(Snippet::ICON, 'fa-wechat text-green', '已同步')
                         : sprintf(Snippet::ICON, 'fa-wechat text-gray', '未同步'));

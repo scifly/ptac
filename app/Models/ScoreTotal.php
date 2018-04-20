@@ -144,9 +144,8 @@ class ScoreTotal extends Model {
                 'db' => 'ScoreTotal.enabled', 'dt' => 9,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
-                    $status = $d ? Snippet::DT_ON : Snippet::DT_OFF;
                     $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
-                    return $status . $delLink;
+                    return Snippet::status($d) . $delLink;
                 },
             ],
         ];

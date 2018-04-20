@@ -21,7 +21,7 @@ class MessageIndexComposer {
             $apps[$datum['id']] = $datum['name'] . '|' . $datum['square_logo_url'];
         }
         $view->with([
-            'titles'         => ['#', '通信方式', '应用', '消息批次', '接收者', '类型', '发送于', '已发 . 已读'],
+            'titles'         => ['#', '通信方式', '应用', '消息批次', '接收者', '类型', '发送于', '状态(发送/阅读)'],
             'apps'           => $apps,
             'messageMaxSize' => env('MESSAGE_MAX_SIZE'),
             'uris'           => $this->uris(),

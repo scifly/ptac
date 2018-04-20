@@ -171,16 +171,16 @@ class ProcedureLog extends Model {
                 'formatter' => function ($d, $row) {
                     switch ($d) {
                         case 0:
-                            $status = Snippet::DT_ON;
+                            $status = Snippet::status(true);
                             break;
                         case 1:
-                            $status = Snippet::DT_OFF;
+                            $status = Snippet::status(false);
                             break;
                         case 2:
                             $status = sprintf(self::DT_PEND, '待定');
                             break;
                         default:
-                            $status = Snippet::DT_OFF;
+                            $status = Snippet::status(false);
                             break;
                     }
                     $id = $row['first_log_id'];

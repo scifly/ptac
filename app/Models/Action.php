@@ -174,9 +174,8 @@ class Action extends Model {
                 'db' => 'Action.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
-                    $status = $d ? Snippet::DT_ON : Snippet::DT_OFF;
                     $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
-                    return $status . $editLink;
+                    return Snippet::status($d) . $editLink;
                 },
             ],
         ];

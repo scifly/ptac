@@ -231,10 +231,9 @@ class Subject extends Model {
                 'db'        => 'Subject.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
-                    $status = $d ? Snippet::DT_ON : Snippet::DT_OFF;
                     $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
                     $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
-                    return $status . $editLink . $delLink;
+                    return Snippet::status($d) . $editLink . $delLink;
                 },
             ],
         ];

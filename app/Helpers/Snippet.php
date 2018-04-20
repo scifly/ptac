@@ -17,8 +17,8 @@ class Snippet {
     const BADGE_FUCHSIA = '<span class="text-fuchsia">%s</span>';
     
     # Datatable
-    const DT_ON = '<i class="fa fa-circle text-green" title="已启用" style="width: 20px; margin: 0 10px;"></i>';
-    const DT_OFF = '<i class="fa fa-circle text-gray" title="未启用" style="width: 20px; margin: 0 10px;"></i>';
+    const DT_ON = '<i class="fa fa-circle text-green" title="%s" style="width: 20px; margin: 0 10px;"></i>';
+    const DT_OFF = '<i class="fa fa-circle text-gray" title="%s" style="width: 20px; margin: 0 10px;"></i>';
     const DT_LINK_EDIT = '<a id="%s" title="编辑" href="#"><i class="fa fa-pencil" style="margin-left: 15px;"></i></a>';
     const DT_LINK_DEL = '<a id="%s" title="删除" href="#"><i class="fa fa-remove text-red" style="margin-left: 15px;"></i></a>';
     const DT_LINK_SHOW = '<a id="%s" title="详情" href="#"><i class="fa fa-bars" style="margin-left: 15px;"></i></a>';
@@ -52,5 +52,21 @@ HTML;
     
     # 卡片图标
     const ICON = '<i class="fa %s" style="width: 20px; margin: 0 5px;" title="%s"></i>&nbsp;';
+    
+    /**
+     * 返回状态图标
+     *
+     * @param $status
+     * @param string $enabled
+     * @param string $disabled
+     * @return string
+     */
+    static function status($status, $enabled = '已启用', $disabled = '未启用') {
+        
+        return $status
+            ? sprintf(self::DT_ON, $enabled)
+            : sprintf(self::DT_OFF, $disabled);
+        
+    }
     
 }

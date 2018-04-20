@@ -543,14 +543,13 @@ class Educator extends Model {
                 'db'        => 'Educator.enabled', 'dt' => 4,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
-                    $status = $d ? Snippet::DT_ON : Snippet::DT_OFF;
                     $user = Auth::user();
                     $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
                     $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
                     $rechargeLink = sprintf(Snippet::DT_LINK_RECHARGE, 'recharge_' . $id);
                     
                     return
-                        $status .
+                        Snippet::status($d) .
                         ($user->can('act', self::uris()['edit']) ? $editLink : '') .
                         ($user->can('act', self::uris()['destroy']) ? $delLink : '') .
                         ($user->can('act', self::uris()['recharge']) ? $rechargeLink : '');

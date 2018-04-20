@@ -213,12 +213,8 @@ class Message extends Model {
             [
                 'db'        => 'Message.sent', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    $sent = $d
-                        ? sprintf(Snippet::BADGE_GREEN, '是')
-                        : sprintf(Snippet::BADGE_RED, '否');
-                    $read = $row['read']
-                        ? sprintf(Snippet::BADGE_GREEN, '是')
-                        : sprintf(Snippet::BADGE_RED, '否');
+                    $sent = Snippet::status($d, '已发', '未发');
+                    $read = Snippet::status($row['read'], '已读', '未读');
                     return $sent . '&nbsp;' . $read;
                 },
             ],
