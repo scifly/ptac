@@ -82,6 +82,7 @@ class HomeController extends Controller {
                     'title'      => '首页',
                     'uri'        => Request::path(),
                     'html'       => view('home.' . $view)->render(),
+                    'department' => $this->menu->department($menuId)
                 ]);
             }
             

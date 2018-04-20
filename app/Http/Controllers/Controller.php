@@ -110,6 +110,7 @@ class Controller extends BaseController {
                     'content' => view($view, $params)->render(),
                     'menuId'  => session('menuId'),
                     'js'      => 'js/home/page.js',
+                    'department' => $menu->department($menu->id)
                 ]);
             }
         }
