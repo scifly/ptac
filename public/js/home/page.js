@@ -552,7 +552,7 @@ var page = {
         });
     },
     initBackBtn: function (table) {
-        $('#cancel, #record-list').on('click', function () {
+        $('#cancel, #record-list').off('click').on('click', function () {
             page.backToList(table);
         })
     },

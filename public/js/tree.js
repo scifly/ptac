@@ -492,7 +492,7 @@
                 });
             },
             cancel: function () {
-                $(document).on('click', '#cancel', function () {
+                $(document).off('click', '#cancel').on('click', '#cancel', function () {
                     $('.box-footer').show();
                     $('.form-horizontal').show();
                     $('.tree-box').hide();
