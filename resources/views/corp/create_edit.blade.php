@@ -56,13 +56,18 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('corpid', null, [
-                        'class' => 'form-control text-blue',
-                        'placeholder' => '(18个小写字母与阿拉伯数字)',
-                        'required' => 'true',
-                        'data-parsley-type' => 'alphanum',
-                        'data-parsley-length' => '[18, 18]'
-                    ]) !!}
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i style="width: 20px;">ID</i>
+                        </div>
+                        {!! Form::text('corpid', null, [
+                            'class' => 'form-control text-blue',
+                            'placeholder' => '(18个小写字母与阿拉伯数字)',
+                            'required' => 'true',
+                            'data-parsley-type' => 'alphanum',
+                            'data-parsley-length' => '[18, 18]'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             <div class="form-group">
