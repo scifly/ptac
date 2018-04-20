@@ -9,7 +9,7 @@
             </div>
             <select multiple="multiple" name="{{ $id }}[]" id="{{ $id }}" class='form-control select2' style="width: 100%;">
                 @foreach ($items as $key => $value)
-                    @if(isset($selectedItems))
+                    @if (isset($selectedItems))
                         <option value="{{ $key }}"
                                 @if(array_key_exists($key, $selectedItems))
                                 selected

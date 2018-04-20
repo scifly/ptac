@@ -42,9 +42,8 @@
                         @include('partials.multiple_select', [
                             'label' => '应用',
                             'id' => 'app_ids',
-                            'icon' => 'fa fa-weixin',
-                            'items' => $apps,
-                            'selectedItems' => null
+                            'icon' => 'fa fa-weixin text-green',
+                            'items' => $apps
                         ])
                         <!-- 发送对象 -->
                         <div class="form-group">
