@@ -282,8 +282,8 @@ var page = {
             $deselectAll = $('#deselect-all'),
             $batchEnable = $('#batch-enable'),
             $batchDisable = $('#batch-disable'),
-            $batchDelete = $('#batch-delete');
-        var showTable = function () {
+            $batchDelete = $('#batch-delete'),
+            showTable = function () {
             var $datatable = $('#data-table'),
                 columns = $datatable.find('thead tr th').length,
                 statusCol = {className: 'text-right', targets: [columns - 1]};
@@ -491,19 +491,23 @@ var page = {
             }));
         }
     },
-    initSelect2: function (options) {
+    initSelect2: function (options, id) {
+        var option = {language: "zh-CN"},
+            $select = $('select');
+        if (typeof options !== 'undefined') {
+            $select = $('#' + id);
+            $.extend(option, options);
+        }
         if (!($.fn.select2)) {
             page.loadCss(plugins.select2.css);
             $.getMultiScripts([plugins.select2.js])
                 .done(function () {
                     $.getMultiScripts([plugins.select2.jscn]).done(function () {
-                        $('select').select2(
-                            typeof options !== 'undefined' ? options : {language: "zh-CN"}
-                        );
+                        $select.select2(option);
                     });
                 });
         } else {
-            $('select').select2(typeof options !== 'undefined' ? options : {language: "zh-CN"});
+            $select.select2(option);
         }
     },
     initICheck: function (object) {

@@ -1,7 +1,8 @@
+//# sourceURL=index.js
 page.initSelect2({
     templateResult: page.formatStateImg,
     templateSelection: page.formatStateImg,
-});
+}, 'app_ids');
 page.initDatatable('messages');
 page.loadCss('css/message/message.css');
 
