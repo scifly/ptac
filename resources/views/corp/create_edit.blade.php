@@ -13,7 +13,9 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-weixin'])
+                        @include('partials.icon_addon', [
+                            'class' => 'fa-weixin text-green'
+                        ])
                         {!! Form::text('name', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(不超过60个汉字)',
@@ -29,7 +31,9 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-weixin'])
+                        @include('partials.icon_addon', [
+                            'class' => 'fa-weixin text-green'
+                        ])
                         {!! Form::text('acronym', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(不超过20个小写字母)',
@@ -44,7 +48,7 @@
                     'label' => '所属运营者',
                     'id' => 'company_id',
                     'items' => $companies,
-                    'icon' => 'fa fa-building'
+                    'icon' => 'fa fa-building text-blue'
                 ])
             @endif
             <div class="form-group">
