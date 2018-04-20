@@ -33,38 +33,34 @@
 					    <i class="fa fa-refresh fa-spin" style=""></i>
 					</div>
                     <div class="form-horizontal" id="message">
-                    {!! Form::open([
-                        'method' => 'post',
-                        'id' => 'formImagetext',
-                        'data-parsley-validate' => 'true'
-                    ]) !!}
-                    <style>.select2-search__field{display: none;}</style>
-                    <!-- 选择应用 -->
-                    @include('partials.multiple_select', [
-                        'label' => '应用',
-                        'id' => 'app_ids',
-                        'icon' => 'fa fa-weixin',
-                        'items' => $apps,
-                        'selectedItems' => null
-                    ])
-
-                    <!-- 发送对象 -->
+                        {!! Form::open([
+                            'method' => 'post',
+                            'id' => 'formImagetext',
+                            'data-parsley-validate' => 'true'
+                        ]) !!}
+                        <!-- 选择应用 -->
+                        @include('partials.multiple_select', [
+                            'label' => '应用',
+                            'id' => 'app_ids',
+                            'icon' => 'fa fa-weixin',
+                            'items' => $apps,
+                            'selectedItems' => null
+                        ])
+                        <!-- 发送对象 -->
                         <div class="form-group">
                             {!! Form::label('objects', '发送对象', [
                                 'class' => 'col-sm-3 control-label'
                             ]) !!}
                             <div class="col-sm-6">
-                                <div id="department-nodes-checked">
-
-                                </div>
-
-                                <input type="hidden" id="selectedDepartmentIds" value=""/>
-                                <button id="add-attachment" class="btn btn-box-tool" type="button"
+                                <div id="checked-nodes"></div>
+                                <input type="hidden" id="selected-node-ids" value=""/>
+                                <button id="choose" class="btn btn-box-tool" type="button"
                                         style="margin-top: 3px;">
                                     <i class="fa fa-user-plus text-blue">&nbsp;选择</i>
                                 </button>
                             </div>
                         </div>
+                        <!-- 消息内容 -->
                         <div class="form-group">
                             {!! Form::label('departmentId', '消息内容', [
                                 'class' => 'col-sm-3 control-label'
@@ -87,11 +83,11 @@
                                                 <i class="fa fa-file-image-o"></i>&nbsp;图片
                                             </a>
                                         </li>
-                                        <!--<li>
-                                            <a href="#content_voice" data-toggle="tab" class="tab">
-                                                <i class="fa fa-file-sound-o"></i>&nbsp;音频
-                                            </a>
-                                        </li>-->
+                                        {{--<li>--}}
+                                            {{--<a href="#content_voice" data-toggle="tab" class="tab">--}}
+                                                {{--<i class="fa fa-file-sound-o"></i>&nbsp;音频--}}
+                                            {{--</a>--}}
+                                        {{--</li>--}}
                                         <li>
                                             <a href="#content_video" data-toggle="tab" class="tab">
                                                 <i class="fa fa-file-movie-o"></i>&nbsp;视频
@@ -190,32 +186,20 @@
                         {!! Form::close() !!}
                     </div>
                 </div>
-                <style>
-                	.dataTables_scrollHeadInner{width: 100% !important;}
-                	.table-striped.table-bordered{width: 100% !important;}
-                </style>
                 <div class="tab-pane" id="tab02">
                     <table id="data-table" style="width: 100%"
                            class="display nowrap table table-striped table-bordered table-hover table-condensed">
                         <thead>
                         <tr class="bg-info">
-                            <th>#</th>
-                            <th>通信方式</th>
-                            <th>应用</th>
-                            <th>消息批次</th>
-                            <th>接收者</th>
-                            <th>类型</th>
-                            <th>已读</th>
-                            <th>已发</th>
-                            <th>创建于</th>
-                            <th>更新于</th>
+                            @foreach ($titles as $title)
+                                <th>{{ $title }}</th>
+                            @endforeach
                         </tr>
                         </thead>
                         <tbody></tbody>
                     </table>
                 </div>
-                <div class="tab-pane" id="tab03">
-                </div>
+                <div class="tab-pane" id="tab03"></div>
             </div>
         </div>
     </div>

@@ -41,13 +41,10 @@ class DepartmentPolicy {
         if ($user->group->name == '运营') { return true; }
         $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
         $action = explode('/', Request::path())[1];
-        if (in_array($action, ['sort', 'move'])) {
-            return true;
-        }
         if (in_array($action, ['index', 'create', 'store'])) {
             return $isSuperRole ? true : $this->action($user);
         }
-        if (in_array($action, ['edit', 'show', 'update', 'delete'])) {
+        if (in_array($action, ['edit', 'update', 'delete'])) {
             $isDepartmentAllowed = in_array($department->id, $this->departmentIds($user->id));
             return $isSuperRole ? $isDepartmentAllowed : ($isDepartmentAllowed && $this->action($user));
         }

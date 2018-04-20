@@ -297,12 +297,17 @@ Route::get('apps/menu/{id}', 'AppController@sync');
 Route::group(['prefix' => 'icons'], routes('IconController'));
 Route::group(['prefix' => 'icon_types'], routes('IconTypeController'));
 # 运营者设置 - 企业设置
-Route::group(['prefix' => 'departments'], routeItem('DepartmentController'));
+
+# 部门管理
 Route::group(['prefix' => 'departments'], function () {
     $c = 'DepartmentController';
-    Route::post('index', $c . '@index');
-    Route::post('move/{id}/{parentId?}', $c . '@move');
-    Route::post('sort', $c . '@sort');
+    Route::get('index/{deptId?}/{parentDeptId?}', $c . '@index');
+    Route::post('index/{deptId?}/{parentDeptId?}', $c . '@index');
+    Route::get('create/{parentId}', $c . '@create');
+    Route::post('store', $c . '@store');
+    Route::get('edit/{id}', $c . '@edit');
+    Route::put('update/{id}', $c . '@update');
+    Route::delete('delete/{id}', $c . '@destroy');
 });
 Route::group(['prefix' => 'companies'], routes('CompanyController'));
 Route::group(['prefix' => 'corps'], routes('CorpController'));
@@ -314,14 +319,17 @@ Route::group(['prefix' => 'tabs'], function () {
     Route::get('edit/{id}', $c . '@edit');
     Route::put('update/{id?}', $c . '@update');
 });
-Route::group(['prefix' => 'menus'], routeItem('MenuController'));
+# 菜单管理
 Route::group(['prefix' => 'menus'], function () {
     $c = 'MenuController';
-    Route::post('index', $c . '@index');
-    Route::post('sort', $c . '@sort');
-    Route::post('move/{id}/{parentId?}', $c . '@move');
-    Route::get('menutabs/{id}', $c . '@menuTabs');
-    Route::post('ranktabs/{id}', $c . '@rankTabs');
+    Route::get('index/{menuId?}/{parentMenuId?}', $c . '@index');
+    Route::post('index/{menuId?}/{parentMenuId?}', $c . '@index');
+    Route::get('create/{parentId}', $c . '@create');
+    Route::get('store', $c . '@store');
+    Route::put('update/{id}', $c . '@update');
+    Route::delete('delete/{id}', $c . '@destroy');
+    Route::get('sort/{id}', $c . '@sort');
+    Route::post('sort/{id}', $c . '@sort');
 });
 # 管理员
 Route::group(['prefix' => 'operators'], routes('OperatorController'));

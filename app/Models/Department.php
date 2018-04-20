@@ -18,9 +18,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Request;
 
 /**
  * App\Models\Department 部门
@@ -316,7 +317,50 @@ class Department extends Model {
         return $moved ? true : false;
 
     }
+    
+    /**
+     * 部门列表
+     *
+     * @param null $id
+     * @param null $parentId
+     * @return bool|JsonResponse
+     */
+    function index($id = null, $parentId = null) {
 
+        if (Request::has('id')) {
+            # 部门列表
+            return response()->json(
+                $this->tree(
+                    $this->rootDepartmentId(true)
+                )
+            );
+        } else if (Request::has('data')) {
+            # 保存部门排序
+            $orders = Request::get('data');
+            foreach ($orders as $id => $order) {
+                $department = $this->find($id);
+                if (isset($department)) {
+                    $department->order = $order;
+                    $department->save();
+                }
+            }
+            return true;
+        } else {
+            # 移动部门
+            $department = $this->find($id);
+            $parentDepartment = $this->find($parentId);
+            abort_if(
+                !$department || !$parentDepartment,
+                HttpStatusCode::NOT_FOUND
+            );
+            if ($department->movable($id, $parentId)) {
+                $department->move($id, $parentId, true);
+            }
+            return true;
+        }
+        
+    }
+    
     /**
      * 获取用于显示jstree的部门数据
      *

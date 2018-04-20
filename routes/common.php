@@ -11,7 +11,6 @@ function routes($ctlr) {
         Route::get('index', $ctlr . '@index');
         Route::get('create', $ctlr . '@create');
         Route::post('store', $ctlr . '@store');
-        Route::get('show/{id}', $ctlr . '@show');
         Route::get('edit/{id}', $ctlr . '@edit');
         Route::put('update/{id?}', $ctlr . '@update');
         Route::delete('delete/{id?}', $ctlr . '@destroy');
@@ -29,7 +28,6 @@ function routeItem($ctlr) {
         Route::get('index', $ctlr . '@index');
         Route::get('create/{id?}', $ctlr . '@create');
         Route::post('store', $ctlr . '@store');
-        Route::get('show/{id}', $ctlr . '@show');
         Route::get('edit/{id}', $ctlr . '@edit');
         Route::put('update/{id}', $ctlr . '@update');
         Route::delete('delete/{id}', $ctlr . '@destroy');

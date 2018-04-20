@@ -15,13 +15,13 @@ class MessageIndexComposer {
         $school = School::find($this->schoolId());
         $data = App::whereEnabled(1)
             ->where('corp_id', $school->corp_id)
-            ->where('agentid', '!=', '999')
             ->get(['id', 'name', 'square_logo_url']);
         $apps = [];
         foreach ($data as $datum) {
             $apps[$datum['id']] = $datum['name'] . '|' . $datum['square_logo_url'];
         }
         $view->with([
+            'titles'         => ['#', '通信方式', '应用', '消息批次', '接收者', '类型', '已读', '已发', '创建于', '更新于'],
             'apps'           => $apps,
             'messageMaxSize' => env('MESSAGE_MAX_SIZE'),
             'uris'           => $this->uris(),

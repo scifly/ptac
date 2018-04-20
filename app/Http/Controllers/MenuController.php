@@ -33,18 +33,16 @@ class MenuController extends Controller {
     /**
      * 菜单列表
      *
+     * @param null $menuId
+     * @param null $parentMenuId
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function index() {
+    public function index($menuId = null, $parentMenuId = null) {
         
-        if (Request::method() === 'POST') {
-            return $this->menu->tree(
-                $this->menu->rootMenuId(true)
-            );
-        }
-        
-        return $this->output();
+        return Request::method() == 'POST'
+            ? $this->menu->index($menuId, $parentMenuId)
+            : $this->output();
         
     }
     
@@ -116,33 +114,6 @@ class MenuController extends Controller {
     }
     
     /**
-     * 更新菜单所处位置
-     *
-     * @param $id
-     * @param $parentId
-     * @return JsonResponse
-     */
-    public function move($id, $parentId = null) {
-        
-        abort_if(
-            !$this->menu->find($id) || !$this->menu->find($parentId),
-            HttpStatusCode::NOT_FOUND,
-            __('messages.not_found')
-        );
-        if ($this->menu->movable($id, $parentId)) {
-            return $this->result(
-                $this->menu->move($id, $parentId, true)
-            );
-        }
-        
-        return abort(
-            HttpStatusCode::NOT_ACCEPTABLE,
-            '非法操作'
-        );
-        
-    }
-    
-    /**
      * 删除菜单
      *
      * @param $id
@@ -159,65 +130,18 @@ class MenuController extends Controller {
     }
     
     /**
-     * 保存菜单排列顺序
-     *
-     */
-    public function sort() {
-        
-        $positions = Request::get('data');
-        foreach ($positions as $id => $pos) {
-            $menu = $this->menu->find($id);
-            if (isset($menu)) {
-                $menu->position = $pos;
-                $menu->save();
-            }
-        }
-        
-    }
-    
-    /**
-     * 菜单包含的卡片
+     * 排序菜单卡片
      *
      * @param $id
      * @return JsonResponse
      * @throws Throwable
      */
-    public function menuTabs($id) {
+    public function sort($id) {
         
-        # todo: needs to be moved to index method
-        $tabRanks = MenuTab::whereMenuId($id)
-            ->get()
-            ->sortBy('tab_order')
-            ->toArray();
-        $tabs = [];
-        foreach ($tabRanks as $rank) {
-            $tabs[] = Tab::find($rank['tab_id']);
-        }
-        
-        return $this->output([
-            'tabs'   => $tabs,
-            'menuId' => $id,
-        ]);
-        
-    }
-    
-    /**
-     * 保存菜单卡片排列顺序
-     *
-     * @param $id
-     * @return JsonResponse
-     * @throws Exception
-     * @throws Throwable
-     */
-    public function rankTabs($id) {
-        
-        # todo: needs to be moved to index method
-        $ranks = Request::get('data');
-        
-        return $this->result(
-            $this->mt->storeTabRanks($id, $ranks)
-        );
-        
+        return Request::method() == 'POST'
+            ? $this->result($this->mt->storeTabRanks($id, Request::get('data')))
+            : $this->output();
+
     }
     
 }

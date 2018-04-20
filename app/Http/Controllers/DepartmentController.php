@@ -31,16 +31,16 @@ class DepartmentController extends Controller {
     /**
      * 部门列表
      *
+     * @param null $deptId
+     * @param null $parentDeptId
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function index() {
+    public function index($deptId = null, $parentDeptId = null) {
         
         if (Request::method() === 'POST') {
-            return response()->json(
-                $this->department->tree(
-                    $this->department->rootDepartmentId(true)
-                )
+            return $this->department->index(
+                $deptId, $parentDeptId
             );
         }
         
@@ -76,21 +76,6 @@ class DepartmentController extends Controller {
                 $request->all(), true
             )
         );
-        
-    }
-    
-    /**
-     * 部门详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function show($id) {
-        
-        return $this->output([
-            'department' => $this->department->find($id),
-        ]);
         
     }
     
@@ -139,48 +124,6 @@ class DepartmentController extends Controller {
         return $this->result(
             $this->department->remove($id)
         );
-        
-    }
-    
-    /**
-     * 更新部门所处位置
-     *
-     * @param $id
-     * @param $parentId
-     * @return JsonResponse
-     */
-    public function move($id, $parentId = null) {
-        
-        # todo: needs to be merged with index
-        $department = $this->department->find($id);
-        $parentDepartment = $this->department->find($parentId);
-        abort_if(
-            !$department || !$parentDepartment,
-            HttpStatusCode::NOT_FOUND
-        );
-        if ($department->movable($id, $parentId)) {
-            return $this->result(
-                $department->move($id, $parentId, true)
-            );
-        }
-        
-        return abort(HttpStatusCode::NOT_ACCEPTABLE);
-        
-    }
-    
-    /**
-     * 保存部门的排列顺序
-     */
-    public function sort() {
-        # todo: needs to be merged with index
-        $orders = Request::get('data');
-        foreach ($orders as $id => $order) {
-            $department = $this->department->find($id);
-            if (isset($department)) {
-                $department->order = $order;
-                $department->save();
-            }
-        }
         
     }
     

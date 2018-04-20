@@ -9,9 +9,9 @@ var title = title,
     $message = $('#message'),
     $objects = $('#objects'),
     $imageText = $('#imagetext'),
-    $addAttachment = $('#add-attachment'),
-    $saveAttachment = $('#save-attachment'),
-    $cancelAttachment = $('#cancel-attachment'),
+    $add = $('#add'),
+    $save = $('#save'),
+    $cancel = $('#cancel'),
     $addImageText = $('#add-imagetext'),
     $saveImageText = $('#save-imagetext'),
     $saveVideo = $('#save-video'),
@@ -26,13 +26,13 @@ var title = title,
     $btn_cancelAttachment = $('.js-btn-close-Attachment');
 
 // 附件管理
-$addAttachment.on('click', function () {
+$add.on('click', function () {
     $message.hide();
     $objects.show();
 });
-$saveAttachment.on('click', function () {
+$save.on('click', function () {
 });
-$cancelAttachment.on('click', function () {
+$cancel.on('click', function () {
     $message.show();
     $objects.hide();
 });
@@ -63,12 +63,12 @@ $cancelVideo.on('click', function () {
 });
 //部门树以及联系人加载
 if (typeof contacts === 'undefined') {
-    $.getMultiScripts(['js/message/contacts.tree.js'])
+    $.getMultiScripts(['js/tree.js'])
         .done(function () {
-            contacts.init('messages/index');
+            $.tree().list('messages/index', 'contact');
         });
 } else {
-    contacts.init('messages/index');
+    $.tree().list('messages/index', 'contact');
 }
 
 //短信获取输入字符

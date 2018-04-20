@@ -44,10 +44,10 @@ class MenuPolicy {
         if ($user->group->name == '运营') { return true; }
         $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
         $action = explode('/', Request::path())[1];
-        if (in_array($action, ['index', 'create', 'store', 'sort', 'move', 'menuTabs', 'rankTabs'])) {
+        if (in_array($action, ['index', 'create', 'store'])) {
             return $isSuperRole;
         }
-        if (in_array($action, ['edit', 'update', 'delete'])) {
+        if (in_array($action, ['edit', 'update', 'delete', 'sort'])) {
             $isMenuAllowed = in_array($menu->id, $this->menuIds($this->menu));
             return $isSuperRole && $isMenuAllowed;
         }

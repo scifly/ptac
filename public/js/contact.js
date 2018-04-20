@@ -1,7 +1,7 @@
 //# sourceURL=contact.js
 (function ($) {
     $.contact = function (options) {
-        var cr = {
+        var contact = {
             options: $.extend({
                 ranges: 'ranges',
                 studentId: 'student_id',
@@ -18,7 +18,7 @@
                 return $('#csrf_token').attr('content');
             },
             mobiles: function (formId, requestType, ajaxUrl) {
-                var $tbody = $('#' + cr.options.mobiles).find('tbody');
+                var $tbody = $('#' + contact.options.mobiles).find('tbody');
                 page.initICheck($tbody);
                 $tbody.find('tr:not(:last) .btn-mobile-add')
                     .removeClass('btn-mobile-add').addClass('btn-mobile-remove')
@@ -35,7 +35,7 @@
                 $(document).off('click', '.btn-remove');
                 $(document).off('click', '#relationship');
                 $(document).off('click', '#confirm-bind');
-                var $tbody = $('#' + cr.options.mobiles).find('tbody');
+                var $tbody = $('#' + contact.options.mobiles).find('tbody');
                 $(document).off('click', '.btn-mobile-remove');
                 $(document).off('click', '.btn-mobile-add').on('click', '.btn-mobile-add', function (e) {
                     e.preventDefault();
@@ -51,7 +51,7 @@
                                     '<input class="form-control" ' +
                                             'placeholder="（请输入手机号码）" ' +
                                             'name="mobile[' + size + '][mobile]" ' +
-                                            'value="" style="width: 75%"' +
+                                            'value="" style="width: 100%"' +
                                     '>' +
                                 '</div>' +
                             '</td>' +
@@ -73,7 +73,7 @@
                             '</td>' +
                         '</tr>'
                     );
-                    cr.mobiles(formId, requestType, ajaxUrl);
+                    contact.mobiles(formId, requestType, ajaxUrl);
                 }).on('click', '.btn-mobile-remove', function (e) {
                     $(this).parents('tr:first').remove();
                     e.preventDefault();
@@ -93,10 +93,10 @@
             },
             onRangeChange: function (table) {
                 page.initICheck();
-                var $range = $(cr.options.range);
+                var $range = $(contact.options.range);
                 if (table === 'educators') {
                     $range.on('ifClicked', function () {
-                        var $departmentId = $('#' + cr.options.departmentId);
+                        var $departmentId = $('#' + contact.options.departmentId);
                         $departmentId.select2('destroy');
                         $departmentId.prop('disabled', parseInt(this.value) !== 0);
                         page.initSelect2();
@@ -104,8 +104,8 @@
                     });
                 } else {
                     $range.on('ifClicked', function () {
-                        var $gradeId = $('#' + cr.options.gradeId);
-                        var $classId = $('#' + cr.options.classId);
+                        var $gradeId = $('#' + contact.options.gradeId);
+                        var $classId = $('#' + contact.options.classId);
                         var value = parseInt(this.value);
                         $gradeId.select2('destroy');
                         $classId.select2('destroy');
@@ -117,10 +117,10 @@
                 }
             },
             onGradeChange: function (table, action, relationship, id) {
-                $(document).off('change', '#' + cr.options.gradeId);
-                $(document).on('change', '#' + cr.options.gradeId, function () {
-                    var gradeId = $('#' + cr.options.gradeId).val(),
-                        $classId = $('#' + cr.options.classId),
+                $(document).off('change', '#' + contact.options.gradeId);
+                $(document).on('change', '#' + contact.options.gradeId, function () {
+                    var gradeId = $('#' + contact.options.gradeId).val(),
+                        $classId = $('#' + contact.options.classId),
                         uri = table + '/' + action + (typeof id !== 'undefined' ? '/' + id : ''),
                         disabled = $classId.prop('disabled'),
                         $next = $classId.next(),
@@ -133,7 +133,7 @@
                         dataType: 'json',
                         url: page.siteRoot() + uri,
                         data: {
-                            _token: cr.token(),
+                            _token: contact.token(),
                             field: 'grade',
                             id: gradeId
                         },
@@ -144,7 +144,7 @@
                                 $('#class_id').prop('disabled', true);
                             }
                             if (typeof relationship !== 'undefined') {
-                                var $studentId = $('#' + cr.options.studentId),
+                                var $studentId = $('#' + contact.options.studentId),
                                     $studentNext = $studentId.next(),
                                     $studentPrev = $studentId.prev();
                                 $studentNext.remove();
@@ -160,10 +160,10 @@
                 });
             },
             onClassChange: function (table, action, id) {
-                $(document).off('change', '#' + cr.options.classId);
-                $(document).on('change', '#' + cr.options.classId, function () {
-                    var classId = $('#' + cr.options.classId).val(),
-                        $studentId = $('#' + cr.options.studentId),
+                $(document).off('change', '#' + contact.options.classId);
+                $(document).on('change', '#' + contact.options.classId, function () {
+                    var classId = $('#' + contact.options.classId).val(),
+                        $studentId = $('#' + contact.options.studentId),
                         $next = $studentId.next(),
                         $prev = $studentId.prev(),
                         uri = table + '/' + action + (typeof id !== 'undefined' ? '/' + id : '');
@@ -172,7 +172,7 @@
                         dataType: 'json',
                         url: page.siteRoot() + uri,
                         data: {
-                            _token: cr.token(),
+                            _token: contact.token(),
                             field: 'class',
                             id: classId
                         },
@@ -194,13 +194,13 @@
                 });
             },
             onExportClick: function () {
-                $('#' + cr.options.output).off('click').on('click', function () {
-                    $('#' + cr.options.ranges).modal({backdrop: true});
+                $('#' + contact.options.output).off('click').on('click', function () {
+                    $('#' + contact.options.ranges).modal({backdrop: true});
                 });
             },
             saveRelationship: function(items) {
-                var relationship = $('#' + cr.options.relationship).val(),
-                    $studentId = $('#' + cr.options.studentId),
+                var relationship = $('#' + contact.options.relationship).val(),
+                    $studentId = $('#' + contact.options.studentId),
                     student = $studentId.find("option:selected").text().split('-'),
                     studentId = $studentId.val();
                 if (!$.trim(relationship) || !$.trim(student) || !$.trim(studentId)) {
@@ -244,26 +244,26 @@
             onImportClick: function (table) {
                 $('#import').on('click', function () {
                     $('#upload').modal({backdrop: true});
-                    cr.onConfirmImportClick(table);
+                    contact.onConfirmImportClick(table);
                 });
             },
             onConfirmClick: function (table, relationship) {
-                $(document).off('click', '#' + cr.options.output);
-                $(document).off('click', '#' + cr.options.confirm);
-                $(document).on('click', '#' + cr.options.confirm, function () {
+                $(document).off('click', '#' + contact.options.output);
+                $(document).off('click', '#' + contact.options.confirm);
+                $(document).on('click', '#' + contact.options.confirm, function () {
                     if (typeof relationship === 'undefined') {
                         var range = parseInt($($('.checked').children[0]).val()),
                             url = page.siteRoot() + table + '/export?range=' + range,
-                            $ranges = $('#' + cr.options.ranges),
-                            $gradeId = $('#' + cr.options.gradeId),
-                            $classId = $('#' + cr.options.classId),
-                            $departmentId = $('#' + cr.options.departmentId),
+                            $ranges = $('#' + contact.options.ranges),
+                            $gradeId = $('#' + contact.options.gradeId),
+                            $classId = $('#' + contact.options.classId),
+                            $departmentId = $('#' + contact.options.departmentId),
                             id = (table !== 'educators'
                                 ? (range === 0 ? $classId.val() : (range === 1 ? $gradeId.val() : ''))
                                 : (range ? $departmentId.val() : ''));
                         window.location = url + (id !== '' ? '&id=' + id : '');
                     } else {
-                        cr.saveRelationship(0)
+                        contact.saveRelationship(0)
                     }
 
                     $ranges.modal('hide');
@@ -322,24 +322,24 @@
             },
             onAddClick: function () {
                 $('#add').on('click', function () {
-                    $('#' + cr.options.ranges).modal({backdrop: true});
+                    $('#' + contact.options.ranges).modal({backdrop: true});
                 });
             },
             index: function (table) {
-                cr.onRangeChange(table);
+                contact.onRangeChange(table);
                 page.initSelect2();
-                cr.onExportClick();
-                cr.onConfirmClick(table);
+                contact.onExportClick();
+                contact.onConfirmClick(table);
                 switch (table) {
                     case 'students':
-                        cr.onGradeChange(table, 'export');
-                        cr.onImportClick(table);
+                        contact.onGradeChange(table, 'export');
+                        contact.onImportClick(table);
                         break;
                     case 'custodians':
-                        cr.onGradeChange(table, 'export');
+                        contact.onGradeChange(table, 'export');
                         break;
                     case 'educators':
-                        cr.onImportClick(table);
+                        contact.onImportClick(table);
                         break;
                     default:
                         break;
@@ -350,22 +350,25 @@
                 switch (table) {
                     case 'students':
                         formId = 'formStudent';
-                        cr.onGradeChange(table, 'create');
+                        contact.onGradeChange(table, 'create');
                         break;
                     case 'custodians':
                         formId = 'formCustodian';
-                        $('#' + cr.options.relationship).val('');
-                        cr.onAddClick();
-                        cr.onRelationshipDelete();
-                        cr.onGradeChange(table, 'create', true);
-                        cr.onClassChange(table, 'create');
-                        cr.onConfirmClick(table, true);
+                        $('#' + contact.options.relationship).val('');
+                        contact.onAddClick();
+                        contact.onRelationshipDelete();
+                        contact.onGradeChange(table, 'create', true);
+                        contact.onClassChange(table, 'create');
+                        contact.onConfirmClick(table, true);
                         break;
                     case 'educators':
                         formId = 'formEducator';
-                        cr.onAddClassClick();
-                        $.getMultiScripts(['js/department.tree.js'])
-                            .done(function() { dept.init('educators/create'); });
+                        contact.onAddClassClick();
+                        $.getMultiScripts(['js/tree.js']).done(
+                            function() {
+                                $.tree().list('educators/create', 'department');
+                            }
+                        );
                         break;
                     case 'operators':
                         formId = 'formOperator';
@@ -373,7 +376,7 @@
                     default:
                         break;
                 }
-                cr.mobile(formId, 0, 'POST', table + '/store');
+                contact.mobile(formId, 0, 'POST', table + '/store');
             },
             edit: function (table) {
                 var formId = '',
@@ -381,21 +384,24 @@
                 switch (table) {
                     case 'students':
                         formId = 'formStudent';
-                        cr.onGradeChange(table, 'edit', null, id);
+                        contact.onGradeChange(table, 'edit', null, id);
                         break;
                     case 'custodians':
-                        $('#' + cr.options.relationship).val('');
-                        cr.onAddClick();
-                        cr.onRelationshipDelete();
-                        cr.onGradeChange(table, 'edit', true, id);
-                        cr.onClassChange(table, 'edit', id);
-                        cr.onConfirmClick(table, true);
+                        $('#' + contact.options.relationship).val('');
+                        contact.onAddClick();
+                        contact.onRelationshipDelete();
+                        contact.onGradeChange(table, 'edit', true, id);
+                        contact.onClassChange(table, 'edit', id);
+                        contact.onConfirmClick(table, true);
                         break;
                     case 'educators':
                         formId = 'formEducator';
-                        cr.onAddClassClick();
-                        $.getMultiScripts(['js/department.tree.js'])
-                            .done(function() { dept.init('educators/edit/' + id); });
+                        contact.onAddClassClick();
+                        $.getMultiScripts(['js/tree.js']).done(
+                            function() {
+                                $.tree().list('educators/edit/' + id, 'department');
+                            }
+                        );
                         break;
                     case 'operators':
                         formId = 'formOperator';
@@ -403,15 +409,15 @@
                     default:
                         break;
                 }
-                cr.mobile(formId, $('#count').val(), 'PUT', table + '/update/' +id);
+                contact.mobile(formId, $('#count').val(), 'PUT', table + '/update/' +id);
             }
         };
 
         return {
-            index: cr.index,
-            create: cr.create,
-            edit: cr.edit,
-            onGradeChange: cr.onGradeChange
+            index: contact.index,
+            create: contact.create,
+            edit: contact.edit,
+            onGradeChange: contact.onGradeChange
         }
     }
 })(jQuery);

@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -396,6 +397,46 @@ class Menu extends Model {
         
         return true;
         
+    }
+    
+    /**
+     * 菜单列表(菜单移动、排序)
+     *
+     * @param null $id
+     * @param null $parentId
+     * @return bool|JsonResponse
+     */
+    function index($id = null, $parentId = null) {
+    
+        if (Request::has('id')) {
+            return $this->tree(
+                $this->rootMenuId(true)
+            );
+        } else if (Request::has('data')) {
+            # 保存菜单排序
+            $positions = Request::get('data');
+            foreach ($positions as $id => $pos) {
+                $menu = $this->find($id);
+                if (isset($menu)) {
+                    $menu->position = $pos;
+                    $menu->save();
+                }
+            }
+            return true;
+        } else {
+            # 移动菜单
+            abort_if(
+                !$this->find($id) || !$this->find($parentId),
+                HttpStatusCode::NOT_FOUND,
+                __('messages.not_found')
+            );
+            if ($this->movable($id, $parentId)) {
+                $moved = $this->move($id, $parentId, true);
+                abort_if(!$moved, HttpStatusCode::BAD_REQUEST, __('messages.bad_request'));
+            }
+            return true;
+        }
+    
     }
     
     /**

@@ -1,4 +1,5 @@
-if (typeof tree.index === 'undefined') {
-    $.getMultiScripts(['js/tree.crud.js'])
-        .done(function() { tree.index('departments'); });
-} else { tree.index('departments'); }
+$.getMultiScripts(['js/tree.js']).done(
+    function() {
+        $.tree().manage('departments');
+    }
+);
