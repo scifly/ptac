@@ -1,6 +1,7 @@
+//# sourceURL=tree.js
 (function ($) {
-    var nodeid;
     $.tree = function (options) {
+        var nodeid;
         var tree = {
             options: $.extend({
                 saveRank: 'save-rank',
