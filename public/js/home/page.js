@@ -331,6 +331,7 @@ var page = {
                         dt.search(this.value, true).draw();
                     }
                 }).attr('placeholder', '多关键词请用空格分隔');
+                $('.dataTables_scrollHeadInner').css('width', '100%');
                 $('.overlay').hide();
             }).on('error.dt', function (e, settings, techNote, message) {
                 page.inform('加载列表', message, page.failure);
