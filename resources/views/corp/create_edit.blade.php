@@ -57,8 +57,8 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        <div class="input-group-addon">
-                            <i style="width: 20px;">ID</i>
+                        <div class="input-group-addon" style="width: 45px;">
+                            <strong>字</strong>
                         </div>
                         {!! Form::text('corpid', null, [
                             'class' => 'form-control text-blue',
