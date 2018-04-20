@@ -93,6 +93,7 @@ class Controller extends BaseController {
                 'uri'        => Request::path(),
                 'html'       => view($view, $params)->render(),
                 'js'         => $action->js,
+                'department' => $menu->department(session('menuId'))
             ]);
         }
         # 如果是非Ajax请求，且用户已登录
