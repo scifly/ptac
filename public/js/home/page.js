@@ -332,7 +332,7 @@ var page = {
                     }
                 }).attr('placeholder', '多关键词请用空格分隔');
                 $('.dataTables_scrollHeadInner').css('width', '100%');
-                $('#data-table').css('width', '100%');
+                $('.dataTables_scrollHeadInner table').css('width', '100%');
                 $('.overlay').hide();
             }).on('error.dt', function (e, settings, techNote, message) {
                 page.inform('加载列表', message, page.failure);
