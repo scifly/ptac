@@ -11,9 +11,9 @@
         <div class="col-xs-6">
             {{--searchBox--}}
             <div class="input-group">
-                {!! Form::text('search_node', null, ['id' => 'search_node']) !!}
+                {!! Form::text('search', null, ['id' => 'search']) !!}
             </div>
-            <div id="department-tree"></div>
+            <div id="tree"></div>
         </div>
         <div class="col-xs-6">
             <h4>已选择的部门</h4>
@@ -23,8 +23,8 @@
     </div>
     <div class="box-footer">
         <div class="form-group">
-            <input class="btn btn-default pull-right margin" id="cancel-nodes" type="reset" value="取消">
-            <input type="button" class="btn btn-primary pull-right margin" id="save-nodes" value="确认">
+            <input class="btn btn-default pull-right margin" id="cancel" type="reset" value="取消">
+            <input type="button" class="btn btn-primary pull-right margin" id="save" value="确认">
         </div>
     </div>
 </div>
