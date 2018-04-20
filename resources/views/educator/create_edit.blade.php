@@ -150,7 +150,7 @@
                 {!! Form::label('departmentId', '所属部门', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
-                <div class="col-sm-6">
+                <div class="col-sm-6" style="margin-top: 7px;">
                     <div id="checked-nodes">
                         @if (isset($selectedDepartments))
                             @foreach($selectedDepartments as $key => $department)
@@ -168,7 +168,7 @@
                     @else
                         <input type="hidden" id="selected-node-ids" value=""/>
                     @endif
-                    <a id="choose" href="#" style="margin-top: 5px;"><i class="fa fa-sitemap"></i>&nbsp; 选择</a>
+                    <a id="choose" href="#"><i class="fa fa-sitemap"></i>&nbsp; 选择</a>
                 </div>
             </div>
             <!-- 所属教职员工组 -->
