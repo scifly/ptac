@@ -23,7 +23,7 @@
     </div>
     <div class="box-footer">
         <div class="form-group">
-            <input class="btn btn-default pull-right margin" id="cancel" type="reset" value="取消">
+            <input class="btn btn-default pull-right margin" id="revoke" type="reset" value="取消">
             <input type="button" class="btn btn-primary pull-right margin" id="save" value="确认">
         </div>
     </div>
