@@ -653,12 +653,12 @@ class Menu extends Model {
         $departmentMenuId = $this->menuId($id);
         
         if ($departmentMenuId) {
-            $icon = 'fa-university';
+            $icon = 'fa fa-university';
             $name = $this->find($departmentMenuId)->name;
         } else {
             $departmentMenuId = $this->menuId($id, '企业');
             if ($departmentMenuId) {
-                $icon = 'fa-weixin';
+                $icon = 'fa fa-weixin';
                 $name = $this->find($departmentMenuId)->name;
             }
         }
