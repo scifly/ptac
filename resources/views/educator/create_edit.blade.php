@@ -168,7 +168,7 @@
                     @else
                         <input type="hidden" id="selected-node-ids" value=""/>
                     @endif
-                    <a id="choose" class="btn btn-primary" style="margin-bottom: 5px">修改</a>
+                    <a id="choose" style="margin-bottom: 5px"><i class="fa fa-sitemap"></i>选择</a>
                 </div>
             </div>
             <!-- 所属教职员工组 -->
