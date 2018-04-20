@@ -117,8 +117,11 @@ var page = {
             success: function (result) {
                 switch (result.statusCode) {
                     case 200:
-                        $('#d_icon').removeClass().addClass(result['department']['icon']);
-                        $('#d_name').html(result['department']['name']);
+                        var dIcon = result['department']['icon'] ? result['department']['icon'] : 'fa fa-send-o',
+                            dName = result['department']['name'] ? result['department']['name'] : '家校通运营';
+
+                        $('#d_icon').removeClass().addClass(dIcon);
+                        $('#d_name').html(dName);
                         $wrapper.html(result.html);
                         $('.overlay').hide();
                         // 获取状态为active的卡片内容
