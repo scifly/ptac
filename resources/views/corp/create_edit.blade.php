@@ -62,6 +62,7 @@
                         </div>
                         {!! Form::text('corpid', null, [
                             'class' => 'form-control text-blue',
+                            'style' => 'width: 100%',
                             'placeholder' => '(18个小写字母与阿拉伯数字)',
                             'required' => 'true',
                             'data-parsley-type' => 'alphanum',
