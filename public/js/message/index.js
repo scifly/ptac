@@ -4,7 +4,7 @@ page.initSelect2({
     templateSelection: page.formatStateImg,
 }, 'app_ids');
 page.initDatatable('messages', [
-    {className: 'text-center', targets: [2, 3, 4, 5, 6, 7, 8, 9]}
+    {className: 'text-center', targets: [1, 2, 3, 4, 5, 6]}
 ]);
 page.loadCss('css/message/message.css');
 

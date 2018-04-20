@@ -209,22 +209,20 @@ class Message extends Model {
             ['db' => 'Message.msl_id', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
             ['db' => 'MessageType.name as messagetypename', 'dt' => 5],
-            ['db'        => 'Message.read', 'dt' => 6,
-             'formatter' => function ($d) {
-                 return $d
-                     ? sprintf(Snippet::BADGE_GREEN, '是')
-                     : sprintf(Snippet::BADGE_GREEN, '否');
-             },
+            ['db' => 'Message.created_at', 'dt' => 6],
+            [
+                'db'        => 'Message.sent', 'dt' => 7,
+                'formatter' => function ($d, $row) {
+                    $sent = $d
+                        ? sprintf(Snippet::BADGE_GREEN, '是')
+                        : sprintf(Snippet::BADGE_RED, '否');
+                    $read = $row['read']
+                        ? sprintf(Snippet::BADGE_GREEN, '是')
+                        : sprintf(Snippet::BADGE_RED, '否');
+                    return $sent . '&nbsp;' . $read;
+                },
             ],
-            ['db'        => 'Message.sent', 'dt' => 7,
-             'formatter' => function ($d) {
-                 return $d
-                     ? sprintf(Snippet::BADGE_GREEN, '是')
-                     : sprintf(Snippet::BADGE_GREEN, '否');
-             },
-            ],
-            ['db' => 'Message.created_at', 'dt' => 8],
-            ['db' => 'Message.updated_at', 'dt' => 9],
+            ['db' => 'Message.read', 'dt' => 8],
         ];
         $joins = [
             [
