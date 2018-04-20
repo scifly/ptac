@@ -58,7 +58,7 @@
                 <div class="col-sm-6">
                     <div class="input-group">
                         <div class="input-group-addon" style="width: 45px;">
-                            <strong>字</strong>
+                            <strong>A</strong>
                         </div>
                         {!! Form::text('corpid', null, [
                             'class' => 'form-control text-blue',
