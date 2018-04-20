@@ -62,15 +62,9 @@ $cancelVideo.on('click', function () {
     $video.hide();
 });
 //部门树以及联系人加载
-if (typeof contacts === 'undefined') {
-    $.getMultiScripts(['js/tree.js'])
-        .done(function () {
-            $.tree().list('messages/index', 'contact');
-        });
-} else {
+$.getMultiScripts(['js/tree.js']).done(function () {
     $.tree().list('messages/index', 'contact');
-}
-
+});
 //短信获取输入字符
 getSmsLength();
 

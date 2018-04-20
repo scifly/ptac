@@ -286,7 +286,7 @@
             },
             index: function (table) {
                 page.unbindEvents();
-                $(document).off('click', '#save-rank');
+                $(document).off('click', '#sort');
                 var $tree = $('#tree');
                 var buildTree = function () {
                     $tree.jstree({
@@ -346,6 +346,7 @@
                 });
             },
 
+            // 部门及联系人列表
             contact: function (uri, type) {
                 var $selectedDepartmentIds = $('#selected-node-ids');
                 // 获取 后台传过来的 已选择的部门 input 数组
@@ -408,8 +409,6 @@
                     $tree.jstree().select_node(selectedDepartmentIds);
                 })
             },
-
-            // 部门及联系人列表
             unbindEvents: function() {
                 $(document).off('click', '.remove-node');
                 $(document).off('click', '.remove-selected');
