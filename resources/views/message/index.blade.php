@@ -186,7 +186,7 @@
                         {!! Form::close() !!}
                     </div>
                 </div>
-                <div class="tab-pane box-body" id="tab02">
+                <div class="tab-pane" id="tab02">
                     <table id="data-table" style="width: 100%"
                            class="display nowrap table table-striped table-bordered table-hover table-condensed">
                         <thead>
