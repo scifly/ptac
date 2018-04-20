@@ -3,7 +3,7 @@
         @include('partials.form_header')
     </div>
     <div class="box-body">
-        <div class="form-horizontal">
+        <div class="form-horizontal form-main">
             @if (isset($educator['id']))
                 {{ Form::hidden('id', $educator['id'], ['id' => 'id']) }}
             @endif

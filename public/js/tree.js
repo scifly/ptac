@@ -354,7 +354,7 @@
                 var selectedDepartmentIds = selectedNodes.split(',');
 
                 $('.box-footer').hide();
-                $('.form-horizontal').hide();
+                $('.form-main').hide();
                 $('.tree-box').show();
                 // 部门树形图中的保存取消按钮
                 $('.tree-box .box-footer').show();
@@ -485,7 +485,7 @@
                     $('.todo-list').empty();
                     $tree.empty().jstree('destroy');
                     $('.box-footer').show();
-                    $('.form-horizontal').show();
+                    $('.form-main').show();
                     $('.tree-box').hide();
                     //部门树形图中的保存取消按钮
                     $('.tree-box .box-footer').hide();
@@ -494,7 +494,7 @@
             cancel: function () {
                 $(document).off('click', '#revoke').on('click', '#revoke', function () {
                     $('.box-footer').show();
-                    $('.form-horizontal').show();
+                    $('.form-main').show();
                     $('.tree-box').hide();
                     $('.tree-box .box-footer').hide();
                     $('#tree').jstree('destroy');
