@@ -4,7 +4,6 @@
         var nodeid;
         var tree = {
             options: $.extend({
-                saveRank: 'save-rank',
                 departmentTypes: {
                     '#': {"icon": 'glyphicon glyphicon-flash'},
                     'root': {"icon": 'fa fa-sitemap'},
@@ -553,12 +552,12 @@
                     init(uri, type);
                 }
             },
-        }
-    };
+        };
 
-    return {
-        manage: tree.index,
-        list: tree.list,
-        initTree: tree.initJsTree
+        return {
+            manage: tree.index,
+            list: tree.list,
+            initTree: tree.initJsTree
+        };
     };
 })(jQuery);
