@@ -220,14 +220,16 @@ class Corp extends Model {
             [
                 'db' => 'Corp.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-weixin text-green', '') . $d;
+                    return sprintf(Snippet::ICON, 'fa-weixin text-green', '') .
+                        '<span class="text-green">' . $d . '</span>';
                 }
             ],
             ['db' => 'Corp.acronym', 'dt' => 2],
             [
                 'db' => 'Company.name as companyname', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-building text-blue', '') . $d;
+                    return sprintf(Snippet::ICON, 'fa-building text-blue', '') .
+                        '<span class="text-blue">' . $d . '</span>';
                 }
             ],
             ['db' => 'Corp.corpid', 'dt' => 4],
