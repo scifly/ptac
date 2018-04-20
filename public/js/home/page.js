@@ -117,6 +117,8 @@ var page = {
             success: function (result) {
                 switch (result.statusCode) {
                     case 200:
+                        $('#d_icon').removeClass().addClass(result['department']['icon']);
+                        $('#d_name').html(result['department']['name']);
                         $wrapper.html(result.html);
                         $('.overlay').hide();
                         // 获取状态为active的卡片内容
