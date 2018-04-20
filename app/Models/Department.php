@@ -344,7 +344,6 @@ class Department extends Model {
                     $department->save();
                 }
             }
-            return true;
         } else {
             # 移动部门
             $department = $this->find($id);
@@ -356,8 +355,9 @@ class Department extends Model {
             if ($department->movable($id, $parentId)) {
                 $department->move($id, $parentId, true);
             }
-            return true;
         }
+        
+        return '';
         
     }
     
