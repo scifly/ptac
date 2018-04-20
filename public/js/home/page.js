@@ -326,7 +326,7 @@ var page = {
                 // $('.buttons-pdf').addClass('btn-sm');
                 // $('.buttons-csv').addClass('btn-sm');
                 // $('.paginate_button').each(function() { $(this).addClass('btn-sm'); })
-                $('input[type="search"]').off().on('keyup', function (e) {
+                $('.dataTables_filter input').off().on('keyup', function (e) {
                     if (e.keyCode === 13) {
                         dt.search(this.value, true).draw();
                     }
