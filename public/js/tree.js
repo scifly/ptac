@@ -327,7 +327,7 @@
                         return tree.move(table, e, data);
                     });
                 };
-                this.initJsTree(buildTree);
+                tree.initJsTree(buildTree);
                 $('#confirm-delete').on('click', function () {
                     $.ajax({
                         type: 'DELETE',
