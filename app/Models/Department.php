@@ -757,7 +757,10 @@ class Department extends Model {
                 ->toArray();
             for ($i = 0; $i < sizeof($nodes); $i++) {
                 $parentId = $i == 0 ? '#' : $nodes[$i]['parent_id'];
-                $type = $i == 0 ? '#' : 'dept';
+                $type = $nodes[$i]['type'];
+                if ($i == 0) {
+                    $type = '#';
+                }
                 $text = $nodes[$i]['name'];
                 if (in_array($nodes[$i]['id'], $belongedDeptIds)) {
                     $selectable = 1;

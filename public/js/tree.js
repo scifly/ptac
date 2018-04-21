@@ -16,7 +16,7 @@
                 },
                 contactTypes: {
                     '#': {"icon": 'fa fa-folder'},
-                    'dept': {"icon": 'fa fa-folder'},
+                    // 'dept': {"icon": 'fa fa-folder'},
                     'user': {"icon": 'fa fa-user'},
                     'root': {"icon": 'fa fa-sitemap'},
                     'company': {"icon": 'fa fa-building'},
@@ -24,7 +24,7 @@
                     'school': {"icon": 'fa fa-university'},
                     'grade': {"icon": 'fa fa-object-group'},
                     'class': {"icon": 'fa fa-users'},
-                    'other': {"icon": 'fa fa-list'}
+                    'other': {"icon": 'fa fa-folder'}
                 },
             }, options),
             to: 0,
@@ -394,14 +394,14 @@
                     //选中事件 将选中的节点增|加到右边列表
                     var nodeHtml =
                         '<li id="tree' + selected.node.id + '">' +
-                        '<span class="handle ui-sortable-handle">' +
-                        '<i class="' + selected.node.icon + '"></i>' +
-                        '</span>' +
-                        '<span class="text">' + selected.node.text + '</span>' +
-                        '<div class="tools">' +
-                        '<i class="fa fa-close remove-node"></i>' +
-                        '<input type="hidden" value="' + selected.node.id + '"/>' +
-                        '</div>' +
+                            '<span class="handle ui-sortable-handle">' +
+                                '<i class="' + selected.node.icon + '"></i>' +
+                            '</span>' +
+                            '<span class="text">' + selected.node.text + '</span>' +
+                            '<div class="tools">' +
+                                '<i class="fa fa-close remove-node"></i>' +
+                                '<input type="hidden" value="' + selected.node.id + '"/>' +
+                            '</div>' +
                         '</li>';
                     $('.todo-list').append(nodeHtml);
                 }).on('deselect_node.jstree', function (node, selected) {
