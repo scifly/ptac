@@ -1,8 +1,11 @@
 //# sourceURL=index.js
-page.initSelect2({
-    templateResult: page.formatStateImg,
-    templateSelection: page.formatStateImg,
-}, 'app_ids');
+page.initSelect2([{
+    option: {
+        templateResult: page.formatStateImg,
+        templateSelection: page.formatStateImg
+    },
+    id: 'app_ids'
+}]);
 page.initDatatable('messages', [
     {className: 'text-center', targets: [1, 2, 3, 4, 5, 6]}
 ]);

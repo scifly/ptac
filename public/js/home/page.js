@@ -288,73 +288,73 @@ var page = {
             $batchDisable = $('#batch-disable'),
             $batchDelete = $('#batch-delete'),
             showTable = function () {
-            var $datatable = $('#data-table'),
-                columns = $datatable.find('thead tr th').length,
-                statusCol = {className: 'text-right', targets: [columns - 1]};
+                var $datatable = $('#data-table'),
+                    columns = $datatable.find('thead tr th').length,
+                    statusCol = {className: 'text-right', targets: [columns - 1]};
 
-            if (typeof options === 'undefined') {
-                options = [statusCol];
-            } else {
-                options.push(statusCol);
-            }
-            var params = {
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: page.siteRoot() + table + '/index' + page.getQueryString(),
-                    error: function (e) {
-                        page.errorHandler(e);
-                    }
-                },
-                rowCallback: function (row, data) {
-                    if ($.inArray(data[0], selected) !== -1) {
-                        $(row).addClass('selected');
-                    }
-                },
-                order: [[0, 'desc']],
-                stateSave: true,
-                autoWidth: true,
-                columnDefs: options,
-                scrollX: true,
-                language: {url: '../files/ch.json'},
-                lengthMenu: [[15, 25, 50, -1], [15, 25, 50, '所有']],
-                // dom: '<"row"<"col-md-6"l><"col-sm-4"f><"col-sm-2"B>>rt<"row"<"col-sm-6"i><"col-sm-6"p>>',
-                // buttons: ['pdf', 'csv']
+                if (typeof options === 'undefined') {
+                    options = [statusCol];
+                } else {
+                    options.push(statusCol);
+                }
+                var params = {
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: page.siteRoot() + table + '/index' + page.getQueryString(),
+                        error: function (e) {
+                            page.errorHandler(e);
+                        }
+                    },
+                    rowCallback: function (row, data) {
+                        if ($.inArray(data[0], selected) !== -1) {
+                            $(row).addClass('selected');
+                        }
+                    },
+                    order: [[0, 'desc']],
+                    stateSave: true,
+                    autoWidth: true,
+                    columnDefs: options,
+                    scrollX: true,
+                    language: {url: '../files/ch.json'},
+                    lengthMenu: [[15, 25, 50, -1], [15, 25, 50, '所有']],
+                    // dom: '<"row"<"col-md-6"l><"col-sm-4"f><"col-sm-2"B>>rt<"row"<"col-sm-6"i><"col-sm-6"p>>',
+                    // buttons: ['pdf', 'csv']
+                };
+                page.loadCss(plugins.datatable.css);
+                page.loadCss(plugins.datatable.multiCss);
+                $('.overlay').show();
+                $.fn.dataTable.ext.errMode = 'none';
+                var dt = $datatable.DataTable(params).on('init.dt', function () {
+                    // $('.dt-buttons').addClass('pull-right');
+                    // $('.buttons-pdf').addClass('btn-sm');
+                    // $('.buttons-csv').addClass('btn-sm');
+                    // $('.paginate_button').each(function() { $(this).addClass('btn-sm'); })
+                    $('.dataTables_filter input').off().on('keyup', function (e) {
+                        if (e.keyCode === 13) {
+                            dt.search(this.value, true).draw();
+                        }
+                    }).attr('placeholder', '多关键词请用空格分隔');
+                    $('.dataTables_scrollHeadInner').css('width', '100%');
+                    $('.dataTables_scrollHeadInner table').css('width', '100%');
+                    $('.overlay').hide();
+                }).on('error.dt', function (e, settings, techNote, message) {
+                    page.inform('加载列表', message, page.failure);
+                }).on('xhr.dt', function (e, settings, data) {
+                    rowIds = data['ids'];
+                    var differences = [];
+                    $.grep(selected, function(el) {
+                        if ($.inArray(el, rowIds) === -1) {
+                            differences.push(el);
+                        }
+                    });
+                    $.each(differences, function () {
+                        if ($.inArray(parseInt(this), rowIds) === -1) {
+                            selected.splice($.inArray(parseInt(this), selected), 1);
+                        }
+                    });
+                });
             };
-            page.loadCss(plugins.datatable.css);
-            page.loadCss(plugins.datatable.multiCss);
-            $('.overlay').show();
-            $.fn.dataTable.ext.errMode = 'none';
-            var dt = $datatable.DataTable(params).on('init.dt', function () {
-                // $('.dt-buttons').addClass('pull-right');
-                // $('.buttons-pdf').addClass('btn-sm');
-                // $('.buttons-csv').addClass('btn-sm');
-                // $('.paginate_button').each(function() { $(this).addClass('btn-sm'); })
-                $('.dataTables_filter input').off().on('keyup', function (e) {
-                    if (e.keyCode === 13) {
-                        dt.search(this.value, true).draw();
-                    }
-                }).attr('placeholder', '多关键词请用空格分隔');
-                $('.dataTables_scrollHeadInner').css('width', '100%');
-                $('.dataTables_scrollHeadInner table').css('width', '100%');
-                $('.overlay').hide();
-            }).on('error.dt', function (e, settings, techNote, message) {
-                page.inform('加载列表', message, page.failure);
-            }).on('xhr.dt', function (e, settings, data) {
-                rowIds = data['ids'];
-                var differences = [];
-                $.grep(selected, function(el) {
-                    if ($.inArray(el, rowIds) === -1) {
-                        differences.push(el);
-                    }
-                });
-                $.each(differences, function () {
-                    if ($.inArray(parseInt(this), rowIds) === -1) {
-                        selected.splice($.inArray(parseInt(this), selected), 1);
-                    }
-                });
-            });
-        };
         $tbody.on('click', 'tr', function () {
             var id = parseInt($(this).find('td').eq(0).text());
             var index = $.inArray(id, selected);
@@ -497,23 +497,34 @@ var page = {
             }));
         }
     },
-    initSelect2: function (options, id) {
+    initSelect2: function (options) {
         var option = {language: "zh-CN"},
-            $select = $('select');
-        if (typeof options !== 'undefined') {
-            $select = $('#' + id);
-            $.extend(option, options);
-        }
+            $select = $('select'),
+            withOptions = (typeof options !== 'undefined'),
+            init = function (withOptions) {
+                if (!withOptions) {
+                    $select.select2(option);
+                } else {
+                    options.each(function () {
+                        $select = $('#' + this['id']);
+                        if (typeof this['option'] !== 'undefined') {
+                            $.extend(option, options['option']);
+                        }
+                        $select.select2(option);
+                    });
+                }
+            };
+
         if (!($.fn.select2)) {
             page.loadCss(plugins.select2.css);
             $.getMultiScripts([plugins.select2.js])
                 .done(function () {
                     $.getMultiScripts([plugins.select2.jscn]).done(function () {
-                        $select.select2(option);
+                        init(withOptions);
                     });
                 });
         } else {
-            $select.select2(option);
+            init(withOptions);
         }
     },
     initICheck: function (object) {
