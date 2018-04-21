@@ -33,7 +33,7 @@ var page = {
         if (!state.id) {
             return state.text;
         }
-        return $('<span><i class="' + state.text + ' style="width: 20px;"> ' + state.text + '</span>');
+        return $('<span><i class="' + state.text + '" style="width: 20px;"> ' + state.text + '</span>');
     },
     formatStateImg: function (state) {
         var paths = state.text.split('|');
