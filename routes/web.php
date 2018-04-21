@@ -325,6 +325,7 @@ Route::group(['prefix' => 'menus'], function () {
     Route::get('index/{menuId?}/{parentMenuId?}', $c . '@index');
     Route::post('index/{menuId?}/{parentMenuId?}', $c . '@index');
     Route::get('create/{parentId}', $c . '@create');
+    Route::get('edit/{id}', $c . '@edit');
     Route::get('store', $c . '@store');
     Route::put('update/{id}', $c . '@update');
     Route::delete('delete/{id}', $c . '@destroy');

@@ -24,6 +24,7 @@ class CorpComposer {
         
         $companies = Company::pluck('name', 'id');
         if ($this->menu->menuId(session('menuId'), '企业')) {
+            # disabled - 是否显示'返回列表'和'取消'按钮
             $disabled = null;
             if (Request::route('id')) {
                 $corp = Corp::find(Request::route('id'));
