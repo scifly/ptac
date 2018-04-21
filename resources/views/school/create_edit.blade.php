@@ -12,11 +12,16 @@
                     'class' => 'col-sm-3 control-label',
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('name', null, [
-                        'class' => 'form-control text-blue',
-                        'required' => 'true',
-                        'data-parsley-length' => '[6, 255]'
-                    ]) !!}
+                    <div class="input-group">
+                        @include('partials.icon_addon', [
+                            'class' => 'fa-university text-purple'
+                        ])
+                        {!! Form::text('name', null, [
+                            'class' => 'form-control text-blue',
+                            'required' => 'true',
+                            'data-parsley-length' => '[6, 255]'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             <div class="form-group">
@@ -55,7 +60,8 @@
                 @include('partials.single_select', [
                     'label' => '所属企业',
                     'id' => 'corp_id',
-                    'items' => $corps
+                    'items' => $corps,
+                    'icon' => 'fa fa-weixin text-green'
                 ])
             @endif
             @include('partials.enabled', [
