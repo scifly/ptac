@@ -557,6 +557,7 @@
         return {
             manage: tree.index,
             list: tree.list,
+            options: tree.options,
             initTree: tree.initJsTree
         };
     };
