@@ -42,6 +42,14 @@ class SchoolComposer {
                 ];
                 $params['disabled'] = true;
             }
+        } else {
+            $menuId = $this->menu->menuId(
+                session('menuId'), '企业'
+            );
+            if ($menuId) {
+                $corp = Corp::whereMenuId($menuId)->first();
+                $params['corps'] = [$corp->id => $corp->name];
+            }
         }
         
         $view->with($params);
