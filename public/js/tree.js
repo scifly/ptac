@@ -70,17 +70,13 @@
                     type: 'POST',
                     dataType: 'json',
                     url: page.siteRoot() + table + '/index/' + id + '/' + parentId,
-                    data: { _token: tree.token() },
-                    success: function (result) {
-                        tree.sort(table);
-                        if (result.statusCode === 200) {
-                        } else {
-                            page.inform(
-                                result.title, result.message,
-                                result.statusCode === 200 ? page.success : page.failure
-                            );
-                            $('#tree').jstree().refresh();
-                        }
+                    data: {_token: tree.token()},
+                    success: function () {
+                        $.when(
+                            tree.sort(table)
+                        ).then(
+                            $('#tree').jstree().refresh()
+                        );
                     },
                     error: function (e) {
                         page.errorHandler(e);
@@ -102,12 +98,16 @@
                     switch (table) {
                         case 'departments':
                             switch (nType) {
-                                case 'company': return pType === 'root';
-                                case 'corp': return pType === 'company';
-                                case 'school': return pType === 'corp';
+                                case 'company':
+                                    return pType === 'root';
+                                case 'corp':
+                                    return pType === 'company';
+                                case 'school':
+                                    return pType === 'corp';
                                 case 'grade':
                                     switch (pType) {
-                                        case 'school': return true;
+                                        case 'school':
+                                            return true;
                                         case 'other':
                                             grandParents = t.get_node(p).parents;
                                             grandParentTypes = [];
@@ -127,7 +127,8 @@
                                 // return $.inArray(pType, ['school', 'other']) > -1;
                                 case 'class':
                                     switch (pType) {
-                                        case 'grade': return true;
+                                        case 'grade':
+                                            return true;
                                         case 'other':
                                             grandParents = t.get_node(p).parents;
                                             grandParentTypes = [];
@@ -189,9 +190,12 @@
                             break;
                         case 'menus':
                             switch (nType) {
-                                case 'company': return pType === 'root';
-                                case 'corp': return pType === 'company';
-                                case 'school': return pType === 'corp';
+                                case 'company':
+                                    return pType === 'root';
+                                case 'corp':
+                                    return pType === 'company';
+                                case 'school':
+                                    return pType === 'corp';
                                 default:
                                     return $.inArray(pType, ['company', 'corp', 'school', 'other', 'root']) > -1;
                             }
@@ -201,10 +205,12 @@
                 }
                 return true;
             },
-            initJsTree: function(callback) {
+            initJsTree: function (callback) {
                 if (!($.fn.jstree)) {
                     page.loadCss(plugins.jstree.css);
-                    $.getMultiScripts([plugins.jstree.js]).done(function () { callback(); })
+                    $.getMultiScripts([plugins.jstree.js]).done(function () {
+                        callback();
+                    })
                 } else {
                     callback();
                 }
@@ -230,7 +236,7 @@
                     label: '删除',
                     icon: 'fa fa-remove',
                     action: function (node) {
-                        $dialog.modal({ backdrop: true });
+                        $dialog.modal({backdrop: true});
                         nodeid = tree.getSelector(node).id;
                     },
                     _disabled: function (node) {
@@ -303,7 +309,7 @@
                                 type: 'POST',
                                 dataType: 'json',
                                 data: function (node) {
-                                    return { id: node.id, _token: tree.token() };
+                                    return {id: node.id, _token: tree.token()};
                                 }
                             },
                             error: function (e) {
@@ -333,7 +339,7 @@
                         type: 'DELETE',
                         dataType: 'json',
                         url: page.siteRoot() + table + '/delete/' + nodeid,
-                        data: { _token: tree.token() },
+                        data: {_token: tree.token()},
                         success: function (result) {
                             page.inform('删除节点', result.message, page.success);
                             $.when(
@@ -374,7 +380,7 @@
                                 }
                             }
                         },
-                        error: function(e) {
+                        error: function (e) {
                             page.errorHandler(e);
                         }
                     },
@@ -388,14 +394,14 @@
                     //选中事件 将选中的节点增|加到右边列表
                     var nodeHtml =
                         '<li id="tree' + selected.node.id + '">' +
-                            '<span class="handle ui-sortable-handle">' +
-                                '<i class="' + selected.node.icon + '"></i>' +
-                            '</span>' +
-                            '<span class="text">' + selected.node.text + '</span>' +
-                            '<div class="tools">' +
-                                '<i class="fa fa-close remove-node"></i>' +
-                                '<input type="hidden" value="' + selected.node.id + '"/>' +
-                            '</div>' +
+                        '<span class="handle ui-sortable-handle">' +
+                        '<i class="' + selected.node.icon + '"></i>' +
+                        '</span>' +
+                        '<span class="text">' + selected.node.text + '</span>' +
+                        '<div class="tools">' +
+                        '<i class="fa fa-close remove-node"></i>' +
+                        '<input type="hidden" value="' + selected.node.id + '"/>' +
+                        '</div>' +
                         '</li>';
                     $('.todo-list').append(nodeHtml);
                 }).on('deselect_node.jstree', function (node, selected) {
@@ -409,7 +415,7 @@
                     $tree.jstree().select_node(selectedDepartmentIds);
                 })
             },
-            unbindEvents: function() {
+            unbindEvents: function () {
                 $(document).off('click', '.remove-node');
                 $(document).off('click', '.remove-selected');
                 $(document).off('click', '#save');
@@ -449,7 +455,9 @@
             },
             search: function () {
                 $('#search').keyup(function () {
-                    if (tree.to) { clearTimeout(tree.to); }
+                    if (tree.to) {
+                        clearTimeout(tree.to);
+                    }
                     tree.to = setTimeout(function () {
                         var v = $('#search').val();
                         $('#tree').jstree(true).search(v);
@@ -471,9 +479,9 @@
                         var node = $tree.jstree("get_node", selectedNodes[i]);
                         var checkedNode =
                             '<button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">' +
-                                '<i class="' + node.icon + '"></i>' + node.text +
-                                '<i class="fa fa-close remove-selected"></i>' +
-                                '<input type="hidden" name="selectedDepartments[]" value="' + node.id + '"/>' +
+                            '<i class="' + node.icon + '"></i>' + node.text +
+                            '<i class="fa fa-close remove-selected"></i>' +
+                            '<input type="hidden" name="selectedDepartments[]" value="' + node.id + '"/>' +
                             '</button>';
                         // $("#add-department").after(checkedNode);
                         $checkedNodes.append(checkedNode);
@@ -518,7 +526,7 @@
                 // 点击表单中的部门修改按钮
                 $('#tree').empty();
                 $('.todo-list').empty();
-                var init = function(uri, type) {
+                var init = function (uri, type) {
                     // 初始化“修改按钮”
                     tree.choose(uri, type);
                     // 初始化节点搜索功能
@@ -534,7 +542,7 @@
                         plugins.select2.js,
                         plugins.icheck.js
                     ];
-                    $.getMultiScripts(scripts).done(function() {
+                    $.getMultiScripts(scripts).done(function () {
                         var $cip = $('#cip');
                         $cip.after($("<link/>", {
                             rel: "stylesheet", type: "text/css",

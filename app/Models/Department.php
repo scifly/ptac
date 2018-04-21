@@ -727,9 +727,12 @@ class Department extends Model {
         if (in_array($role, Constant::SUPER_ROLES)) {
             $tree = self::tree($departmentId);
             foreach ($tree as &$t) {
-                $t['seletable'] = 1;
+                $t['selectable'] = 1;
                 $t['role'] ='dept';
-                $t['type'] = $t['id'] == 0 ? '#' : 'dept';
+                if (!$t['id']) {
+                    $t['type'] = '#';
+                }
+                // $t['type'] = $t['id'] == 0 ? '#' : 'dept';
                 # 读取当前部门下的所有用户
                 $users = self::find($t['id'])->users;
                 /** @var User $u */
@@ -738,7 +741,7 @@ class Department extends Model {
                         'id' => 'user-' . $u->id,
                         'parent' => $t['id'],
                         'text' => $u->realname,
-                        'seletable' => 1,
+                        'selectable' => 1,
                         'type' => 'user',
                         'role' => 'user',
                     ];
@@ -757,12 +760,12 @@ class Department extends Model {
                 $type = $i == 0 ? '#' : 'dept';
                 $text = $nodes[$i]['name'];
                 if (in_array($nodes[$i]['id'], $belongedDeptIds)) {
-                    $seletable = 1;
+                    $selectable = 1;
                 } else {
-                    $seletable = 0;
+                    $selectable = 0;
                     foreach ($belongedDeptIds as $pId) {
                         if (self::find($nodes[$i]['id'])->parent_id == $pId) {
-                            $seletable = 1;
+                            $selectable = 1;
                             break;
                         };
                     }
@@ -771,14 +774,14 @@ class Department extends Model {
                     'id' => $nodes[$i]['id'],
                     'parent' => $parentId,
                     'text' => $text,
-                    'seletable' => $seletable,
-                    'type' => $type, //0->部门；1->用户
-                    'role' => 'dept', //0->部门；1->用户
+                    'selectable' => $selectable,
+                    'type' => $type, // 0->部门；1->用户
+                    'role' => 'dept', // 0->部门；1->用户
                 ];
             }
             $contacts = [];
             foreach ($data as $datum) {
-                if ($datum['seletable']) {
+                if ($datum['selectable']) {
                     # 读取当前部门下的所有用户
                     $users = self::find($datum['id'])->users;
                     /** @var User $u */
@@ -787,7 +790,7 @@ class Department extends Model {
                             'id' => 'user-' . $u->id,
                             'parent' => $datum['id'],
                             'text' => $u->realname,
-                            'seletable' => 1,
+                            'selectable' => 1,
                             'type' => 'user',
                             'role' => 'user',
                         ];
