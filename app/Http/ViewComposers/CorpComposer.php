@@ -23,7 +23,7 @@ class CorpComposer {
     public function compose(View $view) {
         
         $companies = Company::pluck('name', 'id');
-        if ($this->menu->menuId(session('menuId', '企业'))) {
+        if ($this->menu->menuId(session('menuId'), '企业')) {
             $disabled = null;
             if (Request::route('id')) {
                 $corp = Corp::find(Request::route('id'));
