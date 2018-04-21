@@ -28,7 +28,7 @@ class CorpComposer {
             if (Request::route('id')) {
                 $corp = Corp::find(Request::route('id'));
                 $companies = [$corp->company_id => $corp->company->name];
-                $disabled = false;
+                $disabled = true;
             }
             $view->with([
                 'companies' => $companies,
