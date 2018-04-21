@@ -7,12 +7,14 @@
                 'class' => 'btn btn-primary pull-left',
                 'id' => isset($id) ? $id : 'save'
             ]) !!}
-            @can('act', $uris['index'] && !isset($index))
-                {!! Form::reset('取消', [
-                    'class' => 'btn btn-default pull-right',
-                    'id' => 'cancel'
-                ]) !!}
-            @endcan
+            @if (!isset($disabled))
+                @can('act', $uris['index'])
+                    {!! Form::reset('取消', [
+                        'class' => 'btn btn-default pull-right',
+                        'id' => 'cancel'
+                    ]) !!}
+                @endcan
+            @endif
         </div>
     </div>
 </div>

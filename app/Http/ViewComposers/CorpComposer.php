@@ -24,15 +24,15 @@ class CorpComposer {
         
         $companies = Company::pluck('name', 'id');
         if ($this->menu->menuId(session('menuId', '企业'))) {
-            $index = null;
+            $disabled = null;
             if (Request::route('id')) {
                 $corp = Corp::find(Request::route('id'));
                 $companies = [$corp->company_id => $corp->company->name];
-                $index = false;
+                $disabled = false;
             }
             $view->with([
                 'companies' => $companies,
-                'index' => $index,
+                'disabled' => $disabled,
                 'uris' => $this->uris()
             ]);
         } else {
