@@ -72,7 +72,7 @@
                         three_state: false
                     },
                     plugins: ['types', 'search', 'checkbox', 'wholerow'],
-                    types: tree.nodeTypes
+                    types: $.tree().options.departmentTypes
                 }).on('select_node.jstree', function(node, selected) {
                 }).on('deselect_node.jstree', function (node, selected) {
                 }).on('loaded.jstree', function () {
