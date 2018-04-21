@@ -500,9 +500,8 @@ var page = {
     initSelect2: function (options) {
         var option = {language: "zh-CN"},
             $select = $('select'),
-            withOptions = (typeof options !== 'undefined'),
-            init = function (withOptions) {
-                if (!withOptions) {
+            init = function (options) {
+                if (typeof options === 'undefined') {
                     $select.select2(option);
                 } else {
                     $.each(options, function () {
@@ -520,11 +519,11 @@ var page = {
             $.getMultiScripts([plugins.select2.js])
                 .done(function () {
                     $.getMultiScripts([plugins.select2.jscn]).done(function () {
-                        init(withOptions);
+                        init(options);
                     });
                 });
         } else {
-            init(withOptions);
+            init(options);
         }
     },
     initICheck: function (object) {
