@@ -7,7 +7,7 @@
                 'class' => 'btn btn-primary pull-left',
                 'id' => isset($id) ? $id : 'save'
             ]) !!}
-            @can('act', $uris['index'])
+            @can('act', $uris['index'] && !isset($index))
                 {!! Form::reset('取消', [
                     'class' => 'btn btn-default pull-right',
                     'id' => 'cancel'
