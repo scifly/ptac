@@ -507,7 +507,7 @@ var page = {
                     $.each(options, function () {
                         $select = $('#' + this['id']);
                         if (typeof this['option'] !== 'undefined') {
-                            $.extend(option, options['option']);
+                            $.extend(option, this['option']);
                         }
                         $select.select2(option);
                     });
