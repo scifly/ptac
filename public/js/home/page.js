@@ -213,7 +213,7 @@ var page = {
                 if (result.statusCode === 200) {
                     // 在当前已激活卡片中加载服务器返回的HTML
                     $tabPane.html(result.html);
-                    $('#head-breadcrumb').html(result.title);
+                    $('#head-breadcrumb').html(result['breadcrumb']);
                     $('.overlay').show();
                     // $('#ajaxLoader').after(result.html);
                     // 动态加载服务器返回的链接地址指向的js脚本
