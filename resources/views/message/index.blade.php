@@ -5,11 +5,11 @@
     <div class="box-bod">
         <div class="nav-tabs-custom">
             <ul class="nav nav-tabs pull-right">
-                <li>
-                    <a href="#tab03" data-toggle="tab">
-                        <i class="fa fa-th-large"></i>&nbsp;素材库
-                    </a>
-                </li>
+                {{--<li>--}}
+                    {{--<a href="#tab03" data-toggle="tab">--}}
+                        {{--<i class="fa fa-th-large"></i>&nbsp;素材库--}}
+                    {{--</a>--}}
+                {{--</li>--}}
                 <li>
                     <a href="#tab02" data-toggle="tab">
                         <i class="fa fa-archive"></i>&nbsp;已发送
@@ -198,7 +198,7 @@
                         <tbody></tbody>
                     </table>
                 </div>
-                <div class="tab-pane" id="tab03"></div>
+                {{--<div class="tab-pane" id="tab03"></div>--}}
             </div>
         </div>
     </div>
