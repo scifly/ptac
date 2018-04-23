@@ -743,20 +743,20 @@ class Department extends Model {
         $contacts = [];
         if (in_array($role, Constant::SUPER_ROLES)) {
             $tree = self::tree($departmentId);
-            foreach ($tree as &$t) {
-                $t['selectable'] = 1;
-                $t['role'] ='dept';
-                if (!$t['id']) {
-                    $t['type'] = '#';
+            foreach ($tree as $node) {
+                $node['selectable'] = 1;
+                $node['role'] ='dept';
+                if (!$node['id']) {
+                    $node['type'] = '#';
                 }
                 // $t['type'] = $t['id'] == 0 ? '#' : 'dept';
                 # 读取当前部门下的所有用户
-                $users = self::find($t['id'])->users;
+                $users = self::find($node['id'])->users;
                 /** @var User $u */
                 foreach ($users as $u) {
                     $contacts[] = [
                         'id' => 'user-' . $u->id,
-                        'parent' => $t['id'],
+                        'parent' => $node['id'],
                         'text' => $u->realname,
                         'selectable' => 1,
                         'type' => 'user',

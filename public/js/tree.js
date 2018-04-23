@@ -21,7 +21,7 @@
                     'root': {"icon": 'fa fa-sitemap'},
                     'company': {"icon": 'fa fa-building'},
                     'corp': {"icon": 'fa fa-weixin'},
-                    'school': {"icon": 'fa fa-university'},
+                    'school': {"icon": 'fa fa-university text-purple'},
                     'grade': {"icon": 'fa fa-object-group'},
                     'class': {"icon": 'fa fa-users'},
                     'other': {"icon": 'fa fa-folder'}
