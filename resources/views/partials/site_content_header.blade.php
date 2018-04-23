@@ -1,7 +1,7 @@
 <section class="content-header">
     <h1>
         <i class="fa {!! $department['icon'] !!} d_icon">
-            <b class="d_name">{!! $department['name']!!}</b>
+            <span class="d_name">{!! $department['name']!!}</span>
         </i>
     </h1>
     {{--<ol class="breadcrumb">--}}

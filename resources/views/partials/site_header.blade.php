@@ -10,7 +10,7 @@
                 <li class="dropdown messages-menu open">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
                         <i class="fa {!! $department['icon'] !!} d_icon" style="margin-right: 15px;"></i>
-                        <b class="d_name">{!! $department['name'] !!}</b>
+                        <span class="d_name">{!! $department['name'] !!}</span>
                     </a>
                 </li>
                 <!--用户账号-->

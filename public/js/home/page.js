@@ -119,7 +119,7 @@ var page = {
                         var dIcon = result['department']['icon'] ? result['department']['icon'] : 'fa fa-send-o',
                             dName = result['department']['name'] ? result['department']['name'] : '家校通运营';
 
-                        $('.d_icon').removeClass().addClass(dIcon);
+                        $('.d_icon').removeClass().addClass('fa ' + dIcon + ' d_icon');
                         $('.d_name').html(dName);
                         $wrapper.html(result.html);
                         $('.overlay').hide();
