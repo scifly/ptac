@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (isset($company['id']))
-                {{ Form::hidden('id', $company['id'], [
+            @if (isset($op['id']))
+                {{ Form::hidden('id', $op['id'], [
                     'id' => 'id'
                 ]) }}
             @endif
@@ -25,16 +25,16 @@
                     </div>
                 </div>
             </div>
-            @if (isset($company['department_id']))
-                {!! Form::hidden('department_id', $company['department_id']) !!}
+            @if (isset($op['department_id']))
+                {!! Form::hidden('department_id', $op['department_id']) !!}
             @endif
-            @if (isset($company['menu_id']))
-                {!! Form::hidden('menu_id', $company['menu_id']) !!}
+            @if (isset($op['menu_id']))
+                {!! Form::hidden('menu_id', $op['menu_id']) !!}
             @endif
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $company['enabled'] ?? null
+                'value' => $op['enabled'] ?? null
             ])
         </div>
     </div>
