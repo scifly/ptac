@@ -1,9 +1,9 @@
+{!! Form::open([
+    'method' => 'post',
+    'id' => 'formImagetext',
+    'data-parsley-validate' => 'true'
+]) !!}
 <div class="form-horizontal" id="imagetext" style="display: none;">
-    {!! Form::open([
-        'method' => 'post',
-        'id' => 'formImagetext',
-        'data-parsley-validate' => 'true'
-    ]) !!}
     <div class="form-group">
         {!! Form::label('title', '标题', [
             'class' => 'col-sm-3 control-label'
@@ -58,7 +58,6 @@
             </p>
         </div>
     </div>
-
     <div class="form-group">
         {!! Form::label('title', '作者', [
             'class' => 'col-sm-3 control-label'
@@ -77,5 +76,5 @@
             <input type="button" class="btn btn-primary pull-right margin" id="save-imagetext" value="确认">
         </div>
     </div>
-    {!! Form::close() !!}
 </div>
+{!! Form::close() !!}
