@@ -9,5 +9,8 @@
     </ol>
 </section>
 <section class="content">
-    <h1>学校</h1>
+    <h1>
+        <i class="fa {!! $department['icon'] ?? 'fa-send-o' !!}"></i>
+        <b >{!! $department['department'] ?? '家校通运营' !!}</b>
+    </h1>
 </section>
