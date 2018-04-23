@@ -72,7 +72,7 @@ class HomeController extends Controller {
             }
         }
         
-        return view('home.home', [
+        return view('home.page', [
             'menu'       => $this->menu->menuHtml($this->menu->rootMenuId()),
             'menuId'     => $menuId,
             'department' => $department,
