@@ -2,7 +2,7 @@
 @include('partials.modal_dialog')
 {{--@yield('content')--}}
 @if(!empty($tabs))
-    <div class="col-lg-12">
+    <div class="box box-default box-solid">
         <div class="nav-tabs-custom">
             <ul class="nav nav-tabs">
                 @foreach ($tabs as $tab)
