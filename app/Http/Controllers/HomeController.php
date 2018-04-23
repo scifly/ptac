@@ -5,7 +5,6 @@ use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Models\Menu;
 use App\Models\MenuTab;
-use App\Models\MenuType;
 use App\Models\Tab;
 use Exception;
 use Illuminate\Contracts\View\Factory;
@@ -46,11 +45,8 @@ class HomeController extends Controller {
     public function index() {
         
         $menuId = Request::query('menuId');
-        $menu = Menu::find($menuId);
-        
-        if (!$menu) {
-            list($level, $parentMenuId) = self::getVars();
-            $menuId = Menu::whereParentId($parentMenuId)
+        if (!$menuId) {
+            $menuId = Menu::whereParentId($this->menu->rootMenuId())
                 ->whereIn('uri', ['home', '/'])
                 ->first()->id;
             session(['menuId' => $menuId]);
@@ -62,34 +58,26 @@ class HomeController extends Controller {
             } else {
                 Session::forget('menuChanged');
             }
-            if (!$menu->parent->parent_id) {
-                $level = 'company';
-            } elseif (MenuType::find($menu->parent->menu_type_id)->name == '企业') {
-                $level = 'corp';
-            } else {
-                $level = 'school';
-            }
             $department = $this->menu->department($menuId);
             $params = ['department' => $department];
-            $view = view('home.' . $level, $params);
+            $view = view('home.home', $params);
             if (Request::ajax()) {
                 return response()->json([
                     'statusCode' => HttpStatusCode::OK,
                     'title'      => '首页',
                     'uri'        => Request::path(),
                     'html'       => $view->render(),
-                    'department' => $department
+                    'department' => $department,
                 ]);
             }
         }
-
+        
         return view('home.home', [
-            'menu'    => $this->menu->menuHtml($this->menu->rootMenuId()),
-            'menuId'  => $menuId,
-            'content' => view('home.' . $level, ['department' => $department]),
+            'menu'       => $this->menu->menuHtml($this->menu->rootMenuId()),
+            'menuId'     => $menuId,
             'department' => $department,
-            'js'      => self::PAGEJS,
-            'user'    => Auth::user(),
+            'js'         => self::PAGEJS,
+            'user'       => Auth::user(),
         ]);
     }
     
@@ -152,31 +140,19 @@ class HomeController extends Controller {
         if (Request::ajax()) {
             $this->result['html'] = view('partials.site_content', ['tabs' => $tabArray])->render();
             $this->result['department'] = $this->menu->department($id);
+            
             return response()->json($this->result);
         }
         # 获取菜单列表
         $menu = new Menu();
         
         return view('home.page', [
-            'menu'   => $menu->menuHtml($menu->rootMenuId()),
-            'tabs'   => $tabArray,
-            'menuId' => $id,
+            'menu'       => $menu->menuHtml($menu->rootMenuId()),
+            'tabs'       => $tabArray,
+            'menuId'     => $id,
             'department' => $this->menu->department($id),
-            'js'     => self::PAGEJS,
+            'js'         => self::PAGEJS,
         ]);
-        
-    }
-    
-    /**
-     * @return array
-     */
-    private function getVars(): array {
-        
-        $role = Auth::user()->group->name;
-        $level = in_array($role, Constant::SUPER_ROLES)
-            ? Constant::DEPARTMENT_TYPES[$role] : 'school';
-        
-        return [$level, $this->menu->rootMenuId()];
         
     }
     

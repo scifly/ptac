@@ -36,7 +36,19 @@
     @include('partials.site_main_sidebar')
     <!-- 页面内容 -->
     <div class="content-wrapper">
-        {!! $content !!}
+        <section class="content-header">
+            <h1>
+                <i class="fa {!! $department['icon'] !!}">
+                    <b>{!! $department['name']!!}</b>
+                </i>
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> 首页</a></li>
+                <li class="active">Dashboard</li>
+            </ol>
+        </section>
+        <section class="content">
+        </section>
     </div>
     <!-- 页面尾部 -->
     @include('partials.site_footer')
