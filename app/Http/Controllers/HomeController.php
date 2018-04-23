@@ -54,6 +54,7 @@ class HomeController extends Controller {
                 ->whereIn('uri', ['home', '/'])
                 ->first()->id;
             session(['menuId' => $menuId]);
+            $department = $this->menu->department($menuId);
         } else {
             if (!session('menuId') || session('menuId') !== $menuId) {
                 session(['menuId' => $menuId]);
@@ -81,11 +82,12 @@ class HomeController extends Controller {
                 ]);
             }
         }
-    
+
         return view('home.home', [
             'menu'    => $this->menu->menuHtml($this->menu->rootMenuId()),
             'menuId'  => $menuId,
-            'content' => view('home.' . $level, ['department' => $this->menu->department($menuId)]),
+            'content' => view('home.' . $level, ['department' => $department]),
+            'department' => $department,
             'js'      => self::PAGEJS,
             'user'    => Auth::user(),
         ]);
