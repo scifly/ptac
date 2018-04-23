@@ -36,7 +36,7 @@ class MessageController extends Controller {
     }
     
     /**
-     * 消息列表
+     * 消息中心
      *
      * @return bool|JsonResponse
      * @throws Throwable

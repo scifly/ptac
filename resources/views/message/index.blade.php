@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('partials.list_header')
     </div>
     <div class="box-bod">
         <div class="nav-tabs-custom">
