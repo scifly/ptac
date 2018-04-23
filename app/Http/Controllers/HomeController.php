@@ -141,14 +141,13 @@ class HomeController extends Controller {
         if (Request::ajax()) {
             $this->result['html'] = view('partials.site_content', ['tabs' => $tabArray])->render();
             $this->result['department'] = $this->menu->department($id);
+            $this->result['menu'] = $this->menu->find(session('menuId'))->name;
             
             return response()->json($this->result);
         }
-        # 获取菜单列表
-        $menu = new Menu();
-        
+   
         return view('home.page', [
-            'menu'       => $menu->menuHtml($menu->rootMenuId()),
+            'menu'       => $this->menu->menuHtml($this->menu->rootMenuId()),
             'tabs'       => $tabArray,
             'menuId'     => $id,
             'department' => $this->menu->department($id),

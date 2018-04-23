@@ -123,6 +123,7 @@ var page = {
                         $('.d_name').html(dName);
                         // $wrapper.html(result.html);
                         $wrapper.html(result.html);
+                        $('#head-breadcrumb').html(result['menu']);
                         $('.overlay').hide();
                         // 获取状态为active的卡片内容
                         var $tab = null;
