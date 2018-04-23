@@ -30,7 +30,7 @@ class StudentAttendanceSettingPolicy {
      * @param bool $abort
      * @return bool
      */
-    public function operation(User $user, StudentAttendanceSetting $sas = null, $abort = true) {
+    public function operation(User $user, StudentAttendanceSetting $sas = null, $abort = false) {
         
         abort_if(
             $abort && !$sas,
