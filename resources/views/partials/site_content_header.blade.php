@@ -4,8 +4,8 @@
             <span class="d_name">{!! $department['name']!!}</span>
         </i>
     </h1>
-    {{--<ol class="breadcrumb">--}}
-        {{--<li><a href="#"><i class="fa fa-dashboard"></i> 首页</a></li>--}}
-        {{--<li class="active">Dashboard</li>--}}
-    {{--</ol>--}}
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> PTAC</a></li>
+        <li class="active" id="head-breadcrumb"></li>
+    </ol>
 </section>
