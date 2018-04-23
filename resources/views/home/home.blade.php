@@ -33,7 +33,7 @@
     <!-- 页面头部 -->
     @include('partials.site_header')
     <!-- 页面左侧边栏 -->
-    @include('partials.site_main_sidebar', ['menu' => $menu])
+    @include('partials.site_main_sidebar')
     <!-- 页面内容 -->
     <div class="content-wrapper">
         <section class="content-header">
