@@ -141,7 +141,7 @@ class HomeController extends Controller {
         if (Request::ajax()) {
             $this->result['html'] = view('partials.site_content', ['tabs' => $tabArray])->render();
             $this->result['department'] = $this->menu->department($id);
-            $this->result['menu'] = $this->menu->find(session('menuId'))->name;
+            $this->result['title'] = $this->menu->find(session('menuId'))->name;
             
             return response()->json($this->result);
         }
