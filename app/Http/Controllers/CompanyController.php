@@ -86,7 +86,7 @@ class CompanyController extends Controller {
     public function edit($id) {
         
         return $this->output([
-            'company' => $this->company->find($id),
+            'c' => $this->company->find($id),
         ]);
         
     }
