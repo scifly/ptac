@@ -79,6 +79,7 @@ class HomeController extends Controller {
             'js'         => self::PAGEJS,
             'user'       => Auth::user(),
         ]);
+        
     }
     
     /**
