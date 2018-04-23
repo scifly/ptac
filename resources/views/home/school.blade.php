@@ -10,7 +10,8 @@
 </section>
 <section class="content">
     <h1>
-        <i class="fa {!! $department['icon'] ?? 'fa-send-o' !!}"></i>
-        <b >{!! $department['name'] ?? '家校通运营' !!}</b>
+        <i class="fa {!! $department['icon'] !!}">
+            <b>{!! $department['name']!!}</b>
+        </i>
     </h1>
 </section>

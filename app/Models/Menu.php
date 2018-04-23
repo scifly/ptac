@@ -644,16 +644,17 @@ class Menu extends Model {
      */
     function department($id) {
         
-        $icon = $name = null;
+        $icon = 'fa fa-send-o text-blue';
+        $name = '家校通运营';
         $departmentMenuId = $this->menuId($id);
         
         if ($departmentMenuId) {
-            $icon = 'fa fa-university';
+            $icon = 'fa fa-university text-purple';
             $name = $this->find($departmentMenuId)->name;
         } else {
             $departmentMenuId = $this->menuId($id, '企业');
             if ($departmentMenuId) {
-                $icon = 'fa fa-weixin';
+                $icon = 'fa fa-weixin text-green';
                 $name = $this->find($departmentMenuId)->name;
             }
         }
