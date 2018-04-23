@@ -1,4 +1,3 @@
-@include('partials.site_content_header')
 <!--content-->
 <section class="content clearfix">
     @include('partials.modal_dialog')

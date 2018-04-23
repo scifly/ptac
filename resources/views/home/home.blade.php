@@ -1,13 +1,5 @@
-<section class="content-header">
-    <h1>
-        <i class="fa {!! $department['icon'] !!}">
-            <b>{!! $department['name']!!}</b>
-        </i>
-    </h1>
-    <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> 首页</a></li>
-        <li class="active">Dashboard</li>
-    </ol>
-</section>
-<section class="content">
-</section>
+<ul>
+    <li>统计数据</li>
+    <li>常用工具</li>
+    <li>其他</li>
+</ul>

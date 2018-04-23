@@ -75,9 +75,10 @@ class HomeController extends Controller {
         return view('home.page', [
             'menu'       => $this->menu->menuHtml($this->menu->rootMenuId()),
             'menuId'     => $menuId,
-            'content'    => view('home.home', ['department' => $department]),
+            'content'    => view('home.home'),
             'department' => $department,
             'js'         => self::PAGEJS,
+            'enabled'    => true, # 是否显示header
             'user'       => Auth::user(),
         ]);
         

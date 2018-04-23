@@ -37,6 +37,7 @@
     @include('partials.site_main_sidebar')
     <!-- 页面内容 -->
     <div class="content-wrapper">
+        @include('partials.site_content_header')
         @include('partials.site_content')
     </div>
     <!-- 页面尾部 -->
