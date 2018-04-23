@@ -121,6 +121,7 @@ var page = {
 
                         $('.d_icon').removeClass().addClass('fa ' + dIcon + ' d_icon');
                         $('.d_name').html(dName);
+                        // $wrapper.html(result.html);
                         $wrapper.html(result.html);
                         $('.overlay').hide();
                         // 获取状态为active的卡片内容

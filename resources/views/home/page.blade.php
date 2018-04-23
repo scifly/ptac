@@ -38,7 +38,9 @@
     <!-- 页面内容 -->
     <div class="content-wrapper">
         @include('partials.site_content_header')
-        @include('partials.site_content')
+        <div class="content clearfix">
+            @include('partials.site_content')
+        </div>
     </div>
     <!-- 页面尾部 -->
     @include('partials.site_footer')
