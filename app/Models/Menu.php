@@ -77,13 +77,7 @@ class Menu extends Model {
         'action_id', 'icon_id', 'enabled',
     ];
     
-    const MENU_TYPES = [
-        '根'  => ['color' => 'text-gray', 'type' => 'root'],
-        '运营' => ['color' => 'text-blue', 'type' => 'company'],
-        '企业' => ['color' => 'text-green', 'type' => 'corp'],
-        '学校' => ['color' => 'text-purple', 'type' => 'school'],
-        '其他' => ['color' => 'text-black', 'type' => 'other'],
-    ];
+    
     
     /**
      * 获取菜单所属类型
@@ -497,15 +491,15 @@ class Menu extends Model {
             $type = MenuType::find($menu['menu_type_id'])->name;
             $parentId = isset($menu['parent_id']) ? $menu['parent_id'] : '#';
             $text = sprintf(
-                Snippet::MENU_TEXT,
-                $menu['enabled'] ? self::MENU_TYPES[$type]['color'] : 'text-gray',
+                Snippet::NODE_TEXT,
+                $menu['enabled'] ? Constant::NODE_TYPES[$type]['color'] : 'text-gray',
                 $name
             );
             $tree[] = [
                 'id'     => $key,
                 'parent' => $parentId,
                 'text'   => $text,
-                'type'   => self::MENU_TYPES[$type]['type'],
+                'type'   => Constant::NODE_TYPES[$type]['type'],
             ];
         }
         

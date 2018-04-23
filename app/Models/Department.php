@@ -66,6 +66,15 @@ class Department extends Model {
         'remark', 'order', 'enabled',
     ];
 
+    protected $menu;
+    
+    function __construct(array $attributes = []) {
+        
+        parent::__construct($attributes);
+        $this->menu = app()->make('App\Models\Menu');
+        
+    }
+    
     /**
      * 返回所属的部门类型对象
      *
@@ -407,12 +416,17 @@ class Department extends Model {
         
         $user = Auth::user();
         $role = $user->group->name;
-        $rootDId = Department::whereDepartmentTypeId(DepartmentType::whereName('根')->first()->id)->first()->id;
+        $rootDepartmentTypeId = DepartmentType::whereName('根')->first()->id;
+        $rootDId = Department::whereDepartmentTypeId($rootDepartmentTypeId)->first()->id;
+        # 当前菜单id
         $menuId = session('menuId');
-        $menu = new Menu();
-        $smId = $menu->menuId($menuId);
+        # 学校的根菜单id
+        $smId = $this->menu->menuId($menuId);
+        # 学校的根部门id
         $sdId = $smId ? School::whereMenuId($smId)->first()->department_id : null;
-        $cmId = $menu->menuId($menuId, '企业');
+        # 企业的根菜单id
+        $cmId = $this->menu->menuId($menuId, '企业');
+        # 企业的根部门id
         $cdId = $cmId ? Corp::whereMenuId($cmId)->first()->department_id : null;
         switch ($role) {
             case '运营':

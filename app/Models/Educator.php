@@ -218,7 +218,6 @@ class Educator extends Model {
                     'enabled'   => $user['enabled'],
                 ]);
                 if ($u->group_id != Group::whereName('学校')->first()->id) {
-                    
                     # 保存班级科目绑定关系
                     $classSubjectData = $request->input('classSubject');
                     if ($classSubjectData['class_ids'] && $classSubjectData['subject_ids']) {
@@ -262,11 +261,11 @@ class Educator extends Model {
                         ]);
                     }
                 }
-                # 当选择了学校角色没有选择 学校部门时
+                # 当选择了学校角色没有选择学校部门时
                 $schoolId = $this->schoolId();
-                $deptUser = DepartmentUser::whereDepartmentId(School::find($schoolId)->department_id)
-                    ->where('user_id', $u->id)
-                    ->first();
+                $schoolDeptId = School::find($schoolId)->department_id;
+                $deptUser = DepartmentUser::whereDepartmentId($schoolDeptId)
+                    ->where('user_id', $u->id)->first();
                 if ($u->group_id == Group::whereName('学校')->first()->id && empty($deptUser)) {
                     DepartmentUser::create([
                         'user_id'       => $u->id,
@@ -337,7 +336,8 @@ class Educator extends Model {
                 }
                 # 当选择了学校角色没有选择学校部门时
                 $schoolId = $this->schoolId();
-                $deptUser = DepartmentUser::whereDepartmentId(School::find($schoolId)->department_id)
+                $schoolDeptId = School::find($schoolId)->department_id;
+                $deptUser = DepartmentUser::whereDepartmentId($schoolDeptId)
                     ->where('user_id', $request->input('user_id'))
                     ->first();
                 if ($user['group_id'] == Group::whereName('学校')->first()->id && empty($deptUser)) {

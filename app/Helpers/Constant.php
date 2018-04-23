@@ -51,6 +51,16 @@ class Constant {
         '其他' => 'other'
     ];
     
+    const NODE_TYPES = [
+        '根'  => ['color' => 'text-gray', 'type' => 'root'],
+        '运营' => ['color' => 'text-blue', 'type' => 'company'],
+        '企业' => ['color' => 'text-green', 'type' => 'corp'],
+        '学校' => ['color' => 'text-purple', 'type' => 'school'],
+        '年级' => ['color' => 'text-black', 'type' => 'grade'],
+        '班级' => ['color' => 'text-black', 'type' => 'class'],
+        '其他' => ['color' => 'text-black', 'type' => 'other'],
+    ];
+    
     # 控制器相对路径
     const CONTROLLER_DIR = 'app/Http/Controllers';
 
