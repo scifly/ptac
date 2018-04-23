@@ -78,7 +78,6 @@ class HomeController extends Controller {
             'content'    => view('home.home'),
             'department' => $department,
             'js'         => self::PAGEJS,
-            'enabled'    => true, # 是否显示header
             'user'       => Auth::user(),
         ]);
         

@@ -9,8 +9,8 @@
             <ul class="nav navbar-nav">
                 <li class="dropdown messages-menu open">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-                        <i id="d_icon" class="fa {!! $department['icon'] !!}" style="margin-right: 15px;"></i>
-                        <b id="d_name">{!! $department['name'] !!}</b>
+                        <i class="fa {!! $department['icon'] !!} d_icon" style="margin-right: 15px;"></i>
+                        <b class="d_name">{!! $department['name'] !!}</b>
                     </a>
                 </li>
                 <!--用户账号-->
