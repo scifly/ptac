@@ -8,6 +8,7 @@ use App\Events\DepartmentUpdated;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -392,12 +393,14 @@ class Department extends Model {
         $nodes = [];
         for ($i = 0; $i < sizeof($departments); $i++) {
             $parentId = $i == 0 ? '#' : $departments[$i]['parent_id'];
-            $text = $departments[$i]['name'];
             $departmentType = DepartmentType::find($departments[$i]['department_type_id'])->name;
+            $name = $departments[$i]['name'];
+            $enabled = $departments[$i]['enabled'];
+            $color = Constant::NODE_TYPES[$departmentType]['color'];
             $nodes[] = [
                 'id' => $departments[$i]['id'],
                 'parent' => $parentId,
-                'text' => $text,
+                'text' => sprintf(Snippet::NODE_TEXT, $enabled ? $color : 'text-gray', $name),
                 'type' => Constant::DEPARTMENT_TYPES[$departmentType],
             ];
         }
