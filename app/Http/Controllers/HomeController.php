@@ -83,7 +83,7 @@ class HomeController extends Controller {
         }
     
         return view('home.home', [
-            'menu'    => $this->menu->menuHtml($menu->rootMenuId()),
+            'menu'    => $this->menu->menuHtml($this->menu->rootMenuId()),
             'menuId'  => $menuId,
             'content' => view('home.' . $level, ['department' => $this->menu->department($menuId)]),
             'js'      => self::PAGEJS,
