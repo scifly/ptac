@@ -15,7 +15,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-building'])
+                        @include('partials.icon_addon', ['class' => 'fa-building text-blue'])
                         {!! Form::text('name', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(不超过40个汉字)',
