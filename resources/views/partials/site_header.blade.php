@@ -10,7 +10,7 @@
                 <li class="dropdown messages-menu open">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
                         <i id="d_icon" class="fa {!! $department['icon'] ?? 'fa-send-o' !!}" style="margin-right: 15px;"></i>
-                        <b id="d_name">{!! $department['department'] ?? '家校通运营' !!}</b>
+                        <b id="d_name">{!! $department['name'] ?? '家校通运营' !!}</b>
                     </a>
                 </li>
                 <!--用户账号-->

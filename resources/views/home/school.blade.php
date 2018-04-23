@@ -11,6 +11,6 @@
 <section class="content">
     <h1>
         <i class="fa {!! $department['icon'] ?? 'fa-send-o' !!}"></i>
-        <b >{!! $department['department'] ?? '家校通运营' !!}</b>
+        <b >{!! $department['name'] ?? '家校通运营' !!}</b>
     </h1>
 </section>
