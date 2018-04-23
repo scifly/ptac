@@ -76,6 +76,7 @@ class HomeController extends Controller {
             'menu'       => $this->menu->menuHtml($this->menu->rootMenuId()),
             'menuId'     => $menuId,
             'content'    => view('home.home', ['department' => $department]),
+            'department' => $department,
             'js'         => self::PAGEJS,
             'user'       => Auth::user(),
         ]);
