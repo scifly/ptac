@@ -106,7 +106,7 @@ var page = {
         }
     },
     getWrapperContent: function (menuId, menuUrl, tabId, tabUrl) {
-        var $wrapper = $('.content .clearfix');
+        var $wrapper = $('.content.clearfix');
         $('.overlay').show();
         $.ajax({
             type: 'GET',
