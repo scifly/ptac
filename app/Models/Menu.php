@@ -518,7 +518,8 @@ class Menu extends Model {
     function rootMenuId($subRoot = false) {
         
         $user = Auth::user();
-        $rootMId = Menu::whereMenuTypeId(MenuType::whereName('根')->first()->id)->first()->id;
+        $rootMTId = MenuType::whereName('根')->first()->id;
+        $rootMId = Menu::whereMenuTypeId($rootMTId)->first()->id;
         $menuId = session('menuId') ?? $rootMId;
         $smId = self::menuId($menuId);
         $cmId = self::menuId($menuId, '企业');

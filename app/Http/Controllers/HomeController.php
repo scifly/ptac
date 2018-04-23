@@ -1,12 +1,11 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
-use App\Models\Corp;
 use App\Models\Menu;
 use App\Models\MenuTab;
 use App\Models\MenuType;
-use App\Models\School;
 use App\Models\Tab;
 use Exception;
 use Illuminate\Contracts\View\Factory;
@@ -48,20 +47,13 @@ class HomeController extends Controller {
         
         $menuId = Request::query('menuId');
         $menu = Menu::find($menuId);
+        
         if (!$menu) {
-            list($view, $parentMenuId) = self::getVars();
+            list($level, $parentMenuId) = self::getVars();
             $menuId = Menu::whereParentId($parentMenuId)
                 ->whereIn('uri', ['home', '/'])
                 ->first()->id;
             session(['menuId' => $menuId]);
-            $menu = new Menu();
-            
-            return view('home.home', [
-                'menu'    => $menu->menuHtml($menu->rootMenuId()),
-                'content' => view('home.' . $view),
-                'js'      => self::PAGEJS,
-                'user'    => Auth::user(),
-            ]);
         } else {
             if (!session('menuId') || session('menuId') !== $menuId) {
                 session(['menuId' => $menuId]);
@@ -70,31 +62,33 @@ class HomeController extends Controller {
                 Session::forget('menuChanged');
             }
             if (!$menu->parent->parent_id) {
-                $view = 'company';
+                $level = 'company';
             } elseif (MenuType::find($menu->parent->menu_type_id)->name == '企业') {
-                $view = 'corp';
+                $level = 'corp';
             } else {
-                $view = 'school';
+                $level = 'school';
             }
+            $department = $this->menu->department($menuId);
+            $params = ['department' => $department];
+            $view = view('home.' . $level, $params);
             if (Request::ajax()) {
                 return response()->json([
                     'statusCode' => HttpStatusCode::OK,
                     'title'      => '首页',
                     'uri'        => Request::path(),
-                    'html'       => view('home.' . $view)->render(),
-                    'department' => $this->menu->department($menuId)
+                    'html'       => $view->render(),
+                    'department' => $department
                 ]);
             }
-            
-            return view('home.home', [
-                'menu'    => $menu->menuHtml($menu->rootMenuId()),
-                'menuId'  => $menuId,
-                'content' => view('home.' . $view),
-                'js'      => self::PAGEJS,
-            ]);
-            
         }
-        
+    
+        return view('home.home', [
+            'menu'    => $this->menu->menuHtml($menu->rootMenuId()),
+            'menuId'  => $menuId,
+            'content' => view('home.' . $level, ['department' => $this->menu->department($menuId)]),
+            'js'      => self::PAGEJS,
+            'user'    => Auth::user(),
+        ]);
     }
     
     /**
@@ -176,23 +170,11 @@ class HomeController extends Controller {
      */
     private function getVars(): array {
         
-        $user = Auth::user();
-        switch ($user->group->name) {
-            case '运营':
-                $view = 'company';
-                break;
-            case '企业':
-                $view = 'corp';
-                break;
-            case '学校':
-                $view = 'school';
-                break;
-            default:
-                $view = 'school';
-                break;
-        }
+        $role = Auth::user()->group->name;
+        $level = in_array($role, Constant::SUPER_ROLES)
+            ? Constant::DEPARTMENT_TYPES[$role] : 'school';
         
-        return [$view, $this->menu->rootMenuId()];
+        return [$level, $this->menu->rootMenuId()];
         
     }
     
