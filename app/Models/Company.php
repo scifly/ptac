@@ -161,7 +161,7 @@ class Company extends Model {
             [
                 'db' => 'Company.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-building', '') . $d;
+                    return sprintf(Snippet::ICON, 'fa-building text-blue', '') . $d;
                 }
             ],
             ['db' => 'Company.remark', 'dt' => 2],
