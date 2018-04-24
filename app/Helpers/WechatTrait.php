@@ -27,6 +27,7 @@ trait WechatTrait {
             );
         } else {
             $accessToken = Wechat::getAccessToken($corp->corpid, $secret);
+            Log::debug('token: ' . $accessToken);
             $userInfo = json_decode(
                 Wechat::getUserInfo($accessToken, $code),
                 JSON_UNESCAPED_UNICODE
