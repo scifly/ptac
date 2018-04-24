@@ -30,6 +30,7 @@ trait WechatTrait {
                 Wechat::getUserInfo($accessToken, $code),
                 JSON_UNESCAPED_UNICODE
             );
+            Log::debug(json_encode($result));
             abort_if(
                 $result->{'errcode'} != 0,
                 HttpStatusCode::INTERNAL_SERVER_ERROR,
