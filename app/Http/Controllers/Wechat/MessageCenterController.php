@@ -27,6 +27,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
@@ -76,6 +77,7 @@ class MessageCenterController extends Controller {
         if (!Auth::id()) {
             return $this->getUserid(self::APP);
         } else {
+            Log::debug('logged in already!!!');
             list($received, $sent, $count, $educator) = $this->message->wIndex();
     
             return view('wechat.message_center.index', [
