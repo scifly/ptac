@@ -543,7 +543,7 @@ class Message extends Model {
     /** 消息中心 (微信端首页) */
     function wIndex() {
         
-        $user = User::whereUserid(session('userid'))->first();
+        $user = Auth::user(); // User::whereUserid()->first();
         abort_if(
             !$user || !in_array($user->group->name, ['教职员工', '监护人']),
             HttpStatusCode::UNAUTHORIZED,
