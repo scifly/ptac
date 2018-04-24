@@ -26,7 +26,7 @@ class AppIndexComposer {
         
         $rootMenuId = $this->menu->menuId(session('menuId'), '企业');
         if (!$rootMenuId) {
-            $corps = Corp::all()->toArray();
+            $corps = Corp::all()->pluck('name', 'id')->toArray();
         } else {
             $corp = Corp::whereMenuId($rootMenuId)->first();
             $corps = [$corp->id => $corp->name];
