@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Request;
 trait WechatTrait {
 
     function getUserid($app) {
-        static $v = 0;
+        static $v;
         
         $acronym = explode('/', Request::path())[0];
         $corp = Corp::whereAcronym($acronym)->first();
@@ -23,8 +23,10 @@ trait WechatTrait {
         $v += 1;
         Log::debug('visited: ' . $v);
         Log::debug('request no.' . $v . Request::url());
+        Log::debug('input: ' . json_encode(Request::all()));
         $code = Request::input('code');
         if (!$code) {
+            Log::debug('redirecting...');
             redirect(
                 Wechat::getCodeUrl($corp->corpid, $agentid, Request::url())
             );
