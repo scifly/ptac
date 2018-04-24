@@ -49,7 +49,7 @@ $btn_cancelAttachment.on('click', function () {
 // 图文管理
 $addImageText.on('click', function () {
     // $message.hide();
-    $imageText.show();
+    $('#modal-imagetext').modal({backdrop: true})
 });
 $saveImageText.on('click', function () {
 

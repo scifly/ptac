@@ -2,7 +2,7 @@
     <div class="box-header with-border">
         @include('partials.list_header')
     </div>
-    <div class="box-bod">
+    <div class="box-body">
         <div class="nav-tabs-custom">
             <ul class="nav nav-tabs pull-right">
                 <li>
