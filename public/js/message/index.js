@@ -14,7 +14,7 @@ page.loadCss('css/message/message.css');
 var title = title,
     $message = $('#message'),
     $objects = $('#objects'),
-    $imageText = $('#imagetext'),
+    $imageText = $('#modal-imagetext'),
     $add = $('#add'),
     $save = $('#save'),
     $cancel = $('#cancel'),
@@ -22,7 +22,7 @@ var title = title,
     $saveImageText = $('#save-imagetext'),
     $saveVideo = $('#save-video'),
     $cancelImageText = $('#cancel-imagetext'),
-    $video = $('#upload_video'),
+    $video = $('#modal_video'),
     $addVideo = $('#add-video'),
     $cancelVideo = $('#cancel-video'),
     $send = $('#send'),
@@ -48,7 +48,7 @@ $btn_cancelAttachment.on('click', function () {
 });
 // 图文管理
 $addImageText.on('click', function () {
-    $message.hide();
+    // $message.hide();
     $imageText.show();
 });
 $saveImageText.on('click', function () {
