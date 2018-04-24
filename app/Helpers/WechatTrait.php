@@ -18,17 +18,15 @@ trait WechatTrait {
         $app = App::whereCorpId($corp->id)->where('name', $app)->first();
         $agentid = $app->agentid;
         $secret = $app->secret;
-        Log::debug('you are here: ' . $agentid);
     
         $code = Request::input('code');
+        Log::debug('code : ' . $code);
         if (!$code) {
-            Log::debug('request url : ' . Request::url());
             redirect(
                 Wechat::getCodeUrl($corp->corpid, $agentid, Request::url())
             );
         } else {
             $accessToken = Wechat::getAccessToken($corp->corpid, $secret);
-            Log::debug('token: ' . $accessToken);
             $userInfo = json_decode(
                 Wechat::getUserInfo($accessToken, $code),
                 JSON_UNESCAPED_UNICODE
