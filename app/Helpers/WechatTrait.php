@@ -20,7 +20,7 @@ trait WechatTrait {
         $secret = $app->secret;
     
         $code = Request::input('code');
-        Log::debug('code : ' . $code);
+        Log::debug('urlcode: ' . Wechat::getCodeUrl($corp->corpid, $agentid, Request::url()));
         if (!$code) {
             redirect(
                 Wechat::getCodeUrl($corp->corpid, $agentid, Request::url())
