@@ -94,7 +94,8 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function create() {
-        $userId = Session::get('userId');
+        
+        $userId = Auth::id();
         if (Request::isMethod('post')) {
             $keywords = Request::get('keywords');
             if (empty($keywords)) {
@@ -486,6 +487,7 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show($id) {
+        
         $userId = Session::get('userId');
         $user = $this->user->where('userid', $userId)->first();
         $message = $this->message->find($id);
@@ -551,8 +553,7 @@ class MessageCenterController extends Controller {
      */
     public function replyList() {
         
-        $userId = Session::get('userId');
-        $user = $this->user->where('userid', $userId)->first();
+        $user = Auth::user();
         $input = Request::all();
         $message = $this->message->find($input['id']);
         $lists = MessageReply::where('msl_id', $input['msl_id'])->get();
@@ -561,7 +562,8 @@ class MessageCenterController extends Controller {
                 $list->name = $list->user->realname;
             }
         } else {
-            $lists = MessageReply::where('msl_id', $input['msl_id'])->where('user_id', $user->id)->get();
+            $lists = MessageReply::where('msl_id', $input['msl_id'])
+                ->where('user_id', $user->id)->get();
             foreach ($lists as $list) {
                 $list->name = $list->user->realname;
             }
@@ -644,11 +646,10 @@ class MessageCenterController extends Controller {
      */
     public function department($id) {
         
-        $userId = Session::get('userId');
         #判断传过来的id是否为学校id
         $department = Department::whereId($id)->first();
         if ($department->department_type_id == 4) {
-            $lists = $this->initLists($userId);
+            $lists = $this->initLists(Auth::id());
             $data = view('wechat.message_center.select', [
                 'graLists' => $lists['graLists'],
                 'claLists' => $lists['claLists'],

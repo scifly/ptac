@@ -31,7 +31,7 @@ class ScoreCenterController extends Controller {
      * @param Exam $exam
      */
     public function __construct(Score $score, Exam $exam) {
-        // $this->middleware();
+
         $this->score = $score;
         $this->exam = $exam;
         

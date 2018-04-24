@@ -8,7 +8,7 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>500</h1>
+    <h1>500 {{ $exception->getMessage() }}</h1>
     <a href="javascript:history.back();">Back</a>
 </body>
 </html>

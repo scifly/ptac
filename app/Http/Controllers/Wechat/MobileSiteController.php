@@ -7,6 +7,7 @@ use App\Models\WapSite;
 use App\Models\WapSiteModule;
 use App\Models\WsmArticle;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class MobileSiteController extends Controller {
@@ -32,9 +33,9 @@ class MobileSiteController extends Controller {
      */
     public function index() {
         
-        $this->getUserid(self::APP);
-        
-        return $this->ws->wIndex();
+        return Auth::id()
+            ? $this->ws->wIndex()
+            : $this->getUserid(self::APP);
         
     }
     

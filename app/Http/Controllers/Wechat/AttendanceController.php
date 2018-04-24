@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\StudentAttendance;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Throwable;
 
@@ -36,9 +37,9 @@ class AttendanceController extends Controller {
      */
     public function index() {
         
-        $this->getUserid(self::APP);
-        
-        return $this->sa->wIndex();
+        return Auth::id()
+            ? $this->sa->wIndex()
+            : $this->getUserid(self::APP);
         
     }
     

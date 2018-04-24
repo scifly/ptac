@@ -30,14 +30,12 @@ trait WechatTrait {
                 Wechat::getUserInfo($accessToken, $code),
                 JSON_UNESCAPED_UNICODE
             );
-            Log::debug(json_encode($result));
             abort_if(
                 $result['errcode'] != 0,
                 HttpStatusCode::INTERNAL_SERVER_ERROR,
                 __('messages.internal_server_error')
             );
-            $user = User::whereUserid($result['UserId'])->first();
-            Log::debug('userId: ' . ($user ? 'yes' : 'no'));
+            $user = User::whereEnabled(1)->where('userid', $result['UserId'])->first();
             abort_if(
                 !$user,
                 HttpStatusCode::NOT_FOUND,

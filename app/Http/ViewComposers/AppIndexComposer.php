@@ -4,6 +4,7 @@ namespace App\Http\ViewComposers;
 use App\Helpers\ModelTrait;
 use App\Models\App;
 use App\Models\Corp;
+use App\Models\Menu;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -12,32 +13,32 @@ class AppIndexComposer {
     
     use ModelTrait;
     
-    protected $corp;
+    protected $corp, $menu;
     
-    function __construct(Corp $corp) { $this->corp = $corp; }
+    function __construct(Corp $corp, Menu $menu) {
+        
+        $this->corp = $corp;
+        $this->menu = $menu;
+        
+    }
     
     public function compose(View $view) {
         
-        $user = Auth::user();
-        if ($user->group->name === '运营') {
+        $rootMenuId = $this->menu->menuId(session('menuId'), '企业');
+        if (!$rootMenuId) {
             $corps = Corp::all()->toArray();
-            $apps = App::whereCorpId($corps)->get()->toArray();
-            $view->with([
-                'corps' => Corp::all()->pluck('name', 'id')->toArray(),
-                'apps' => $apps,
-                'uris' => $this->uris()
-            ]);
         } else {
-            $corpId = $this->corp->corpId();
-            $corp = Corp::find($corpId);
-            $apps = App::whereCorpId($corpId)->get()->toArray();
-            $this->formatDateTime($apps);
-            $view->with([
-                'corp' => $corp,
-                'apps' => $apps,
-                'uris' => $this->uris(),
-            ]);
+            $corp = Corp::whereMenuId($rootMenuId)->first();
+            $corps = [$corp->id => $corp->name];
         }
+        reset($corps);
+        $apps = App::whereCorpId(key($corps))->get()->toArray();
+        $this->formatDateTime($apps);
+        $view->with([
+            'corps' => $corps,
+            'apps' => $apps,
+            'uris' => $this->uris()
+        ]);
         
     }
     
