@@ -11,7 +11,7 @@
             <div class="switchschool-item clearfix">
                 <div class="switchschool-head">
                     <div class="title-name"> 消息中心</div>
-                    @if($educator)
+                    @if ($educator)
                         <span class="addworkicon">
 							<a class="icon iconfont icon-add c-green" href="{{url('message_create')}}"></a>
 						</span>

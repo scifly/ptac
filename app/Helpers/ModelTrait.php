@@ -439,7 +439,11 @@ trait ModelTrait {
         
         $menu = new Menu();
         $corpMenuId = $menu->menuId(session('menuId'), '企业');
-        abort_if(!$corpMenuId, HttpStatusCode::BAD_REQUEST, __('messages.bad_request'));
+        abort_if(
+            !$corpMenuId,
+            HttpStatusCode::BAD_REQUEST,
+            __('messages.bad_request')
+        );
         $corp = Corp::whereMenuId($corpMenuId)->first();
         
         return [

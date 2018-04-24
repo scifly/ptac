@@ -351,19 +351,20 @@ Route::group(['prefix' => 'school_types'], routes('SchoolTypeController'));
 # --------------------------------------------------------------------------------
 /** 消息中心 */
 $c = 'Wechat\MessageCenterController';
-Route::get('message_center', $c . '@index');
-Route::post('message_center', $c . '@index');
-Route::get('message_create', $c . '@create');
-Route::post('message_create', $c . '@create');
-Route::post('message_store', $c . '@store');
-Route::get('message_show/{id}', $c . '@show');
-Route::get('message_update/{id}', $c . '@updateStatus');
-Route::delete('message_delete/{id}', $c . '@destroy');
-Route::post('message_upload', $c . '@upload');
-Route::get('message_dept/{id}', $c . '@getNextDept');
-Route::post('message_replay', $c . '@replay');
-Route::post('message_replaylist', $c . '@replayList');
-Route::delete('message_replaydel/{id}', $c . '@replayDestroy');
+$p = 'wlrj/message_center/';
+Route::get($p, $c . '@index');
+Route::post($p, $c . '@index');
+Route::get($p . 'create', $c . '@create');
+Route::post($p . 'create', $c . '@create');
+Route::post($p . 'store', $c . '@store');
+Route::get($p . 'show/{id}', $c . '@show');
+Route::get($p . 'update/{id}', $c . '@updateStatus');
+Route::delete($p . 'delete/{id}', $c . '@destroy');
+Route::post($p . 'upload', $c . '@upload');
+Route::get($p . 'dept/{id}', $c . '@department');
+Route::post($p . 'reply', $c . '@reply');
+Route::post($p . 'replylist', $c . '@replyList');
+Route::delete($p . 'replydel/{id}', $c . '@replyDestroy');
 
 /** 考勤中心 */
 $c = 'Wechat\AttendanceController';

@@ -497,7 +497,7 @@ class Message extends Model {
     /**
      * 上传媒体文件
      *
-     * @return array
+     * @return JsonResponse
      */
     function upload() {
         
@@ -517,6 +517,7 @@ class Message extends Model {
             '文件上传失败'
         );
         $result['message'] = '上传成功！';
+        
         # 上传到企业号后台
         list($corpid, $secret) = $this->tokenParams();
         $message = json_decode(
@@ -531,13 +532,15 @@ class Message extends Model {
             HttpStatusCode::INTERNAL_SERVER_ERROR,
             '上传微信服务器失败！'
         );
-        $uploadedFile['media_id'] = $message->media_id;
+        
+        $uploadedFile['media_id'] = $message->{'media_id'};
         $result['data'] = $uploadedFile;
         
-        return $result;
+        return response()->json($result);
         
     }
     
+    /** 消息中心 (微信端首页) */
     function wIndex() {
         
         $user = User::whereUserid(session('userid'))->first();

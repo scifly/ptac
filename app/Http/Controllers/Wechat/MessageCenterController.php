@@ -527,7 +527,7 @@ class MessageCenterController extends Controller {
      * 消息回复
      *
      */
-    public function replay() {
+    public function reply() {
         
         $userId = Session::get('userId');
         $user = $this->user->where('userid', $userId)->first();
@@ -545,7 +545,7 @@ class MessageCenterController extends Controller {
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function replayList() {
+    public function replyList() {
         
         $userId = Session::get('userId');
         $user = $this->user->where('userid', $userId)->first();
@@ -574,7 +574,7 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      * @throws Exception
      */
-    public function replayDestroy($id) {
+    public function replyDestroy($id) {
         
         $mr = MessageReply::find($id);
         abort_if(!$mr, HttpStatusCode::NOT_FOUND);
@@ -638,7 +638,7 @@ class MessageCenterController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      * @throws \Throwable
      */
-    public function getNextDept($id) {
+    public function department($id) {
         
         $userId = Session::get('userId');
         #判断传过来的id是否为学校id

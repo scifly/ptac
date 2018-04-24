@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\MessageRequest;
 use App\Models\Department;
 use App\Models\Media;
@@ -13,7 +12,7 @@ use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
- * 消息
+ * 消息中心
  *
  * Class MessageController
  * @package App\Http\Controllers
@@ -30,13 +29,11 @@ class MessageController extends Controller {
         $this->middleware(['auth', 'checkrole']);
         $this->message = $message;
         $this->department = $departement;
-        $this->user = $user;
-        $this->media = $media;
         
     }
     
     /**
-     * 消息列表
+     * 消息中心
      *
      * @return bool|JsonResponse
      * @throws Throwable
@@ -49,6 +46,9 @@ class MessageController extends Controller {
             );
         }
         if (Request::method() == 'POST') {
+            if (Request::has('uploadFile')) {
+                return $this->message->upload();
+            }
             return $this->department->contacts();
         }
         
@@ -57,17 +57,7 @@ class MessageController extends Controller {
     }
     
     /**
-     * 消息中心 (应用)
-     *
-     * @return void
-     */
-    public function message() {
-        
-        // return $this->output();
-    }
-    
-    /**
-     * 保存消息
+     * 发送消息
      *
      * @param MessageRequest $request
      * @return bool|JsonResponse
@@ -78,19 +68,6 @@ class MessageController extends Controller {
         
         return $this->message->send(
             $request->all()
-        );
-        
-    }
-    
-    /**
-     * 上传媒体文件
-     *
-     * @return JsonResponse
-     */
-    public function uploadFile() {
-        
-        return response()->json(
-            $this->message->upload()
         );
         
     }
