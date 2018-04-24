@@ -11,7 +11,7 @@
                 <h4 class="modal-title">添加图文</h4>
             </div>
             <div class="modal-body">
-                <div class="form-horizontal" id="imagetext" style="display: none;">
+                <div class="form-horizontal" id="imagetext">
                     <div class="form-group">
                         {!! Form::label('title', '标题', [
                             'class' => 'col-sm-3 control-label'
