@@ -13,25 +13,21 @@
                 <div class="modal-body with-border">
                     <div class="form-horizontal">
                         <!-- 选择考试 -->
-                        <div class="form-group">
-                            @if(isset($examarr))
-                                @include('partials.single_select', [
-                                    'id' => 'exam',
-                                    'label' => '选择考试',
-                                    'items' => $examarr
-                                ])
-                            @endif
-                        </div>
+                        @if (isset($examarr))
+                            @include('partials.single_select', [
+                                'id' => 'exam',
+                                'label' => '选择考试',
+                                'items' => $examarr
+                            ])
+                        @endif
                         <!-- 班级 -->
-                        <div class="form-group">
-                            @if(isset($classes))
-                                @include('partials.single_select', [
-                                    'id' => 'classId',
-                                    'label' => '班级',
-                                    'items' => $classes
-                                ])
-                            @endif
-                        </div>
+                        @if (isset($classes))
+                            @include('partials.single_select', [
+                                'id' => 'classId',
+                                'label' => '班级',
+                                'items' => $classes
+                            ])
+                        @endif
                         <div class="form-group">
                             {{ Form::label('import', '选择导入文件', [
                                 'class' => 'control-label col-sm-3'

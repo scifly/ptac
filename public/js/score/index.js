@@ -17,7 +17,7 @@ var $score = $('#score'),
     $import = $('#import'),
     $importPupils = $('#import-pupils'),
     $file = $('#confirm-import'),
-    $statistics = $('#statistics'),
+    $stat = $('#stat'),
     $exam = $('#exam');
 
 $send.on('click', function() {
@@ -218,7 +218,7 @@ $import.on('click', function () {
 });
 
 //学生成绩统计
-$statistics.on('click', function () {
+$stat.on('click', function () {
     $('#statistics-modal').modal({backdrop: true});
     $('#confirm-statistics').off('click').click(function () {
         var $examSta = $('#exam-sta').val();
