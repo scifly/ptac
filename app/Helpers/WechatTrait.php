@@ -30,6 +30,8 @@ trait WechatTrait {
                 Wechat::getUserInfo($accessToken, $code),
                 JSON_UNESCAPED_UNICODE
             );
+            Log::debug($userInfo->{'errCode'});
+            Log::debug($userInfo->{'errMsg'});
             $user = User::whereUserid($userInfo['UserId'])->first();
             abort_if(!$user, HttpStatusCode::NOT_FOUND, __('messages.unauthorized'));
             return Auth::loginUsingId($user->id);
