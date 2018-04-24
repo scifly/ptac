@@ -1,17 +1,17 @@
-<div class="tree-box box box-primary box-solid" style="display: none" id="objects">
+<div class="tree-box box box-primary box-solid" style="display: none" id="targets">
     <div class="box-header with-border">
         <h3 class="box-title">
             <i class="fa fa-globe"></i> 选择发送对象
         </h3>
         <div class="box-tools pull-right">
-            <i class="fa fa-close js-btn-close-Attachment" style="cursor: pointer;"></i>
+            <i class="fa fa-close close-targets" style="cursor: pointer;"></i>
         </div>
     </div>
     <div class="box-body row">
         <div class="col-xs-6">
             {{--searchBox--}}
             <div class="input-group">
-                {!! Form::text('search_node', null, ['id' => 'search_node']) !!}
+                {!! Form::text('search', null, ['id' => 'search']) !!}
             </div>
             <div id="tree"></div>
         </div>

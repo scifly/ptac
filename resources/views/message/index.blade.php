@@ -152,9 +152,9 @@
                                             </button>
                                         </div>
                                         <div class="tab-pane" id="content_sms">
-                                            <input id="content-sms-maxlength" type="hidden" value="{{$messageMaxSize}}">
+                                            <input id="content-sms-maxlength" type="hidden" value="{{ $messageMaxSize }}">
                                             {!! Form::textarea('content', null, [
-                                                'id' => 'contentSms',
+                                                'id' => 'content-sms',
                                                 'class' => 'form-control text-blue',
                                             ]) !!}
                                             <span id="content-sms-length" style="color: #777;margin-top: 10px;display: inline-block;"></span>

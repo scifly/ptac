@@ -42,7 +42,7 @@
                         <label for="" class="col-sm-3"></label>
                         <div class="col-sm-6">
                             <!--<a href="#"><i class="fa fa-paperclip text-blue"></i>&nbsp;添加附件</a>-->
-                            <a href="#" id="add-article-url"><i class="fa fa-link text-blue"></i>&nbsp;添加原文链接</a>
+                            <a href="#" id="insert-url"><i class="fa fa-link text-blue"></i>&nbsp;添加原文链接</a>
                             {!! Form::text('content_image', null, [
                                 'class' => 'form-control imagetext-content_source_url',
                                 'placeholder' => '(原文链接)',
@@ -63,7 +63,7 @@
                                            style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
                                 </i>
                             </button>
-                            <input type="file" id="file-cover" onchange="uploadCover(this)" name="input-cover" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
+                            <input type="file" id="cover-image" name="cover-image" onchange="uploadCover(this)" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
                         </div>
                     </div>
                     <div class="form-group">
