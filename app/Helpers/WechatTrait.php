@@ -19,7 +19,7 @@ trait WechatTrait {
         $agentid = $app->agentid;
         $secret = $app->secret;
 
-        Log::debug('wtf: ' . Request::url());
+        Log::debug('wtf: ' . json_encode(Request::all()));
         $code = Request::input('code');
         Log::debug('urlcode: ' . Wechat::getCodeUrl($corp->corpid, $agentid, Request::url()));
         if (!$code) {
