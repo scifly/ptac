@@ -193,6 +193,6 @@
         </div>
     </div>
 </div>
-@include('messages.message.modal_imagetext')
-@include('messages.message.message.modal_video')
+@include('messages.modal_imagetext')
+@include('messages.modal_video')
 
