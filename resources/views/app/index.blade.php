@@ -10,32 +10,21 @@
         ]) !!}
         <div class="form-inline">
             <!-- 所属企业 -->
-            @if (isset($corps))
-                <div class="form-group" style="margin-right: 10px">
-                    {!! Form::label('corp_id', '所属企业：', [
-                        'class' => 'control-label',
-                    ]) !!}
-                    <div class="input-group">
-                        <div class="input-group-addon">
-                            <i class="fa fa-weixin" style="width: 20px;"></i>
-                        </div>
-                        {!! Form::select('corp_id', $corps, null, [
-                            'class' => 'form-control select2 input-sm',
-                            'style' => 'width: 100%;'
-                        ]) !!}
+            <div class="form-group" style="margin-right: 10px">
+                {!! Form::label('corp_id', '所属企业：', [
+                    'class' => 'control-label',
+                ]) !!}
+                <div class="input-group">
+                    <div class="input-group-addon">
+                        <i class="fa fa-weixin text-green" style="width: 20px;"></i>
                     </div>
-                </div>
-            @else
-                <div class="form-group" style="margin-right: 10px">
-                    {!! Form::label('corp_id', '所属企业：', [
-                        'class' => 'control-label',
-                    ]) !!}
-                    {!! Form::label('name', $corp->name, [
-                        'class' => 'control-label',
-                        'style' => 'font-weight: normal;'
+                    {!! Form::select('corp_id', $corps, null, [
+                        'class' => 'form-control select2 input-sm',
+                        'style' => 'width: 100%;',
+                        'disabled' => sizeof($corps) <= 1
                     ]) !!}
                 </div>
-            @endif
+            </div>
             <!-- 企业应用ID -->
             <div class="form-group" style="margin-right: 10px">
                 {!! Form::label('agentid', '应用AgentId：', [
