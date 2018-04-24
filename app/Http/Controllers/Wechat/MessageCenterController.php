@@ -74,16 +74,17 @@ class MessageCenterController extends Controller {
         
         #获取用户信息
         if (!Auth::id()) {
-            $this->getUserid(self::APP);
+            return $this->getUserid(self::APP);
+        } else {
+            list($received, $sent, $count, $educator) = $this->message->wIndex();
+    
+            return view('wechat.message_center.index', [
+                'receiveMessages' => $received,
+                'sendMessages'    => $sent,
+                'count'           => $count,
+                'educator'        => $educator,
+            ]);
         }
-        list($received, $sent, $count, $educator) = $this->message->wIndex();
-        
-        return view('wechat.message_center.index', [
-            'receiveMessages' => $received,
-            'sendMessages'    => $sent,
-            'count'           => $count,
-            'educator'        => $educator,
-        ]);
     }
     
     /**
