@@ -77,7 +77,6 @@ class MessageCenterController extends Controller {
         if (!Auth::id()) {
             return $this->getUserid(self::APP);
         } else {
-            Log::debug('logged in already!!!');
             list($received, $sent, $count, $educator) = $this->message->wIndex();
     
             return view('wechat.message_center.index', [

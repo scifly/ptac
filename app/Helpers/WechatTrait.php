@@ -26,11 +26,16 @@ trait WechatTrait {
             );
         } else {
             $accessToken = Wechat::getAccessToken($corp->corpid, $secret);
-            $userInfo = json_decode(
+            $result = json_decode(
                 Wechat::getUserInfo($accessToken, $code),
                 JSON_UNESCAPED_UNICODE
             );
-            $user = User::whereUserid($userInfo['UserId'])->first();
+            abort_if(
+                $result->{'errcode'} != 0,
+                HttpStatusCode::INTERNAL_SERVER_ERROR,
+                __('messages.internal_server_error')
+            );
+            $user = User::whereUserid($result['UserId'])->first();
             abort_if(!$user, HttpStatusCode::NOT_FOUND, __('messages.unauthorized'));
             return Auth::loginUsingId($user->id);
         }
