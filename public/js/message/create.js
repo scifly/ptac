@@ -24,12 +24,19 @@ $uploadFile.fileinput({
     }
 });
 // 上传成功
-$uploadFile.on("filebatchuploadsuccess", function (event, data, previewId, index) {
+$uploadFile.on("filebatchuploadsuccess", function (event, data) {
     // 填充数据
     var response = data.response.data;
     $.each(response, function (index, obj) {
-        $pre.append('<div class="img-item"><img src="../../' + obj.path + '" id="' + obj.id + '"><div class="del-mask"><i class="delete glyphicon glyphicon-trash"></i></div></div>');
-        $pre.append('<input type="hidden" name="media_ids[]" value="' + obj.id + '">');
+        var html =
+            '<div class="img-item">' +
+                '<img src="../../' + obj.path + '" id="' + obj.id + '">' +
+                '<div class="del-mask">' +
+                    '<i class="delete glyphicon glyphicon-trash"></i>' +
+                '</div>' +
+            '</div>' +
+            '<input type="hidden" name="media_ids[]" value="' + obj.id + '">';
+        $pre.append(html);
     });
     // 成功后关闭弹窗
     setTimeout(function () {
@@ -46,6 +53,7 @@ $('body').on('click', '.delete', function () {
     $(this).parent().parent().remove();
     $pre.append('<input type="hidden" name="del_ids[]" value="' + $(this).parent().siblings().attr('id') + '">');
 });
-
-dept.init('messages/get_depart_users');
+$.getMultiScripts(['js/tree.js']).done(function () {
+    $.tree().list('messages/get_depart_users', 'contact');
+});
 

@@ -5,11 +5,11 @@
     <div class="box-bod">
         <div class="nav-tabs-custom">
             <ul class="nav nav-tabs pull-right">
-                {{--<li>--}}
-                    {{--<a href="#tab03" data-toggle="tab">--}}
-                        {{--<i class="fa fa-th-large"></i>&nbsp;素材库--}}
-                    {{--</a>--}}
-                {{--</li>--}}
+                <li>
+                    <a href="#tab03" data-toggle="tab">
+                        <i class="fa fa-th-large"></i>&nbsp;素材库
+                    </a>
+                </li>
                 <li>
                     <a href="#tab02" data-toggle="tab">
                         <i class="fa fa-archive"></i>&nbsp;已发送
@@ -118,7 +118,9 @@
                                             </div>-->
                                         </div>
                                         <div class="tab-pane" id="content_image">
+
                                             <form id="uploadImageForm" enctype="multipart/form-data">
+
                                                 <button id="add-image" class="btn btn-box-tool" type="button" style="margin-top: 3px;position: relative;border: 0;">
                                                     <i class="fa fa-plus text-blue">
                                                         &nbsp;添加图片
@@ -127,6 +129,7 @@
                                                     </i>
                                                 </button>
                                             </form>
+
                                         </div>
                                         <!--<div class="tab-pane" id="content_voice">
                                             <form id="uploadVoiceForm" enctype="multipart/form-data">
@@ -195,7 +198,7 @@
                         <tbody></tbody>
                     </table>
                 </div>
-                {{--<div class="tab-pane" id="tab03"></div>--}}
+                <div class="tab-pane" id="tab03"></div>
             </div>
         </div>
     </div>

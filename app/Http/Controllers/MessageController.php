@@ -36,7 +36,7 @@ class MessageController extends Controller {
     }
     
     /**
-     * 消息中心
+     * 消息列表
      *
      * @return bool|JsonResponse
      * @throws Throwable
@@ -64,6 +64,72 @@ class MessageController extends Controller {
     public function message() {
         
         // return $this->output();
+    }
+    
+    /**
+     * 创建消息
+     *
+     * @return bool|JsonResponse
+     * @throws Throwable
+     */
+    public function create() {
+        
+        if (Request::method() === 'POST') {
+            return response()->json(
+                $this->department->tree()
+            );
+        }
+        
+        return $this->output();
+        
+    }
+    
+    /**
+     * 保存消息
+     *
+     * @param MessageRequest $request
+     * @return bool|JsonResponse
+     * @throws Exception
+     * @throws Throwable
+     */
+    public function store(MessageRequest $request) {
+        
+        return $this->message->sendMessage(
+            $request->all()
+        );
+        
+    }
+    
+    /**
+     * 更新消息
+     *
+     * @param MessageRequest $request
+     * @param $id
+     * @return JsonResponse
+     * @throws Throwable
+     */
+    public function update(MessageRequest $request, $id) {
+        
+        return $this->result(
+            $this->message->modify($request, $id)
+        );
+        
+    }
+    
+    /**
+     * 删除消息
+     *
+     * @param $id
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function destroy($id) {
+        
+        $message = $this->message->find($id);
+        abort_if(!$message, HttpStatusCode::NOT_FOUND);
+        
+        return $this->result($message->delete());
+        
     }
     
     public function getDepartmentUsers() {

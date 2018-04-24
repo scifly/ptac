@@ -158,7 +158,6 @@ class Message extends Model {
             foreach ($medias as $media) {
                 $paths = explode("/", $media->path);
                 Storage::disk('uploads')->delete($paths[5]);
-                
             }
             try {
                 Media::whereIn('id', $mediaIds)->delete();
