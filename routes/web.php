@@ -241,14 +241,12 @@ Route::get('users/messages', 'UserController@messages');
 Route::get('users/events', 'UserController@events');
 
 # 消息中心
-Route::group(['prefix' => 'messages'], routes('MessageController'));
 Route::group(['prefix' => 'messages'], function () {
     $c = 'MessageController';
-    Route::post('get_depart_users', $c . '@getDepartmentUsers');
+    Route::get('index', $c . '@index');
     Route::post('index', $c . '@index');
     Route::get('send', $c . '@send');
     Route::any('uploadFile', $c . '@uploadFile');
-    
 });
 # 日历
 # 个人信息

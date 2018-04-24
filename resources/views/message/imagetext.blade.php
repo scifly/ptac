@@ -53,12 +53,10 @@
                         <input type="file" id="file-cover" onchange="uploadCover(this)" name="input-cover" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
                 	</a>
                 	&nbsp;&nbsp;<span class="text-gray">建议尺寸:1068*534</span>
-                	
                </form>
             </p>
         </div>
     </div>
-
     <div class="form-group">
         {!! Form::label('title', '作者', [
             'class' => 'col-sm-3 control-label'

@@ -29,7 +29,7 @@
                     @include('message.objects')
                     @include('message.imagetext')
                     @include('message.upload_video')
-                    <div class="overlay" style="display: none;position: fixed;top: 0;left: 0;width: 100%;height: 100%;">
+                    <div class="overlay" style="display: none; position: fixed; top: 0;left: 0; width: 100%; height: 100%;">
 					    <i class="fa fa-refresh fa-spin" style=""></i>
 					</div>
                     <div class="form-horizontal form-main" id="message">
@@ -82,11 +82,11 @@
                                                 <i class="fa fa-file-image-o"></i>&nbsp;图片
                                             </a>
                                         </li>
-                                        {{--<li>--}}
-                                            {{--<a href="#content_voice" data-toggle="tab" class="tab">--}}
-                                                {{--<i class="fa fa-file-sound-o"></i>&nbsp;音频--}}
-                                            {{--</a>--}}
-                                        {{--</li>--}}
+                                        <li>
+                                            <a href="#content_voice" data-toggle="tab" class="tab">
+                                                <i class="fa fa-file-sound-o"></i>&nbsp;音频
+                                            </a>
+                                        </li>
                                         <li>
                                             <a href="#content_video" data-toggle="tab" class="tab">
                                                 <i class="fa fa-file-movie-o"></i>&nbsp;视频
@@ -118,22 +118,18 @@
                                             </div>-->
                                         </div>
                                         <div class="tab-pane" id="content_image">
-
                                             <form id="uploadImageForm" enctype="multipart/form-data">
-
-                                                <button id="add-image" class="btn btn-box-tool" type="button" style="margin-top: 3px;position: relative;border: 0;">
+                                                <button id="add-image" class="btn btn-box-tool" type="button" style="margin-top: 3px; position: relative; border: 0;">
                                                     <i class="fa fa-plus text-blue">
                                                         &nbsp;添加图片
-                                                            <input type="hidden" value="image" name="type" />
-                                                            <input type="file" id="file-image" onchange="uploadFile(this)" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
+                                                        <input type="hidden" value="image" name="type" />
+                                                        <input type="file" id="file-image" onchange="uploadFile(this)" name="uploadFile" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
                                                     </i>
                                                 </button>
                                             </form>
-
                                         </div>
-                                        <!--<div class="tab-pane" id="content_voice">
+                                        <div class="tab-pane" id="content_voice">
                                             <form id="uploadVoiceForm" enctype="multipart/form-data">
-
                                             <button id="add-voice" class="btn btn-box-tool" type="button" style="margin-top: 3px;position: relative;border: 0;">
                                                 <i class="fa fa-plus text-blue">
                                                 	&nbsp;添加音频
@@ -142,8 +138,7 @@
                                                 </i>
                                             </button>
                                             </form>
-
-                                        </div>-->
+                                        </div>
                                         <div class="tab-pane" id="content_video">
                                             <span class="text-gray">tips：视频格式支持mp4，大小不能超过10MB</span>
                                         	<button id="add-video" class="btn btn-box-tool" type="button"
@@ -177,9 +172,9 @@
                             <label for="" class="col-sm-3"></label>
                             <div class="col-sm-6">
                                 <input type="button" class="btn btn-default" id="send" value="发送">
-                                {{--<input type="button" class="btn btn-default" id="time-send" value="定时发送">--}}
-                                {{--<input type="button" class="btn btn-default" id="draft" value="存为草稿">--}}
-                                {{--<input type="button" class="btn btn-default" id="preview" value="预览">--}}
+                                <input type="button" class="btn btn-default" id="time-send" value="定时发送">
+                                <input type="button" class="btn btn-default" id="draft" value="存为草稿">
+                                <input type="button" class="btn btn-default" id="preview" value="预览">
                             </div>
                         </div>
                         {!! Form::close() !!}

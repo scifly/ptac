@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
@@ -277,9 +278,9 @@ class Message extends Model {
     
     /**
      * @param $data
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    function sendMessage($data) {
+    function send($data) {
         
         $result = [
             'statusCode' => 200,
@@ -326,7 +327,6 @@ class Message extends Model {
             ];
             $id = MessageSendingLog::create($msl)->id;
             foreach ($apps as $app) {
-                
                 $token = Wechat::getAccessToken($corp->corpid, $app['secret']);
                 $message = [
                     'touser'  => $touser,
@@ -391,12 +391,12 @@ class Message extends Model {
                     
                 }
                 foreach ($userDatas['users'] as $i) {
-                    $comtype = $data['type'] == 'sms' ? '短信' : '应用';
+                    $commType = $data['type'] == 'sms' ? '短信' : '应用';
                     $read = $data['type'] == 'sms' ? 1 : 0;
                     $sent = $result['statusCode'] == 200 ? 1 : 0;
                     $mediaIds = $data['media_id'] == '' ? 0 : $data['media_id'];
                     $m = [
-                        'comm_type_id'    => CommType::whereName($comtype)->first()->id,
+                        'comm_type_id'    => CommType::whereName($commType)->first()->id,
                         'app_id'          => $app['id'],
                         'msl_id'          => $id,
                         'title'           => $title,

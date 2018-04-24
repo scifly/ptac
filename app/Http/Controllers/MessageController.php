@@ -67,24 +67,6 @@ class MessageController extends Controller {
     }
     
     /**
-     * 创建消息
-     *
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function create() {
-        
-        if (Request::method() === 'POST') {
-            return response()->json(
-                $this->department->tree()
-            );
-        }
-        
-        return $this->output();
-        
-    }
-    
-    /**
      * 保存消息
      *
      * @param MessageRequest $request
@@ -92,86 +74,11 @@ class MessageController extends Controller {
      * @throws Exception
      * @throws Throwable
      */
-    public function store(MessageRequest $request) {
+    public function send(MessageRequest $request) {
         
-        return $this->message->sendMessage(
+        return $this->message->send(
             $request->all()
         );
-        
-    }
-    
-    /**
-     * 更新消息
-     *
-     * @param MessageRequest $request
-     * @param $id
-     * @return JsonResponse
-     * @throws Throwable
-     */
-    public function update(MessageRequest $request, $id) {
-        
-        return $this->result(
-            $this->message->modify($request, $id)
-        );
-        
-    }
-    
-    /**
-     * 删除消息
-     *
-     * @param $id
-     * @return JsonResponse
-     * @throws Exception
-     */
-    public function destroy($id) {
-        
-        $message = $this->message->find($id);
-        abort_if(!$message, HttpStatusCode::NOT_FOUND);
-        
-        return $this->result($message->delete());
-        
-    }
-    
-    public function getDepartmentUsers() {
-        
-        return $this->department->showDepartments($this->checkRole());
-        
-    }
-    
-    private function checkRole($userId = 1) {
-        
-        $user = $this->user->find($userId);
-        $departments = [];
-        $childDepartmentId = [];
-        foreach ($user->departments as $department) {
-            $departments[] = $department['id'];
-        }
-        foreach ($departments as $departmentId) {
-            $childDepartmentId = $this->departmentChildIds($departmentId);
-        }
-        $departmentIds = array_merge($departments, $childDepartmentId);
-        
-        return array_unique($departmentIds);
-        
-    }
-    
-    /**
-     * 获取该部门下所有部门id
-     * @param $id
-     * @return array
-     */
-    private function departmentChildIds($id) {
-        
-        static $childIds = [];
-        $firstIds = $this->department->whereParentId($id)->get(['id'])->toArray();
-        if ($firstIds) {
-            foreach ($firstIds as $firstId) {
-                $childIds[] = $firstId['id'];
-                $this->departmentChildIds($firstId['id']);
-            }
-        }
-        
-        return $childIds;
         
     }
     
