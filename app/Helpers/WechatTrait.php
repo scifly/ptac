@@ -18,6 +18,7 @@ trait WechatTrait {
         $app = App::whereCorpId($corp->id)->where('name', $app)->first();
         $agentid = $app->agentid;
         $secret = $app->secret;
+        Log::debug('you are here: ' . $agentid);
     
         $code = Request::input('code');
         if (!$code) {
