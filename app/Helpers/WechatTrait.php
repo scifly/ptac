@@ -18,7 +18,9 @@ trait WechatTrait {
         $app = App::whereCorpId($corp->id)->where('name', $app)->first();
         $agentid = $app->agentid;
         $secret = $app->secret;
-
+        
+        Log::debug('corpid: ' . $corp->corpid);
+        Log::debug('appsecret: ' . $app->secret);
         Log::debug('wtf: ' . json_encode(Request::all()));
         $code = Request::input('code');
         Log::debug('urlcode: ' . Wechat::getCodeUrl($corp->corpid, $agentid, Request::url()));
