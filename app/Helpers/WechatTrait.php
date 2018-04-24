@@ -36,7 +36,12 @@ trait WechatTrait {
                 __('messages.internal_server_error')
             );
             $user = User::whereUserid($result['UserId'])->first();
-            abort_if(!$user, HttpStatusCode::NOT_FOUND, __('messages.unauthorized'));
+            abort_if(
+                !$user,
+                HttpStatusCode::NOT_FOUND,
+                __('messages.unauthorized')
+            );
+            
             return Auth::loginUsingId($user->id);
         }
         
