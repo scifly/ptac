@@ -10,15 +10,15 @@
                 {{ Form::hidden('student', $score['student_id'], ['id' => 'student']) }}
             @endif
             @include('partials.single_select', [
-                    'label' => '考试名称',
-                    'id' => 'exam_id',
-                    'items' => $exams
-                ])
+                'label' => '考试名称',
+                'id' => 'exam_id',
+                'items' => $exams
+            ])
             @include('partials.single_select', [
                'label' => '科目名称',
                'id' => 'subject_id',
                'items' => $subjects
-           ])
+            ])
             @include('partials.single_select', [
                 'label' => '学号',
                 'id' => 'student_id',

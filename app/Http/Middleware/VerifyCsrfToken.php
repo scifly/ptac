@@ -11,7 +11,8 @@ class VerifyCsrfToken extends BaseVerifier {
      * @var array
      */
     protected $except = [
-        'wlrj/message_center'
+        'wlrj/message_center',
+        'wlrj/wapsite'
     ];
 }
 

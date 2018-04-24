@@ -39,7 +39,7 @@ class AttendanceController extends Controller {
         
         return Auth::id()
             ? $this->sa->wIndex()
-            : $this->getUserid(self::APP);
+            : $this->signin(self::APP);
         
     }
     

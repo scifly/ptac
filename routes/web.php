@@ -348,46 +348,56 @@ Route::group(['prefix' => 'media_types'], routes('MediaTypeController'));
 Route::group(['prefix' => 'attachment_types'], routes('AttachmentTypeController'));
 Route::group(['prefix' => 'school_types'], routes('SchoolTypeController'));
 
-# --------------------------------------------------------------------------------
-/** 消息中心 */
-$c = 'Wechat\MessageCenterController';
-$p = 'wlrj/message_center/';
-Route::get($p, $c . '@index');
-Route::post($p, $c . '@index');
-Route::get($p . 'create', $c . '@create');
-Route::post($p . 'create', $c . '@create');
-Route::post($p . 'store', $c . '@store');
-Route::get($p . 'show/{id}', $c . '@show');
-Route::get($p . 'update/{id}', $c . '@updateStatus');
-Route::delete($p . 'delete/{id}', $c . '@destroy');
-Route::post($p . 'upload', $c . '@upload');
-Route::get($p . 'dept/{id}', $c . '@department');
-Route::post($p . 'reply', $c . '@reply');
-Route::post($p . 'replylist', $c . '@replyList');
-Route::delete($p . 'replydel/{id}', $c . '@replyDestroy');
+/** 微信端路由 -------------------------------------------------------------------------------------------------------- */
+# 万浪软件
+app_routes('wlrj');
 
-/** 考勤中心 */
-$c = 'Wechat\AttendanceController';
-Route::get('lists', $c . '@index');
-Route::get('detail/{id}', $c . '@detail');
-Route::post('detail/{id?}', $c . '@detail');
-Route::post('chart', $c . '@chart');
-
-/** 成绩中心 */
-$c = 'Wechat\ScoreCenterController';
-Route::any('wechat/score/score_lists', $c . '@index');
-Route::get('wechat/score/detail', $c . '@detail');
-Route::get('wechat/score/student_detail', $c . '@subjectDetail');
-Route::post('wechat/score/student_detail', $c . '@subjectDetail');
-Route::any('wechat/score/show', $c . '@show');
-Route::get('wechat/score/analysis', $c . '@analysis');
-Route::get('wechat/score/cus_total', $c . '@cusTotal');
-
-/** 布置作业 */
-Route::get('homework', 'Wechat\HomeWorkController@index');
-
-/** 微网站 */
-$c = 'Wechat\MobileSiteController';
-Route::any('wlrj/wapsite', $c . '@index');
-Route::any('wlrj/wapsite/module', $c . '@module');
-Route::any('wlrj/wapsite/article', $c . '@article');
+function app_routes($acronym) {
+    
+    /** 消息中心 */
+    $c = 'Wechat\MessageCenterController';
+    $p = $acronym . '/message_center/';
+    Route::get($p, $c . '@index');
+    Route::post($p, $c . '@index');
+    Route::get($p . 'create', $c . '@create');
+    Route::post($p . 'create', $c . '@create');
+    Route::post($p . 'store', $c . '@store');
+    Route::get($p . 'show/{id}', $c . '@show');
+    Route::get($p . 'update/{id}', $c . '@updateStatus');
+    Route::delete($p . 'delete/{id}', $c . '@destroy');
+    Route::post($p . 'upload', $c . '@upload');
+    Route::get($p . 'dept/{id}', $c . '@department');
+    Route::post($p . 'reply', $c . '@reply');
+    Route::post($p . 'replylist', $c . '@replyList');
+    Route::delete($p . 'replydel/{id}', $c . '@replyDestroy');
+    
+    /** 考勤中心 */
+    $c = 'Wechat\AttendanceController';
+    $p = $acronym . '/attendance/';
+    Route::get($p, $c . '@index');
+    Route::get($p . 'detail/{id}', $c . '@detail');
+    Route::post($p . 'detail/{id?}', $c . '@detail');
+    Route::post($p . 'chart', $c . '@chart');
+    
+    /** 成绩中心 */
+    $c = 'Wechat\ScoreCenterController';
+    $p = $acronym . '/score_center/';
+    Route::any($p, $c . '@index');
+    Route::get($p . 'detail', $c . '@detail');
+    Route::get($p . 'student_detail', $c . '@subjectDetail');
+    Route::post($p . 'student_detail', $c . '@subjectDetail');
+    Route::any($p . 'show', $c . '@show');
+    Route::get($p . 'analysis', $c . '@analysis');
+    Route::get($p . 'cus_total', $c . '@cusTotal');
+    
+    /** 布置作业 */
+    Route::get($acronym . '/homework', 'Wechat\HomeWorkController@index');
+    
+    /** 微网站 */
+    $c = 'Wechat\MobileSiteController';
+    $p = $acronym . '/wapsite/';
+    Route::any($p, $c . '@index');
+    Route::any($p . 'module', $c . '@module');
+    Route::any($p . 'article', $c . '@article');
+    
+}

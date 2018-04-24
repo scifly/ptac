@@ -402,14 +402,16 @@ class Score extends Model {
      * @return array
      */
     function scores($exam, $squad, $subject, $project) {
+        
         $student = $this->where('exam_id', $exam)
             ->get()->pluck('student_id');
         # 当前班级下的所有参加考试的学生
         $students = Student::whereClassId($squad)->whereIn('id', $student)->get();
+        
         # 当前选择班级的所属年级下 的所有班级 id
         $classes = Squad::where('grade_id', Squad::whereId($squad)->first()->grade_id)
-            ->get()
-            ->pluck('id');
+            ->get()->pluck('id');
+        
         # 统计当前学生年级 的所有参加考试的学生
         $gradeStudents = Student::whereIn('class_id', $classes)
             ->whereIn('id', $student)
@@ -575,12 +577,18 @@ class Score extends Model {
                     
                 }
             }
+            $msgTpl = '尊敬的%s家长, %s考试成绩已出: %s。';
+            $content = sprintf(
+                $msgTpl,
+                $student,
+                Exam::find($exam)->name,
+                implode(',', $message)
+            );
             $result[] = [
                 'custodian' => $user->pluck('realname'),
                 'name'      => $student,
                 'mobile'    => Mobile::whereIn('user_id', $user->pluck('id'))->get()->pluck('mobile'),
-                'content'   => '尊敬的' . $student . '家长,'
-                    . Exam::whereId($exam)->first()->name . '考试成绩已出:' . implode(',', $message) . '。',
+                'content'   => $content,
             ];
             unset($message);
             

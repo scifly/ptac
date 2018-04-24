@@ -19,7 +19,7 @@ class HomeWorkController extends Controller {
     
         return Auth::id()
             ? $this->hw->wIndex()
-            : $this->getUserId(self::APP);
+            : $this->signin(self::APP);
         
     }
     

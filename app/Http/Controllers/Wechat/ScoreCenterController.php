@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Wechat;
 
 use App\Facades\Wechat;
 use App\Helpers\HttpStatusCode;
+use App\Helpers\WechatTrait;
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
 use App\Models\Score;
@@ -23,7 +24,11 @@ use Illuminate\Support\Facades\Session;
  */
 class ScoreCenterController extends Controller {
     
+    use WechatTrait;
+    
     protected $score, $exam;
+    
+    const APP = '成绩中心';
     
     /**
      * MessageCenterController constructor.
@@ -60,8 +65,6 @@ class ScoreCenterController extends Controller {
             Session::put('userId', $userId);
         }
         $role = User::where($userId)->first()->group->name;
-        Log::error($role);
-        Log::error($userId);
         $pageSize = 4;
         $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
         $exams = [];

@@ -37,6 +37,7 @@ class MessageCenterController extends Controller {
     use WechatTrait;
     
     const APP = '消息中心';
+    
     protected $message, $user, $department, $media, $student, $mr, $du;
     
     /**
@@ -75,7 +76,7 @@ class MessageCenterController extends Controller {
         
         #获取用户信息
         if (!Auth::id()) {
-            return $this->getUserid(self::APP);
+            return $this->signin(self::APP);
         } else {
             list($received, $sent, $count, $educator) = $this->message->wIndex();
     

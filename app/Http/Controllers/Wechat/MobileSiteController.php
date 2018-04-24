@@ -35,7 +35,7 @@ class MobileSiteController extends Controller {
         
         return Auth::id()
             ? $this->ws->wIndex()
-            : $this->getUserid(self::APP);
+            : $this->signin(self::APP);
         
     }
     

@@ -34,7 +34,7 @@ class ScoreController extends Controller {
      * 成绩列表
      *
      * @return bool|JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function index() {
         
@@ -111,9 +111,10 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function update(ScoreRequest $request, $id) {
+        
         $input = $request->all();
         $score = Score::find($id);
-        abort_if(!$score, HttpStatusCode::NOT_FOUND);
+        abort_if(!$score, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
         $subject = Subject::whereId($input['subject_id'])->first();
         abort_if(
             $input['score'] > $subject->max_score,
@@ -151,53 +152,60 @@ class ScoreController extends Controller {
      * @return JsonResponse
      */
     public function send() {
-        
-        if (Request::method() === 'POST') {
-            $exam = Request::input('exam');
-            $squad = Request::input('squad');
-            $subject = Request::input('subject');
-            $project = Request::input('project');
-            if ($exam && $squad) {
-                $score = new Score();
-                $result = $score->scores($exam, $squad, explode(',', $subject), explode(',', $project));
-                
-                return response()->json($result);
-            } else {
-                $ids = Exam::whereId($exam)->first();
-                $classes = Squad::whereIn('id', explode(',', $ids['class_ids']))
-                    ->get()
-                    ->toArray();
-                $subjects = Subject::whereIn('id', explode(',', $ids['subject_ids']))
-                    ->get()
-                    ->toArray();
-                $result = [
-                    'classes'  => $classes,
-                    'subjects' => $subjects,
-                ];
-                
-                return response()->json($result);
-            }
-            
+
+        abort_if(
+            Request::method() !== 'POST',
+            HttpStatusCode::METHOD_NOT_ALLOWED,
+            __('messages.method_not_allowed')
+        );
+        $exam = Request::input('exam');
+        $squad = Request::input('squad');
+        $subject = Request::input('subject');
+        $project = Request::input('project');
+        if ($exam && $squad) {
+            $score = new Score();
+            $result = $score->scores(
+                $exam,
+                $squad,
+                explode(',', $subject),
+                explode(',', $project)
+            );
+        } else {
+            $ids = Exam::whereId($exam)->first();
+            $classes = Squad::whereIn('id', explode(',', $ids['class_ids']))
+                ->get()->toArray();
+            $subjects = Subject::whereIn('id', explode(',', $ids['subject_ids']))
+                ->get()->toArray();
+            $result = [
+                'classes'  => $classes,
+                'subjects' => $subjects,
+            ];
+    
         }
         
-        return abort(HttpStatusCode::METHOD_NOT_ALLOWED);
-        
+        return response()->json($result);
+    
+    
     }
     
     /**
      * 发送成绩信息
      *
+     * @return JsonResponse
      */
     public function send_message() {
         
-        if (Request::method() === 'POST') {
-            $data = Request::input('data');
-            $score = new Score();
-            
-            return response()->json($score->sendMessage(json_decode($data)));
-        }
+        abort_if(
+            Request::method() != 'POST',
+            HttpStatusCode::METHOD_NOT_ALLOWED,
+            __('messages.method_not_allowed')
+        );
+        $data = Request::input('data');
+        $score = new Score();
         
-        return abort(HttpStatusCode::METHOD_NOT_ALLOWED);
+        return response()->json(
+            $score->sendMessage(json_decode($data))
+        );
         
     }
     

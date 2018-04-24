@@ -6,16 +6,15 @@ use App\Models\Corp;
 use App\Models\User;
 use App\Facades\Wechat;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 trait WechatTrait {
 
-    function getUserid($app) {
+    function signin($appName) {
         
         $acronym = explode('/', Request::path())[0];
         $corp = Corp::whereAcronym($acronym)->first();
-        $app = App::whereCorpId($corp->id)->where('name', $app)->first();
+        $app = App::whereCorpId($corp->id)->where('name', $appName)->first();
         $agentid = $app->agentid;
         $secret = $app->secret;
         
