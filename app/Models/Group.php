@@ -215,14 +215,22 @@ class Group extends Model {
             [
                 'db' => 'School.name as schoolname', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-university', '') . $d;
+                    return sprintf(Snippet::ICON, 'fa-university text-blue', '') .
+                        '<span class="text-blue">' . $d . '</span>';
                 }
             ],
-            ['db' => 'Groups.remark', 'dt' => 3],
-            ['db' => 'Groups.created_at', 'dt' => 4],
-            ['db' => 'Groups.updated_at', 'dt' => 5],
             [
-                'db' => 'Groups.enabled', 'dt' => 6,
+                'db' => 'Corp.name as corpname', 'dt' => 3,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-weixin text-green', '') .
+                        '<span class="text-green">' . $d . '</span>';
+                }
+            ],
+            ['db' => 'Groups.remark', 'dt' => 4],
+            ['db' => 'Groups.created_at', 'dt' => 5],
+            ['db' => 'Groups.updated_at', 'dt' => 6],
+            [
+                'db' => 'Groups.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
@@ -237,6 +245,14 @@ class Group extends Model {
                 'type' => 'INNER',
                 'conditions' => [
                     'School.id = Groups.school_id'
+                ]
+            ],
+            [
+                'table' => 'corps',
+                'alias' => 'Corp',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Corp.id = School.corp_id'
                 ]
             ]
         ];
