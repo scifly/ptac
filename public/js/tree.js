@@ -370,6 +370,8 @@
                         themes: tree.themes(true),
                         multiple: true,
                         animation: 0,
+                        expand_selected_onload: true,
+                        check_callback: true,
                         data: {
                             url: page.siteRoot() + uri,
                             type: 'POST',
