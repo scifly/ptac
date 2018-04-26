@@ -388,7 +388,8 @@
                     },
                     checkbox: {
                         keep_selected_style: false,
-                        three_state: false
+                        three_state: false,
+                        tie_selection: false,
                     },
                     plugins: ['types', 'search', 'checkbox', 'wholerow'],
                     types: type === 'department' ? tree.options.departmentTypes : tree.options.contactTypes
