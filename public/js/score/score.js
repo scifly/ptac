@@ -489,10 +489,10 @@
                 });
             },
             onExamIdChange: function () {
-                list('class', $('#exam_id').val());
+                score.list('class', $('#exam_id').val());
             },
             onClassIdChange: function () {
-                list('student', $('#class_id').val());
+                score.list('student', $('#class_id').val());
             },
             onAnalyzeClick: function () {
                 $('#analyze').off('click').on('click', function () {
