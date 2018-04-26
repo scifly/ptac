@@ -742,8 +742,12 @@ class Department extends Model {
         $departmentId = School::find($this->schoolId())->department_id;
         $contacts = [];
         if (in_array($role, Constant::SUPER_ROLES)) {
-            $tree = self::tree($departmentId);
-            foreach ($tree as $node) {
+            $nodes = self::tree($departmentId);
+            for ($i = 0; $i < sizeof($nodes); $i++) {
+                $nodes[$i]['selectable'] = 1;
+                $nodes[$i]['role'] = 'dept';
+            }
+            foreach ($nodes as $node) {
                 $node['selectable'] = 1;
                 $node['role'] ='dept';
                 if (!$node['id']) {
@@ -764,12 +768,12 @@ class Department extends Model {
                     ];
                 }
             }
-            return  array_merge($tree, $contacts);
+            return  array_merge($nodes, $contacts);
         } else {
             $departmentId = self::topDeptId();
             $nodes = self::tree($departmentId);
             $data = [];
-            $belongedDeptIds = $user->departments->pluck('id')->toArray();
+            $allowedDeptIds = $user->departments->pluck('id')->toArray();
             for ($i = 0; $i < sizeof($nodes); $i++) {
                 $parentId = $i == 0 ? '#' : $nodes[$i]['parent'];
                 $type = $nodes[$i]['type'];
@@ -777,11 +781,11 @@ class Department extends Model {
                     $type = '#';
                 }
                 $text = $nodes[$i]['text'];
-                if (in_array($nodes[$i]['id'], $belongedDeptIds)) {
+                if (in_array($nodes[$i]['id'], $allowedDeptIds)) {
                     $selectable = 1;
                 } else {
                     $selectable = 0;
-                    foreach ($belongedDeptIds as $pId) {
+                    foreach ($allowedDeptIds as $pId) {
                         if (self::find($nodes[$i]['id'])->parent_id == $pId) {
                             $selectable = 1;
                             break;
