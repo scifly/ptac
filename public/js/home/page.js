@@ -13,7 +13,7 @@ var page = {
         if ($activeTabPane.length !== 0) {
             page.getTabContent($activeTabPane, table + '/index');
         } else {
-            page.getWrapperContent(page.getActiveMenuId(), table + '/index');
+            page.getWrapperContent(page.getActiveMenuId(), page.siteRoot() + table + '/index');
         }
     },
     inform: function (title, text, image) {
