@@ -22,7 +22,8 @@
             @include('partials.single_select', [
                 'label' => '学号',
                 'id' => 'student_id',
-                'items' => $students
+                'items' => $students,
+                'icon' => 'fa fa-child'
             ])
             <div class="form-group">
                 {!! Form::label('score', '分数', [
