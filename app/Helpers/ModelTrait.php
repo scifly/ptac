@@ -5,8 +5,6 @@ use App\Models\Action;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\DepartmentUser;
-use App\Models\Exam;
-use App\Models\ExamType;
 use App\Models\Menu;
 use App\Models\School;
 use App\Models\User;
@@ -204,7 +202,7 @@ trait ModelTrait {
             $exams = School::find($schoolId)->exams->pluck('class_ids', 'id');
             $examIds = [];
             foreach ($exams as $key => $value) {
-                if (!empty(array_intersect($classIds, explode(',', $value))) {
+                if (!empty(array_intersect($classIds, explode(',', $value)))) {
                     $examIds[] = $key;
                 }
             }
