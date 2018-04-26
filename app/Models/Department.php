@@ -769,13 +769,11 @@ class Department extends Model {
             $departmentId = self::topDeptId();
             $nodes = self::nodes($departmentId);
             $data = [];
-            $belongedDeptIds = $user->departments
-                ->pluck('id')
-                ->toArray();
+            $belongedDeptIds = $user->departments->pluck('id')->toArray();
             for ($i = 0; $i < sizeof($nodes); $i++) {
                 $parentId = $i == 0 ? '#' : $nodes[$i]['parent_id'];
                 $type = $nodes[$i]['type'];
-                if ($i == 0) {
+                if (!$nodes[$i]['id']) {
                     $type = '#';
                 }
                 $text = $nodes[$i]['name'];
@@ -807,7 +805,7 @@ class Department extends Model {
                     /** @var User $u */
                     foreach ($users as $u) {
                         $contacts[] = [
-                            'id' => 'user-' . $u->id,
+                            'id' => 'user-' . $datum['id'] . '-' . $u->id,
                             'parent' => $datum['id'],
                             'text' => $u->realname,
                             'selectable' => 1,
