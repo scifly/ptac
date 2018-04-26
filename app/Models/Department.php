@@ -771,7 +771,7 @@ class Department extends Model {
             $data = [];
             $belongedDeptIds = $user->departments->pluck('id')->toArray();
             for ($i = 0; $i < sizeof($nodes); $i++) {
-                $parentId = $i == 0 ? '#' : $nodes[$i]['parent_id'];
+                $parentId = $i == 0 ? '#' : $nodes[$i]['parent'];
                 $type = $nodes[$i]['type'];
                 if (!$nodes[$i]['id']) {
                     $type = '#';
@@ -793,8 +793,8 @@ class Department extends Model {
                     'parent' => $parentId,
                     'text' => $text,
                     'selectable' => $selectable,
-                    'type' => $type, // 0->部门；1->用户
-                    'role' => 'dept', // 0->部门；1->用户
+                    'type' => $type,
+                    'role' => 'dept',
                 ];
             }
             $contacts = [];
