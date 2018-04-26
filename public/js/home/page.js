@@ -201,6 +201,10 @@ var page = {
         });
     },
     getTabContent: function ($tabPane, url) {
+        if ($tabPane.length === 0) {
+            page.getWrapperContent(page.getActiveMenuId(), page.siteRoot() + url);
+            return false;
+        }
         if (url.indexOf('http://') > -1) {
             url = url.replace(page.siteRoot(), '');
         }
