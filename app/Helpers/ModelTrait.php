@@ -201,8 +201,16 @@ trait ModelTrait {
             $examIds = School::find($schoolId)->exams->pluck('id')->toArray();
         } else {
             $classIds = $this->classIds($schoolId);
-            $examIds = Exam::whereRaw('set_intersect("' . implode(',', $classIds) . '", class_ids) != ""')
-                ->get()->pluck('id')->toArray();
+            $exams = School::find($schoolId)->exams->pluck('class_ids', 'id');
+            $examIds = [];
+            foreach ($exams as $key => $value) {
+                if (!empty(array_intersect($classIds, explode(',', $value))) {
+                    $examIds[] = $key;
+                }
+            }
+            
+            // $examIds = Exam::whereRaw('set_intersect("' . implode(',', $classIds) . '", class_ids) != ""')
+            //     ->get()->pluck('id')->toArray();
         }
         
         return $examIds;
