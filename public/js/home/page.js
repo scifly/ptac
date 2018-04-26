@@ -10,7 +10,7 @@ var page = {
     info: 'img/info.png',
     backToList: function (table) {
         var $activeTabPane = $('#tab_' + page.getActiveTabId());
-        if ($activeTabPane) {
+        if ($activeTabPane.length !== 0) {
             page.getTabContent($activeTabPane, table + '/index');
         } else {
             page.getWrapperContent(page.getActiveMenuId(), table + '/index');
