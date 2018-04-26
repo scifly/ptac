@@ -1,6 +1,6 @@
 <div class="form-group"
-     @if(isset($divId)) id="{{ $divId }}" @endif
-     @if(isset($style)) style="{{ $style }}" @endif
+     @if (isset($divId)) id="{{ $divId }}" @endif
+     @if (isset($style)) style="{{ $style }}" @endif
 >
     {!! Form::label($id, $label, [
         'class' => 'col-sm-3 control-label',

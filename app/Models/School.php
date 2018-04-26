@@ -46,6 +46,7 @@ use Illuminate\Support\Facades\Auth;
  * @property-read Department $department
  * @property-read Collection|Educator[] $educators
  * @property-read Collection|ExamType[] $examTypes
+ * @property-read Collection|Exam[] $exams
  * @property-read Collection|Grade[] $grades
  * @property-read Collection|Group[] $groups
  * @property-read Collection|Major[] $majors
@@ -197,6 +198,17 @@ class School extends Model {
      * @return HasMany
      */
     function examTypes() { return $this->hasMany('App\Models\ExamType'); }
+    
+    /**
+     * 获取指定学校包含的所有考试对象
+     *
+     * @return HasManyThrough
+     */
+    function exams() {
+        
+        return $this->hasManyThrough('App\Models\Exam', 'App\Models\ExamType');
+        
+    }
     
     /**
      * 获取指定学校所有的教职员工对象

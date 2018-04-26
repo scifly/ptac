@@ -82,13 +82,13 @@
         }
 
 
-        .subtitle{
+        .subject-title{
             font-size: 12px;
         }
-        .header .subtitle{
+        .header .subject-title{
             color: #ddd;
         }
-        .otherinfo .subtitle{
+        .otherinfo .subject-title{
             color: #999;
         }
         .time ,.subject ,.test{
@@ -268,7 +268,7 @@
                 if($data.scores.length !==0)
                 {
                     var scores = $data.scores;
-                    $('.time .subtitle').html(scores.start_date.substring(0,7));
+                    $('.time .subject-title').html(scores.start_date.substring(0,7));
                     $('.time .days').html(scores.start_date.substring(8,10)+'日');
                     $('.test .testName').html(scores.examName);
                     $('.header .score').html(scores.score);
@@ -352,7 +352,6 @@
 
             xAxis:  {
                 type: 'category',
-                boundaryGap: false,
                 data: test_name,
                 boundaryGap : false,
             },

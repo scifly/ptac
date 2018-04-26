@@ -87,10 +87,4 @@ var plugins = {
             radioClass: 'iradio_minimal-blue'
         }
     },
-    send_css: {
-        css: 'js/score/send.css'
-    },
-    analysis_css: {
-        css: 'js/score/analysis.css'
-    }
 };

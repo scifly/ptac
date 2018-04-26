@@ -219,6 +219,31 @@ class Exam extends Model {
     }
     
     /**
+     * 返回指定考试对应的班级列表html
+     *
+     * @param $id
+     * @param $action
+     * @return mixed
+     */
+    function classList($id, $action) {
+    
+        $exam = $this->find($id);
+        if (!$exam) {
+            $classes = [];
+        } else {
+            $classes = Squad::whereIn('id', explode(',', $exam->class_ids))
+                ->whereEnabled(1)
+                ->pluck('name', 'id')
+                ->toArray();
+        }
+        
+        return response()->json([
+            'html' => $this->singleSelectList($classes, $action . '_class_id')
+        ]);
+        
+    }
+    
+    /**
      * 考试列表
      *
      * @return array

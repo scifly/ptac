@@ -32,6 +32,7 @@ use App\Models\ProcedureStep;
 use App\Models\ProcedureType;
 use App\Models\School;
 use App\Models\SchoolType;
+use App\Models\Score;
 use App\Models\ScoreRange;
 use App\Models\ScoreTotal;
 use App\Models\Squad;
@@ -82,6 +83,7 @@ use App\Policies\ProcedureTypePolicy;
 use App\Policies\Route;
 use App\Policies\SchoolPolicy;
 use App\Policies\SchoolTypePolicy;
+use App\Policies\ScorePolicy;
 use App\Policies\ScoreRangePolicy;
 use App\Policies\ScoreTotalPolicy;
 use App\Policies\SquadPolicy;
@@ -140,6 +142,7 @@ class AuthServiceProvider extends ServiceProvider {
         ProcedureStep::class => ProcedureStepPolicy::class,
         School::class => SchoolPolicy::class,
         SchoolType::class => SchoolTypePolicy::class,
+        Score::class => ScorePolicy::class,
         ScoreRange::class => ScoreRangePolicy::class,
         ScoreTotal::class => ScoreTotalPolicy::class,
         Squad::class => SquadPolicy::class,

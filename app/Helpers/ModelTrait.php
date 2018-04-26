@@ -5,6 +5,8 @@ use App\Models\Action;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\DepartmentUser;
+use App\Models\Exam;
+use App\Models\ExamType;
 use App\Models\Menu;
 use App\Models\School;
 use App\Models\User;
@@ -181,6 +183,29 @@ trait ModelTrait {
         }
         
         return empty($classIds) ? [0] : $classIds;
+        
+    }
+    
+    /**
+     * 返回对当前用户可见的所有考试id
+     *
+     * @param null $schoolId
+     * @return array
+     */
+    function examIds($schoolId = null) {
+        
+        $user = Auth::user();
+        $schoolId = $schoolId ?? $this->schoolId();
+        $role = $user->group->name;
+        if (in_array($role, Constant::SUPER_ROLES)) {
+            $examIds = School::find($schoolId)->exams->pluck('id')->toArray();
+        } else {
+            $classIds = $this->classIds($schoolId);
+            $examIds = Exam::whereRaw('set_intersect(' . implode(',', $classIds) . ', class_ids')
+                ->get()->pluck('id')->toArray();
+        }
+        
+        return $examIds;
         
     }
     

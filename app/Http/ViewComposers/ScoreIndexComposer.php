@@ -14,9 +14,23 @@ class ScoreIndexComposer {
     use ModelTrait;
     
     public function compose(View $view) {
-
+    
+        $examList = Exam::whereEnabled(1)
+            ->whereIn('id', $this->examIds())
+            ->get()->pluck('name', 'id')
+            ->toArray();
+        reset($examList);
+        $exam = Exam::find(key($examList));
+        # 指定考试对应的班级
+        $classList = Squad::whereEnabled(1)
+            ->whereIn('id', array_intersect(explode(',', $exam->class_ids), $this->classIds()))
+            ->get()->pluck('name', 'id')->toArray();
+        $subjectList = Subject::whereEnabled(1)
+            ->whereIn('id', explode(',', $exam->subject_ids))
+            ->get()->pluck('name', 'id')->toArray();
+        
         $schoolId = $this->schoolId();
-        $school = School::whereId($schoolId)->first();
+        $school = School::find($schoolId);
         #获取学校下所有班级 和 考试
         $squadIds = [];
         $examarr = [];
@@ -39,20 +53,9 @@ class ScoreIndexComposer {
         if ($examScore) {
             $ids = Exam::whereId(array_keys($examScore)[0])->first();
             $classes = Squad::whereIn('id', explode(',', $ids['class_ids']))
-                ->pluck('name', 'id')
-                ->toArray();
+                ->pluck('name', 'id')->toArray();
             $subjects = Subject::whereIn('id', explode(',', $ids['subject_ids']))
-                ->get()
-                ->toArray();
-        }
-        if (empty($examarr)) {
-            $examarr[] = '';
-        }
-        if (empty($classes)) {
-            $classes[] = '';
-        }
-        if (empty($subjects)) {
-            $subjects[] = '';
+                ->get()->toArray();
         }
         $view->with([
             'buttons'   => [
@@ -66,21 +69,31 @@ class ScoreIndexComposer {
                     'label' => '批量导入',
                     'icon'  => 'fa fa-arrow-circle-up',
                 ],
+                'export'     => [
+                    'id'    => 'export',
+                    'label' => '批量导出',
+                    'icon'  => 'fa fa-arrow-circle-down'
+                ],
+                'rank' => [
+                    'id'    => 'rank',
+                    'label' => ' 排名统计',
+                    'icon'  => 'fa fa-sort-numeric-asc',
+                ],
                 'stat' => [
                     'id'    => 'stat',
-                    'label' => ' 排名统计',
-                    'icon'  => 'fa fa-bar-chart-o',
-                ],
+                    'label' => '统计分析',
+                    'icon'  => 'fa fa-bar-chart-o'
+                ]
             ],
             'titles'    => [
                 '#', '姓名', '年级', '班级', '学号', '科目名称', '考试名称',
                 '班级排名', '年级排名', '成绩', '创建于', '更新于', '状态 . 操作',
             ],
             'uris'      => $this->uris(),
-            'classes'   => $classes,
-            'examarr'   => $examarr,
-            'examScore' => $examScore,
-            'subjects'  => $subjects,
+            'exams'   => $examList,
+            'classes'   => $classList,
+            'subjects'  => $subjectList,
+            'importTemplate' => 'files/scores.xlsx'
         ]);
         
     }

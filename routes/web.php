@@ -92,21 +92,24 @@ Route::post('users/upload_ava/{id}', 'UserController@uploadAvatar');
 # 考试管理 - 考试设置.考试类型设置
 Route::group(['prefix' => 'exams'], routes('ExamController'));
 Route::group(['prefix' => 'exam_types'], routes('ExamTypeController'));
+
 # 成绩管理 - 成绩录入/导入.总成绩录入/导入.成绩统计项设置
-Route::group(['prefix' => 'scores'], routes('ScoreController'));
 Route::group(['prefix' => 'scores'], function () {
     $c = 'ScoreController';
-    Route::get('statistics/{examId}', $c . '@statistics');
-    Route::get('export/{examId}', $c . '@export');
-    Route::get('clalists/{examId}', $c . '@claLists');
-    Route::post('analysis', $c . '@analysis');
-    Route::get('analysis', $c . '@analysis');
-    Route::post('analydata', $c . '@analydata');
+    Route::get('index', $c . '@index');
+    Route::get('create/{examId?}', $c . '@create');
+    Route::get('edit/{id}/{examId?}', $c . '@edit');
+    Route::post('store', $c . '@store');
+    Route::put('update/{id}', $c . '@update');
+    Route::delete('delete/{id}', $c . '@destroy');
+    Route::get('rank/{examId}', $c . '@stat');
+    Route::get('import', $c . '@import');
     Route::post('import', $c . '@import');
-    Route::get('exports', $c . '@exports');
+    Route::get('export', $c . '@export');
+    Route::post('export', $c . '@export');
+    Route::get('stat/{type?}/{value?}', $c . '@stat');
+    Route::post('stat', $c . '@stat');
     Route::post('send', $c . '@send');
-    Route::post('send_message', $c . '@send_message');
-    Route::get('listdatas/{examId}', $c . '@listdatas');
     Route::get('clastudents/{classId}', $c . '@clastudents');
 });
 # 总成绩
@@ -351,7 +354,11 @@ Route::group(['prefix' => 'school_types'], routes('SchoolTypeController'));
 /** 微信端路由 -------------------------------------------------------------------------------------------------------- */
 # 万浪软件
 app_routes('wlrj');
-
+/**
+ * 返回指定企业应用路由
+ *
+ * @param $acronym
+ */
 function app_routes($acronym) {
     
     /** 消息中心 */

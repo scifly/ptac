@@ -4,54 +4,53 @@ namespace App\Http\ViewComposers;
 use App\Helpers\ModelTrait;
 use App\Models\Exam;
 use App\Models\School;
+use App\Models\Score;
+use App\Models\Squad;
+use App\Models\Student;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Request;
 
 class ScoreComposer {
     
     use ModelTrait;
     
     public function compose(View $view) {
-        $schoolId = $this->schoolId();
-        $school = School::whereId($schoolId)->first();
-        #获取学校下所有班级 和 考试
-        $squadIds = [];
-        $examarr = [];
-        $squads = $school->classes;
-        foreach ($squads as $squad) {
-            $squadIds[] = $squad->id;
+        
+        /** 班级、考试、科目和学生列表 */
+        # 对当前用户可见的考试列表
+        $examList = Exam::whereEnabled(1)
+            ->whereIn('id', $this->examIds())
+            ->get()->pluck('name', 'id');
+        if (Request::route('id')) {
+            $exam = Score::find(Request::route('id'))->exam;
+        } else {
+            reset($examList);
+            $exam = Exam::find(key($examList));
         }
-        #获取学校下所有学生
-        $students = [];
-        foreach ($squads as $squad) {
-            foreach ($squad->students as $stu) {
-                $students[$stu->id] = $stu->student_number . '-' . $stu->user->realname;
-            }
+        
+        # 指定考试对应的班级
+        $classIds = Squad::whereEnabled(1)
+            ->whereIn('id', explode(',', $exam->class_ids))
+            ->get()->pluck('id')->toArray();
+        
+        # 指定考试对应的科目列表
+        $subjectList = Subject::whereEnabled(1)
+            ->whereIn('id', explode(',', $exam->subject_ids))
+            ->pluck('name', 'id')->toArray();
+        
+        # 指定考试对应的且对当前用户可见的学生列表
+        $studentList = [];
+        $students = Student::whereEnabled(1)
+            ->whereIn('class_id', array_intersect($classIds, $this->classIds()))->get();
+        foreach ($students as $student) {
+            $studentList[$student->id] = $student->student_number . ' - ' . $student->user->realname;
         }
-        #显示的考试
-        $examAll = Exam::whereEnabled(1)->get();
-        foreach ($examAll as $item) {
-            #筛选出属于本校的考试
-            if (empty(array_diff(explode(',', $item->class_ids), $squadIds))) {
-                $examarr[$item->id] = $item->name;
-            }
-        }
-        $subjects = Subject::whereEnabled(1)
-            ->whereSchoolId($schoolId)
-            ->pluck('name', 'id');
-        if (empty($exams)) {
-            $exams[] = '';
-        }
-        if (empty($subjects)) {
-            $subjects[] = '';
-        }
-        if (empty($students)) {
-            $students[] = '';
-        }
+        
         $view->with([
-            'subjects' => $subjects,
-            'exams'    => $examarr,
-            'students' => $students,
+            'subjects' => $subjectList,
+            'exams'    => $examList,
+            'students' => $studentList,
             'uris'     => $this->uris(),
         ]);
         

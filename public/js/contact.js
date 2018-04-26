@@ -77,8 +77,8 @@
                 }).on('click', '.btn-mobile-remove', function (e) {
                     $(this).parents('tr:first').remove();
                     e.preventDefault();
-                    var $defaults = $('input[name="mobile[isdefault]"]');
-                    var defaultChecked = false;
+                    var $defaults = $('input[name="mobile[isdefault]"]'),
+                        defaultChecked = false;
                     $.each($defaults, function () {
                         if (typeof $(this).attr('checked') !== 'undefined') {
                             defaultChecked = true;
@@ -104,9 +104,9 @@
                     });
                 } else {
                     $range.on('ifClicked', function () {
-                        var $gradeId = $('#' + contact.options.gradeId);
-                        var $classId = $('#' + contact.options.classId);
-                        var value = parseInt(this.value);
+                        var $gradeId = $('#' + contact.options.gradeId),
+                            $classId = $('#' + contact.options.classId),
+                            value = parseInt(this.value);
                         $gradeId.select2('destroy');
                         $classId.select2('destroy');
                         $gradeId.prop('disabled', value === 2);

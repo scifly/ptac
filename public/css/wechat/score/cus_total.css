@@ -70,13 +70,13 @@ a{
     clear: both;
 }
 
-.subtitle{
+.subject-title{
     font-size: 12px;
 }
-.header .subtitle{
+.header .subject-title{
     color: #ddd;
 }
-.otherinfo .subtitle{
+.otherinfo .subject-title{
     color: #999;
 }
 .time ,.subject ,.test{
@@ -170,7 +170,7 @@ a{
     font-size: 19px;
     text-align: right;
 }
-.scorelist .scoreItem .subtitle{
+.scorelist .scoreItem .subject-title{
     color: #999;
     margin-right: 5px;
 }

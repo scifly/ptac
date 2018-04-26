@@ -258,7 +258,7 @@ class ScoreCenterController extends Controller {
         $examId = Request::input('examId');
         $student = Request::input('student');
         if ($classId && $examId) {
-            $data = $this->score->getExamClass($examId, $classId, $student);
+            $data = $this->score->examDetail($examId, $classId, $student);
             
             return view('wechat.score.detail', [
                 'data'    => $data,
@@ -318,7 +318,7 @@ class ScoreCenterController extends Controller {
             return '暂未该班级相关数据！';
         }
         #需要返回给视图页面的数据
-        $data = $this->score->claAnalysis($input, true);
+        $data = $this->score->classStat($input, true);
         if (!$data) {
             $data = [
                 'className'   => $exam->start_date,
@@ -340,6 +340,7 @@ class ScoreCenterController extends Controller {
      * 微信 监护人端综合
      */
     public function cusTotal() {
+        
         #综合返回回分数
         $input['exam_id'] = Request::get('examId');
         $input['student_id'] = Request::get('studentId');
@@ -364,6 +365,8 @@ class ScoreCenterController extends Controller {
             'studentId' => $input['student_id'],
             'examId'    => $input['exam_id'],
         ]);
+        
     }
+    
 }
 

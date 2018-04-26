@@ -1,13 +1,25 @@
-<form class='import' method='post' enctype='multipart/form-data' id="form-import">
-    {{ csrf_field() }}
-    <div class="modal fade" id="upload">
-        <div class="modal-dialog">
-            <div class="modal-content">
+<div class="modal fade" id="modal-import">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form class='import' method='post' enctype='multipart/form-data' id="form-import">
+                {{ csrf_field() }}
                 <div class="modal-header">
                     <h4 class="modal-title">批量导入</h4>
                 </div>
                 <div class="modal-body with-border">
                     <div class="form-horizontal">
+                        <!-- 选择考试 -->
+                        @include('partials.single_select', [
+                            'id' => 'import_exam_id',
+                            'label' => '选择考试',
+                            'items' => $exams
+                        ])
+                        <!-- 班级 -->
+                        @include('partials.single_select', [
+                            'id' => 'import_class_id',
+                            'label' => '班级',
+                            'items' => $classes
+                        ])
                         <div class="form-group">
                             {{ Form::label('import', '选择导入文件', [
                                 'class' => 'control-label col-sm-3'
@@ -20,10 +32,10 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <a id="confirm-import" href="#" class="btn btn-sm btn-success" data-dismiss="modal">确定</a>
+                    <a id="import-scores" href="#" class="btn btn-sm btn-success" data-dismiss="modal">确定</a>
                     <a href="#" class="btn btn-sm btn-white" data-dismiss="modal">取消</a>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
-</form>
+</div>

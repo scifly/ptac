@@ -6,6 +6,7 @@ use App\Events\ScoreUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Facades\Wechat;
 use App\Helpers\Constant;
+use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
@@ -13,12 +14,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Http\UploadedFile;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Maatwebsite\Excel\Facades\Excel;
-use Maatwebsite\Excel\Readers\LaravelExcelReader;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Throwable;
 
 /**
  * App\Models\Score 分数
@@ -52,9 +54,14 @@ class Score extends Model {
     
     use ModelTrait;
     
-    #表头必须包含字段
-    const EXCEL_FILE_TITLE = [
-        '班级', '学号', '姓名',
+    # 导出格式
+    const EXPORT_TITLES = [
+        '姓名', '班级', '学号', '考试', '科目', '分数', '班排名', '年排名'
+    ];
+    
+    # 导入格式
+    const IMPORT_TITLES = [
+        '班级', '学号', '姓名'
     ];
     
     protected $fillable = [
@@ -62,6 +69,16 @@ class Score extends Model {
         'class_rank', 'grade_rank', 'score',
         'enabled',
     ];
+    
+    protected $ex, $squad;
+    
+    function __construct(array $attributes = []) {
+        
+        parent::__construct($attributes);
+        $this->ex = app()->make('App\Models\Exam');
+        $this->squad = app()->make('App\Models\Squad');
+    
+    }
     
     /**
      * 返回分数记录所属的学生对象
@@ -131,6 +148,40 @@ class Score extends Model {
         }
         
         return $score->delete() ? true : false;
+        
+    }
+    
+    /**
+     * 返回指定考试对应的学生及科目列表
+     *
+     * @param $examId
+     * @return array
+     */
+    function ssList($examId) {
+        
+        $exam = Exam::find($examId);
+        # 指定考试对应的班级
+        $classIds = Squad::whereEnabled(1)
+            ->whereIn('id', explode(',', $exam->class_ids))
+            ->get()->pluck('id')->toArray();
+    
+        # 指定考试对应的科目列表
+        $subjectList = Subject::whereEnabled(1)
+            ->whereIn('id', explode(',', $exam->subject_ids))
+            ->pluck('name', 'id')->toArray();
+    
+        # 指定考试对应的且对当前用户可见的学生列表
+        $studentList = [];
+        $students = Student::whereEnabled(1)
+            ->whereIn('class_id', array_intersect($classIds, $this->classIds()))->get();
+        foreach ($students as $student) {
+            $studentList[$student->id] = $student->student_number . ' - ' . $student->user->realname;
+        }
+        
+        return response()->json([
+            'students' => $this->singleSelectList($studentList, 'student_id'),
+            'subjects' => $this->singleSelectList($subjectList, 'subject_id')
+        ]);
         
     }
     
@@ -230,12 +281,12 @@ class Score extends Model {
     /**
      * 排名统计
      *
-     * @param $exam_id
+     * @param $examId
      * @return boolean
      */
-    function stat($exam_id) {
+    function rank($examId) {
         
-        $exam = Exam::whereId($exam_id)->first();
+        $exam = Exam::whereId($examId)->first();
         #找到考试对应的科目存到数组 ids
         $examSub = explode(',', $exam->subject_ids);
         #找到考试对应的班级存到数组 ids
@@ -267,7 +318,7 @@ class Score extends Model {
             #一次处理一个科目  查出这个科目下 班级下所有学生的成绩
             foreach ($claStuIds as $claStuId) {
                 # 若该学生id没有对应的score则不会在结果数组中
-                $scores = Score::whereExamId($exam_id)
+                $scores = Score::whereExamId($examId)
                     ->whereSubjectId($sub)
                     ->whereIn('student_id', $claStuId)
                     ->whereEnabled(1)
@@ -290,7 +341,7 @@ class Score extends Model {
             }
             #年级排名
             foreach ($graStuIds as $graStuId) {
-                $scoresAll = Score::whereExamId($exam_id)
+                $scoresAll = Score::whereExamId($examId)
                     ->whereSubjectId($sub)
                     ->whereIn('student_id', $graStuId)
                     ->whereEnabled(1)
@@ -312,7 +363,7 @@ class Score extends Model {
         }
         #总分统计
         #按学生id对本次考试成绩 分组
-        $studentScore = Score::whereExamId($exam_id)
+        $studentScore = Score::whereExamId($examId)
             ->whereEnabled(1)
             ->whereIn('subject_id', $examSub)
             ->get()
@@ -330,7 +381,7 @@ class Score extends Model {
             $noSub = array_diff($examSub, $studentSub);
             $scoreTotalData = [
                 'student_id'     => $studentId,
-                'exam_id'        => $exam_id,
+                'exam_id'        => $examId,
                 'score'          => $total,
                 'subject_ids'    => implode(',', $studentSub),
                 'na_subject_ids' => implode(',', $noSub),
@@ -341,7 +392,7 @@ class Score extends Model {
             #判断记录是否已经存在，存在则更新
             $scoreTotal = ScoreTotal::whereEnabled(1)
                 ->whereStudentId($studentId)
-                ->whereExamId($exam_id)
+                ->whereExamId($examId)
                 ->first();
             if ($scoreTotal) {
                 $scoreTotal->update($scoreTotalData);
@@ -353,7 +404,7 @@ class Score extends Model {
         #班级排名
         foreach ($claStuIds as $claStuId) {
             $scoreTotalCla = ScoreTotal::whereEnabled(1)
-                ->whereExamId($exam_id)
+                ->whereExamId($examId)
                 ->whereIn('student_id', $claStuId)
                 ->orderBy('score', 'desc')
                 ->get();
@@ -373,7 +424,7 @@ class Score extends Model {
         #年级排名
         foreach ($graStuIds as $graStuId) {
             $scoreTotalGra = ScoreTotal::whereEnabled(1)
-                ->whereExamId($exam_id)
+                ->whereExamId($examId)
                 ->whereIn('student_id', $graStuId)
                 ->orderBy('score', 'desc')
                 ->get();
@@ -395,21 +446,22 @@ class Score extends Model {
     }
     
     /**
-     * @param $exam
-     * @param $squad
-     * @param $subject
-     * @param $project
+     * @param $examId
+     * @param $classId
+     * @param $subjectIds
+     * @param $items
      * @return array
      */
-    function scores($exam, $squad, $subject, $project) {
+    private function scores($examId, $classId, $subjectIds, $items) {
         
-        $student = $this->where('exam_id', $exam)
+        $student = $this->whereExamId($examId)
             ->get()->pluck('student_id');
+        
         # 当前班级下的所有参加考试的学生
-        $students = Student::whereClassId($squad)->whereIn('id', $student)->get();
+        $students = Student::whereClassId($classId)->whereIn('id', $student)->get();
         
         # 当前选择班级的所属年级下 的所有班级 id
-        $classes = Squad::where('grade_id', Squad::whereId($squad)->first()->grade_id)
+        $classes = Squad::where('grade_id', Squad::whereId($classId)->first()->grade_id)
             ->get()->pluck('id');
         
         # 统计当前学生年级 的所有参加考试的学生
@@ -418,170 +470,172 @@ class Score extends Model {
             ->get();
         $result = [];
         foreach ($students as $s) {
-            $user = User::whereIn('id', array_column(json_decode($s->custodians), 'user_id'))
-                ->get();
+            $user = User::whereIn('id', array_column(json_decode($s->custodians), 'user_id'))->get();
             $student = $s->user['realname'];
             $message = [];
-            foreach ($subject as $j) {
-                $sub = Subject::whereId($j)->first();
-                $subScore = self::where('exam_id', $exam)
-                    ->where('subject_id', $j)
+            foreach ($subjectIds as $subjectId) {
+                $s = Subject::find($subjectId);
+                $subScore = self::where('exam_id', $examId)
+                    ->where('subject_id', $subjectId)
                     ->where('student_id', $s->id)
                     ->first();
-                $subName = isset($sub->name) ? $sub->name : '';
-                foreach ($project as $p) {
-                    if ($p == 'score') {
-                        if ($j == '-1') {
-                            $message[] = '总分:' . ScoreTotal::
-                                whereExamId($exam)
-                                    ->where('student_id', $s->id)
-                                    ->first()
-                                    ->score;
-                        } else {
-                            $message[] = $sub->name . ':' . $subScore->score;
-                        }
-                    }
-                    if ($p == 'grade_rank') {
-                        if ($j == '-1') {
-                            $total = ScoreTotal::where('student_id', $s->id)
-                                ->where('exam_id', $exam)
-                                ->first();
-                            $message[] = '年排名:' . $total->grade_rank;
-                        } else {
-                            $stotal = self::where('student_id', $s->id)
-                                ->where('exam_id', $exam)
-                                ->where('subject_id', $j)
-                                ->first();
-                            $message[] = $subName . '(年排):' . $stotal->grade_rank;
-                        }
-                    }
-                    if ($p == 'class_rank') {
-                        if ($j == '-1') {
-                            $total = ScoreTotal::where('student_id', $s->id)
-                                ->where('exam_id', $exam)
-                                ->first();
-                            $message[] = '班排名:' . $total->class_rank;
-                        } else {
-                            $stotal = self::where('student_id', $s->id)
-                                ->where('exam_id', $exam)
-                                ->where('subject_id', $j)
-                                ->first();
-                            $message[] = $subName . '(班排):' . $stotal->class_rank;
-                        }
-                    }
-                    if ($p == 'grade_average') {
-                        if ($j == '-1') {
-                            $gaToTal = ScoreTotal::whereIn('student_id', $gradeStudents->pluck('id'))
-                                ->where('exam_id', $exam)
-                                ->get();
-                            if ($gaToTal->count() == 0) {
-                                $ga = 0;
+                $sName = $s->name ?? '';
+                foreach ($items as $item) {
+                    switch ($item) {
+                        case 'score':
+                            if ($subjectId == '-1') {
+                                $message[] = '总分:' . ScoreTotal::
+                                    whereExamId($examId)
+                                        ->where('student_id', $s->id)
+                                        ->first()
+                                        ->score;
                             } else {
-                                $ga = $gaToTal->sum('score') / $gaToTal->count();
+                                $message[] = $s->name . ':' . $subScore->score;
                             }
-                            $message[] = '年平均:' . sprintf("%.2f", $ga);
-                        } else {
-                            $sgaToTal = self::whereIn('student_id', $gradeStudents->pluck('id'))
-                                ->where('exam_id', $exam)
-                                ->where('subject_id', $j)
-                                ->get();
-                            if ($sgaToTal->count() == 0) {
-                                $sga = 0;
+                            break;
+                        case 'grade_rank':
+                            if ($subjectId == '-1') {
+                                $total = ScoreTotal::where('student_id', $s->id)
+                                    ->where('exam_id', $examId)
+                                    ->first();
+                                $message[] = '年排名:' . $total->grade_rank;
                             } else {
-                                $sga = $sgaToTal->sum('score') / $sgaToTal->count();
+                                $stotal = self::where('student_id', $s->id)
+                                    ->where('exam_id', $examId)
+                                    ->where('subject_id', $subjectId)
+                                    ->first();
+                                $message[] = $sName . '(年排):' . $stotal->grade_rank;
                             }
-                            $message[] = $subName . '(年平均):' . sprintf("%.2f", $sga);
-                        }
-                    }
-                    if ($p == 'class_average') {
-                        if ($j == '-1') {
-                            $caToTal = ScoreTotal::whereIn('student_id', $students->pluck('id'))
-                                ->where('exam_id', $exam)
-                                ->get();
-                            if ($caToTal->count() == 0) {
-                                $ca = 0;
+                            break;
+                        case 'class_rank':
+                            if ($subjectId == '-1') {
+                                $total = ScoreTotal::where('student_id', $s->id)
+                                    ->where('exam_id', $examId)
+                                    ->first();
+                                $message[] = '班排名:' . $total->class_rank;
                             } else {
-                                $ca = $caToTal->sum('score') / $caToTal->count();
+                                $stotal = self::where('student_id', $s->id)
+                                    ->where('exam_id', $examId)
+                                    ->where('subject_id', $subjectId)
+                                    ->first();
+                                $message[] = $sName . '(班排):' . $stotal->class_rank;
                             }
-                            $message[] = '班平均:' . sprintf("%.2f", $ca);
-                        } else {
-                            $scaToTal = self::whereIn('student_id', $students->pluck('id'))
-                                ->where('exam_id', $exam)
-                                ->where('subject_id', $j)
-                                ->get();
-                            if ($scaToTal->count() == 0) {
-                                $sca = 0;
+                            break;
+                        case 'grade_average':
+                            if ($subjectId == '-1') {
+                                $gaToTal = ScoreTotal::whereIn('student_id', $gradeStudents->pluck('id'))
+                                    ->where('exam_id', $examId)
+                                    ->get();
+                                if ($gaToTal->count() == 0) {
+                                    $ga = 0;
+                                } else {
+                                    $ga = $gaToTal->sum('score') / $gaToTal->count();
+                                }
+                                $message[] = '年平均:' . sprintf("%.2f", $ga);
                             } else {
-                                $sca = $scaToTal->sum('score') / $scaToTal->count();
+                                $sgaToTal = self::whereIn('student_id', $gradeStudents->pluck('id'))
+                                    ->where('exam_id', $examId)
+                                    ->where('subject_id', $subjectId)
+                                    ->get();
+                                if ($sgaToTal->count() == 0) {
+                                    $sga = 0;
+                                } else {
+                                    $sga = $sgaToTal->sum('score') / $sgaToTal->count();
+                                }
+                                $message[] = $sName . '(年平均):' . sprintf("%.2f", $sga);
                             }
-                            $message[] = $subName . '(班平均):' . sprintf("%.2f", $sca);
-                        }
+                            break;
+                        case 'class_average':
+                            if ($subjectId == '-1') {
+                                $caToTal = ScoreTotal::whereIn('student_id', $students->pluck('id'))
+                                    ->where('exam_id', $examId)
+                                    ->get();
+                                if ($caToTal->count() == 0) {
+                                    $ca = 0;
+                                } else {
+                                    $ca = $caToTal->sum('score') / $caToTal->count();
+                                }
+                                $message[] = '班平均:' . sprintf("%.2f", $ca);
+                            } else {
+                                $scaToTal = self::whereIn('student_id', $students->pluck('id'))
+                                    ->where('exam_id', $examId)
+                                    ->where('subject_id', $subjectId)
+                                    ->get();
+                                if ($scaToTal->count() == 0) {
+                                    $sca = 0;
+                                } else {
+                                    $sca = $scaToTal->sum('score') / $scaToTal->count();
+                                }
+                                $message[] = $sName . '(班平均):' . sprintf("%.2f", $sca);
+                            }
+                            break;
+                        case 'grade_max':
+                            if ($subjectId == '-1') {
+                                $maxTotal = ScoreTotal::whereIn('student_id', $gradeStudents->pluck('id'))
+                                    ->where('exam_id', $examId)
+                                    ->max('score');
+                                $message[] = '年最高:' . $maxTotal;
+                            } else {
+                                $maxSub = self::whereIn('student_id', $gradeStudents->pluck('id'))
+                                    ->where('exam_id', $examId)
+                                    ->where('subject_id', $subjectId)
+                                    ->max('score');
+                                $message[] = $sName . '(年最高):' . $maxSub;
+                            }
+                            break;
+                        case 'class_max':
+                            if ($subjectId == '-1') {
+                                $cmaxTotal = ScoreTotal::whereIn('student_id', $students->pluck('id'))
+                                    ->where('exam_id', $examId)
+                                    ->max('score');
+                                $message[] = '班最高:' . $cmaxTotal;
+                            } else {
+                                $cmaxSub = self::whereIn('student_id', $students->pluck('id'))
+                                    ->where('exam_id', $examId)
+                                    ->where('subject_id', $subjectId)
+                                    ->max('score');
+                                $message[] = $sName . '(班最高):' . $cmaxSub;
+                            }
+                            break;
+                        case 'grade_min':
+                            if ($subjectId == '-1') {
+                                $minTotal = ScoreTotal::whereIn('student_id', $gradeStudents->pluck('id'))
+                                    ->where('exam_id', $examId)
+                                    ->min('score');
+                                $message[] = '年最低:' . $minTotal;
+                            } else {
+                                $minSub = self::whereIn('student_id', $gradeStudents->pluck('id'))
+                                    ->where('exam_id', $examId)
+                                    ->where('subject_id', $subjectId)
+                                    ->min('score');
+                                $message[] = $sName . '(年最低):' . $minSub;
+                            }
+                            break;
+                        case 'class_min':
+                            if ($subjectId == '-1') {
+                                $cminTotal = ScoreTotal::whereIn('student_id', $students->pluck('id'))
+                                    ->where('exam_id', $examId)
+                                    ->min('score');
+                                $message[] = '班最低:' . $cminTotal;
+                            } else {
+                                $cminSub = self::whereIn('student_id', $students->pluck('id'))
+                                    ->where('exam_id', $examId)
+                                    ->where('subject_id', $subjectId)
+                                    ->min('score');
+                                $message[] = $sName . '(班最低):' . $cminSub;
+                            }
+                            break;
+                        default:
+                            break;
+    
                     }
-                    if ($p == 'grade_max') {
-                        if ($j == '-1') {
-                            $maxTotal = ScoreTotal::whereIn('student_id', $gradeStudents->pluck('id'))
-                                ->where('exam_id', $exam)
-                                ->max('score');
-                            $message[] = '年最高:' . $maxTotal;
-                        } else {
-                            $maxSub = self::whereIn('student_id', $gradeStudents->pluck('id'))
-                                ->where('exam_id', $exam)
-                                ->where('subject_id', $j)
-                                ->max('score');
-                            $message[] = $subName . '(年最高):' . $maxSub;
-                        }
-                    }
-                    if ($p == 'class_max') {
-                        if ($j == '-1') {
-                            $cmaxTotal = ScoreTotal::whereIn('student_id', $students->pluck('id'))
-                                ->where('exam_id', $exam)
-                                ->max('score');
-                            $message[] = '班最高:' . $cmaxTotal;
-                        } else {
-                            $cmaxSub = self::whereIn('student_id', $students->pluck('id'))
-                                ->where('exam_id', $exam)
-                                ->where('subject_id', $j)
-                                ->max('score');
-                            $message[] = $subName . '(班最高):' . $cmaxSub;
-                        }
-                        
-                    }
-                    if ($p == 'grade_min') {
-                        if ($j == '-1') {
-                            $minTotal = ScoreTotal::whereIn('student_id', $gradeStudents->pluck('id'))
-                                ->where('exam_id', $exam)
-                                ->min('score');
-                            $message[] = '年最低:' . $minTotal;
-                        } else {
-                            $minSub = self::whereIn('student_id', $gradeStudents->pluck('id'))
-                                ->where('exam_id', $exam)
-                                ->where('subject_id', $j)
-                                ->min('score');
-                            $message[] = $subName . '(年最低):' . $minSub;
-                        }
-                    }
-                    if ($p == 'class_min') {
-                        if ($j == '-1') {
-                            $cminTotal = ScoreTotal::whereIn('student_id', $students->pluck('id'))
-                                ->where('exam_id', $exam)
-                                ->min('score');
-                            $message[] = '班最低:' . $cminTotal;
-                        } else {
-                            $cminSub = self::whereIn('student_id', $students->pluck('id'))
-                                ->where('exam_id', $exam)
-                                ->where('subject_id', $j)
-                                ->min('score');
-                            $message[] = $subName . '(班最低):' . $cminSub;
-                        }
-                    }
-                    
                 }
             }
             $msgTpl = '尊敬的%s家长, %s考试成绩已出: %s。';
             $content = sprintf(
                 $msgTpl,
                 $student,
-                Exam::find($exam)->name,
+                Exam::find($examId)->name,
                 implode(',', $message)
             );
             $result[] = [
@@ -599,10 +653,48 @@ class Score extends Model {
     }
     
     /**
+     * 预览
+     *
+     * @return JsonResponse
+     */
+    function preview() {
+        
+        $examId = Request::input('examId');
+        $classId = Request::input('classId');
+        $subjectIds = Request::input('subjectIds');
+        $items = Request::input('items');
+        if ($examId && $classId) {
+            $score = new Score();
+            $result = $score->scores(
+                $examId,
+                $classId,
+                explode(',', $subjectIds),
+                explode(',', $items)
+            );
+        } else {
+            $ids = Exam::whereId($examId)->first();
+            $classes = Squad::whereIn('id', explode(',', $ids['class_ids']))
+                ->get()->toArray();
+            $subjects = Subject::whereIn('id', explode(',', $ids['subject_ids']))
+                ->get()->toArray();
+            $result = [
+                'classes'  => $classes,
+                'subjects' => $subjects,
+            ];
+            
+        }
+        
+        return response()->json($result);
+        
+    }
+    
+    /**
+     * 发送成绩
+     *
      * @param $data
      * @return array
      */
-    function sendMessage($data) {
+    function send($data) {
         
         $corp = Corp::whereName('万浪软件')->first();
         $app = App::whereName('成绩中心')->first();
@@ -659,108 +751,124 @@ class Score extends Model {
     }
     
     /**
-     * @param UploadedFile $file
-     * @param $input
-     * @return array
-     * @throws \PHPExcel_Exception
+     * 导入成绩
+     *
+     * @return bool
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    function upload(UploadedFile $file, $input) {
-        
+    function upload() {
+    
+        $file = Request::file('file');
+        abort_if(
+            !$file || !$file->isValid(),
+            HttpStatusCode::BAD_REQUEST,
+            __('messages.bad_request')
+        );
         $ext = $file->getClientOriginalExtension();     // 扩展名//xls
         $realPath = $file->getRealPath();   //临时文件的绝对路径
         // 上传文件
         $filename = date('His') . uniqid() . '.' . $ext;
-        $stored = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
+        $stored = Storage::disk('uploads')->put(
+            $filename, file_get_contents($realPath)
+        );
         if ($stored) {
-            $filePath =
-                'uploads/'
-                . date('Y')
-                . '/'
-                . date('m')
-                . '/'
-                . date('d')
-                . '/'
-                . $filename;
-            /** @var LaravelExcelReader $reader */
-            $reader = Excel::load($filePath);
-            $sheet = $reader->getExcel()->getSheet(0);
-            $scores = $sheet->toArray();
-            #考虑删除读取过后的xml文件
-            if (is_file($filePath)) {
-                unlink($filePath);
-            }
-            if (self::checkFileFormat($scores[0])) {
-                return [
-                    'error'   => 1,
-                    'message' => '文件格式错误',
-                ];
-            }
-            $schoolId = $this->schoolId();
-            #这次考试对应的科目id
-            $exam = Exam::whereId($input['exam_id'])->first();
+            $spreadsheet = IOFactory::load(
+                $this->uploadedFilePath($filename)
+            );
+            $scores = $spreadsheet->getActiveSheet()->toArray(
+                null, true, true, true
+            );
+            abort_if(
+                !empty(array_diff(self::IMPORT_TITLES, $scores[0])),
+                HttpStatusCode::NOT_ACCEPTABLE,
+                '文件格式错误'
+            );
+            # 这次考试对应的科目id
+            $exam = Exam::find(Request::input('examId'));
             $subjectIds = explode(',', $exam->subject_ids);
-            $scoreArr = $scores;
+            $aScores = $scores;
             #去除表头后的数据
-            array_shift($scoreArr);
-            $scoreArr = array_values($scoreArr);
-            if (count($scoreArr) != 0) {
+            array_shift($aScores);
+            $aScores = array_values($aScores);
+            if (count($aScores) != 0) {
                 # 去除表格的空数据
-                foreach ($scoreArr as $key => $v) {
+                foreach ($aScores as $key => $v) {
                     if ((array_filter($v)) == null) {
-                        unset($scoreArr[$key]);
+                        unset($aScores[$key]);
                     }
                 }
             }
             #处理表头循环单列的数据插入分数
             for ($i = 3; $i < count($scores[0]); $i++) {
                 $data = [];
-                $sub = $scores[0][$i];
-                $subject = Subject::where('school_id', $schoolId)
-                    ->where('name', $sub)->first();
+                $subject = Subject::whereSchoolId($this->schoolId())
+                    ->where('name', $scores[0][$i])->first();
                 #判断录入科目分数是否在这次考试中  在
                 if ($subject) {
                     if (in_array($subject->id, $subjectIds)) {
-                        foreach ($scoreArr as $arr) {
+                        foreach ($aScores as $a) {
                             $data[] = [
-                                'class'          => $arr[0],
-                                'student_number' => $arr[1],
-                                'student_name'   => $arr[2],
+                                'class'          => $a[0],
+                                'student_number' => $a[1],
+                                'student_name'   => $a[2],
                                 'subject_id'     => $subject->id,
-                                'score'          => $arr[$i],
-                                'exam_id'        => $input['exam_id'],
+                                'score'          => $a[$i],
+                                'exam_id'        => Request::input('examId'),
                             ];
-                            
                         }
-                        if (!self::checkData($data, $input)) {
-                            return ['statusCode' => 500, 'message' => '数据有误!',];
-                        }
-                    } else {
-                        unset($sub);
+                        abort_if(
+                            !self::checkData($data, Request::all()),
+                            HttpStatusCode::INTERNAL_SERVER_ERROR,
+                            __('messages.internal_server_error')
+                        );
                     }
                 }
             }
-            unset($scores);
-            unset($scoreArr);
             
-            return ['statusCode' => 200, 'message' => '上传成功'];
+            return true;
         }
         
-        return ['statusCode' => 500, 'message' => '上传失败'];
+        return false;
+        
     }
     
     /**
-     * 检查表头是否合法
-     * @param array $fileTitle
-     * @return bool
+     * 导出成绩
+     *
+     * @return mixed
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    private function checkFileFormat(array $fileTitle) {
+    function export() {
+    
+        $classId = Request::query('classId');
+        $examId = Request::query('examId');
         
-        return count(array_diff(self::EXCEL_FILE_TITLE, $fileTitle)) != 0;
+        $studentIds = Student::whereClassId($classId)->get()->pluck('id')->toArray();
+        $scores = $this->whereExamId($examId)->whereIn('student_id', $studentIds)->get();
+        $records = [self::EXPORT_TITLES];
+        foreach ($scores as $score) {
+            if (!$score->student) { continue; }
+            $records[] = [
+                $score->student->user->realname,
+                $score->squad->name,
+                $score->student->student_number,
+                $score->exam->name,
+                $score->subject->name,
+                $score->score,
+                $score->class_rank,
+                $score->grade_rank
+            ];
+        }
+        
+        return $this->excel($records);
         
     }
     
     /**
-     *  检查每行数据 是否符合导入数据
+     * 检查每行数据 是否符合导入数据
+     *
      * @param array $data
      * @param $input
      * @return bool
@@ -824,78 +932,99 @@ class Score extends Model {
         }
         
         return true;
+        
     }
     
     /**
      * 成绩分析
-     * @param $input
-     * @return bool|string
-     * @throws \Throwable
+     *
+     * @return JsonResponse
+     * @throws Throwable
      */
-    static function analysis($input) {
-        #分析班级成绩
-        if ($input['type'] == 0) {
-            $data = (new Score)->claAnalysis($input, false);
-            if ($data) {
-                return view('score.analysis_data', [
-                    'className'   => $data['className'],
-                    'examName'    => $data['examName'],
-                    'oneData'     => $data['oneData'],
-                    'rangs'       => $data['rangs'],
-                    'totalRanges' => $data['totalRanges'],
-                ])->render();
-            } else {
-                return false;
-            }
-        }
-        #分析学生
-        if ($input['type'] == 1) {
-            $data = (new Score)->stuAnalysis($input);
-            if ($data) {
-                return view('score.analysis_student_data', [
-                    'examScore'   => $data['examScore'],
-                    'subjectName' => $data['subjectName'],
-                    'student'     => $data['student'],
-                ])->render();
-            } else {
-                return false;
-            }
-            
-        }
+    function stat() {
         
-        return false;
+        # 分析班级成绩
+        if (Request::has('examId')) {
+            $data = $this->classStat(false);
+            abort_if(!$data, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
+            $view = view('score.class_stat', [
+                'className'   => $data['className'],
+                'examName'    => $data['examName'],
+                'oneData'     => $data['oneData'],
+                'rangs'       => $data['rangs'],
+                'totalRanges' => $data['totalRanges'],
+            ])->render();
+        } else {
+            $data = $this->studentStat();
+            abort_if(!$data, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
+            $view = view('score.student_stat', [
+                'examScore'   => $data['examScore'],
+                'subjectName' => $data['subjectName'],
+                'student'     => $data['student'],
+            ])->render();
+        }
+
+        return response()->json(['html' => $view]);
+        
     }
     
     /**
-     * @param $examId
-     * @param $classId
-     * @param null $studentName
+     * 返回指定考试/班级对应的班级/学生列表html
+     *
+     * @param $type
+     * @param $value
+     * @return JsonResponse
+     */
+    function lists($type, $value) {
+        
+        if ($type == 'class') {
+            $html = $this->ex->classList($value);
+        } else {
+            $html = $this->squad->studentList($value);
+        }
+        
+        return response()->json([
+            'html' => $html
+        ]);
+        
+    }
+    
+    /**
+     * 获取指定考试和班级的指定学生或所有学生的各科目考试详情
+     *
+     * @param integer $examId
+     * @param integer $classId
+     * @param null|string $realname - 学生姓名
      * @return array
      */
-    function getExamClass($examId, $classId, $studentName = null) {
+    function examDetail($examId, $classId, $realname = null) {
         
-        $student = $this->where('exam_id', $examId)
+        $studentIds = $this->where('exam_id', $examId)
             ->get()->pluck('student_id');
-        if ($studentName) {
-            $users = User::whereRealname($studentName)->get()->pluck('id');
+        if ($realname) {
+            $userIds = User::whereRealname($realname)->first()->pluck('id');
             # 当前班级下的所有参加考试的学生
-            $students = Student::whereClassId($classId)->whereIn('id', $student)->whereIn('user_id', $users)->get();
+            $students = Student::whereClassId($classId)
+                ->whereIn('id', $studentIds)
+                ->whereIn('user_id', $userIds)->get();
         } else {
             # 当前班级下的所有参加考试的学生
-            $students = Student::whereClassId($classId)->whereIn('id', $student)->get();
+            $students = Student::whereClassId($classId)
+                ->whereIn('id', $studentIds)->get();
         }
         $result = [
-            'exam'  => Exam::whereId($examId)->first()->name,
-            'squad' => Squad::whereId($classId)->first()->name,
+            'exam'  => Exam::find($examId)->name,
+            'squad' => Squad::find($classId)->name,
             'items' => [],
         ];
         foreach ($students as $s) {
-            $scores = $this::whereExamId($examId)->where('student_id', $s->id)->get();
+            $scores = $this->whereExamId($examId)
+                ->where('student_id', $s->id)->get();
             $detail = [];
-            foreach ($scores as $c) {
+            foreach ($scores as $score) {
                 $detail[] = [
-                    'subject' => $c->subject->name,
-                    'score'   => $c->score,
+                    'subject' => $score->subject->name,
+                    'score'   => $score->score,
                 ];
             }
             $result['items'][] = [
@@ -908,7 +1037,6 @@ class Score extends Model {
                 'total'          => 623,
                 'detail'         => $detail,
             ];
-            unset($detail);
         }
         
         return $result;
@@ -976,22 +1104,22 @@ class Score extends Model {
     /**
      * 班级成绩分析
      *
-     * @param $input
      * @param $wechat
      * @return array|bool
      */
-    function claAnalysis($input, $wechat = false) {
+    function classStat($wechat = false) {
+        
         #第一个表格数据
         $firstTableData = [];
         #存放满足当前科目的分数段设置和统计人数的数组（第二个表格数据--一个数据一个表格）
         $rangs = [];
         #存放总分分数段设置和统计人数的数组
         $scoreToRanges = [];
-        $exam = Exam::whereId($input['exam_id'])->first();
+        $exam = Exam::find(Request::input('examId'));
         if (!$exam) {
             return false;
         }
-        $squad = Squad::whereId($input['squad_id'])->first();
+        $squad = Squad::find(Request::input('classId'));
         if (!$squad) {
             return false;
         }
@@ -1099,7 +1227,7 @@ class Score extends Model {
             #总分分数段
             $totalRanges = $rangAll->where('subject_ids', 0);
             #查询考试对应的总分 班级
-            $scoreTotal = ScoreTotal::whereExamId($input['exam_id'])
+            $scoreTotal = ScoreTotal::whereExamId(Request::input('examId'))
                 ->whereIn('student_id', $claStuIds)
                 ->whereEnabled(1)
                 ->get();
@@ -1124,7 +1252,8 @@ class Score extends Model {
                 ];
             }
         }
-        $data = [
+        
+        return [
             'className'   => $squad->name,
             'examName'    => $exam->name,
             'oneData'     => $firstTableData,
@@ -1132,25 +1261,24 @@ class Score extends Model {
             'totalRanges' => $scoreToRanges,
         ];
         
-        return $data;
     }
     
     /**
      * 学生成绩分析
-     * @param $input
+     *
      * @return mixed
      */
-    function stuAnalysis($input) {
+    function studentStat() {
         
         #学生对象
-        $student = Student::whereId($input['student_id'])->first();
+        $student = Student::find(Request::input('studentId'));
         #先找出这个学生最近十场考试
         $exams = Exam::all();
-        $stuExams = [];
+        $studentExams = [];
         foreach ($exams as $exam) {
-            if (in_array($input['class_id'], explode(',', $exam->class_ids))) {
-                if (count($stuExams) < 10) {
-                    $stuExams[] = $exam->id;
+            if (in_array(Request::input('classId'), explode(',', $exam->class_ids))) {
+                if (count($studentExams) < 10) {
+                    $studentExams[] = $exam->id;
                 }
             }
         }
@@ -1160,7 +1288,7 @@ class Score extends Model {
         $subjects = [];
         #存这十次考试的科目和id
         $subName = [];
-        foreach ($stuExams as $stuExam) {
+        foreach ($studentExams as $stuExam) {
             $exam = Exam::whereId($stuExam)->first();
             $examSubjects[] = explode(',', $exam->subject_ids);
         }
@@ -1174,14 +1302,14 @@ class Score extends Model {
         }
         #处理$subName 按照key值升序
         ksort($subName);
-        foreach ($stuExams as $stuExam) {
+        foreach ($studentExams as $stuExam) {
             $exam = Exam::whereId($stuExam)->first();
             $studentScore = [];
             $examName = $exam->name;
             $examTime = $exam->start_date;
             foreach ($subName as $key => $value) {
                 $sco = $this->whereExamId($stuExam)
-                    ->whereStudentId($input['student_id'])
+                    ->whereStudentId(Request::input('studentId'))
                     ->whereEnabled(1)
                     ->where('subject_id', $key)
                     ->first();
@@ -1201,7 +1329,7 @@ class Score extends Model {
             }
             #处理$studentScore 按照key值升序
             ksort($studentScore);
-            $examTotal = ScoreTotal::whereStudentId($input['student_id'])
+            $examTotal = ScoreTotal::whereStudentId(Request::input('studentId'))
                 ->whereExamId($stuExam)
                 ->first();
             if ($examTotal) {
@@ -1225,13 +1353,12 @@ class Score extends Model {
                 'scoreTotal' => $scoreTotal,
             ];
         }
-        $data = [
+        
+        return [
             'examScore'   => $stuScores,
             'subjectName' => $subName,
             'student'     => $student,
         ];
-        
-        return $data;
         
     }
     
