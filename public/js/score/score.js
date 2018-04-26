@@ -12,7 +12,7 @@
                 $.ajax({
                     type: 'POST',
                     dataType: 'json',
-                    data: { _token: token },
+                    data: { _token: score.token() },
                     url: '../scores/' + action + '/' + $('#' + action + '_exam_id').val(),
                     success: function (result) {
                         var $classId = $('#' + action + '_class_id'),
@@ -30,7 +30,7 @@
             list: function (type, id) {
                 $.ajax({
                     type: 'GET',
-                    data: { _token: token },
+                    data: { _token: score.token() },
                     url: '../scores/stat/' + type + '/' + id,
                     success: function (result) {
                         var $typeId = $('#' + type + '_id'),
@@ -305,7 +305,7 @@
                     type: 'POST',
                     cache: false,
                     data: {
-                        _token: token,
+                        _token: score.token(),
                         examId: examId,
                         classId: classId,
                         subjects: subjects,
@@ -348,7 +348,7 @@
                         type: 'POST',
                         cache: false,
                         data: {
-                            _token: token,
+                            _token: score.token(),
                             examId: $examId.val()
                         },
                         success: function (result) {
@@ -387,7 +387,7 @@
                             type: 'POST',
                             cache: false,
                             data: {
-                                _token: token,
+                                _token: score.token(),
                                 data: JSON.stringify(data)
                             },
                             success: function (result) {
@@ -493,7 +493,7 @@
                 $('#analyze').off('click').on('click', function () {
                     var type = $('#type').val(),
                         data = {
-                            _token: token,
+                            _token: score.token(),
                             classId: $('#class_id').val()
                         };
 
