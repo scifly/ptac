@@ -419,10 +419,8 @@
                         $($tree.jstree(true).get_json($tree, {flat: true})).each(function (index, value) {
                             var node = $("#tree").jstree(true).get_node(this.id, false);
                             var $node = $('#' + node.id);
-                            if (node.type !== 'disabled') {
+                            if (node.original.selectable !== 1) {
                                 $node.find('i.jstree-checkbox').removeClass();
-                            } else {
-                                $node.find('i[class=""]').addClass('jstree-icon jstree-checkbox');
                             }
                             // var lvl = node.parents.length;
                             // console.log('node index = ' + index + ' level = ' + lvl + ' id = ' + node.id);
