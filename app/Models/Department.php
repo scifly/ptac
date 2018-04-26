@@ -767,7 +767,7 @@ class Department extends Model {
             return  array_merge($tree, $contacts);
         } else {
             $departmentId = self::topDeptId();
-            $nodes = self::nodes($departmentId);
+            $nodes = self::tree($departmentId);
             $data = [];
             $belongedDeptIds = $user->departments->pluck('id')->toArray();
             for ($i = 0; $i < sizeof($nodes); $i++) {
