@@ -122,14 +122,19 @@ class Score extends Model {
      * @param $id
      * @return bool
      */
-    function modify(array $data, $id) {
+    function modify(array $data, $id = null) {
         
-        $score = self::find($id);
-        if (!$score) {
-            return false;
+        if (isset($id)) {
+            $score = self::find($id);
+            if (!$score) { return false; }
+            return $score->update($data) ? true : false;
+        } else {
+            $ids = Request::input('ids');
+            $action = Request::input('action');
+            return $this->whereIn('id', $ids)->update([
+                'enabled' => $action == 'enable' ? Constant::ENABLED : Constant::DISABLED
+            ]);
         }
-        
-        return $score->update($data) ? true : false;
         
     }
     
@@ -140,14 +145,18 @@ class Score extends Model {
      * @return bool
      * @throws \Exception
      */
-    function remove($id) {
+    function remove($id = null) {
         
-        $score = self::find($id);
-        if (!$score) {
-            return false;
+        if (isset($id)) {
+            $score = self::find($id);
+            if (!$score) {
+                return false;
+            }
+            return $score->delete() ? true : false;
+        } else {
+            $ids = Request::input('ids');
+            return $this->whereIn('id', $ids)->delete();
         }
-        
-        return $score->delete() ? true : false;
         
     }
     

@@ -293,7 +293,7 @@ class Tab extends Model {
         } else {
             $ids = Request::input('ids');
             $action = Request::input('action');
-            $this->whereIn('id', $ids)->update([
+            return $this->whereIn('id', $ids)->update([
                 'enabled' => $action == 'enable' ? Constant::ENABLED : Constant::DISABLED
             ]);
         }

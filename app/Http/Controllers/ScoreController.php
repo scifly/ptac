@@ -105,7 +105,7 @@ class ScoreController extends Controller {
      * @param $id
      * @return JsonResponse
      */
-    public function update(ScoreRequest $request, $id) {
+    public function update(ScoreRequest $request, $id = null) {
         
         return $this->result(
             $this->score->modify(
@@ -122,7 +122,7 @@ class ScoreController extends Controller {
      * @return JsonResponse
      * @throws Exception
      */
-    public function destroy($id) {
+    public function destroy($id = null) {
         
         return $this->result(
             $this->score->remove($id)

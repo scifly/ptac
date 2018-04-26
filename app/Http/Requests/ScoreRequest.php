@@ -1,7 +1,10 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Helpers\Constant;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Validation\Rule;
 
 class ScoreRequest extends FormRequest {
     
@@ -19,6 +22,14 @@ class ScoreRequest extends FormRequest {
      */
     public function rules() {
         
+        if (Request::has('ids')) {
+            return [
+                'ids' => 'required|array',
+                'action' => [
+                    'required', Rule::in(Constant::BATCH_OPERATIONS)
+                ]
+            ];
+        }
         return [
             'student_id' => 'required|integer|unique:scores,student_id,' .
                 $this->input('id') . ',id,' .
