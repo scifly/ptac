@@ -58,7 +58,7 @@ class ScorePolicy {
         }
         switch ($action) {
             case 'index':
-                return $isSuperRole && $this->action($user);
+                return $isSuperRole ? true : $this->action($user);
             case 'create':
                 if (Request::route('examId')) {
                     $isExamAllowed = in_array(Request::route('examId'), $this->examIds());
