@@ -49,6 +49,7 @@ class ScoreStatComposer {
         
         $view->with([
             'subjects' => $subjectList,
+            'classes'  => [],
             'exams'    => $examList,
             'students' => $studentList,
             'uris'     => $this->uris(),
