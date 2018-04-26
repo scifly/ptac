@@ -421,6 +421,8 @@
                             var $node = $('#' + node.id);
                             if (node.original.selectable !== 1) {
                                 $node.find('i.jstree-checkbox').removeClass();
+                            }else {
+                                $node.find('i[class=""]').addClass('jstree-icon jstree-checkbox');
                             }
                             // var lvl = node.parents.length;
                             // console.log('node index = ' + index + ' level = ' + lvl + ' id = ' + node.id);
