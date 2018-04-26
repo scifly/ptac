@@ -39,7 +39,7 @@
 
                         $typeNext.remove();
                         $typeId.remove();
-                        $typePrev(result['html']);
+                        $typePrev.after(result['html']);
 
                         page.initSelect2();
                     }
@@ -489,10 +489,16 @@
                 });
             },
             onExamIdChange: function () {
-                score.list('class', $('#exam_id').val());
+                var $examId = $('#exam_id');
+                $examId.on('change', function () {
+                    score.list('class', $('#exam_id').val());
+                });
             },
             onClassIdChange: function () {
-                score.list('student', $('#class_id').val());
+                var $classId = $('#class_id');
+                $classId.on('change', function () {
+                    score.list('student', $('#class_id').val());
+                });
             },
             onAnalyzeClick: function () {
                 $('#analyze').off('click').on('click', function () {
