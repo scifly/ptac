@@ -776,7 +776,7 @@ class Department extends Model {
                 if (!$nodes[$i]['id']) {
                     $type = '#';
                 }
-                $text = $nodes[$i]['name'];
+                $text = $nodes[$i]['text'];
                 if (in_array($nodes[$i]['id'], $belongedDeptIds)) {
                     $selectable = 1;
                 } else {
