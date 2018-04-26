@@ -394,7 +394,6 @@
                     plugins: ['types', 'search', 'checkbox', 'wholerow'],
                     types: type === 'department' ? tree.options.departmentTypes : tree.options.contactTypes
                 }).on('check_node.jstree', function (node, selected) {
-                    alert('wtf');
                     //选中事件 将选中的节点增|加到右边列表
                     var nodeHtml =
                         '<li id="tree' + selected.node.id + '">' +
