@@ -274,6 +274,7 @@
                 page.initSelect2();
                 page.initMinimalIcheck();
                 page.loadCss('css/score/stat.css');
+                page.initBackBtn('scores');
                 $.getMultiScripts([plugins.echarts_common.js]);
 
                 score.onExamIdChange();
