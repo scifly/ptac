@@ -61,6 +61,7 @@ class ScoreIndexComposer {
                 '#', '姓名', '年级', '班级', '学号', '科目名称', '考试名称',
                 '班级排名', '年级排名', '成绩', '创建于', '更新于', '状态 . 操作',
             ],
+            'batch'          => true,
             'uris'           => $this->uris(),
             'exams'          => $examList,
             'classes'        => $classList,
