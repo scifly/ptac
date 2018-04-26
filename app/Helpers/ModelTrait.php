@@ -206,9 +206,6 @@ trait ModelTrait {
                     $examIds[] = $key;
                 }
             }
-            
-            // $examIds = Exam::whereRaw('set_intersect("' . implode(',', $classIds) . '", class_ids) != ""')
-            //     ->get()->pluck('id')->toArray();
         }
         
         return $examIds;

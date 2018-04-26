@@ -755,7 +755,7 @@ class Department extends Model {
                 /** @var User $u */
                 foreach ($users as $u) {
                     $contacts[] = [
-                        'id' => 'user-' . $u->id,
+                        'id' => 'user-' . $node['id'] . '-' . $u->id,
                         'parent' => $node['id'],
                         'text' => $u->realname,
                         'selectable' => 1,
