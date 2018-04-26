@@ -225,7 +225,7 @@ class Exam extends Model {
      * @param $action
      * @return mixed
      */
-    function classList($id, $action) {
+    function classList($id, $action = null) {
     
         $exam = $this->find($id);
         if (!$exam) {
@@ -238,7 +238,7 @@ class Exam extends Model {
         }
         
         return response()->json([
-            'html' => $this->singleSelectList($classes, $action . '_class_id')
+            'html' => $this->singleSelectList($classes, $action ? $action . '_class_id' : 'class_id')
         ]);
         
     }

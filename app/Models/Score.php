@@ -454,11 +454,11 @@ class Score extends Model {
      */
     private function scores($examId, $classId, $subjectIds, $items) {
         
-        $student = $this->whereExamId($examId)
+        $studentIds = $this->whereExamId($examId)
             ->get()->pluck('student_id');
         
         # 当前班级下的所有参加考试的学生
-        $students = Student::whereClassId($classId)->whereIn('id', $student)->get();
+        $students = Student::whereClassId($classId)->whereIn('id', $studentIds)->get();
         
         # 当前选择班级的所属年级下 的所有班级 id
         $classes = Squad::where('grade_id', Squad::whereId($classId)->first()->grade_id)
@@ -466,12 +466,11 @@ class Score extends Model {
         
         # 统计当前学生年级 的所有参加考试的学生
         $gradeStudents = Student::whereIn('class_id', $classes)
-            ->whereIn('id', $student)
-            ->get();
+            ->whereIn('id', $studentIds)->get();
         $result = [];
         foreach ($students as $s) {
             $user = User::whereIn('id', array_column(json_decode($s->custodians), 'user_id'))->get();
-            $student = $s->user['realname'];
+            $realname = $s->user['realname'];
             $message = [];
             foreach ($subjectIds as $subjectId) {
                 $s = Subject::find($subjectId);
@@ -633,14 +632,13 @@ class Score extends Model {
             }
             $msgTpl = '尊敬的%s家长, %s考试成绩已出: %s。';
             $content = sprintf(
-                $msgTpl,
-                $student,
+                $msgTpl, $realname,
                 Exam::find($examId)->name,
                 implode(',', $message)
             );
             $result[] = [
                 'custodian' => $user->pluck('realname'),
-                'name'      => $student,
+                'name'      => $realname,
                 'mobile'    => Mobile::whereIn('user_id', $user->pluck('id'))->get()->pluck('mobile'),
                 'content'   => $content,
             ];
@@ -668,8 +666,8 @@ class Score extends Model {
             $result = $score->scores(
                 $examId,
                 $classId,
-                explode(',', $subjectIds),
-                explode(',', $items)
+                $subjectIds ? explode(',', $subjectIds) : [],
+                $items ? explode(',', $items) : []
             );
         } else {
             $ids = Exam::whereId($examId)->first();
