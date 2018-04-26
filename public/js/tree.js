@@ -394,6 +394,9 @@
                     plugins: ['types', 'search', 'checkbox', 'wholerow'],
                     types: type === 'department' ? tree.options.departmentTypes : tree.options.contactTypes
                 }).on('check_node.jstree', function (node, selected) {
+                    if (!$($('#' + node.id + '_anchor').children()[0]).hasClass('jstree-checkbox')) {
+                        return false;
+                    }
                     //选中事件 将选中的节点增|加到右边列表
                     var nodeHtml =
                         '<li id="tree' + selected.node.id + '">' +
@@ -421,11 +424,9 @@
                             var node = $("#tree").jstree(true).get_node(this.id, false);
                             var $node = $('#' + node.id);
                             if (node.original.selectable !== 1) {
-                                node.hide_checkboxes();
-                                // $node.find('i.jstree-checkbox').removeClass();
+                                $node.find('i.jstree-checkbox').removeClass();
                             }else {
-                                node.show_checkboxes();
-                                // $node.find('i[class=""]').addClass('jstree-icon jstree-checkbox');
+                                $node.find('i[class=""]').addClass('jstree-icon jstree-checkbox');
                             }
                         });
                     }
