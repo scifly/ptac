@@ -24,10 +24,10 @@
 							{{ Form::checkbox('subjects', -1, false, [
 								'class' => 'minimal'
 							]) }} 总分
-							@foreach ($subjects as $s)
-								{{ Form::checkbox('content', $s['id'], false, [
+							@foreach ($subjects as $key => $value)
+								{{ Form::checkbox('content', $key, false, [
 									'class' => 'minimal'
-								]) }} {{ $s['name'] }}
+								]) }} {{ $value }}
 							@endforeach
 						</div>
 					</div>
