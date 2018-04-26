@@ -10,7 +10,11 @@ var page = {
     info: 'img/info.png',
     backToList: function (table) {
         var $activeTabPane = $('#tab_' + page.getActiveTabId());
-        page.getTabContent($activeTabPane, table + '/index');
+        if (typeof $activeTabPane !== "undefined") {
+            page.getTabContent($activeTabPane, table + '/index');
+        } else {
+            page.getWrapperContent(page.getActiveMenuId(), table + '/index');
+        }
     },
     inform: function (title, text, image) {
         title = title || '提示';
