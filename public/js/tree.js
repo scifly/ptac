@@ -417,7 +417,7 @@
                     $tree.jstree().select_node(selectedDepartmentIds);
                     if (type === 'contact') {
                         $($tree.jstree(true).get_json($tree, {flat: true})).each(function (index, value) {
-                            var node = $("#tree").jstree(true).get_node(this.id, true);
+                            var node = $("#tree").jstree(true).get_node(this.id, false);
                             var $node = $('#' + node.id);
                             if (node.type !== 'disabled') {
                                 $node.find('i.jstree-checkbox').removeClass();
