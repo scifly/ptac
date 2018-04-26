@@ -4,6 +4,7 @@
             <form class='import' method='post' enctype='multipart/form-data' id="form-import">
                 {{ csrf_field() }}
                 <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                     <h4 class="modal-title">批量导出</h4>
                 </div>
                 <div class="modal-body with-border">
