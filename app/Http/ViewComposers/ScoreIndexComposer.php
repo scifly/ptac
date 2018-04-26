@@ -24,7 +24,7 @@ class ScoreIndexComposer {
             ->whereIn('id', array_intersect(explode(',', $exam ? $exam->class_ids : ''), $this->classIds()))
             ->get()->pluck('name', 'id')->toArray();
         $subjectList = Subject::whereEnabled(1)
-            ->whereIn('id', explode(',', $exam ? $exam->subject_ids, ''))
+            ->whereIn('id', explode(',', $exam ? $exam->subject_ids : ''))
             ->get()->pluck('name', 'id')->toArray();
 
         $view->with([
