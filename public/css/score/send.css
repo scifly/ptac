@@ -1,16 +1,12 @@
-#subject-list .icheckbox_minimal-blue,#project-list .icheckbox_minimal-blue{
+#subject-list .icheckbox_minimal-blue,
+#item-list .icheckbox_minimal-blue {
 	margin-top: -3px !important;
 	margin-right: 2px !important;
 }
 
-#item-list .icheckbox_minimal-blue,#project-list .icheckbox_minimal-blue{
+#send-table .icheckbox_minimal-blue {
 	margin-top: -3px !important;
-	margin-right: 2px !important;
-}
-
-#send-table .icheckbox_minimal-blue{
-	margin-top: 5px !important;
-	margin-left: 5px !important;
+	margin-left: 2px !important;
 }
 #send-table{
 	overflow: auto;
@@ -22,7 +18,4 @@
 	left: 0;
 	width: 100%;
 	height: 100%;
-}
-.checkbox {
-	width: 50px;
 }
