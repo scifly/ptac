@@ -421,9 +421,11 @@
                             var node = $("#tree").jstree(true).get_node(this.id, false);
                             var $node = $('#' + node.id);
                             if (node.original.selectable !== 1) {
-                                $node.find('i.jstree-checkbox').removeClass();
+                                node.hide_checkboxes();
+                                // $node.find('i.jstree-checkbox').removeClass();
                             }else {
-                                $node.find('i[class=""]').addClass('jstree-icon jstree-checkbox');
+                                node.show_checkboxes();
+                                // $node.find('i[class=""]').addClass('jstree-icon jstree-checkbox');
                             }
                         });
                     }
