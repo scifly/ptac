@@ -21,7 +21,7 @@ var plugins = {
     },
     jstree: {
         css: 'js/plugins/jstree/dist/themes/default/style.min.css',
-        js: 'js/plugins/jstree/dist/jstree.min.js'
+        js: 'js/plugins/jstree/dist/jstree.js'
     },
     fullcalendar: {
         css: 'js/plugins/fullcalendar/fullcalendar.min.css',
