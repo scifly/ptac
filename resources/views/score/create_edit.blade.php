@@ -17,7 +17,8 @@
             @include('partials.single_select', [
                'label' => '科目名称',
                'id' => 'subject_id',
-               'items' => $subjects
+               'items' => $subjects,
+               'icon' => 'fa fa-book'
             ])
             @include('partials.single_select', [
                 'label' => '学号',
