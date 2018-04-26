@@ -3,8 +3,6 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use App\Models\Exam;
-use App\Models\School;
-use App\Models\ScoreTotal;
 use App\Models\Squad;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;
