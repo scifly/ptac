@@ -192,7 +192,7 @@ class ComposerServiceProvider extends ServiceProvider {
         # 分数 - Score
         View::composer('score.index', $ns . 'ScoreIndexComposer');
         View::composer('score.create_edit', $ns . 'ScoreComposer');
-        View::composer('score.analysis', $ns . 'ScoreAnalysisComposer');
+        View::composer('score.stat', $ns . 'ScoreStatComposer');
     
         # 分数统计项 - ScoreRange
         View::composer('score_range.index', $ns . 'ScoreRangeIndexComposer');
