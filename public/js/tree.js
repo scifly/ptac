@@ -392,7 +392,7 @@
                     },
                     plugins: ['types', 'search', 'checkbox', 'wholerow'],
                     types: type === 'department' ? tree.options.departmentTypes : tree.options.contactTypes
-                }).on('select_node.jstree', function (node, selected) {
+                }).on('check_node.jstree', function (node, selected) {
                     //选中事件 将选中的节点增|加到右边列表
                     var nodeHtml =
                         '<li id="tree' + selected.node.id + '">' +
@@ -406,7 +406,7 @@
                             '</div>' +
                         '</li>';
                     $('.todo-list').append(nodeHtml);
-                }).on('deselect_node.jstree', function (node, selected) {
+                }).on('uncheck_node.jstree', function (node, selected) {
                     // 取消选中事件 将列表中的 节点 移除
                     $('#tree' + selected.node.id).remove();
                 }).on('loaded.jstree', function () {
@@ -424,9 +424,6 @@
                             }else {
                                 $node.find('i[class=""]').addClass('jstree-icon jstree-checkbox');
                             }
-                            // var lvl = node.parents.length;
-                            // console.log('node index = ' + index + ' level = ' + lvl + ' id = ' + node.id);
-
                         });
                     }
                 })
