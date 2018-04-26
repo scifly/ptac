@@ -71,7 +71,7 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<a id="preview" href="javascript:" class="btn btn-sm btn-success" data-dismiss="modal">预览</a>
+				<a id="preview" href="javascript:" class="btn btn-sm btn-success">预览</a>
 				<a id="send-scores" href="#" class="btn btn-sm btn-white" data-dismiss="modal">发送</a>
 			</div>
 		</div>
