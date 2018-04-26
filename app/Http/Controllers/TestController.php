@@ -44,6 +44,7 @@ class TestController extends Controller {
     
     public function index(Request $request) {
 
+        dd(explode(',', []));
         dd(array_values(self::EXPORT_RANGES));
         $names = ['运营', '企业', '学校'];
         $arrs = array_map(function ($name) {
