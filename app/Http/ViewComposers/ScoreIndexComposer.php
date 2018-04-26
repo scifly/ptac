@@ -21,10 +21,10 @@ class ScoreIndexComposer {
         $exam = Exam::find(key($examList));
         # 指定考试对应的班级
         $classList = Squad::whereEnabled(1)
-            ->whereIn('id', array_intersect(explode(',', $exam->class_ids), $this->classIds()))
+            ->whereIn('id', array_intersect(explode(',', $exam ? $exam->class_ids : ''), $this->classIds()))
             ->get()->pluck('name', 'id')->toArray();
         $subjectList = Subject::whereEnabled(1)
-            ->whereIn('id', explode(',', $exam->subject_ids))
+            ->whereIn('id', explode(',', $exam ? $exam->subject_ids, ''))
             ->get()->pluck('name', 'id')->toArray();
 
         $view->with([
