@@ -288,7 +288,7 @@
             },
             onPreviewClick: function () {
                 var examId = $('#send_exam_id').val(),
-                    classId = $classId.val(),
+                    classId = $('#send_class_id').val(),
                     subjects = [],
                     items = [];
 
@@ -494,7 +494,7 @@
                     var type = $('#type').val(),
                         data = {
                             _token: token,
-                            classId: $classId.val()
+                            classId: $('#class_id').val()
                         };
 
                     $.ajax({
