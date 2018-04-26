@@ -7,7 +7,8 @@
 			@include('partials.enabled', [
 				'id' => 'type',
 				'label' => '分析类型',
-				'options' => ['按考次', '按学生']
+				'options' => ['按考次', '按学生'],
+				'value' => null
 			])
 			@include('partials.single_select', [
 				'id' => 'exam_id',
