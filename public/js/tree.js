@@ -409,12 +409,12 @@
                     $('#tree' + selected.node.id).remove();
                 }).on('loaded.jstree', function () {
                     var $tree = $('#tree');
-                    // 展开所有节点
-                    $tree.jstree('open_all');
-                    // 初始化 根据后台数据节点数组 选中
-                    $tree.jstree().select_node(selectedDepartmentIds);
+                    // // 展开所有节点
+                    // $tree.jstree('open_all');
+                    // // 初始化 根据后台数据节点数组 选中
+                    // $tree.jstree().select_node(selectedDepartmentIds);
                     if (type === 'contact') {
-                        $tree.jstree.get_json($tree, {flat: true}).each(function (index, value) {
+                        $($tree.jstree().get_json($tree, {flat: true})).each(function (index, value) {
                             var node = $("#tree").jstree.get_node(this.id, true);
                             var $node = $('#' + node.id);
                             if (node.selectable !== 1) {
