@@ -299,35 +299,37 @@
                 $('#item-list .checked').each(function(){
                     items.push($(this).find('.minimal').val());
                 });
-                $('.overlay').show();
-                $.ajax({
-                    url: page.siteRoot() + "scores/send",
-                    type: 'POST',
-                    cache: false,
-                    data: {
-                        _token: score.token(),
-                        examId: examId,
-                        classId: classId,
-                        subjects: subjects,
-                        items: items
-                    },
-                    success: function (result) {
-                        var html = '';
-                        $('.overlay').hide();
-                        for(var i = 0; i < result.length; i++) {
-                            var data = result[i];
-                            html +=
-                                '<tr>'+
-                                '<td><label><input type="checkbox" class="minimal"></label></td>'+
-                                '<td>' + data['custodian'] + '</td>' +
-                                '<td>' + data.name + '</td>' +
-                                '<td class="mobile">' + data.mobile + '</td>'+
-                                '<td class="content">' + data.content + '</td>'+
-                                '</tr>';
+                $('#preview').on('click', function () {
+                    $('.overlay').show();
+                    $.ajax({
+                        url: page.siteRoot() + "scores/send",
+                        type: 'POST',
+                        cache: false,
+                        data: {
+                            _token: score.token(),
+                            examId: examId,
+                            classId: classId,
+                            subjects: subjects,
+                            items: items
+                        },
+                        success: function (result) {
+                            var html = '';
+                            $('.overlay').hide();
+                            for(var i = 0; i < result.length; i++) {
+                                var data = result[i];
+                                html +=
+                                    '<tr>'+
+                                    '<td><label><input type="checkbox" class="minimal"></label></td>'+
+                                    '<td>' + data['custodian'] + '</td>' +
+                                    '<td>' + data.name + '</td>' +
+                                    '<td class="mobile">' + data.mobile + '</td>'+
+                                    '<td class="content">' + data.content + '</td>'+
+                                    '</tr>';
+                            }
+                            $('#send-table tbody').html(html);
+                            page.initMinimalIcheck();
                         }
-                        $('#send-table tbody').html(html);
-                        page.initMinimalIcheck();
-                    }
+                    });
                 });
             },
             onSelectAllChecked: function () {
@@ -441,21 +443,23 @@
                 var examId = $('#import_exam_id').val(),
                     classId = $('#import_class_id').val();
 
-                $.ajax({
-                    url: "../scores/import",
-                    type: 'POST',
-                    data: {
-                        file: $('#fileupload')[0].files[0],
-                        _token: score.token(),
-                        examId: examId,
-                        classId: classId
-                    },
-                    success: function (result) {
-                        page.inform(result.title, result.message, page.success);
-                    },
-                    error: function (e) {
-                        page.errorHandler(e);
-                    }
+                $('#import-scores').on('click', function () {
+                    $.ajax({
+                        url: "../scores/import",
+                        type: 'POST',
+                        data: {
+                            file: $('#fileupload')[0].files[0],
+                            _token: score.token(),
+                            examId: examId,
+                            classId: classId
+                        },
+                        success: function (result) {
+                            page.inform(result.title, result.message, page.success);
+                        },
+                        error: function (e) {
+                            page.errorHandler(e);
+                        }
+                    });
                 });
             },
             /** 批量导出 */
