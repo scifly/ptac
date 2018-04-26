@@ -31,12 +31,12 @@ class ScoreComposer {
         
         # 指定考试对应的班级
         $classIds = Squad::whereEnabled(1)
-            ->whereIn('id', explode(',', $exam->class_ids))
+            ->whereIn('id', explode(',', $exam ? $exam->class_ids : ''))
             ->get()->pluck('id')->toArray();
         
         # 指定考试对应的科目列表
         $subjectList = Subject::whereEnabled(1)
-            ->whereIn('id', explode(',', $exam->subject_ids))
+            ->whereIn('id', explode(',', $exam ? $exam->subject_ids : ''))
             ->pluck('name', 'id')->toArray();
         
         # 指定考试对应的且对当前用户可见的学生列表

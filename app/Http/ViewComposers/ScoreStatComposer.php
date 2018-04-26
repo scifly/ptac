@@ -22,12 +22,8 @@ class ScoreStatComposer {
         $examList = Exam::whereEnabled(1)
             ->whereIn('id', $this->examIds())
             ->get()->pluck('name', 'id');
-        if (Request::route('id')) {
-            $exam = Score::find(Request::route('id'))->exam;
-        } else {
-            reset($examList);
-            $exam = Exam::find(key($examList));
-        }
+        reset($examList);
+        $exam = Exam::find(key($examList));
         
         # 指定考试对应的班级
         $classIds = Squad::whereEnabled(1)

@@ -5,8 +5,6 @@ page.index('students', [{
 }]);
 
 /** 初始化学籍首页功能 */
-$.getMultiScripts(['js/contact.js']).done(
-    function () {
-        $.contact().index('students');
-    }
-);
+$.getMultiScripts(['js/contact.js']).done(function () {
+    $.contact().index('students');
+});
