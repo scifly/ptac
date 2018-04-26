@@ -14,13 +14,14 @@
 					@include('partials.single_select', [
 						'label' => '考试范围',
 						'id' => 'send_class_id',
-						'items' => $classes
+						'items' => $classes,
+						'icon' => 'fa fa-users'
 					])
 					<div class="form-group" id="subject-list">
 						{{ Form::label('subjects', '发布内容', [
 							'class' => 'control-label col-sm-3'
 						]) }}
-						<div class="col-sm-6">
+						<div class="col-sm-9">
 							{{ Form::checkbox('subjects', -1, false, [
 								'class' => 'minimal'
 							]) }} 总分
@@ -35,7 +36,7 @@
 						{{ Form::label('items', '发布项目', [
 							'class' => 'control-label col-sm-3'
 						]) }}
-						<div class="col-sm-6">
+						<div class="col-sm-9">
 							{{ Form::checkbox('items', 'score', false, ['class' => 'minimal']) }} 分数
 							{{ Form::checkbox('items', 'grade_rank', false, ['class' => 'minimal']) }} 年排名
 							{{ Form::checkbox('items', 'class_rank', false, ['class' => 'minimal']) }} 班排名
