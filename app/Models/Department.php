@@ -581,7 +581,7 @@ class Department extends Model {
             $departmentId = School::find($this->schoolId())->department_id;
             $visibleNodes = $this->tree($departmentId);
             for ($i = 0; $i < sizeof($visibleNodes); $i++) {
-                $nodes[$i]['selectable'] = 1;
+                $visibleNodes[$i]['selectable'] = 1;
             }
             foreach ($visibleNodes as $node) {
                 # 读取当前部门下的所有用户
