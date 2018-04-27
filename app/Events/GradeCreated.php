@@ -31,6 +31,9 @@ class GradeCreated {
      * @return Channel|array
      */
     public function broadcastOn() {
+        
         return new PrivateChannel('channel-name');
+        
     }
+    
 }

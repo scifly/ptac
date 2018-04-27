@@ -1,10 +1,23 @@
 <?php
 namespace App\Listeners;
 
+use App\Events\ClassCreated;
+use App\Events\ClassDeleted;
+use App\Events\ClassUpdated;
+use App\Events\CompanyCreated;
+use App\Events\CompanyUpdated;
+use App\Events\CorpCreated;
+use App\Events\CorpDeleted;
+use App\Events\CorpUpdated;
+use App\Events\GradeCreated;
+use App\Events\GradeDeleted;
+use App\Events\GradeUpdated;
+use App\Events\MenuMoved;
+use App\Events\SchoolCreated;
+use App\Events\SchoolUpdated;
 use App\Jobs\ManageWechatDepartment;
 use App\Models\Department;
 use App\Models\DepartmentType;
-use App\Models\Menu;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Throwable;
@@ -27,7 +40,7 @@ class DepartmentEventSubscriber {
      * @param $event
      * @return bool
      */
-    public function onCompanyCreated($event) {
+    public function onCompanyCreated(CompanyCreated $event) {
         
         return $this->createDepartment($event, '运营', 'company');
         
@@ -46,9 +59,9 @@ class DepartmentEventSubscriber {
         
         $$model = $event->{$model};
         $data = [
-            'parent_id'          => isset($belongsTo) ?
-                $$model->{$belongsTo}->department_id :
-                $this->department->where('parent_id', null)->first()->id,
+            'parent_id'          => isset($belongsTo)
+                ? $$model->{$belongsTo}->department_id
+                : $this->department->where('parent_id', null)->first()->id,
             'name'               => $$model->name,
             'remark'             => $$model->remark,
             'department_type_id' => $this->typeId($type),
@@ -82,7 +95,7 @@ class DepartmentEventSubscriber {
      * @param $event
      * @return bool
      */
-    public function onCompanyUpdated($event) {
+    public function onCompanyUpdated(CompanyUpdated $event) {
         
         return $this->updateDepartment($event, '运营', 'company');
         
@@ -123,7 +136,7 @@ class DepartmentEventSubscriber {
      * @return bool|null
      * @throws Throwable
      */
-    public function onCompanyDeleted($event) {
+    public function onCompanyDeleted(CompanyCreated $event) {
         
         return $this->deleteDepartment($event, 'company');
         
@@ -155,7 +168,7 @@ class DepartmentEventSubscriber {
      * @param $event
      * @return bool
      */
-    public function onCorpCreated($event) {
+    public function onCorpCreated(CorpCreated $event) {
         
         return $this->createDepartment($event, '企业', 'corp', 'company');
         
@@ -167,7 +180,7 @@ class DepartmentEventSubscriber {
      * @param $event
      * @return bool
      */
-    public function onCorpUpdated($event) {
+    public function onCorpUpdated(CorpUpdated $event) {
         
         return $this->updateDepartment($event, '企业', 'corp');
         
@@ -180,7 +193,7 @@ class DepartmentEventSubscriber {
      * @return bool|null
      * @throws Throwable
      */
-    public function onCorpDeleted($event) {
+    public function onCorpDeleted(CorpDeleted $event) {
         
         return $this->deleteDepartment($event, 'corp');
         
@@ -192,7 +205,7 @@ class DepartmentEventSubscriber {
      * @param $event
      * @return bool
      */
-    public function onSchoolCreated($event) {
+    public function onSchoolCreated(SchoolCreated $event) {
         
         return $this->createDepartment($event, '学校', 'school', 'corp');
         
@@ -204,7 +217,7 @@ class DepartmentEventSubscriber {
      * @param $event
      * @return bool
      */
-    public function onSchoolUpdated($event) {
+    public function onSchoolUpdated(SchoolUpdated $event) {
         
         return $this->updateDepartment($event, '学校', 'school');
         
@@ -217,7 +230,7 @@ class DepartmentEventSubscriber {
      * @return bool|null
      * @throws Throwable
      */
-    public function onSchoolDeleted($event) {
+    public function onSchoolDeleted(SchoolCreated $event) {
         
         return $this->deleteDepartment($event, 'school');
         
@@ -229,9 +242,11 @@ class DepartmentEventSubscriber {
      * @param $event
      * @return bool
      */
-    public function onGradeCreated($event) {
+    public function onGradeCreated(GradeCreated $event) {
         
-        return $this->createDepartment($event, '年级', 'grade', 'school');
+        return !$event->grade->department_id
+            ? $this->createDepartment($event, '年级', 'grade', 'school')
+            : false;
         
     }
     
@@ -241,7 +256,7 @@ class DepartmentEventSubscriber {
      * @param $event
      * @return bool
      */
-    public function onGradeUpdated($event) {
+    public function onGradeUpdated(GradeUpdated $event) {
         
         return $this->updateDepartment($event, '年级', 'grade');
         
@@ -254,7 +269,7 @@ class DepartmentEventSubscriber {
      * @return bool|null
      * @throws Throwable
      */
-    public function onGradeDeleted($event) {
+    public function onGradeDeleted(GradeDeleted $event) {
         
         return $this->deleteDepartment($event, 'grade');
         
@@ -266,7 +281,7 @@ class DepartmentEventSubscriber {
      * @param $event
      * @return bool
      */
-    public function onClassCreated($event) {
+    public function onClassCreated(ClassCreated $event) {
         
         return $this->createDepartment($event, '班级', 'class', 'grade');
         
@@ -278,7 +293,7 @@ class DepartmentEventSubscriber {
      * @param $event
      * @return bool
      */
-    public function onClassUpdated($event) {
+    public function onClassUpdated(ClassUpdated $event) {
         
         return $this->updateDepartment($event, '班级', 'class');
         
@@ -291,7 +306,7 @@ class DepartmentEventSubscriber {
      * @return bool|null
      * @throws Throwable
      */
-    public function onClassDeleted($event) {
+    public function onClassDeleted(ClassDeleted $event) {
         
         return $this->deleteDepartment($event, 'class');
         
@@ -301,9 +316,8 @@ class DepartmentEventSubscriber {
      * @param $event
      * @return bool|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null|static|static[]
      */
-    public function onMenuMoved($event) {
+    public function onMenuMoved(MenuMoved $event) {
         
-        /** @var Menu $menu */
         $menu = $event->menu;
         $menuType = $menu->menuType->name;
         if (in_array($menuType, ['企业', '学校'])) {

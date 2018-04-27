@@ -239,29 +239,6 @@ class User extends Authenticatable {
     }
     
     /**
-     * 返回用户所属最顶级部门的ID
-     *
-     * @return mixed
-     */
-    function topDeptId() {
-        
-        $departmentIds = Auth::user()->departments
-            ->pluck('id')->toArray();
-        $levels = [];
-        foreach ($departmentIds as $id) {
-            $level = 0;
-            $department = new Department();
-            $levels[$id] = $department->level($id, $level);
-            unset($department);
-        }
-        asort($levels);
-        reset($levels);
-        
-        return key($levels) ?? 1;
-        
-    }
-    
-    /**
      * 根据部门id获取部门所属学校的部门id
      *
      * @param $deptId
