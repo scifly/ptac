@@ -573,9 +573,10 @@ class Department extends Model {
     /**
      * 获取联系人树
      *
+     * @param bool $contact - 是否包含部门中的联系人
      * @return array|\Illuminate\Http\JsonResponse
      */
-    function contacts() {
+    function contacts($contact = true) {
         
         $user = Auth::user();
         $contacts = [];
@@ -607,18 +608,20 @@ class Department extends Model {
             }
         }
         # 获取可见部门下的所有联系人
-        foreach ($visibleNodes as $node) {
-            if ($node['selectable']) {
-                # 读取当前部门下的所有用户
-                $users = $this->find($node['id'])->users;
-                foreach ($users as $u) {
-                    $contacts[] = [
-                        'id' => 'user-' . $node['id'] . '-' . $u->id,
-                        'parent' => $node['id'],
-                        'text' => $u->realname,
-                        'selectable' => 1,
-                        'type' => 'user',
-                    ];
+        if ($contact) {
+            foreach ($visibleNodes as $node) {
+                if ($node['selectable']) {
+                    # 读取当前部门下的所有用户
+                    $users = $this->find($node['id'])->users;
+                    foreach ($users as $u) {
+                        $contacts[] = [
+                            'id' => 'user-' . $node['id'] . '-' . $u->id,
+                            'parent' => $node['id'],
+                            'text' => $u->realname,
+                            'selectable' => 1,
+                            'type' => 'user',
+                        ];
+                    }
                 }
             }
         }

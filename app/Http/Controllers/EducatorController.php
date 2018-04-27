@@ -59,9 +59,7 @@ class EducatorController extends Controller {
         
         if (Request::method() === 'POST') {
             return response()->json(
-                $this->department->tree(
-                    $this->school->find($this->school->schoolId())->department_id
-                )
+                $this->department->contacts(false)
             );
         }
         
@@ -110,7 +108,7 @@ class EducatorController extends Controller {
         
         if (Request::method() === 'POST') {
             return response()->json(
-                $this->department->tree()
+                $this->department->contacts(false)
             );
         }
         
