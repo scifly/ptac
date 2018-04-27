@@ -57,11 +57,9 @@ class EducatorController extends Controller {
      */
     public function create() {
         
-        if (Request::method() === 'POST') {
-            return $this->department->contacts(false);
-        }
-        
-        return $this->output();
+        return Request::method() === 'POST'
+            ? $this->department->contacts(false)
+            : $this->output();
         
     }
     
@@ -104,13 +102,11 @@ class EducatorController extends Controller {
      */
     public function edit($id) {
         
-        if (Request::method() === 'POST') {
-            return $this->department->contacts(false);
-        }
-        
-        return $this->output([
-            'educator' => $this->educator->find($id),
-        ]);
+        return Request::method() === 'POST'
+            ? $this->department->contacts(false)
+            : $this->output([
+                'educator' => $this->educator->find($id)
+            ]);
         
     }
     

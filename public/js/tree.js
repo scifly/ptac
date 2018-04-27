@@ -420,7 +420,7 @@
                     // 展开所有节点
                     $tree.jstree('open_all');
                     // 初始化 根据后台数据节点数组 选中
-                    $tree.jstree().select_node(selectedDepartmentIds);
+                    $tree.jstree().check_node(selectedDepartmentIds);
                     $($tree.jstree(true).get_json($tree, {flat: true})).each(function () {
                         var node = $("#tree").jstree(true).get_node(this.id, false);
                         var $node = $('#' + node.id);
