@@ -58,9 +58,7 @@ class EducatorController extends Controller {
     public function create() {
         
         if (Request::method() === 'POST') {
-            return response()->json(
-                $this->department->contacts(false)
-            );
+            return $this->department->contacts(false);
         }
         
         return $this->output();
@@ -107,9 +105,7 @@ class EducatorController extends Controller {
     public function edit($id) {
         
         if (Request::method() === 'POST') {
-            return response()->json(
-                $this->department->contacts(false)
-            );
+            return $this->department->contacts(false);
         }
         
         return $this->output([
