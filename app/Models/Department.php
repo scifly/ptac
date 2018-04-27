@@ -619,7 +619,10 @@ class Department extends Model {
                             break;
                         }
                     }
+                } else {
+                    $visibleNodes[] = $node;
                 }
+                
             }
             $contacts = [];
             foreach ($visibleNodes as $node) {
