@@ -42,10 +42,29 @@ class TestController extends Controller {
         'all'   => 2
     ];
     
+    protected $department;
+    
+    function __construct(Department $department) { $this->department = $department; }
+    
+    private function parentIds($id) {
+    
+        static $ids = [];
+        
+        $d = $this->department->find($id);
+        $p = $d->parent;
+        while ($p->departmentType->name != '学校') {
+            $ids[] = $p->id;
+            return $this->parentIds($p->id);
+        }
+        $ids[] = $p->id;
+        
+        return $ids;
+    
+    }
+    
     public function index(Request $request) {
 
-        dd(explode(',', ''));
-        dd(array_values(self::EXPORT_RANGES));
+        dd($this->parentIds(6));
         $names = ['运营', '企业', '学校'];
         $arrs = array_map(function ($name) {
             return [$name => Group::whereName($name)->first()->id];
