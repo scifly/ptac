@@ -386,7 +386,7 @@ class Department extends Model {
         } else {
             $rootId = $isSuperRole
                 ? $this->rootDepartmentId(true)
-                : $user->topDeptId();
+                : $this->topDeptId();
             $departments = $this->nodes($rootId);
         }
         $nodes = [];
