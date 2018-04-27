@@ -411,7 +411,7 @@
                         '</li>';
                     $('.todo-list').append(nodeHtml);
                 }).on('uncheck_node.jstree', function (node, selected) {
-                    if (!!$('#' + selected.node.id + '_anchor :nth-child(1)').hasClass('jstree-checkbox')) {
+                    if (!$('#' + selected.node.id + '_anchor :nth-child(1)').hasClass('jstree-checkbox')) {
                         return false;
                     }
                     $('#tree' + selected.node.id).remove();
