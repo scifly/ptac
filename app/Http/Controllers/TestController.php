@@ -48,17 +48,7 @@ class TestController extends Controller {
     
     private function parentIds($id) {
     
-        static $ids = [];
-        
-        $d = $this->department->find($id);
-        $p = $d->parent;
-        while ($p->departmentType->name != '学校') {
-            $ids[] = $p->id;
-            return $this->parentIds($p->id);
-        }
-        $ids[] = $p->id;
-        
-        return $ids;
+    
     
     }
     

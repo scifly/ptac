@@ -579,11 +579,11 @@ class Department extends Model {
         $contacts = [];
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {
             $departmentId = School::find($this->schoolId())->department_id;
-            $nodes = $this->tree($departmentId);
-            for ($i = 0; $i < sizeof($nodes); $i++) {
+            $visibleNodes = $this->tree($departmentId);
+            for ($i = 0; $i < sizeof($visibleNodes); $i++) {
                 $nodes[$i]['selectable'] = 1;
             }
-            foreach ($nodes as $node) {
+            foreach ($visibleNodes as $node) {
                 # 读取当前部门下的所有用户
                 $users = $this->find($node['id'])->users;
                 foreach ($users as $u) {
@@ -598,12 +598,31 @@ class Department extends Model {
             }
         } else {
             $nodes = $this->tree($this->topDeptId());
+            # 对当前用户可见的所有部门id
+            $allowedDepartmentIds = $this->departmentIds($user->id);
+            # 对当前用户可见部门的所有上级部门id
+            $allowedParentIds = [];
+            foreach ($allowedDepartmentIds as $id) {
+                $allowedParentIds[$id] = $this->parentIds($id);
+            }
             for ($i = 0; $i < sizeof($nodes); $i++) {
                 $departmentId = $nodes[$i]['id'];
-                $nodes[$i]['selectable'] = in_array($departmentId, $this->departmentIds($user->id)) ? 1 : 0;
+                $nodes[$i]['selectable'] = in_array($departmentId, $allowedDepartmentIds) ? 1 : 0;
+            }
+            # 对当前用户可见的所有联系人树节点
+            $visibleNodes = [];
+            foreach ($nodes as $node) {
+                if (!$node['selectable']) {
+                    foreach ($allowedParentIds as $departmentId => $parentIds) {
+                        if (in_array($node['id'], $parentIds)) {
+                            $visibleNodes[] = $node;
+                            break;
+                        }
+                    }
+                }
             }
             $contacts = [];
-            foreach ($nodes as $node) {
+            foreach ($visibleNodes as $node) {
                 if ($node['selectable']) {
                     # 读取当前部门下的所有用户
                     $users = $this->find($node['id'])->users;
@@ -621,7 +640,7 @@ class Department extends Model {
         }
         
         return response()->json(
-            array_merge($nodes, $contacts)
+            array_merge($visibleNodes, $contacts)
         );
     
     }
@@ -747,9 +766,25 @@ class Department extends Model {
 
     }
     
+    /**
+     * 返回指定部门的所有上级（校级及以下）部门id
+     *
+     * @param $id
+     * @return array
+     */
     private function parentIds($id) {
     
+        static $ids = [];
     
+        $d = $this->find($id);
+        $p = $d->parent;
+        while ($p->departmentType->name != '学校') {
+            $ids[] = $p->id;
+            return $this->parentIds($p->id);
+        }
+        $ids[] = $p->id;
+    
+        return $ids;
     
     }
 
