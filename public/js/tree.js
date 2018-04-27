@@ -394,7 +394,7 @@
                     plugins: ['types', 'search', 'checkbox', 'wholerow'],
                     types: type === 'department' ? tree.options.departmentTypes : tree.options.contactTypes
                 }).on('check_node.jstree', function (node, selected) {
-                    if (!$($('#' + selected.node.id + '_anchor').children()[0]).hasClass('jstree-checkbox')) {
+                    if (!$('#' + selected.node.id + '_anchor :nth-child(1)').hasClass('jstree-checkbox')) {
                         return false;
                     }
                     //选中事件 将选中的节点增|加到右边列表
@@ -411,7 +411,9 @@
                         '</li>';
                     $('.todo-list').append(nodeHtml);
                 }).on('uncheck_node.jstree', function (node, selected) {
-                    // 取消选中事件 将列表中的 节点 移除
+                    if (!!$('#' + selected.node.id + '_anchor :nth-child(1)').hasClass('jstree-checkbox')) {
+                        return false;
+                    }
                     $('#tree' + selected.node.id).remove();
                 }).on('loaded.jstree', function () {
                     var $tree = $('#tree');
@@ -420,7 +422,7 @@
                     // 初始化 根据后台数据节点数组 选中
                     $tree.jstree().select_node(selectedDepartmentIds);
                     if (type === 'contact') {
-                        $($tree.jstree(true).get_json($tree, {flat: true})).each(function (index, value) {
+                        $($tree.jstree(true).get_json($tree, {flat: true})).each(function () {
                             var node = $("#tree").jstree(true).get_node(this.id, false);
                             var $node = $('#' + node.id);
                             if (node.original.selectable !== 1) {
