@@ -573,7 +573,7 @@ class Department extends Model {
     /**
      * 获取联系人树
      *
-     * @param bool $contact - 是否包含部门中的联系人
+     * @param bool $contact - 联系人树是否包含部门中的联系人
      * @return array|\Illuminate\Http\JsonResponse
      */
     function contacts($contact = true) {
