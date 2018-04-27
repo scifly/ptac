@@ -156,7 +156,7 @@ class Department extends Model {
         
         $leaves = [];
         $leafPath = [];
-        $departments = self::nodes();
+        $departments = $this->nodes();
         /** @var Department $department */
         foreach ($departments as $department) {
             if (empty($department->children()->count())) {
@@ -180,11 +180,11 @@ class Department extends Model {
 
         $nodes = new Collection();
         if (!isset($rootId)) {
-            $nodes = self::all();
+            $nodes = $this->all();
         } else {
-            $root = self::find($rootId);
+            $root = $this->find($rootId);
             $nodes->push($root);
-            self::getChildren($rootId, $nodes);
+            $this->getChildren($rootId, $nodes);
         }
 
         return $nodes;
@@ -221,7 +221,7 @@ class Department extends Model {
      */
     function departments() {
 
-        $departments = self::nodes();
+        $departments = $this->nodes();
         $departmentList = [];
         foreach ($departments as $department) {
             $departmentList[$department->id] = $department->name;
@@ -379,29 +379,31 @@ class Department extends Model {
      */
     function tree($rootId = null) {
 
-        $departments = $this->nodes();
+        $user = Auth::user();
+        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
         if (isset($rootId)) {
             $departments = $this->nodes($rootId);
         } else {
-            $user = Auth::user();
-            if ($user->group->name != '运营') {
-                # todo: this is the trickest one if a user belongs to departments that
-                # todo: have no direct relationships
-                $departments = $this->nodes($user->topDeptId());
-            }
+            $rootId = $isSuperRole
+                ? $this->rootDepartmentId(true)
+                : $user->topDeptId();
+            $departments = $this->nodes($rootId);
         }
         $nodes = [];
         for ($i = 0; $i < sizeof($departments); $i++) {
+            $id = $departments[$i]['id'];
             $parentId = $i == 0 ? '#' : $departments[$i]['parent_id'];
-            $departmentType = DepartmentType::find($departments[$i]['department_type_id'])->name;
+            $departmentTypeId = $departments[$i]['department_type_id'];
+            $departmentType = DepartmentType::find($departmentTypeId)->name;
             $name = $departments[$i]['name'];
             $enabled = $departments[$i]['enabled'];
             $color = Constant::NODE_TYPES[$departmentType]['color'];
             $nodes[] = [
-                'id' => $departments[$i]['id'],
+                'id' => $id,
                 'parent' => $parentId,
                 'text' => sprintf(Snippet::NODE_TEXT, $enabled ? $color : 'text-gray', $name),
                 'type' => Constant::DEPARTMENT_TYPES[$departmentType],
+                'selectable' => $isSuperRole ? 1 : (in_array($id, $this->departmentIds($user->id)) ? 1 : 0)
             ];
         }
 
@@ -580,36 +582,16 @@ class Department extends Model {
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {
             $departmentId = School::find($this->schoolId())->department_id;
             $visibleNodes = $this->tree($departmentId);
-            for ($i = 0; $i < sizeof($visibleNodes); $i++) {
-                $visibleNodes[$i]['selectable'] = 1;
-            }
-            foreach ($visibleNodes as $node) {
-                # 读取当前部门下的所有用户
-                $users = $this->find($node['id'])->users;
-                foreach ($users as $u) {
-                    $contacts[] = [
-                        'id' => 'user-' . $node['id'] . '-' . $u->id,
-                        'parent' => $node['id'],
-                        'text' => $u->realname,
-                        'selectable' => 1,
-                        'type' => 'user',
-                    ];
-                }
-            }
         } else {
-            $nodes = $this->tree($this->topDeptId());
-            # 对当前用户可见的所有部门id
+            $nodes = $this->tree();
+            # 当前用户可访问的所有部门id
             $allowedDepartmentIds = $this->departmentIds($user->id);
-            # 对当前用户可见部门的所有上级部门id
+            # 当前用户可访问部门的所有上级部门id
             $allowedParentIds = [];
             foreach ($allowedDepartmentIds as $id) {
                 $allowedParentIds[$id] = $this->parentIds($id);
             }
-            for ($i = 0; $i < sizeof($nodes); $i++) {
-                $departmentId = $nodes[$i]['id'];
-                $nodes[$i]['selectable'] = in_array($departmentId, $allowedDepartmentIds) ? 1 : 0;
-            }
-            # 对当前用户可见的所有联系人树节点
+            # 对当前用户可见的所有部门节点
             $visibleNodes = [];
             foreach ($nodes as $node) {
                 if (!$node['selectable']) {
@@ -622,26 +604,25 @@ class Department extends Model {
                 } else {
                     $visibleNodes[] = $node;
                 }
-                
             }
-            $contacts = [];
-            foreach ($visibleNodes as $node) {
-                if ($node['selectable']) {
-                    # 读取当前部门下的所有用户
-                    $users = $this->find($node['id'])->users;
-                    foreach ($users as $u) {
-                        $contacts[] = [
-                            'id' => 'user-' . $node['id'] . '-' . $u->id,
-                            'parent' => $node['id'],
-                            'text' => $u->realname,
-                            'selectable' => 1,
-                            'type' => 'user',
-                        ];
-                    }
+        }
+        # 获取可见部门下的所有联系人
+        foreach ($visibleNodes as $node) {
+            if ($node['selectable']) {
+                # 读取当前部门下的所有用户
+                $users = $this->find($node['id'])->users;
+                foreach ($users as $u) {
+                    $contacts[] = [
+                        'id' => 'user-' . $node['id'] . '-' . $u->id,
+                        'parent' => $node['id'],
+                        'text' => $u->realname,
+                        'selectable' => 1,
+                        'type' => 'user',
+                    ];
                 }
             }
         }
-        
+    
         return response()->json(
             array_merge($visibleNodes, $contacts)
         );

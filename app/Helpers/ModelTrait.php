@@ -313,7 +313,7 @@ trait ModelTrait {
     }
     
     /**
-     * 返回对指定用户可见的所有部门Id
+     * 返回指定用户可访问的指定学校的所有部门Id
      *
      * @param $userId
      * @param null $schoolId
@@ -328,7 +328,10 @@ trait ModelTrait {
             $departmentIds[] = $department->id;
             
             return array_unique(
-                array_merge($departmentIds, $department->subDepartmentIds($department->id))
+                array_merge(
+                    $departmentIds,
+                    $department->subDepartmentIds($department->id)
+                )
             );
         }
         $departments = $user->departments;
