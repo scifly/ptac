@@ -738,25 +738,16 @@ class Department extends Model {
     function contacts() {
         
         $user = Auth::user();
-        $role = $user->group->name;
-        $departmentId = School::find($this->schoolId())->department_id;
         $contacts = [];
-        if (in_array($role, Constant::SUPER_ROLES)) {
-            $nodes = self::tree($departmentId);
+        if (in_array($user->group->name, Constant::SUPER_ROLES)) {
+            $departmentId = School::find($this->schoolId())->department_id;
+            $nodes = $this->tree($departmentId);
             for ($i = 0; $i < sizeof($nodes); $i++) {
                 $nodes[$i]['selectable'] = 1;
-                $nodes[$i]['role'] = 'dept';
             }
             foreach ($nodes as $node) {
-                $node['selectable'] = 1;
-                $node['role'] ='dept';
-                if (!$node['id']) {
-                    $node['type'] = '#';
-                }
-                // $t['type'] = $t['id'] == 0 ? '#' : 'dept';
                 # 读取当前部门下的所有用户
-                $users = self::find($node['id'])->users;
-                /** @var User $u */
+                $users = $this->find($node['id'])->users;
                 foreach ($users as $u) {
                     $contacts[] = [
                         'id' => 'user-' . $node['id'] . '-' . $u->id,
@@ -764,68 +755,37 @@ class Department extends Model {
                         'text' => $u->realname,
                         'selectable' => 1,
                         'type' => 'user',
-                        'role' => 'user',
                     ];
                 }
             }
-            return  array_merge($nodes, $contacts);
         } else {
-            $departmentId = self::topDeptId();
-            $nodes = self::tree($departmentId);
-            $data = [];
-            $allowedDeptIds = $user->departments->pluck('id')->toArray();
+            $nodes = $this->tree($this->topDeptId());
             for ($i = 0; $i < sizeof($nodes); $i++) {
-                $parentId = $i == 0 ? '#' : $nodes[$i]['parent'];
-                $type = $nodes[$i]['type'];
-                if (!$nodes[$i]['id']) {
-                    $type = '#';
-                }
-                $text = $nodes[$i]['text'];
-                if (in_array($nodes[$i]['id'], $allowedDeptIds)) {
-                    $selectable = 1;
-                } else {
-                    $selectable = 0;
-                    foreach ($allowedDeptIds as $pId) {
-                        if (self::find($nodes[$i]['id'])->parent_id == $pId) {
-                            $selectable = 1;
-                            break;
-                        };
-                    }
-                }
-                $data[] = [
-                    'id' => $nodes[$i]['id'],
-                    'parent' => $parentId,
-                    'text' => $text,
-                    'selectable' => $selectable,
-                    'type' => $type,
-                    'role' => 'dept',
-                ];
+                $departmentId = $nodes[$i]['id'];
+                $nodes[$i]['selectable'] = in_array($departmentId, $this->departmentIds($user->id)) ? 1 : 0;
             }
             $contacts = [];
-            foreach ($data as $datum) {
-                if ($datum['selectable']) {
+            foreach ($nodes as $node) {
+                if ($node['selectable']) {
                     # 读取当前部门下的所有用户
-                    $users = self::find($datum['id'])->users;
-                    /** @var User $u */
+                    $users = $this->find($node['id'])->users;
                     foreach ($users as $u) {
                         $contacts[] = [
-                            'id' => 'user-' . $datum['id'] . '-' . $u->id,
-                            'parent' => $datum['id'],
+                            'id' => 'user-' . $node['id'] . '-' . $u->id,
+                            'parent' => $node['id'],
                             'text' => $u->realname,
                             'selectable' => 1,
                             'type' => 'user',
-                            'role' => 'user',
                         ];
                     }
                 }
             }
-            
-            return response()->json(
-                array_merge($data, $contacts)
-            );
-
         }
         
+        return response()->json(
+            array_merge($nodes, $contacts)
+        );
+    
     }
 
     /**
