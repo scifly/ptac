@@ -21,6 +21,25 @@ use ReflectionException;
 trait ModelTrait {
     
     /**
+     * 批量操作（删除, 启用, 禁用）
+     *
+     * @param Model $model
+     * @return bool
+     * @throws \Exception
+     */
+    function batch(Model $model) {
+        
+        $ids = Request::input('ids');
+        $action = Request::input('action');
+        return $action == 'delete'
+            ? $model->whereIn('id', $ids)->delete()
+            : $model->whereIn('id', $ids)->update([
+                'enabled' => $action == 'enable' ? Constant::ENABLED : Constant::DISABLED
+            ]);
+        
+    }
+    
+    /**
      * 判断指定记录能否被删除
      *
      * @param Model $model

@@ -14,6 +14,7 @@ class EducatorIndexComposer {
         
         $departments = Department::whereIn('id', $this->departmentIds(Auth::id()))
             ->pluck('name', 'id')->toArray();
+        
         $view->with([
             'buttons'        => [
                 'import' => [
@@ -27,6 +28,7 @@ class EducatorIndexComposer {
                     'icon'  => 'fa fa-arrow-circle-down',
                 ],
             ],
+            'batch'          => true,
             'titles'         => ['#', '姓名', '创建于', '更新于', '状态 . 操作'],
             'departments'    => $departments,
             'importTemplate' => 'files/educators.xlsx',

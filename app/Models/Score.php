@@ -10,6 +10,7 @@ use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -121,6 +122,7 @@ class Score extends Model {
      * @param array $data
      * @param $id
      * @return bool
+     * @throws Exception
      */
     function modify(array $data, $id = null) {
         
@@ -128,13 +130,9 @@ class Score extends Model {
             $score = self::find($id);
             if (!$score) { return false; }
             return $score->update($data) ? true : false;
-        } else {
-            $ids = Request::input('ids');
-            $action = Request::input('action');
-            return $this->whereIn('id', $ids)->update([
-                'enabled' => $action == 'enable' ? Constant::ENABLED : Constant::DISABLED
-            ]);
         }
+        
+        return $this->batch($this);
         
     }
     
@@ -143,20 +141,17 @@ class Score extends Model {
      *
      * @param $id
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     function remove($id = null) {
         
         if (isset($id)) {
             $score = self::find($id);
-            if (!$score) {
-                return false;
-            }
+            if (!$score) { return false; }
             return $score->delete() ? true : false;
-        } else {
-            $ids = Request::input('ids');
-            return $this->whereIn('id', $ids)->delete();
         }
+        
+        return $this->batch($this);
         
     }
     

@@ -118,7 +118,7 @@ class EducatorController extends Controller {
      * @return JsonResponse
      * @throws Throwable
      */
-    public function update(EducatorRequest $request, $id) {
+    public function update(EducatorRequest $request, $id = null) {
         
         return $this->result(
             $this->educator->modify(
@@ -169,7 +169,7 @@ class EducatorController extends Controller {
      * @throws Throwable
      * @throws Exception
      */
-    public function destroy($id) {
+    public function destroy($id = null) {
         
         return $this->result(
             $this->educator->remove(

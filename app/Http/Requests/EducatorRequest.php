@@ -1,9 +1,12 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use App\Rules\Mobiles;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Validation\Rule;
 
 class EducatorRequest extends FormRequest {
     
@@ -17,7 +20,15 @@ class EducatorRequest extends FormRequest {
     public function authorize() { return true; }
     
     public function rules() {
-        
+    
+        if (Request::has('ids')) {
+            return [
+                'ids' => 'required|array',
+                'action' => [
+                    'required', Rule::in(Constant::BATCH_OPERATIONS)
+                ]
+            ];
+        }
         $rules = [
             'educator.school_id'          => 'required|integer',
             'user.group_id'               => 'required|integer',

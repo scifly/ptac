@@ -303,8 +303,11 @@ class Educator extends Model {
      * @return bool|mixed
      * @throws Exception
      */
-    function modify(EducatorRequest $request, $id) {
+    function modify(EducatorRequest $request, $id = null) {
         
+        if (!isset($id)) {
+            return $this->batch($this);
+        }
         $educator = $this->find($id);
         if (!$educator) { return false; }
         try {
