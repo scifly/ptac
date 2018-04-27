@@ -125,7 +125,7 @@ class StudentController extends Controller {
      * @throws Exception
      * @throws Throwable
      */
-    public function update(StudentRequest $request, $id) {
+    public function update(StudentRequest $request, $id = null) {
         
         return $this->result(
             $this->student->modify(
@@ -143,7 +143,7 @@ class StudentController extends Controller {
      * @throws Exception
      * @throws Throwable
      */
-    public function destroy($id) {
+    public function destroy($id = null) {
         
         return $this->result(
             $this->student->remove($id)

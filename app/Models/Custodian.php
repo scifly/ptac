@@ -160,10 +160,11 @@ class Custodian extends Model {
      * @throws Exception
      * @throws Throwable
      */
-    function modify(array $data, $id) {
+    function modify(array $data, $id = null) {
         
-        $custodian = self::find($id);
-        abort_if(!$custodian, HttpStatusCode::NOT_FOUND, '找不到该监护人');
+        if (!isset($id)) { return $this->batch($this); }
+        $custodian = $this->find($id);
+        if (!$custodian) { return false; }
         try {
             DB::transaction(function () use ($data, $id, $custodian) {
                 
@@ -232,13 +233,11 @@ class Custodian extends Model {
      * @throws Exception
      * @throws Throwable
      */
-    function remove($id) {
-        
-        # todo 删除监护人（监护人可能绑定不同学校的学生，所以不能直接删除）
+    function remove($id = null) {
+
+        if (!isset($ic)) { return $this->batch($this); }
         $custodian = self::find($id);
-        if (!isset($custodian)) {
-            return false;
-        }
+        if (!isset($custodian)) { return false; }
         try {
             DB::transaction(function () use ($id, $custodian) {
                 $userId = $custodian->user_id;

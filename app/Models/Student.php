@@ -219,10 +219,11 @@ class Student extends Model {
      * @throws Exception
      * @throws Throwable
      */
-    function modify(array $data, $id) {
+    function modify(array $data, $id = null) {
         
+        if (!isset($id)) { return $this->batch($this); }
         $student = $this->find($id);
-        abort_if(!$student, HttpStatusCode::NOT_FOUND, '找不到该学籍');
+        if (!$student) { return false; }
         try {
             DB::transaction(function () use ($data, $id, $student) {
                 $user = User::find($data['user_id']);
@@ -281,17 +282,18 @@ class Student extends Model {
     /**
      * 删除指定的学生记录
      *
-     * @param $studentId
+     * @param $id
      * @return bool|mixed
      * @throws Exception
      * @throws \Throwable
      */
-    function remove($studentId) {
+    function remove($id = null) {
         
-        $student = $this->find($studentId);
-        #if (!isset($custodian)) { return false; }
+        if (!isset($id)) { return $this->batch($this); }
+        $student = $this->find($id);
+        if (!$student) { return false; }
         try {
-            DB::transaction(function () use ($studentId, $student) {
+            DB::transaction(function () use ($id, $student) {
                 $userId = $student->user_id;
                 #删除关联监护人
                 $custodians = $student->custodians;
@@ -303,11 +305,11 @@ class Student extends Model {
                     }
                 }
                 # 删除与指定学生绑定的监护人记录
-                CustodianStudent::whereStudentId($studentId)->delete();
+                CustodianStudent::whereStudentId($id)->delete();
+                # 删除user数据
+                $student->user->remove($userId);
                 # 删除指定的学生记录
                 $student->delete();
-                # 删除user数据
-                $this->user->remove($userId);
             });
         } catch (Exception $e) {
             throw $e;

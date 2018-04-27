@@ -1,8 +1,11 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Helpers\Constant;
 use App\Rules\Mobiles;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Validation\Rule;
 
 class StudentRequest extends FormRequest {
     
@@ -19,7 +22,15 @@ class StudentRequest extends FormRequest {
      * @return array
      */
     public function rules() {
-        
+    
+        if (Request::has('ids')) {
+            return [
+                'ids' => 'required|array',
+                'action' => [
+                    'required', Rule::in(Constant::BATCH_OPERATIONS)
+                ]
+            ];
+        }
         return [
             'card_number'    => 'required|alphanum|between:2,32|unique:students,card_number,' .
                 $this->input('user_id') . ',user_id',

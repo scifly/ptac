@@ -120,7 +120,7 @@ class CustodianController extends Controller {
      * @return JsonResponse
      * @throws Throwable
      */
-    public function update(CustodianRequest $request, $id) {
+    public function update(CustodianRequest $request, $id = null) {
         
         return $this->result(
             $this->custodian->modify(
@@ -138,7 +138,7 @@ class CustodianController extends Controller {
      * @throws Exception
      * @throws Throwable
      */
-    public function destroy($id) {
+    public function destroy($id = null) {
         
         return $this->result(
             $this->custodian->remove($id)

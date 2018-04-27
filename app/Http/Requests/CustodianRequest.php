@@ -1,9 +1,12 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Helpers\Constant;
 use App\Models\Group;
 use App\Rules\Mobiles;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Validation\Rule;
 
 class CustodianRequest extends FormRequest {
     
@@ -20,7 +23,16 @@ class CustodianRequest extends FormRequest {
      * @return array
      */
     public function rules() {
-        $rules = [
+    
+        if (Request::has('ids')) {
+            return [
+                'ids' => 'required|array',
+                'action' => [
+                    'required', Rule::in(Constant::BATCH_OPERATIONS)
+                ]
+            ];
+        }
+        return [
             'user.realname' => 'required|string',
             'user.gender'   => 'required|boolean',
             'user.group_id' => 'required|integer',
@@ -29,8 +41,6 @@ class CustodianRequest extends FormRequest {
             'mobile.*'      => ['required', new Mobiles()],
             'student_ids'   => 'required',
         ];
-        
-        return $rules;
         
     }
     

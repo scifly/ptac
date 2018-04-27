@@ -427,8 +427,9 @@ class Educator extends Model {
      * @throws Exception
      * @throws Throwable
      */
-    function remove($id, $fireEvent = false) {
+    function remove($id = null, $fireEvent = false) {
         
+        if (!isset($id)) { return $this->batch($this); }
         $educator = self::find($id);
         $userId = $educator->user_id;
         $removed = self::removable($educator) ? $educator->delete() : false;
