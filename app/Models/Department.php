@@ -262,7 +262,7 @@ class Department extends Model {
                 : $this::whereParentId(null)->first()->id,
             'name'               => $model->{'name'},
             'remark'             => $model->{'remark'},
-            'department_type_id' => $this->typeId($type),
+            'department_type_id' => $this->typeId($model->),
             'order'              => $this->department->all()->max('order') + 1,
             'enabled'            => $$model->enabled,
         ]);
