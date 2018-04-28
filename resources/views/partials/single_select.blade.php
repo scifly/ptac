@@ -13,7 +13,7 @@
             {!! Form::select($id, $items, null, [
                 'class' => 'form-control select2',
                 'style' => 'width: 100%;',
-                'readonly' => sizeof($items) <= 1
+                'disabled' => sizeof($items) <= 1
             ]) !!}
         </div>
     </div>
