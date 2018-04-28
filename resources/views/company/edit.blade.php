@@ -1,4 +1,4 @@
-{!! Form::model($company, [
+{!! Form::model($op, [
     'method' => 'put',
     'id' => 'formCompany',
     'data-parsley-validate' => 'true'
