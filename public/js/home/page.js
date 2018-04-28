@@ -575,11 +575,20 @@ var page = {
     },
     initParsley: function ($form, requestType, url) {
         $form.parsley().on('form:validated', function () {
+            var data = $form.serialize();
+            $disabledSelects = $('select[disabled]');
+            if ($disabledSelects.length > 0) {
+                $.each($disabledSelects, function () {
+                    $.extend(data, {
+                        $(this).attr('id'): $(this).val()
+                    })
+                })
+            }
+            console.log(data);
             if ($('.parsley-error').length === 0) {
-                page.ajaxRequest(requestType, url, $form.serialize(), $form[0]);
+                page.ajaxRequest(requestType, url, data, $form[0]);
             }
         }).on('form:submit', function () {
-            $('select').prop('disabled', false);
             return false;
         });
     },
