@@ -99,45 +99,45 @@ class Company extends Model {
 
     }
 
-    /**
-     * 保存运营者
-     *
-     * @param array $data
-     * @param bool $fireEvent
-     * @return bool
-     */
-    function store(array $data, $fireEvent = false) {
-
-        try {
-            DB::transaction(function () use ($data) {
-                # 创建运营者
-                $company = $this->create($data);
-    
-                # 创建部门
-                $department = $this->d->create([
-                    'parent_id' => $this->d->where('parent_id', null)->first()->id,
-                    'name' => $company->name,
-                    'remark' => $company->remark,
-                    'department_type_id' => $this->dt->where('name', '运营')->first()->id,
-                    'enabled' => $company->enabled
-                ]);
-                
-                # 创建菜单
-                $menu = $this->m->create([])
-                
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        return true;
-        if ($company && $fireEvent) {
-            event(new CompanyCreated($company));
-            return true;
-        }
-
-        return $company ? true : false;
-
-    }
+    // /**
+    //  * 保存运营者
+    //  *
+    //  * @param array $data
+    //  * @param bool $fireEvent
+    //  * @return bool
+    //  */
+    // function store(array $data, $fireEvent = false) {
+    //
+    //     try {
+    //         DB::transaction(function () use ($data) {
+    //             # 创建运营者
+    //             $company = $this->create($data);
+    //
+    //             # 创建部门
+    //             $department = $this->d->create([
+    //                 'parent_id' => $this->d->where('parent_id', null)->first()->id,
+    //                 'name' => $company->name,
+    //                 'remark' => $company->remark,
+    //                 'department_type_id' => $this->dt->where('name', '运营')->first()->id,
+    //                 'enabled' => $company->enabled
+    //             ]);
+    //
+    //             # 创建菜单
+    //             $menu = $this->m->create([])
+    //
+    //         });
+    //     } catch (Exception $e) {
+    //         throw $e;
+    //     }
+    //     return true;
+    //     if ($company && $fireEvent) {
+    //         event(new CompanyCreated($company));
+    //         return true;
+    //     }
+    //
+    //     return $company ? true : false;
+    //
+    // }
 
     /**
      * 更新运营者

@@ -250,24 +250,20 @@ class Department extends Model {
 
     }
     
-    /**
-     * @param Model $model
-     * @param null|string $belongsTo
-     */
-    function createDepartment(Model $model, $belongsTo = null) {
-        
-        return $this->store([
-            'parent_id'          => isset($belongsTo)
-                ? $model->{$belongsTo}->department_id
-                : $this::whereParentId(null)->first()->id,
-            'name'               => $model->{'name'},
-            'remark'             => $model->{'remark'},
-            'department_type_id' => $this->typeId($model->),
-            'order'              => $this->department->all()->max('order') + 1,
-            'enabled'            => $$model->enabled,
-        ]);
-        
-    }
+    // function createDepartment(Model $model, $belongsTo = null) {
+    //
+    //     return $this->store([
+    //         'parent_id'          => isset($belongsTo)
+    //             ? $model->{$belongsTo}->department_id
+    //             : $this::whereParentId(null)->first()->id,
+    //         'name'               => $model->{'name'},
+    //         'remark'             => $model->{'remark'},
+    //         'department_type_id' => $this->typeId($model->),
+    //         'order'              => $this->department->all()->max('order') + 1,
+    //         'enabled'            => $$model->enabled,
+    //     ]);
+    //
+    // }
     
     /**
      * 更新部门
