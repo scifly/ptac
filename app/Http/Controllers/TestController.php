@@ -54,7 +54,7 @@ class TestController extends Controller {
     
     public function index(Request $request) {
 
-        dd($this->parentIds(6));
+        dd(get_class($this));
         $names = ['运营', '企业', '学校'];
         $arrs = array_map(function ($name) {
             return [$name => Group::whereName($name)->first()->id];

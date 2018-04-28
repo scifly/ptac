@@ -240,16 +240,35 @@ class Department extends Model {
      */
     function store(array $data, $fireEvent = false) {
 
-        $department = self::create($data);
+        $department = $this->create($data);
         if ($department && $fireEvent) {
             event(new DepartmentCreated($department));
             return $department;
         }
 
-        return $department ? $department : false;
+        return $department ?? false;
 
     }
-
+    
+    /**
+     * @param Model $model
+     * @param null|string $belongsTo
+     */
+    function createDepartment(Model $model, $belongsTo = null) {
+        
+        return $this->store([
+            'parent_id'          => isset($belongsTo)
+                ? $model->{$belongsTo}->department_id
+                : $this::whereParentId(null)->first()->id,
+            'name'               => $model->{'name'},
+            'remark'             => $model->{'remark'},
+            'department_type_id' => $this->typeId($type),
+            'order'              => $this->department->all()->max('order') + 1,
+            'enabled'            => $$model->enabled,
+        ]);
+        
+    }
+    
     /**
      * 更新部门
      *

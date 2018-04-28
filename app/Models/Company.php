@@ -17,6 +17,7 @@ use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\Company 运营者公司
@@ -55,6 +56,17 @@ class Company extends Model {
         'menu_id', 'enabled',
     ];
 
+    protected $d, $m, $dt;
+    
+    function __construct(array $attributes = []) {
+        
+        parent::__construct($attributes);
+        $this->d = app()->make('App\Models\Department');
+        $this->m = app()->make('App\Models\Menu');
+        $this->dt = app()->make('App\Models\DepartmentType');
+    
+    }
+    
     /**
      * 返回对应的部门对象
      *
@@ -96,7 +108,28 @@ class Company extends Model {
      */
     function store(array $data, $fireEvent = false) {
 
-        $company = self::create($data);
+        try {
+            DB::transaction(function () use ($data) {
+                # 创建运营者
+                $company = $this->create($data);
+    
+                # 创建部门
+                $department = $this->d->create([
+                    'parent_id' => $this->d->where('parent_id', null)->first()->id,
+                    'name' => $company->name,
+                    'remark' => $company->remark,
+                    'department_type_id' => $this->dt->where('name', '运营')->first()->id,
+                    'enabled' => $company->enabled
+                ]);
+                
+                # 创建菜单
+                $menu = $this->m->create([])
+                
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return true;
         if ($company && $fireEvent) {
             event(new CompanyCreated($company));
             return true;
