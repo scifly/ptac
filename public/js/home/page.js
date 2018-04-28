@@ -582,7 +582,7 @@ var page = {
                 $.each($disabledSelects, function () {
                     id = $(this).attr('id');
                     value = $(this).val();
-                    $.extend(data, { id: value });
+                    data += '&' + id + '=' + value;
                 });
             }
             console.log(data);
