@@ -575,14 +575,15 @@ var page = {
     },
     initParsley: function ($form, requestType, url) {
         $form.parsley().on('form:validated', function () {
-            var data = $form.serialize(),
+            var data = $form.serialize(), id, value,
                 $disabledSelects = $('select[disabled]');
+
             if ($disabledSelects.length > 0) {
                 $.each($disabledSelects, function () {
-                    $.extend(data, {
-                        $(this).attr('id'): $(this).val()
-                    })
-                })
+                    id = $(this).attr('id');
+                    value = $(this).val();
+                    $.extend(data, { id: value });
+                });
             }
             console.log(data);
             if ($('.parsley-error').length === 0) {
