@@ -2,6 +2,7 @@
 namespace App\Http\Requests;
 
 use App\Helpers\ModelTrait;
+use App\Models\Company;
 use App\Models\Corp;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -47,9 +48,13 @@ class CorpRequest extends FormRequest {
             $input['menu_id'] = 0;
         }
         if (!isset($input['company_id'])) {
-            $departmentId = $this->head(Auth::user());
-            $corpId = Corp::whereDepartmentId($departmentId)->first()->id;
-            $input['company_id'] = Corp::find($corpId)->company_id;
+            $user = Auth::user();
+            $departmentId = $this->head($user);
+            if ($user->group->name == '运营') {
+                $input['company_id'] = Company::whereDepartmentId($departmentId)->id;
+            } else {
+                $input['company_id'] = Corp::whereDepartmentId($departmentId)->first()->company_id;
+            }
         }
         $this->replace($input);
         
