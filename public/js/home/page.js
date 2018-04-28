@@ -585,7 +585,6 @@ var page = {
                     data += '&' + id + '=' + value;
                 });
             }
-            console.log(data);
             if ($('.parsley-error').length === 0) {
                 page.ajaxRequest(requestType, url, data, $form[0]);
             }

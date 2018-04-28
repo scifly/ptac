@@ -50,12 +50,9 @@ class CorpRequest extends FormRequest {
         if (!isset($input['company_id'])) {
             $user = Auth::user();
             $departmentId = $this->head($user);
-            if ($user->group->name == '运营') {
-                $input['company_id'] = Company::whereDepartmentId($departmentId)->first()->id;
-            } else {
-                $input['company_id'] = Corp::whereDepartmentId($departmentId)->first()->company_id;
-            }
+            $input['company_id'] = Corp::whereDepartmentId($departmentId)->first()->company_id;
         }
+        
         $this->replace($input);
         
     }
