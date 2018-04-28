@@ -579,6 +579,7 @@ var page = {
                 page.ajaxRequest(requestType, url, $form.serialize(), $form[0]);
             }
         }).on('form:submit', function () {
+            $('select').prop('disabled', false);
             return false;
         });
     },
