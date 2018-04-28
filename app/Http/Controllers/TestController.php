@@ -44,14 +44,6 @@ class TestController extends Controller {
     
     protected $department;
     
-    function __construct(Department $department) { $this->department = $department; }
-    
-    private function parentIds($id) {
-    
-    
-    
-    }
-    
     /**
      * @param Request $request
      * @throws \ReflectionException
