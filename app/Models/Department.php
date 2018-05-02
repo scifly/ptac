@@ -409,7 +409,7 @@ class Department extends Model {
             }
         }
         
-        return '';
+        return response()->json([], HttpStatusCode::OK);
         
     }
     /**
