@@ -722,7 +722,7 @@ class Department extends Model {
                 $parent = $this->find($id)->parent;
                 while ($parent->departmentType->name != '企业') {
                     $id = $parent->id;
-                    $this->corpId($id);
+                    return $this->corpId($id);
                 }
                 return Corp::whereDepartmentId($parent->id)->first()->id;
         }
