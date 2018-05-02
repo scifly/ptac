@@ -76,14 +76,15 @@ class Menu extends Model {
         'action_id', 'icon_id', 'enabled',
     ];
     
-    protected $mt, $department;
+    protected $menuTab, $mt, $department;
     
-    function __construct(array $attributes = []) {
+    function __construct(MenuTab $menuTab, MenuType $mt, Department $department) {
         
-        parent::__construct($attributes);
-        $this->mt = app()->make('App\Models\MenuType');
-        $this->department = app()->make('App\Models\Department');
-    
+        parent::__construct();
+        $this->menuTab = $menuTab;
+        $this->mt = $mt;
+        $this->department = $department;
+        
     }
     
     /**
@@ -368,13 +369,13 @@ class Menu extends Model {
                 # 更新指定Menu记录
                 $menu->update($request->all());
                 # 更新与指定Menu记录绑定的卡片记录
-                $this->mt::whereMenuId($id)->delete();
+                $this->menuTab::whereMenuId($id)->delete();
                 $tabIds = $request->input('tab_ids', []);
                 $uri = $request->input('uri', '');
                 if (empty($uri)) {
                     if (!empty($tabIds)) {
                         if ($menu->children->count() == 0) {
-                            $this->mt->storeByMenuId($id, $tabIds);
+                            $this->menuTab->storeByMenuId($id, $tabIds);
                         }
                     } else {
                         $menu->update(['enabled' => 0]);

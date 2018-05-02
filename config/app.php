@@ -205,7 +205,7 @@ return [
         'View'         => Illuminate\Support\Facades\View::class,
         'Wechat'       => App\Facades\Wechat::class,
         'Datatable'    => App\Facades\DatatableFacade::class,
-        'Test'         => App\Services\Test::class,
+        'Test'         => App\Models\MenuType::class,
         'Form'         => Collective\Html\FormFacade::class,
         'Html'         => Collective\Html\HtmlFacade::class,
         'Excel'        => Maatwebsite\Excel\Facades\Excel::class,

@@ -1,7 +1,7 @@
 <?php
 namespace App\Providers;
 
-use App\Services\Test;
+use App\Models\MenuType;
 use Illuminate\Support\ServiceProvider;
 
 class TestServiceProvider extends ServiceProvider {
@@ -21,8 +21,8 @@ class TestServiceProvider extends ServiceProvider {
      * @return void
      */
     public function register() {
-        $this->app->bind(Test::class, function ($app) {
-            return new Test('hithere');
+        $this->app->bind(MenuType::class, function ($app) {
+            return new MenuType();
         });
     }
 }

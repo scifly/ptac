@@ -6,6 +6,7 @@ use App\Models\Action;
 use App\Models\Department;
 use App\Models\Group;
 use App\Models\User;
+use App\Services\Test;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Http\Request;
@@ -45,10 +46,10 @@ class TestController extends Controller {
     protected $department;
     
     /**
-     * @param Request $request
+     * @param Test $test
      * @throws \ReflectionException
      */
-    public function index(Request $request) {
+    public function index(Test $test) {
 
         $a = [
             1 => 'ab',
