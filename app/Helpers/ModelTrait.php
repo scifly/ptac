@@ -355,7 +355,7 @@ trait ModelTrait {
         $user = User::find($userId);
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {
             $department = $this->schoolId()
-                ? School::find($schoolId ?? $this->schoolId())->department 
+                ? School::find($schoolId ?? $this->schoolId())->department
                 : Department::find($this->head($user));
             $departmentIds[] = $department->id;
             
