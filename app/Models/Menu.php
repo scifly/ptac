@@ -473,7 +473,7 @@ class Menu extends Model {
             }
         }
         
-        return '';
+        return response()->json([], HttpStatusCode::Ok);
     
     }
     

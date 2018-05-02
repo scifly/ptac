@@ -173,8 +173,9 @@ class Department extends Model {
             $nodes = $this->orderBy('order')->all();
         } else {
             $root = $this->find($rootId);
+            $nodes = $this->orderBy('order')->whereIn('id', $this->subDepartmentIds($rootId))->get();
             $nodes->push($root);
-            $this->getChildren($rootId, $nodes);
+            // $this->getChildren($rootId, $nodes);
         }
 
         return $nodes;
