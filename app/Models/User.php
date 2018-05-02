@@ -3,18 +3,16 @@ namespace App\Models;
 
 use Eloquent;
 use Exception;
-use Illuminate\Http\JsonResponse;
 use Throwable;
 use Carbon\Carbon;
 use App\Helpers\Snippet;
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use Laravel\Passport\Token;
-use App\Events\UserCreated;
-use App\Events\UserDeleted;
-use App\Events\UserUpdated;
 use Laravel\Passport\Client;
 use App\Helpers\HttpStatusCode;
+use App\Jobs\ManageWechatMember;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Support\Facades\Auth;
@@ -277,7 +275,7 @@ class User extends Authenticatable {
             'gender'     => $user->gender,
             'enable'     => $user->enabled,
         ];
-        event(new UserCreated($data));
+        ManageWechatMember::dispatch($data, 'create');
         
         return true;
         
@@ -303,9 +301,22 @@ class User extends Authenticatable {
             'gender'       => $user->gender,
             'enable'       => $user->enabled,
         ];
-        event(new UserUpdated($data));
+        ManageWechatMember::dispatch($data, 'update');
         
         return true;
+        
+    }
+    
+    /**
+     * 批量更新企业号会员
+     *
+     * @param $ids
+     */
+    function batchUpdateWechatUsers($ids) {
+        
+        foreach ($ids as $id) {
+            $this->updateWechatUser($id);
+        }
         
     }
     
@@ -316,11 +327,12 @@ class User extends Authenticatable {
      * @return bool
      */
     function deleteWechatUser($id) {
-        
-        event(new UserDeleted([
+    
+        $data = [
             'userId' => Auth::id(),
             'userid' => self::find($id)->userid
-        ]));
+        ];
+        ManageWechatMember::dispatch($data, 'delete');
         
         return true;
         

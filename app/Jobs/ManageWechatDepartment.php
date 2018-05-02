@@ -3,9 +3,8 @@ namespace App\Jobs;
 
 use App\Facades\Wechat;
 use App\Helpers\ModelTrait;
-use App\Models\App;
 use App\Models\Corp;
-use App\Models\School;
+use App\Models\Department;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -30,7 +29,7 @@ class ManageWechatDepartment implements ShouldQueue {
      * @param $department
      * @param $action
      */
-    public function __construct($department, $action) {
+    public function __construct(Department $department, $action) {
         
         $this->department = $department;
         $this->action = $action;
@@ -38,47 +37,43 @@ class ManageWechatDepartment implements ShouldQueue {
     }
     
     /**
-     * Execute the job.
+     * Execute the job
      *
-     * @return void
+     * @return mixed|null
      */
     public function handle() {
-
-        $schoolId = $this->schoolId();
-        if ($schoolId != 0) {
-            $school = School::find($schoolId);
-            $corpMenuId = $school->menu->parent_id;
-            $corp = Corp::whereMenuId($corpMenuId)->first();
-            $corpId = $corp->corpid;
-        } else {
-            $corp = Corp::find(1);
-            $corpId = $corp->corpid;
-        }
-        $contactSync = App::whereAgentid('999')->first();
-        $secret = $contactSync->secret;
+    
+        $departmentId = $this->department->id;
         $name = $this->department->name;
         $parent_id = $this->department->departmentType->name == '学校'
             ? 1 : $this->department->parent->id;
         $order = $this->department->order;
-        $departmentId = $this->department->id;
-        $token = Wechat::getAccessToken($corpId, $secret);
+        $corp = Corp::find($this->department->corpId($departmentId));
+        $token = Wechat::getAccessToken(
+            $corp->corpid,
+            $corp->contact_sync_secret
+        );
+        $result = null;
         switch ($this->action) {
             case 'create':
-                Wechat::createDept(
-                    $token, $name, $parent_id, $order, $departmentId
+                $result = json_decode(
+                    Wechat::createDept($token, $name, $parent_id, $order, $departmentId)
                 );
                 break;
             case 'update':
-                Wechat::updateDept(
-                    $token, $departmentId, $name, $parent_id, $order
+                $result = json_decode(
+                    Wechat::updateDept($token, $departmentId, $name, $parent_id, $order)
                 );
                 break;
             default:
-                Wechat::delDept($token, $departmentId);
+                $result = json_decode(
+                    Wechat::delDept($token, $departmentId)
+                );
                 break;
         }
         
+        return $result;
+        
     }
-
     
 }

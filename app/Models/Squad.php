@@ -1,19 +1,20 @@
 <?php
 namespace App\Models;
 
-use App\Events\ClassCreated;
-use App\Events\ClassDeleted;
-use App\Events\ClassUpdated;
-use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use Throwable;
+use Carbon\Carbon;
+use ReflectionException;
+use App\Helpers\Snippet;
+use App\Helpers\ModelTrait;
+use App\Helpers\HttpStatusCode;
+use Illuminate\Support\Facades\DB;
+use App\Http\Requests\SquadRequest;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -54,6 +55,15 @@ class Squad extends Model {
         'educator_ids', 'enabled',
     ];
     
+    protected $d;
+    
+    function __construct(array $attributes = []) {
+        
+        parent::__construct($attributes);
+        $this->d = app()->make('App\Models\Department');
+    
+    }
+    
     /**
      * 返回对应的部门对象
      *
@@ -85,42 +95,74 @@ class Squad extends Model {
     /**
      * 保存班级
      *
-     * @param array $data
-     * @param bool $fireEvent
+     * @param SquadRequest $request
      * @return bool
+     * @throws Exception
      */
-    function store(array $data, $fireEvent = false) {
+    function store(SquadRequest $request) {
         
-        $class = self::create($data);
-        if ($class && $fireEvent) {
-            event(new ClassCreated($class));
-            
-            return true;
+        $class = null;
+        try {
+            DB::transaction(function () use ($request, &$class) {
+                # 创建班级、对应的部门
+                $class = $this->create($request->all());
+                $department = $this->d->createDepartment($class, 'grade');
+                # 更新“班级”的部门id
+                $class->update([
+                    'department_id' => $department->id
+                ]);
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
         
-        return $class ? true : false;
+        return $class;
         
     }
     
     /**
      * 更新班级
      *
-     * @param array $data
+     * @param SquadRequest $request
      * @param $id
-     * @param bool $fireEvent
      * @return bool
+     * @throws Exception
      */
-    function modify(array $data, $id, $fireEvent = false) {
-        
-        $class = self::find($id);
-        $updated = $class->update($data);
-        if ($updated && $fireEvent) {
-            event(new ClassUpdated($class));
-            
-            return true;
+    function modify(SquadRequest $request, $id) {
+       
+        $class = null;
+        try {
+            DB::transaction(function () use ($request, $id, &$class) {
+                $class = $this->find($id);
+                $class->update($request->all());
+                $this->d->modifyDepartment($this->find($id));
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
         
-        return $updated ? true : false;
+        return $class ? $this->find($id) : null;
+        
+    }
+    
+    /**
+     * 删除班级
+     *
+     * @param $id
+     * @return bool
+     * @throws ReflectionException
+     * @throws Throwable
+     */
+    function remove($id) {
+        
+        $class = self::find($id);
+        if ($this->removable($class)) {
+            $department = $class->department;
+            return $class->delete()
+                && $this->d->removeDepartment($department);
+        }
+        
+        return false;
         
     }
     
@@ -147,31 +189,6 @@ class Squad extends Model {
         }
         
         return $this->singleSelectList($items, 'student_id');
-        
-    }
-    
-    /**
-     * 删除班级
-     *
-     * @param $id
-     * @param bool $fireEvent
-     * @return bool
-     * @throws Exception
-     */
-    function remove($id, $fireEvent = false) {
-        
-        $class = self::find($id);
-        if (!$class) {
-            return false;
-        }
-        $removed = $this->removable($class) ? $class->delete() : false;
-        if ($removed && $fireEvent) {
-            event(new ClassDeleted($class));
-            
-            return true;
-        }
-        
-        return $removed ? true : false;
         
     }
     

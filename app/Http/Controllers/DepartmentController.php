@@ -1,14 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
-use App\Http\Requests\DepartmentRequest;
-use App\Models\Department;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
+use Throwable;
+use App\Models\Department;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
-use Throwable;
+use App\Http\Requests\DepartmentRequest;
 
 /**
  * 部门
@@ -73,7 +71,7 @@ class DepartmentController extends Controller {
         
         return $this->result(
             $this->department->store(
-                $request->all(), true
+                $request->all()
             )
         );
         
@@ -105,7 +103,7 @@ class DepartmentController extends Controller {
         
         return $this->result(
             $this->department->modify(
-                $request->all(), $id, true
+                $request->all(), $id
             )
         );
         

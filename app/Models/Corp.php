@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
-use App\Events\CorpCreated;
-use App\Events\CorpDeleted;
-use App\Events\CorpUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
+use App\Http\Requests\CorpRequest;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -18,7 +16,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use ReflectionException;
+use Throwable;
 
 /**
  * App\Models\Corp 企业
@@ -55,21 +56,22 @@ use Illuminate\Support\Facades\Session;
  * @property-read Menu $menu
  */
 class Corp extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $fillable = [
         'name', 'acronym', 'company_id',
         'corpid', 'contact_sync_secret',
         'menu_id', 'department_id', 'enabled',
     ];
-
-    protected $menu;
+    
+    protected $d, $m;
     
     function __construct(array $attributes = []) {
         
         parent::__construct($attributes);
-        $this->menu = app()->make('App\Models\Menu');
+        $this->d = app()->make('App\Models\Department');
+        $this->m = app()->make('App\Models\Menu');
         
     }
     
@@ -79,119 +81,140 @@ class Corp extends Model {
      * @return BelongsTo
      */
     function department() { return $this->belongsTo('App\Models\Department'); }
-
+    
     /**
      * 返回对应的菜单对象
      *
      * @return BelongsTo
      */
     function menu() { return $this->belongsTo('App\Models\Menu'); }
-
+    
     /**
      * 获取所属运营者公司对象
      *
      * @return BelongsTo
      */
     function company() { return $this->belongsTo('App\Models\Company'); }
-
+    
     /**
      * 获取下属学校对象
      *
      * @return HasMany
      */
     function schools() { return $this->hasMany('App\Models\School'); }
-
+    
     /**
      * 通过School中间对象获取所有年级对象
      *
      * @return HasManyThrough
      */
     function grades() {
-
+        
         return $this->hasManyThrough('App\Models\Grade', 'App\Models\School');
-
+        
     }
-
+    
     /**
      * 通过School中间对象获取所有教职员工组对象
      *
      * @return HasManyThrough
      */
     function teams() {
-
+        
         return $this->hasManyThrough('App\Models\Team', 'App\Models\School');
-
+        
     }
     
     /**
      * 保存企业
      *
-     * @param array $data
-     * @param bool $fireEvent
-     * @return bool
+     * @param CorpRequest $request
+     * @return mixed|bool|null
+     * @throws Exception
      */
-    function store(array $data, $fireEvent = false) {
-
-        $corp = $this->create($data);
-        if ($corp && $fireEvent) {
-            event(new CorpCreated($corp));
-            return true;
-        }
-
-        return $corp ? true : false;
-
+    function store(CorpRequest $request) {
+        
+        $corp = null;
+        try {
+            DB::transaction(function () use ($request, &$corp) {
+                # 创建企业微信、对应部门及菜单
+                $corp = $this->create($request->all());
+                $department = $this->d->storeDepartment(
+                    $corp, 'company'
+                );
+                $menu = $this->m->storeMenu(
+                    $corp, 'company'
+                );
+                # 更新“企业微信”的部门id和菜单id
+                $corp->update([
+                    'department_id' => $department->id,
+                    'menu_id' => $menu->id
+                ]);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        };
+        
+        return $corp;
+        
     }
-
+    
     /**
      * 更新企业
      *
-     * @param array $data
+     * @param CorpRequest $request
      * @param $id
-     * @param bool $fireEvent
-     * @return bool
+     * @return mixed|bool|null
+     * @throws Exception
      */
-    function modify(array $data, $id, $fireEvent = false) {
-
-        $corp = $this->find($id);
-        $updated = $corp->update($data);
-        if ($updated && $fireEvent) {
-            event(new CorpUpdated($corp));
-            return true;
+    function modify(CorpRequest $request, $id) {
+        
+        $corp = null;
+        try {
+            DB::transaction(function () use ($request, $id, &$corp) {
+                $corp = $this->find($id);
+                $corp->update($request->all());
+                $this->d->modifyDepartment($corp, 'company');
+                $this->m->modifyMenu($corp, 'company');
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
-
-        return $updated ? true : false;
-
+        
+        return $corp ? $this->find($id) : null;
+        
     }
     
     /**
      * 删除企业
      *
      * @param $id
-     * @param bool $fireEvent
      * @return bool
-     * @throws Exception
+     * @throws ReflectionException
+     * @throws Throwable
      */
-    function remove($id, $fireEvent = false) {
-
+    function remove($id) {
+        
         $corp = $this->find($id);
-        if (!$corp) { return false; }
-        $removed = $this->removable($corp) ? $corp->delete() : false;
-        if ($removed && $fireEvent) {
-            event(new CorpDeleted($corp));
-            return true;
+        if ($this->removable($corp)) {
+            $department = $corp->department;
+            $menu = $corp->menu;
+            return $corp->delete()
+                && $this->d->removeDepartment($department)
+                && $this->m->removeMenu($menu);
         }
-
-        return $removed ? true : false;
-
+        
+        return false;
+        
     }
-
+    
     /**
      * 根据角色 & 菜单id获取corp_id
      *
      * @return int|mixed
      */
     function corpId() {
-    
+        
         if (!Session::exists('menuId')) { return null; }
         $user = Auth::user();
         switch ($user->group->name) {
@@ -205,16 +228,18 @@ class Corp extends Model {
             default:
                 return School::find($user->educator->school_id)->corp_id;
         }
-
+        
     }
-
+    
+    
+    
     /**
      * 企业列表
      *
      * @return mixed
      */
     function datatable() {
-
+        
         $columns = [
             ['db' => 'Corp.id', 'dt' => 0],
             [
@@ -253,11 +278,11 @@ class Corp extends Model {
                 ],
             ],
         ];
-
+        
         return Datatable::simple(
             $this->getModel(), $columns, $joins
         );
-
+        
     }
-
+    
 }

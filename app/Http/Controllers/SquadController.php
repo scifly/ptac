@@ -1,14 +1,13 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Http\Requests\SquadRequest;
-use App\Models\Educator;
-use App\Models\Squad;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Request;
 use Throwable;
+use App\Models\Squad;
+use App\Models\Educator;
+use Illuminate\Http\JsonResponse;
+use App\Http\Requests\SquadRequest;
+use Illuminate\Support\Facades\Request;
 
 /**
  * 班级
@@ -64,13 +63,12 @@ class SquadController extends Controller {
      *
      * @param SquadRequest $request
      * @return JsonResponse
+     * @throws Exception
      */
     public function store(SquadRequest $request) {
         
         return $this->result(
-            $this->class->store(
-                $request->all(), true
-            )
+            $this->class->store($request)
         );
         
     }
@@ -96,13 +94,12 @@ class SquadController extends Controller {
      * @param SquadRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Exception
      */
     public function update(SquadRequest $request, $id) {
         
         return $this->result(
-            $this->class->modify(
-                $request->all(), $id, true
-            )
+            $this->class->modify($request, $id)
         );
         
     }
@@ -117,9 +114,7 @@ class SquadController extends Controller {
     public function destroy($id) {
         
         return $this->result(
-            $this->class->remove(
-                $id, true
-            )
+            $this->class->remove($id)
         );
         
     }

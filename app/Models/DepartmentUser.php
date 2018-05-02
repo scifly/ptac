@@ -37,6 +37,15 @@ class DepartmentUser extends Model {
 
     protected $fillable = ['department_id', 'user_id', 'enabled'];
     
+    protected $user;
+    
+    function __construct(array $attributes = []) {
+        
+        parent::__construct($attributes);
+        $this->user = app()->make('App\Models\User');
+    
+    }
+    
     /**
      * 按UserId保存记录
      *
@@ -82,16 +91,25 @@ class DepartmentUser extends Model {
         try {
             DB::transaction(function () use ($departmentId, $userIds) {
                 $values = [];
+                $userids = [];
                 foreach ($userIds as $userId) {
-                    $values[] = [
-                        'user_id' => $userId,
-                        'department_id' => $departmentId,
-                        'created_at' => now()->toDateTimeString(),
-                        'updated_at' => now()->toDateTimeString(),
-                        'enabled' => Constant::ENABLED,
-                    ];
+                    $du = $this::whereDepartmentId($departmentId)
+                        ->where('user_id', $userId)->first();
+                    if (!$du) {
+                        $values[] = [
+                            'user_id' => $userId,
+                            'department_id' => $departmentId,
+                            'created_at' => now()->toDateTimeString(),
+                            'updated_at' => now()->toDateTimeString(),
+                            'enabled' => Constant::ENABLED,
+                        ];
+                        $userids[] = $userId;
+                    }
                 }
-                $this->insert($values);
+                if (!empty($values)) {
+                    $this->insert($values);
+                    $this->user->batchUpdateWechatUsers($userids);
+                }
             });
         } catch (Exception $e) {
             throw $e;
@@ -112,6 +130,5 @@ class DepartmentUser extends Model {
         return $this->create($data) ? true : false;
         
     }
-    
     
 }

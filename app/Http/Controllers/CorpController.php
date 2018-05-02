@@ -61,13 +61,12 @@ class CorpController extends Controller {
      *
      * @param CorpRequest $request
      * @return JsonResponse
+     * @throws Exception
      */
     public function store(CorpRequest $request) {
         
         return $this->result(
-            $this->corp->store(
-                $request->all(), true
-            )
+            $this->corp->store($request)
         );
         
     }
@@ -93,13 +92,12 @@ class CorpController extends Controller {
      * @param CorpRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Exception
      */
     public function update(CorpRequest $request, $id) {
         
         return $this->result(
-            $this->corp->modify(
-                $request->all(), $id, true
-            )
+            $this->corp->modify($request, $id)
         );
         
     }
@@ -114,7 +112,7 @@ class CorpController extends Controller {
     public function destroy($id) {
         
         return $this->result(
-            $this->corp->remove($id, true)
+            $this->corp->remove($id)
         );
         
     }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use ReflectionClass;
 
 /**
  * App\Models\DepartmentType 部门类型
@@ -83,6 +85,27 @@ class DepartmentType extends Model {
 
         return $removed ? true : false;
 
+    }
+    
+    /**
+     * 返回指定model（运营/企业/学校/年级/班级)对应的部门类型id
+     *
+     * @param Model $model
+     * @return int|mixed
+     * @throws \ReflectionException
+     */
+    function dtId(Model $model) {
+    
+        $dtType = array_search(
+            lcfirst((new ReflectionClass(get_class($model)))->getShortName()),
+            Constant::DEPARTMENT_TYPES
+        );
+        
+        return [
+            $dtType,
+            $this->where('name', $dtType)->first()->id
+        ];
+        
     }
     
     /**

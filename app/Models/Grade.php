@@ -1,14 +1,12 @@
 <?php
 namespace App\Models;
 
-use App\Events\GradeCreated;
-use App\Events\GradeDeleted;
-use App\Events\GradeUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
+use App\Http\Requests\GradeRequest;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -19,6 +17,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use ReflectionException;
+use Throwable;
 
 /**
  * App\Models\Grade 年级
@@ -54,6 +55,15 @@ class Grade extends Model {
         'name', 'school_id', 'department_id',
         'educator_ids', 'enabled',
     ];
+    
+    protected $d, $m;
+    
+    function __construct(array $attributes = []) {
+        
+        parent::__construct($attributes);
+        $this->d = app()->make('App\Models\Department');
+    
+    }
     
     /**
      * 返回对应的部门对象
@@ -113,42 +123,53 @@ class Grade extends Model {
     /**
      * 保存年级
      *
-     * @param array $data
-     * @param bool $fireEvent
+     * @param GradeRequest $request
      * @return bool
+     * @throws Exception
      */
-    function store(array $data, $fireEvent = false) {
+    function store(GradeRequest $request) {
         
-        $grade = self::create($data);
-        if ($grade && $fireEvent) {
-            event(new GradeCreated($grade));
-            
-            return true;
+        $grade = null;
+        try {
+            DB::transaction(function () use ($request, &$grade) {
+                # 创建年级、对应的部门
+                $grade = $this->create($request->all());
+                $department = $this->d->createDepartment($grade, 'school');
+                # 更新“年级”的部门id
+                $grade->update([
+                    'department_id' => $department->id
+                ]);
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
         
-        return $grade ? true : false;
+        return $grade;
         
     }
     
     /**
      * 更新年级
      *
-     * @param array $data
+     * @param GradeRequest $request
      * @param $id
-     * @param bool $fireEvent
      * @return bool
+     * @throws Exception
      */
-    function modify(array $data, $id, $fireEvent = false) {
+    function modify(GradeRequest $request, $id) {
         
-        $grade = self::find($id);
-        $updated = $grade->update($data);
-        if ($updated && $fireEvent) {
-            event(new GradeUpdated($grade));
-            
-            return true;
+        $grade = null;
+        try {
+            DB::transaction(function () use ($request, $id, &$grade) {
+                $grade = $this->find($id);
+                $grade->update($request->all());
+                $this->d->modifyDepartment($this->find($id));
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
-        
-        return $updated ? true : false;
+
+        return $grade ? $this->find($id) : null;
         
     }
     
@@ -156,24 +177,20 @@ class Grade extends Model {
      * 删除年级
      *
      * @param $id
-     * @param bool $fireEvent
      * @return bool
-     * @throws Exception
+     * @throws ReflectionException
+     * @throws Throwable
      */
-    function remove($id, $fireEvent = false) {
+    function remove($id) {
         
         $grade = self::find($id);
-        if (!$grade) {
-            return false;
+        if ($this->removable($grade)) {
+            $department = $grade->department;
+            return $grade->delete()
+                && $this->d->removeDepartment($department);
         }
-        $removed = self::removable($grade) ? $grade->delete() : false;
-        if ($removed && $fireEvent) {
-            event(new GradeDeleted($grade));
-            
-            return true;
-        }
-        
-        return $removed ? true : false;
+
+        return false;
         
     }
     

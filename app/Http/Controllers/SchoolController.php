@@ -61,13 +61,12 @@ class SchoolController extends Controller {
      *
      * @param SchoolRequest $request
      * @return JsonResponse|string
+     * @throws Exception
      */
     public function store(SchoolRequest $request) {
         
         return $this->result(
-            $this->school->store(
-                $request->all(), true
-            )
+            $this->school->store($request)
         );
         
     }
@@ -108,13 +107,12 @@ class SchoolController extends Controller {
      * @param SchoolRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Exception
      */
     public function update(SchoolRequest $request, $id) {
         
         return $this->result(
-            $this->school->modify(
-                $request->all(), $id, true
-            )
+            $this->school->modify($request, $id)
         );
         
     }
@@ -129,7 +127,7 @@ class SchoolController extends Controller {
     public function destroy($id) {
         
         return $this->result(
-            $this->school->remove($id, true)
+            $this->school->remove($id)
         );
         
     }

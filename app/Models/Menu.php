@@ -10,7 +10,6 @@ use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use App\Http\Requests\MenuRequest;
-use App\Models\MenuTab as MenuTab;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -77,7 +76,15 @@ class Menu extends Model {
         'action_id', 'icon_id', 'enabled',
     ];
     
+    protected $mt, $department;
     
+    function __construct(array $attributes = []) {
+        
+        parent::__construct($attributes);
+        $this->mt = app()->make('App\Models\MenuType');
+        $this->department = app()->make('App\Models\Department');
+    
+    }
     
     /**
      * 获取菜单所属类型
@@ -224,23 +231,48 @@ class Menu extends Model {
      */
     function store(MenuRequest $request) {
         
+        $menu = null;
         # 创建新的Menu记录及卡片绑定记录
         try {
-            DB::transaction(function () use ($request) {
-                $menu = $request->all();
-                $menu['position'] = self::all()->count();
-                $m = self::create($menu);
-                $menuTab = new MenuTab();
+            DB::transaction(function () use ($request, &$menu) {
+                $data = $request->all();
+                $data['position'] = $this->all()->max('position') + 1;
+                $menu = $this->create($menu);
                 $tabIds = $request->input('tab_ids', []);
-                $menuTab->storeByMenuId($m->id, $tabIds);
+                $this->mt->storeByMenuId($menu->id, $tabIds);
             });
-            
         } catch (Exception $e) {
             throw $e;
         }
         
-        return true;
+        return $menu;
         
+    }
+    
+    /**
+     * 创建并返回指定（运营/企业/学校）对应的菜单对象
+     *
+     * @param Model $model
+     * @param null $beLongsTo
+     * @return $this|Model
+     * @throws \ReflectionException
+     */
+    function storeMenu(Model $model, $beLongsTo = null) {
+    
+        list($iconId, $mtId) = $this->mt->mtIds($model);
+
+        return $this->create([
+            'parent_id' => $beLongsTo
+                ? $model->{$beLongsTo}->menu_id
+                : $this->where('parent_id', null)->first()->id,
+            'name' => $model->{'name'},
+            'remark' => $model->{'remark'},
+            'menu_type_id' => $mtId,
+            'icon_id' => $iconId,
+            'position' => $this->all()->max('position') + 1,
+            'enabled' => $model->{'enabled'}
+        ]);
+    
     }
     
     /**
@@ -320,65 +352,29 @@ class Menu extends Model {
     }
     
     /**
-     * 删除Menu记录
-     *
-     * @param $menuId
-     * @return bool|mixed
-     * @throws Throwable
-     */
-    function remove($menuId) {
-        
-        $menu = self::find($menuId);
-        if (!isset($menu)) {
-            return false;
-        }
-        try {
-            DB::transaction(function () use ($menuId, $menu) {
-                # 删除指定的Menu记录
-                $menu->delete();
-                # 移除指定菜单与卡片的绑定记录
-                MenuTab::whereMenuId($menuId)->delete();
-                # 删除指定菜单的子所有菜单记录, 以及与卡片的绑定记录
-                $subMenus = self::whereParentId($menuId)->get();
-                foreach ($subMenus as $subMenu) {
-                    self::remove($subMenu->id);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    
-    /**
      * 修改Menu记录
      *
      * @param MenuRequest $request
-     * @param $menuId
+     * @param $id
      * @return bool|mixed
      * @throws Throwable
      */
-    function modify(MenuRequest $request, $menuId) {
+    function modify(MenuRequest $request, $id) {
         
-        $menu = self::find($menuId);
-        if (!isset($menu)) {
-            return false;
-        }
+        $menu = null;
         try {
-            DB::transaction(function () use ($request, $menuId, $menu) {
+            DB::transaction(function () use ($request, $id, &$menu) {
+                $menu = $this->find($id);
                 # 更新指定Menu记录
                 $menu->update($request->all());
                 # 更新与指定Menu记录绑定的卡片记录
-                $menuTab = new MenuTab();
-                $menuTab::whereMenuId($menuId)->delete();
+                $this->mt::whereMenuId($id)->delete();
                 $tabIds = $request->input('tab_ids', []);
                 $uri = $request->input('uri', '');
                 if (empty($uri)) {
                     if (!empty($tabIds)) {
                         if ($menu->children->count() == 0) {
-                            $menuTab->storeByMenuId($menuId, $tabIds);
+                            $this->mt->storeByMenuId($id, $tabIds);
                         }
                     } else {
                         $menu->update(['enabled' => 0]);
@@ -389,7 +385,59 @@ class Menu extends Model {
             throw $e;
         }
         
-        return true;
+        return $menu ? $this->find($id) : null;
+        
+    }
+    
+    /**
+     * 更新(运营/企业/学校)对应的菜单
+     *
+     * @param Model $model
+     * @param null $belongsTo
+     * @return bool
+     */
+    function modifyMenu(Model $model, $belongsTo = null) {
+        
+        return $this->update([
+            'name' => $model->{'name'},
+            'remark' => $model->{'remark'},
+            'parent_id' => $belongsTo
+                ? $this->{$belongsTo}->deparmtent_id
+                : $this::whereParentId(null)->first()->id,
+            'enabled' => $model->{'enabled'}
+        ]);
+        
+    }
+    
+    /**
+     * 删除Menu记录
+     *
+     * @param $menuId
+     * @return bool|mixed
+     * @throws Throwable
+     */
+    function remove($menuId) {
+        
+        $menu = self::find($menuId);
+        
+        return $this->removable($menu)
+            ? $menu->delete()
+            : false;
+        
+    }
+    
+    /**
+     * 移除(运营/企业/学校)对应的菜单
+     *
+     * @param Model $model
+     * @return bool|mixed
+     * @throws Throwable
+     */
+    function removeMenu(Model $model) {
+        
+        return $this->remove(
+            $this->find($model->{'menu_id'})->id
+        );
         
     }
     
@@ -399,6 +447,7 @@ class Menu extends Model {
      * @param null $id
      * @param null $parentId
      * @return bool|JsonResponse
+     * @throws Exception
      */
     function index($id = null, $parentId = null) {
     
@@ -424,8 +473,12 @@ class Menu extends Model {
                 __('messages.not_found')
             );
             if ($this->movable($id, $parentId)) {
-                $moved = $this->move($id, $parentId, true);
-                abort_if(!$moved, HttpStatusCode::BAD_REQUEST, __('messages.bad_request'));
+                $moved = $this->move($id, $parentId);
+                abort_if(
+                    !$moved,
+                    HttpStatusCode::BAD_REQUEST,
+                    __('messages.bad_request')
+                );
             }
         }
         
@@ -438,24 +491,36 @@ class Menu extends Model {
      *
      * @param $id
      * @param $parentId
-     * @param bool $fireEvent
      * @return bool
+     * @throws Exception
      */
-    function move($id, $parentId, $fireEvent = false) {
+    private function move($id, $parentId) {
         
-        $menu = $this->find($id);
-        if (!isset($menu)) {
-            return false;
-        }
-        $menu->parent_id = $parentId === '#' ? null : intval($parentId);
-        $moved = $menu->save();
-        if ($moved && $fireEvent) {
-            event(new MenuMoved($this->find($id)));
-            
-            return true;
+        $moved = false;
+        try {
+            DB::transaction(function () use ($id, $parentId, &$moved) {
+                $menu = $this->find($id);
+                if (!isset($menu)) {
+                    $moved = false;
+                } else {
+                    $menu->parent_id = $parentId === '#' ? null : intval($parentId);
+                    $moved = $menu->save();
+                    /** 当企业类菜单所属运营类菜单发生变化时，更新企业所属运营者及所属部门 */
+                    if ($moved && $menu->menuType->name == '企业') {
+                        $corp = Corp::whereMenuId($menu->id)->first();
+                        $company = Company::whereMenuId($menu->parent_id)->first();
+                        $data = ['parent_id' => $company->department_id];
+                        $moved = $moved && ($this->department->modify($data, $corp->department_id) ? true : false);
+                        $data = ['company_id' => $company->id];
+                        $moved = $moved && $corp->update($data);
+                    }
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
         
-        return $moved ? true : false;
+        return $moved;
         
     }
     
@@ -488,21 +553,35 @@ class Menu extends Model {
                     : Snippet::MENU_DEFAULT_ICON;
                 $name = $iconHtml . '&nbsp;&nbsp;' . $name;
             }
-            $type = MenuType::find($menu['menu_type_id'])->name;
             $parentId = isset($menu['parent_id']) ? $menu['parent_id'] : '#';
+            $menuType = MenuType::find($menu['menu_type_id'])->name;
+            $type = Constant::NODE_TYPES[$menuType]['type'];
+            $color = Constant::NODE_TYPES[$menuType]['color'];
             $text = sprintf(
                 Snippet::NODE_TEXT,
-                $menu['enabled'] ? Constant::NODE_TYPES[$type]['color'] : 'text-gray',
+                $menu['enabled'] ? $color : 'text-gray',
                 $name
             );
+            switch ($type) {
+                case '企业':
+                    $corp_id = Corp::whereMenuId($key)->first()->id;
+                    break;
+                case '学校':
+                    $corp_id = School::whereMenuId($key)->first()->corp_id;
+                    break;
+                default:
+                    $corp_id = null;
+                    break;
+            }
             $tree[] = [
                 'id'     => $key,
                 'parent' => $parentId,
                 'text'   => $text,
-                'type'   => Constant::NODE_TYPES[$type]['type'],
+                'type'   => $type,
+                'corp_id' => $corp_id
             ];
         }
-        
+    
         return response()->json($tree);
         
     }
@@ -590,7 +669,14 @@ class Menu extends Model {
             case '企业':
                 return $parentType == '运营';
             case '学校':
-                return $parentType == '企业';
+                $school = School::whereMenuId($id)->first();
+                if ($parentType !== '企业') {
+                    return false;
+                } else {
+                    $corp = Corp::whereMenuId($parentId)->first();
+                    # 如果学校所属企业发生变化，则不允许移动
+                    return $school->corp_id == $corp->id;
+                }
             case '其他':
                 return true;
             default:

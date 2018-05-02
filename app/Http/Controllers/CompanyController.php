@@ -65,13 +65,12 @@ class CompanyController extends Controller {
      *
      * @param CompanyRequest $request
      * @return JsonResponse
+     * @throws Exception
      */
     public function store(CompanyRequest $request) {
         
         return $this->result(
-            $this->company->store(
-                $request->all(), true
-            )
+            $this->company->store($request)
         );
         
     }
@@ -97,13 +96,12 @@ class CompanyController extends Controller {
      * @param CompanyRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Exception
      */
     public function update(CompanyRequest $request, $id) {
         
         return $this->result(
-            $this->company->modify(
-                $request->all(), $id, true
-            )
+            $this->company->modify($request, $id)
         );
         
     }
@@ -118,7 +116,7 @@ class CompanyController extends Controller {
     public function destroy($id) {
         
         return $this->result(
-            $this->company->remove($id, true)
+            $this->company->remove($id)
         );
         
     }

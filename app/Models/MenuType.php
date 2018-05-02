@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use App\Facades\DatatableFacade as Datatable;
@@ -11,6 +12,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use ReflectionClass;
+use ReflectionException;
 
 /**
  * App\Models\MenuType 菜单类型
@@ -35,7 +38,20 @@ class MenuType extends Model {
     use ModelTrait;
 
     protected $fillable = ['name', 'remark', 'enabled'];
-
+ 
+    protected $icons;
+    
+    function __construct(array $attributes = []) {
+        
+        parent::__construct($attributes);
+        $this->icons = [
+            'company' => Icon::whereName('fa fa-building')->first()->id,
+            'corp'    => Icon::whereName('fa fa-weixin')->first()->id,
+            'school'  => Icon::whereName('fa fa-university')->first()->id,
+        ];
+        
+    }
+    
     /**
      * 获取指定菜单类型所包含的所有菜单对象
      *
@@ -87,6 +103,27 @@ class MenuType extends Model {
 
         return $menuType->removable($menuType) ? $menuType->delete() : false;
 
+    }
+    
+    /**
+     * 返回指定model（运营/企业/学校)对应的菜单类型id和图标id
+     *
+     * @param Model $model
+     * @return array
+     * @throws ReflectionException
+     */
+    function mtIds(Model $model): array {
+        
+        $mtType = array_search(
+            lcfirst((new ReflectionClass(get_class($model)))->getShortName()),
+            Constant::MENU_TYPES
+        );
+        
+        return [
+            $this->icons[$mtType],
+            $this->where('name', $mtType)->first()->id
+        ];
+        
     }
     
     function datatable() {

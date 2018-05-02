@@ -50,7 +50,12 @@ class TestController extends Controller {
      */
     public function index(Request $request) {
 
-        
+        $a = [
+            1 => 'ab',
+            2 => 'cd',
+            3 => 'ef'
+        ];
+        dd(array_slice($a, 1));
         dd((new ReflectionClass(get_class($this)))->getShortName());
         $names = ['运营', '企业', '学校'];
         $arrs = array_map(function ($name) {

@@ -350,21 +350,21 @@ class DepartmentEventSubscriber {
         
         $e = 'App\\Events\\';
         $l = 'App\\Listeners\\DepartmentEventSubscriber@';
-        $events->listen($e . 'CompanyCreated', $l . 'onCompanyCreated');
-        $events->listen($e . 'CompanyUpdated', $l . 'onCompanyUpdated');
-        $events->listen($e . 'CompanyDeleted', $l . 'onCompanyDeleted');
-        $events->listen($e . 'CorpCreated', $l . 'onCorpCreated');
-        $events->listen($e . 'CorpUpdated', $l . 'onCorpUpdated');
-        $events->listen($e . 'CorpDeleted', $l . 'onCorpDeleted');
-        $events->listen($e . 'SchoolCreated', $l . 'onSchoolCreated');
-        $events->listen($e . 'SchoolUpdated', $l . 'onSchoolUpdated');
-        $events->listen($e . 'SchoolDeleted', $l . 'onSchoolDeleted');
-        $events->listen($e . 'GradeCreated', $l . 'onGradeCreated');
-        $events->listen($e . 'GradeUpdated', $l . 'onGradeUpdated');
-        $events->listen($e . 'GradeDeleted', $l . 'onGradeDeleted');
-        $events->listen($e . 'ClassCreated', $l . 'onClassCreated');
-        $events->listen($e . 'ClassUpdated', $l . 'onClassUpdated');
-        $events->listen($e . 'ClassDeleted', $l . 'onClassDeleted');
+        // $events->listen($e . 'CompanyCreated', $l . 'onCompanyCreated');
+        // $events->listen($e . 'CompanyUpdated', $l . 'onCompanyUpdated');
+        // $events->listen($e . 'CompanyDeleted', $l . 'onCompanyDeleted');
+        // $events->listen($e . 'CorpCreated', $l . 'onCorpCreated');
+        // $events->listen($e . 'CorpUpdated', $l . 'onCorpUpdated');
+        // $events->listen($e . 'CorpDeleted', $l . 'onCorpDeleted');
+        // $events->listen($e . 'SchoolCreated', $l . 'onSchoolCreated');
+        // $events->listen($e . 'SchoolUpdated', $l . 'onSchoolUpdated');
+        // $events->listen($e . 'SchoolDeleted', $l . 'onSchoolDeleted');
+        // $events->listen($e . 'GradeCreated', $l . 'onGradeCreated');
+        // $events->listen($e . 'GradeUpdated', $l . 'onGradeUpdated');
+        // $events->listen($e . 'GradeDeleted', $l . 'onGradeDeleted');
+        // $events->listen($e . 'ClassCreated', $l . 'onClassCreated');
+        // $events->listen($e . 'ClassUpdated', $l . 'onClassUpdated');
+        // $events->listen($e . 'ClassDeleted', $l . 'onClassDeleted');
         $events->listen($e . 'MenuMoved', $l . 'onMenuMoved');
         
     }

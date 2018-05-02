@@ -2,27 +2,26 @@
 
 namespace App\Models;
 
-use App\Events\DepartmentCreated;
-use App\Events\DepartmentMoved;
-use App\Events\DepartmentUpdated;
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use Throwable;
+use Carbon\Carbon;
+use App\Helpers\Snippet;
+use App\Helpers\Constant;
+use App\Helpers\ModelTrait;
+use App\Helpers\HttpStatusCode;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use App\Jobs\ManageWechatDepartment;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 
 /**
  * App\Models\Department 部门
@@ -67,66 +66,70 @@ class Department extends Model {
         'remark', 'order', 'enabled',
     ];
 
-    protected $menu;
+    protected $menu, $dt, $du;
     
     function __construct(array $attributes = []) {
         
         parent::__construct($attributes);
+        /** @var Menu menu */
         $this->menu = app()->make('App\Models\Menu');
-        
+        /** @var DepartmentType dt */
+        $this->dt = app()->make('App\Models\DepartmentType');
+        /** @var DepartmentUser du */
+        $this->du = app()->make('App\Modles\DepartmentUser');
     }
     
     /**
-     * 返回所属的部门类型对象
+     * 部门类型
      *
      * @return BelongsTo
      */
     function departmentType() { return $this->belongsTo('App\Models\DepartmentType'); }
 
     /**
-     * 返回对应的运营者对象
+     * 运营者
      *
      * @return HasOne
      */
     function company() { return $this->hasOne('App\Models\Company'); }
 
     /**
-     * 返回对应的班级对象
+     * 企业
      *
      * @return HasOne
      */
     function corp() { return $this->hasOne('App\Models\Corp'); }
 
     /**
-     * 返回对应的学校对象
+     * 学校
      *
      * @return HasOne
      */
     function school() { return $this->hasOne('App\Models\School'); }
 
     /**
-     * 返回对应的年级对象
+     * 年级
      *
      * @return HasOne
      */
     function grade() { return $this->hasOne('App\Models\Grade'); }
 
     /**
-     * 返回对应的班级对象
+     * 班级
      *
      * @return HasOne
      */
     function squad() { return $this->hasOne('App\Models\Squad'); }
 
     /**
-     * 获取指定部门包含的所有用户对象
+     * 用户
      *
      * @return BelongsToMany
      */
     function users() { return $this->belongsToMany('App\Models\User', 'departments_users'); }
 
     /**
-     * 返回上级部门对象
+     * 直接上级部门
      *
      * @return BelongsTo
      */
@@ -137,7 +140,7 @@ class Department extends Model {
     }
 
     /**
-     * 获取指定部门的子部门
+     * 直接子部门
      *
      * @return HasMany
      */
@@ -230,60 +233,113 @@ class Department extends Model {
         return $departmentList;
 
     }
-
+    
     /**
      * 创建部门
      *
      * @param array $data
-     * @param bool $fireEvent
-     * @return $this|bool|Model
+     * @return Department|bool|Model
      */
-    function store(array $data, $fireEvent = false) {
+    function store(array $data) {
 
         $department = $this->create($data);
-        if ($department && $fireEvent) {
-            event(new DepartmentCreated($department));
-            return $department;
+        if ($department && $this->needSync($department)) {
+            ManageWechatDepartment::dispatch($department, 'create');
         }
 
-        return $department ?? false;
+        return $department;
 
     }
     
-    // function createDepartment(Model $model, $belongsTo = null) {
-    //
-    //     return $this->store([
-    //         'parent_id'          => isset($belongsTo)
-    //             ? $model->{$belongsTo}->department_id
-    //             : $this::whereParentId(null)->first()->id,
-    //         'name'               => $model->{'name'},
-    //         'remark'             => $model->{'remark'},
-    //         'department_type_id' => $this->typeId($model->),
-    //         'order'              => $this->department->all()->max('order') + 1,
-    //         'enabled'            => $$model->enabled,
-    //     ]);
-    //
-    // }
+    /**
+     * 创建并返回指定（运营/企业/学校/年级/班级）对应的部门对象
+     *
+     * @param Model $model
+     * @param null $belongsTo
+     * @return Department|bool|Model
+     * @throws Exception
+     */
+    function storeDepartment(Model $model, $belongsTo = null) {
+    
+        $department = null;
+        try {
+            DB::transaction(function () use ($model, $belongsTo, &$department) {
+                list($dtType, $dtId) = $this->dt->dtId($model);
+                $department = $this->store([
+                    'parent_id'          => $belongsTo
+                        ? $model->{$belongsTo}->department_id
+                        : $this::whereParentId(null)->first()->id,
+                    'name'               => $model->{'name'},
+                    'remark'             => $model->{'remark'},
+                    'department_type_id' => $dtId,
+                    'order'              => $this->all()->max('order') + 1,
+                    'enabled'            => $model->{'enabled'},
+                ]);
+                # 创建年级/班级主任用户与部门的绑定关系
+                $this->updateDu($dtType, $model, $department);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return $department;
+    
+    }
     
     /**
      * 更新部门
      *
      * @param array $data
      * @param $id
-     * @param bool $fireEvent
      * @return bool|Collection|Model|null|static|static[]
      */
-    function modify(array $data, $id, $fireEvent = false) {
+    function modify(array $data, $id) {
 
         $department = self::find($id);
         $updated = $department->update($data);
-        if ($updated && $fireEvent) {
-            event(new DepartmentUpdated($department));
-            return $department;
+        if ($this->needSync($department) && $updated) {
+            ManageWechatDepartment::dispatch($this->find($id), 'update');
         }
+        
+        return $updated ?? $this->find($id);
 
-        return $updated ? $department : false;
-
+    }
+    
+    /**
+     * 更新（运营/企业/学校/年级/班级）对应的部门
+     *
+     * @param Model $model
+     * @param null $beLongsTo
+     * @return void
+     * @throws Exception
+     */
+    function modifyDepartment(Model $model, $beLongsTo = null) {
+        
+        try {
+            DB::transaction(function () use ($model, $beLongsTo) {
+                list($dtType, $dtId) = $this->dt->dtId($model);
+                $data = [
+                    'name' => $model->{'name'},
+                    'remark' => $model->{'remark'},
+                    'department_type_id' => $dtId,
+                    'enabled' => $model->{'enabled'}
+                ];
+                /**
+                 * 如果部门类型为年级或班级，则不更新其父部门id，
+                 * 因为年级或班级可能是其他类型部门的子部门
+                 */
+                if (!$beLongsTo || in_array($beLongsTo, ['company', 'corp'])) {
+                    $data['parent_id'] = $beLongsTo
+                        ? $this->{$beLongsTo}->department_id
+                        : $this::whereParentId(null)->first()->id;
+                }
+                $department = $this->modify($data, $model->{'department_id'});
+                $this->updateDu($dtType, $model, $department);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
     }
     
     /**
@@ -292,55 +348,35 @@ class Department extends Model {
      * @param $id
      * @return bool|null
      * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     function remove($id) {
 
-        $department = self::find($id);
-        if (!$department) { return false; }
-        if (!self::removable($department)) { return false; }
-        try {
-            DB::transaction(function () use ($id, $department) {
-                # 删除指定的Department记录
-                $department->delete();
-                # 移除指定部门与用户的绑定记录
-                $departmentUser = new DepartmentUser();
-                $departmentUser::whereDepartmentId($id)->delete();
-                # 删除指定部门的所有子部门记录, 以及与用户的绑定记录
-                $subDepartments = self::whereParentId($id)->get();
-                foreach ($subDepartments as $department) {
-                    self::remove($department->id);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
+        $department = $this->find($id);
+        if ($this->removable($department)) {
+            if ($this->needSync($department)) {
+                ManageWechatDepartment::dispatch($department, 'delete');
+            }
+            return $department->delete();
         }
         
-        return true;
+        return false;
         
     }
-
+    
     /**
-     * 更改部门所处位置
+     * 删除（运营/企业/学校）对应的部门
      *
-     * @param $id
-     * @param $parentId
-     * @param bool $fireEvent
-     * @return bool
+     * @param Model $model
+     * @return bool|null
+     * @throws Throwable
      */
-    function move($id, $parentId, $fireEvent = false) {
-
-        $deparment = self::find($id);
-        if (!isset($deparment)) { return false; }
-        $deparment->parent_id = $parentId === '#' ? null : intval($parentId);
-        $moved = $deparment->save();
-        if ($moved && $fireEvent) {
-            event(new DepartmentMoved(self::find($id)));
-            return true;
-        }
-
-        return $moved ? true : false;
-
+    function removeDepartment(Model $model) {
+        
+        return $this->remove(
+            $this->find($model->{'department_id'})->id
+        );
+        
     }
     
     /**
@@ -349,6 +385,7 @@ class Department extends Model {
      * @param null $id
      * @param null $parentId
      * @return bool|JsonResponse
+     * @throws Exception
      */
     function index($id = null, $parentId = null) {
 
@@ -378,14 +415,16 @@ class Department extends Model {
                 HttpStatusCode::NOT_FOUND
             );
             if ($department->movable($id, $parentId)) {
-                $department->move($id, $parentId, true);
+                $moved = $department->move($id, $parentId);
+                if ($moved && $this->needSync($department)) {
+                    ManageWechatDepartment::dispatch($department, 'update');
+                }
             }
         }
         
         return '';
         
     }
-    
     /**
      * 获取用于显示jstree的部门数据
      *
@@ -412,13 +451,19 @@ class Department extends Model {
             $departmentType = DepartmentType::find($departmentTypeId)->name;
             $name = $departments[$i]['name'];
             $enabled = $departments[$i]['enabled'];
+            
             $color = Constant::NODE_TYPES[$departmentType]['color'];
+            $type = Constant::DEPARTMENT_TYPES[$departmentType];
+            $text = sprintf(Snippet::NODE_TEXT, $enabled ? $color : 'text-gray', $name);
+            $selectable = $isSuperRole ? 1 : (in_array($id, $this->departmentIds($user->id)) ? 1 : 0);
+            $corp_id = !in_array($type, ['root', 'company']) ? $this->corpId($id) : null;
             $nodes[] = [
                 'id' => $id,
                 'parent' => $parentId,
-                'text' => sprintf(Snippet::NODE_TEXT, $enabled ? $color : 'text-gray', $name),
-                'type' => Constant::DEPARTMENT_TYPES[$departmentType],
-                'selectable' => $isSuperRole ? 1 : (in_array($id, $this->departmentIds($user->id)) ? 1 : 0)
+                'text' => $text,
+                'type' => $type,
+                'selectable' => $selectable,
+                'corp_id' => $corp_id
             ];
         }
 
@@ -496,38 +541,7 @@ class Department extends Model {
         return $data;
 
     }
-
-    /**
-     * 判断指定的节点能否移至指定的节点下
-     *
-     * @param $id
-     * @param $parentId
-     * @return bool
-     */
-    function movable($id, $parentId) {
-
-        if (!isset($id, $parentId)) { return false; }
-        $allowedDepartmentIds = $this->departmentIds(Auth::id());
-        # 如果部门(被移动的部门和目标部门）不在当前用户的可见范围内，则抛出401异常
-        abort_if(
-            !in_array($id, $allowedDepartmentIds) || !in_array($parentId, $allowedDepartmentIds),
-            HttpStatusCode::UNAUTHORIZED,
-            __('messages.forbidden')
-        );
-        $type = self::find($id)->departmentType->name;
-        $parentType = self::find($parentId)->departmentType->name;
-        switch ($type) {
-            case '运营': return $parentType == '根';
-            case '企业': return $parentType == '运营';
-            case '学校': return $parentType == '企业';
-            case '年级': return $parentType == '学校' or $parentType == '其他';
-            case '班级': return $parentType == '年级' or $parentType == '其他';
-            case '其他': return !($parentType == '企业' or $parentType == '运营');
-            default: return false;
-        }
-
-    }
-
+    
     /**
      * 根据年级的部门ID获取所属学校的ID
      *
@@ -545,7 +559,6 @@ class Department extends Model {
         }
 
     }
-
     /**
      * 根据班级的部门ID获取所属年级的ID
      *
@@ -646,7 +659,7 @@ class Department extends Model {
         );
     
     }
-
+    
     /**
      * 获取一个数组部门下 连同子部门下的所有用户
      *
@@ -675,7 +688,7 @@ class Department extends Model {
         return $users;
 
     }
-
+    
     /**
      * 返回指定部门所有子部门的id
      *
@@ -713,28 +726,51 @@ class Department extends Model {
         return $department->id;
         
     }
-
+    
     /**
-     * 返回用户所处的顶级部门id
+     * 返回指定部门所属的企业id
      *
-     * @return int
+     * @param $id
+     * @return int|mixed
      */
-    private function topDeptId() {
+    function corpId($id) {
         
-        $ids = Auth::user()->departments->pluck('id')->toArray();
-        $levels = [];
-        foreach ($ids as $id) {
-            $level = 0;
-            $levels[$id] = self::level($id, $level);
+        $department = $this->find($id);
+        switch ($department->departmentType->name) {
+            case '运营': return null;
+            case '企业': return Corp::whereDepartmentId($id)->first()->id;
+            default:
+                $parent = $this->find($id)->parent;
+                while ($parent->departmentType->name != '企业') {
+                    $id = $parent->id;
+                    $this->corpId($id);
+                }
+                return Corp::whereDepartmentId($parent->id)->first()->id;
         }
-        asort($levels);
-        reset($levels);
-        $topLevelId = key($levels);
-        
-        return self::find($topLevelId)->parent->id;
         
     }
-
+    /**
+     * 更新年级/班级主任与部门的绑定关系
+     *
+     * @param $dtType
+     * @param $model
+     * @param $department
+     */
+    function updateDu($dtType, $model, $department): void {
+        
+        if (in_array($dtType, ['grade', 'squad'])) {
+            $users = User::with('educators')
+                ->whereIn('educator.id', explode(',', $model->{'educator_ids'}))
+                ->get();
+            if (!empty($users)) {
+                $this->du->storeByDepartmentId(
+                    $department->id, $users->pluck('user.id')
+                );
+            }
+        }
+        
+    }
+    
     /**
      * 根据Department ID返回所有下级部门
      *
@@ -750,7 +786,7 @@ class Department extends Model {
         }
 
     }
-
+    
     /**
      * 根据Department ID返回所有下级部门 含本身
      *
@@ -789,5 +825,148 @@ class Department extends Model {
         return $ids;
     
     }
-
+    
+    /**
+     * 判断指定的节点能否移至指定的节点下
+     *
+     * @param $id
+     * @param $parentId
+     * @return bool
+     */
+    private function movable($id, $parentId) {
+        
+        if (!isset($id, $parentId)) { return false; }
+        $allowedDepartmentIds = $this->departmentIds(Auth::id());
+        # 如果部门(被移动的部门和目标部门）不在当前用户的可见范围内，则抛出401异常
+        abort_if(
+            !in_array($id, $allowedDepartmentIds) ||
+            !in_array($parentId, $allowedDepartmentIds),
+            HttpStatusCode::UNAUTHORIZED,
+            __('messages.forbidden')
+        );
+        $department = $this->find($id);
+        $parentDepartment = $this->find($parentId);
+        $type = $department->departmentType->name;
+        $parentType = $parentDepartment->departmentType->name;
+        switch ($type) {
+            case '运营':
+                return $parentType == '根';
+            case '企业':
+                return $parentType == '运营';
+            case '学校':
+                return $parentType == '企业'
+                    ? $this->corpId($id) == $this->corpId($parentId)
+                    : false;
+            case '年级':
+                return in_array($parentType, ['学校', '其他'])
+                    ? $this->corpId($id) == $this->corpId($parentId)
+                    : false;
+            case '班级':
+                return in_array($parentType, ['年级', '其他'])
+                    ? $this->corpId($id) == $this->corpId($parentId)
+                    : false;
+            case '其他':
+                return !in_array($parentType, ['运营', '企业'])
+                    && $this->corpId($id) == $this->corpId($parentId);
+            default:
+                return false;
+        }
+        
+    }
+    
+    /**
+     * 判断指定部门是否需要同步到企业微信
+     *
+     * @param Department $department
+     * @return bool
+     */
+    private function needSync(Department $department) {
+        
+        return !in_array(
+            $department->departmentType->name, ['根', '运营', '企业']
+        );
+        
+    }
+    
+    /**
+     * 更改部门所处位置
+     *
+     * @param $id
+     * @param $parentId
+     * @return bool
+     * @throws Exception
+     */
+    private function move($id, $parentId) {
+        
+        $moved = false;
+        try {
+            DB::transaction(function () use ($id, $parentId, &$moved) {
+                $deparment = $this->find($id);
+                if (!isset($deparment)) {
+                    $moved = false;
+                } else {
+                    $deparment->parent_id = $parentId === '#' ? null : intval($parentId);
+                    $moved = $deparment->save();
+                    # 更新部门对应企业/学校/年级/班级、菜单等对象
+                    if ($moved) {
+                        switch ($deparment->departmentType->name) {
+                            case '企业':
+                                $corp = Corp::whereDepartmentId($id)->first();
+                                $company = Company::whereDepartmentId($parentId)->first();
+                                $corp->update(['company_id' => $company->id]);
+                                Menu::find($corp->menu_id)->first()->update([
+                                    'parent_id' => Menu::find($company->menu_id)->first()->id
+                                ]);
+                                break;
+                            case '学校':
+                                break;
+                            case '年级':
+                                $grade = Grade::whereDepartmentId($id)->first();
+                                $parent = $this->find($parentId);
+                                if ($parent->departmentType->name == '学校') {
+                                    $grade->update(['school_id' => $parent->school->id]);
+                                }
+                                break;
+                            case '班级':
+                                $class = Squad::whereDepartmentId($id)->first();
+                                $parent = $this->find($parentId);
+                                if ($parent->departmentType->name == '年级') {
+                                    $class->update(['grade_id' => $parent->grade->id]);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return $moved;
+        
+    }
+    
+    /**
+     * 返回用户所处的顶级部门id
+     *
+     * @return int
+     */
+    private function topDeptId() {
+        
+        $ids = Auth::user()->departments->pluck('id')->toArray();
+        $levels = [];
+        foreach ($ids as $id) {
+            $level = 0;
+            $levels[$id] = self::level($id, $level);
+        }
+        asort($levels);
+        reset($levels);
+        $topLevelId = key($levels);
+        
+        return self::find($topLevelId)->parent->id;
+        
+    }
+    
 }

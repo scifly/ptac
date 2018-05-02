@@ -132,12 +132,12 @@ class Controller extends BaseController {
     /**
      * 返回操作结果提示信息
      *
-     * @param bool $result
+     * @param mixed $result
      * @param String $success
      * @param String $failure
      * @return JsonResponse|string
      */
-    protected function result(bool $result, String $success = null, String $failure = null) {
+    protected function result($result, String $success = null, String $failure = null) {
     
         # 获取功能名称
         $e = new Exception();

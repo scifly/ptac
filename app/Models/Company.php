@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
+use App\Http\Requests\CompanyRequest;
 use Eloquent;
 use Exception;
 use Carbon\Carbon;
 use App\Helpers\Snippet;
 use App\Helpers\ModelTrait;
-use App\Events\CompanyCreated;
-use App\Events\CompanyDeleted;
-use App\Events\CompanyUpdated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -18,6 +16,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\DB;
+use ReflectionException;
+use Throwable;
 
 /**
  * App\Models\Company 运营者公司
@@ -98,88 +98,85 @@ class Company extends Model {
         return $this->hasManyThrough('App\Models\School', 'App\Models\Corp');
 
     }
-
-    // /**
-    //  * 保存运营者
-    //  *
-    //  * @param array $data
-    //  * @param bool $fireEvent
-    //  * @return bool
-    //  */
-    // function store(array $data, $fireEvent = false) {
-    //
-    //     try {
-    //         DB::transaction(function () use ($data) {
-    //             # 创建运营者
-    //             $company = $this->create($data);
-    //
-    //             # 创建部门
-    //             $department = $this->d->create([
-    //                 'parent_id' => $this->d->where('parent_id', null)->first()->id,
-    //                 'name' => $company->name,
-    //                 'remark' => $company->remark,
-    //                 'department_type_id' => $this->dt->where('name', '运营')->first()->id,
-    //                 'enabled' => $company->enabled
-    //             ]);
-    //
-    //             # 创建菜单
-    //             $menu = $this->m->create([])
-    //
-    //         });
-    //     } catch (Exception $e) {
-    //         throw $e;
-    //     }
-    //     return true;
-    //     if ($company && $fireEvent) {
-    //         event(new CompanyCreated($company));
-    //         return true;
-    //     }
-    //
-    //     return $company ? true : false;
-    //
-    // }
-
+    
+    /**
+     * 保存运营者
+     *
+     * @param CompanyRequest $request
+     * @return mixed|bool|null
+     * @throws Exception
+     */
+    function store(CompanyRequest $request) {
+    
+        $company = null;
+        try {
+            DB::transaction(function () use ($request, &$company) {
+                # 创建运营者、对应部门及菜单
+                $company = $this->create($request->all());
+                $department = $this->d->storeDepartment($company);
+                $menu = $this->m->storeMenu($company);
+                # 更新“运营者”的部门id和菜单id
+                $company->update([
+                    'department_id' => $department->id,
+                    'menu_id' => $menu->id
+                ]);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return $company;
+    
+    }
+    
     /**
      * 更新运营者
      *
-     * @param array $data
+     * @param CompanyRequest $request
      * @param $id
-     * @param bool $fireEvent
-     * @return bool
+     * @return mixed|bool|null
+     * @throws Exception
      */
-    function modify(array $data, $id, $fireEvent = false) {
+    function modify(CompanyRequest $request, $id) {
 
-        $company = self::find($id);
-        $updated = $company->update($data);
-        if ($updated && $fireEvent) {
-            event(new CompanyUpdated($company));
-            return true;
+        $company = null;
+        try {
+            DB::transaction(function () use ($request, $id, &$company) {
+                $company = $this->find($id);
+                $company->update($request->all());
+                $this->d->modifyDepartment($company);
+                $this->m->modifyMenu($company);
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
 
-        return $updated ? true : false;
-
+        return $company ? $this->find($id) : null;
+        
     }
-
+    
     /**
      * 删除运营者
      *
      * @param $id
-     * @param bool $fireEvent
      * @return bool
+     * @throws ReflectionException
      * @throws Exception
+     * @throws Throwable
      */
-    function remove($id, $fireEvent = false) {
-
+    function remove($id) {
+        
         $company = $this->find($id);
-        if (!$company) { return false; }
-        $removed = self::removable($company) ? $company->delete() : false;
-        if ($removed && $fireEvent) {
-            event(new CompanyDeleted($company));
-            return true;
+        if ($this->removable($company)) {
+            $department = $company->department;
+            $menu = $company->menu;
+            return $company->delete()
+                && $this->d->removeDepartment($department)
+                && $this->m->removeMenu($menu);
         }
-
-        return $removed ?? false;
-
+        
+        return false;
+        
     }
 
     /**

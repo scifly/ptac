@@ -91,9 +91,13 @@
                 // if(o === "move_node" || o === "copy_node") {
                 //    if(this.get_node(p).id === '#') { return false; }
                 // }
-                var nType = t.get_node(n).type; // 节点类型
-                var pType = t.get_node(p).type; // 父节点类型
-                var grandParents, grandParentTypes;
+                var nNode = t.get_node(n),
+                    pNode = t.get_node(p),
+                    nType = nNode.type, // 节点类型
+                    pType = pNode.type, // 父节点类型
+                    nCorpId = nNode['corp_id'],
+                    pCorpId = pNode['corp_id'],
+                    grandParents, grandParentTypes, cNode, gpNode;
                 if (o === "move_node" || o === "copy_node") {
                     switch (table) {
                         case 'departments':
@@ -103,21 +107,24 @@
                                 case 'corp':
                                     return pType === 'company';
                                 case 'school':
-                                    return pType === 'corp';
+                                    return pType === 'corp' && nCorpId === pCorpId;
                                 case 'grade':
+                                    if (nCorpId !== pCorpId) { return false; }
                                     switch (pType) {
                                         case 'school':
                                             return true;
                                         case 'other':
-                                            grandParents = t.get_node(p).parents;
+                                            // parents of all levels of the current node
+                                            grandParents = pNode.parents;
                                             grandParentTypes = [];
                                             $.each(grandParents, function () {
-                                                grandParentTypes.push($('#tree').jstree(true).get_node(this).type);
+                                                gpNode = $('#tree').jstree(true).get_node(this, false);
+                                                grandParentTypes.push(gpNode.type);
                                             });
-                                            if ($.inArray('grade', grandParentTypes) > -1) {
-                                                return false;
-                                            }
-                                            if ($.inArray('class', grandParentTypes) > -1) {
+                                            if (
+                                                $.inArray('grade', grandParentTypes) > -1 ||
+                                                $.inArray('class', grandParentTypes) > -1
+                                            ) {
                                                 return false;
                                             }
                                             return $.inArray('school', grandParentTypes) > -1;
@@ -126,57 +133,73 @@
                                     }
                                 // return $.inArray(pType, ['school', 'other']) > -1;
                                 case 'class':
+                                    if (nCorpId !== pCorpId) { return false; }
                                     switch (pType) {
                                         case 'grade':
                                             return true;
                                         case 'other':
-                                            grandParents = t.get_node(p).parents;
+                                            grandParents = pNode.parents;
                                             grandParentTypes = [];
                                             $.each(grandParents, function () {
-                                                grandParentTypes.push($('#tree').jstree(true).get_node(this).type);
+                                                gpNode = $('#tree').jstree(true).get_node(this, false);
+                                                grandParentTypes.push(gpNode.type);
                                             });
                                             return $.inArray('grade', grandParentTypes) > -1;
                                         default:
                                             return false;
                                     }
                                 case 'other':
-                                    var children = t.get_node(n).children_d;
-                                    var childTypes = [];
+                                    if (nCorpId !== pCorpId) { return false; }
+                                    var children = nNode.children_d,
+                                        childrenTypes = [];
                                     $.each(children, function () {
-                                        var type = $('#tree').jstree(true).get_node(this).type;
-                                        childTypes.push(type);
+                                        cNode = $('#tree').jstree(true).get_node(this, false);
+                                        childrenTypes.push(cNode.type);
                                     });
                                     switch (pType) {
                                         case 'school':
-                                            if ($.inArray('grade', childTypes) > -1) {
+                                            if ($.inArray('grade', childrenTypes) > -1) {
                                                 return true;
                                             }
-                                            return !($.inArray('class', childTypes) > -1) && !($.inArray('grade', childTypes) > -1);
+                                            return !($.inArray('class', childrenTypes) > -1);
                                         case 'grade':
-                                            return !($.inArray('grade', childTypes) > -1);
+                                            return !($.inArray('grade', childrenTypes) > -1);
                                         case 'class':
-                                            return !($.inArray('class', childTypes) > -1) && !($.inArray('grade', childTypes) > -1);
+                                            return !($.inArray('class', childrenTypes) > -1)
+                                                && !($.inArray('grade', childrenTypes) > -1);
                                         case 'other':
-                                            grandParents = t.get_node(p).parents;
+                                            grandParents = pNode.parents;
                                             grandParentTypes = [];
                                             $.each(grandParents, function () {
-                                                grandParentTypes.push($('#tree').jstree(true).get_node(this).type);
+                                                gpNode = $('#tree').jstree(true).get_node(this, false);
+                                                grandParentTypes.push(gpNode.type);
                                             });
-                                            var c = childTypes, g = grandParentTypes;
-                                            // neither grade nor class
-                                            if (!($.inArray('class', g) > -1) && !($.inArray('grade', g) > -1)) {
-                                                if (!($.inArray('class', c) > -1) && !($.inArray('grade', c) > -1)) {
+                                            // has neither grades nor classes
+                                            if (
+                                                !($.inArray('class', grandParentTypes) > -1) &&
+                                                !($.inArray('grade', grandParentTypes) > -1)
+                                            ) {
+                                                if (
+                                                    !($.inArray('class', childrenTypes) > -1) &&
+                                                    !($.inArray('grade', childrenTypes) > -1)
+                                                ) {
                                                     return true;
                                                 }
-                                                return $.inArray('grade', c) > -1;
+                                                return $.inArray('grade', childrenTypes) > -1;
                                             }
-                                            // grade, no class
-                                            if ($.inArray('grade', g) > -1 && !($.inArray('class', g) > -1)) {
-                                                return $.inArray('grade', c) <= -1;
+                                            // has grades but no classess
+                                            if (
+                                                $.inArray('grade', grandParentTypes) > -1 &&
+                                                !($.inArray('class', grandParentTypes) > -1)
+                                            ) {
+                                                return $.inArray('grade', childrenTypes) <= -1;
                                             }
-                                            // class
-                                            if ($.inArray('class', g) > -1) {
-                                                return !($.inArray('class', c) > -1) && !($.inArray('grade', c) > -1);
+                                            // has classes but no grades
+                                            if (
+                                                $.inArray('class', grandParentTypes) > -1 &&
+                                                !$.inArray('grade', grandParentTypes) > -1
+                                            ) {
+                                                return !($.inArray('class', childrenTypes) > -1);
                                             }
                                             break;
                                         default:
@@ -195,7 +218,7 @@
                                 case 'corp':
                                     return pType === 'company';
                                 case 'school':
-                                    return pType === 'corp';
+                                    return pType === 'corp' && nCorpId === pCorpId;
                                 default:
                                     return $.inArray(pType, ['company', 'corp', 'school', 'other', 'root']) > -1;
                             }

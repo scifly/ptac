@@ -62,13 +62,12 @@ class GradeController extends Controller {
      *
      * @param GradeRequest $request
      * @return JsonResponse
+     * @throws Exception
      */
     public function store(GradeRequest $request) {
         
         return $this->result(
-            $this->grade->store(
-                $request->all(), true
-            )
+            $this->grade->store($request)
         );
         
     }
@@ -94,13 +93,12 @@ class GradeController extends Controller {
      * @param GradeRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Exception
      */
     public function update(GradeRequest $request, $id) {
         
         return $this->result(
-            $this->grade->modify(
-                $request->all(), $id, true
-            )
+            $this->grade->modify($request, $id)
         );
         
     }
@@ -115,9 +113,7 @@ class GradeController extends Controller {
     public function destroy($id) {
         
         return $this->result(
-            $this->grade->remove(
-                $id, true
-            )
+            $this->grade->remove($id)
         );
         
     }

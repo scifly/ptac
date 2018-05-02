@@ -254,15 +254,15 @@ class MenuEventSubscriber {
         
         $e = 'App\\Events\\';
         $l = 'App\\Listeners\\MenuEventSubscriber@';
-        $events->listen($e . 'CompanyCreated', $l . 'onCompanyCreated');
-        $events->listen($e . 'CompanyUpdated', $l . 'onCompanyUpdated');
-        $events->listen($e . 'CompanyDeleted', $l . 'onCompanyDeleted');
-        $events->listen($e . 'CorpCreated', $l . 'onCorpCreated');
-        $events->listen($e . 'CorpUpdated', $l . 'onCorpUpdated');
-        $events->listen($e . 'CorpDeleted', $l . 'onCorpDeleted');
-        $events->listen($e . 'SchoolCreated', $l . 'onSchoolCreated');
-        $events->listen($e . 'SchoolUpdated', $l . 'onSchoolUpdated');
-        $events->listen($e . 'SchoolDeleted', $l . 'onSchoolDeleted');
+        // $events->listen($e . 'CompanyCreated', $l . 'onCompanyCreated');
+        // $events->listen($e . 'CompanyUpdated', $l . 'onCompanyUpdated');
+        // $events->listen($e . 'CompanyDeleted', $l . 'onCompanyDeleted');
+        // $events->listen($e . 'CorpCreated', $l . 'onCorpCreated');
+        // $events->listen($e . 'CorpUpdated', $l . 'onCorpUpdated');
+        // $events->listen($e . 'CorpDeleted', $l . 'onCorpDeleted');
+        // $events->listen($e . 'SchoolCreated', $l . 'onSchoolCreated');
+        // $events->listen($e . 'SchoolUpdated', $l . 'onSchoolUpdated');
+        // $events->listen($e . 'SchoolDeleted', $l . 'onSchoolDeleted');
         $events->listen($e . 'DepartmentMoved', $l . 'onDepartmentMoved');
         
     }

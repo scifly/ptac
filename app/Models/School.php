@@ -1,13 +1,11 @@
 <?php
 namespace App\Models;
 
-use App\Events\SchoolCreated;
-use App\Events\SchoolDeleted;
-use App\Events\SchoolUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
+use App\Http\Requests\SchoolRequest;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -18,7 +16,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use ReflectionException;
+use Throwable;
 
 /**
  * App\Models\School 学校
@@ -80,7 +80,7 @@ class School extends Model {
     
     use ModelTrait;
 
-    protected $menu;
+    protected $d, $m;
     
     protected $fillable = [
         'name', 'address', 'school_type_id', 'menu_id', 'signature',
@@ -90,7 +90,8 @@ class School extends Model {
     function __construct(array $attributes = []) {
         
         parent::__construct($attributes);
-        $this->menu = app()->make('App\Models\Menu');
+        $this->d = app()->make('App\Models\Department');
+        $this->m = app()->make('App\Models\Menu');
     
     }
     
@@ -266,45 +267,71 @@ class School extends Model {
     /**
      * 保存学校
      *
-     * @param array $data
-     * @param bool $fireEvent
-     * @return bool
+     * @param SchoolRequest $request
+     * @return mixed|bool|null
+     * @throws Exception
      */
-    function store(array $data, $fireEvent = false) {
+    function store(SchoolRequest $request) {
         
-        $school = $this->create($data);
-        if ($school && $fireEvent) {
-            event(new SchoolCreated($school));
-            
-            return true;
+        $school = null;
+        try {
+            DB::transaction(function () use ($request, &$school) {
+                # 创建学校、对应的部门和菜单
+                $school = $this->create($request->all());
+                $department = $this->d->createDepartment($school, 'corp');
+                $menu = $this->m->createMenu($school, 'corp');
+                # 更新“学校”的部门id和菜单id
+                $school->update([
+                    'department_id' => $department->id,
+                    'menu_id' => $menu->id
+                ]);
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
         
-        return $school ? true : false;
+        return $school;
         
     }
     
     /**
      * 更新学校
      *
-     * @param array $data
+     * @param SchoolRequest $request
      * @param $id
-     * @param bool $fireEvent
-     * @return bool
+     * @return mixed|bool|null
+     * @throws Exception
      */
-    function modify(array $data, $id, $fireEvent = false) {
+    function modify(SchoolRequest $request, $id) {
         
-        $school = $this->find($id);
-        if (!$school) {
-            return false;
+        $school = null;
+        try {
+            DB::transaction(function () use ($request, &$id, &$school) {
+                $school = $this->find($id);
+                $corpChanged = $school->corp_id !== $request->input('corp_id');
+                abort_if(
+                    $corpChanged && !$this->removable($school),
+                    HttpStatusCode::INTERNAL_SERVER_ERROR,
+                    __(
+                        '请先删除此学校所有相关数据(部门、部门用户绑定关系、角色、微网站等)，' .
+                        '并在新的企业微信下创建该学校'
+                    )
+                );
+                if (!$corpChanged) {
+                    $school->update($request->all());
+                    $this->d->modifyDepartment($school, 'corp');
+                    $this->m->modifyMenu($school, 'corp');
+                } else {
+                    $school = $this->create($request->except('id'));
+                    $school->remove($id);
+                    $id = $school->id;
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
-        $updated = $school->update($data);
-        if ($updated && $fireEvent) {
-            event(new SchoolUpdated($this->find($id)));
-            
-            return true;
-        }
-        
-        return $updated ? true : false;
+
+        return $school ? $this->find($id) : null;
         
     }
     
@@ -312,30 +339,23 @@ class School extends Model {
      * 删除学校
      *
      * @param $id
-     * @param bool $fireEvent
      * @return bool|null
-     * @throws Exception
+     * @throws ReflectionException
+     * @throws Throwable
      */
-    function remove($id, $fireEvent = false) {
-        
+    function remove($id) {
+    
         $school = $this->find($id);
-        if (!$school) { return false; }
-        $user = Auth::user();
-        $role = $user->group->name;
-        abort_if(
-            !in_array($role, ['运营', '企业']) || !in_array($id, $this->schoolIds()),
-            HttpStatusCode::FORBIDDEN,
-            __('messages.forbidden')
-        );
-        $removed = $this->removable($school) ? $school->delete() : false;
-        if ($removed && $fireEvent) {
-            event(new SchoolDeleted($school));
-            
-            return true;
+        if ($this->removable($school)) {
+            $department = $school->department;
+            $menu = $school->menu;
+            return $school->delete()
+                && $this->d->removeDepartment($department)
+                && $this->m->removeMenu($menu);
         }
-        
-        return $removed ? true : false;
-        
+    
+        return false;
+    
     }
     
     /**

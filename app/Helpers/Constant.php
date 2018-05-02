@@ -51,6 +51,14 @@ class Constant {
         '其他' => 'other'
     ];
     
+    const MENU_TYPES = [
+        '根' => 'root',
+        '运营' => 'company',
+        '企业' => 'corp',
+        '学校' => 'school',
+        '其他' => 'other'
+    ];
+    
     const NODE_TYPES = [
         '根'  => ['color' => 'text-gray', 'type' => 'root'],
         '运营' => ['color' => 'text-blue', 'type' => 'company'],
