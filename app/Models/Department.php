@@ -155,7 +155,7 @@ class Department extends Model {
                 $leafPath = [];
             }
         }
-        
+
         return $leaves;
 
     }

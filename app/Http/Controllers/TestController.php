@@ -49,7 +49,7 @@ class TestController extends Controller {
      * @param Test $test
      * @throws \ReflectionException
      */
-    public function index(Test $test) {
+    public function index() {
 
         $a = [
             1 => 'ab',
