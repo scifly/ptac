@@ -168,14 +168,11 @@ class Department extends Model {
      */
     function nodes($rootId = null) {
 
-        $nodes = new Collection();
         if (!isset($rootId)) {
             $nodes = $this->orderBy('order')->all();
         } else {
-            $root = $this->find($rootId);
-            $nodes = $this->orderBy('order')->whereIn('id', $this->subDepartmentIds($rootId))->get();
-            $nodes->push($root);
-            // $this->getChildren($rootId, $nodes);
+            $departmentIds = array_merge([$rootId], $this->subDepartmentIds($rootId));
+            $nodes = $this->orderBy('order')->whereIn('id', $departmentIds)->get();
         }
 
         return $nodes;
