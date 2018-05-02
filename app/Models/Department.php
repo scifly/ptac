@@ -304,7 +304,7 @@ class Department extends Model {
         
         try {
             DB::transaction(function () use ($model, $beLongsTo) {
-                list($dtType, $dtId) = (new DepartmentTpe())->dtId($model);
+                list($dtType, $dtId) = (new DepartmentType())->dtId($model);
                 $data = [
                     'name' => $model->{'name'},
                     'remark' => $model->{'remark'},
@@ -508,21 +508,12 @@ class Department extends Model {
             $parentId = isset($department['parent_id']) ? $department['parent_id'] : '#';
             $text = $department['name'];
             $departmentType = DepartmentType::find($department['department_type_id'])->name;
-            switch ($departmentType) {
-                case '根': $type = 'root'; $icon = 'fa fa-sitemap'; break;
-                case '运营': $type = 'company'; $icon = 'fa fa-building'; break;
-                case '企业': $type = 'corp'; $icon = 'fa fa-weixin'; break;
-                case '学校': $type = 'school'; $icon = 'fa fa-university'; break;
-                case '年级': $type = 'grade'; $icon = 'fa fa-object-group'; break;
-                case '班级': $type = 'class'; $icon = 'fa fa-users'; break;
-                default: $type = 'other'; $icon = 'fa fa-list'; break;
-            }
             $data[] = [
                 'id' => $department['id'],
                 'parent' => $parentId,
                 'text' => $text,
-                'icon' => $icon,
-                'type' => $type,
+                'icon' => Constant::NODE_TYPES[$departmentType]['icon'],
+                'type' => Constant::NODE_TYPES[$departmentType]['type'],
             ];
         }
 

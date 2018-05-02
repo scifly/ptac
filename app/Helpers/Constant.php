@@ -60,13 +60,13 @@ class Constant {
     ];
     
     const NODE_TYPES = [
-        '根'  => ['color' => 'text-gray', 'type' => 'root'],
-        '运营' => ['color' => 'text-blue', 'type' => 'company'],
-        '企业' => ['color' => 'text-green', 'type' => 'corp'],
-        '学校' => ['color' => 'text-purple', 'type' => 'school'],
-        '年级' => ['color' => 'text-black', 'type' => 'grade'],
-        '班级' => ['color' => 'text-black', 'type' => 'class'],
-        '其他' => ['color' => 'text-black', 'type' => 'other'],
+        '根'  => ['color' => 'text-gray', 'type' => 'root', 'icon' => 'fa fa-sitemap'],
+        '运营' => ['color' => 'text-blue', 'type' => 'company', 'icon' => 'fa fa-building'],
+        '企业' => ['color' => 'text-green', 'type' => 'corp', 'icon' => 'fa fa-weixin'],
+        '学校' => ['color' => 'text-purple', 'type' => 'school', 'icon' => 'fa fa-university'],
+        '年级' => ['color' => 'text-black', 'type' => 'grade', 'icon' => 'fa fa-object-group'],
+        '班级' => ['color' => 'text-black', 'type' => 'class', 'icon' => 'fa fa-users'],
+        '其他' => ['color' => 'text-black', 'type' => 'other', 'icon' => 'fa fa-list'],
     ];
     
     # 控制器相对路径
