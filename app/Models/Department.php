@@ -170,7 +170,7 @@ class Department extends Model {
 
         $nodes = new Collection();
         if (!isset($rootId)) {
-            $nodes = $this->all();
+            $nodes = $this->orderBy('order')->all();
         } else {
             $root = $this->find($rootId);
             $nodes->push($root);
