@@ -52,7 +52,7 @@ class TestController extends Controller {
             2 => 'cd',
             3 => 'ef'
         ];
-        dd(key(array_slice($a, 1, 1, true)));
+        dd(value(array_slice($a, 1, 1, true)));
         $names = ['运营', '企业', '学校'];
         $arrs = array_map(function ($name) {
             return [$name => Group::whereName($name)->first()->id];
