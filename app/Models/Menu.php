@@ -76,18 +76,6 @@ class Menu extends Model {
         'action_id', 'icon_id', 'enabled',
     ];
     
-    protected $menuTab, $mt, $department;
-    
-    function __construct(array $attributes = [], MenuTab $menuTab, MenuType $mt, Department $department) {
-        
-        $this->menuTab = $menuTab;
-        $this->mt = $mt;
-        $this->department = $department;
-        parent::__construct($attributes);
-        
-        
-    }
-    
     /**
      * 获取菜单所属类型
      *
@@ -133,7 +121,7 @@ class Menu extends Model {
     /**
      * 获取指定菜单包含的所有角色菜单对象
      *
-     * @return HasManyd
+     * @return HasMany
      */
     function groupMenus() { return $this->hasMany('App\Models\GroupMenu'); }
     
@@ -261,7 +249,7 @@ class Menu extends Model {
      */
     function storeMenu(Model $model, $beLongsTo = null) {
     
-        list($iconId, $mtId) = $this->mt->mtIds($model);
+        list($iconId, $mtId) = (new MenuType())->mtIds($model);
 
         return $this->create([
             'parent_id' => $beLongsTo
@@ -370,13 +358,14 @@ class Menu extends Model {
                 # 更新指定Menu记录
                 $menu->update($request->all());
                 # 更新与指定Menu记录绑定的卡片记录
-                $this->menuTab::whereMenuId($id)->delete();
+                $menuTab = new MenuTab();
+                $menuTab::whereMenuId($id)->delete();
                 $tabIds = $request->input('tab_ids', []);
                 $uri = $request->input('uri', '');
                 if (empty($uri)) {
                     if (!empty($tabIds)) {
                         if ($menu->children->count() == 0) {
-                            $this->menuTab->storeByMenuId($id, $tabIds);
+                            $menuTab->storeByMenuId($id, $tabIds);
                         }
                     } else {
                         $menu->update(['enabled' => 0]);
@@ -512,7 +501,7 @@ class Menu extends Model {
                         $corp = Corp::whereMenuId($menu->id)->first();
                         $company = Company::whereMenuId($menu->parent_id)->first();
                         $data = ['parent_id' => $company->department_id];
-                        $moved = $moved && ($this->department->modify($data, $corp->department_id) ? true : false);
+                        $moved = $moved && ((new Department())->modify($data, $corp->department_id) ? true : false);
                         $data = ['company_id' => $company->id];
                         $moved = $moved && $corp->update($data);
                     }

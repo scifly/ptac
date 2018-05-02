@@ -44,16 +44,6 @@ class Custodian extends Model {
     ];
     protected $fillable = ['user_id'];
     
-    protected $grade, $squad;
-    
-    function __construct(array $attributes = []) {
-        
-        parent::__construct($attributes);
-        $this->grade = app()->make('App\Models\Grade');
-        $this->squad = app()->make('App\Models\Squad');
-    
-    }
-    
     /**
      * 返回对应的用户对象
      *
@@ -304,13 +294,13 @@ class Custodian extends Model {
         $id = Request::input('id');
         $result = [];
         if (Request::input('field') == 'grade') {
-            list($classes, $classId) = $this->grade->classList($id);
+            list($classes, $classId) = (new Grade())->classList($id);
             $result['html'] = [
                 'classes'  => $classes,
-                'students' => $this->squad->studentList($classId),
+                'students' => (new Squad())->studentList($classId),
             ];
         } else {
-            $result['html']['students'] = $this->squad->studentList($id);
+            $result['html']['students'] = (new Squad())->studentList($id);
         }
     
         return response()->json($result);

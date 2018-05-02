@@ -71,16 +71,6 @@ class Score extends Model {
         'enabled',
     ];
     
-    protected $ex, $squad;
-    
-    function __construct(array $attributes = []) {
-        
-        parent::__construct($attributes);
-        $this->ex = app()->make('App\Models\Exam');
-        $this->squad = app()->make('App\Models\Squad');
-    
-    }
-    
     /**
      * 返回分数记录所属的学生对象
      *
@@ -980,9 +970,9 @@ class Score extends Model {
     function lists($type, $value) {
         
         if ($type == 'class') {
-            $html = $this->ex->classList($value);
+            $html = (new Exam())->classList($value);
         } else {
-            $html = $this->squad->studentList($value);
+            $html = (new Squad())->studentList($value);
         }
         
         return response()->json([

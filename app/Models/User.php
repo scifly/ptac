@@ -115,16 +115,6 @@ class User extends Authenticatable {
      */
     protected $hidden = ['password', 'remember_token'];
     
-    protected $du, $menu;
-    
-    function __construct(array $attributes = []) {
-        
-        parent::__construct($attributes);
-        $this->du = app()->make('App\Models\DepartmentUser');
-        $this->menu = app()->make('App\Models\Menu');
-        
-    }
-    
     /**
      * 返回指定用户所属的角色对象
      *
@@ -438,7 +428,7 @@ class User extends Authenticatable {
                     # 更新部门数据
                     DepartmentUser::whereUserId($user->id)->delete();
                     $du = new DepartmentUser();
-                    $this->du->store([
+                    (new DepartmentUser())->store([
                         'department_id' => $this->departmentId($data),
                         'user_id' => $user->id,
                         'enabled' => Constant::ENABLED

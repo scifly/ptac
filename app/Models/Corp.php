@@ -65,16 +65,6 @@ class Corp extends Model {
         'menu_id', 'department_id', 'enabled',
     ];
     
-    protected $d, $m;
-    
-    function __construct(array $attributes = []) {
-        
-        parent::__construct($attributes);
-        $this->d = app()->make('App\Models\Department');
-        $this->m = app()->make('App\Models\Menu');
-        
-    }
-    
     /**
      * 返回对应的部门对象
      *
@@ -139,10 +129,10 @@ class Corp extends Model {
             DB::transaction(function () use ($request, &$corp) {
                 # 创建企业微信、对应部门及菜单
                 $corp = $this->create($request->all());
-                $department = $this->d->storeDepartment(
+                $department = (new Department())->storeDepartment(
                     $corp, 'company'
                 );
-                $menu = $this->m->storeMenu(
+                $menu = (new Menu())->storeMenu(
                     $corp, 'company'
                 );
                 # 更新“企业微信”的部门id和菜单id
@@ -174,8 +164,8 @@ class Corp extends Model {
             DB::transaction(function () use ($request, $id, &$corp) {
                 $corp = $this->find($id);
                 $corp->update($request->all());
-                $this->d->modifyDepartment($corp, 'company');
-                $this->m->modifyMenu($corp, 'company');
+                (new Department())->modifyDepartment($corp, 'company');
+                (new Menu())->modifyMenu($corp, 'company');
             });
         } catch (Exception $e) {
             throw $e;
@@ -200,8 +190,8 @@ class Corp extends Model {
             $department = $corp->department;
             $menu = $corp->menu;
             return $corp->delete()
-                && $this->d->removeDepartment($department)
-                && $this->m->removeMenu($menu);
+                && (new Department())->removeDepartment($department)
+                && (new Menu())->removeMenu($menu);
         }
         
         return false;

@@ -56,15 +56,6 @@ class Grade extends Model {
         'educator_ids', 'enabled',
     ];
     
-    protected $d, $m;
-    
-    function __construct(array $attributes = []) {
-        
-        parent::__construct($attributes);
-        $this->d = app()->make('App\Models\Department');
-    
-    }
-    
     /**
      * 返回对应的部门对象
      *
@@ -134,7 +125,7 @@ class Grade extends Model {
             DB::transaction(function () use ($request, &$grade) {
                 # 创建年级、对应的部门
                 $grade = $this->create($request->all());
-                $department = $this->d->createDepartment($grade, 'school');
+                $department = (new Department())->storeDepartment($grade, 'school');
                 # 更新“年级”的部门id
                 $grade->update([
                     'department_id' => $department->id
@@ -163,7 +154,7 @@ class Grade extends Model {
             DB::transaction(function () use ($request, $id, &$grade) {
                 $grade = $this->find($id);
                 $grade->update($request->all());
-                $this->d->modifyDepartment($this->find($id));
+                (new Department())->modifyDepartment($this->find($id));
             });
         } catch (Exception $e) {
             throw $e;
@@ -187,7 +178,7 @@ class Grade extends Model {
         if ($this->removable($grade)) {
             $department = $grade->department;
             return $grade->delete()
-                && $this->d->removeDepartment($department);
+                && (new Department())->removeDepartment($department);
         }
 
         return false;

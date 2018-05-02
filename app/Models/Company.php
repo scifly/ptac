@@ -56,17 +56,6 @@ class Company extends Model {
         'menu_id', 'enabled',
     ];
 
-    protected $d, $m, $dt;
-    
-    function __construct(array $attributes = []) {
-        
-        parent::__construct($attributes);
-        $this->d = app()->make('App\Models\Department');
-        $this->m = app()->make('App\Models\Menu');
-        $this->dt = app()->make('App\Models\DepartmentType');
-    
-    }
-    
     /**
      * 返回对应的部门对象
      *
@@ -113,8 +102,8 @@ class Company extends Model {
             DB::transaction(function () use ($request, &$company) {
                 # 创建运营者、对应部门及菜单
                 $company = $this->create($request->all());
-                $department = $this->d->storeDepartment($company);
-                $menu = $this->m->storeMenu($company);
+                $department = (new Department())->storeDepartment($company);
+                $menu = (new Menu())->storeMenu($company);
                 # 更新“运营者”的部门id和菜单id
                 $company->update([
                     'department_id' => $department->id,
@@ -144,8 +133,8 @@ class Company extends Model {
             DB::transaction(function () use ($request, $id, &$company) {
                 $company = $this->find($id);
                 $company->update($request->all());
-                $this->d->modifyDepartment($company);
-                $this->m->modifyMenu($company);
+                (new Department())->modifyDepartment($company);
+                (new Menu())->modifyMenu($company);
             });
         } catch (Exception $e) {
             throw $e;
@@ -171,8 +160,8 @@ class Company extends Model {
             $department = $company->department;
             $menu = $company->menu;
             return $company->delete()
-                && $this->d->removeDepartment($department)
-                && $this->m->removeMenu($menu);
+                && (new Department())->removeDepartment($department)
+                && (new Menu())->removeMenu($menu);
         }
         
         return false;

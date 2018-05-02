@@ -9,6 +9,7 @@ use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -36,15 +37,6 @@ class DepartmentUser extends Model {
     protected $table = 'departments_users';
 
     protected $fillable = ['department_id', 'user_id', 'enabled'];
-    
-    protected $user;
-    
-    function __construct(array $attributes = []) {
-        
-        parent::__construct($attributes);
-        $this->user = app()->make('App\Models\User');
-    
-    }
     
     /**
      * 按UserId保存记录
@@ -108,7 +100,7 @@ class DepartmentUser extends Model {
                 }
                 if (!empty($values)) {
                     $this->insert($values);
-                    $this->user->batchUpdateWechatUsers($userids);
+                    Auth::user()->batchUpdateWechatUsers($userids);
                 }
             });
         } catch (Exception $e) {

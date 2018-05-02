@@ -48,21 +48,9 @@ class Group extends Model {
 
     protected $table = 'groups';
 
-    protected $ag, $gm, $gt, $menu;
-    
     protected $fillable = [
         'name', 'school_id', 'remark', 'enabled',
     ];
-    
-    function __construct(array $attributes = []) {
-        
-        parent::__construct($attributes);
-        $this->ag = app()->make('App\Models\ActionGroup');
-        $this->gm = app()->make('App\Models\GroupMenu');
-        $this->gt = app()->make('App\Models\GroupTab');
-        $this->menu = app()->make('App\Models\Menu');
-        
-    }
     
     /**
      * 获取指定角色下的所有用户对象
@@ -118,11 +106,11 @@ class Group extends Model {
                     'school_id' => $data['school_id'],
                 ]);
                 # 功能与角色的对应关系
-                $this->ag->storeByGroupId($group->id, $data['action_ids']);
+                (new ActionGroup())->storeByGroupId($group->id, $data['action_ids']);
                 # 功能与菜单的对应关系
-                $this->gm->storeByGroupId($group->id, $data['menu_ids']);
+                (new GroupMenu())->storeByGroupId($group->id, $data['menu_ids']);
                 # 功能与卡片的对应关系
-                $this->gt->storeByGroupId($group->id, $data['tab_ids']);
+                (new GroupTab())->storeByGroupId($group->id, $data['tab_ids']);
             });
         } catch (Exception $e) {
             throw $e;
@@ -153,11 +141,11 @@ class Group extends Model {
                     'enabled' => $data['enabled'],
                 ]);
                 # 功能与角色的对应关系
-                $this->ag->storeByGroupId($id, $data['action_ids']);
+                (new ActionGroup())->storeByGroupId($id, $data['action_ids']);
                 # 功能与菜单的对应关系
-                $this->gm->storeByGroupId($id, $data['menu_ids']);
+                (new GroupMenu())->storeByGroupId($id, $data['menu_ids']);
                 # 功能与卡片的对应关系
-                $this->gt->storeByGroupId($id, $data['tab_ids']);
+                (new GroupTab())->storeByGroupId($id, $data['tab_ids']);
             });
         } catch (Exception $e) {
             throw $e;
@@ -193,7 +181,7 @@ class Group extends Model {
         $schoolId = Request::query('schoolId');
         $menuId = School::find($schoolId)->menu_id;
         
-        return $this->menu->schoolTree($menuId);
+        return (new Menu())->schoolTree($menuId);
         
     }
     

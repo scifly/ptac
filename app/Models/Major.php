@@ -49,15 +49,6 @@ class Major extends Model {
         'name', 'remark', 'school_id', 'enabled',
     ];
 
-    protected $ms;
-    
-    function __construct(array $attributes = []) {
-        
-        parent::__construct($attributes);
-        $this->ms = app()->make('App\Models\MajorSubject');
-        
-    }
-    
     /**
      * 返回专业所属的学校对象
      *
@@ -105,7 +96,7 @@ class Major extends Model {
             DB::transaction(function () use ($request) {
                 $m = self::create($request->all());
                 $subjectIds = $request->input('subject_ids', []);
-                $this->ms->storeByMajorId($m->id, $subjectIds);
+                (new MajorSubject())->storeByMajorId($m->id, $subjectIds);
             });
         } catch (Exception $e) {
             throw $e;
@@ -130,8 +121,8 @@ class Major extends Model {
             DB::transaction(function () use ($request, $id, $major) {
                 $major->update($request->all());
                 $subjectIds = $request->input('subject_ids', []);
-                $this->ms->whereMajorId($id)->delete();
-                $this->ms->storeByMajorId($id, $subjectIds);
+                (new MajorSubject())->whereMajorId($id)->delete();
+                (new MajorSubject())->storeByMajorId($id, $subjectIds);
             });
         } catch (Exception $e) {
             throw $e;

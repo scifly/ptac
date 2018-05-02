@@ -66,19 +66,6 @@ class Department extends Model {
         'remark', 'order', 'enabled',
     ];
 
-    protected $menu, $dt, $du;
-    
-    function __construct(array $attributes = []) {
-        
-        parent::__construct($attributes);
-        /** @var Menu menu */
-        $this->menu = app()->make('App\Models\Menu');
-        /** @var DepartmentType dt */
-        $this->dt = app()->make('App\Models\DepartmentType');
-        /** @var DepartmentUser du */
-        $this->du = app()->make('App\Modles\DepartmentUser');
-    }
-    
     /**
      * 部门类型
      *
@@ -264,7 +251,7 @@ class Department extends Model {
         $department = null;
         try {
             DB::transaction(function () use ($model, $belongsTo, &$department) {
-                list($dtType, $dtId) = $this->dt->dtId($model);
+                list($dtType, $dtId) = (new DepartmentType())->dtId($model);
                 $department = $this->store([
                     'parent_id'          => $belongsTo
                         ? $model->{$belongsTo}->department_id
@@ -317,7 +304,7 @@ class Department extends Model {
         
         try {
             DB::transaction(function () use ($model, $beLongsTo) {
-                list($dtType, $dtId) = $this->dt->dtId($model);
+                list($dtType, $dtId) = (new DepartmentTpe())->dtId($model);
                 $data = [
                     'name' => $model->{'name'},
                     'remark' => $model->{'remark'},
@@ -485,12 +472,13 @@ class Department extends Model {
         $rootDId = Department::whereDepartmentTypeId($rootDepartmentTypeId)->first()->id;
         # 当前菜单id
         $menuId = session('menuId');
+        $menu = Menu::find($menuId);
         # 学校的根菜单id
-        $smId = $this->menu->menuId($menuId);
+        $smId = $menu->menuId($menuId);
         # 学校的根部门id
         $sdId = $smId ? School::whereMenuId($smId)->first()->department_id : null;
         # 企业的根菜单id
-        $cmId = $this->menu->menuId($menuId, '企业');
+        $cmId = $menu->menuId($menuId, '企业');
         # 企业的根部门id
         $cdId = $cmId ? Corp::whereMenuId($cmId)->first()->department_id : null;
         switch ($role) {
@@ -749,12 +737,14 @@ class Department extends Model {
         }
         
     }
+    
     /**
      * 更新年级/班级主任与部门的绑定关系
      *
      * @param $dtType
      * @param $model
      * @param $department
+     * @throws Throwable
      */
     function updateDu($dtType, $model, $department): void {
         
@@ -763,7 +753,7 @@ class Department extends Model {
                 ->whereIn('educator.id', explode(',', $model->{'educator_ids'}))
                 ->get();
             if (!empty($users)) {
-                $this->du->storeByDepartmentId(
+                (new DepartmentUser())->storeByDepartmentId(
                     $department->id, $users->pluck('user.id')
                 );
             }

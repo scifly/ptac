@@ -55,15 +55,6 @@ class Squad extends Model {
         'educator_ids', 'enabled',
     ];
     
-    protected $d;
-    
-    function __construct(array $attributes = []) {
-        
-        parent::__construct($attributes);
-        $this->d = app()->make('App\Models\Department');
-    
-    }
-    
     /**
      * 返回对应的部门对象
      *
@@ -106,7 +97,7 @@ class Squad extends Model {
             DB::transaction(function () use ($request, &$class) {
                 # 创建班级、对应的部门
                 $class = $this->create($request->all());
-                $department = $this->d->createDepartment($class, 'grade');
+                $department = (new Department())->storeDepartment($class, 'grade');
                 # 更新“班级”的部门id
                 $class->update([
                     'department_id' => $department->id
@@ -135,7 +126,7 @@ class Squad extends Model {
             DB::transaction(function () use ($request, $id, &$class) {
                 $class = $this->find($id);
                 $class->update($request->all());
-                $this->d->modifyDepartment($this->find($id));
+                (new Department())->modifyDepartment($this->find($id));
             });
         } catch (Exception $e) {
             throw $e;
@@ -159,7 +150,7 @@ class Squad extends Model {
         if ($this->removable($class)) {
             $department = $class->department;
             return $class->delete()
-                && $this->d->removeDepartment($department);
+                && (new Department())->removeDepartment($department);
         }
         
         return false;

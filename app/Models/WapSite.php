@@ -49,21 +49,11 @@ class WapSite extends Model {
     
     use ModelTrait;
     
-    protected $department, $media;
-
     protected $fillable = [
         'id', 'school_id', 'site_title',
         'media_ids', 'created_at', 'updated_at',
         'enabled',
     ];
-    
-    function __construct(array $attributes = []) {
-        
-        parent::__construct($attributes);
-        $this->department = app()->make('App\Models\Department');
-        $this->media = app()->make('App\Models\Media');
-        
-    }
     
     /**
      * 获取微网站包含的所有网站模块对象
@@ -137,7 +127,7 @@ class WapSite extends Model {
         
         return [
             'ws'     => $ws,
-            'medias' => $this->media->medias(
+            'medias' => (new Media())->medias(
                 explode(",", $ws->media_ids)
             ),
             'show'   => true,
@@ -223,7 +213,7 @@ class WapSite extends Model {
         $schoolId = Group::find($user->group_id)->school_id;
         if (!$schoolId) {
             $departmentId = DepartmentUser::whereUserId($user->id)->first()->department_id;
-            $department = $this->department->schoolDeptId($departmentId);
+            $department = (new Department())->schoolDeptId($departmentId);
             $schoolId = School::whereDepartmentId($department)->first()->id;
         }
         $wapSite = WapSite::whereSchoolId($schoolId)->first();
@@ -235,7 +225,7 @@ class WapSite extends Model {
         
         return view('wechat.wapsite.home', [
             'wapsite' => $wapSite,
-            'medias'  => $this->media->medias(
+            'medias'  => (new Media())->medias(
                 explode(',', $wapSite->media_ids)
             ),
         ]);

@@ -80,20 +80,10 @@ class School extends Model {
     
     use ModelTrait;
 
-    protected $d, $m;
-    
     protected $fillable = [
         'name', 'address', 'school_type_id', 'menu_id', 'signature',
         'corp_id', 'department_id', 'enabled',
     ];
-    
-    function __construct(array $attributes = []) {
-        
-        parent::__construct($attributes);
-        $this->d = app()->make('App\Models\Department');
-        $this->m = app()->make('App\Models\Menu');
-    
-    }
     
     /**
      * 返回对应的部门对象
@@ -278,8 +268,8 @@ class School extends Model {
             DB::transaction(function () use ($request, &$school) {
                 # 创建学校、对应的部门和菜单
                 $school = $this->create($request->all());
-                $department = $this->d->createDepartment($school, 'corp');
-                $menu = $this->m->createMenu($school, 'corp');
+                $department = (new Department())->storeDepartment($school, 'corp');
+                $menu = (new Menu())->storeMenu($school, 'corp');
                 # 更新“学校”的部门id和菜单id
                 $school->update([
                     'department_id' => $department->id,
@@ -319,8 +309,8 @@ class School extends Model {
                 );
                 if (!$corpChanged) {
                     $school->update($request->all());
-                    $this->d->modifyDepartment($school, 'corp');
-                    $this->m->modifyMenu($school, 'corp');
+                    (new Department())->modifyDepartment($school, 'corp');
+                    (new Menu())->modifyMenu($school, 'corp');
                 } else {
                     $school = $this->create($request->except('id'));
                     $school->remove($id);
@@ -350,8 +340,8 @@ class School extends Model {
             $department = $school->department;
             $menu = $school->menu;
             return $school->delete()
-                && $this->d->removeDepartment($department)
-                && $this->m->removeMenu($menu);
+                && (new Department())->removeDepartment($department)
+                && (new Menu())->removeMenu($menu);
         }
     
         return false;

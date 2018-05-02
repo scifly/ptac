@@ -89,15 +89,6 @@ class Student extends Model {
         'remark', 'enabled',
     ];
     
-    protected $grade;
-    
-    function __construct(array $attributes = []) {
-        
-        parent::__construct($attributes);
-        $this->grade = app()->make('App\Models\Grade');
-        
-    }
-    
     /**
      * 返回指定学生所属的班级对象
      *
@@ -460,7 +451,7 @@ class Student extends Model {
      */
     function classList() {
     
-        list($classes) = $this->grade->classList(
+        list($classes) = (new Grade())->classList(
             Request::input('id')
         );
         $result['html']['classes'] = $classes;
