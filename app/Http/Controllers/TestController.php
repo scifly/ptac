@@ -45,10 +45,6 @@ class TestController extends Controller {
     
     protected $department;
     
-    /**
-     * @param Test $test
-     * @throws \ReflectionException
-     */
     public function index() {
 
         $a = [
@@ -56,8 +52,7 @@ class TestController extends Controller {
             2 => 'cd',
             3 => 'ef'
         ];
-        dd(array_slice($a, 1, 1));
-        dd((new ReflectionClass(get_class($this)))->getShortName());
+        dd(array_slice($a, 1, 1, true));
         $names = ['运营', '企业', '学校'];
         $arrs = array_map(function ($name) {
             return [$name => Group::whereName($name)->first()->id];
