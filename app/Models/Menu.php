@@ -23,6 +23,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use ReflectionException;
 use Throwable;
 
 /**
@@ -77,9 +78,9 @@ class Menu extends Model {
     
     protected $mt, $department;
     
-    function __construct() {
+    function __construct(array $attributes = []) {
         
-        parent::__construct();
+        parent::__construct($attributes);
         $this->mt = app()->make('App\Models\MenuType');
         $this->department = app()->make('App\Models\Department');
     
@@ -238,7 +239,7 @@ class Menu extends Model {
                 $data['position'] = $this->all()->max('position') + 1;
                 $menu = $this->create($menu);
                 $tabIds = $request->input('tab_ids', []);
-                $this->mt->storeByMenuId($menu->id, $tabIds);
+                $menu->menuType->storeByMenuId($menu->id, $tabIds);
             });
         } catch (Exception $e) {
             throw $e;
@@ -254,7 +255,7 @@ class Menu extends Model {
      * @param Model $model
      * @param null $beLongsTo
      * @return $this|Model
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     function storeMenu(Model $model, $beLongsTo = null) {
     
