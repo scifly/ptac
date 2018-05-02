@@ -39,19 +39,6 @@ class MenuType extends Model {
 
     protected $fillable = ['name', 'remark', 'enabled'];
  
-    protected $icons;
-    
-    function __construct(array $attributes = []) {
-        
-        parent::__construct($attributes);
-        $this->icons = [
-            'company' => Icon::whereName('fa fa-building')->first()->id,
-            'corp'    => Icon::whereName('fa fa-weixin')->first()->id,
-            'school'  => Icon::whereName('fa fa-university')->first()->id,
-        ];
-        
-    }
-    
     /**
      * 获取指定菜单类型所包含的所有菜单对象
      *
@@ -113,14 +100,19 @@ class MenuType extends Model {
      * @throws ReflectionException
      */
     function mtIds(Model $model): array {
-        
+    
+        $icons = [
+            'company' => Icon::whereName('fa fa-building')->first()->id,
+            'corp'    => Icon::whereName('fa fa-weixin')->first()->id,
+            'school'  => Icon::whereName('fa fa-university')->first()->id,
+        ];
         $mtType = array_search(
             lcfirst((new ReflectionClass(get_class($model)))->getShortName()),
             Constant::MENU_TYPES
         );
         
         return [
-            $this->icons[$mtType],
+            $icons[$mtType],
             $this->where('name', $mtType)->first()->id
         ];
         

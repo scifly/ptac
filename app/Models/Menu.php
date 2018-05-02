@@ -78,12 +78,13 @@ class Menu extends Model {
     
     protected $menuTab, $mt, $department;
     
-    function __construct(MenuTab $menuTab, MenuType $mt, Department $department) {
+    function __construct(array $attributes = [], MenuTab $menuTab, MenuType $mt, Department $department) {
         
-        parent::__construct();
         $this->menuTab = $menuTab;
         $this->mt = $mt;
         $this->department = $department;
+        parent::__construct($attributes);
+        
         
     }
     
