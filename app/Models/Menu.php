@@ -133,7 +133,7 @@ class Menu extends Model {
     /**
      * 获取指定菜单包含的所有角色菜单对象
      *
-     * @return HasMany
+     * @return HasManyd
      */
     function groupMenus() { return $this->hasMany('App\Models\GroupMenu'); }
     
