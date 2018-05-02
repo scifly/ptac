@@ -343,7 +343,7 @@ trait ModelTrait {
     }
     
     /**
-     * 返回指定用户可访问的指定学校的所有部门Id
+     * 返回指定用户可访问的所有部门Id
      *
      * @param $userId
      * @param null $schoolId
@@ -354,7 +354,9 @@ trait ModelTrait {
         $departmentIds = [];
         $user = User::find($userId);
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {
-            $department = School::find($schoolId ?? $this->schoolId())->department;
+            $department = $this->schoolId()
+                ? School::find($schoolId ?? $this->schoolId())->department 
+                : Department::find($this->head($user));
             $departmentIds[] = $department->id;
             
             return array_unique(
