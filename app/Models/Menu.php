@@ -3,7 +3,6 @@ namespace App\Models;
 
 use App\Events\MenuCreated;
 use App\Events\MenuDeleted;
-use App\Events\MenuMoved;
 use App\Events\MenuUpdated;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
@@ -78,9 +77,9 @@ class Menu extends Model {
     
     protected $mt, $department;
     
-    function __construct(array $attributes = []) {
+    function __construct() {
         
-        parent::__construct($attributes);
+        // parent::__construct($attributes);
         $this->mt = app()->make('App\Models\MenuType');
         $this->department = app()->make('App\Models\Department');
     
