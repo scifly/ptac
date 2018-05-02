@@ -79,7 +79,7 @@ class Menu extends Model {
     
     function __construct() {
         
-        // parent::__construct($attributes);
+        parent::__construct();
         $this->mt = app()->make('App\Models\MenuType');
         $this->department = app()->make('App\Models\Department');
     
