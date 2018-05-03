@@ -89,34 +89,34 @@ class App extends Model {
      */
     function sync(AppRequest $request) {
 
-        $agentid = Request::input('agentid');
-        $secret = Request::input('secret');
+        $agentid = $request->input('agentid');
+        $secret = $request->input('secret');
+        $corpId = $request->input('corp_id');
         $app = $this->where('agentid', $agentid)
             ->where('secret', $secret)->first();
-        if (!$app) {
-            $app = $this->store($request->all());
-            $action = 'create';
-        } else {
-            $action = 'update';
-        }
-        abort_if(
-            !$app,
-            HttpStatusCode::NOT_FOUND,
-            __('messages.not_found')
-        );
-        $corpid = Corp::find($app->corp_id)->corpid;
-        $token = Wechat::getAccessToken($corpid, $app->secret);
-        $result = json_decode(Wechat::getApp($token, $app->agentid));
+        $action = !$app ? 'create' : 'update';
         
-        if ($result->{'errcode'} != 0) {
-            $app->delete();
-            return abort(
-                HttpStatusCode::INTERNAL_SERVER_ERROR,
-                $result->{'errcode'} . ': ' . $result->{'errmsg'}
-            );
-        }
+        # 获取应用
+        $corpid = Corp::find($app ? $app->corp_id : $corpId)->corpid;
+        $token = Wechat::getAccessToken($corpid, $app ? $app->secret : $secret);
+        abort_if(
+            is_array($token),
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            Wechat::ERRCODES[$token[0]]
+        );
+        $result = json_decode(Wechat::getApp($token, $app ? $app->agentid : $agentid));
+        abort_if(
+            $result->{'errcode'} != 0,
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            Wechat::ERRCODES[$result->{'errcode'}]
+        );
+        
+        # 更新/创建本地应用记录
         $data = [
             'name' => $result->{'name'},
+            'corp_id' => $corpId,
+            'agentid' => $agentid,
+            'secret' => $secret,
             'description' => $result->{'description'},
             'report_location_flag' => $result->{'report_location_flag'},
             'square_logo_url' => $result->{'square_logo_url'},
@@ -125,10 +125,11 @@ class App extends Model {
             'home_url' => $result->{'home_url'},
             'allow_userinfos' => json_encode($result->{'allow_userinfos'}),
             'allow_partys' => json_encode($result->{'allow_partys'}),
-            // 'allow_tags' => $result->{'allow_tags'},
             'enabled' => !$result->{'close'}
         ];
-        $app = $this->modify($data, $app->id)->toArray();
+        $app = $app
+            ? $this->modify($data, $app->id)->toArray()
+            : $this->store($data)->toArray();
         $this->formatDateTime($app);
         
         return response()->json([

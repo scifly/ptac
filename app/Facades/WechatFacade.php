@@ -190,20 +190,33 @@ class Wechat extends Facade {
         } else {
             $app = Corp::whereContactSyncSecret($secret)->first();
         }
-        if ($app['expire_at'] < time() || !isset($app['expire_at'])) {
-            $token = self::curlGet(sprintf(self::URL_GET_ACCESSTOKEN, $corpid, $secret));
-            $result = json_decode($token);
-            if ($result->{'errcode'} == 0) {
-                $accessToken = $result->{'access_token'};
-                $app->update([
-                    'expire_at' => date('Y-m-d H:i:s', time() + 7000),
-                    'access_token' => $accessToken
-                ]);
+        
+        if ($app) {
+            if ($app['expire_at'] < time() || !isset($app['expire_at'])) {
+                $result = json_decode(
+                    self::curlGet(sprintf(self::URL_GET_ACCESSTOKEN, $corpid, $secret))
+                );
+                if ($result->{'errcode'} == 0) {
+                    $accessToken = $result->{'access_token'};
+                    $app->update([
+                        'expire_at' => date('Y-m-d H:i:s', time() + 7000),
+                        'access_token' => $accessToken
+                    ]);
+                } else {
+                    return [$result->{'errcode'}, $result->{'errmsg'}];
+                }
             } else {
-                return $result->{'errcode'} . ': ' . $result->{'errmsg'};
+                $accessToken = $app['access_token'];
             }
         } else {
-            $accessToken = $app['access_token'];
+            $result = json_decode(
+                self::curlGet(sprintf(self::URL_GET_ACCESSTOKEN, $corpid, $secret))
+            );
+            if ($result->{'errcode'} == 0) {
+                $accessToken = $result->{'access_token'};
+            } else {
+                return [$result->{'errcode'}, $result->{'errmsg'}];
+            }
         }
 
         return $accessToken;
