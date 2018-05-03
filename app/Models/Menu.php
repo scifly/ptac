@@ -193,21 +193,21 @@ class Menu extends Model {
     /**
      * 获取指定菜单所有的子菜单Id
      *
-     * @param $menuId
+     * @param $id
      * @return array
      */
-    function subMenuIds($menuId) {
+    function subMenuIds($id) {
         
-        static $childrenIds;
-        $firstIds = Menu::whereParentId($menuId)->get(['id'])->toArray();
-        if ($firstIds) {
-            foreach ($firstIds as $firstId) {
-                $childrenIds[] = $firstId['id'];
-                self::subMenuIds($firstId['id']);
+        static $subMenuIds;
+        $childrenIds = Menu::whereParentId($id)->get(['id'])->toArray();
+        if ($childrenIds) {
+            foreach ($childrenIds as $childId) {
+                $subMenuIds[] = $childId['id'];
+                self::subMenuIds($childId['id']);
             }
         }
         
-        return $childrenIds;
+        return $subMenuIds;
         
     }
     

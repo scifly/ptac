@@ -603,16 +603,16 @@ class Department extends Model {
      */
     function subDepartmentIds($id) {
 
-        static $childrenIds;
-        $firstIds = Department::whereParentId($id)->get(['id'])->toArray();
-        if ($firstIds) {
-            foreach ($firstIds as $firstId) {
-                $childrenIds[] = $firstId['id'];
-                $this->subDepartmentIds($firstId['id']);
+        static $subDepartmentIds;
+        $childrenIds = Department::whereParentId($id)->pluck('id')->toArray();
+        if ($childrenIds) {
+            foreach ($childrenIds as $childId) {
+                $subDepartmentIds[] = $childId;
+                $this->subDepartmentIds($childId);
             }
         }
 
-        return $childrenIds ?? [];
+        return $subDepartmentIds ?? [];
 
     }
     
