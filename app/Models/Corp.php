@@ -60,8 +60,8 @@ class Corp extends Model {
     use ModelTrait;
     
     protected $fillable = [
-        'name', 'acronym', 'company_id',
-        'corpid', 'contact_sync_secret',
+        'name', 'acronym', 'company_id', 'expire_at',
+        'corpid', 'contact_sync_secret', 'access_token',
         'menu_id', 'department_id', 'enabled',
     ];
     
