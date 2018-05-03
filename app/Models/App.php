@@ -85,6 +85,7 @@ class App extends Model {
      *
      * @param AppRequest $request
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
     function sync(AppRequest $request) {
 
@@ -107,11 +108,13 @@ class App extends Model {
         $token = Wechat::getAccessToken($corpid, $app->secret);
         $result = json_decode(Wechat::getApp($token, $app->agentid));
         
-        abort_if(
-            $result->{'errcode'} != 0,
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            $result->{'errcode'} . ': ' . $result->{'errmsg'}
-        );
+        if ($result->{'errcode'} != 0) {
+            $app->delete();
+            return abort(
+                HttpStatusCode::INTERNAL_SERVER_ERROR,
+                $result->{'errcode'} . ': ' . $result->{'errmsg'}
+            );
+        }
         $data = [
             'name' => $result->{'name'},
             'description' => $result->{'description'},
