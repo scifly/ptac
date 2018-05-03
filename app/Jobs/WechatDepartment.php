@@ -14,10 +14,10 @@ use Illuminate\Queue\SerializesModels;
 /**
  * 企业号部门管理
  *
- * Class ManageWechatDepartment
+ * Class WechatDepartment
  * @package App\Jobs
  */
-class ManageWechatDepartment implements ShouldQueue {
+class WechatDepartment implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait;
     

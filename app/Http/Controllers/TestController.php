@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Facades\Wechat;
 use App\Helpers\ModelTrait;
 use App\Models\Action;
 use App\Models\Department;
@@ -47,6 +48,9 @@ class TestController extends Controller {
     
     public function index() {
 
+        $corpid = 'wxe75227cead6b8aec';
+        $secret = 'IoiSOIsOGrdps03Lx_h5V3cCvMl3ibu-FyqqAsy-qLM';
+        dd(Wechat::getAccessToken($corpid, $secret));
         $a = [
             1 => 'ab',
             2 => 'cd',

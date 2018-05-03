@@ -17,10 +17,10 @@ use Illuminate\Support\Facades\Log;
 /**
  * 企业号会员管理
  *
- * Class ManageWechatMember
+ * Class WechatMember
  * @package App\Jobs
  */
-class ManageWechatMember implements ShouldQueue {
+class WechatMember implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     

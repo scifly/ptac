@@ -178,12 +178,12 @@ class Wechat extends Facade {
     /**
      * 获取access_token
      *
-     * @param string $corpId 企业号ID
+     * @param string $corpid 企业号ID
      * @param string $secret 应用secret
      * @param bool $contactSync
      * @return bool|mixed
      */
-    static function getAccessToken($corpId, $secret, $contactSync = false) {
+    static function getAccessToken($corpid, $secret, $contactSync = false) {
         
         if (!$contactSync) {
             $app = App::whereSecret($secret)->first();
@@ -191,7 +191,7 @@ class Wechat extends Facade {
             $app = Corp::whereContactSyncSecret($secret)->first();
         }
         if ($app['expire_at'] < time() || !isset($app['expire_at'])) {
-            $token = self::curlGet(sprintf(self::URL_GET_ACCESSTOKEN, $corpId, $secret));
+            $token = self::curlGet(sprintf(self::URL_GET_ACCESSTOKEN, $corpid, $secret));
             $result = json_decode($token);
     
             if ($result) {

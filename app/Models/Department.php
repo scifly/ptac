@@ -13,7 +13,7 @@ use App\Helpers\HttpStatusCode;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Jobs\ManageWechatDepartment;
+use App\Jobs\WechatDepartment;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -58,7 +58,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Department extends Model {
 
     // todo: needs to be optimized
-
     use ModelTrait;
 
     protected $fillable = [
@@ -147,7 +146,7 @@ class Department extends Model {
 
         $department = $this->create($data);
         if ($department && $this->needSync($department)) {
-            ManageWechatDepartment::dispatch($department, 'create');
+            WechatDepartment::dispatch($department, 'create');
         }
 
         return $department;
@@ -201,7 +200,7 @@ class Department extends Model {
         $department = self::find($id);
         $updated = $department->update($data);
         if ($this->needSync($department) && $updated) {
-            ManageWechatDepartment::dispatch($this->find($id), 'update');
+            WechatDepartment::dispatch($this->find($id), 'update');
         }
         
         return $updated ?? $this->find($id);
@@ -258,7 +257,7 @@ class Department extends Model {
         $department = $this->find($id);
         if ($this->removable($department)) {
             if ($this->needSync($department)) {
-                ManageWechatDepartment::dispatch($department, 'delete');
+                WechatDepartment::dispatch($department, 'delete');
             }
             return $department->delete();
         }
@@ -322,59 +321,13 @@ class Department extends Model {
             if ($department->movable($id, $parentId)) {
                 $moved = $department->move($id, $parentId);
                 if ($moved && $this->needSync($department)) {
-                    ManageWechatDepartment::dispatch($department, 'update');
+                    WechatDepartment::dispatch($department, 'update');
                 }
             }
         }
         
         return response()->json();
         
-    }
-    
-    /**
-     * 获取用于显示jstree的部门数据
-     *
-     * @param null $rootId
-     * @return array
-     */
-    function tree($rootId = null) {
-
-        $user = Auth::user();
-        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
-        if (isset($rootId)) {
-            $departments = $this->nodes($rootId);
-        } else {
-            $rootId = $isSuperRole
-                ? $this->rootDepartmentId(true)
-                : $this->topDeptId();
-            $departments = $this->nodes($rootId);
-        }
-        $nodes = [];
-        for ($i = 0; $i < sizeof($departments); $i++) {
-            $id = $departments[$i]['id'];
-            $parentId = $i == 0 ? '#' : $departments[$i]['parent_id'];
-            $departmentTypeId = $departments[$i]['department_type_id'];
-            $departmentType = DepartmentType::find($departmentTypeId)->name;
-            $name = $departments[$i]['name'];
-            $enabled = $departments[$i]['enabled'];
-            
-            $color = Constant::NODE_TYPES[$departmentType]['color'];
-            $type = Constant::DEPARTMENT_TYPES[$departmentType];
-            $text = sprintf(Snippet::NODE_TEXT, $enabled ? $color : 'text-gray', $name);
-            $selectable = $isSuperRole ? 1 : (in_array($id, $this->departmentIds($user->id)) ? 1 : 0);
-            $corp_id = !in_array($type, ['root', 'company']) ? $this->corpId($id) : null;
-            $nodes[] = [
-                'id' => $id,
-                'parent' => $parentId,
-                'text' => $text,
-                'type' => $type,
-                'selectable' => $selectable,
-                'corp_id' => $corp_id
-            ];
-        }
-
-        return $nodes;
-
     }
     
     /**
@@ -398,86 +351,6 @@ class Department extends Model {
         
         return $leaves;
         
-    }
-    
-    /**
-     * 根据根部门ID返回所有下级部门对象
-     *
-     * @param null $rootId
-     * @return Collection|static[]
-     */
-    function nodes($rootId = null) {
-        
-        if (!isset($rootId)) {
-            $nodes = $this->orderBy('order')->all();
-        } else {
-            $departmentIds = array_merge([$rootId], $this->subDepartmentIds($rootId));
-            $nodes = $this->orderBy('order')->whereIn('id', $departmentIds)->get();
-        }
-        
-        return $nodes;
-        
-    }
-    
-    /**
-     * 返回Department列表
-     *
-     * @return array
-     */
-    function departments() {
-        
-        $departments = $this->nodes();
-        $departmentList = [];
-        foreach ($departments as $department) {
-            $departmentList[$department->id] = $department->name;
-        }
-        
-        return $departmentList;
-        
-    }
-    /**
-     * 选中的部门节点
-     *
-     * @param $ids
-     * @return array
-     */
-    function selectedNodes($ids) {
-
-        $departments = self::whereIn('id', $ids)->get()->toArray();
-        $data = [];
-        foreach ($departments as $department) {
-            $parentId = isset($department['parent_id']) ? $department['parent_id'] : '#';
-            $text = $department['name'];
-            $departmentType = DepartmentType::find($department['department_type_id'])->name;
-            $data[] = [
-                'id' => $department['id'],
-                'parent' => $parentId,
-                'text' => $text,
-                'icon' => Constant::NODE_TYPES[$departmentType]['icon'],
-                'type' => Constant::NODE_TYPES[$departmentType]['type'],
-            ];
-        }
-
-        return $data;
-
-    }
-    
-    /**
-     * 根据年级的部门ID获取所属学校的ID
-     *
-     * @param $id
-     * @return int|mixed
-     */
-    function getSchoolId($id) {
-
-        $parent = self::find($id)->parent;
-        if ($parent->departmentType->name == '学校') {
-            $departmentId = $parent->id;
-            return School::whereDepartmentId($departmentId)->first()->id;
-        } else {
-            return self::getSchoolId($parent->id);
-        }
-
     }
     
     /**
@@ -610,6 +483,72 @@ class Department extends Model {
                 }
                 return Corp::whereDepartmentId($parent->id)->first()->id;
         }
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+    /**
+     * 获取用于显示jstree的部门数据
+     *
+     * @param null $rootId
+     * @return array
+     */
+    private function tree($rootId = null) {
+        
+        $user = Auth::user();
+        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
+        if (isset($rootId)) {
+            $departments = $this->nodes($rootId);
+        } else {
+            $rootId = $isSuperRole
+                ? $this->rootDepartmentId(true)
+                : $this->topDeptId();
+            $departments = $this->nodes($rootId);
+        }
+        $nodes = [];
+        for ($i = 0; $i < sizeof($departments); $i++) {
+            $id = $departments[$i]['id'];
+            $parentId = $i == 0 ? '#' : $departments[$i]['parent_id'];
+            $departmentTypeId = $departments[$i]['department_type_id'];
+            $departmentType = DepartmentType::find($departmentTypeId)->name;
+            $name = $departments[$i]['name'];
+            $enabled = $departments[$i]['enabled'];
+            
+            $color = Constant::NODE_TYPES[$departmentType]['color'];
+            $type = Constant::DEPARTMENT_TYPES[$departmentType];
+            $text = sprintf(Snippet::NODE_TEXT, $enabled ? $color : 'text-gray', $name);
+            $selectable = $isSuperRole ? 1 : (in_array($id, $this->departmentIds($user->id)) ? 1 : 0);
+            $corp_id = !in_array($type, ['root', 'company']) ? $this->corpId($id) : null;
+            $nodes[] = [
+                'id' => $id,
+                'parent' => $parentId,
+                'text' => $text,
+                'type' => $type,
+                'selectable' => $selectable,
+                'corp_id' => $corp_id
+            ];
+        }
+        
+        return $nodes;
+        
+    }
+
+    /**
+     * 根据根部门ID返回所有下级部门对象
+     *
+     * @param null $rootId
+     * @return Collection|static[]
+     */
+    private function nodes($rootId = null) {
+        
+        if (!isset($rootId)) {
+            $nodes = $this->orderBy('order')->all();
+        } else {
+            $departmentIds = array_merge([$rootId], $this->subDepartmentIds($rootId));
+            $nodes = $this->orderBy('order')->whereIn('id', $departmentIds)->get();
+        }
+        
+        return $nodes;
         
     }
     

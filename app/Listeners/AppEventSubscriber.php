@@ -1,7 +1,7 @@
 <?php
 namespace App\Listeners;
 
-use App\Jobs\ManageWechatApp;
+use App\Jobs\WechatApp;
 use App\Jobs\ManageWechatAppMenu;
 use App\Models\App;
 use Illuminate\Events\Dispatcher;
@@ -19,7 +19,7 @@ class AppEventSubscriber {
     public function onAppUpdated($event) {
         
         $app = $event->app;
-        ManageWechatApp::dispatch($app);
+        WechatApp::dispatch($app);
     
     }
     

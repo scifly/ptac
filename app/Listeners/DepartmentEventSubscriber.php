@@ -15,7 +15,7 @@ use App\Events\GradeUpdated;
 use App\Events\MenuMoved;
 use App\Events\SchoolCreated;
 use App\Events\SchoolUpdated;
-use App\Jobs\ManageWechatDepartment;
+use App\Jobs\WechatDepartment;
 use App\Models\Department;
 use App\Models\DepartmentType;
 use Illuminate\Events\Dispatcher;
@@ -70,7 +70,7 @@ class DepartmentEventSubscriber {
         ];
         $d = $this->department->store($data, true);
         if ($d && !in_array($type, ['运营', '企业'])) {
-            ManageWechatDepartment::dispatch($d, 'create');
+            WechatDepartment::dispatch($d, 'create');
         }
 
         return $d ? true : false;
@@ -122,7 +122,7 @@ class DepartmentEventSubscriber {
         ];
         $d = $this->department->modify($data, $$model->department_id);
         if ($d && !in_array($type, ['运营', '企业'])) {
-            ManageWechatDepartment::dispatch($d, 'update');
+            WechatDepartment::dispatch($d, 'update');
         }
 
         return $d ? true : false;
@@ -154,7 +154,7 @@ class DepartmentEventSubscriber {
 
         $d = $this->department->find($event->{$model}->department_id);
         if ($d && !in_array($d->departmentType->name, ['运营', '企业'])) {
-            ManageWechatDepartment::dispatch($d, 'delete');
+            WechatDepartment::dispatch($d, 'delete');
         }
         $result = $this->department->remove($event->{$model}->department_id);
 

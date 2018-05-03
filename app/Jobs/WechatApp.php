@@ -10,7 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class ManageWechatApp implements ShouldQueue {
+class WechatApp implements ShouldQueue {
 
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     
@@ -21,7 +21,11 @@ class ManageWechatApp implements ShouldQueue {
      *
      * @param $app
      */
-    public function __construct(App $app) { $this->app = $app; }
+    public function __construct(App $app) {
+        
+        $this->app = $app;
+        
+    }
     
     /**
      * Execute the job
@@ -39,7 +43,10 @@ class ManageWechatApp implements ShouldQueue {
             'isreportenter' => $this->app->isreportenter,
             'home_url' => $this->app->home_url,
         ];
-        $accessToken = Wechat::getAccessToken(Corp::find($this->app->corp_id)->corpid, $this->app->secret);
+        $accessToken = Wechat::getAccessToken(
+            Corp::find($this->app->corp_id)->corpid,
+            $this->app->secret
+        );
         
         return Wechat::configApp($accessToken, $app);
         

@@ -11,7 +11,7 @@ use App\Helpers\ModelTrait;
 use Laravel\Passport\Token;
 use Laravel\Passport\Client;
 use App\Helpers\HttpStatusCode;
-use App\Jobs\ManageWechatMember;
+use App\Jobs\WechatMember;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Laravel\Passport\HasApiTokens;
@@ -265,7 +265,7 @@ class User extends Authenticatable {
             'gender'     => $user->gender,
             'enable'     => $user->enabled,
         ];
-        ManageWechatMember::dispatch($data, 'create');
+        WechatMember::dispatch($data, 'create');
         
         return true;
         
@@ -291,7 +291,7 @@ class User extends Authenticatable {
             'gender'       => $user->gender,
             'enable'       => $user->enabled,
         ];
-        ManageWechatMember::dispatch($data, 'update');
+        WechatMember::dispatch($data, 'update');
         
         return true;
         
@@ -322,7 +322,7 @@ class User extends Authenticatable {
             'userId' => Auth::id(),
             'userid' => self::find($id)->userid
         ];
-        ManageWechatMember::dispatch($data, 'delete');
+        WechatMember::dispatch($data, 'delete');
         
         return true;
         
