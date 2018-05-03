@@ -52,7 +52,7 @@ class AppRequest extends FormRequest {
         
         if (Request::method() === 'POST') {
             $input = $this->all();
-            $input['name'] = $input['name'] ?? '新建应用';
+            $input['name'] = $input['name'] ?? uniqid('app');
             $input['description'] = $input['description'] ?? '0';
             $input['report_location_flag'] = $input['reprot_location_flag'] ?? 0;
             $input['square_logo_url'] = $input['square_logo_url'] ?? '0';
