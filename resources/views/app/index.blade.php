@@ -33,7 +33,7 @@
                 {!! Form::text('name', null, [
                     'id' => 'name',
                     'class' => 'form-control input-sm',
-                    'required' => 'true',
+                    'placeholder' => '(可选)'
                 ]) !!}
             </div>
             <!-- 企业应用ID -->
@@ -59,7 +59,7 @@
                     'data-parsley-length' => '[43,43]'
                 ]) !!}
             </div>
-            {!! Form::submit('同步应用', [
+            {!! Form::submit('同步/创建应用', [
                 'id' => 'sync',
                 'class' => 'btn btn-default btn-sm'
             ]) !!}
@@ -75,7 +75,7 @@
                 <th class="text-center">应用id</th>
                 <th class="text-center">应用名称</th>
                 <th class="text-center">应用头像</th>
-                <th>应用详情</th>
+                <th class="text-center">应用secret</th>
                 <th class="text-center">创建于</th>
                 <th class="text-center">更新于</th>
                 <th class="text-right">状态</th>
@@ -93,7 +93,7 @@
                         <td class="text-center">{{ $app['agentid'] }}</td>
                         <td class="text-center">{{ $app['name'] }}</td>
                         <td class="text-center"><img style="width: 16px; height: 16px;" src="{{ $app['square_logo_url'] }}"/></td>
-                        <td>{{ $app['description'] }}</td>
+                        <td class="text-center">{{ $app['secret'] }}</td>
                         <td class="text-center">{{ $app['created_at'] }}</td>
                         <td class="text-center">{{ $app['updated_at'] }}</td>
                         <td class="text-right">

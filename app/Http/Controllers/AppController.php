@@ -26,24 +26,20 @@ class AppController extends Controller {
     }
     
     /**
-     * 微信应用列表
+     * 微信应用列表/同步
      *
+     * @param AppRequest $request
      * @return bool|JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
-    public function index() {
+    public function index(AppRequest $request) {
         
-        if (Request::method() == 'POST') {
-            return $this->app->store();
-        } else {
-            if (Request::query('corpId')) {
-                return $this->app->appList(
-                    Request::query('corpId')
-                );
-            }
-            return $this->output();
-        }
-    
+        return Request::method() == 'GET'
+            ? ($request->query('corpId')
+                ? $this->app->index($request)
+                : $this->output()
+            )
+            : $this->app->sync($request);
     }
     
     /**
@@ -79,7 +75,7 @@ class AppController extends Controller {
     }
     
     /**
-     * 获取指定应用的menu
+     * 同步指定应用菜单
      *
      * @param $id
      * @return bool|JsonResponse

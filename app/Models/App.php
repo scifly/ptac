@@ -1,18 +1,16 @@
 <?php
-
 namespace App\Models;
 
-
-use App\Events\AppUpdated;
+use Eloquent;
+use Carbon\Carbon;
 use App\Facades\Wechat;
 use App\Helpers\HttpStatusCode;
-use Carbon\Carbon;
-use Eloquent;
+use App\Http\Requests\AppRequest;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Request;
 
 /**
  * App\Models\App
@@ -58,7 +56,7 @@ use Illuminate\Support\Facades\Request;
  * @method static Builder|App whereSquareLogoUrl($value)
  * @method static Builder|App whereUpdatedAt($value)
  * @mixin Eloquent
- * @property-read \App\Models\Corp $corp
+ * @property-read Corp $corp
  */
 class App extends Model {
 
@@ -85,79 +83,70 @@ class App extends Model {
     /**
      * 保存App
      *
+     * @param AppRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    function store() {
+    function sync(AppRequest $request) {
 
-        $corpId = Request::input('corp_id');
-        $secret = Request::input('secret');
         $agentid = Request::input('agentid');
-        
-        $corp = Corp::find($corpId);
-        $corpid = $corp->corpid;
-        $token = Wechat::getAccessToken($corpid, $secret);
-        $corpApp = json_decode(Wechat::getApp($token, $agentid));
-        $response = [];
-        if (isset($corpApp->name)) {
-            $app = self::whereAgentid($agentid)->where('corp_id', $corpId)->first();
-            if (!$app) {
-                $a = self::create([
-                    'corp_id' => intval($corpId),
-                    'name' => $corpApp->name,
-                    'secret' => $secret,
-                    'description' => $corpApp->description,
-                    'agentid' => $agentid,
-                    'report_location_flag' => $corpApp->report_location_flag,
-                    'square_logo_url' => $corpApp->square_logo_url,
-                    'redirect_domain' => $corpApp->redirect_domain,
-                    'isreportenter' => $corpApp->isreportenter,
-                    'home_url' => $corpApp->home_url,
-                    'menu' => '',
-                    'allow_userinfos' => json_encode($corpApp->allow_userinfos),
-                    'allow_partys' => json_encode($corpApp->allow_partys),
-                    'allow_tags' => isset($corpApp->allow_tags) ? json_encode($corpApp->allow_tags) : '',
-                    'enabled' => $corpApp->close,
-                ]);
-                $response = response()->json([
-                    'app' => self::formatDateTime($a->toArray()), 
-                    'action' => 'create'
-                ]);
-            } else {
-                $app->corp_id = $corpId;
-                $app->name = $corpApp->name;
-                $app->secret = $secret;
-                $app->description = $corpApp->description;
-                $app->agentid = $agentid;
-                $app->report_location_flag = $corpApp->report_location_flag;
-                $app->square_logo_url = $corpApp->square_logo_url;
-                $app->redirect_domain = $corpApp->redirect_domain;
-                $app->isreportenter = $corpApp->isreportenter;
-                $app->home_url = $corpApp->home_url;
-                $app->menu = '';
-                $app->allow_userinfos = json_encode($corpApp->allow_userinfos);
-                $app->allow_partys = json_encode($corpApp->allow_partys);
-                $app->allow_tags = isset($corpApp->allow_tags) ? json_encode($corpApp->allow_tags) : '';
-                $app->enabled = !($corpApp->close);
-                $app->save();
-                $app = $app->toArray();
-                self::formatDateTime($app);
-                $response = response()->json([
-                    'app' => $app, 
-                    'action' => 'update',
-                ]);
-            }
+        $secret = Request::input('secret');
+        $app = $this->where('agentid', $agentid)
+            ->where('secret', $secret)->first();
+        if (!$app) {
+            $app = $this->store($request->all());
+            $action = 'create';
         } else {
-            abort_if(
-                $corpApp->{'errcode'},
-                HttpstatusCode::INTERNAL_SERVER_ERROR,
-                $corpApp->{'errmsg'}
-            );
+            $action = 'update';
         }
-
-        return response()->json($response);
+        abort_if(
+            !$app,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
+        $corpid = Corp::find($app->corp_id)->corpid;
+        $token = Wechat::getAccessToken($corpid, $app->secret);
+        $result = json_decode(Wechat::getApp($token, $app->agentid));
+        
+        abort_if(
+            $result->{'errcode'} != 0,
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            $result->{'errcode'} . ': ' . $result->{'errmsg'}
+        );
+        $data = [
+            'name' => $result->{'name'},
+            'description' => $result->{'description'},
+            'report_location_flag' => $result->{'report_location_flag'},
+            'square_logo_url' => $result->{'square_logo_url'},
+            'redirect_domain' => $result->{'redirect_domain'},
+            'isreportenter' => $result->{'isreportenter'},
+            'home_url' => $result->{'home_url'},
+            'allow_user_infos' => $result->{'allow_user_infos'},
+            'allow_partys' => $result->{'allow_partys'},
+            'allow_tags' => $result->{'allow_tags'},
+            'enabled' => $result->{'close'}
+        ];
+        $app = $this->modify($data, $app->id)->toArray();
+        $this->formatDateTime($app);
+        
+        return response()->json([
+            'app' => $app,
+            'action' => $action,
+        ]);
 
     }
-
+    
+    /**
+     * 保存新创建的app
+     *
+     * @param array $data
+     * @return $this|bool|Model
+     */
+    private function store(array $data) {
+        
+        return $this->create($data) ?? false;
+        
+    }
+    
     /**
      * 更新App
      *
@@ -167,26 +156,22 @@ class App extends Model {
      */
     function modify(array $data, $id) {
 
-        $app = self::find($id);
-        if (!$app) { return false; }
-        $updated = $app->update($data);
-        if ($updated) {
-            event(new AppUpdated($app));
-            return $app;
-        }
+        $app = $this->find($id);
+        $app->update($data);
 
-        return $updated ? $app : false;
+        return $this->find($id) ?? false;
 
     }
     
     /**
      * 返回指定企业对应的应用列表
      *
-     * @param $corpId
+     * @param AppRequest $request
      * @return JsonResponse
      */
-    function appList($corpId) {
-        
+    function index(AppRequest $request) {
+
+        $corpId = $request->query('corpId');
         $apps = App::whereCorpId($corpId)->get()->toArray();
         if (empty($apps)) {
             return response()->json([

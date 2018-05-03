@@ -3,6 +3,7 @@ namespace App\Http\Requests;
 
 use App\Models\Corp;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Request;
 
 class AppRequest extends FormRequest {
     
@@ -20,27 +21,52 @@ class AppRequest extends FormRequest {
      */
     public function rules() {
         
-        return [
-            'name'                 => 'required|string|max:36|unique:apps,name,' .
-                $this->input('id') . ',id,' .
-                'agentid,' . $this->input('agentid') . ',' .
-                'corp_id,' . $this->input('corp_id'),
-            'description'          => 'required|string|max:255',
-            'agentid'              => 'required|string|max:60',
-            'report_location_flag' => 'required|boolean',
-            'redirect_domain'      => 'required|string|max:255',
-            'isreportenter'        => 'required|boolean',
-            'home_url'             => 'required|string|max:255',
-        ];
+        if (in_array(Request::method(), ['POST', 'PUT'])) {
+            return [
+                'name'                 => 'required|string|max:36|unique:apps,name,' .
+                    $this->input('id') . ',id,' .
+                    'agentid,' . $this->input('agentid') . ',' .
+                    'corp_id,' . $this->input('corp_id'),
+                'corp_id'              => 'required|integer',
+                'secret'               => 'required|string|max:255',
+                'description'          => 'required|string|max:255',
+                'agentid'              => 'required|string|max:60',
+                'square_logo_url'      => 'required|string|max:255',
+                'allow_userinfos'      => 'required|string|max:2048',
+                'allow_tags'           => 'required|string|max:255',
+                'allow_partys'         => 'required|string|max:1024',
+                'report_location_flag' => 'required|boolean',
+                'redirect_domain'      => 'required|string|max:255',
+                'isreportenter'        => 'required|boolean',
+                'home_url'             => 'required|string|max:255',
+                'menu'                 => 'required|string|max:1024',
+                'enabled'              => 'required|boolean',
+            ];
+        }
         
+        return [];
+    
     }
     
     protected function prepareForValidation() {
         
-        $input = $this->all();
-        $corp = new Corp();
-        $input['corp_id'] = $corp->corpId();
-        $this->replace($input);
+        if (Request::method() === 'POST') {
+            $input = $this->all();
+            $input['name'] = $input['name'] ?? '新建应用';
+            $input['description'] = $input['description'] ?? '';
+            $input['reprot_location_flag'] = $input['reprot_location_flag'] ?? 0;
+            $input['square_logo_url'] = $input['square_logo_url'] ?? '';
+            $input['redirect_domain'] = $input['redirect_domain'] ?? '';
+            $input['isreportenter'] = $input['isreportenter'] ?? 0;
+            $input['home_url'] = $input['home_url'] ?? '';
+            $input['allow_userinfos'] = $input['allow_userinfos'] ?? '';
+            $input['allow_partys'] = $input['allow_partys'] ?? '';
+            $input['allow_tags'] = $input['allow_tags'] ?? '';
+            $input['menu'] = $input['menu'] ?? '';
+            $input['enabled'] = $input['enabled'] ?? 0;
+            
+            $this->replace($input);
+        }
         
     }
     

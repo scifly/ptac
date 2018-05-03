@@ -51,9 +51,10 @@ class TestController extends Controller {
 
         $corp = Corp::find(1);
         $corpid = 'wxe75227cead6b8aec';
-        $secret = 'IoiSOIsOGrdps03Lx_h5V3cCvMl3ibu-FyqqAsy-qLM';
+        $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIE';
         $token = Wechat::getAccessToken($corpid, $secret, true);
-        dd(Wechat::getAppList($token));
+        $agentid = 1000007;
+        dd(Wechat::getApp($token, $agentid));
         $a = [
             1 => 'ab',
             2 => 'cd',
