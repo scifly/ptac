@@ -53,16 +53,16 @@ class AppRequest extends FormRequest {
         if (Request::method() === 'POST') {
             $input = $this->all();
             $input['name'] = $input['name'] ?? '新建应用';
-            $input['description'] = $input['description'] ?? '';
+            $input['description'] = $input['description'] ?? '0';
             $input['reprot_location_flag'] = $input['reprot_location_flag'] ?? 0;
-            $input['square_logo_url'] = $input['square_logo_url'] ?? '';
-            $input['redirect_domain'] = $input['redirect_domain'] ?? '';
+            $input['square_logo_url'] = $input['square_logo_url'] ?? '0';
+            $input['redirect_domain'] = $input['redirect_domain'] ?? '0';
             $input['isreportenter'] = $input['isreportenter'] ?? 0;
-            $input['home_url'] = $input['home_url'] ?? '';
-            $input['allow_userinfos'] = $input['allow_userinfos'] ?? '';
-            $input['allow_partys'] = $input['allow_partys'] ?? '';
-            $input['allow_tags'] = $input['allow_tags'] ?? '';
-            $input['menu'] = $input['menu'] ?? '';
+            $input['home_url'] = $input['home_url'] ?? '0';
+            $input['allow_userinfos'] = $input['allow_userinfos'] ?? '0';
+            $input['allow_partys'] = $input['allow_partys'] ?? '0';
+            $input['allow_tags'] = $input['allow_tags'] ?? '0';
+            $input['menu'] = $input['menu'] ?? '0';
             $input['enabled'] = $input['enabled'] ?? 0;
             
             $this->replace($input);
