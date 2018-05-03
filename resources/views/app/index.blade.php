@@ -27,18 +27,18 @@
             </div>
             <!-- 企业应用名称 -->
             <div class="form-group" style="margin-right: 10px">
-                {!! Form::label('name', '应用名称：', [
+                {!! Form::label('name', '名称：', [
                     'class' => 'control-label'
                 ]) !!}
                 {!! Form::text('name', null, [
-                    'id' => 'agentid',
+                    'id' => 'name',
                     'class' => 'form-control input-sm',
                     'required' => 'true',
                 ]) !!}
             </div>
             <!-- 企业应用ID -->
             <div class="form-group" style="margin-right: 10px">
-                {!! Form::label('agentid', '应用AgentId：', [
+                {!! Form::label('agentid', 'agentid：', [
                     'class' => 'control-label'
                 ]) !!}
                 {!! Form::text('agentid', null, [
@@ -49,7 +49,7 @@
             </div>
             <!-- 应用Secret -->
             <div class="form-group" style="margin-right: 10px">
-                {!! Form::label('secret', '应用Secret：', [
+                {!! Form::label('secret', 'secret：', [
                     'class' => 'control-label'
                 ]) !!}
                 {!! Form::text('secret', null, [
