@@ -72,9 +72,9 @@
             <thead>
 			<tr class="bg-info">
                 <th>#</th>
-                <th class="text-center">应用id</th>
-                <th class="text-center">应用名称</th>
-                <th class="text-center">应用头像</th>
+                <th class="text-center">agentid</th>
+                <th class="text-center">名称</th>
+                <th class="text-center">头像</th>
                 <th class="text-center">应用secret</th>
                 <th class="text-center">创建于</th>
                 <th class="text-center">更新于</th>

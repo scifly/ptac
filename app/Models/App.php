@@ -126,7 +126,7 @@ class App extends Model {
             'allow_userinfos' => json_encode($result->{'allow_userinfos'}),
             'allow_partys' => json_encode($result->{'allow_partys'}),
             // 'allow_tags' => $result->{'allow_tags'},
-            'enabled' => $result->{'close'}
+            'enabled' => !$result->{'close'}
         ];
         $app = $this->modify($data, $app->id)->toArray();
         $this->formatDateTime($app);
