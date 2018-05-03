@@ -138,88 +138,6 @@ class Department extends Model {
     }
     
     /**
-     * 返回所有叶节点部门
-     *
-     * @return array
-     */
-    function leaves() {
-        
-        $leaves = [];
-        $leafPath = [];
-        $departments = $this->nodes();
-        /** @var Department $department */
-        foreach ($departments as $department) {
-            if (empty($department->children()->count())) {
-                $path = self::leafPath($department->id, $leafPath);
-                $leaves[$department->id] = $path;
-                $leafPath = [];
-            }
-        }
-
-        return $leaves;
-
-    }
-
-    /**
-     * 根据根部门ID返回所有下级部门对象
-     *
-     * @param null $rootId
-     * @return Collection|static[]
-     */
-    function nodes($rootId = null) {
-
-        if (!isset($rootId)) {
-            $nodes = $this->orderBy('order')->all();
-        } else {
-            $departmentIds = array_merge([$rootId], $this->subDepartmentIds($rootId));
-            $nodes = $this->orderBy('order')->whereIn('id', $departmentIds)->get();
-        }
-
-        return $nodes;
-
-    }
-
-    /**
-     * 获取指定部门的完整路径
-     *
-     * @param $id
-     * @param array $path
-     * @return string
-     */
-    function leafPath($id, array &$path) {
-
-        $department = self::find($id);
-        if (!isset($department)) {
-            return '';
-        }
-        $path[] = $department->name;
-        if (isset($department->parent_id)) {
-            self::leafPath($department->parent_id, $path);
-        }
-        krsort($path);
-
-        return implode(' . ', $path);
-
-    }
-    
-    /**
-     * 返回Department列表
-     *
-     * @return array
-     */
-    function departments() {
-
-        $departments = $this->nodes();
-        $departmentList = [];
-        foreach ($departments as $department) {
-            $departmentList[$department->id] = $department->name;
-        }
-
-        return $departmentList;
-
-    }
-    
-    /**
      * 创建部门
      *
      * @param array $data
@@ -384,6 +302,9 @@ class Department extends Model {
         } else if (Request::has('data')) {
             # 保存部门排序
             $orders = Request::get('data');
+            $originalOrders = $this->orderBy('order')
+                ->whereIn('id', array_keys($orders))
+                ->get()->pluck('order', 'id')->toArray();
             foreach ($orders as $id => $order) {
                 $department = $this->find($id);
                 if (isset($department)) {
@@ -407,9 +328,10 @@ class Department extends Model {
             }
         }
         
-        return response()->json([], HttpStatusCode::OK);
+        return response()->json();
         
     }
+    
     /**
      * 获取用于显示jstree的部门数据
      *
@@ -457,38 +379,83 @@ class Department extends Model {
     }
     
     /**
-     * 获取当前用户的根部门ID
+     * 返回所有叶节点部门
      *
-     * @param bool $subRoot
-     * @return int|mixed
+     * @return array
      */
-    function rootDepartmentId($subRoot = false) {
+    function leaves() {
         
-        $user = Auth::user();
-        $role = $user->group->name;
-        $rootDepartmentTypeId = DepartmentType::whereName('根')->first()->id;
-        $rootDId = Department::whereDepartmentTypeId($rootDepartmentTypeId)->first()->id;
-        # 当前菜单id
-        $menuId = session('menuId');
-        $menu = Menu::find($menuId);
-        # 学校的根菜单id
-        $smId = $menu->menuId($menuId);
-        # 学校的根部门id
-        $sdId = $smId ? School::whereMenuId($smId)->first()->department_id : null;
-        # 企业的根菜单id
-        $cmId = $menu->menuId($menuId, '企业');
-        # 企业的根部门id
-        $cdId = $cmId ? Corp::whereMenuId($cmId)->first()->department_id : null;
-        switch ($role) {
-            case '运营':
-                return !$subRoot ? $rootDId : ($sdId ?? ($cdId ?? $rootDId));
-            case '企业':
-                return !$subRoot ? $cdId : ($sdId ?? $cdId);
-            case '学校':
-                return $sdId;
-            default:
-                return School::find($user->educator->school_id)->department_id;
+        $leaves = [];
+        $leafPath = [];
+        $departments = $this->nodes();
+        /** @var Department $department */
+        foreach ($departments as $department) {
+            if (empty($department->children()->count())) {
+                $path = self::leafPath($department->id, $leafPath);
+                $leaves[$department->id] = $path;
+                $leafPath = [];
+            }
         }
+        
+        return $leaves;
+        
+    }
+    /**
+     * 根据根部门ID返回所有下级部门对象
+     *
+     * @param null $rootId
+     * @return Collection|static[]
+     */
+    function nodes($rootId = null) {
+        
+        if (!isset($rootId)) {
+            $nodes = $this->orderBy('order')->all();
+        } else {
+            $departmentIds = array_merge([$rootId], $this->subDepartmentIds($rootId));
+            $nodes = $this->orderBy('order')->whereIn('id', $departmentIds)->get();
+        }
+        
+        return $nodes;
+        
+    }
+    
+    /**
+     * 获取指定部门的完整路径
+     *
+     * @param $id
+     * @param array $path
+     * @return string
+     */
+    function leafPath($id, array &$path) {
+        
+        $department = self::find($id);
+        if (!isset($department)) {
+            return '';
+        }
+        $path[] = $department->name;
+        if (isset($department->parent_id)) {
+            self::leafPath($department->parent_id, $path);
+        }
+        krsort($path);
+        
+        return implode(' . ', $path);
+        
+    }
+    
+    /**
+     * 返回Department列表
+     *
+     * @return array
+     */
+    function departments() {
+        
+        $departments = $this->nodes();
+        $departmentList = [];
+        foreach ($departments as $department) {
+            $departmentList[$department->id] = $department->name;
+        }
+        
+        return $departmentList;
         
     }
     
@@ -535,44 +502,6 @@ class Department extends Model {
             return self::getSchoolId($parent->id);
         }
 
-    }
-    /**
-     * 根据班级的部门ID获取所属年级的ID
-     *
-     * @param $id
-     * @return int|mixed
-     */
-    function getGradeId($id) {
-
-        $parent = self::find($id)->parent;
-        if ($parent->departmentType->name == '年级') {
-            $departmentId = $parent->id;
-            return Grade::whereDepartmentId($departmentId)->first()->id;
-        } else {
-            return self::getGradeId($parent->id);
-        }
-
-    }
-    
-    /**
-     * 返回指定部门所处的级别
-     *
-     * @param integer $id 部门ID
-     * @param integer $level 部门所处级别
-     * @return int|null
-     */
-    function level($id, &$level) {
-        
-        $department = self::find($id);
-        if (!$department) { return null; }
-        $parent = $department->parent;
-        if ($parent) {
-            $level += 1;
-            self::level($parent->id, $level);
-        }
-        
-        return $level;
-        
     }
     
     /**
@@ -679,7 +608,7 @@ class Department extends Model {
         if ($firstIds) {
             foreach ($firstIds as $firstId) {
                 $childrenIds[] = $firstId['id'];
-                self::subDepartmentIds($firstId['id']);
+                return $this->subDepartmentIds($firstId['id']);
             }
         }
 
@@ -735,7 +664,7 @@ class Department extends Model {
      * @param $department
      * @throws Throwable
      */
-    function updateDu($dtType, $model, $department): void {
+    private function updateDu($dtType, $model, $department): void {
         
         if (in_array($dtType, ['grade', 'squad'])) {
             $users = User::with('educators')
@@ -746,6 +675,63 @@ class Department extends Model {
                     $department->id, $users->pluck('user.id')
                 );
             }
+        }
+        
+    }
+    
+    /**
+     * 返回指定部门所处的级别
+     *
+     * @param integer $id 部门ID
+     * @param integer $level 部门所处级别
+     * @return int|null
+     */
+    private function level($id, &$level) {
+        
+        $department = self::find($id);
+        if (!$department) { return null; }
+        $parent = $department->parent;
+        if ($parent) {
+            $level += 1;
+            self::level($parent->id, $level);
+        }
+        
+        return $level;
+        
+    }
+    
+    /**
+     * 获取当前用户的根部门ID
+     *
+     * @param bool $subRoot
+     * @return int|mixed
+     */
+    private function rootDepartmentId($subRoot = false) {
+        
+        $user = Auth::user();
+        $role = $user->group->name;
+        $rootDepartmentTypeId = DepartmentType::whereName('根')->first()->id;
+        $rootDId = Department::whereDepartmentTypeId($rootDepartmentTypeId)->first()->id;
+        # 当前菜单id
+        $menuId = session('menuId');
+        $menu = Menu::find($menuId);
+        # 学校的根菜单id
+        $smId = $menu->menuId($menuId);
+        # 学校的根部门id
+        $sdId = $smId ? School::whereMenuId($smId)->first()->department_id : null;
+        # 企业的根菜单id
+        $cmId = $menu->menuId($menuId, '企业');
+        # 企业的根部门id
+        $cdId = $cmId ? Corp::whereMenuId($cmId)->first()->department_id : null;
+        switch ($role) {
+            case '运营':
+                return !$subRoot ? $rootDId : ($sdId ?? ($cdId ?? $rootDId));
+            case '企业':
+                return !$subRoot ? $cdId : ($sdId ?? $cdId);
+            case '学校':
+                return $sdId;
+            default:
+                return School::find($user->educator->school_id)->department_id;
         }
         
     }
@@ -774,7 +760,7 @@ class Department extends Model {
      */
     private function getChildrenNode($id, Collection &$nodes) {
 
-        $node = self::find($id);
+        $node = $this->find($id);
         $nodes->push($node);
         foreach ($node->children as $child) {
             $nodes->push($child);

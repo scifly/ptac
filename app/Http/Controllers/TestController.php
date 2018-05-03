@@ -47,6 +47,8 @@ class TestController extends Controller {
     
     public function index() {
 
+        $d = new Department();
+        dd($d->subDepartmentIds(1));
         $a = [
             1 => 'ab',
             2 => 'cd',
