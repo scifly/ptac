@@ -193,8 +193,7 @@ class Wechat extends Facade {
         if ($app['expire_at'] < time() || !isset($app['expire_at'])) {
             $token = self::curlGet(sprintf(self::URL_GET_ACCESSTOKEN, $corpid, $secret));
             $result = json_decode($token);
-            dd($result);
-            if ($result) {
+            if ($result->{'errcode'} == 0) {
                 $accessToken = $result->{'access_token'};
                 $app->update([
                     'expire_at' => date('Y-m-d H:i:s', time() + 7000),
