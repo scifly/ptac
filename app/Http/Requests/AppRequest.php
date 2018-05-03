@@ -54,7 +54,7 @@ class AppRequest extends FormRequest {
             $input = $this->all();
             $input['name'] = $input['name'] ?? '新建应用';
             $input['description'] = $input['description'] ?? '0';
-            $input['reprot_location_flag'] = $input['reprot_location_flag'] ?? 0;
+            $input['report_location_flag'] = $input['reprot_location_flag'] ?? 0;
             $input['square_logo_url'] = $input['square_logo_url'] ?? '0';
             $input['redirect_domain'] = $input['redirect_domain'] ?? '0';
             $input['isreportenter'] = $input['isreportenter'] ?? 0;
