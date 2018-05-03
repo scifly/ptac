@@ -22,7 +22,7 @@ var sync = function () {
                         '<td class="text-center">' + data['agentid'] + '</td>' +
                         '<td>' + data['name'] + '</td>' +
                         '<td class="text-center"><img style="width: 16px; height: 16px;" src="' + data['square_logo_url'] + '"/></td>' +
-                        '<td>' + data['description'] + '</td>' +
+                        '<td class="text-center">' + data['secret'] + '</td>' +
                         '<td class="text-center">' + data['created_at'] + '</td>' +
                         '<td class="text-center">' + data['updated_at'] + '</td>' +
                         '<td class="text-right">' + status + '</td>' +
@@ -38,7 +38,7 @@ var sync = function () {
                     '<td class="text-center">' + data['agentid'] + '</td>' +
                     '<td class="text-center">' + data['name'] + '</td>' +
                     '<td class="text-center"><img style="width: 16px; height: 16px;" src="' + data['square_logo_url'] + '"/></td>' +
-                    '<td>' + data['description'] + '</td>' +
+                    '<td class="text-center">' + data['secret'] + '</td>' +
                     '<td class="text-center">' + data['created_at'] + '</td>' +
                     '<td class="text-center">' + data['updated_at'] + '</td>' +
                     '<td class="text-right">' + status + '</td>';
