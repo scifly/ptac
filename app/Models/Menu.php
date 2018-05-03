@@ -394,7 +394,7 @@ class Menu extends Model {
         $user = Auth::user();
         $rootMTId = MenuType::whereName('根')->first()->id;
         $rootMId = Menu::whereMenuTypeId($rootMTId)->first()->id;
-        $menuId = session('menuId') ?? $rootMId;
+        $menuId = session('menuId') != '0' ? session('menuId') : $rootMId;
         $smId = self::menuId($menuId);
         $cmId = self::menuId($menuId, '企业');
         switch ($user->group->name) {
@@ -479,7 +479,7 @@ class Menu extends Model {
      */
     function menuId($id, $type = '学校') {
         
-        $menu = self::find($id);
+        $menu = $this->find($id);
         $menuType = $menu->menuType->name;
         while ($menuType != $type) {
             $menu = $menu->parent;
