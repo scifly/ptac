@@ -20,7 +20,7 @@ var sync = function () {
                     '<tr id="app"' + data['agentid'] + '">' +
                         '<td>' + data['id'] + '</td>' +
                         '<td class="text-center">' + data['agentid'] + '</td>' +
-                        '<td>' + data['name'] + '</td>' +
+                        '<td class="text-center">' + data['name'] + '</td>' +
                         '<td class="text-center"><img style="width: 16px; height: 16px;" src="' + data['square_logo_url'] + '"/></td>' +
                         '<td class="text-center">' + data['secret'] + '</td>' +
                         '<td class="text-center">' + data['created_at'] + '</td>' +
