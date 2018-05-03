@@ -25,6 +25,17 @@
                     ]) !!}
                 </div>
             </div>
+            <!-- 企业应用名称 -->
+            <div class="form-group" style="margin-right: 10px">
+                {!! Form::label('name', '应用名称：', [
+                    'class' => 'control-label'
+                ]) !!}
+                {!! Form::text('name', null, [
+                    'id' => 'agentid',
+                    'class' => 'form-control input-sm',
+                    'required' => 'true',
+                ]) !!}
+            </div>
             <!-- 企业应用ID -->
             <div class="form-group" style="margin-right: 10px">
                 {!! Form::label('agentid', '应用AgentId：', [
@@ -50,7 +61,7 @@
             </div>
             {!! Form::submit('同步应用', [
                 'id' => 'sync',
-                'class' => 'btn btn-default'
+                'class' => 'btn btn-default btn-sm'
             ]) !!}
         </div>
         {!! Form::close() !!}
