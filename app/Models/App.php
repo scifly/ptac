@@ -123,8 +123,8 @@ class App extends Model {
             'redirect_domain' => $result->{'redirect_domain'},
             'isreportenter' => $result->{'isreportenter'},
             'home_url' => $result->{'home_url'},
-            'allow_userinfos' => $result->{'allow_userinfos'},
-            'allow_partys' => $result->{'allow_partys'},
+            'allow_userinfos' => json_encode($result->{'allow_userinfos'}),
+            'allow_partys' => json_encode($result->{'allow_partys'}),
             // 'allow_tags' => $result->{'allow_tags'},
             'enabled' => $result->{'close'}
         ];
