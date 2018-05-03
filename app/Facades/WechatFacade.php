@@ -200,7 +200,7 @@ class Wechat extends Facade {
                     'access_token' => $accessToken
                 ]);
             } else {
-                return false;
+                return $result->{'errcode'} . ': ' . $result->{'errmsg'};
             }
         } else {
             $accessToken = $app['access_token'];

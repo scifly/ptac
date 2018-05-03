@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Facades\Wechat;
 use App\Helpers\ModelTrait;
 use App\Models\Action;
+use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Group;
 use App\Models\User;
@@ -48,9 +49,15 @@ class TestController extends Controller {
     
     public function index() {
 
+        $corp = new Corp();
+        dd($corp->update([
+            'expire_at' => date('Y-m-d H:i:s', time() + 7000),
+            'access_token' => 'yglhSv5VwQ1RTxQmEE1S9ePQFSMm5X44Xuvja5V_FiexFy4y4pQa25V0sV7wQj5RJBQBvnz5yeYH4Afh2qOWmwBkjDRzCNT3YaPPhoYqJocXR8_JNKBCnN7meZXykonHyQMPhi9RInZHnWiJGhwrfKWqW4SX_4d3cf0YcZgHXEkcqRLu4-_UPqXFAfzZRVTGc5rM5VGPXP745diBBoWTGA'
+        ]));
         $corpid = 'wxe75227cead6b8aec';
         $secret = 'IoiSOIsOGrdps03Lx_h5V3cCvMl3ibu-FyqqAsy-qLM';
         dd(Wechat::getAccessToken($corpid, $secret, true));
+        
         $a = [
             1 => 'ab',
             2 => 'cd',
