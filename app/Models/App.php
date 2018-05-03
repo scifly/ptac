@@ -99,11 +99,12 @@ class App extends Model {
         # 获取应用
         $corpid = Corp::find($app ? $app->corp_id : $corpId)->corpid;
         $token = Wechat::getAccessToken($corpid, $app ? $app->secret : $secret);
-        abort_if(
-            is_array($token),
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            Wechat::ERRCODES[$token[0]]
-        );
+        if (is_array($token)) {
+            abort(
+                HttpStatusCode::INTERNAL_SERVER_ERROR,
+                Wechat::ERRCODES[$token[0]]
+            );
+        }
         $result = json_decode(Wechat::getApp($token, $app ? $app->agentid : $agentid));
         abort_if(
             $result->{'errcode'} != 0,
