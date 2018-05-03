@@ -199,11 +199,11 @@ class Menu extends Model {
     function subMenuIds($id) {
         
         static $subMenuIds;
-        $childrenIds = Menu::whereParentId($id)->get(['id'])->toArray();
+        $childrenIds = Menu::whereParentId($id)->pluck('id')->toArray();
         if ($childrenIds) {
             foreach ($childrenIds as $childId) {
-                $subMenuIds[] = $childId['id'];
-                self::subMenuIds($childId['id']);
+                $subMenuIds[] = $childId;
+                self::subMenuIds($childId);
             }
         }
         
