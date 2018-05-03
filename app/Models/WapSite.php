@@ -206,29 +206,36 @@ class WapSite extends Model {
     
         $user = Auth::user();
         abort_if(
-            !$user || in_array($user->group->name, ['运营', '企业']),
+            !$user,
             HttpStatusCode::UNAUTHORIZED,
             __('messages.unauthorized')
         );
         $schoolId = Group::find($user->group_id)->school_id;
         if (!$schoolId) {
-            $departmentId = DepartmentUser::whereUserId($user->id)->first()->department_id;
-            $department = (new Department())->schoolDeptId($departmentId);
-            $schoolId = School::whereDepartmentId($department)->first()->id;
+            # todo 显示微网站列表
+            switch ($user->group->name) {
+                case '运营':
+                case '企业':
+                case '监护人':
+                default:
+                    break;
+            }
+            return view();
+        } else {
+            $wapSite = WapSite::whereSchoolId($schoolId)->first();
+            abort_if(
+                !$wapSite,
+                HttpStatusCode::NOT_FOUND,
+                __('messages.not_found')
+            );
+    
+            return view('wechat.wapsite.home', [
+                'wapsite' => $wapSite,
+                'medias'  => (new Media())->medias(
+                    explode(',', $wapSite->media_ids)
+                ),
+            ]);
         }
-        $wapSite = WapSite::whereSchoolId($schoolId)->first();
-        abort_if(
-            !$wapSite,
-            HttpStatusCode::NOT_FOUND,
-            __('messages.not_found')
-        );
-        
-        return view('wechat.wapsite.home', [
-            'wapsite' => $wapSite,
-            'medias'  => (new Media())->medias(
-                explode(',', $wapSite->media_ids)
-            ),
-        ]);
         
     }
     

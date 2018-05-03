@@ -230,7 +230,7 @@ class MessageCenterController extends Controller {
         }
         if (!empty($input['department_ids'])) {
             #获取该部门下包括子部门的user
-            $users = $this->department->getPartyUser($input['department_ids']);
+            $users = $this->department->partyUsers($input['department_ids']);
             foreach ($users as $user) {
                 $userIds[] = $user->id;
             }

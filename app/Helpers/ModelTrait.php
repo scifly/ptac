@@ -137,14 +137,6 @@ trait ModelTrait {
                 $departmentId = head($user->departments->pluck('id')->toArray());
                 return [School::whereDepartmentId($departmentId)->first()->id];
             default:
-                $educator = $user->educator;
-                if (!$educator) {
-                    $departmentId = head($user->departments->pluck('id')->toArray());
-                    $department = new Department();
-                    $schoolDepartmentId = $department->schoolDeptId($departmentId);
-                    unset($department);
-                    return [School::whereDepartmentId($schoolDepartmentId)->first()->id];
-                }
                 return [$user->educator->school_id];
         }
         

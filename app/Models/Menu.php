@@ -449,12 +449,14 @@ class Menu extends Model {
         } else if (Request::has('data')) {
             # 保存菜单排序
             $positions = Request::get('data');
-            foreach ($positions as $id => $pos) {
-                $menu = $this->find($id);
-                if (isset($menu)) {
-                    $menu->position = $pos;
-                    $menu->save();
-                }
+            $originalPositions = $this->orderBy('position')
+                ->whereIn('id', array_keys($positions))
+                ->pluck('position', 'id')->toArray();
+            foreach ($positions as $id => $position) {
+                $originalPosition = array_slice($originalPositions, $position, 1, true);
+                $this->find($id)->update([
+                    'position' => $originalPosition[key($originalPosition)]
+                ]);
             }
         } else {
             # 移动菜单
@@ -473,7 +475,7 @@ class Menu extends Model {
             }
         }
         
-        return response()->json([], HttpStatusCode::Ok);
+        return response()->json();
     
     }
     

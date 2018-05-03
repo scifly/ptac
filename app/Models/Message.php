@@ -286,15 +286,14 @@ class Message extends Model {
             'statusCode' => 200,
             'message'    => '',
         ];
-        $departmentIds = explode(',', $data['departIds']);
-        if ($departmentIds) {
+        $contactIds = explode(',', $data['departIds']);
+        if ($contactIds) {
             $apps = App::whereIn('id', $data['app_ids'])->get()->toArray();
-            if (!$apps) {
+            if (empty($apps)) {
                 $result = [
                     'statusCode' => 0,
                     'message'    => '应用不存在，请刷新页面！',
                 ];
-                
                 return response()->json($result);
             }
             $corp = School::find($this->schoolId())->corp;
@@ -303,39 +302,41 @@ class Message extends Model {
                 HttpStatusCode::NOT_FOUND,
                 '企业号不存在，请刷新页面！'
             );
-            $depts = [];
-            $users = [];
-            $us = [];
-            foreach ($departmentIds as $o) {
-                $item = explode('-', $o);
-                if (isset($item[1])) {
-                    $users[] = User::find($item[1])->userid;
-                    $us[] = User::find($item[1])->id;
+            $deptIds = [];
+            $userids = [];
+            $userIds = [];
+            foreach ($contactIds as $contactId) {
+                # paths[2] = user-[departmentId]-[userId]
+                $paths = explode('-', $contactId);
+                if (isset($paths[2])) {
+                    $user = User::find($paths[2]);
+                    $userids[] = $user->userid;
+                    $userIds[] = $user->id;
                 } else {
-                    $depts[] = $o;
+                    $deptIds[] = $contactId;
                 }
             }
-            $touser = implode('|', $users);
-            $toparty = implode('|', $depts);
+            $toUserids = implode('|', $userids);
+            $toParties = implode('|', $deptIds);
             # 推送的所有用户以及电话
-            $userDatas = $this->getMobiles($us, $depts);
+            $targets = $this->getMobiles($toUserids, $deptIds);
             $title = '';
             $msl = [
                 'read_count'      => 0,
                 'received_count'  => 0,
-                'recipient_count' => count($userDatas['users']),
+                'recipient_count' => count($targets['users']),
             ];
             $id = MessageSendingLog::create($msl)->id;
             foreach ($apps as $app) {
                 $token = Wechat::getAccessToken($corp->corpid, $app['secret']);
                 $message = [
-                    'touser'  => $touser,
-                    'toparty' => $toparty,
+                    'touser'  => $toUserids,
+                    'toparty' => $toParties,
                     'agentid' => $app['agentid'],
                 ];
                 # 短信推送
                 if ($data['type'] == 'sms') {
-                    $code = $this->sendSms($us, $depts, $data['content']['sms']);
+                    $code = $this->sendSms($userIds, $deptIds, $data['content']['sms']);
                     $content = $data['content']['sms'] . '【成都外国语】';
                     if ($code != '0' && $code != '-1') {
                         $result = [
@@ -390,7 +391,7 @@ class Message extends Model {
                     }
                     
                 }
-                foreach ($userDatas['users'] as $i) {
+                foreach ($targets['users'] as $i) {
                     $commType = $data['type'] == 'sms' ? '短信' : '应用';
                     $read = $data['type'] == 'sms' ? 1 : 0;
                     $sent = $result['statusCode'] == 200 ? 1 : 0;
@@ -416,8 +417,8 @@ class Message extends Model {
                 
             }
             if ($result['statusCode'] == 200) {
-                $readCount = $data['type'] == 'sms' ? count($userDatas['users']) : 0;
-                $receivedCount = count($userDatas['users']);
+                $readCount = $data['type'] == 'sms' ? count($targets['users']) : 0;
+                $receivedCount = count($targets['users']);
                 MessageSendingLog::find($id)->update([
                     'read_count'     => $readCount,
                     'received_count' => $receivedCount,
@@ -455,33 +456,33 @@ class Message extends Model {
     /**
      * 获取所有发送短信对象的电话
      *
-     * @param $touser
-     * @param $toparty
+     * @param $toUserids
+     * @param $toParties
      * @return array
      */
-    function getMobiles($touser, $toparty) {
+    function getMobiles($toUserids, $toParties) {
         
         $mobiles = [];
-        $userDatas = [];
-        if ($touser) {
-            foreach ($touser as $i) {
-                $user = User::find($i);
-                $m = Mobile::whereUserId($i)->where('enabled', 1)->first();
-                if ($m) {
-                    $mobiles[] = $m->mobile;
-                    $userDatas[] = $user;
+        $users = [];
+        if ($toUserids) {
+            foreach ($toUserids as $userid) {
+                $user = User::whereUserid($userid)->first();
+                $mobile = Mobile::whereUserId($user->id)->where('enabled', 1)->first();
+                if ($mobile) {
+                    $mobiles[] = $mobile->mobile;
+                    $users[] = $user;
                 }
             }
         }
-        if ($toparty) {
-            $dept = new Department();
-            $users = $dept->getPartyUser($toparty);
-            if ($users) {
-                foreach ($users as $u) {
-                    $m = Mobile::whereUserId($u->id)->where('enabled', 1)->first();
-                    if ($m) {
-                        $mobiles[] = $m->mobile;
-                        $userDatas[] = $u;
+        if ($toParties) {
+            $department = new Department();
+            $partyUsers = $department->partyUsers($toParties);
+            if ($partyUsers) {
+                foreach ($partyUsers as $user) {
+                    $mobile = Mobile::whereUserId($user->id)->where('enabled', 1)->first();
+                    if ($mobile) {
+                        $mobiles[] = $mobile->mobile;
+                        $users[] = $user;
                     }
                 }
             }
@@ -489,7 +490,7 @@ class Message extends Model {
         
         return $result = [
             'mobiles' => $mobiles,
-            'users'   => $userDatas,
+            'users'   => $users,
         ];
         
     }

@@ -306,11 +306,10 @@ class Department extends Model {
                 ->whereIn('id', array_keys($orders))
                 ->get()->pluck('order', 'id')->toArray();
             foreach ($orders as $id => $order) {
-                $department = $this->find($id);
-                if (isset($department)) {
-                    $department->order = $order;
-                    $department->save();
-                }
+                $originalOrder = array_slice($originalOrders, $order, 1, true);
+                $this->find($id)->update([
+                    'order' => $originalOrder[key($originalOrder)]
+                ]);
             }
         } else {
             # 移动部门
@@ -400,6 +399,7 @@ class Department extends Model {
         return $leaves;
         
     }
+    
     /**
      * 根据根部门ID返回所有下级部门对象
      *
@@ -420,29 +420,6 @@ class Department extends Model {
     }
     
     /**
-     * 获取指定部门的完整路径
-     *
-     * @param $id
-     * @param array $path
-     * @return string
-     */
-    function leafPath($id, array &$path) {
-        
-        $department = self::find($id);
-        if (!isset($department)) {
-            return '';
-        }
-        $path[] = $department->name;
-        if (isset($department->parent_id)) {
-            self::leafPath($department->parent_id, $path);
-        }
-        krsort($path);
-        
-        return implode(' . ', $path);
-        
-    }
-    
-    /**
      * 返回Department列表
      *
      * @return array
@@ -458,7 +435,6 @@ class Department extends Model {
         return $departmentList;
         
     }
-    
     /**
      * 选中的部门节点
      *
@@ -567,31 +543,29 @@ class Department extends Model {
     }
     
     /**
-     * 获取一个数组部门下 连同子部门下的所有用户
+     * 获取指定部门（含所有子部门）的所有用户
      *
-     * @param $toparty
+     * @param $ids
      * @return array
      */
-    function getPartyUser ($toparty) {
+    function partyUsers($ids) {
 
-        $users = [];
-        $depts = new Collection();
-        foreach ($toparty as $p) {
-            self::getChildrenNode($p, $depts);
+        $departmentIds = [];
+        foreach ($ids as $id) {
+            $departmentIds = array_merge(
+                $departmentIds, $this->subDepartmentIds($id)
+            );
         }
-        $items = $depts->toArray();
-        if (empty($items)) { return $users; }
-        foreach ($items as $i) {
-            $deptUsers = DepartmentUser::whereDepartmentId($i['id'])->get();
-            if ($deptUsers) {
-                foreach ($deptUsers as $d) {
-                    $user = User::find($d->user_id);
-                    if ($user) { $users[] = $user; }
-                }
-            }
+        $ids = array_unique($departmentIds);
+        $userIds = [];
+        foreach ($ids as $id) {
+            $userIds = array_merge(
+                $userIds, $this->find($id)->users->pluck('id')->toArray()
+            );
         }
+        $userIds = array_unique($userIds);
 
-        return $users;
+        return User::whereIn('id', $userIds)->get();
 
     }
     
@@ -617,23 +591,6 @@ class Department extends Model {
     }
     
     /**
-     * 返回指定部门所属学校的部门id
-     *
-     * @param $id
-     * @return int|mixed
-     */
-    function schoolDeptId($id) {
-        
-        $department = $this->find($id);
-        if ($department->department_type->name != '学校') {
-            return self::schoolDeptId($department->parent_id);
-        }
-        
-        return $department->id;
-        
-    }
-    
-    /**
      * 返回指定部门所属的企业id
      *
      * @param $id
@@ -653,6 +610,29 @@ class Department extends Model {
                 }
                 return Corp::whereDepartmentId($parent->id)->first()->id;
         }
+        
+    }
+    
+    /**
+     * 获取指定部门的完整路径
+     *
+     * @param $id
+     * @param array $path
+     * @return string
+     */
+    private function leafPath($id, array &$path) {
+        
+        $department = self::find($id);
+        if (!isset($department)) {
+            return '';
+        }
+        $path[] = $department->name;
+        if (isset($department->parent_id)) {
+            self::leafPath($department->parent_id, $path);
+        }
+        krsort($path);
+        
+        return implode(' . ', $path);
         
     }
     
@@ -734,39 +714,6 @@ class Department extends Model {
                 return School::find($user->educator->school_id)->department_id;
         }
         
-    }
-    
-    /**
-     * 根据Department ID返回所有下级部门
-     *
-     * @param $id
-     * @param Collection $nodes
-     */
-    private function getChildren($id, Collection &$nodes) {
-
-        $node = self::find($id);
-        foreach ($node->children as $child) {
-            $nodes->push($child);
-            self::getChildren($child->id, $nodes);
-        }
-
-    }
-    
-    /**
-     * 根据Department ID返回所有下级部门 含本身
-     *
-     * @param $id
-     * @param Collection $nodes
-     */
-    private function getChildrenNode($id, Collection &$nodes) {
-
-        $node = $this->find($id);
-        $nodes->push($node);
-        foreach ($node->children as $child) {
-            $nodes->push($child);
-            self::getChildren($child->id, $nodes);
-        }
-
     }
     
     /**

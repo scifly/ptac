@@ -47,14 +47,13 @@ class TestController extends Controller {
     
     public function index() {
 
-        $d = new Department();
-        dd($d->subDepartmentIds(1));
         $a = [
             1 => 'ab',
             2 => 'cd',
             3 => 'ef'
         ];
-        dd(value(array_slice($a, 1, 1, true)));
+        $s = array_slice($a, 1, 1, true);
+        dd($s[key($s)]);
         $names = ['运营', '企业', '学校'];
         $arrs = array_map(function ($name) {
             return [$name => Group::whereName($name)->first()->id];
