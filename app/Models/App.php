@@ -6,6 +6,8 @@ use Carbon\Carbon;
 use App\Facades\Wechat;
 use App\Helpers\HttpStatusCode;
 use App\Http\Requests\AppRequest;
+use Exception;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Request;
@@ -72,7 +74,7 @@ class App extends Model {
     /**
      * 返回应用所属的企业对象
      * 
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     function corp() {
         
@@ -84,8 +86,8 @@ class App extends Model {
      * 保存App
      *
      * @param AppRequest $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Exception
+     * @return JsonResponse
+     * @throws Exception
      */
     function sync(AppRequest $request) {
 
@@ -102,7 +104,7 @@ class App extends Model {
         if (is_array($token)) {
             abort(
                 HttpStatusCode::INTERNAL_SERVER_ERROR,
-                Wechat::ERRCODES[$token[0]]
+                Wechat::ERRCODES[$token[0]] ?? $token[1]
             );
         }
         $result = json_decode(Wechat::getApp($token, $app ? $app->agentid : $agentid));
