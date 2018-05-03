@@ -608,7 +608,7 @@ class Department extends Model {
         if ($firstIds) {
             foreach ($firstIds as $firstId) {
                 $childrenIds[] = $firstId['id'];
-                return $this->subDepartmentIds($firstId['id']);
+                $this->subDepartmentIds($firstId['id']);
             }
         }
 
