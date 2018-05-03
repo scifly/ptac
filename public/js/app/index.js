@@ -8,7 +8,7 @@ var sync = function () {
         dataType: 'json',
         data: $('#formApp').serialize(),
         success: function (result) {
-            var data = result["app"];
+            var data = result['original']['app'];
             var app = '';
             var className = data['enabled'] ? 'text-green' : 'text-gray';
             var title = data['enabled'] ? '已启用' : '未启用';
