@@ -89,18 +89,20 @@ class App extends Model {
      */
     function store() {
 
+        $corpId = Request::input('corp_id');
         $secret = Request::input('secret');
         $agentid = Request::input('agentid');
-        $corp_id = $this->corp->corpId();
-        $corpid = $this->corp->find($corp_id)->corpid;
+        
+        $corp = Corp::find($corpId);
+        $corpid = $corp->corpid;
         $token = Wechat::getAccessToken($corpid, $secret);
         $corpApp = json_decode(Wechat::getApp($token, $agentid));
         $response = [];
         if (isset($corpApp->name)) {
-            $app = self::whereAgentid($agentid)->where('corp_id', $corp_id)->first();
+            $app = self::whereAgentid($agentid)->where('corp_id', $corpId)->first();
             if (!$app) {
                 $a = self::create([
-                    'corp_id' => intval($corp_id),
+                    'corp_id' => intval($corpId),
                     'name' => $corpApp->name,
                     'secret' => $secret,
                     'description' => $corpApp->description,
@@ -121,7 +123,7 @@ class App extends Model {
                     'action' => 'create'
                 ]);
             } else {
-                $app->corp_id = intval($corp_id);
+                $app->corp_id = $corpId;
                 $app->name = $corpApp->name;
                 $app->secret = $secret;
                 $app->description = $corpApp->description;
