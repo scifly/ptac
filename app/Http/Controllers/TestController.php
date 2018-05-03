@@ -50,7 +50,7 @@ class TestController extends Controller {
 
         $corpid = 'wxe75227cead6b8aec';
         $secret = 'IoiSOIsOGrdps03Lx_h5V3cCvMl3ibu-FyqqAsy-qLM';
-        dd(Wechat::getAccessToken($corpid, $secret));
+        dd(Wechat::getAccessToken($corpid, $secret, true));
         $a = [
             1 => 'ab',
             2 => 'cd',
