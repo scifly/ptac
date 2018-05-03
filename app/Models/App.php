@@ -125,7 +125,7 @@ class App extends Model {
             'home_url' => $result->{'home_url'},
             'allow_userinfos' => $result->{'allow_userinfos'},
             'allow_partys' => $result->{'allow_partys'},
-            'allow_tags' => $result->{'allow_tags'},
+            // 'allow_tags' => $result->{'allow_tags'},
             'enabled' => $result->{'close'}
         ];
         $app = $this->modify($data, $app->id)->toArray();
