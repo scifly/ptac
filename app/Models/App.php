@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use App\Jobs\WechatApp;
 use Eloquent;
 use Carbon\Carbon;
 use App\Facades\Wechat;
@@ -10,7 +11,6 @@ use Exception;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -164,9 +164,12 @@ class App extends Model {
     function modify(array $data, $id) {
 
         $app = $this->find($id);
-        $app->update($data);
+        $updated = $app->update($data);
+        if ($updated) {
+            WechatApp::dispatch($this->find($id));
+        }
 
-        return $this->find($id) ?? false;
+        return $updated ? $this->find($id) : false;
 
     }
     
@@ -191,7 +194,7 @@ class App extends Model {
                 <td class="text-center">%s</td>
                 <td class="text-center">%s</td>
                 <td class="text-center"><img style="width: 16px; height: 16px;" src="%s"/></td>
-                <td>%s</td>
+                <td class="text-center">%s</td>
                 <td class="text-center">%s</td>
                 <td class="text-center">%s</td>
                 <td class="text-right">
@@ -200,6 +203,8 @@ class App extends Model {
                     <a href="#"><i class="fa fa-pencil" title="修改"></i></a>
                     &nbsp;&nbsp;
                     <a href="#"><i class="fa fa-exchange" title="同步菜单"></i></a>
+                    &nbsp;&nbsp;
+                    <a href="#"><i class="fa fa-remove text-red" title="删除"</a>
                 </td>
             </tr>';
         $html = '';
@@ -212,7 +217,7 @@ class App extends Model {
                 $app['agentid'],
                 $app['name'],
                 $app['square_logo_url'],
-                $app['description'],
+                $app['secret'],
                 $app['created_at'],
                 $app['updated_at'],
                 $app['enabled']

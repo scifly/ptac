@@ -13,7 +13,7 @@
                 {{ Form::hidden('id', $app['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
-                {!! Form::label('agentid', '应用id', [
+                {!! Form::label('agentid', 'agentid', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
@@ -26,7 +26,7 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('name', '应用名称', [
+                {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
