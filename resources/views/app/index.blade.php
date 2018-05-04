@@ -75,10 +75,10 @@
                 <th class="text-center">agentid</th>
                 <th class="text-center">名称</th>
                 <th class="text-center">头像</th>
-                <th class="text-center">应用secret</th>
+                <th class="text-center">secret</th>
                 <th class="text-center">创建于</th>
                 <th class="text-center">更新于</th>
-                <th class="text-right">状态</th>
+                <th class="text-right">状态 . 操作</th>
             </tr>
             </thead>
             <tbody>
