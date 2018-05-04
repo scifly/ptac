@@ -94,7 +94,7 @@ $(document).off('click', '.fa-pencil').on('click', '.fa-pencil', function() {
 
 // 删除应用
 $(document).off('click', '.fa-remove').on('click', '.fa-remove', function() {
-    id = $(this).parents().eq(0).attr('id');
+    id = $(this).parentsUntil('tbody').eq(2).children(0).first().html();
     $('#modal-dialog').modal({backdrop: true});
 });
 
