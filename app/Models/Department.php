@@ -9,11 +9,11 @@ use Carbon\Carbon;
 use App\Helpers\Snippet;
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
+use App\Jobs\WechatDepartment;
 use App\Helpers\HttpStatusCode;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Jobs\WechatDepartment;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -146,7 +146,7 @@ class Department extends Model {
 
         $department = $this->create($data);
         if ($department && $this->needSync($department)) {
-            WechatDepartment::dispatch($department, 'create');
+            WechatDepartment::dispatch($department, Auth::id(), 'create');
         }
 
         return $department;
@@ -200,7 +200,7 @@ class Department extends Model {
         $department = self::find($id);
         $updated = $department->update($data);
         if ($this->needSync($department) && $updated) {
-            WechatDepartment::dispatch($this->find($id), 'update');
+            WechatDepartment::dispatch($this->find($id), Auth::id(), 'update');
         }
         
         return $updated ?? $this->find($id);
@@ -257,7 +257,7 @@ class Department extends Model {
         $department = $this->find($id);
         if ($this->removable($department)) {
             if ($this->needSync($department)) {
-                WechatDepartment::dispatch($department, 'delete');
+                WechatDepartment::dispatch($department, Auth::id(), 'delete');
             }
             return $department->delete();
         }

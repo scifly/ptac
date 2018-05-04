@@ -39,6 +39,12 @@ class Constant {
         '星期四', '星期五', '星期六'
     ];
     
+    const SYNC_ACTIONS = [
+        'create' => '创建',
+        'update' => '更新',
+        'delete' => '删除',
+    ];
+    
     const ROOT_DEPARTMENT_ID = 1;
     
     const DEPARTMENT_TYPES = [

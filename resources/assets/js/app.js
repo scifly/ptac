@@ -32,6 +32,13 @@ Vue.component('example', require('./components/Example.vue'));
 // );
 
 // noinspection JSUnusedLocalSymbols
+var notify = function (e) {
+    page.inform(
+        e.data['title'],
+        e.data['message'],
+        e.data['statusCode'] === 200 ? page.success : page.failure
+    );
+};
 const app = new Vue({
     // el: '#app',
     created() {
@@ -44,12 +51,7 @@ const app = new Vue({
                     page.inform('导入通讯录', '学生队列导入成功', page.success)
                 }
             })
-            .listen('ContactSyncTrigger', (e) => {
-                page.inform(
-                    e.data['title'],
-                    e.data['message'],
-                    e.data['statusCode'] === 200 ? page.success : page.failure
-                );
-            });
+            .listen('ContactSyncTrigger', (e) => { notify(e); })
+            .listen('DepartmentSyncTrigger', (e) => { notify(e); });
     }
 });

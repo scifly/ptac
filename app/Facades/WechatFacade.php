@@ -1,6 +1,8 @@
 <?php
 namespace App\Facades;
 
+use App\Helpers\Constant;
+use App\Helpers\HttpStatusCode;
 use App\Models\App;
 use App\Models\Corp;
 use Illuminate\Support\Facades\Facade;
@@ -185,38 +187,34 @@ class Wechat extends Facade {
      */
     static function getAccessToken($corpid, $secret, $contactSync = false) {
         
-        if (!$contactSync) {
-            $app = App::whereSecret($secret)->first();
-        } else {
-            $app = Corp::whereContactSyncSecret($secret)->first();
+        function token($corpid, $secret) {
+            $result = json_decode(
+                Wechat::curlGet(sprintf(Wechat::URL_GET_ACCESSTOKEN, $corpid, $secret))
+            );
+            abort_if(
+                $result->{'errcode'} != 0,
+                HttpStatusCode::INTERNAL_SERVER_ERROR,
+                Wechat::ERRCODES[$result['errcode']]
+            );
+            
+            return $result->{'access_token'};
         }
         
+        $app = !$contactSync
+            ? $app = App::whereSecret($secret)->first()
+            : Corp::whereContactSyncSecret($secret)->first();
         if ($app) {
             if ($app['expire_at'] < time() || !isset($app['expire_at'])) {
-                $result = json_decode(
-                    self::curlGet(sprintf(self::URL_GET_ACCESSTOKEN, $corpid, $secret))
-                );
-                if ($result->{'errcode'} == 0) {
-                    $accessToken = $result->{'access_token'};
-                    $app->update([
-                        'expire_at' => date('Y-m-d H:i:s', time() + 7000),
-                        'access_token' => $accessToken
-                    ]);
-                } else {
-                    return [$result->{'errcode'}, $result->{'errmsg'}];
-                }
+                $accessToken = token($corpid, $secret);
+                $app->update([
+                    'expire_at' => date('Y-m-d H:i:s', time() + 7000),
+                    'access_token' => $accessToken
+                ]);
             } else {
                 $accessToken = $app['access_token'];
             }
         } else {
-            $result = json_decode(
-                self::curlGet(sprintf(self::URL_GET_ACCESSTOKEN, $corpid, $secret))
-            );
-            if ($result->{'errcode'} == 0) {
-                $accessToken = $result->{'access_token'};
-            } else {
-                return [$result->{'errcode'}, $result->{'errmsg'}];
-            }
+            $accessToken = token($corpid, $secret);
         }
 
         return $accessToken;
@@ -402,7 +400,6 @@ class Wechat extends Facade {
      * @internal param array $extAttr 自定义字段。自定义字段需要先在WEB管理端“我的企业” — “通讯录管理”添加，否则忽略未知属性的赋值
      */
     static function createUser(
-        
         $accessToken, array $data
     ) {
         return self::curlPost(
@@ -463,7 +460,7 @@ class Wechat extends Facade {
      * @param string $userId 成员UserID，对应管理端的帐号
      * @return mixed
      */
-    static function delUser($accessToken, $userId) {
+    static function deleteUser($accessToken, $userId) {
         
         return self::curlGet(sprintf(self::URL_DEL_USER, $accessToken, $userId));
         
@@ -517,22 +514,14 @@ class Wechat extends Facade {
      * 部门管理 - 创建部门
      *
      * @param string $accessToken 接口调用凭证
-     * @param string $name 部门名称。长度限制为1~64个字节，字符不能包括\:?”<>｜
-     * @param integer $parentId 父部门id
-     * @param integer $order 在父部门中的次序值，值越大排序越靠前。
-     * @param integer $id 部门id。指定时必须大于1，否则自动生成
+     * @param array $data
      * @return mixed
      */
-    static function createDept($accessToken, $name, $parentId, $order = null, $id = null) {
+    static function createDept($accessToken, array $data) {
         
         return self::curlPost(
             sprintf(self::URL_CREATE_DEPT, $accessToken),
-            json_encode([
-                'name'     => $name,
-                'parentid' => $parentId,
-                'order'    => $order,
-                'id'       => $id,
-            ])
+            json_encode($data)
         );
     }
     
@@ -540,22 +529,14 @@ class Wechat extends Facade {
      * 部门管理 - 更新部门
      *
      * @param string $accessToken 接口调用凭证
-     * @param integer $id 部门id
-     * @param string $name 部门名称。长度限制为1~64个字节，不得包括\:?”<>｜
-     * @param integer $parentId 父部门id
-     * @param integer $order 在父部门中的次序值， 值越大的排序越靠前。
+     * @param array $data
      * @return mixed {"errcode": 0, "errmsg": "updated"}
      */
-    static function updateDept($accessToken, $id, $name = null, $parentId = null, $order = null) {
+    static function updateDept($accessToken, array $data) {
         
         return self::curlPost(
             sprintf(self::URL_UPDATE_DEPT, $accessToken),
-            json_encode([
-                'id'       => $id,
-                'name'     => $name,
-                'parentid' => $parentId,
-                'order'    => $order,
-            ])
+            json_encode($data)
         );
         
     }
@@ -567,7 +548,7 @@ class Wechat extends Facade {
      * @param integer $id 部门id。（注：不能删除根部门；不能删除含有子部门、成员的部门）
      * @return mixed {"errcode": 0, "errmsg": "updated"}
      */
-    static function delDept($accessToken, $id) {
+    static function deleteDept($accessToken, $id) {
         
         return self::curlGet(sprintf(self::URL_DEL_DEPT, $accessToken, $id));
         

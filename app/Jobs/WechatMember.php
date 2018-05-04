@@ -3,8 +3,10 @@ namespace App\Jobs;
 
 use App\Events\ContactSyncTrigger;
 use App\Facades\Wechat;
+use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Models\Corp;
+use App\Models\Mobile;
 use App\Models\School;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
@@ -24,23 +26,19 @@ class WechatMember implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     
-    protected $data, $action;
-    
-    const ACTIONS = [
-        'create' => '创建',
-        'update' => '更新',
-        'delete' => '删除',
-    ];
+    protected $member, $userId, $action;
     
     /**
      * Create a new job instance.
      *
-     * @param mixed $data
-     * @param $action
+     * @param User $member
+     * @param $userId - 后台登录用户的id
+     * @param $action - create/update/delete操作
      */
-    public function __construct($data, $action) {
+    public function __construct(User $member, $userId, $action) {
         
-        $this->data = $data;
+        $this->member = $member;
+        $this->userId = $userId;
         $this->action = $action;
         
     }
@@ -52,7 +50,7 @@ class WechatMember implements ShouldQueue {
      */
     public function handle() {
         
-        $user = User::whereUserid($this->data['userid'])->first();
+        $user = User::whereUserid($this->member->userid)->first();
         switch ($user->group->name) {
             case '运营':
                 $corps = Corp::all();
@@ -106,27 +104,37 @@ class WechatMember implements ShouldQueue {
         
         $token = Wechat::getAccessToken($corpid, $secret, true);
         $response = [
-            'userId' => $this->data['userId'],
-            'title' => self::ACTIONS[$this->action] . '企业微信会员',
+            'userId' => $this->userId,
+            'title' => Constant::SYNC_ACTIONS[$this->action] . '企业微信会员',
             'statusCode' => HttpStatusCode::OK,
             'message' => __('messages.wechat_synced')
         ];
+        $params = $this->member->userid;
+        if (in_array($this->action, ['create', 'update'])) {
+            $params = [
+                'userid' => $this->member->userid,
+                'name' => $this->member->realname,
+                'mobile' => head($this->member->mobiles->where('isdefault', 1)->pluck('mobile')->toArray()),
+                
+            ];
+        }
         $result = null;
+        
         switch ($this->action) {
             case 'create':
-                $result = json_decode(Wechat::createUser($token, $this->data));
+                $result = json_decode(Wechat::createUser($token, $this->member));
                 break;
             case 'update':
-                $result = json_decode(Wechat::updateUser($token, $this->data));
+                $result = json_decode(Wechat::updateUser($token, $this->member));
                 break;
             case 'delete':
-                $result = json_decode(Wechat::delUser($token, $this->data));
+                $result = json_decode(Wechat::deleteUser($token, $this->member['userid']));
                 break;
             default:
                 break;
         }
         if ($result->{'errcode'} == 0 && $this->action !== 'delete') {
-            $user = User::whereUserid($this->data['userid'])->first();
+            $user = User::whereUserid($this->member['userid'])->first();
             $user->update(['synced' => 1]);
         }
         

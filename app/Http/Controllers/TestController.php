@@ -49,7 +49,7 @@ class TestController extends Controller {
     
     public function index() {
 
-        $corp = Corp::find(1);
+        dd(head(User::find(1)->mobiles->where('isdefault', 1)->pluck('mobile')->toArray()));
         $corpid = 'wxe75227cead6b8aec';
         $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIE';
         $token = Wechat::getAccessToken($corpid, $secret, true);

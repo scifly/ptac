@@ -291,8 +291,13 @@ Route::group(['prefix' => 'groups'], function () {
 Route::group(['prefix' => 'grades'], routes('GradeController'));
 Route::group(['prefix' => 'classes'], routes('SquadController'));
 # 应用设置 - 微信应用管理
-Route::group(['prefix' => 'apps'], routes('AppController'));
-Route::post('apps/index', 'AppController@index');
+Route::group(['prefix' => 'apps'], function () {
+    Route::get('index', 'AppController@index');
+    Route::post('index', 'AppController@index');
+    Route::get('edit/{id}', 'AppController@edit');
+    Route::put('update/{id}', 'AppController@update');
+    Route::delete('delete/{id}', 'AppController@destroy');
+});
 # 图标管理 - 图标设置.图标类型管理
 Route::group(['prefix' => 'icons'], routes('IconController'));
 Route::group(['prefix' => 'icon_types'], routes('IconTypeController'));
