@@ -32,7 +32,7 @@
                 ]) !!}
                 {!! Form::text('name', null, [
                     'id' => 'name',
-                    'class' => 'form-control input-sm',
+                    'class' => 'form-control input-sm text-blue',
                     'placeholder' => '(可选)'
                 ]) !!}
             </div>
@@ -43,7 +43,7 @@
                 ]) !!}
                 {!! Form::text('agentid', null, [
                     'id' => 'agentid',
-                    'class' => 'form-control input-sm',
+                    'class' => 'form-control input-sm text-blue',
                     'required' => 'true',
                 ]) !!}
             </div>
@@ -54,7 +54,7 @@
                 ]) !!}
                 {!! Form::text('secret', null, [
                     'id' => 'secret',
-                    'class' => 'form-control input-sm',
+                    'class' => 'form-control input-sm text-blue',
                     'required' => 'true',
                     'data-parsley-length' => '[43,43]'
                 ]) !!}
@@ -67,7 +67,7 @@
         {!! Form::close() !!}
         <!-- 企业应用列表 -->
         <div style="display: block; overflow-x: auto; clear: both; width: 100%; margin-top: 10px;">
-            <table class="display table table-striped table-bordered table-hover table-condensed"
+            <table class="table-striped table-bordered table-hover table-condensed"
                style="white-space: nowrap; width: 100%;">
             <thead>
 			<tr class="bg-info">
@@ -88,7 +88,7 @@
                 </tr>
             @else
                 @foreach ($apps as $app)
-                    <tr role="row" id="app{{ $app['agentid'] }}">
+                    <tr id="app{{ $app['agentid'] }}">
                         <td>{{ $app['id'] }}</td>
                         <td class="text-center">{{ $app['agentid'] }}</td>
                         <td class="text-center">{{ $app['name'] }}</td>

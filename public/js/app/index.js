@@ -120,15 +120,15 @@ $('tbody tr').on('click', function () {
         $agentid = $('#agentid'),
         $name = $('#name'),
         $secret = $('#secret');
-    $this.toggleClass('selected');
-    if ($this.hasClass('selected')) {
+    $this.toggleClass('text-blue');
+    if ($this.hasClass('text-blue')) {
         var agentid = $this.find('td').eq(1).text(),
             name = $this.find('td').eq(2).text(),
             secret = $this.find('td').eq(4).text(),
             $rows = $('tbody tr');
         $.each($rows, function () {
             if ($(this).find('td').eq(1).text() !== agentid) {
-                $(this).removeClass('selected');
+                $(this).removeClass('text-blue');
             }
         });
         $agentid.val(agentid);
