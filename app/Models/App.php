@@ -1,18 +1,18 @@
 <?php
 namespace App\Models;
 
-use App\Jobs\WechatApp;
 use Eloquent;
+use Exception;
 use Carbon\Carbon;
 use App\Facades\Wechat;
+use App\Jobs\WechatApp;
 use App\Helpers\HttpStatusCode;
 use App\Http\Requests\AppRequest;
-use Exception;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\App
@@ -171,6 +171,19 @@ class App extends Model {
 
         return $updated ? $this->find($id) : false;
 
+    }
+    
+    /**
+     * 移除应用
+     *
+     * @param $id
+     * @return bool|null
+     * @throws Exception
+     */
+    function remove($id) {
+        
+        return $this->find($id)->delete();
+        
     }
     
     /**

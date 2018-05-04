@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use Exception;
 use Throwable;
 use App\Models\App;
 use App\Http\Requests\AppRequest;
@@ -40,6 +41,7 @@ class AppController extends Controller {
                 : $this->output()
             )
             : $this->app->sync($request);
+        
     }
     
     /**
@@ -86,6 +88,21 @@ class AppController extends Controller {
         return $this->output([
             'menu' => $this->app->find($id)->menu
         ]);
+        
+    }
+    
+    /**
+     * 移除应用
+     *
+     * @param $id
+     * @return JsonResponse|string
+     * @throws Exception
+     */
+    public function destroy($id) {
+        
+        return $this->result(
+            $this->app->remove($id)
+        );
         
     }
     

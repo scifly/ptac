@@ -575,22 +575,30 @@ var page = {
     },
     initParsley: function ($form, requestType, url) {
         $form.parsley().on('form:validated', function () {
-            var data = $form.serialize(), id, value,
-                $disabledSelects = $('select[disabled]');
-
-            if ($disabledSelects.length > 0) {
-                $.each($disabledSelects, function () {
-                    id = $(this).attr('id');
-                    value = $(this).val();
-                    data += '&' + id + '=' + value;
-                });
-            }
             if ($('.parsley-error').length === 0) {
-                page.ajaxRequest(requestType, url, data, $form[0]);
+                page.ajaxRequest(
+                    requestType,
+                    url,
+                    page.formData($form),
+                    $form[0]
+                );
             }
         }).on('form:submit', function () {
             return false;
         });
+    },
+    formData: function ($form) {
+        var data = $form.serialize(), id, value,
+            $disabledSelects = $('select[disabled]');
+
+        if ($disabledSelects.length > 0) {
+            $.each($disabledSelects, function () {
+                id = $(this).attr('id');
+                value = $(this).val();
+                data += '&' + id + '=' + value;
+            });
+        }
+        return data;
     },
     initBackBtn: function (table) {
         $('#cancel, #record-list').off('click').on('click', function () {

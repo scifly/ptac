@@ -6,7 +6,7 @@ var sync = function () {
         type: 'POST',
         url: '../apps/index',
         dataType: 'json',
-        data: $('#formApp').serialize(),
+        data: page.formData($form),
         success: function (result) {
             var data = result['app'];
             var app = '';
@@ -72,7 +72,9 @@ $corpId.on('change', function() {
 
 // 同步应用
 $form.parsley().on('form:validated', function () {
-    if($('.parsley-error').length === 0) { sync(); }
+    if ($('.parsley-error').length === 0) {
+        sync();
+    }
 }).on('form:submit', function () {
     return false;
 });
