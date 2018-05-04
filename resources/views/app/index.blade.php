@@ -106,6 +106,8 @@
                             <a href="#"><i class="fa fa-pencil" title="修改"></i></a>
                             &nbsp;&nbsp;
                             <a href="#"><i class="fa fa-exchange" title="同步菜单"></i></a>
+                            &nbsp;&nbsp;
+                            <a href="#"><i class="fa fa-remove text-red" title="删除"></i></a>
                         </td>
                     </tr>
                 @endforeach
