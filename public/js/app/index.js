@@ -80,14 +80,20 @@ $form.parsley().on('form:validated', function () {
 });
 
 // 编辑应用
-$(document).off('click', '.fa-pencil');
-$(document).on('click', '.fa-pencil', function() {
-    var $this = $(this);
-    var $tr = $this.parentsUntil('tbody').eq(2);
-    var id = $tr.children('td').eq(0).html();
-    var $activeTabPane = $('#tab_' + page.getActiveTabId());
+$(document).off('click', '.fa-pencil').on('click', '.fa-pencil', function() {
+    var $this = $(this),
+        $tr = $this.parentsUntil('tbody').eq(2),
+        id = $tr.children('td').eq(0).html(),
+        $activeTabPane = $('#tab_' + page.getActiveTabId());
+
     page.getTabContent($activeTabPane, 'apps/edit/' + id);
     $(document).off('click', '.btn-primary');
+});
+
+// 删除应用
+$(document).off('click', '.fa-remove').on('click', '.fa-remove', function() {
+    var id = $(this).parents().eq(0).attr('id');
+    $('#modal-dialog').modal({backdrop: true});
 });
 
 // 同步菜单
