@@ -21,8 +21,7 @@
                                             测试1
                                         </dd>
                                         <dd class="show_item_cnt_menuName">测试2</dd>
-                                        <a href="javascript:"
-                                           class="show_item_cnt_editBtn js_enter_menuEdit">
+                                        <a href="javascript:" class="show_item_cnt_editBtn js_enter_menuEdit">
                                             <span class="fa fa-edit"></span>
                                         </a>
                                     </dl>
@@ -68,7 +67,7 @@
                                     <div class="editMenu_header">
                                         <span class="editMenu_header_title">主菜单</span>
                                         <span class="editMenu_tips">请输入主菜单名字</span>
-                                        <input type="text" class="edit_text">
+                                        <input type="text" class="edit_text" title="主菜单名称">
                                         <span class="del_menu fa fa-trash-o"></span>
                                     </div>
                                     <!--子菜单-->
@@ -91,8 +90,7 @@
                                                                 网址：
                                                             </div>
                                                             <div class="menuInfoPanel_item_content">
-                                                                <input type="text" name="url"
-                                                                       class="menuInfoPanel_item_url">
+                                                                <input type="text" name="url" class="menuInfoPanel_item_url" title="网址">
                                                             </div>
                                                         </li>
                                                     </ul>
