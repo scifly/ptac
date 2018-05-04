@@ -576,12 +576,7 @@ var page = {
     initParsley: function ($form, requestType, url) {
         $form.parsley().on('form:validated', function () {
             if ($('.parsley-error').length === 0) {
-                page.ajaxRequest(
-                    requestType,
-                    url,
-                    page.formData($form),
-                    $form[0]
-                );
+                page.ajaxRequest(requestType, url, page.formData($form), $form[0]);
             }
         }).on('form:submit', function () {
             return false;

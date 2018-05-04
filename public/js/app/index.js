@@ -1,3 +1,4 @@
+//# sourceURL=index.js
 var $form = $('#formApp'),
     $corpId = $('#corp_id');
 var sync = function () {
