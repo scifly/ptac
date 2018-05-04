@@ -113,3 +113,30 @@ $('#confirm-delete').on('click', function () {
         }
     });
 });
+
+// 选择/取消选择应用
+$('tbody tr').on('click', function () {
+    var $this = $(this),
+        $agentid = $('#agentid'),
+        $name = $('#name'),
+        $secret = $('#secret');
+    $this.toggleClass('selected');
+    if ($this.hasClass('selected')) {
+        var agentid = $this.find('td').eq(1).text(),
+            name = $this.find('td').eq(2).text(),
+            secret = $this.find('td').eq(4).text(),
+            $rows = $('tbody tr');
+        $.each($rows, function () {
+            if ($(this).find('td').eq(1).text() !== agentid) {
+                $(this).removeClass('selected');
+            }
+        });
+        $agentid.val(agentid);
+        $name.val(name);
+        $secret.val(secret);
+    } else {
+        $agentid.val('');
+        $name.val('');
+        $secret.val('');
+    }
+});
