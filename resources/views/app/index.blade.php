@@ -93,7 +93,7 @@
                         <td class="text-center">{{ $app['agentid'] }}</td>
                         <td class="text-center">{{ $app['name'] }}</td>
                         <td class="text-center">
-                            @if ($app['square_logo_url'] != 0)
+                            @if ($app['square_logo_url'] != '0')
                                 <img style="width: 16px; height: 16px;" src="{{ $app['square_logo_url'] }}" />
                             @endif
                         </td>
