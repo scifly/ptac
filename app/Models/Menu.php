@@ -480,6 +480,7 @@ class Menu extends Model {
     function menuId($id, $type = '学校') {
         
         $menu = $this->find($id);
+        if (!$menu) { return null; }
         $menuType = $menu->menuType->name;
         while ($menuType != $type) {
             $menu = $menu->parent;
