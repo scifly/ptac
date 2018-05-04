@@ -77,21 +77,6 @@ class AppController extends Controller {
     }
     
     /**
-     * 同步指定应用菜单
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function sync($id) {
-        
-        return $this->output([
-            'menu' => $this->app->find($id)->menu
-        ]);
-        
-    }
-    
-    /**
      * 移除应用
      *
      * @param $id

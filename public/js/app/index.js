@@ -14,10 +14,10 @@ var sync = function () {
             var app = '';
             var className = data['enabled'] ? 'text-green' : 'text-gray';
             var title = data['enabled'] ? '已启用' : '未启用';
-            var status = '<i class="fa fa-circle ' + className + '" title="' + title + '"></i>\n\n&nbsp;&nbsp;\n' +
+            var status = '<i class="fa fa-circle ' + className + '" title="' + title + '"></i>\n\n&nbsp;&nbsp;&nbsp;\n' +
                 '<a href="#"><i class="fa fa-pencil" title="修改"></i></a>\n\n&nbsp;&nbsp;\n' +
-                '<a href="#"><i class="fa fa-exchange" title="同步菜单"></i></a>';
-            if(result['action'] === 'create') {
+                '<a href="#"><i class="fa fa-remove text-red" title="删除"></i></a>';
+            if (result['action'] === 'create') {
                 app =
                     '<tr id="app"' + data['agentid'] + '">' +
                         '<td>' + data['id'] + '</td>' +
@@ -97,17 +97,6 @@ $(document).off('click', '.fa-remove').on('click', '.fa-remove', function() {
     id = $(this).parentsUntil('tbody').eq(2).children(0).first().html();
     $('#modal-dialog').modal({backdrop: true});
 });
-
-// 同步菜单
-$(document).on('click', '.fa-exchange', function() {
-    var $this = $(this);
-    var $tr = $this.parentsUntil('tbody').eq(2);
-    var id = $tr.children('td').eq(0).html();
-    var $activeTabPane = $('#tab_' + page.getActiveTabId());
-    page.getTabContent($activeTabPane, 'apps/menu/' + id);
-    $(document).off('click', '.bg-purple');
-});
-
 $('#confirm-delete').on('click', function () {
     $('.overlay').show();
     $.ajax({

@@ -106,10 +106,8 @@
                             @else
                                 <i class="fa fa-circle text-gray" title="未启用"></i>
                             @endif
-                            &nbsp;&nbsp;
-                            <a href="#"><i class="fa fa-pencil" title="修改"></i></a>
-                            &nbsp;&nbsp;
-                            <a href="#"><i class="fa fa-exchange" title="同步菜单"></i></a>
+                            &nbsp;&nbsp;&nbsp;
+                            <a href="#"><i class="fa fa-pencil" title="编辑"></i></a>
                             &nbsp;&nbsp;
                             <a href="#"><i class="fa fa-remove text-red" title="删除"></i></a>
                         </td>

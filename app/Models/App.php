@@ -76,11 +76,7 @@ class App extends Model {
      * 
      * @return BelongsTo
      */
-    function corp() {
-        
-        return $this->belongsTo('App\Models\Corp');
-        
-    }
+    function corp() { return $this->belongsTo('App\Models\Corp'); }
     
     /**
      * 保存App
@@ -143,18 +139,6 @@ class App extends Model {
     }
     
     /**
-     * 保存新创建的app
-     *
-     * @param array $data
-     * @return $this|bool|Model
-     */
-    private function store(array $data) {
-        
-        return $this->create($data) ?? false;
-        
-    }
-    
-    /**
      * 更新App
      *
      * @param array $data
@@ -212,10 +196,8 @@ class App extends Model {
                 <td class="text-center">%s</td>
                 <td class="text-right">
                     %s
-                    &nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;
                     <a href="#"><i class="fa fa-pencil" title="修改"></i></a>
-                    &nbsp;&nbsp;
-                    <a href="#"><i class="fa fa-exchange" title="同步菜单"></i></a>
                     &nbsp;&nbsp;
                     <a href="#"><i class="fa fa-remove text-red" title="删除"</a>
                 </td>
@@ -246,6 +228,18 @@ class App extends Model {
     }
     
     /**
+     * 保存新创建的app
+     *
+     * @param array $data
+     * @return $this|bool|Model
+     */
+    private function store(array $data) {
+        
+        return $this->create($data) ?? false;
+        
+    }
+    
+    /**
      * 将日期时间转换为人类友好的格式
      *
      * @param $app
@@ -263,6 +257,5 @@ class App extends Model {
         }
         
     }
-    
     
 }
