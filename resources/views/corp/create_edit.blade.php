@@ -75,12 +75,17 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('contact_sync_secret', null, [
-                        'class' => 'form-control text-blue',
-                        'placeholder' => '(43个小写字母与阿拉伯数字)',
-                        'required' => 'true',
-                        'data-parsley-length' => '[43, 43]'
-                    ]) !!}
+                    <div class="input-group" style="width: 100%;">
+                        <div class="input-group-addon" style="width: 45px;">
+                            <strong>通</strong>
+                        </div>
+                        {!! Form::text('contact_sync_secret', null, [
+                            'class' => 'form-control text-blue',
+                            'placeholder' => '(43个小写字母与阿拉伯数字)',
+                            'required' => 'true',
+                            'data-parsley-length' => '[43, 43]'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             @if (isset($corp['department_id']))
