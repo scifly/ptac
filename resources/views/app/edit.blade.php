@@ -17,12 +17,17 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('agentid', null, [
-                        'class' => 'form-control text-blue',
-                        'required' => 'true',
-                        'placeholder' => '请输入应用id',
-                        'maxlength' => '12'
-                    ]) !!}
+                    <div class="input-group" style="width: 100%;">
+                        <div class="input-group-addon" style="width: 45px;">
+                            <strong>ID</strong>
+                        </div>
+                        {!! Form::text('agentid', null, [
+                            'class' => 'form-control text-blue',
+                            'required' => 'true',
+                            'placeholder' => '请输入应用id',
+                            'maxlength' => '12'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             <div class="form-group">
@@ -31,7 +36,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-weixin'])
+                        @include('partials.icon_addon', ['class' => 'fa-weixin text-green'])
                         {!! Form::text('name', null, [
                             'class' => 'form-control text-blue',
                             'required' => 'true',
@@ -46,12 +51,15 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('redirect_domain', null, [
-                        'class' => 'form-control text-blue',
-                        'required' => 'true',
-                        'placeholder' => '请输入企业应用可信域名',
-                        'maxlength' => '255'
-                    ]) !!}
+                    <div class="input-group">
+                        @include('partials.icon_addon', ['class' => 'fa-location-arrow text-purple'])
+                        {!! Form::text('redirect_domain', null, [
+                            'class' => 'form-control text-blue',
+                            'required' => 'true',
+                            'placeholder' => '请输入企业应用可信域名',
+                            'maxlength' => '255'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             <div class="form-group">
