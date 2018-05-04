@@ -13,12 +13,15 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('name', null, [
-                        'class' => 'form-control text-blue',
-                        'placeholder' => '(请输入部门名称)',
-                        'required' => 'true',
-                        'maxlength' => '255'
-                    ]) !!}
+                    <div class="input-group">
+                        @include('partials.icon_addon', ['class' => 'fa fa-sitemap'])
+                        {!! Form::text('name', null, [
+                            'class' => 'form-control text-blue',
+                            'placeholder' => '(请输入部门名称)',
+                            'required' => 'true',
+                            'maxlength' => '255'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             @include('partials.remark')
