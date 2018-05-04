@@ -88,7 +88,7 @@
                 </tr>
             @else
                 @foreach ($apps as $app)
-                    <tr id="app{{ $app['agentid'] }}">
+                    <tr role="row" id="app{{ $app['agentid'] }}">
                         <td>{{ $app['id'] }}</td>
                         <td class="text-center">{{ $app['agentid'] }}</td>
                         <td class="text-center">{{ $app['name'] }}</td>
