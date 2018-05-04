@@ -1,6 +1,7 @@
 //# sourceURL=index.js
 var $form = $('#formApp'),
-    $corpId = $('#corp_id');
+    $corpId = $('#corp_id'),
+    id;
 var sync = function () {
     $('.overlay').show();
     $.ajax({
@@ -93,7 +94,7 @@ $(document).off('click', '.fa-pencil').on('click', '.fa-pencil', function() {
 
 // 删除应用
 $(document).off('click', '.fa-remove').on('click', '.fa-remove', function() {
-    var id = $(this).parents().eq(0).attr('id');
+    id = $(this).parents().eq(0).attr('id');
     $('#modal-dialog').modal({backdrop: true});
 });
 
@@ -105,4 +106,21 @@ $(document).on('click', '.fa-exchange', function() {
     var $activeTabPane = $('#tab_' + page.getActiveTabId());
     page.getTabContent($activeTabPane, 'apps/menu/' + id);
     $(document).off('click', '.bg-purple');
+});
+
+$('#confirm-delete').on('click', function () {
+    $('.overlay').show();
+    $.ajax({
+        type: 'DELETE',
+        dataType: 'json',
+        url: page.siteRoot() + 'apps/delete/' + id,
+        data: {_token: $('#csrf_token').attr('content')},
+        success: function (result) {
+            page.inform(result.title, result.message, page.success);
+            page.getTabContent($('#tab_' + page.getActiveTabId()), 'apps/index');
+        },
+        error: function (e) {
+            page.errorHandler(e);
+        }
+    });
 });
