@@ -67,7 +67,7 @@
         {!! Form::close() !!}
         <!-- 企业应用列表 -->
         <div style="display: block; overflow-x: auto; clear: both; width: 100%; margin-top: 10px;">
-            <table class="table-striped table-bordered table-hover table-condensed"
+            <table class="display table table-striped table-bordered table-hover table-condensed"
                style="white-space: nowrap; width: 100%;">
             <thead>
 			<tr class="bg-info">
