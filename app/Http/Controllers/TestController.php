@@ -50,7 +50,7 @@ class TestController extends Controller {
     
     public function index() {
 
-        dd(Mobile::with('user')->where('enabled', 1)->whereIn('user.id', [1, 2])->pluck('mobile')->toArray());
+        dd(User::with('mobiles')->whereIn('user.id', [1, 2])->where('mobiles.enabled', 1)->pluck('mobiles.mobile')->toArray());
         $corpid = 'wxe75227cead6b8aec';
         $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIE';
         $token = Wechat::getAccessToken($corpid, $secret, true);
