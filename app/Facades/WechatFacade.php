@@ -129,7 +129,7 @@ class Wechat extends Facade {
     # 接收短信回复
     const URL_GET_RESPONSE_SMS = "http://sdk2.028lk.com:9880/sdk2/Get.aspx?CorpID=%s&Pwd=%s";
     
-    const ERRCODES = [
+    const ERRMSGS = [
         -1 => '系统繁忙',
         0 => '请求成功',
         40001 => '不合法的secret参数',
@@ -188,36 +188,38 @@ class Wechat extends Facade {
     static function getAccessToken($corpid, $secret, $contactSync = false) {
         
         function token($corpid, $secret) {
+
             $result = json_decode(
                 Wechat::curlGet(sprintf(Wechat::URL_GET_ACCESSTOKEN, $corpid, $secret))
             );
-            abort_if(
-                $result->{'errcode'} != 0,
-                HttpStatusCode::INTERNAL_SERVER_ERROR,
-                Wechat::ERRCODES[$result['errcode']]
-            );
+            $errcode = $result->{'errcode'};
             
-            return $result->{'access_token'};
+            return $errcode == 0
+                ? ['errcode' => 0, 'access_token' => $result->{'access_token'}]
+                : ['errcode' => $errcode, 'errmsg' => Wechat::ERRMSGS[$errcode]];
+            
         }
         
         $app = !$contactSync
-            ? $app = App::whereSecret($secret)->first()
+            ? App::whereSecret($secret)->first()
             : Corp::whereContactSyncSecret($secret)->first();
         if ($app) {
             if ($app['expire_at'] < time() || !isset($app['expire_at'])) {
-                $accessToken = token($corpid, $secret);
-                $app->update([
-                    'expire_at' => date('Y-m-d H:i:s', time() + 7000),
-                    'access_token' => $accessToken
-                ]);
+                $token = token($corpid, $secret);
+                if ($token['errcode'] == 0) {
+                    $app->update([
+                        'expire_at' => date('Y-m-d H:i:s', time() + 7000),
+                        'access_token' => $token['access_token']
+                    ]);
+                }
             } else {
-                $accessToken = $app['access_token'];
+                $token = ['errcode' => 0, 'access_token' => $app['access_token']];
             }
         } else {
-            $accessToken = token($corpid, $secret);
+            $token = token($corpid, $secret);
         }
 
-        return $accessToken;
+        return $token;
         
     }
     

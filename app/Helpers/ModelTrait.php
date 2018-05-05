@@ -120,11 +120,12 @@ trait ModelTrait {
     /**
      * 返回对指定用户可见的所有学校Id
      *
+     * @param null $userId
      * @return array
      */
-    function schoolIds() {
+    function schoolIds($userId = null) {
         
-        $user = Auth::user();
+        $user = !$userId ? Auth::user() : User::find($userId);
         $role = $user->group->name;
         switch ($role) {
             case '运营':
@@ -146,11 +147,12 @@ trait ModelTrait {
      * 返回对当前用户可见的所有年级Id
      *
      * @param null $schoolId
+     * @param null $userId
      * @return array
      */
-    function gradeIds($schoolId = null) {
+    function gradeIds($schoolId = null, $userId = null) {
         
-        $user = Auth::user();
+        $user = !$userId ? Auth::user() : User::find($userId);
         $schoolId = $schoolId ?? $this->schoolId();
         $role = $user->group->name;
         if (in_array($role, Constant::SUPER_ROLES)) {
@@ -175,11 +177,12 @@ trait ModelTrait {
      * 获取对当前用户可见的所有班级Id
      *
      * @param null $schoolId
+     * @param null $userId
      * @return array
      */
-    function classIds($schoolId = null) {
-        
-        $user = Auth::user();
+    function classIds($schoolId = null, $userId = null) {
+    
+        $user = !$userId ? Auth::user() : User::find($userId);
         $schoolId = $schoolId ?? $this->schoolId();
         $role = $user->group->name;
         if (in_array($role, Constant::SUPER_ROLES)) {
@@ -210,11 +213,12 @@ trait ModelTrait {
      * 返回对当前用户可见的所有考试id
      *
      * @param null $schoolId
+     * @param null $userId
      * @return array
      */
-    function examIds($schoolId = null) {
-        
-        $user = Auth::user();
+    function examIds($schoolId = null, $userId = null) {
+    
+        $user = !$userId ? Auth::user() : User::find($userId);
         $schoolId = $schoolId ?? $this->schoolId();
         $role = $user->group->name;
         if (in_array($role, Constant::SUPER_ROLES)) {
@@ -375,11 +379,12 @@ trait ModelTrait {
      * 返回指定用户可管理的所有菜单id（校级以下角色没有管理菜单的权限）
      *
      * @param Menu $menu
+     * @param null $userId
      * @return array
      */
-    function menuIds(Menu $menu) {
-        
-        $user = Auth::user();
+    function menuIds(Menu $menu, $userId = null) {
+    
+        $user = !$userId ? Auth::user() : User::find($userId);
         $role = $user->group->name;
         switch ($role) {
             case '运营':

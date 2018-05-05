@@ -1,6 +1,7 @@
 <?php
 namespace App\Jobs;
 
+use App\Events\JobResponse;
 use App\Helpers\Constant;
 use App\Models\Corp;
 use App\Facades\Wechat;
@@ -43,13 +44,18 @@ class WechatDepartment implements ShouldQueue {
     
     /**
      * Execute the job
+     *
+     * @return bool
      */
     public function handle() {
     
         $departmentId = $this->department->id;
         $response = [
             'userId' => $this->userId,
-            'title' => Constant::SYNC_ACTIONS[$this->action] . '企业微信部门',
+            'title' => sprintf(
+                __('messages.department.department_sync'),
+                Constant::SYNC_ACTIONS[$this->action]
+            ),
             'statusCode' => HttpStatusCode::OK,
             'message' => __('messages.wechat_synced')
         ];
@@ -68,30 +74,26 @@ class WechatDepartment implements ShouldQueue {
         }
         $corp = Corp::find($this->department->corpId($departmentId));
         $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
-        $result = null;
-        switch ($this->action) {
-            case 'create':
-                $result = json_decode(Wechat::createDept($token, $params));
-                break;
-            case 'update':
-                $result = json_decode(Wechat::updateDept($token, $params));
-                break;
-            case 'delete':
-                $result = json_decode(Wechat::deleteDept($token, $params));
-                break;
-            default:
-                break;
+        if ($token['errcode']) {
+            $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+            $response['message'] = $token['errmsg'];
+            event(new JobResponse($response));
+            return false;
         }
+        $action = $this->action . 'User';
+        $result = json_decode(Wechat::$$action($token['access_token'], $params));
         if ($result->{'errcode'} == 0 && $this->action !== 'delete') {
             Department::find($departmentId)->first()->update(['synced' => 1]);
         }
-        if ($result->{'errcode'} != 0) {
+        if ($result->{'errcode'}) {
             $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-            $response['message'] = $result->{'errcode'} . ' : '
-                . Wechat::ERRCODES[intval($result->{'errcode'})];
+            $response['message'] = Wechat::ERRMSGS[$result['errcode']];
+            event(new JobResponse($response));
+            return false;
         }
-    
-        event(new DepartmentSyncTrigger($response));
+        event(new JobResponse($response));
+        
+        return true;
         
     }
     

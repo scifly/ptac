@@ -17,15 +17,6 @@ class EventServiceProvider extends ServiceProvider {
     ];
 
     protected $subscribe = [
-        'App\Listeners\DepartmentEventSubscriber',
-        'App\Listeners\CompanyEventSubscriber',
-        'App\Listeners\CorpEventSubscriber',
-        'App\Listeners\SchoolEventSubscriber',
-        'App\Listeners\GradeEventSubscriber',
-        'App\Listeners\ClassEventSubscriber',
-        'App\Listeners\MenuEventSubscriber',
-        'App\Listeners\UserEventSubscriber',
-        'App\Listeners\AppEventSubscriber',
         'App\Listeners\StudentEventSubscriber',
         'App\Listeners\EducatorEventSubscriber',
         'App\Listeners\MessageEventSubscriber',

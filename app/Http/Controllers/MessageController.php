@@ -65,8 +65,10 @@ class MessageController extends Controller {
      */
     public function send(MessageRequest $request) {
         
-        return $this->message->send(
-            $request->all()
+        return $this->result(
+            $this->message->send($request->all()),
+            __('messages.message.submitted'),
+            __('messages.message.failed')
         );
         
     }

@@ -146,7 +146,7 @@ class Department extends Model {
 
         $department = $this->create($data);
         if ($department && $this->needSync($department)) {
-            WechatDepartment::dispatch($department, Auth::id(), 'create');
+            $this->sync($department->id, 'create');
         }
 
         return $department;
@@ -200,7 +200,7 @@ class Department extends Model {
         $department = self::find($id);
         $updated = $department->update($data);
         if ($this->needSync($department) && $updated) {
-            WechatDepartment::dispatch($this->find($id), Auth::id(), 'update');
+            $this->sync($id, 'update');
         }
         
         return $updated ?? $this->find($id);
@@ -257,7 +257,7 @@ class Department extends Model {
         $department = $this->find($id);
         if ($this->removable($department)) {
             if ($this->needSync($department)) {
-                WechatDepartment::dispatch($department, Auth::id(), 'delete');
+                $this->sync($id, 'delete');
             }
             return $department->delete();
         }
@@ -321,7 +321,7 @@ class Department extends Model {
             if ($department->movable($id, $parentId)) {
                 $moved = $department->move($id, $parentId);
                 if ($moved && $this->needSync($department)) {
-                    WechatDepartment::dispatch($department, 'update');
+                    $this->sync($id, 'update');
                 }
             }
         }
@@ -817,6 +817,21 @@ class Department extends Model {
         $topLevelId = key($levels);
         
         return self::find($topLevelId)->parent->id;
+        
+    }
+    
+    /**
+     * 同步企业微信部门
+     *
+     * @param $id
+     * @param $action
+     * @return bool
+     */
+    private function sync($id, $action) {
+        
+        WechatDepartment::dispatch($this->find($id), Auth::id(), $action);
+        
+        return true;
         
     }
     

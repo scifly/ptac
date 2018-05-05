@@ -24,15 +24,20 @@ trait WechatTrait {
                 Wechat::getCodeUrl($corp->corpid, $agentid, Request::url())
             );
         } else {
-            $accessToken = Wechat::getAccessToken($corp->corpid, $secret);
+            $token = Wechat::getAccessToken($corp->corpid, $secret);
+            abort_if(
+                $token['errcode'],
+                HttpStatusCode::INTERNAL_SERVER_ERROR,
+                $token['errmsg']
+            );
             $result = json_decode(
-                Wechat::getUserInfo($accessToken, $code),
+                Wechat::getUserInfo($token['access_token'], $code),
                 JSON_UNESCAPED_UNICODE
             );
             abort_if(
-                $result['errcode'] != 0,
+                $result['errcode'],
                 HttpStatusCode::INTERNAL_SERVER_ERROR,
-                __('messages.internal_server_error')
+                Wechat::ERRMSGS[$result['errmsg']]
             );
             $user = User::whereEnabled(1)->where('userid', $result['UserId'])->first();
             abort_if(

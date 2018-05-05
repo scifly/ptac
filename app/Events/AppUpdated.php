@@ -34,4 +34,5 @@ class AppUpdated {
     public function broadcastOn() {
         return new PrivateChannel('channel-name');
     }
+    
 }

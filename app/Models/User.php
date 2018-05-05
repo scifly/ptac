@@ -1,33 +1,33 @@
 <?php
 namespace App\Models;
 
+use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\Constant;
+use App\Helpers\HttpStatusCode;
+use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
+use App\Jobs\WechatMember;
+use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Throwable;
-use Carbon\Carbon;
-use App\Helpers\Snippet;
-use App\Helpers\Constant;
-use App\Jobs\WechatMember;
-use App\Helpers\ModelTrait;
-use Laravel\Passport\Token;
-use Laravel\Passport\Client;
-use App\Helpers\HttpStatusCode;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
-use Laravel\Passport\HasApiTokens;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use App\Facades\DatatableFacade as Datatable;
-use Illuminate\Notifications\DatabaseNotification;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
+use Laravel\Passport\Client;
+use Laravel\Passport\HasApiTokens;
+use Laravel\Passport\Token;
+use Throwable;
 
 /**
  * App\Models\User 用户
@@ -103,7 +103,7 @@ class User extends Authenticatable {
         'email', 'realname', 'gender',
         'avatar_url', 'userid', 'english_name',
         'isleader', 'position', 'telephone',
-        'order', 'mobile', 'enabled', 'synced'
+        'order', 'mobile', 'enabled', 'synced',
     ];
     
     const SELECT_HTML = '<select class="form-control select2" style="width: 100%;" id="ID" name="ID">';
@@ -254,20 +254,7 @@ class User extends Authenticatable {
      */
     function createWechatUser($id) {
         
-        $user = self::find($id);
-        $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
-        $data = [
-            'userId'     => Auth::id(),
-            'userid'     => $user->userid,
-            'name'       => $user->realname,
-            'mobile'     => $mobile,
-            'department' => $user->departments->pluck('id')->toArray(),
-            'gender'     => $user->gender,
-            'enable'     => $user->enabled,
-        ];
-        WechatMember::dispatch($data, 'create');
-        
-        return true;
+        return $this->sync($id, 'create');
         
     }
     
@@ -279,21 +266,7 @@ class User extends Authenticatable {
      */
     function updateWechatUser($id) {
         
-        $user = self::find($id);
-        $mobile = Mobile::whereUserId($id)->where('isdefault', 1)->first()->mobile;
-        $data = [
-            'userId'       => Auth::id(),
-            'userid'       => $user->userid,
-            'name'         => $user->realname,
-            'english_name' => $user->english_name,
-            'mobile'       => $mobile,
-            'department'   => $user->departments->pluck('id')->toArray(),
-            'gender'       => $user->gender,
-            'enable'       => $user->enabled,
-        ];
-        WechatMember::dispatch($data, 'update');
-        
-        return true;
+        return $this->sync($id, 'update');
         
     }
     
@@ -317,14 +290,8 @@ class User extends Authenticatable {
      * @return bool
      */
     function deleteWechatUser($id) {
-    
-        $data = [
-            'userId' => Auth::id(),
-            'userid' => self::find($id)->userid
-        ];
-        WechatMember::dispatch($data, 'delete');
         
-        return true;
+        return $this->sync($id, 'delete');
         
     }
     
@@ -356,28 +323,25 @@ class User extends Authenticatable {
                     'avatar_url'   => '',
                     'isleader'     => 0,
                 ]);
-
                 # 保存手机号码
                 $mobile = new Mobile();
                 $mobile->store($data['mobile'], $user);
                 unset($mobile);
-                
                 # 保存用户所属部门数据
                 $du = new DepartmentUser();
                 $du->store([
                     'department_id' => $this->departmentId($data),
-                    'user_id' => $user->id,
-                    'enabled' => $data['enabled']
+                    'user_id'       => $user->id,
+                    'enabled'       => $data['enabled'],
                 ]);
                 unset($du);
-                
                 # 创建企业号成员
                 $this->createWechatUser($user->id);
             });
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }
@@ -396,15 +360,15 @@ class User extends Authenticatable {
             $ids = Request::input('ids');
             $action = Request::input('action');
             $result = $this->whereIn('id', $ids)->update([
-                'enabled' => $action == 'enable' ? Constant::ENABLED : Constant::DISABLED
+                'enabled' => $action == 'enable' ? Constant::ENABLED : Constant::DISABLED,
             ]);
             foreach ($ids as $id) {
                 $this->updateWechatUser($id);
             }
+            
             return $result;
         } else {
             $user = $this->find($id);
-            abort_if(!$user, HttpStatusCode::NOT_FOUND, '找不到该用户');
             try {
                 # 更新用户数据
                 DB::transaction(function () use ($data, $id, $user) {
@@ -418,30 +382,27 @@ class User extends Authenticatable {
                         'telephone'    => $data['telephone'],
                         'enabled'      => $data['enabled'],
                     ]);
-                    
                     # 更新手机号码
                     Mobile::whereUserId($user->id)->delete();
                     $mobile = new Mobile();
                     $mobile->store($data['mobile'], $user);
                     unset($mobile);
-    
                     # 更新部门数据
                     DepartmentUser::whereUserId($user->id)->delete();
                     $du = new DepartmentUser();
                     (new DepartmentUser())->store([
                         'department_id' => $this->departmentId($data),
-                        'user_id' => $user->id,
-                        'enabled' => Constant::ENABLED
+                        'user_id'       => $user->id,
+                        'enabled'       => Constant::ENABLED,
                     ]);
                     unset($du);
-    
                     # 更新企业号成员记录
                     $this->updateWechatUser($user->id);
                 });
             } catch (Exception $e) {
                 throw $e;
             }
-    
+            
             return true;
             
         }
@@ -460,13 +421,16 @@ class User extends Authenticatable {
         if (Request::has('ids')) {
             $ids = Request::input('ids');
             foreach ($ids as $id) {
-                if (!$this->purge($id)) { return false; }
+                if (!$this->purge($id)) {
+                    return false;
+                }
             }
+            
             return true;
         } else {
             return $this->purge($id);
         }
-    
+        
     }
     
     /**
@@ -497,9 +461,9 @@ class User extends Authenticatable {
      * @return JsonResponse
      */
     function csList() {
-    
-        function corps() {
         
+        function corps() {
+            
             $user = Auth::user();
             switch ($user->group->name) {
                 case '运营':
@@ -507,13 +471,14 @@ class User extends Authenticatable {
                 case '企业':
                     $departmentId = $this->head($user);
                     $corp = Corp::whereDepartmentId($departmentId)->first();
+                    
                     return [$corp->id => $corp->name];
                 default:
                     return [];
             }
-        
+            
         }
-    
+        
         $field = Request::input('field');
         $value = Request::input('value');
         abort_if(
@@ -541,9 +506,9 @@ class User extends Authenticatable {
             ->where('enabled', 1)->get()
             ->pluck('name', 'id')->toArray() : [];
         $result['schoolList'] = $this->selectList($schools, 'school_id');
-    
+        
         return response()->json($result);
-    
+        
     }
     
     /**
@@ -557,7 +522,7 @@ class User extends Authenticatable {
             ['db' => 'User.id', 'dt' => 0],
             ['db' => 'User.username', 'dt' => 1],
             [
-                'db' => 'Groups.name as role', 'dt' => 2,
+                'db'        => 'Groups.name as role', 'dt' => 2,
                 'formatter' => function ($d) {
                     switch ($d) {
                         case '运营':
@@ -577,9 +542,10 @@ class User extends Authenticatable {
                             $class = '';
                             break;
                     }
+                    
                     return sprintf(Snippet::ICON, $class . ' ' . $color, '')
                         . '<span class="' . $color . '">' . $d . '</span>';
-                }
+                },
             ],
             ['db' => 'User.avatar_url', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
@@ -603,14 +569,14 @@ class User extends Authenticatable {
                         : sprintf(Snippet::ICON, 'fa-wechat text-gray', '未同步'));
                     $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
                     $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
-    
+                    
                     return
                         $status .
                         ($user->can('act', $this->uris()['edit']) ? $editLink : '') .
-                        ($user->can('act', $this->uris()['destroy']) ? $delLink : '') ;
+                        ($user->can('act', $this->uris()['destroy']) ? $delLink : '');
                 },
             ],
-            ['db' => 'User.synced', 'dt' => 10]
+            ['db' => 'User.synced', 'dt' => 10],
         ];
         $joins = [
             [
@@ -630,7 +596,6 @@ class User extends Authenticatable {
         $menu = new Menu();
         $menuType = Menu::find($menu->rootMenuId(true))->menuType->name;
         unset($menu);
-        
         switch ($menuType) {
             case '根':
                 $condition = sprintf($sql, implode(',', [$rootGId, $corpGId, $schoolGId]));
@@ -644,13 +609,14 @@ class User extends Authenticatable {
             default:
                 break;
         }
-    
+        
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition
         );
         
     }
     
+    /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
      * 获取Select HTML
      *
@@ -678,10 +644,8 @@ class User extends Authenticatable {
      */
     private function purge($id): bool {
         
-        $user = self::find($id);
-        if (!isset($user)) { return false; }
         try {
-            DB::transaction(function () use ($id, $user) {
+            DB::transaction(function () use ($id) {
                 # 删除企业号成员
                 User::deleteWechatUser($id);
                 # custodian删除指定user绑定的部门记录
@@ -689,11 +653,26 @@ class User extends Authenticatable {
                 # 删除与指定user绑定的手机记录
                 Mobile::whereUserId($id)->delete();
                 # 删除user
-                $user->delete();
+                $this->find($id)->delete();
             });
         } catch (Exception $e) {
             throw $e;
         }
+        
+        return true;
+        
+    }
+    
+    /**
+     * 同步企业微信会员
+     *
+     * @param $id
+     * @param $action
+     * @return bool
+     */
+    private function sync($id, $action) {
+        
+        WechatMember::dispatch($this->find($id), Auth::id(), $action);
         
         return true;
         
@@ -706,7 +685,7 @@ class User extends Authenticatable {
      * @return int|mixed|null
      */
     private function departmentId($data) {
-    
+        
         switch (Group::find($data['group_id'])->name) {
             case '运营':
                 return Department::whereDepartmentTypeId(
