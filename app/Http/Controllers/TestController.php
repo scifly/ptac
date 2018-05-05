@@ -7,6 +7,7 @@ use App\Models\Action;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Group;
+use App\Models\Mobile;
 use App\Models\User;
 use App\Services\Test;
 use GuzzleHttp\Client;
@@ -49,7 +50,7 @@ class TestController extends Controller {
     
     public function index() {
 
-        dd(head(User::find(1)->mobiles->where('isdefault', 1)->pluck('mobile')->toArray()));
+        dd(Mobile::with('users')->where('enabled', 1)->whereIn('user.id', [1, 2])->pluck('mobile')->toArray());
         $corpid = 'wxe75227cead6b8aec';
         $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIE';
         $token = Wechat::getAccessToken($corpid, $secret, true);
