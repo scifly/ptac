@@ -59,6 +59,29 @@ trait JobTrait {
     }
     
     /**
+     * 发送微信消息
+     *
+     * @param Corp $corp - 用于发送消息的企业对象
+     * @param array $app - 应用详情
+     * @param array $message - 消息详情
+     * @return array|bool|mixed
+     */
+    function sendMessage(Corp $corp, array $app, array $message) {
+        
+        $token = Wechat::getAccessToken($corp->corpid, $app['secret']);
+        if ($token['errcode']) { return $token; }
+        $result = json_decode(Wechat::sendMessage($token['access_token'], $message));
+        
+        return [
+            'errcode' => $result->{'errcode'},
+            'errmsg' => Wechat::ERRMSGS[$result->{'errcode'}]
+        ];
+        
+    }
+    
+    /**
+     * 同步会员信息
+     *
      * @param $corpid
      * @param $secret
      * @param User $member

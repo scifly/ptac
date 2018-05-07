@@ -34,20 +34,25 @@ return [
         'stored' => '保存超级管理员'
     ],
     'app' => [
+        'title' => '企业应用管理',
         'app_configured' => '应用设置成功'
     ],
     'department' => [
+        'title' => '部门管理',
         'department_sync' => '%企业微信部门',
     ],
     'message' => [
+        'title' => '消息中心',
         'sent' => '消息已发送',
         'failed' => '消息发送失败',
+        'sms_send_failed' => '短信推送失败',
         'invalid_app_list' => '应用不存在，请检查后重试',
         'invalid_corp' => '企业号不存在，请检查后重试',
         'empty_targets' => '请选择发送对象',
         'submitted' => '已提交消息发送请求',
     ],
     'student' => [
+        'title' => '学籍管理',
         'invalid_file_format' => '文件格式错误',
         'invalid_data_format' => '导入数据格式不正确',
         'import_request_submitted' => '已提交导入请求\n需要新增的学籍数：%s\n需要更新的学籍数：%s\n非法学籍数: %s, 请参考导出文件',

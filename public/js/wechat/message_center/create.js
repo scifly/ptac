@@ -5,31 +5,12 @@ var msg_type = $('#type');
 msg_type.select({
     title: "选择类型",
     items: [
-        {
-            title: "文本",
-            value: "text"
-        },
-        {
-            title: "卡片",
-            value: "textcard"
-        },
-        {
-            title: "图文",
-            value: "mpnews"
-        },
-        {
-            title: "图片",
-            value: "image"
-        },
-        {
-            title: "视频",
-            value: "video"
-        },
-        {
-            title: "短信",
-            value: "sms"
-        }
-
+        {title: "文本", value: "text"},
+        {title: "卡片", value: "textcard"},
+        {title: "图文", value: "mpnews"},
+        {title: "图片", value: "image"},
+        {title: "视频", value: "video"},
+        {title: "短信", value: "sms"}
     ]
 });
 
@@ -89,21 +70,24 @@ msg_type.change(function () {
 $(".ma_expect_date").datetimePicker();
 
 $('.js-search-input').bind("input propertychange change", function (event) {
-    var keywords = $(this).val();
-    if (keywords === '') {
+    var keyword = $(this).val();
+    if (keyword === '') {
         $.ajax({
-            type: 'post',
+            type: 'POST',
             dataType: 'json',
-            url: 'message_create',
-            data: {keywords: keywords, _token: $('#csrf_token').attr('content')},
-            success: function ($data) {
+            url: 'create',
+            data: {
+                keyword: keyword,
+                _token: $('#csrf_token').attr('content')
+            },
+            success: function (result) {
                 var str = '';
-                console.log($data);
+                console.log(result);
                 // 年级列表
-                if ($data.graLists.length > 0 || $data.claLists.length > 0 ) {
+                if (result.graLists.length > 0 || result.claLists.length > 0 ) {
 
-                    for (var i = 0; i < $data.graLists.length; i++) {
-                        var graLists = $data.graLists[i];
+                    for (var i = 0; i < result.graLists.length; i++) {
+                        var graLists = result.graLists[i];
                         str += '<div class="air-choose-item" style="position: relative;">' +
                             '<label class="weui-cell weui-check__label" id="group-' + graLists.id + '" data-item="' + graLists.id + '" data-uid="' + graLists.id + '" data-type="group">' +
                             '<div class="weui-cell__hd">' +
@@ -121,8 +105,8 @@ $('.js-search-input').bind("input propertychange change", function (event) {
 
                     // 班级列表
 
-                    for (var k = 0; k < $data.claLists.length; k++) {
-                        var claLists = $data.claLists[k];
+                    for (var k = 0; k < result.claLists.length; k++) {
+                        var claLists = result.claLists[k];
                         str += '<div class="air-choose-item" style="position: relative;">' +
                             '<label class="weui-cell weui-check__label" id="group-' + claLists.id + '" data-item="' + claLists.id + '" data-uid="' + claLists.id + '" data-type="group">' +
                             '<div class="weui-cell__hd">' +

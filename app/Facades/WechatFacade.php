@@ -1,8 +1,6 @@
 <?php
 namespace App\Facades;
 
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
 use App\Models\App;
 use App\Models\Corp;
 use Illuminate\Support\Facades\Facade;

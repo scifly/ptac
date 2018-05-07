@@ -128,7 +128,7 @@ class Grade extends Model {
                 $department = (new Department())->storeDepartment($grade, 'school');
                 # 更新“年级”的部门id
                 $grade->update([
-                    'department_id' => $department->id
+                    'department_id' => $department->id,
                 ]);
             });
         } catch (Exception $e) {
@@ -159,7 +159,7 @@ class Grade extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-
+        
         return $grade ? $this->find($id) : null;
         
     }
@@ -177,10 +177,11 @@ class Grade extends Model {
         $grade = self::find($id);
         if ($this->removable($grade)) {
             $department = $grade->department;
+            
             return $grade->delete()
                 && (new Department())->removeDepartment($department);
         }
-
+        
         return false;
         
     }
@@ -203,8 +204,24 @@ class Grade extends Model {
         
         return [
             $this->singleSelectList($items, 'class_id'),
-            key($items)
+            key($items),
         ];
+        
+    }
+    
+    /**
+     * 返回对指定用户可见的所有年级类部门对象
+     *
+     * @param null $userId
+     */
+    function departments($userId = null) {
+        
+        $user = $userId ? User::find($userId) : Auth::user();
+        $ids = $this->gradeIds($user->educator->school_id, $user->id);
+        $grades = $this->whereIn('id', $ids)->get();
+        $departments = $grades ?
+        
+        
         
     }
     

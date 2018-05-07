@@ -40,7 +40,7 @@ class WechatApp implements ShouldQueue {
         
         $response = [
             'userId' => $this->userId,
-            'title' => '设置应用',
+            'title' => __('messages.app.title'),
             'message' => __('messages.app.app_configured'),
             'statusCode' => HttpStatusCode::OK,
         ];
@@ -70,8 +70,6 @@ class WechatApp implements ShouldQueue {
         if ($result->{'errcode'}) {
             $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
             $response['message'] = Wechat::ERRMSGS[$result->{'errcode'}];
-            event(new JobResponse($response));
-            return false;
         }
         event(new JobResponse($response));
         

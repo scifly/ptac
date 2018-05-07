@@ -114,6 +114,8 @@ class Message extends Model {
     function commType() { return $this->belongsTo('App\Models\CommType'); }
     
     /**
+     * 创建并发送消息
+     *
      * @param MessageRequest $request
      * @return bool
      * @throws Exception
@@ -121,26 +123,73 @@ class Message extends Model {
      */
     function store(MessageRequest $request) {
         
-        $input = $request->all();
-        #新增一条日志记录（指定批次）
-        $msl = new MessageSendingLog();
-        $logId = $msl->store(count($input['r_user_id']));
-        unset($msl);
-        $input['msl_id'] = $logId;
-        $updateUrl = [];
-        try {
-            foreach ($input['r_user_id'] as $receiveUser) {
-                $input['r_user_id'] = $receiveUser;
-                DB::transaction(function () use ($request, $input, $updateUrl) {
-                    //删除原有的图片
-                    self::removeMedias($request);
-                    $message = self::create($input);
-                    $updateUrl['url'] = url('messages/show/' . $message->id);
-                    $message->update($updateUrl);
+        list($users, $mobiles) = $this->targets(
+            $request['user_ids'], $request['department_ids']
+        );
+        #判断是否是短信，调用接口不一样
+        $msl = MessageSendingLog::create([
+            'read_count'      => count($users),
+            'received_count'  => count($users),
+            'recipient_count' => count($users),
+        ]);
+        if ($request['type'] == 'sms') {
+            try {
+                DB::transaction(function () use ($request, $msl, $users, $mobiles) {
+                    $request['content']['media_ids'] = 0;
+                    $result = $this->sendSms($mobiles, $request['content']);
+                    $sent = $read = count($users);
+                    if ($result > 0) {
+                        $sent = $read = 0;
+                        $msl->update([
+                            'received_count'  => $sent,
+                            'recipient_count' => $read,
+                        ]);
+                    }
+                    $this->log($users, $msl->id, 'n/a', $request['content'], $sent, $read);
                 });
+            } catch (Exception $e) {
+                throw $e;
             }
-        } catch (Exception $e) {
-            throw $e;
+        } else {
+            try {
+                DB::transaction(function () use ($request, $msl, $users) {
+                    $request['content']['media_ids'] = isset($request['media_ids'])
+                        ? implode(',', $request['media_ids']) : 0;
+                    /** @var User $user */
+                    foreach ($users as $user) {
+                        $messageData = [
+                            'title'           => $request['title'],
+                            'comm_type_id'    => CommType::whereName('应用')->first()->id,
+                            'app_id'          => App::whereName('消息中心')->first()->id,
+                            'msl_id'          => $request['msl_id'],
+                            'content'         => $request['content'],
+                            'serviceid'       => 0,
+                            'message_id'      => 0,
+                            'url'             => '0',
+                            'media_ids'       => $request['media_ids'],
+                            's_user_id'       => Auth::id(),
+                            'r_user_id'       => $user->id,
+                            'message_type_id' => MessageType::whereName('消息通知')->first()->id,
+                            'read'            => 0,
+                            'sent'            => 0,
+                        ];
+                        $message = $this->message->create($messageData);
+                        //这里的判断是无效的，应该放在应用发送后返回正确的状态值后
+                        $message->sent = 1;
+                        $message->save();
+                        #更新msl表
+                        $msl->received_count = $msl->received_count + 1;
+                        $msl->save();
+                    }
+                    #推送微信服务器且显示详情页
+                    $msg = $this->message->where('msl_id', $request['msl_id'])->first();
+                    $url = 'http://weixin.028lk.com/message_show/' . $msg->id;
+                    
+                    return $this->frontSendMessage($request, $url);
+                });
+            } catch (Exception $e) {
+                throw $e;
+            }
         }
         
         return true;
@@ -216,6 +265,7 @@ class Message extends Model {
                 'formatter' => function ($d, $row) {
                     $sent = Snippet::status($d, '已发', '未发');
                     $read = Snippet::status($row['read'], '已读', '未读');
+                    
                     return $sent . '&nbsp;' . $read;
                 },
             ],
@@ -285,14 +335,10 @@ class Message extends Model {
      */
     function send($data) {
         
-        $result = [
-            'statusCode' => HttpStatusCode::OK,
-            'message'    => __('messages.message.message_sent'),
-        ];
         $targetIds = explode(',', $data['departIds']);
         abort_if(empty($targetIds), HttpStatusCode::NOT_ACCEPTABLE, __('messages.message.empty_targets'));
         $apps = App::whereIn('id', $data['app_ids'])->get()->toArray();
-        abort_if(empty($apps), HttpStatusCode::NOT_ACCEPTABLE, __('messages.message.invalid_app_list'));
+        // abort_if(empty($apps), HttpStatusCode::NOT_ACCEPTABLE, __('messages.message.invalid_app_list'));
         $corp = School::find($this->schoolId())->corp;
         abort_if(!$corp, HttpStatusCode::NOT_FOUND, __('messages.message.invalid_corp'));
         # 获取发送对象(部门和用户）
@@ -308,137 +354,26 @@ class Message extends Model {
         }
         $userIds = array_unique($userIds);
         $deptIds = array_unique($deptIds);
-        
-        
-        if ($data['type'] == 'sms') {
-            SendMessage::dispatch($data, $userIds, $deptIds, Auth::id());
-        } else {
-            $toUserids = implode('|', User::whereIn('id', $userIds)->pluck('userid')->toArray());
-            $toParties = implode('|', $deptIds);
-        }
-        # 推送的所有用户以及电话
-        $targets = $this->mobiles($toUserids, $deptIds);
-        $title = '';
-        $msl = [
-            'read_count'      => 0,
-            'received_count'  => 0,
-            'recipient_count' => count($targets['users']),
-        ];
-        $mslId = MessageSendingLog::create($msl)->id;
-        foreach ($apps as $app) {
-            $token = Wechat::getAccessToken($corp->corpid, $app['secret']);
-            abort_if($token['errcode'], HttpStatusCode::INTERNAL_SERVER_ERROR, $token['errmsg']);
-            $params = [
-                'touser'  => $toUserids,
-                'toparty' => $toParties,
-                'agentid' => $app['agentid'],
-            ];
-            # 短信推送
-            if ($data['type'] == 'sms') {
-                $code = $this->sendSms($userIds, $deptIds, $data['content']['sms']);
-                $content = $data['content']['sms'] . '【成都外国语】';
-                if ($code != '0' && $code != '-1') {
-                    $result = [
-                        'statusCode' => 200,
-                        'message'    => '消息已发送！',
-                    ];
-                } else {
-                    $result = [
-                        'statusCode' => 0,
-                        'message'    => '短信推送失败！',
-                    ];
-                
-                    return response()->json($result);
-                }
-            } else {
-                $params['msgtype'] = $data['type'];
-                switch ($data['type']) {
-                    case 'text' :
-                        $params['text'] = ['content' => $data['content']['text']];
-                        break;
-                    case 'image' :
-                    case 'voice' :
-                        $params['image'] = ['media_id' => $data['content']['media_id']];
-                        break;
-                    case 'mpnews' :
-                        if (isset($i)) unset($i);
-                        $i['articles'][] = $data['content']['articles'];
-                        $params['mpnews'] = $i;
-                        $title = $data['content']['articles']['title'];
-                        break;
-                    case 'video' :
-                        $params['video'] = $data['content']['video'];
-                        $title = $data['content']['video']['title'];
-                        break;
-                        break;
-                }
-                $status = json_decode(Wechat::sendMessage($token['access_token'], $params));
-                if ($status->{'errcode'}) {
-                    return response()->json([
-                        'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
-                        'message'    => Wechat::ERRMSGS[$status->{'errcode'}],
-                    ]);
-                }
-                $content = $params[$data['type']];
-                $result = [
-                    'statusCode' => HttpStatusCode::OK,
-                    'message'    => __('messages.message.message_sent'),
-                ];
-            }
-            foreach ($targets['users'] as $i) {
-                $commType = $data['type'] == 'sms' ? '短信' : '应用';
-                $read = $data['type'] == 'sms' ? 1 : 0;
-                $sent = $result['statusCode'] == 200 ? 1 : 0;
-                $mediaIds = $data['media_id'] == '' ? 0 : $data['media_id'];
-                $m = [
-                    'comm_type_id'    => CommType::whereName($commType)->first()->id,
-                    'app_id'          => $app['id'],
-                    'msl_id'          => $mslId,
-                    'title'           => $title,
-                    'content'         => json_encode($content),
-                    'serviceid'       => 0,
-                    'message_id'      => 0,
-                    'url'             => '',
-                    'media_ids'       => $mediaIds,
-                    's_user_id'       => $i->id,
-                    'r_user_id'       => Auth::id(),
-                    'message_type_id' => MessageType::whereName('消息通知')->first()->id,
-                    'read'            => $read,
-                    'sent'            => $sent,
-                ];
-                $this->create($m);
-            }
-        
-        }
-        if ($result['statusCode'] == 200) {
-            $readCount = $data['type'] == 'sms' ? count($targets['users']) : 0;
-            $receivedCount = count($targets['users']);
-            MessageSendingLog::find($mslId)->update([
-                'read_count'     => $readCount,
-                'received_count' => $receivedCount,
-            ]);
-        }
+        SendMessage::dispatch($data, $userIds, $deptIds, Auth::id(), $corp, $apps);
         
         return true;
+        
     }
     
     /**
      * 发送短信
      *
-     * @param $touser
-     * @param $toparty
+     * @param $mobiles
      * @param $content
      * @return string
      */
-    function sendSms($touser, $toparty, $content) {
+    function sendSms($mobiles, $content) {
         
-        $items = $this->mobiles($touser, $toparty);
-        $autograph = '【成都外国语】';
+        $signature = '【成都外国语】';
         $result = Wechat::batchSend(
-            'LKJK004923',
-            "654321@",
-            implode(',', $items['mobiles']),
-            $content . $autograph
+            'LKJK004923', "654321@",
+            implode(',', $mobiles),
+            $content . $signature
         );
         
         return json_encode($result);
@@ -446,37 +381,60 @@ class Message extends Model {
     }
     
     /**
-     * 获取指定用户及部门用户对应的手机号码
+     * 记录消息发送日志
+     *
+     * @param $users - 发送对象
+     * @param $mslId - 发送日志id
+     * @param $title - 消息抬头
+     * @param $content - 消息内容（文本）
+     * @param $sent - 是否已发送
+     * @param $read - 是否已读
+     * @param array $app - 应用详情
+     */
+    function log($users, $mslId, $title, $content, $sent, $read, array $app = []) {
+        
+        foreach ($users as $user) {
+            $commType = empty($app) ? '短信' : '微信';
+            $mediaIds = $content['media_ids'] ?? 0;
+            $this->create([
+                'comm_type_id'    => CommType::whereName($commType)->first()->id,
+                'app_id'          => !empty($app) ? $app['id'] : 0,
+                'msl_id'          => $mslId,
+                'title'           => $title,
+                'content'         => json_encode($content),
+                'serviceid'       => 0,
+                'message_id'      => 0,
+                'url'             => '',
+                'media_ids'       => $mediaIds,
+                's_user_id'       => Auth::id(),
+                'r_user_id'       => $user->id,
+                'message_type_id' => MessageType::whereName('消息通知')->first()->id,
+                'sent'            => $sent ? 0 : 1,
+                'read'            => $read ? 0 : 1,
+            ]);
+        }
+        
+    }
+    
+    /**
+     * 根据用户id和部门id获取消息发送对象（手机号码，用户对象）
      *
      * @param $userIds
      * @param $deptIds
      * @return array
      */
-    function mobiles($userIds, $deptIds) {
+    function targets($userIds = [], $deptIds = []) {
         
-        $mobiles = [];
-        $users = [];
-        foreach ($userIds as $userid) {
-            $user = User::whereUserid($userid)->first();
-            $mobile = Mobile::whereUserId($user->id)->where('enabled', 1)->first();
-            if ($mobile) {
-                $mobiles[] = $mobile->mobile;
-                $users[] = $user;
-            }
-        }
-        $partyUsers = (new Department())->partyUsers($deptIds);
-        foreach ($partyUsers as $user) {
-            $mobile = Mobile::whereUserId($user->id)->where('enabled', 1)->first();
-            if ($mobile) {
-                $mobiles[] = $mobile->mobile;
-                $users[] = $user;
-            }
-        }
+        $userIds = array_unique(
+            array_merge(
+                DepartmentUser::whereIn('department_id', $deptIds)->pluck('user_id')->toArray(),
+                $userIds
+            )
+        );
+        $users = User::whereIn('id', $userIds)->get();
+        $mobiles = Mobile::whereIn('user_id', $userIds)->where('enabled', 1)->pluck('mobile')->toArray();
         
-        return $result = [
-            'mobiles' => $mobiles,
-            'users'   => $users,
-        ];
+        return [$users, $mobiles];
         
     }
     
@@ -503,7 +461,6 @@ class Message extends Model {
             '文件上传失败'
         );
         $result['message'] = '上传成功！';
-        
         # 上传到企业号后台
         list($corpid, $secret) = $this->tokenParams();
         $message = json_decode(
@@ -518,7 +475,6 @@ class Message extends Model {
             HttpStatusCode::INTERNAL_SERVER_ERROR,
             '上传微信服务器失败！'
         );
-        
         $uploadedFile['media_id'] = $message->{'media_id'};
         $result['data'] = $uploadedFile;
         
@@ -526,72 +482,93 @@ class Message extends Model {
         
     }
     
-    /** 消息中心 (微信端首页) */
-    function wIndex() {
+    /**
+     * 搜索（消息或发送对象）
+     *
+     * @param MessageRequest $request
+     * @return array
+     */
+    function search(MessageRequest $request) {
         
-        $user = Auth::user(); // User::whereUserid()->first();
-        abort_if(
-            !$user || !in_array($user->group->name, ['教职员工', '监护人']),
-            HttpStatusCode::UNAUTHORIZED,
-            '<h4>您无权访问此页面</h4>'
-        );
-        if (Request::isMethod('post')) {
-            $keywords = Request::get('keywords');
+        $response = [];
+        if ($request->has('type')) {
+            # 搜索已发或收到的消息
+            $user = Auth::user();
+            $keyword = $request->input('keyword');
             $type = Request::get('type');
-            if (!empty($keywords)) {
-                switch ($type) {
-                    case 'send':
-                        $sendMessages = Message::whereSUserId($user->id)
-                            ->where('content', 'like', '%' . $keywords . '%')
-                            ->orWhere('title', 'like', '%' . $keywords . '%')
-                            ->get();
-                        if (sizeof($sendMessages) != 0) {
-                            foreach ($sendMessages as $s) {
-                                $s['r_user_id'] = User::find($s['r_user_id'])->realname;
-                            }
+            $response = ['type' => $type];
+            switch ($type) {
+                case 'sent':
+                    $sent = Message::whereSUserId($user->id)
+                        ->where('content', 'like', '%' . $keyword . '%')
+                        ->orWhere('title', 'like', '%' . $keyword . '%')
+                        ->get();
+                    if (sizeof($sent) != 0) {
+                        foreach ($sent as $s) {
+                            $s['user'] = User::find($s['r_user_id'])->realname;
                         }
-                        
-                        return response([
-                            'sendMessages' => $sendMessages,
-                            'type'         => $type,
-                        ]);
-                    case 'receive':
-                        $receiveMessages = Message::whereRUserId($user->id)
-                            ->where('content', 'like', '%' . $keywords . '%')
-                            ->orWhere('title', 'like', '%' . $keywords . '%')
-                            ->get();
-                        if (sizeof($receiveMessages) != 0) {
-                            foreach ($receiveMessages as $r) {
-                                $r['s_user_id'] = User::find($r['s_user_id'])->realname;
-                            }
+                    }
+                    $response['messages'] = $sent;
+                    break;
+                case 'received':
+                    $received = Message::whereRUserId($user->id)
+                        ->where('content', 'like', '%' . $keyword . '%')
+                        ->orWhere('title', 'like', '%' . $keyword . '%')
+                        ->get();
+                    if (sizeof($received) != 0) {
+                        foreach ($received as $r) {
+                            $r['user'] = User::find($r['user'])->realname;
                         }
-                        
-                        return response([
-                            'type'            => $type,
-                            'receiveMessages' => $receiveMessages,
-                        ]);
-                    default:
-                        break;
+                    }
+                    $response['messages'] = $received;
+                    break;
+                default:
+                    break;
+            }
+            
+            return $response;
+        } else {
+            # 搜索发送对象
+            $user = Auth::user();
+            $keyword = Request::get('keywords');
+            if (empty($keyword)) {
+                $educator = $user->educator;
+                $school = $educator->school;
+                $grades = Grade::whereIn('id', $this->gradeIds($school->id))->get();
+                $gradeDepts = Department::whereIn('id', $grades ? $grades->pluck('department_id')->toArray() : [])->get();
+                $classes = Squad::whereIn('id', $this->classIds($school->id))->get();
+                $classDepts = Department::whereIn('id', $classes ? $classes->pluck('department_id')->toArray() : [])->get();
+                $response = [
+                    'gradeDepts' => $gradeDepts,
+                    'classDepts' => $classDepts,
+                    'schoolDept' => Department::find($school->department_id),
+                    'users'      => [],
+                ];
+            }
+            if (!in_array($user->group->name, Constant::SUPER_ROLES)) {
+                $keyword = '%' . $keyword . '%';
+                $studentIds = $this->contactIds('student', $user, $user->educator->school_id);
+                $userIds = Student::whereIn('id', $studentIds)->get()->pluck('user_id')->toArray();
+                $users = User::whereIn('id', $userIds)->where('realname', 'like', $keyword)->get();
+                if ($users) {
+                    return response()->json(['statusCode' => HttpStatusCode::OK, 'user' => $users]);
                 }
             }
         }
-        $sendMessages = $this->where('s_user_id', $user->id)
-            ->get()->unique('msl_id')
-            ->sortByDesc('created_at')
-            ->groupBy('message_type_id');
-        $receiveMessages = $this->where('r_user_id', $user->id)
-            ->get()->sortByDesc('created_at')
-            ->groupBy('message_type_id');
-        $count = $this->where('r_user_id', $user->id)
-            ->where('read', '0')
-            ->count();
         
-        return [
-            $sendMessages,
-            $receiveMessages,
-            $count,
-            $user->group->name == '教职员工' ? true : false,
-        ];
+        return $response;
+        
+    }
+    
+    /**
+     * 初始化发送对象列表
+     *
+     * @param $userId
+     * @return array
+     */
+    private function initLists($userId) {
+        
+    
         
     }
     

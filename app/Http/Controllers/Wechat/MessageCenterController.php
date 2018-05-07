@@ -1,13 +1,15 @@
 <?php
 namespace App\Http\Controllers\Wechat;
 
+use Exception;
+use Throwable;
 use App\Facades\Wechat;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\WechatTrait;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\MessageRequest;
 use App\Models\App;
-use App\Models\CommType;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\DepartmentUser;
@@ -17,17 +19,15 @@ use App\Models\Media;
 use App\Models\Message;
 use App\Models\MessageReply;
 use App\Models\MessageSendingLog;
-use App\Models\MessageType;
 use App\Models\Squad;
 use App\Models\Student;
 use App\Models\User;
-use Exception;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
@@ -70,59 +70,38 @@ class MessageCenterController extends Controller {
     /**
      * 消息列表
      *
+     * @param MessageRequest $request
      * @return Factory|RedirectResponse|Redirector|View|string
      */
-    public function index() {
-        
-        #获取用户信息
-        if (!Auth::id()) {
-            return $this->signin(self::APP);
-        } else {
-            list($received, $sent, $count, $educator) = $this->message->wIndex();
+    public function index(MessageRequest $request) {
     
-            return view('wechat.message_center.index', [
-                'receiveMessages' => $received,
-                'sendMessages'    => $sent,
-                'count'           => $count,
-                'educator'        => $educator,
-            ]);
+        if (!Auth::id()) { return $this->signin(self::APP); }
+        $user = Auth::user();
+        abort_if(
+            $user->group->name != '监护人' || !$user->group->school_id,
+            HttpStatusCode::UNAUTHORIZED,
+            '<h4>' . __('messages.unauthorized') . '</h4>'
+        );
+        if (Request::method() == 'POST') {
+            return response()->json(
+                $this->message->search($request)
+            );
         }
+    
+        return view('wechat.message_center.index');
+        
     }
     
     /**
      * 发送消息页面
      *
+     * @param MessageRequest $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function create() {
+    public function create(MessageRequest $request) {
         
-        $userId = Auth::id();
-        if (Request::isMethod('post')) {
-            $keywords = Request::get('keywords');
-            if (empty($keywords)) {
-                $lists = $this->initLists($userId);
-                
-                return response()->json([
-                    'department' => $lists['department'],
-                    'graLists'   => $lists['graLists'],
-                    'claLists'   => $lists['claLists'],
-                    'users'      => $lists['users'],
-                ]);
-            }
-            if (!in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
-                $studentIds = $this->du->contactIds('student');
-                $students = Student::whereIn('id', $studentIds)->get();
-                $userIds[] = User::whereUserid($userId)->first()->id;
-                foreach ($students as $s) {
-                    $userIds[] = $s->user->id;
-                }
-                $users = User::whereIn('id', $userIds)
-                    ->where('realname', 'like', '%' . $keywords . '%')->get();
-                if ($users) {
-                    return response()->json(['statusCode' => HttpStatusCode::OK, 'user' => $users]);
-                }
-            }
-            
+        if (Request::method() == 'POST') {
+            return $this->message->search($request);
         }
         #教师可发送消息
         #取的和教师关联的学校的部门id
@@ -136,217 +115,20 @@ class MessageCenterController extends Controller {
         ]);
     }
     
-    /**
-     * 初始化发送对象列表
-     * @param $userId
-     * @return array
-     */
-    private function initLists($userId) {
-        
-        $user = User::where('userid', $userId)->first();
-        $educator = Educator::where('user_id', $user->id)->first();
-        $school = $educator->school;
-        $departmentId = Department::where('name', $school->name)->first()->id;
-        $department = Department::whereId($departmentId)->first();
-        #找出教师关联的班级
-        $classes = $educator->classes;
-        #找出教师关联的年级 且判断是否为年级主任
-        $gradeId = [];
-        $squadId = [];
-        $classId = [];
-        #年级主任对应的年级
-        $grades = Grade::whereEnabled(1)->where('school_id', $school->id)->get();
-        foreach ($grades as $gra) {
-            if (in_array($educator->id, explode(',', $gra->educator_ids))) {
-                $gradeId[] = $gra->department_id;
-            }
-        }
-        #班级主任对应的班级id, 需要排除年级下的班级
-        $squads = Squad::whereEnabled(1)->get();
-        foreach ($squads as $sq) {
-            $grade = $sq->grade;
-            if (!in_array($educator->id, explode(',', $grade->educator_ids))
-                && in_array($educator->id, explode(',', $sq->educator_ids))) {
-                $squadId[] = $sq->department_id;
-            }
-        }
-        #找出科任老师对应的班级ids 排除属于班主任对应的班级和属于年级主任对应的班级
-        foreach ($classes as $squad) {
-            $grade = $squad->grade;
-            if (!in_array($educator->id, explode(',', $grade->educator_ids))
-                && !in_array($educator->id, explode(',', $squad->educator_ids))) {
-                $classId[] = $squad->department_id;
-            }
-        }
-        $data = [
-            #年级列表
-            'graLists'   => Department::whereIn('id', $gradeId)->get(),
-            #班级列表
-            'claLists'   => Department::whereIn('id', array_merge($squadId, $classId))->get(),
-            #初始人员列表
-            'users'      => false,
-            #学校对应的部门
-            'department' => $department,
-        ];
-        
-        return $data;
-    }
+    
     
     /**
-     * 消息发送操作
+     * 发送消息
      *
-     * @return \Illuminate\Http\JsonResponse
-     * @throws Exception
-     * @throws \Throwable
+     * @param MessageRequest $request
+     * @return JsonResponse
+     * @throws Throwable
      */
-    public function store() {
+    public function store(MessageRequest $request) {
         
         return $this->result(
-            $this->frontStore()
+            $this->message->store($request)
         );
-        
-    }
-    
-    /**
-     *
-     * 服务器端数据保存 后期用队列处理
-     * @return bool
-     * @throws Exception
-     * @throws \Throwable
-     */
-    private function frontStore() {
-        
-        $user = $this->user->where('userid', Session::get('userId'))->first();
-        $input = Request::all();
-        $userIds = [];
-        if (!isset($input['user_ids'])) {
-            $input['user_ids'] = [];
-        }
-        if (!isset($input['department_ids'])) {
-            $input['department_ids'] = [];
-        }
-        if ($input['content'] == '0') {
-            $input['content'] = '';
-        }
-        if (!empty($input['department_ids'])) {
-            #获取该部门下包括子部门的user
-            $users = $this->department->partyUsers($input['department_ids']);
-            foreach ($users as $user) {
-                $userIds[] = $user->id;
-            }
-        }
-        $receiveUserIds = array_unique(array_merge($input['user_ids'], $userIds));
-        #判断是否是短信，调用接口不一样
-        if ($input['type'] == 'sms') {
-            try {
-                DB::transaction(function () use ($receiveUserIds, $input, $user) {
-                    $messageSendingLog = new MessageSendingLog();
-                    #新增一条日志记录（指定批次）
-                    $sendLogData = [
-                        'read_count'      => count($receiveUserIds),
-                        'received_count'  => count($receiveUserIds),
-                        'recipient_count' => count($receiveUserIds),
-                    ];
-                    $input['msl_id'] = $messageSendingLog->create($sendLogData)->id;
-                    if (isset($input['media_ids'])) {
-                        $input['media_ids'] = implode(',', $input['media_ids']);
-                    } else {
-                        $input['media_ids'] = '0';
-                    }
-                    foreach ($receiveUserIds as $receiveUserId) {
-                        $messageData = [
-                            'title'           => $input['title'],
-                            'comm_type_id'    => CommType::whereName('短信')->first()->id,
-                            'app_id'          => App::whereName('消息中心')->first()->id,
-                            'msl_id'          => $input['msl_id'],
-                            'content'         => $input['content'],
-                            'serviceid'       => 0,
-                            'message_id'      => 0,
-                            'url'             => '0',
-                            'media_ids'       => $input['media_ids'],
-                            's_user_id'       => $user->id,
-                            'r_user_id'       => $receiveUserId,
-                            'message_type_id' => MessageType::whereName('消息通知')->first()->id,
-                            'read'            => 1,
-                            'sent'            => 1,
-                        ];
-                        $this->message->create($messageData);
-                    }
-                    
-                    #调用短信接口
-                    return $this->frontSendSms($input);
-                });
-            } catch (Exception $e) {
-                throw $e;
-            }
-        } else {
-            try {
-                DB::transaction(function () use ($receiveUserIds, $input, $user) {
-                    $messageSendingLog = new MessageSendingLog();
-                    #新增一条日志记录（指定批次）
-                    $sendLogData = [
-                        'read_count'      => 0,
-                        'received_count'  => 0,
-                        'recipient_count' => count($receiveUserIds),
-                    ];
-                    $input['msl_id'] = $messageSendingLog->create($sendLogData)->id;
-                    $msl = $messageSendingLog->whereId($input['msl_id'])->first();
-                    if (isset($input['media_ids'])) {
-                        $input['media_ids'] = implode(',', $input['media_ids']);
-                    } else {
-                        $input['media_ids'] = '0';
-                    }
-                    foreach ($receiveUserIds as $receiveUserId) {
-                        $messageData = [
-                            'title'           => $input['title'],
-                            'comm_type_id'    => CommType::whereName('应用')->first()->id,
-                            'app_id'          => App::whereName('消息中心')->first()->id,
-                            'msl_id'          => $input['msl_id'],
-                            'content'         => $input['content'],
-                            'serviceid'       => 0,
-                            'message_id'      => 0,
-                            'url'             => '0',
-                            'media_ids'       => $input['media_ids'],
-                            's_user_id'       => $user->id,
-                            'r_user_id'       => $receiveUserId,
-                            'message_type_id' => MessageType::whereName('消息通知')->first()->id,
-                            'read'            => 0,
-                            'sent'            => 0,
-                        ];
-                        $message = $this->message->create($messageData);
-                        //这里的判断是无效的，应该放在应用发送后返回正确的状态值后
-                        $message->sent = 1;
-                        $message->save();
-                        #更新msl表
-                        $msl->received_count = $msl->received_count + 1;
-                        $msl->save();
-                    }
-                    #推送微信服务器且显示详情页
-                    $msg = $this->message->where('msl_id', $input['msl_id'])->first();
-                    $url = 'http://weixin.028lk.com/message_show/' . $msg->id;
-                    
-                    return $this->frontSendMessage($input, $url);
-                });
-            } catch (Exception $e) {
-                throw $e;
-            }
-        }
-        
-        return true;
-    }
-    
-    /**
-     * 短信消息发送
-     *
-     * @param $input
-     * @return bool
-     */
-    private function frontSendSms($input) {
-        
-        #调用短信接口
-        $code = $this->message->sendSms($input['user_ids'], $input['department_ids'], $input['content']);
-        
-        return $code > 0;
         
     }
     

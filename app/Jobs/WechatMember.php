@@ -55,8 +55,8 @@ class WechatMember implements ShouldQueue {
         ];
         $results = $this->syncMember($this->member, $this->action);
         if (sizeof($results) == 1) {
-            if ($results[0]['errcode']) {
-                $response['message'] = $results[0]['errmsg'];
+            if ($results[key($results)]['errcode']) {
+                $response['message'] = $results[key($results)]['errmsg'];
                 $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
             }
         } else {

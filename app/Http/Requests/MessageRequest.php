@@ -16,30 +16,27 @@ class MessageRequest extends FormRequest {
     public function rules() {
         
         return [
-//            'content' => 'required|string|max:255',
-//            'serviceid' => 'required|string|max:255',
             'message_id' => 'required|integer',
             'url'        => 'required|string|max:255',
-//            'message_type_id' => 'required|integer',
         ];
         
     }
     
     protected function prepareForValidation() {
+        
         $input = $this->all();
-        if (isset($input['media_ids'])) {
-            $input['media_ids'] = implode(',', $input['media_ids']);
-        }
+        $input['media_ids'] = $input['media_ids'] ? implode(',', $input['media_ids']) : [];
+        
         if (isset($input['selectedDepartments'])) {
-            $input['r_user_id'] = $this->getInputUserIds($input['selectedDepartments']);
+            $input['department_ids'] = $this->getInputUserIds($input['selectedDepartments']);
         }
         $input['url'] = "http://";
         $input['message_id'] = 0;
         $input['serviceid'] = 0;
         $input['read'] = 0;
         $input['sent'] = 0;
-        $input['media_ids'] = 1;
-        $input['s_user_id'] = 1;
+        $input['media_ids'] = 0;
+        $input['s_user_id'] = 0;
         $input['message_type_id'] = 5;
         $this->replace($input);
         

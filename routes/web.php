@@ -367,7 +367,7 @@ function app_routes($acronym) {
     
     /** 消息中心 */
     $c = 'Wechat\MessageCenterController';
-    $p = $acronym . '/message_center/';
+    $p = $acronym . '/mc/';
     Route::get($p, $c . '@index');
     Route::post($p, $c . '@index');
     Route::get($p . 'create', $c . '@create');
