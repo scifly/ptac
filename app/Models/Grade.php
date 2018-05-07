@@ -218,8 +218,8 @@ class Grade extends Model {
         
         $user = $userId ? User::find($userId) : Auth::user();
         $ids = $this->gradeIds($user->educator->school_id, $user->id);
-        $grades = $this->whereIn('id', $ids)->get();
-        $departments = $grades ?
+        $grades = $this->whereIn('id', $ids)->pluck('department_id')->toArray();
+        $departments =
         
         
         
