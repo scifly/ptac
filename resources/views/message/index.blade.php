@@ -124,34 +124,50 @@
                                         <!-- 图片 -->
                                         <div class="tab-pane" id="content_image">
                                             <label for="file-image" class="custom-file-upload">
-                                                <i class="fa fa-cloud-upload"></i> 上传图片
+                                                <i class="fa fa-cloud-upload text-blue"></i> 上传图片
                                             </label>
                                             {!! Form::file('file-image', [
                                                 'id' => 'file-image',
                                                 'accept' => 'image/*',
-                                                /*'class' => 'upload'*/
                                             ]) !!}
                                         </div>
                                         <!-- 语音 -->
                                         <div class="tab-pane" id="content_voice">
-                                            <button id="add-voice" class="btn btn-box-tool add-btn" type="button">
-                                                <i class="fa fa-plus text-blue">
-                                                    &nbsp;添加语音
-                                                    {!! Form::hidden('type') !!}
-                                                    {!! Form::file('file-voice', [
-                                                        'id' => 'file-voice',
-                                                        'accept' => 'audio/*',
-                                                        /*'class' => 'upload'*/
-                                                    ]) !!}
-                                                </i>
-                                            </button>
+                                            <label for="file-voice" class="custom-file-upload">
+                                                <i class="fa fa-cloud-upload text-blue"></i> 上传语音
+                                            </label>
+                                            {!! Form::file('file-voice', [
+                                                'id' => 'file-voice',
+                                                'accept' => 'audio/*',
+                                            ]) !!}
                                         </div>
                                         <!-- 视频 -->
                                         <div class="tab-pane" id="content_video">
-                                            <span class="text-gray">tips：视频格式支持mp4，大小不能超过10MB</span>
-                                            <button id="add-video" class="btn btn-box-tool" type="button">
-                                                <i class="fa fa-plus text-blue">&nbsp;添加视频</i>
-                                            </button>
+                                            <div class="form-group">
+                                                {!! Form::text('content_video', null, [
+                                                    'class' => 'form-control',
+                                                    'placeholder' => '(请输入标题)',
+                                                    'required' => 'true',
+                                                    'data-parsley-length' => '[2,10]',
+                                                    'maxlength' => '128',
+                                                ]) !!}
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="file-voice" class="custom-file-upload">
+                                                    <i class="fa fa-cloud-upload text-blue"></i> 上传视频
+                                                </label>
+                                                {!! Form::file('file-video', [
+                                                    'id' => 'file-video',
+                                                    'accept' => 'audio/*',
+                                                ]) !!}
+                                                <p class="help-block">tips：视频格式支持mp4，大小不能超过10MB</p>
+                                            </div>
+                                            <div class="form-group">
+                                                {!! Form::text('content_video', null, [
+                                                    'class' => 'form-control',
+                                                    'placeholder' => '请在此添加视频描述(选填)',
+                                                ]) !!}
+                                            </div>
                                         </div>
                                         <!-- 文件 -->
                                         <div class="tab-pane" id="content_file">
