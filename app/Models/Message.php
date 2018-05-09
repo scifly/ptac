@@ -471,11 +471,16 @@ class Message extends Model {
                 $token['errmsg']
             );
         }
+        $fileInfo = [
+            'filename' => $uploadedFile['filename'],
+            'content-type' => 'image/jpg',
+            'filelength' => filesize($uploadedFile['path'])
+        ];
         $message = json_decode(
             Wechat::uploadMedia(
                 $token['access_token'],
                 Request::input('type'),
-                ['media' => curl_file_create($uploadedFile['path'])]
+                ['media' => /*curl_file_create(*/'@' . $uploadedFile['path'], 'form-data' => $fileInfo]
             )
         );
         abort_if(
