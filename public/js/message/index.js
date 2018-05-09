@@ -22,11 +22,35 @@ var title,
     $targets = $('#targets'),
     $choose = $('#choose'),
 
+    // 文本
+    $textContent = $('#text-content'),
+
+    // 图片
+    $fileImage = $('#file-image'),
+
+    // 语音
+    $fileVoice = $('#file-voice'),
+
+    // 视频
+    $videoTitle = $('#video-title'),
+    $videoDescription = $('#video-description'),
+    $fileVideo = $('#file-video'),
+
+    // 卡片
+    $textcardTitle = $('#textcard-title'),
+    $textcardDescription = $('#textcard-description'),
+    $textcardUrl = $('#textcard-url'),
+    $textcardBtntxt = $('#textcard-btntxt'),
+
     // 图文
-    $imageText = $('#modal-imagetext'),
-    $addImageText = $('#add-imagetext'),
-    $saveImageText = $('#save-imagetext'),
-    $insertUrl = $('#insert-url'),
+    $modalMpnews = $('#modal-mpnews'),
+    $addMpnews = $('#add-mpnews'),
+    $mpnewsTitle = $('#mpnews-title'),
+    $mpnewsContent = $('#mpnews-content'),
+    $fileMpnewsImage = $('#file-mpnews-image'),
+    $contentSourceUrl = $('#content-source-url'),
+    $mpnewsAutho = $('#mpnews-author'),
+    $saveMpnews = $('#save-mpnews'),
     $coverImage = $('#cover-image'),
 
     // 视频
@@ -62,7 +86,7 @@ $(document).on('click', '#cancel .close-targets', function () {
 
 /** 图文 ------------------------------------------------------------------------------------------------------------- */
 // 添加图文
-$addImageText.on('click', function () {
+$addMpnews.on('click', function () {
     $('#modal-imagetext').modal({backdrop: true});
 });
 // 添加图文 - 插入原文链接
@@ -71,7 +95,7 @@ $insertUrl.on('click', function () {
     $(this).next().val('');
 });
 // 添加图文 - 保存图文
-$saveImageText.on('click', function () {
+$saveMpnews.on('click', function () {
     var $imageTextTitle = $('.imagetext-title'),
         $cover = $('#cover'),
         title = $imageTextTitle.val();
@@ -108,11 +132,11 @@ $saveImageText.on('click', function () {
         '</div>';
     $('.tab-pane.active#content_mpnews').html(html);
     $message.show();
-    $imageText.hide();
+    $modalMpnews.hide();
     // 初始化图文显示事件
     $('.show_imagetext').click(function () {
         $message.hide();
-        $imageText.show();
+        $modalMpnews.show();
     });
 });
 

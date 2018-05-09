@@ -14,11 +14,11 @@
                 <div class="form-horizontal" id="imagetext">
                     <!-- 标题 -->
                     <div class="form-group">
-                        {!! Form::label('title', '标题', [
+                        {!! Form::label('mpnews-title', '标题', [
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
                         <div class="col-sm-6">
-                            {!! Form::text('content_image', null, [
+                            {!! Form::text('mpnews-title', null, [
                                 'class' => 'form-control',
                                 'placeholder' => '(请输入标题)',
                                 'required' => 'true',
@@ -29,11 +29,11 @@
                     </div>
                     <!-- 正文 -->
                     <div class="form-group">
-                        {!! Form::label('content', '正文', [
+                        {!! Form::label('mpnews-content', '正文', [
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
                         <div class="col-sm-6">
-                            {!! Form::textarea('content', null, [
+                            {!! Form::textarea('mpnews-content', null, [
                                 'id' => 'content',
                                 'class' => 'form-control',
                                 'maxlength' => '666',
@@ -42,12 +42,12 @@
                     </div>
                     <!-- 原文链接 -->
                     <div class="form-group">
-                        {!! Form::label('content_source_url', '原文链接', [
+                        {!! Form::label('content-source-url', '原文链接', [
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
                         <div class="col-sm-6">
-                            {!! Form::text('content_source_url', null, [
-                                'id' => 'content_source_url',
+                            {!! Form::text('content-source-url', null, [
+                                'id' => 'content-source-url',
                                 'class' => 'form-control',
                                 'placeholder' => '请在此插入原文链接地址（可选）',
                                 'maxlength' => '255',
@@ -70,7 +70,7 @@
                         ]) !!}
                         <div class="col-sm-6">
                             {!! Form::text('mpnews-author', null, [
-                                'class' => 'form-control imagetext-author',
+                                'class' => 'form-control',
                                 'placeholder' => '(可选)',
                             ]) !!}
                         </div>

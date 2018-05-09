@@ -186,7 +186,7 @@
                                                 'placeholder' => '请在此输入卡片链接地址',
                                                 'title' => '链接地址'
                                             ]) !!}
-                                            {!! Form::text('textcard-btntext', '详情', [
+                                            {!! Form::text('textcard-btntxt', '详情', [
                                                 'class' => 'form-control',
                                                 'title' => '卡片按钮名称'
                                             ]) !!}
