@@ -145,7 +145,7 @@
                                         <div class="tab-pane" id="content_video">
                                             {!! Form::text('video-title', null, [
                                                 'class' => 'form-control',
-                                                'placeholder' => '(请输入标题)',
+                                                'placeholder' => '请在此输入视频标题',
                                                 'required' => 'true',
                                                 'data-parsley-length' => '[2,10]',
                                                 'maxlength' => '128',
