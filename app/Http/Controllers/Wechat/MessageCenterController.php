@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Wechat;
 use Exception;
 use Throwable;
 use App\Facades\Wechat;
-use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\WechatTrait;
 use App\Http\Controllers\Controller;
@@ -13,13 +12,10 @@ use App\Models\App;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\DepartmentUser;
-use App\Models\Educator;
-use App\Models\Grade;
 use App\Models\Media;
 use App\Models\Message;
 use App\Models\MessageReply;
 use App\Models\MessageSendingLog;
-use App\Models\Squad;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Contracts\View\Factory;
@@ -70,24 +66,20 @@ class MessageCenterController extends Controller {
     /**
      * 消息列表
      *
-     * @param MessageRequest $request
-     * @return Factory|RedirectResponse|Redirector|View|string
+     * @return RedirectResponse|Redirector|View|string
+     * @throws Throwable
      */
-    public function index(MessageRequest $request) {
-    
-        if (!Auth::id()) { return $this->signin(self::APP); }
-        $user = Auth::user();
-        abort_if(
-            $user->group->name != '监护人' || !$user->group->school_id,
-            HttpStatusCode::UNAUTHORIZED,
-            '<h4>' . __('messages.unauthorized') . '</h4>'
-        );
+    public function index() {
+        
+        if (!Auth::id()) {
+            return $this->signin(self::APP);
+        }
         if (Request::method() == 'POST') {
             return response()->json(
-                $this->message->search($request)
+                $this->message->search()
             );
         }
-    
+        
         return view('wechat.message_center.index');
         
     }
@@ -95,27 +87,21 @@ class MessageCenterController extends Controller {
     /**
      * 发送消息页面
      *
-     * @param MessageRequest $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @param $departmentId
+     * @return Factory|View
+     * @throws Throwable
      */
-    public function create(MessageRequest $request) {
+    public function create($departmentId = null) {
         
         if (Request::method() == 'POST') {
-            return $this->message->search($request);
+            return response()->json(
+                $this->message->search($departmentId)
+            );
         }
-        #教师可发送消息
-        #取的和教师关联的学校的部门id
-        $lists = $this->initLists($userId);
         
-        return view('wechat.message_center.create', [
-            'department' => $lists['department'],
-            'graLists'   => $lists['graLists'],
-            'claLists'   => $lists['claLists'],
-            'users'      => $lists['users'],
-        ]);
+        return view('wechat.message_center.create');
+        
     }
-    
-    
     
     /**
      * 发送消息
@@ -205,7 +191,7 @@ class MessageCenterController extends Controller {
      * 消息编辑页面
      *
      * @param $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function edit($id) {
         
@@ -222,9 +208,9 @@ class MessageCenterController extends Controller {
      * 更新已读状态
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Exception
-     * @throws \Throwable
+     * @return JsonResponse
+     * @throws Exception
+     * @throws Throwable
      */
     public function updateStatus($id) {
         
@@ -241,7 +227,7 @@ class MessageCenterController extends Controller {
      * @param $id
      * @return bool
      * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     private function modifyReaded($id) {
         
@@ -267,7 +253,7 @@ class MessageCenterController extends Controller {
      * 消息详情页面展示
      *
      * @param $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function show($id) {
         
@@ -297,8 +283,8 @@ class MessageCenterController extends Controller {
      * 删除指定消息
      *
      * @param $id
-     * @return bool|\Illuminate\Http\JsonResponse|null
-     * @throws \Exception
+     * @return bool|JsonResponse|null
+     * @throws Exception
      */
     public function destroy($id) {
         
@@ -332,7 +318,7 @@ class MessageCenterController extends Controller {
     /**
      * 消息回复列表
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function replyList() {
         
@@ -360,7 +346,7 @@ class MessageCenterController extends Controller {
      * 消息回复删除
      *
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      * @throws Exception
      */
     public function replyDestroy($id) {
@@ -377,7 +363,7 @@ class MessageCenterController extends Controller {
     /**
      *上传图片和视频
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function upload() {
         
@@ -417,38 +403,6 @@ class MessageCenterController extends Controller {
         }
         
         return response()->json($this->result);
-        
-    }
-    
-    /**
-     * 获取下一级部门列表
-     *
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Throwable
-     */
-    public function department($id) {
-        
-        #判断传过来的id是否为学校id
-        $department = Department::whereId($id)->first();
-        if ($department->department_type_id == 4) {
-            $lists = $this->initLists(Auth::id());
-            $data = view('wechat.message_center.select', [
-                'graLists' => $lists['graLists'],
-                'claLists' => $lists['claLists'],
-                'users'    => $lists['users'],
-            ])->render();
-            
-        } else {
-            $users = $department->users;
-            $nextDepts = Department::where('parent_id', $id)->get();
-            $data = view('wechat.message_center.select', [
-                'departments' => $nextDepts,
-                'users'       => $users,
-            ])->render();
-        }
-        
-        return $this->result($data, $data);
         
     }
     

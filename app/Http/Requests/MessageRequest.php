@@ -1,8 +1,10 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Models\CommType;
 use App\Models\Department;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class MessageRequest extends FormRequest {
     
@@ -14,10 +16,25 @@ class MessageRequest extends FormRequest {
     public function authorize() { return true; }
     
     public function rules() {
-        
+    
         return [
-            'message_id' => 'required|integer',
-            'url'        => 'required|string|max:255',
+            'comm_type_id'    => 'required|integer',
+            'app_id'          => 'required|integer',
+            'msl_id'          => 'required|integer',
+            'title'           => 'required|string|max:64',
+            'content'         => 'required|string|max:255',
+            'serviceid'       => 'required|string|max:255',
+            'message_id'      => 'required|integer',
+            'url'             => 'required|string|max:255',
+            'media_ids'       => 'required|string|max:255',
+            's_user_id'       => 'required|integer',
+            'r_user_id'       => 'required|integer',
+            'message_type_id' => 'required|integer',
+            'read'            => 'required|boolean',
+            'sent'            => 'required|boolean',
+            'user_ids'        => 'required|array',
+            'dept_ids'        => 'required|array',
+            'app_ids'         => 'required|array'
         ];
         
     }
@@ -25,19 +42,26 @@ class MessageRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
+        $input['comm_type_id'] = $input['type'] == 'sms'
+            ? CommType::whereName('短信')->first()->id
+            : CommType::whereName('应用')->first()->id;
+        $input['app_id'] = 0;
+        $input['msl_id'] = 0;
+        $input['title'] = $input['title'] ?? 'n/a';
+        $input['serviceid'] = '0';
+        $input['message_id'] = 0;
+        $input['url'] = "http://";
+        $input['media_ids'] = '0';
+        $input['s_user_id'] = Auth::id();
+        $input['r_user_id'] = '0';
+        $input['message_type_id'] = 5;
+        $input['read'] = 0;
+        $input['sent'] = 0;
         $input['media_ids'] = $input['media_ids'] ? implode(',', $input['media_ids']) : [];
-        
+    
         if (isset($input['selectedDepartments'])) {
             $input['department_ids'] = $this->getInputUserIds($input['selectedDepartments']);
         }
-        $input['url'] = "http://";
-        $input['message_id'] = 0;
-        $input['serviceid'] = 0;
-        $input['read'] = 0;
-        $input['sent'] = 0;
-        $input['media_ids'] = 0;
-        $input['s_user_id'] = 0;
-        $input['message_type_id'] = 5;
         $this->replace($input);
         
     }

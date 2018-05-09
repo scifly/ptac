@@ -370,14 +370,13 @@ function app_routes($acronym) {
     $p = $acronym . '/mc/';
     Route::get($p, $c . '@index');
     Route::post($p, $c . '@index');
-    Route::get($p . 'create', $c . '@create');
-    Route::post($p . 'create', $c . '@create');
+    Route::get($p . 'create/{departmentId?}', $c . '@create');
+    Route::post($p . 'create/{departmentId?}', $c . '@create');
     Route::post($p . 'store', $c . '@store');
     Route::get($p . 'show/{id}', $c . '@show');
     Route::get($p . 'update/{id}', $c . '@updateStatus');
     Route::delete($p . 'delete/{id}', $c . '@destroy');
     Route::post($p . 'upload', $c . '@upload');
-    Route::get($p . 'dept/{id}', $c . '@department');
     Route::post($p . 'reply', $c . '@reply');
     Route::post($p . 'replylist', $c . '@replyList');
     Route::delete($p . 'replydel/{id}', $c . '@replyDestroy');

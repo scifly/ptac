@@ -3,6 +3,7 @@ namespace App\Models;
 
 use Eloquent;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Throwable;
 use Carbon\Carbon;
 use ReflectionException;
@@ -180,6 +181,22 @@ class Squad extends Model {
         }
         
         return $this->singleSelectList($items, 'student_id');
+        
+    }
+    
+    /**
+     * 返回对指定用户可见的所有班级类部门对象
+     *
+     * @param null $userId
+     * @return Collection|Department[]
+     */
+    function departments($userId = null) {
+        
+        $user = $userId ? User::find($userId) : Auth::user();
+        $ids = $this->classIds($user->educator->school_id, $user->id);
+        $departmentIds = $this->whereIn('id', $ids)->pluck('department_id')->toArray();
+        
+        return Department::whereIn('id', $departmentIds)->get();
         
     }
     

@@ -104,7 +104,7 @@ class SendMessage implements ShouldQueue {
                     'agentid' => $app['agentid'],
                     'msgtype' => $this->data['type']
                 ];
-                $content = $this->data['type'];
+                $content = $this->data['content'];
                 $content['media_ids'] = 0;
                 switch ($this->data['type']) {
                     case 'text':
@@ -121,10 +121,6 @@ class SendMessage implements ShouldQueue {
                         $message['voice'] = ['media_id' => $mediaId];
                         $content['media_ids'] = $mediaId;
                         break;
-                    case 'mpnews' :
-                        $title = $this->data['content']['articles']['title'];
-                        $message['mpnews'] = ['articles' => $this->data['content']['articles']];
-                        break;
                     case 'video' :
                         $title = $this->data['content']['video']['title'];
                         $message['video'] = $this->data['content']['video'];
@@ -133,6 +129,18 @@ class SendMessage implements ShouldQueue {
                         $mediaId = $this->data['content']['media_id'];
                         $message['file'] = ['media_id' => $mediaId];
                         $content['media_ids'] = $mediaId;
+                        break;
+                    case 'textcard':
+                        $message['textcard'] = [
+                            'title' => $this->data['content']['title'],
+                            'description' => $this->data['content']['description'],
+                            'url' => $this->data['content']['url']
+                        ];
+                        break;
+                    case 'mpnews' :
+                        $message['mpnews'] = [
+                            'articles' => $this->data['content']['articles']
+                        ];
                         break;
                     default:
                         break;

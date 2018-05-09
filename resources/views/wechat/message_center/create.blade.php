@@ -5,121 +5,72 @@
 @endsection
 @section('content')
     <div class="msg-send-wrap">
-        <div class="scui-choose js-scui-choose-container3 js-scui-choose scui-form-group">
+        <div id="chosen-container" class="scui-chosen js-scui-chosen-container3 js-scui-chosen scui-form-group">
             <label class="scui-control-label mr4">发送对象</label>
-            <div id="homeWorkChoose" class="choose-results js-choose-results"></div>
-            <span class="icons-choose choose-icon js-choose-icon">
-                <a class="icon iconfont icon-add c-green open-popup" href="#" data-target="#choose"></a>
+            <div id="chosen-results"></div>
+            <span class="icons-chosen chosen-icon js-chosen-icon">
+                <a class="icon iconfont icon-add c-green open-popup" href="#" data-target="#targets"></a>
             </span>
         </div>
         <div class="weui-cell" style="background-color: #fff;">
             <div class="weui-cell__hd">
-                <label for="name" class="weui-label">信息类型</label>
+                <label for="msg-type" class="weui-label">消息类型</label>
+                {!! Form::label('msg-type', '消息类型', ['class' => 'weui-label']) !!}
             </div>
             <div class="weui-cell__bd">
-                <input class="weui-input" id="type" type="text" value="文本" readonly="" data-values="text" title="信息类型">
+                {!! Form::select('msg-type', $msgTypes, null, [
+                    'id' => 'msg-type',
+                    'class' => 'weui-input',
+                    'disabled' => sizeof($msgTypes) <= 1
+                ]) !!}
             </div>
         </div>
         <div style="height: 5px;"></div>
-        <div class="mt5px msg-send-bg b-bottom hw-title">
+        <div id="title-container" class="mt5px msg-send-bg b-bottom hw-title" style="display: none;">
             <div class="weui-cell">
                 <div class="weui-cell__bd js-title">
-                    <input id="title" name="title" type="text" placeholder="标题" maxlength="30"
-                           value="{{ $message ? $message->title : '' }}"
-                           class="weui-input fs18 one-line title"
-                    >
+                    {!! Form::text('title', $message ? $message->title : '', [
+                        'id' => 'title',
+                        'class' => 'weui-input fs18 one-line title',
+                        'placeholder' => '标题',
+                        'maxlength' => 30
+                    ]) !!}
                 </div>
             </div>
         </div>
-        <div class="msg-send-conwrap msg-send-bg js-content js-content-item">
-            <div contenteditable="true" id="emojiInput"
-                 class="wangEditor-mobile-txt">{!! $message ? $message->content : ''!!}
+        <div id="content-container" class="msg-send-conwrap msg-send-bg">
+            <div contenteditable="true" id="content" class="wangEditor-mobile-txt">
+                {!! $message ? $message->content : ''!!}
             </div>
         </div>
-        <div class="msg-send-conicon msg-send-bg b-top js-upload-img js-content-item" style="display: none">
-            <ul class="weui-flex">
-                <li class="weui-flex__item addImg">
-                    <i class="icon iconfont icon-tupian placeholder fs15 c-999"></i>
-                    <input id="uploaderInput" class="weui-uploader__input js_file"
-                           type="file" accept="image/*" multiple="multiple">
-                </li>
-            </ul>
+        <div id="url-container" class="msg-send-bg b-bottom hw-title extra" style="display: none;">
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    {!! Form::text('url', null, [
+                        'id' => 'url',
+                        'class' => 'weui-input one-line title',
+                        'placeholder' => '原文链接(选填)',
+                        'maxlength' => 30
+                    ]) !!}
+                </div>
+            </div>
         </div>
         <div style="height: 5px;"></div>
-        <div class="weui-cells weui-cells_form js-mpnews-cover js-content-item" style="margin: 0; display: none;">
-            <div class="weui-cell">
-                <div class="weui-cell__bd">
-                    <div class="weui-uploader">
-                        <div class="weui-uploader__hd">
-                            <p class="weui-uploader__title">封面上传</p>
-                        </div>
-                        <div class="weui-uploader__bd" id="cover" style="width: 100%">
-                            <div class="weui-uploader__input-box">
-                                <input id="upload_mpnews" onchange="uploadCover()"
-                                       class="weui-uploader__input upload_mpnews"
-                                       type="file" accept="image/*" multiple=""
-                                >
-                            </div>
+        <div id="upload-container" class="msg-send-conicon msg-send-bg b-top extra" style="display: none;">
+            <div class="weui-cell__bd">
+                <div class="weui-uploader">
+                    <div class="weui-uploader__hd">
+                        <p id="upload-title" class="weui-uploader__title"></p>
+                    </div>
+                    <div class="weui-uploader__bd">
+                        <div class="weui-uploader__input-box">
+                            {!! Form::file('upload', [
+                                'id' => 'upload',
+                                'accept' => '',
+                                'class' => 'weui-uploader__input'
+                            ]) !!}
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="weui-cells weui-cells_form js-image js-content-item" style="margin: 0; display: none;">
-            <div class="weui-cell">
-                <div class="weui-cell__bd">
-                    <div class="weui-uploader">
-                        <div class="weui-uploader__hd">
-                            <p class="weui-uploader__title">图片上传</p>
-                        </div>
-                        <div class="weui-uploader__bd">
-                            <div class="weui-uploader__input-box">
-                                <input id="upload_image" class="weui-uploader__input"
-                                       type="file" accept="image/*" multiple=""
-                                >
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="weui-cells weui-cells_form js-video js-content-item" style="margin: 0; display: none;">
-            <div class="weui-cell">
-                <div class="weui-cell__bd">
-                    <div class="weui-uploader">
-                        <div class="weui-uploader__hd">
-                            <p class="weui-uploader__title">视频上传</p>
-                        </div>
-                        <div class="weui-uploader__bd">
-                            <div class="weui-uploader__input-box">
-                                <input id="upload_video" class="weui-uploader__input"
-                                       type="file" accept="video/mp4" multiple=""
-                                >
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="msg-send-bg b-bottom hw-title js-content_source_url js-content-item" style="display: none;">
-            <div class="weui-cell">
-                <div class="weui-cell__bd">
-                    <input type="text" placeholder="原文链接(选填)" maxlength="30" class="weui-input one-line title">
-                </div>
-            </div>
-        </div>
-        <div class="msg-send-bg b-bottom hw-title js-author js-content-item" style="display: none;">
-            <div class="weui-cell">
-                <div class="weui-cell__bd">
-                    <input type="text" placeholder="作者(选填)" maxlength="10" class="weui-input one-line title">
-                </div>
-            </div>
-        </div>
-        <div class="msg-send-bg b-bottom hw-title js-description js-content-item" style="display: none;">
-            <div class="weui-cell">
-                <div class="weui-cell__bd">
-                    <input type="text" id="description-video" placeholder="描述" maxlength="30"
-                           class="weui-input one-line title" value="">
                 </div>
             </div>
         </div>
@@ -142,111 +93,70 @@
         <div class="weui-flex mt5px">
             <div class="weui-flex__item">
                 <div class="placeholder msg-send-btn" style="padding: 15px;">
-                    <a href="#" class="weui-btn weui-btn_primary release">发布信息</a>
+                    <a id="send" href="#" class="weui-btn weui-btn_primary">发送消息</a>
                 </div>
             </div>
         </div>
     </div>
-    <div id="choose" class='weui-popup__container'>
+    <div id="targets" class='weui-popup__container'>
         <div class="weui-popup__overlay"></div>
         <div class="weui-popup__modal">
-            <div class="choose-container js-scui-choose-layer">
-                <div class="choose-container-fixed">
-                    <div class="choose-header js-choose-header">
-                        <div class="choose-header-result js-choose-header-result">
-
-
-                        </div>
+            <div class="js-scui-chosen-layer">
+                <div class="chosen-container-fixed">
+                    <div class="chosen-header js-chosen-header">
+                        <div class="chosen-header-result js-chosen-header-result"></div>
                         <div class="common-left-search">
                             <i class="icon iconfont icon-search3 search-logo icons2x-search"></i>
-                            <input type="text" name="search" class="js-search-input" placeholder="搜索">
+                            {!! Form::text('search', null, [
+                                'id' => 'search',
+                                'placeholder' => '搜索'
+                            ]) !!}
                         </div>
                     </div>
-
-                    <div class="choose-breadcrumb js-choose-breadcrumb">
-                        <ol class="breadcrumb js-choose-breadcrumb-ol">
-                            <li data-id="{{ $schoolDept->id }}" class="js-choose-breadcrumb-li headclick">
+                    <div class="chosen-breadcrumb js-chosen-breadcrumb">
+                        <ol class="breadcrumb js-chosen-breadcrumb-ol">
+                            <li data-id="{{ $schoolDept->id }}" class="js-chosen-breadcrumb-li headclick">
                                 <a>{{ $schoolDept->name }}</a>
                             </li>
                         </ol>
                     </div>
-
-                    <div class="choose-items js-choose-items">
+                    <div class="chosen-items js-chosen-items">
                         <div class="weui-cells weui-cells_checkbox" style="padding-bottom: 60px;">
-                            <div class="air-choose-group">
+                            <div id="targets-container">
                                 {{--年级列表--}}
-                                @foreach($gradeDepts as $dept)
-                                    <div class="air-choose-item" style="position: relative;">
-                                        <label class="weui-cell weui-check__label" id="group-{{ $dept->id }}"
-                                               data-item="{{ $dept->id }}" data-uid="{{ $dept->id }}"
-                                               data-type="group">
-                                            <div class="weui-cell__hd">
-                                                <input type="checkbox" class="weui-check choose-item-btn"
-                                                       name="checkbox">
-                                                <i class="weui-icon-checked"></i>
-                                            </div>
-                                            <div class="weui-cell__bd">
-                                                <img src="{{ asset('img/department.png') }}"
-                                                     style="border-radius: 0;" class="js-go-detail lazy" width="75"
-                                                     height="75">
-                                                <span class="contacts-text">{{ $dept->name }}</span>
-                                            </div>
-                                        </label>
-                                        <a class="icon iconfont icon-jiantouyou show-group"
-                                           style="position:absolute;top: 0;right:0;height: 55px;line-height:55px;z-index: 1;width: 30px;"></a>
-                                    </div>
+                                @foreach ($gradeDepts as $dept)
+                                    @include('wechat.message_center.target', [
+                                        'type' => 'department',
+                                        'target' => $dept
+                                    ])
                                 @endforeach
                                 {{--班级列表--}}
-                                @foreach ($classDept as $dept)
-                                    <div class="air-choose-item" style="position: relative;">
-                                        <label class="weui-cell weui-check__label" id="group-{{ $dept->id }}"
-                                               data-item="{{ $dept->id }}" data-uid="{{ $dept->id }}"
-                                               data-type="group">
-                                            <div class="weui-cell__hd">
-                                                <input type="checkbox" class="weui-check choose-item-btn"
-                                                       name="checkbox">
-                                                <i class="weui-icon-checked"></i>
-                                            </div>
-                                            <div class="weui-cell__bd">
-                                                <img src="{{ asset('img/department.png') }}"
-                                                     style="border-radius: 0;" class="js-go-detail lazy" width="75"
-                                                     height="75">
-                                                <span class="contacts-text">{{ $dept->name }}</span>
-                                            </div>
-                                        </label>
-                                        <a class="icon iconfont icon-jiantouyou show-group"
-                                           style="position:absolute;top: 0;right:0;height: 55px;line-height:55px;z-index: 1;width: 30px;"></a>
-                                    </div>
+                                @foreach ($classDepts as $dept)
+                                    @include('wechat.message_center.target', [
+                                        'type' => 'department',
+                                        'target' => $dept
+                                    ])
                                 @endforeach
                                 {{--用户列表--}}
-                                @foreach($users as $user)
-                                    <div class="air-choose-item" style="position: relative;">
-                                        <label class="weui-cell weui-check__label" id="person-{{ $user->id }}"
-                                               data-item="{{ $user->id }}" data-uid="{{ $user->id }}"
-                                               data-type="person">
-                                            <div class="weui-cell__hd">
-                                                <input type="checkbox" class="weui-check choose-item-btn"
-                                                       name="checkbox">
-                                                <i class="weui-icon-checked"></i>
-                                            </div>
-                                            <div class="weui-cell__bd">
-                                                <img src="{{asset('img/personal.png')}}" class="js-go-detail lazy"
-                                                     width="75" height="75">
-                                                <span class="contacts-text">{{ $user->realname . '-'. $user->mobiles->first()->mobile }}</span>
-                                            </div>
-                                        </label>
-                                    </div>
+                                @foreach ($users as $user)
+                                    @include('wechat.message_center.target', [
+                                        'type' => 'user',
+                                        'target' => $user
+                                    ])
                                 @endforeach
                             </div>
                         </div>
                         <div style="height: 40px;"></div>
                     </div>
                 </div>
-                <div class="choose-footer js-choose-footer">
+                <div class="chosen-footer js-chosen-footer">
                     <div class="weui-cells weui-cells_checkbox">
                         <label class="weui-cell weui-check__label">
                             <div class="weui-cell__hd">
-                                <input type="checkbox" id="checkall" class="weui-check" name="checkedall">
+                                {!! Form::checkbox('check-all', 0, null, [
+                                    'id' => 'check-all',
+                                    'class' => 'weui-check'
+                                ]) !!}
                                 <i class="weui-icon-checked"></i>
                             </div>
                             <div class="weui-cell__bd">
@@ -254,17 +164,17 @@
                             </div>
                         </label>
                     </div>
-                    <span class="scui-pull-right js-choose-sure def-color choose-enable" id="choose-btn-ok">
+                    <span class="scui-pull-right js-chosen-sure def-color chosen-enable" id="confirm">
                         确定<i class="expand"></i>
                     </span>
-                    <span class="js-choose-num choose-num"><!--  eslint-disable -->
-					    已选0个分组,0名用户
+                    <span id="count"><!--  eslint-disable -->
+					    已选0个分组, 0名用户
                     </span>
                 </div>
             </div>
         </div>
     </div>
-    <div id="upload-wait">
+    <div id="notification">
         <div class="weui-loadmore" style="margin-top: 50%;">
             <i class="weui-loading"></i>
             <span class="weui-loadmore__tips">正在上传</span>

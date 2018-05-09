@@ -170,11 +170,11 @@ $contentSms.bind("input propertychange", function () {
 /** 发送消息 ---------------------------------------------------------------------------------------------------------- */
 $send.on('click', function () {
     var appIds = $('#app_ids').val();
-    var selectedDepartmentIds = $('#selectedDepartmentIds').val();
+    var targetIds = $('#selectedDepartmentIds').val();
     var type = $('#message-content').find('.tab-pane.active').attr('id');
     type = type.substring('8');
     var content = '';
-    var media_id = '';
+    var mediaId = '';
     switch (type) {
         case 'text': // 文本
             content = {text: $('#messageText').val()};
@@ -188,15 +188,15 @@ $send.on('click', function () {
                 thumb_media_id: $('.show_imagetext_pic_media_id').val(),
             };
             content = {articles: articles};
-            media_id = $('.show_imagetext_media_id').val();
+            mediaId = $('.show_imagetext_media_id').val();
             break;
         case 'image': // 图片
             content = {media_id: $('#image_media_id').val()};
-            media_id = $('#image-media-id').val();
+            mediaId = $('#image-media-id').val();
             break;
         case 'voice': // 音频
             content = {media_id: $('#voice_media_id').val()};
-            media_id = $('#voice-media-id').val();
+            mediaId = $('#voice-media-id').val();
             break;
         case 'video': // 视频
             var video = {
@@ -205,9 +205,10 @@ $send.on('click', function () {
                 description: $('.show_video_description').text(),
             };
             content = {video: video};
-            media_id = $('#video-media-id').val();
+            mediaId = $('#video-media-id').val();
             break;
         case 'sms': // 短信
+            appIds = [0];
             content = {sms: $('#contentSms').val()};
             break;
         default:
@@ -218,7 +219,7 @@ $send.on('click', function () {
         page.inform(title, '应用不能为空', page.failure);
         return false
     }
-    if (selectedDepartmentIds === '') {
+    if (targetIds === '') {
         page.inform(title, '对象不能为空', page.failure);
         return false
     }
@@ -235,12 +236,12 @@ $send.on('click', function () {
         type: 'POST',
         dataType: 'json',
         data: {
-            app_ids: appIds,
-            departIds: selectedDepartmentIds,
+            appIds: appIds,
+            targetIds: targetIds,
+            messageTypeId: $('#message_type_id').val(),
             type: type,
             content: content,
-            media_id: media_id,
-            _token: $token.attr('content')
+            _token: token
         },
         success: function (result) {
             page.inform(result.title, result.message, page.success);

@@ -34,30 +34,36 @@
                     <div class="form-horizontal form-main" id="message">
                     {!! Form::open([
                         'method' => 'post',
-                        'id' => 'formImagetext',
+                        'id' => 'message',
                         'data-parsley-validate' => 'true'
                     ]) !!}
-                    <!-- 选择应用 -->
-                    @include('partials.multiple_select', [
-                        'label' => '应用',
-                        'id' => 'app_ids',
-                        'icon' => 'fa fa-weixin text-green',
-                        'items' => $apps
-                    ])
-                    <!-- 发送对象 -->
+                        <!-- 选择应用 -->
+                        @include('partials.multiple_select', [
+                            'label' => '应用',
+                            'id' => 'app_ids',
+                            'icon' => 'fa fa-weixin text-green',
+                            'items' => $apps
+                        ])
+                        <!-- 发送对象 -->
                         <div class="form-group">
-                            {!! Form::label('objects', '发送对象', [
+                            {!! Form::label('targets', '发送对象', [
                                 'class' => 'col-sm-3 control-label'
                             ]) !!}
                             <div class="col-sm-6">
                                 <div id="checked-nodes"></div>
-                                <input type="hidden" id="selected-node-ids" value=""/>
-                                <button id="choose" class="btn btn-box-tool" type="button"
-                                        style="margin-top: 3px;">
-                                    <i class="fa fa-user-plus text-blue">&nbsp;选择</i>
-                                </button>
+                                {!! Form::hidden('selected-node-ids') !!}
+                                {!! Form::button('<i class="fa fa-user-plus text-blue">&nbsp;选择</i>', [
+                                    'id' => 'choose',
+                                    'class' => 'btn btn-box-tool',
+                                    'style' => 'margin-top: 3px;'
+                                ]) !!}
                             </div>
                         </div>
+                        @include('partials.single_select', [
+                            'label' => '消息类型',
+                            'id' => 'message_type_id',
+                            'items' => $messageTypes
+                        ])
                         <!-- 消息内容 -->
                         <div class="form-group">
                             {!! Form::label('departmentId', '消息内容', [
@@ -69,11 +75,6 @@
                                         <li class="active">
                                             <a href="#content_text" data-toggle="tab" class="tab">
                                                 <i class="fa fa-file-text-o"></i>&nbsp;文本
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#content_mpnews" data-toggle="tab" class="tab">
-                                                <i class="fa fa-th-list"></i>&nbsp;图文
                                             </a>
                                         </li>
                                         <li>
@@ -92,8 +93,18 @@
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="#content_file" data-toggle="tab" class="tab">
-                                                <i class="fa fa-file"></i>&nbsp;文件
+                                            <a href="#content_video" data-toggle="tab" class="tab">
+                                                <i class="fa fa-file-movie-o"></i>&nbsp;文件
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#content_textcard" data-toggle="tab" class="tab">
+                                                <i class="fa fa-file"></i>&nbsp;卡片
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#content_mpnews" data-toggle="tab" class="tab">
+                                                <i class="fa fa-th-list"></i>&nbsp;图文
                                             </a>
                                         </li>
                                         <li>
@@ -103,54 +114,70 @@
                                         </li>
                                     </ul>
                                     <div class="tab-content" id="message-content">
+                                        <!-- 文本 -->
                                         <div class="active tab-pane" id="content_text">
                                             {!! Form::textarea('content', null, [
-                                                'id' => 'messageText',
+                                                'id' => 'content',
                                                 'name' => 'content',
+                                                'placeholder' => '（请在此输入文本消息内容）',
                                                 'class' => 'form-control text-blue',
                                             ]) !!}
                                         </div>
-                                        <div class="tab-pane" id="content_mpnews">
-                                            <button id="add-imagetext" class="btn btn-box-tool" type="button"
-                                                    style="margin-top: 3px;">
-                                                <i class="fa fa-plus text-blue">&nbsp;添加图文</i>
+                                        <!-- 图片 -->
+                                        <div class="tab-pane" id="content_image">
+                                            <button id="add-image" class="btn btn-box-tool add-btn" type="button">
+                                                <i class="fa fa-plus text-blue">
+                                                    &nbsp;添加图片
+                                                    {!! Form::hidden('type') !!}
+                                                    {!! Form::file('file-image', [
+                                                        'id' => 'file-image',
+                                                        'accept' => 'image/*',
+                                                        'class' => 'upload'
+                                                    ]) !!}
+                                                </i>
                                             </button>
                                         </div>
-                                        <div class="tab-pane" id="content_image">
-                                                <button id="add-image" class="btn btn-box-tool" type="button"
-                                                        style="margin-top: 3px; position: relative; border: 0;">
-                                                    <i class="fa fa-plus text-blue">
-                                                        &nbsp;添加图片
-                                                        <input type="hidden" value="image" name="type"/>
-                                                        <input type="file" id="file-image" onchange="uploadFile(this)"
-                                                               name="uploadFile" accept="image/*"
-                                                               style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
-                                                    </i>
-                                                </button>
-                                        </div>
+                                        <!-- 语音 -->
                                         <div class="tab-pane" id="content_voice">
-                                                <button id="add-voice" class="btn btn-box-tool" type="button"
-                                                        style="margin-top: 3px;position: relative;border: 0;">
-                                                    <i class="fa fa-plus text-blue">
-                                                        &nbsp;添加语音
-                                                        <input type="hidden" value="voice" name="type"/>
-                                                        <input type="file" id="file-voice" onchange="uploadFile(this)"
-                                                               name="uploadFile"
-                                                               style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
-                                                    </i>
-                                                </button>
+                                            <button id="add-voice" class="btn btn-box-tool add-btn" type="button">
+                                                <i class="fa fa-plus text-blue">
+                                                    &nbsp;添加语音
+                                                    {!! Form::hidden('type') !!}
+                                                    {!! Form::file('file-voice', [
+                                                        'id' => 'file-voice',
+                                                        'accept' => 'audio/*',
+                                                        'class' => 'upload'
+                                                    ]) !!}
+                                                </i>
+                                            </button>
                                         </div>
+                                        <!-- 视频 -->
                                         <div class="tab-pane" id="content_video">
                                             <span class="text-gray">tips：视频格式支持mp4，大小不能超过10MB</span>
-                                            <button id="add-video" class="btn btn-box-tool" type="button" style="margin-top: 3px; display: block">
+                                            <button id="add-video" class="btn btn-box-tool" type="button">
                                                 <i class="fa fa-plus text-blue">&nbsp;添加视频</i>
                                             </button>
                                         </div>
+                                        <!-- 文件 -->
                                         <div class="tab-pane" id="content_file">
                                             <button id="add-video" class="btn btn-box-tool" type="button" style="margin-top: 3px; display: block">
                                                 <i class="fa fa-plus text-blue">&nbsp;添加文件</i>
                                             </button>
                                         </div>
+                                        <!-- 卡片 -->
+                                        <div class="tab-pane" id="content_textcard">
+                                            <button id="add-textcard" class="btn btn-box-tool" type="button">
+                                                <i class="fa fa-plus text-blue">&nbsp;添加卡片</i>
+                                            </button>
+                                        </div>
+                                        <!-- 图文 -->
+                                        <div class="tab-pane" id="content_mpnews">
+                                            <button id="add-mpnews" class="btn btn-box-tool" type="button"
+                                                    style="margin-top: 3px;">
+                                                <i class="fa fa-plus text-blue">&nbsp;添加图文</i>
+                                            </button>
+                                        </div>
+                                        <!-- 短信 -->
                                         <div class="tab-pane" id="content_sms">
                                             <input id="content-sms-maxlength" type="hidden" value="{{ $messageMaxSize }}">
                                             {!! Form::textarea('content', null, [
@@ -193,6 +220,6 @@
         </div>
     </div>
 </div>
-@include('message.modal_imagetext')
+@include('message.modal_mpnews')
 @include('message.modal_video')
 

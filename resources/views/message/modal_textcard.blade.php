@@ -1,23 +1,24 @@
-<div class="modal fade" id="modal-video">
+<div class="modal fade" id="modal-textcard">
     {!! Form::open([
         'method' => 'post',
-        'id' => 'formVideo',
+        'id' => 'formTextcard',
         'data-parsley-validate' => 'true'
     ]) !!}
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title">添加视频</h4>
+                <h4 class="modal-title">添加卡片</h4>
             </div>
             <div class="modal-body">
-                <div class="form-horizontal" id="upload_video">
+                <div class="form-horizontal" id="create_textcard">
+                    <!-- 标题 -->
                     <div class="form-group">
-                        {!! Form::label('title', '标题', [
+                        {!! Form::label('textcard-title', '标题', [
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
                         <div class="col-sm-6">
-                            {!! Form::text('content_video', null, [
+                            {!! Form::text('textcard-title', null, [
                                 'class' => 'form-control',
                                 'placeholder' => '(请输入标题)',
                                 'required' => 'true',
@@ -26,31 +27,42 @@
                             ]) !!}
                         </div>
                     </div>
+                    <!-- 描述 -->
                     <div class="form-group">
-                        <label for="" class="col-sm-3"></label>
-                        <div class="col-sm-6">
-                            <span class="text-gray" style="display: block">
-                                tips：视频格式支持mp4，大小不能超过10MB
-                            </span>
-                            <a href="#" style="position: relative;">
-                                上传视频
-                                {!! Form::hidden('type') !!}
-                                {!! Form::file('file-video', [
-                                    'id' => 'file-video',
-                                    'accept' => 'video/*',
-                                    'class' => 'upload'
-                                ]) !!}
-                            </a>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        {!! Form::label('description', '描述', [
+                        {!! Form::label('textcard-description', '描述', [
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
                         <div class="col-sm-6">
-                            {!! Form::text('content_video', null, [
+                            {!! Form::textarea('description', null, [
+                                'required' => 'true',
+                                'maxlength' => 255,
                                 'class' => 'form-control',
-                                'placeholder' => '(选填)',
+                            ]) !!}
+                        </div>
+                    </div>
+                    <!-- URL -->
+                    <div class="form-group">
+                        {!! Form::label('textcard-url', '描述', [
+                            'class' => 'col-sm-3 control-label'
+                        ]) !!}
+                        <div class="col-sm-6">
+                            {!! Form::textarea('description', null, [
+                                'required' => 'true',
+                                'maxlength' => 255,
+                                'class' => 'form-control',
+                            ]) !!}
+                        </div>
+                    </div>
+                    <!-- 按钮文字 -->
+                    <div class="form-group">
+                        {!! Form::label('textcard-url', '描述', [
+                            'class' => 'col-sm-3 control-label'
+                        ]) !!}
+                        <div class="col-sm-6">
+                            {!! Form::textarea('description', null, [
+                                'required' => 'true',
+                                'maxlength' => 255,
+                                'class' => 'form-control',
                             ]) !!}
                         </div>
                     </div>

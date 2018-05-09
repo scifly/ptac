@@ -103,7 +103,7 @@
                         <div class="tea-head">
                             <span class="tea-select-list-icon">
                                 <span class="searchicon">
-                                    <a class="icon iconfont icon-search3 c-green open-popup" href="javascript:"
+                                    <a class="icon iconfont icon-search3 c-green open-popup" href="#"
                                        data-target="#search"></a>
                                 </span>
                             </span>
@@ -173,10 +173,11 @@
                     <div class="weui-search-bar__box">
                         <i class="weui-icon-search"></i>
                         <input type="search" class="weui-search-bar__input" id="searchInput" placeholder="请输入搜索内容" required="" />
-                        <a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
+
+                        <a href="#" class="weui-icon-clear" id="searchClear"></a>
                     </div>
                 </form>
-                <a href="javascript:" class="weui-search-bar__cancel-btn close-popup" id="searchCancel" style="display: block;">取消</a>
+                <a href="#" class="weui-search-bar__cancel-btn close-popup" id="searchCancel" style="display: block;">取消</a>
             </div>
             <div class="weui-tab__bd-item weui-tab__bd-item--active">
                 <div class="weui-tab__bd-item weui-tab__bd-item--active">

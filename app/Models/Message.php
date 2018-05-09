@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 /**
  * App\Models\Message
@@ -485,75 +486,65 @@ class Message extends Model {
     /**
      * 搜索（消息或发送对象）
      *
-     * @param MessageRequest $request
+     * @param null $departmentId
+     * @return array
+     * @throws Throwable
+     */
+    function search($departmentId = null) {
+        
+        if (!isset($departmentId)) {
+            if (Request::has('type')) {
+                $response = $this->searchMessage();
+            } else {
+                $response = $this->searchTarget();
+            }
+        } else {
+            $response = $this->subTargets($departmentId);
+        }
+
+        return $response;
+        
+    }
+    
+    /**
+     * 搜索已发货收到的消息
+     *
      * @return array
      */
-    function search(MessageRequest $request) {
-        
-        $response = [];
-        if ($request->has('type')) {
-            # 搜索已发或收到的消息
-            $user = Auth::user();
-            $keyword = $request->input('keyword');
-            $type = Request::get('type');
-            $response = ['type' => $type];
-            switch ($type) {
-                case 'sent':
-                    $sent = Message::whereSUserId($user->id)
-                        ->where('content', 'like', '%' . $keyword . '%')
-                        ->orWhere('title', 'like', '%' . $keyword . '%')
-                        ->get();
-                    if (sizeof($sent) != 0) {
-                        foreach ($sent as $s) {
-                            $s['user'] = User::find($s['r_user_id'])->realname;
-                        }
+    private function searchMessage() {
+    
+        # 搜索已发或收到的消息
+        $user = Auth::user();
+        $keyword = Request::input('keyword');
+        $type = Request::input('type');
+        $response = ['type' => $type];
+        switch ($type) {
+            case 'sent':
+                $sent = Message::whereSUserId($user->id)
+                    ->where('content', 'like', '%' . $keyword . '%')
+                    ->orWhere('title', 'like', '%' . $keyword . '%')
+                    ->get();
+                if (sizeof($sent) != 0) {
+                    foreach ($sent as $s) {
+                        $s['user'] = User::find($s['r_user_id'])->realname;
                     }
-                    $response['messages'] = $sent;
-                    break;
-                case 'received':
-                    $received = Message::whereRUserId($user->id)
-                        ->where('content', 'like', '%' . $keyword . '%')
-                        ->orWhere('title', 'like', '%' . $keyword . '%')
-                        ->get();
-                    if (sizeof($received) != 0) {
-                        foreach ($received as $r) {
-                            $r['user'] = User::find($r['user'])->realname;
-                        }
-                    }
-                    $response['messages'] = $received;
-                    break;
-                default:
-                    break;
-            }
-            
-            return $response;
-        } else {
-            # 搜索发送对象
-            $user = Auth::user();
-            $keyword = Request::get('keywords');
-            if (empty($keyword)) {
-                $educator = $user->educator;
-                $school = $educator->school;
-                $grades = Grade::whereIn('id', $this->gradeIds($school->id))->get();
-                $gradeDepts = Department::whereIn('id', $grades ? $grades->pluck('department_id')->toArray() : [])->get();
-                $classes = Squad::whereIn('id', $this->classIds($school->id))->get();
-                $classDepts = Department::whereIn('id', $classes ? $classes->pluck('department_id')->toArray() : [])->get();
-                $response = [
-                    'gradeDepts' => $gradeDepts,
-                    'classDepts' => $classDepts,
-                    'schoolDept' => Department::find($school->department_id),
-                    'users'      => [],
-                ];
-            }
-            if (!in_array($user->group->name, Constant::SUPER_ROLES)) {
-                $keyword = '%' . $keyword . '%';
-                $studentIds = $this->contactIds('student', $user, $user->educator->school_id);
-                $userIds = Student::whereIn('id', $studentIds)->get()->pluck('user_id')->toArray();
-                $users = User::whereIn('id', $userIds)->where('realname', 'like', $keyword)->get();
-                if ($users) {
-                    return response()->json(['statusCode' => HttpStatusCode::OK, 'user' => $users]);
                 }
-            }
+                $response['messages'] = $sent;
+                break;
+            case 'received':
+                $received = Message::whereRUserId($user->id)
+                    ->where('content', 'like', '%' . $keyword . '%')
+                    ->orWhere('title', 'like', '%' . $keyword . '%')
+                    ->get();
+                if (sizeof($received) != 0) {
+                    foreach ($received as $r) {
+                        $r['user'] = User::find($r['user'])->realname;
+                    }
+                }
+                $response['messages'] = $received;
+                break;
+            default:
+                break;
         }
         
         return $response;
@@ -561,14 +552,65 @@ class Message extends Model {
     }
     
     /**
-     * 初始化发送对象列表
+     * 搜索发送对象
      *
-     * @param $userId
      * @return array
      */
-    private function initLists($userId) {
-        
+    private function searchTarget() {
     
+        # 搜索发送对象
+        $user = Auth::user();
+        $response = [];
+        $keyword = Request::input('keyword');
+        if (empty($keyword)) {
+            $response = [
+                'gradeDepts' => (new Grade())->departments($user->id),
+                'classDepts' => (new Squad())->departments($user->id),
+                'schoolDept' => Department::find($user->educator->school->department_id),
+                'users'      => [],
+            ];
+        }
+        if (!in_array($user->group->name, Constant::SUPER_ROLES)) {
+            $keyword = '%' . $keyword . '%';
+            $studentIds = $this->contactIds('student', $user, $user->educator->school_id);
+            $userIds = Student::whereIn('id', $studentIds)->get()->pluck('user_id')->toArray();
+            $users = User::whereIn('id', $userIds)->where('realname', 'like', $keyword)->get();
+            $response = [
+                'users' => $users,
+            ];
+        }
+        
+        return $response;
+        
+    }
+    
+    /**
+     * 搜索指定部门包含的发送对象（部门或用户）
+     *
+     * @param $departmentId
+     * @return string
+     * @throws Throwable
+     */
+    private function subTargets($departmentId) {
+    
+        $user = Auth::user();
+        $department = Department::find($departmentId);
+        if ($department->department_type->name == '学校') {
+            $response = view('wechat.message_center.select', [
+                'gradeDepts' => (new Grade())->departments($user->id),
+                'classDepts' => (new Squad())->departments($user->id),
+                'users'    => Collect([]),
+            ])->render();
+        } else {
+            $users = $department->users;
+            $nextDepts = Department::where('parent_id', $departmentId)->get();
+            $response = view('wechat.message_center.select', [
+                'departments' => $nextDepts,
+                'users'       => $users,
+            ])->render();
+        }
+        
+        return $response;
         
     }
     

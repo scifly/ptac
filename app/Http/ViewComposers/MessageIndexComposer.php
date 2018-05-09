@@ -3,6 +3,7 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use App\Models\App;
+use App\Models\MessageType;
 use App\Models\School;
 use Illuminate\Contracts\View\View;
 
@@ -24,9 +25,9 @@ class MessageIndexComposer {
             'titles'         => ['#', '通信方式', '应用', '消息批次', '接收者', '类型', '发送于', '状态(发送/阅读)'],
             'apps'           => $apps,
             'messageMaxSize' => env('MESSAGE_MAX_SIZE'),
+            'messageTypes'   => MessageType::pluck('name', 'id')->toArray(),
             'uris'           => $this->uris(),
         ]);
-        
     }
     
 }

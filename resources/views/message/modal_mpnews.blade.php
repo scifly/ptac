@@ -12,13 +12,14 @@
             </div>
             <div class="modal-body">
                 <div class="form-horizontal" id="imagetext">
+                    <!-- 标题 -->
                     <div class="form-group">
                         {!! Form::label('title', '标题', [
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
                         <div class="col-sm-6">
                             {!! Form::text('content_image', null, [
-                                'class' => 'form-control imagetext-title',
+                                'class' => 'form-control',
                                 'placeholder' => '(请输入标题)',
                                 'required' => 'true',
                                 'data-parsley-length' => '[2,10]',
@@ -26,6 +27,7 @@
                             ]) !!}
                         </div>
                     </div>
+                    <!-- 正文 -->
                     <div class="form-group">
                         {!! Form::label('content', '正文', [
                             'class' => 'col-sm-3 control-label'
@@ -33,37 +35,44 @@
                         <div class="col-sm-6">
                             {!! Form::textarea('content', null, [
                                 'id' => 'content',
-                                'class' => 'form-control imagetext-content',
+                                'class' => 'form-control',
                                 'maxlength' => '666',
                             ]) !!}
                         </div>
                     </div>
+                    <!-- 原文链接 -->
                     <div class="form-group">
-                        <label for="" class="col-sm-3"></label>
+                        {!! Form::label('content_source_url', '原文链接', [
+                            'class' => 'col-sm-3 control-label'
+                        ]) !!}
                         <div class="col-sm-6">
-                            <!--<a href="#"><i class="fa fa-paperclip text-blue"></i>&nbsp;添加附件</a>-->
-                            <a href="#" id="insert-url"><i class="fa fa-link text-blue"></i>&nbsp;添加原文链接</a>
-                            {!! Form::text('content_image', null, [
-                                'class' => 'form-control imagetext-content_source_url',
-                                'placeholder' => '(原文链接)',
-                                'style' => 'display:none',
+                            {!! Form::text('content_source_url', null, [
+                                'id' => 'content_source_url',
+                                'class' => 'form-control',
+                                'placeholder' => '请在此插入原文链接地址（可选）',
+                                'maxlength' => '255',
                             ]) !!}
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="" class="col-sm-3"></label>
                         <div class="col-sm-6">
-                            <button id="add-image" class="btn btn-box-tool" type="button"
-                                    style="margin-top: 3px; position: relative; border: 0;">
+                            <button id="add-mpnews-image" class="btn btn-box-tool add-btn" type="button">
                                 <i class="fa fa-plus text-blue">
                                     &nbsp;添加图片
-                                    <input type="hidden" value="image" name="type"/>
-                                    <input type="file" id="file-image" onchange="uploadFile(this)"
-                                           name="uploadFile" accept="image/*"
-                                           style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
+                                    {!! Form::hidden('type') !!}
+                                    {!! Form::file('file-mpnews-image', [
+                                        'id' => 'file-mpnews-image',
+                                        'accept' => 'image/*',
+                                        'class' => 'upload'
+                                    ]) !!}
                                 </i>
                             </button>
-                            <input type="file" id="cover-image" name="cover-image" onchange="uploadCover(this)" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>
+                            {!! Form::file('cover-image', [
+                                'id' => 'cover-image',
+                                'accept' => 'image/*',
+                                'class' => 'upload',
+                            ]) !!}
                         </div>
                     </div>
                     <div class="form-group">
@@ -73,7 +82,7 @@
                         <div class="col-sm-6">
                             {!! Form::text('content_image', null, [
                                 'class' => 'form-control imagetext-author',
-                                'placeholder' => '(选填)',
+                                'placeholder' => '(可选)',
                             ]) !!}
                         </div>
                     </div>

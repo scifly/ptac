@@ -1,588 +1,517 @@
-var token = $('#csrf_token').attr('content');
-choose_item();
-getdept();
-var msg_type = $('#type');
-msg_type.select({
-    title: "选择类型",
-    items: [
-        {title: "文本", value: "text"},
-        {title: "卡片", value: "textcard"},
-        {title: "图文", value: "mpnews"},
-        {title: "图片", value: "image"},
-        {title: "视频", value: "video"},
-        {title: "短信", value: "sms"}
-    ]
-});
+var token = $('#csrf_token').attr('content'),
+    $msgType = $('#msg-type'),
+    $search = $('#search'),
+    $send = $('#send'),
+    $notification = $('#notification'),
 
-msg_type.change(function () {
-    var type = $(this).attr('data-values');
+    $extra = $('.extra'),   // 消息的附加属性(文件、url、图片、语音等)
+    $titleContainer = $('#title-container'),
+    $title = $('#title'),
+    $contentContainer = $('#content-container'),
+    $content = $('#content'),
+    $uploadContainer = $('#upload-container'),
+    $upload = $('#upload'),
+    $uploadTitle = $('#upload-title'),
+    $urlContainer = $('#url-container'),
+    $url = $('#url'),
+
+    $targetsContainer = $('#targets-container'),
+    $targetCheck = $('.target-check'),
+    $checkAll = $('#check-all'),
+    $confirm = $('#confirm'),
+    $chosenResults = $('#chosen-results'),
+
+    allowedTypes = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'], // 允许上传的图片类型
+    maxSize = 1024 * 1024,  // 1024KB，也就是 1MB
+    maxWidth = 300, // 图片最大宽度
+    maxCount = 6,  // 最大上传图片数量
+    tmp = 1,
+    title = $title.val(),
+    content = '',
+    mediaIds = [],
+    wechatMediaId = '';
+
+// 初始化发送对象选择事件
+$(document).on('change', '.target-check', function () {
+    var $this = $(this).parents('.weui-check__label'),
+        id = $this.attr('data-item'),
+        type = $this.attr('data-type'),
+        html = '';
+
+    if ($(this).is(':checked')) {
+        var imgSrc = $this.find('img').attr('src');
+        html += chosenHtml(id, type, imgSrc);
+        $chosenResults.prepend(html);
+    } else {
+        $chosenResults.find('#' + type + '-' + id).remove();
+        $targetsContainer.removeClass('air-checkall');
+        $checkAll.prop('checked', false);
+        removeTarget();
+    }
+    countTargets();
+});
+getDept();
+expand();
+// $(".ma_expect_date").datetimePicker();
+
+// 初始化移除发送对象的事件
+$(document).on('click', '.js-chosen-results-item', function () {
+    removeTarget();
+});
+// 初始化上传封面事件
+$(document).on('change', '#mpnews-media-id', function() {
+    uploadCover();
+});
+// 初始化开启评论的事件
+$(".weui-switch").on('change', function () {
+    $('.hw-time').slideToggle('fast');
+});
+$(".js-chosen-breadcrumb-ol li").off('click').click(function () {
+    getDept(this)
+});
+// 初始化选择微信消息类型的事件
+$msgType.on('change', function () {
+    var type = $(this).val();
     $('.js-content-item input').val('');
-    $('#emojiInput').html('');
+    $content.html('');
     switch (type) {
         case 'text':
-            //文本
-            $('.js-content-item').hide();
-            $('.js-content').show();
-            break;
-        case 'textcard':
-            //卡片
-            $('.js-content-item').hide();
-            $('.js-content').show();
-            $('.js-upload-img').show();
-            break;
-        case 'mpnews':
-            //图文
-            $('.js-content-item').hide();
-            $('.js-title').show();
-            $('.js-content').show();
-            $('.js-upload-img').hide();
-            $('.js-content_source_url').show();
-            $('.js-author').show();
-            $('.js-mpnews-cover').show();
+            $titleContainer.hide();
+            $extra.hide();
+            $contentContainer.show();
             break;
         case 'image':
-            //图片
-            $('.js-content-item').hide();
-            $('.js-image').show();
+            $extra.hide();
+            $titleContainer.hide();
+            $contentContainer.hide();
+            $uploadContainer.show();
+            $upload.attr('accept', 'image/*');
+            $uploadTitle.text('上传图片');
             break;
         case 'voice':
-            //音频
+            $extra.hide();
+            $titleContainer.hide();
+            $contentContainer.hide();
+            $uploadContainer.show();
+            $upload.attr('accept', 'audio/*');
+            $uploadTitle.text('上传语音');
             break;
         case 'video':
-            //视频
-            $('.js-content-item').hide();
-            $('.js-title').show();
-            $('.js-video').show();
-            $('.js-uploadvideo').show();
-            $('.js-description').show();
+            $extra.hide();
+            $title.attr('placeholder', '视频标题');
+            $content.attr('placeholder', '视频描述');
+            $uploadTitle.text('上传视频');
+            $upload.attr('accept', 'video/*');
+            $titleContainer.show();     // title
+            $contentContainer.show();   // description
+            $uploadContainer.show();    // media_id
+            break;
+        case 'file':
+            $extra.hide();
+            $titleContainer.hide();
+            $contentContainer.hide();
+            $uploadContainer.show();
+            $upload.attr('accept', '*');
+            $uploadTitle.text('上传文件');
+            break;
+        case 'textcard':
+            $extra.hide();
+            $url.attr('placeholder', '链接地址');
+            $titleContainer.show();     // title
+            $contentContainer.show();   // description
+            $urlContainer.show();       // url
+            break;
+        case 'mpnews':
+            $extra.hide();
+            $url.attr('placeholder', '原文链接');
+            $title.attr('placeholder', '标题');
+            $content.attr('placeholder', '');
+            $uploadTitle.text('上传图片');
+            $titleContainer.show();     // title
+            $contentContainer.show();   // content
+            $uploadContainer.show();    // media_ids
             break;
         case 'sms':
-            //短信
-            $('.js-content-item').hide();
-            $('.js-title').hide();
-            $('.js-content').show();
+            $extra.hide();
+            $titleContainer.hide();
+            $contentContainer.show();
+            break;
+        default:
             break;
     }
-
 });
-
-
-$(".ma_expect_date").datetimePicker();
-
-$('.js-search-input').bind("input propertychange change", function (event) {
-    var keyword = $(this).val();
-    if (keyword === '') {
-        $.ajax({
-            type: 'POST',
-            dataType: 'json',
-            url: 'create',
-            data: {
-                keyword: keyword,
-                _token: $('#csrf_token').attr('content')
-            },
-            success: function (result) {
-                var str = '';
-                console.log(result);
-                // 年级列表
-                if (result.graLists.length > 0 || result.claLists.length > 0 ) {
-
-                    for (var i = 0; i < result.graLists.length; i++) {
-                        var graLists = result.graLists[i];
-                        str += '<div class="air-choose-item" style="position: relative;">' +
-                            '<label class="weui-cell weui-check__label" id="group-' + graLists.id + '" data-item="' + graLists.id + '" data-uid="' + graLists.id + '" data-type="group">' +
-                            '<div class="weui-cell__hd">' +
-                            '<input type="checkbox" class="weui-check choose-item-btn" name="checkbox" >' +
-                            '<i class="weui-icon-checked"></i>' +
-                            '</div>' +
-                            '<div class="weui-cell__bd">' +
-                            '<img src="img/department.png" style="border-radius: 0;" class="js-go-detail lazy" width="75" height="75">' +
-                            '<span class="contacts-text">' + graLists.name + '</span>' +
-                            '</div>' +
-                            '</label>' +
-                            '<a class="icon iconfont icon-jiantouyou show-group" style="position:absolute;top: 0;right:0;height: 55px;line-height:55px;z-index: 1;width: 30px;"></a>' +
-                            '</div>';
-                    }
-
-                    // 班级列表
-
-                    for (var k = 0; k < result.claLists.length; k++) {
-                        var claLists = result.claLists[k];
-                        str += '<div class="air-choose-item" style="position: relative;">' +
-                            '<label class="weui-cell weui-check__label" id="group-' + claLists.id + '" data-item="' + claLists.id + '" data-uid="' + claLists.id + '" data-type="group">' +
-                            '<div class="weui-cell__hd">' +
-                            '<input type="checkbox" class="weui-check choose-item-btn" name="checkbox" >' +
-                            '<i class="weui-icon-checked"></i>' +
-                            '</div>' +
-                            '<div class="weui-cell__bd">' +
-                            '<img src="img/department.png" style="border-radius: 0;" class="js-go-detail lazy" width="75" height="75">' +
-                            '<span class="contacts-text">' + claLists.name + '</span>' +
-                            '</div>' +
-                            '</label>' +
-                            '<a class="icon iconfont icon-jiantouyou show-group" style="position:absolute;top: 0;right:0;height: 55px;line-height:55px;z-index: 1;width: 30px;"></a>' +
-                            '</div>';
-                    }
-
-                    $('.air-choose-group').html(str);
-                    choose_item();
-                    show_group();
-
-                }
-
+// 初始化搜索发送对象的事件
+$search.on("input propertychange change", function () {
+    var keyword = $(this).val(), i, html = '',
+        departments = function (html, result) {
+            for (i = 0; i < result['gradeDepts'].length; i++) {
+                html += targetHtml(result['gradeDepts'][i], 'department');
             }
+            for (i = 0; i < result['classDepts'].length; i++) {
+                html += targetHtml(result['classDepts'][i], 'department');
+            }
+            expand();
+        },
+        users = function (html, result) {
+            for (i = 0; i < result['users'].length; i++) {
+                html += targetHtml(result['users'][i]);
+            }
+        };
 
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: '../create',
+        data: { keyword: keyword, _token: token },
+        success: function (result) {
+            keyword === '' ? departments(html, result) : users(html, result);
+        }
+    });
+    $targetsContainer.html(html);
+});
+// 初始化确认选定发送对象的事件
+$confirm.on('click', function () {
+    var html = $chosenResults.html();
+    $chosenResults.html(html);
+    $.closePopup();
+});
+// 初始化选择所有发送对象的事件
+$checkAll.on('change', function () {
+    if ($(this).is(':checked')) {
+        var html = '';
+
+        $targetCheck.prop('checked', true);
+        $('.js-chosen-items .weui-check__label').each(function (i, target) {
+            var $target = $(target),
+                type = $target.attr('data-type'),
+                id = $target.attr('data-item'),
+                imgSrc = $target.find('img').attr('src');
+
+            html += chosenHtml(id, type, imgSrc);
         });
-        // $('.js-choose-items .weui-check__label').show();
-        // $('.js-choose-breadcrumb-li').text('全部');
+        $chosenResults.html(html);
+        removeTarget();
+        $targetsContainer.addClass('air-checkall');
+        countTargets();
     } else {
-        // $('.js-choose-items .air-choose-item').html('');
-        $.ajax({
-            type: 'post',
-            dataType: 'json',
-            url: 'message_create',
-            data: {keywords: keywords, _token: $('#csrf_token').attr('content')},
-            success: function ($data) {
-                if ($data.user.length > 0) {
-                    for (var i = 0; i < $data.user.length; i++) {
-                        var data = $data.user[i];
-                        var str = '<div class="air-choose-item" style="position: relative;"><label class="weui-cell weui-check__label" id="person-' + data.id + '" data-item="' + data.id + '" data-uid="' + data.id + '" data-type="person">' +
-                            '<div class="weui-cell__hd">' +
-                            '<input type="checkbox" class="weui-check choose-item-btn" name="checkbox">' +
-                            '<i class="weui-icon-checked"></i>' +
-                            '</div>' +
-                            '<div class="weui-cell__bd">' +
-                            '<img src="img/personal.png" class="js-go-detail lazy" width="75" height="75">' +
-                            '<span class="contacts-text">' + data.realname + '</span>' +
-                            '</div>' +
-                            '</label></div>';
-                    }
-                    $('.air-choose-group').html(str);
-                    choose_item();
-                } else {
-                    $('.js-choose-items .air-choose-item').html('');
-                }
-            }
-        });
-        // $('.js-choose-breadcrumb-li').text('搜索结果');
-        // $('.js-choose-items .weui-check__label').hide();
-        // $('.js-choose-items .weui-check__label').each(function () {
-        //     var uname = $(this).find('.contacts-text').text();
-        //     if (uname.indexOf(keywords) >= 0) {
-        //         $(this).show();
-        //     }
-        // });
+        $targetCheck.prop('checked', false);
+        $chosenResults.html('');
+        $targetsContainer.removeClass('air-checkall');
+        countTargets();
     }
 });
-show_group();
+// 初始化上传文件的事件
+$upload.on('change', function (event) {
+    var files = event.target.files;
 
-function show_group() {
-    $('.show-group').click(function () {
-        //展示下一个分组
+    // 如果没有选中文件，直接返回
+    if (files.length === 0) {
+        return false;
+    }
+
+    for (var i = 0, len = files.length; i < len; i++) {
+        var file = files[i],
+            reader = new FileReader();
+
+        // 如果类型不在允许的类型范围内
+        if (allowedTypes.indexOf(file.type) === -1) {
+            $.alert({text: '该类型不允许上传'});
+            continue;
+        }
+        if (file.size > maxSize) {
+            $.alert({text: '图片太大，不允许上传'});
+            continue;
+        }
+        if ($('.weui_uploader_file').length >= maxCount) {
+            $.alert({text: '最多只能上传' + maxCount + '张图片'});
+            return;
+        }
+        reader.onload = function (e) {
+            var img = new Image();
+            img.onload = function () {
+                // 不要超出最大宽度
+                var w = Math.min(maxWidth, img.width);
+                // 高度按比例计算
+                var h = img.height * (w / img.width);
+                var canvas = document.createElement('canvas');
+                var ctx = canvas.getContext('2d');
+                // 设置 canvas 的宽度和高度
+                canvas.width = w;
+                canvas.height = h;
+                ctx.drawImage(img, 0, 0, w, h);
+                var base64 = canvas.toDataURL('image/png');
+
+                // console.log(base64);
+                var html = '<img class="uploadimg-item" src="' + base64 + '" id="uploadimg-' + tmp + '" style="width: 300px;height: 187px">';
+                $content.append(html);
+                // 然后假装在上传，可以post base64格式，也可以构造blob对象上传，也可以用微信JSSDK上传
+            };
+            img.src = e.target['result'];
+        };
+        reader.readAsDataURL(file);
+    }
+    $.ajax({
+        url: '../message_upload',
+        type: 'POST',
+        data: {
+            file: $('#upload-file')[0].files[0],
+            _token: token
+        },
+        success: function (result) {
+            if (result.statusCode === 200) {
+                $('#uploadimg-' + tmp).attr('data-media-id', result.message.id);
+                $('#uploadimg-' + tmp).attr('src', 'http://weixin.028lk.com/' + result.message.path);
+            }
+        }
+    });
+    tmp++;
+});
+// 初始化上传视频的事件
+$upload.on('change', function () {
+    $notification.show();
+    var $this = $(this);
+    var formData = new FormData();
+    formData.append('file', $('#upload_video')[0].files[0]);
+    formData.append('_token', token);
+    formData.append('type', $msgType.val());
+    $.ajax({
+        url: "../message_upload",
+        data: formData,
+        type: 'POST',
+        dataType: 'json',
+        contentType: false,
+        processData: false,
+        cache: false,
+        success: function (result) {
+            $('#notification').hide();
+            if (result.statusCode === 1) {
+                var html = '<video class="video-id" id="' + result.data.id + '" src="' + 'http://weixin.028lk.com/' + result.data.path + '" controls="controls" style="height: 200px; width: 300px"></video>' +
+                    '<input id="video_media_id" name="video_media_id" value="' + result.data.media_id + '" hidden>';
+                $this.parent().parent().html(html);
+            } else {
+                $.alert('上传失败，请稍后重新尝试！')
+            }
+        }
+    });
+});
+// 初始化上传图片的事件
+$uploadImage.on('change', function () {
+    $('#notification').show();
+    var $this = $(this);
+    var formData = new FormData();
+    formData.append('file', $('#upload_image')[0].files[0]);
+    formData.append('_token', token);
+    formData.append('type', $msgType.val());
+    $.ajax({
+        url: "../message_upload",
+        data: formData,
+        type: 'POST',
+        dataType: 'json',
+        contentType: false,
+        processData: false,
+        cache: false,
+        success: function (result) {
+            $('#notification').hide();
+            if (result.statusCode === 1) {
+                var html = '<img class="img-id" id="' + result.data.id + '" src="' + 'http://weixin.028lk.com/' + result.data.path + '" style="height: 200px; width: 300px">' +
+                    '<input id="image_media_id" name="image_media_id" value="' + result.data.media_id + '" hidden>';
+                $this.parent().parent().html(html);
+            } else {
+                $.alert('上传失败，请稍后重新尝试！')
+            }
+        }
+    });
+});
+
+// 初始化提交消息发送请求的事件
+$send.on('click', function () {
+    content = $content.html();
+    var departmentIds = [],
+        userIds = [],
+        type = $msgType.val();
+
+    switch (type) {
+        case 'video':
+            content = $('#description-video').val();
+            wechatMediaId = $('#video_media_id').val();
+            mediaIds.push($('.video-id').attr('id'));
+            if (mediaIds.length === 0 || !content) {
+                $.alert('视频/描述不得为空');
+                return false;
+            }
+            break;
+        case 'image':
+            content = '0';
+            wechatMediaId = $('#image_media_id').val();
+            mediaIds.push($('.img-id').attr('id'));
+            if (mediaIds.length === 0) {
+                $.alert('请上传图片');
+                return false;
+            }
+            break;
+        case 'mpnews':
+            wechatMediaId = $('#mpnews_media_id').attr('data-content-id');
+            break;
+        case 'sms':
+            title = '短信消息';
+            break;
+        default:
+            break;
+    }
+    $('.uploadimg-item').each(function () {
+        mediaIds.push($(this).attr('data-media-id'));
+    });
+    $chosenResults.find('a.department').each(function () {
+        departmentIds.push($(this).attr('data-uid'));
+    });
+    $chosenResults.find('a.user').each(function () {
+        userIds.push($(this).attr('data-uid'));
+    });
+    if (
+        (userIds.length === 0) && (departmentIds.length === 0) ||
+        !title || !content
+    ) {
+        $.alert('发送对象/标题/内容不得为空');
+        return false;
+    }
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        data: {
+            _token: token,
+            title: title,
+            content: content,
+            department_ids: departmentIds,
+            user_ids: userIds,
+            media_ids: mediaIds,
+            type: type,
+            mediaid: wechatMediaId,
+        },
+        url: 'store',
+        success: function (result) {
+            $.alert(result.message, function () {
+                window.location.href = '../message_center';
+            });
+        }
+    });
+});
+function expand() {
+    $(document).on('click', '.targets', function () {
+        // 展示下一个分组
         $(this).unbind("click");
-        var id = $(this).prev().attr('data-uid');
-        var name = $(this).prev().find('span').html();
-        var choose_box = $('.air-choose-group');
-        var choose_dept = $('.js-choose-breadcrumb-ol');
-        var html =
-            '<li data-id="' + id + '" class="js-choose-breadcrumb-li headclick"><a>>' + name + '</a></li>';
+        var id = $(this).prev().attr('data-uid'),
+            name = $(this).prev().find('span').html(),
+            chosen_dept = $('.js-chosen-breadcrumb-ol'),
+            html = '<li data-id="' + id + '" class="js-chosen-breadcrumb-li headclick"><a>' + name + '</a></li>';
         $.ajax({
             type: 'GET',
             data: {},
             url: 'message_dept/' + id,
             success: function (result) {
                 if (result.statusCode === 200) {
-
-                    choose_box.html(result.message);
-                    choose_dept.append(html);
-                    show_group();
-                    choose_item();
-                    remove_choose_result();
-                    getdept();
+                    $targetsContainer.html(result.message);
+                    chosen_dept.append(html);
+                    expand();
+                    removeTarget();
+                    getDept();
                 } else {
-                    choose_box.empty();
+                    $targetsContainer.empty();
                 }
             }
         });
     });
 }
+function countTargets() {
+    var departments = $('#chosen-results .js-chosen-results-item.department').length,
+        users = $('#chosen-results .js-chosen-results-item.user').length;
 
-$('#choose-btn-ok').click(function () {
-    var html = $('.js-choose-header-result').html();
-    $('#homeWorkChoose').html(html);
-    $.closePopup();
-});
+    $('#count').text('已选' + departments + '个分组,' + users + '名用户');
+}
+function removeTarget() {
+    var id = $(this).attr('data-list'),
+        type = $(this).attr('data-type');
+    $(this).remove();
+    $('#' + type + '-' + id).find('.target-check').prop('checked', false);
+    countTargets();
+}
+function getDept(obj) {
+    var id = $(obj).attr("data-id");
 
-function choose_item() {
-    $(".choose-item-btn").change(function () {
-        var $this = $(this).parents('.weui-check__label');
-        var num = $this.attr('data-item');
-        var type = $this.attr('data-type');
-        if ($(this).is(':checked')) {
-            var imgsrc = $this.find('img').attr('src');
-            var uid = $this.attr('data-uid');
-            var html = '';
-            if (type === 'group') {
-                html = '<a class="choose-results-item js-choose-results-item choose-item-type-group" id="group-' + num + '" data-list="' + num + '" data-uid="' + uid + '" data-type="' + type + '">' +
-                    '<img src="' + imgsrc + '">' +
-                    '</a>';
+    $(this).nextAll().remove();
+    $.ajax({
+        type: 'GET',
+        url: 'message_dept/' + id,
+        success: function (result) {
+            if (result.statusCode === 200) {
+                $targetsContainer.html(result.message);
+                expand();
+                removeTarget();
+                getDept();
             } else {
-                html = '<a class="choose-results-item js-choose-results-item choose-item-type-person" id="person-' + num + '" data-list="' + num + '" data-uid="' + uid + '" data-type="' + type + '">' +
-                    '<img src="' + imgsrc + '" style="border-radius:50%">' +
-                    '</a>';
+                $targetsContainer.empty();
             }
-
-            $('.js-choose-header-result').prepend(html);
-
-            remove_choose_result();
-            count_result();
-        } else {
-            $('.js-choose-header-result').find('#' + type + '-' + num).remove();
-            $('.air-choose-group').removeClass('air-checkall');
-            $('#checkall').prop('checked', false);
-            count_result();
         }
     });
 }
+function chosenHtml(id, type, imgSrc) {
+    var targetId = (type === 'department' ? 'id="department-' : 'id="user-') + id,
+        imgStyle = (type === 'department' ? '' : '" style="border-radius: 50%;');
 
-
-$('#checkall').change(function () {
-    if ($(this).is(':checked')) {
-        $('.choose-item-btn').prop('checked', true);
-        var html = '';
-        $('.js-choose-items .weui-check__label').each(function (i, vo) {
-            var type = $(vo).attr('data-type');
-            var num = $(vo).attr('data-item');
-            var uid = $(vo).attr('data-uid');
-            var imgsrc = $(vo).find('img').attr('src');
-            if (type === 'group') {
-                html += '<a class="choose-results-item js-choose-results-item choose-item-type-group" id="group-' + num + '" data-list="' + num + '" data-uid="' + uid + '" data-type="' + type + '">' +
-                    '<img src="' + imgsrc + '">' +
-                    '</a>';
-            } else {
-                html += '<a class="choose-results-item js-choose-results-item choose-item-type-person" id="person-' + num + '" data-list="' + num + '" data-uid="' + uid + '" data-type="' + type + '">' +
-                    '<img src="' + imgsrc + '" style="border-radius:50%">' +
-                    '</a>';
-            }
-        });
-        $('.js-choose-header-result').html(html);
-        remove_choose_result();
-        $('.air-choose-group').addClass('air-checkall');
-        count_result();
-    } else {
-        $('.choose-item-btn').prop('checked', false);
-        $('.js-choose-header-result').html('');
-        $('.air-choose-group').removeClass('air-checkall');
-        count_result();
-    }
-});
-
-function count_result() {
-    var grouptotal = $('.js-choose-header-result .js-choose-results-item.choose-item-type-group').length;
-    var persontotal = $('.js-choose-header-result .js-choose-results-item.choose-item-type-person').length;
-    $('.js-choose-num').text('已选' + grouptotal + '个分组,' + persontotal + '名用户');
+    return '<a class="chosen-results-item js-chosen-results-item ' + type + '" ' +
+            targetId + '" data-list="' + id + '" data-uid="' + id + '" ' +
+            'data-type="' + type + '">' +
+            '<img src="' + imgSrc + imgStyle + '">' +
+        '</a>';
 }
+function targetHtml(target, type) {
+    var imgSrc = (type === 'department' ? 'img/department.png' : 'img/personal.png'),
+        name = (type === 'department' ? target['name'] : target['realname']),
+        imgStyle = (type === 'department' ? ' style="border-radius: 0;"' : ''),
+        id = target['id'];
 
-function remove_choose_result() {
-    $('.js-choose-results-item').click(function () {
-        var num = $(this).attr('data-list');
-        var type = $(this).attr('data-type');
-        $(this).remove();
-        $('#' + type + '-' + num).find('.choose-item-btn').prop('checked', false);
-        count_result();
-    });
+    return '<div style="position: relative;">' +
+        '<label class="weui-cell weui-check__label" id="' + type + '-' + id +
+            '" data-item="' + id + '" data-uid="' + id + '" data-type="' + type + '">' +
+            '<div class="weui-cell__hd">' +
+                '<input type="checkbox" class="weui-check target-check" name="targets[]" >' +
+                '<i class="weui-icon-checked"></i>' +
+            '</div>' +
+            '<div class="weui-cell__bd">' +
+                '<img src="' + imgSrc + '"' + imgStyle + ' class="js-go-detail lazy" width="75" height="75">' +
+                '<span class="contacts-text">' + name + '</span>' +
+            '</div>' +
+        '</label>' +
+        (type === 'department' ? '<a class="icon iconfont icon-jiantouyou show-group targets"></a>' : '') +
+        '</div>';
 }
-
-$(".weui-switch").change(function () {
-    if ($(this).is(':checked')) {
-        $('.hw-time').slideToggle('fast');
-    } else {
-        $('.hw-time').slideToggle('fast');
-    }
-});
-
-function upload_cover() {
-    $('#upload-wait').show();
-    var formData = new FormData();
-    formData.append('file', $('#upload_mpnews')[0].files[0]);
-    formData.append('_token', token);
-    formData.append('type', msg_type.attr('data-values'));
+function uploadCover() {
+    $notification.show();
     $.ajax({
         url: '../message_upload',
         type: 'POST',
         cache: false,
-        data: formData,
-        processData: false,
-        contentType: false,
+        data: {
+            file:  $uploadMpnews[0].files[0],
+            _token: token,
+            type: $msgType.val()
+        },
         success: function (result) {
-            $('#upload-wait').hide();
+            $notification.hide();
             if (result.statusCode === 1) {
-                var html = '<img class="uploadimg-item upload_mpnews" id="' + result.data.id + '" src="http://weixin.028lk.com/' + result.data.path + '"  style="width: 100%" data-id="' + result.data.id + '">' +
-                    '<input id="mpnews_media_id" name="mpnews_media_id" onchange="uploadCover()" data-content-id="' + result.data.media_id + '" class="weui-uploader__input upload_mpnews" type="file" accept="image/*" multiple="" >';
-                $('#cover').html(html);
+                var html =
+                    '<img class="uploadimg-item upload_mpnews" id="' + result.data.id + '" ' +
+                    'src="http://weixin.028lk.com/' + result.data.path + '"  ' +
+                    'style="width: 100%" data-id="' + result.data.id +
+                    '">' +
+                    '<input id="mpnews-media-id" name="mpnews-media-id" ' +
+                    'data-content-id="' + result.data.media_id + '" ' +
+                    'class="weui-uploader__input" type="file" ' +
+                    'accept="image/*" multiple="" ' +
+                    '>';
+                $cover.html(html);
             } else {
                 $.alert('上传失败，请稍后重新尝试！')
             }
         }
-    });
-
-}
-
-
-$(function () {
-    // 允许上传的图片类型
-    var allowTypes = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'];
-    // 1024KB，也就是 1MB
-    var maxSize = 1024 * 1024;
-    // 图片最大宽度
-    var maxWidth = 300;
-    // 最大上传图片数量
-    var maxCount = 6;
-    var tmp = 1;
-    $('.js_file').on('change', function (event) {
-        var files = event.target.files;
-
-        // 如果没有选中文件，直接返回
-        if (files.length === 0) {
-            return;
-        }
-
-        for (var i = 0, len = files.length; i < len; i++) {
-            var file = files[i];
-            var reader = new FileReader();
-
-            // 如果类型不在允许的类型范围内
-            if (allowTypes.indexOf(file.type) === -1) {
-                $.alert({text: '该类型不允许上传'});
-                continue;
-            }
-
-            if (file.size > maxSize) {
-                $.alert({text: '图片太大，不允许上传'});
-                continue;
-            }
-
-            if ($('.weui_uploader_file').length >= maxCount) {
-                $.alert({text: '最多只能上传' + maxCount + '张图片'});
-                return;
-            }
-
-            reader.onload = function (e) {
-                var img = new Image();
-                img.onload = function () {
-                    // 不要超出最大宽度
-                    var w = Math.min(maxWidth, img.width);
-                    // 高度按比例计算
-                    var h = img.height * (w / img.width);
-                    var canvas = document.createElement('canvas');
-                    var ctx = canvas.getContext('2d');
-                    // 设置 canvas 的宽度和高度
-                    canvas.width = w;
-                    canvas.height = h;
-                    ctx.drawImage(img, 0, 0, w, h);
-                    var base64 = canvas.toDataURL('image/png');
-
-                    // console.log(base64);
-                    var html = '<img class="uploadimg-item" src="' + base64 + '" id="uploadimg-' + tmp + '" style="width: 300px;height: 187px">';
-                    $('#emojiInput').append(html);
-                    // 然后假装在上传，可以post base64格式，也可以构造blob对象上传，也可以用微信JSSDK上传
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-        var formData = new FormData();
-        formData.append('file', $('#uploaderInput')[0].files[0]);
-        formData.append('_token', token);
-        $.ajax({
-            url: '../message_upload',
-            type: 'POST',
-            cache: false,
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (result) {
-                if (result.statusCode === 200) {
-                    $('#uploadimg-' + tmp).attr('data-media-id', result.message.id);
-                    $('#uploadimg-' + tmp).attr('src', 'http://weixin.028lk.com/' + result.message.path);
-                }
-            }
-        });
-        tmp++;
-    });
-
-    $("#upload_video").change(function () {
-        $('#upload-wait').show();
-        var $this = $(this);
-        var formData = new FormData();
-        formData.append('file', $('#upload_video')[0].files[0]);
-        formData.append('_token', token);
-        formData.append('type', msg_type.attr('data-values'));
-        $.ajax({
-            url: "../message_upload",
-            data: formData,
-            type: 'POST',
-            dataType: 'json',
-            contentType: false,
-            processData: false,
-            cache: false,
-            success: function (result) {
-                $('#upload-wait').hide();
-                if (result.statusCode === 1) {
-                    var html = '<video class="video-id" id="' + result.data.id + '" src="' + 'http://weixin.028lk.com/' + result.data.path + '" controls="controls" style="height: 200px; width: 300px"></video>' +
-                        '<input id="video_media_id" name="video_media_id" value="' + result.data.media_id + '" hidden>';
-                    $this.parent().parent().html(html);
-                } else {
-                    $.alert('上传失败，请稍后重新尝试！')
-                }
-            }
-        });
-    });
-
-    $('#upload_image').change(function () {
-        $('#upload-wait').show();
-        var $this = $(this);
-        var formData = new FormData();
-        formData.append('file', $('#upload_image')[0].files[0]);
-        formData.append('_token', token);
-        formData.append('type', msg_type.attr('data-values'));
-        $.ajax({
-            url: "../message_upload",
-            data: formData,
-            type: 'POST',
-            dataType: 'json',
-            contentType: false,
-            processData: false,
-            cache: false,
-            success: function (result) {
-                $('#upload-wait').hide();
-                if (result.statusCode === 1) {
-                    var html = '<img class="img-id" id="' + result.data.id + '" src="' + 'http://weixin.028lk.com/' + result.data.path + '" style="height: 200px; width: 300px">' +
-                        '<input id="image_media_id" name="image_media_id" value="' + result.data.media_id + '" hidden>';
-                    $this.parent().parent().html(html);
-                } else {
-                    $.alert('上传失败，请稍后重新尝试！')
-                }
-            }
-        });
-    });
-
-
-    var title = '';
-    var content = '';
-    var media_ids = [];
-    var wechat_media_id = '';
-    // var time = '';
-    $('.release').on('click', function () {
-        media_ids = [];
-        title = $('#title').val();
-        content = $('#emojiInput').html();
-        // time = $('#time').val();
-        var department_ids = [];
-        var user_ids = [];
-        var choose = $('#homeWorkChoose');
-        var type = msg_type.attr('data-values');
-
-        if (type === 'video') {
-            content = $('#description-video').val();
-            wechat_media_id = $('#video_media_id').val();
-            media_ids.push($('.video-id').attr('id'));
-            if (media_ids.length === 0) {
-                $.alert('亲，还没有上传视频！');
-                return;
-            }
-            if (!content) {
-                $.alert('亲，请填写描述！');
-                return;
-            }
-        }
-        if (type === 'image') {
-            content = '0';
-            wechat_media_id = $('#image_media_id').val();
-            media_ids.push($('.img-id').attr('id'));
-            if (media_ids.length === 0) {
-                $.alert('亲，还没有上传图片！');
-                return;
-            }
-        }
-        if (type === 'mpnews') {
-            wechat_media_id = $('#mpnews_media_id').attr('data-content-id');
-        }
-
-        if (type === 'sms') {
-            title = '短信信息';
-        }
-
-        $('.uploadimg-item').each(function () {
-            media_ids.push($(this).attr('data-media-id'));
-        });
-
-        choose.find('a.choose-item-type-group').each(function () {
-            department_ids.push($(this).attr('data-uid'));
-        });
-        choose.find('a.choose-item-type-person').each(function () {
-            user_ids.push($(this).attr('data-uid'));
-        });
-        //前端验证
-        if ((user_ids.length === 0) && (department_ids.length === 0)) {
-            $.alert('发送对象不能为空');
-            return false;
-        }
-        if (!title) {
-            $.alert('标题不能为空');
-            return false;
-        }
-        if (!content) {
-            $.alert('发送内容不能为空');
-            return false;
-        }
-        $.ajax({
-            type: 'POST',
-            data: {
-                '_token': token,
-                'title': title,
-                'content': content,
-                //'time': time,
-                'department_ids': department_ids,
-                'user_ids': user_ids,
-                'media_ids': media_ids,
-                'type': type,
-                'mediaid': wechat_media_id
-            },
-            url: '../message_store',
-            success: function (result) {
-                if (result.statusCode === 200) {
-                    $.alert('消息发送成功！', function () {
-                        window.location.href = '../message_center';
-                    });
-                } else {
-                    $.alert('消息发送失败，请稍后重试！');
-                }
-            }
-        });
-
-    });
-});
-
-function getdept() {
-    $(".js-choose-breadcrumb-ol li").off('click').click(function () {
-        var id = $(this).attr("data-id");
-        // var name = $(this).find('a').html();
-        var choose_box = $('.air-choose-group');
-        $(this).nextAll().remove();
-        $.ajax({
-            type: 'GET',
-            url: 'message_dept/' + id,
-            success: function (result) {
-                if (result.statusCode === 200) {
-                    choose_box.html(result.message);
-                    show_group();
-                    choose_item();
-                    remove_choose_result();
-                    getdept();
-                } else {
-                    choose_box.empty();
-                }
-            }
-        });
-
     });
 }

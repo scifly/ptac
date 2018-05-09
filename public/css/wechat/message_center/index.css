@@ -190,7 +190,11 @@ div.weui_tab_bd {
     z-index: 0;
 }
 .worktime .info-status {
-    position: absolute;bottom: 30px;right: 0;pointer-events: none;padding: 0 10px;
+    position: absolute;
+    bottom: 30px;
+    right: 0;
+    pointer-events: none;
+    padding: 0 10px;
 }
 .worktime .info-status.green {
     color: green;
@@ -243,4 +247,5 @@ div.weui_tab_bd {
     border-radius: 50%;
     background-color:red !important;color: #fff;
 }
+
 
