@@ -377,10 +377,9 @@
 
             // 部门及联系人列表
             contact: function (uri, type) {
-                var $selectedDepartmentIds = $('#selected-node-ids');
-                // 获取 后台传过来的 已选择的部门 input 数组
-                var selectedNodes = $selectedDepartmentIds.val();
-                var selectedDepartmentIds = selectedNodes.split(',');
+                var $selectedDepartmentIds = $('#selected-node-ids'),
+                    selectedNodes = $selectedDepartmentIds.val(),
+                    selectedDepartmentIds = typeof selectedNodes !== 'undefined' ? selectedNodes.split(',') : [];
 
                 $('.box-footer').hide();
                 $('.form-main').hide();
