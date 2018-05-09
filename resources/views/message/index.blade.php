@@ -123,17 +123,16 @@
                                         </div>
                                         <!-- 图片 -->
                                         <div class="tab-pane" id="content_image">
-                                            <button id="add-image" class="btn btn-box-tool add-btn" type="button">
-                                                <i class="fa fa-plus text-blue">
-                                                    &nbsp;添加图片
-                                                    {!! Form::hidden('type') !!}
-                                                    {!! Form::file('file-image', [
-                                                        'id' => 'file-image',
-                                                        'accept' => 'image/*',
-                                                        'class' => 'upload'
-                                                    ]) !!}
-                                                </i>
-                                            </button>
+                                            <i class="fa fa-plus text-blue"></i>&nbsp;添加图片
+                                            {!! Form::hidden('type') !!}
+                                            {!! Form::file('file-image', [
+                                                'id' => 'file-image',
+                                                'accept' => 'image/*',
+                                                'class' => 'upload'
+                                            ]) !!}
+                                            {{--<button id="add-image" class="btn btn-box-tool add-btn" type="button">--}}
+                                                {{----}}
+                                            {{--</button>--}}
                                         </div>
                                         <!-- 语音 -->
                                         <div class="tab-pane" id="content_voice">
