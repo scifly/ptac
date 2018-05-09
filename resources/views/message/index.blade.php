@@ -123,13 +123,13 @@
                                         </div>
                                         <!-- 图片 -->
                                         <div class="tab-pane" id="content_image">
-                                            {!! Form::label('file-image', '<i class="fa fa-cloud-upload"></i> 上传图片', [
-                                                'class' => 'custom-file-upload'
-                                            ]) !!}
+                                            <label for="file-image" class="custom-file-upload">
+                                                <i class="fa fa-cloud-upload"></i> 上传图片
+                                            </label>
                                             {!! Form::file('file-image', [
                                                 'id' => 'file-image',
                                                 'accept' => 'image/*',
-                                                'class' => 'upload'
+                                                /*'class' => 'upload'*/
                                             ]) !!}
                                         </div>
                                         <!-- 语音 -->
