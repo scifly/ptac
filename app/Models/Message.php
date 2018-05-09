@@ -449,7 +449,7 @@ class Message extends Model {
         # 上传到本地后台
         $media = new Media();
         $result = [];
-        $file = Request::file('uploadFile');
+        $file = Request::file('file');
         abort_if(
             empty($file),
             HttpStatusCode::NOT_ACCEPTABLE,

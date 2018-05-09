@@ -272,15 +272,14 @@
             onConfirmImportClick: function (table) {
                 $('#confirm-import').off('click').on('click', function () {
                     page.inform("导入通讯录", '正在导入中...', page.info);
-                    var formData = new FormData();
-                    formData.append('file', $('#fileupload')[0].files[0]);
-                    formData.append('_token', $('#csrf_token').attr('content'));
                     $.ajax({
-                        url: '../' + table + '/import',
                         type: 'POST',
-                        data: formData,
-                        contentType: false,
-                        processData: false,
+                        dataType: 'json',
+                        url: '../' + table + '/import',
+                        data: {
+                            file: $('#fileupload')[0].files[0],
+                            _token: contact.token()
+                        },
                         success: function (result) {
                             page.inform(
                                 '导入通讯录', result.message,

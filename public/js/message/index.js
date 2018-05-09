@@ -1,19 +1,4 @@
 //# sourceURL=index.js
-// 初始化select2
-page.initSelect2([{
-    option: {
-        templateResult: page.formatStateImg,
-        templateSelection: page.formatStateImg
-    },
-    id: 'app_ids'
-}]);
-// 初始化"已发送"datatable
-page.initDatatable('messages', [
-    {className: 'text-center', targets: [1, 2, 3, 4, 5, 6]}
-]);
-// 加载消息中心css
-page.loadCss('css/message/message.css');
-
 var title,
     token = $('#csrf_token').attr('content'),
     $message = $('#message'),
@@ -36,6 +21,9 @@ var title,
     $videoDescription = $('#video-description'),
     $fileVideo = $('#file-video'),
 
+    // 文件
+    $fileFile = $('#file-file'),
+
     // 卡片
     $textcardTitle = $('#textcard-title'),
     $textcardDescription = $('#textcard-description'),
@@ -43,8 +31,8 @@ var title,
     $textcardBtntxt = $('#textcard-btntxt'),
 
     // 图文
-    $modalMpnews = $('#modal-mpnews'),
     $addMpnews = $('#add-mpnews'),
+    $modalMpnews = $('#modal-mpnews'),
     $mpnewsTitle = $('#mpnews-title'),
     $mpnewsContent = $('#mpnews-content'),
     $fileMpnewsImage = $('#file-mpnews-image'),
@@ -52,11 +40,6 @@ var title,
     $mpnewsAutho = $('#mpnews-author'),
     $saveMpnews = $('#save-mpnews'),
     $coverImage = $('#cover-image'),
-
-    // 视频
-    $video = $('#modal_video'),
-    $addVideo = $('#add-video'),
-    $saveVideo = $('#save-video'),
 
     // 短信
     smsMaxlength = $('#content-sms-maxlength').val(),
@@ -67,6 +50,22 @@ var title,
 
     // 发送按钮
     $send = $('#send');
+
+// 初始化select2
+page.initSelect2([{
+    option: {
+        templateResult: page.formatStateImg,
+        templateSelection: page.formatStateImg
+    },
+    id: 'app_ids'
+}]);
+// 初始化"已发送"datatable
+page.initDatatable('messages', [
+    {className: 'text-center', targets: [1, 2, 3, 4, 5, 6]}
+]);
+
+// 加载消息中心css
+page.loadCss('css/message/message.css');
 
 /** 发送对象 ---------------------------------------------------------------------------------------------------------- */
 // 选择发送对象
@@ -84,17 +83,24 @@ $(document).on('click', '#cancel .close-targets', function () {
     $targets.hide();
 });
 
+/** 图片 ------------------------------------------------------------------------------------------------------------- */
+$fileImage.on('change', function () { upload(this, 'image')});
+
+/** 语音 ------------------------------------------------------------------------------------------------------------- */
+$fileVoice.on('change', function () { upload(this, 'voice')});
+
+/** 视频 ------------------------------------------------------------------------------------------------------------- */
+$fileVideo.on('change', function () { upload(this, 'video')});
+
+/** 文件 ------------------------------------------------------------------------------------------------------------- */
+$fileFile.on('change', function () { upload(this, 'file')});
+
 /** 图文 ------------------------------------------------------------------------------------------------------------- */
+// 上传图片
+$fileMpnewsImage.on('change', function () { upload(this, 'image'); });
 // 添加图文
-$addMpnews.on('click', function () {
-    $('#modal-imagetext').modal({backdrop: true});
-});
-// 添加图文 - 插入原文链接
-$insertUrl.on('click', function () {
-    $(this).next().slideToggle('fast');
-    $(this).next().val('');
-});
-// 添加图文 - 保存图文
+$addMpnews.on('click', function () { $modalMpnews.modal({backdrop: true}); });
+// 保存图文
 $saveMpnews.on('click', function () {
     var $imageTextTitle = $('.imagetext-title'),
         $cover = $('#cover'),
@@ -138,47 +144,6 @@ $saveMpnews.on('click', function () {
         $message.hide();
         $modalMpnews.show();
     });
-});
-
-/** 视频 ------------------------------------------------------------------------------------------------------------- */
-// 添加视频
-$addVideo.on('click', function () {
-    $('#modal-video').modal({ backdrop: true});
-});
-// 保存视频
-$saveVideo.on('click', function () {
-    var title = $('.video-title').val(),
-        $fileVideo = $('#filevideo'),
-        videoId = null,
-        videoUrl = $fileVideo.find('video').attr("src");
-
-    if (title === '') {
-        page.inform('添加视频', '请输入标题', page.failure);
-        return false;
-    }
-    if (!videoUrl) {
-        page.inform('添加视频', '请上传视频', page.failure);
-        return false;
-    } else {
-        videoId = $fileVideo.find('.changefile input').eq(0).val();
-    }
-    var description = $('.imagetext-description').val();
-    var html =
-        '<div class="showVideo">' +
-        '<div class="show_video_title">' + title + '</div>' +
-        '<video controls="controls" class="show_video_main" src="' + videoUrl + '"></video>' +
-        '<div class="show_video_description">' + description + '</div>' +
-        '<input type="hidden" class="show_video_media_id" value="' + videoId + '">' +
-        '</div>';
-    $('.tab-pane.active#content_video').html(html);
-    $message.show();
-    $fileVideo.find('video')[0].pause();
-    // 显示视频
-    $('.showVideo').click(function () {
-        $message.hide();
-        $video.show();
-        $('.tab-pane.active#content_video video')[0].pause();
-    })
 });
 
 /** 短信 ------------------------------------------------------------------------------------------------------------- */
@@ -278,17 +243,11 @@ $send.on('click', function () {
 
 /** Helper functions ------------------------------------------------------------------------------------------------ */
 // 上传文件
-function upload(obj) {
-    var $this = $(obj),
-        type = $this.prev().val(),
-        $fileType = $(`#file-${type}`),
-        ext = $fileType[0].files[0].name.split('.'),
-        error = function (message) {
-            page.inform('上传文件', message, page.failure);
-            return false;
-        };
+function upload(file, type) {
+    var $this = $(file),
+        filename = $this[0].files[0].name.split('.'),
+        ext = filename[filename.length - 1].toUpperCase();
 
-    ext = ext[ext.length - 1].toUpperCase();
     switch (type) {
         case 'image':
             if (ext !== 'JPG' && ext !== 'PNG') {
@@ -304,7 +263,7 @@ function upload(obj) {
             if (ext !== 'MP4') {
                 error('请上传MP4格式的视频');
             } else {
-                if ($('#file-' + type)[0].files[0].size > 10485760) {
+                if ($this[0].files[0].size > 10485760) {
                     error('请上传10MB以内的视频');
                 }
             }
@@ -321,7 +280,7 @@ function upload(obj) {
         url: page.siteRoot() + "messages/index",
         type: 'POST',
         data: {
-            uploadFile: $fileType[0].files[0],
+            file: $this[0].files[0],
             _token: token,
             type: type
         },
@@ -488,4 +447,9 @@ function removeCover() {
             '</form>';
         $('#cover').html(html);
     });
+}
+
+function error(message) {
+    page.inform('上传文件', message, page.failure);
+    return false;
 }
