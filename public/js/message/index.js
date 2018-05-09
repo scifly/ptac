@@ -277,8 +277,9 @@ function upload(file, type) {
     $('.overlay').show();
     //请求接口
     $.ajax({
-        url: page.siteRoot() + "messages/index",
         type: 'POST',
+        dataType: 'json',
+        url: page.siteRoot() + "messages/index",
         data: {
             file: $this[0].files[0],
             _token: token,
