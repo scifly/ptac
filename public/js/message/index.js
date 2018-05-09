@@ -280,7 +280,7 @@ function upload(file, type) {
         dataType: 'json',
         url: page.siteRoot() + "messages/index",
         data: {
-            _file: file,
+            uploadFile: file,
             _token: token,
             type: type
         },
