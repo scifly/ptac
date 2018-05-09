@@ -474,7 +474,7 @@ class Message extends Model {
         $fileInfo = [
             'filename' => $uploadedFile['filename'],
             'content-type' => 'image/jpg',
-            'filelength' => filesize($uploadedFile['path'])
+            'filelength' => $file->getSize()
         ];
         $message = json_decode(
             Wechat::uploadMedia(
