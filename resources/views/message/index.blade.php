@@ -123,16 +123,14 @@
                                         </div>
                                         <!-- 图片 -->
                                         <div class="tab-pane" id="content_image">
-                                            <i class="fa fa-plus text-blue">&nbsp;添加图片</i>
-                                            {!! Form::hidden('type') !!}
+                                            {!! Form::label('file-image', '<i class="fa fa-cloud-upload"></i> 上传图片', [
+                                                'class' => 'custom-file-upload'
+                                            ]) !!}
                                             {!! Form::file('file-image', [
                                                 'id' => 'file-image',
                                                 'accept' => 'image/*',
-                                                /*'class' => 'upload'*/
+                                                'class' => 'upload'
                                             ]) !!}
-                                            {{--<button id="add-image" class="btn btn-box-tool add-btn" type="button">--}}
-                                                {{----}}
-                                            {{--</button>--}}
                                         </div>
                                         <!-- 语音 -->
                                         <div class="tab-pane" id="content_voice">
@@ -143,7 +141,7 @@
                                                     {!! Form::file('file-voice', [
                                                         'id' => 'file-voice',
                                                         'accept' => 'audio/*',
-                                                        /*'class' => 'upload'*/
+                                                        'class' => 'upload'
                                                     ]) !!}
                                                 </i>
                                             </button>
