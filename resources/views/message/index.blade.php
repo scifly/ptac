@@ -154,8 +154,8 @@
                                                 'class' => 'form-control',
                                                 'placeholder' => '请在此添加视频描述(选填)',
                                             ]) !!}
-                                            <label for="file-voice" class="custom-file-upload">
-                                                <i class="fa fa-cloud-upload text-blue"></i> 上传视频
+                                            <label for="file-voice" class="custom-file-upload text-blue">
+                                                <i class="fa fa-cloud-upload"></i> 上传视频
                                             </label>
                                             {!! Form::file('file-video', [
                                                 'id' => 'file-video',
