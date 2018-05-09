@@ -27,8 +27,7 @@
             <div class="tab-content">
                 <div class="tab-pane active" id="tab01">
                     @include('message.targets')
-                    <div class="overlay"
-                         style="display: none; position: fixed; top: 0;left: 0; width: 100%; height: 100%;">
+                    <div class="overlay" style="display: none; position: fixed; top: 0;left: 0; width: 100%; height: 100%;">
                         <i class="fa fa-refresh fa-spin" style=""></i>
                     </div>
                     <div class="form-horizontal form-main" id="message">
@@ -93,7 +92,7 @@
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="#content_video" data-toggle="tab" class="tab">
+                                            <a href="#content_file" data-toggle="tab" class="tab">
                                                 <i class="fa fa-file-movie-o"></i>&nbsp;文件
                                             </a>
                                         </li>
@@ -116,9 +115,8 @@
                                     <div class="tab-content" id="message-content">
                                         <!-- 文本 -->
                                         <div class="active tab-pane" id="content_text">
-                                            {!! Form::textarea('content', null, [
-                                                'id' => 'content',
-                                                'name' => 'content',
+                                            {!! Form::textarea('text-content', null, [
+                                                'id' => 'text-content',
                                                 'placeholder' => '（请在此输入文本消息内容）',
                                                 'class' => 'form-control text-blue',
                                             ]) !!}
@@ -160,7 +158,7 @@
                                         </div>
                                         <!-- 文件 -->
                                         <div class="tab-pane" id="content_file">
-                                            <button id="add-video" class="btn btn-box-tool" type="button" style="margin-top: 3px; display: block">
+                                            <button id="add-file" class="btn btn-box-tool" type="button" style="margin-top: 3px; display: block">
                                                 <i class="fa fa-plus text-blue">&nbsp;添加文件</i>
                                             </button>
                                         </div>
@@ -180,8 +178,8 @@
                                         <!-- 短信 -->
                                         <div class="tab-pane" id="content_sms">
                                             <input id="content-sms-maxlength" type="hidden" value="{{ $messageMaxSize }}">
-                                            {!! Form::textarea('content', null, [
-                                                'id' => 'content-sms',
+                                            {!! Form::textarea('sms-content', null, [
+                                                'id' => 'sms-content',
                                                 'class' => 'form-control text-blue',
                                             ]) !!}
                                             <span id="content-sms-length" style="color: #777;margin-top: 10px;display: inline-block;"></span>
