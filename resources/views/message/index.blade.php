@@ -143,31 +143,25 @@
                                         </div>
                                         <!-- 视频 -->
                                         <div class="tab-pane" id="content_video">
-                                            <div class="form-group">
-                                                {!! Form::text('content_video', null, [
-                                                    'class' => 'form-control',
-                                                    'placeholder' => '(请输入标题)',
-                                                    'required' => 'true',
-                                                    'data-parsley-length' => '[2,10]',
-                                                    'maxlength' => '128',
-                                                ]) !!}
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="file-voice" class="custom-file-upload">
-                                                    <i class="fa fa-cloud-upload text-blue"></i> 上传视频
-                                                </label>
-                                                {!! Form::file('file-video', [
-                                                    'id' => 'file-video',
-                                                    'accept' => 'audio/*',
-                                                ]) !!}
-                                                <p class="help-block">tips：视频格式支持mp4，大小不能超过10MB</p>
-                                            </div>
-                                            <div class="form-group">
-                                                {!! Form::text('content_video', null, [
-                                                    'class' => 'form-control',
-                                                    'placeholder' => '请在此添加视频描述(选填)',
-                                                ]) !!}
-                                            </div>
+                                            {!! Form::text('content_video', null, [
+                                                'class' => 'form-control',
+                                                'placeholder' => '(请输入标题)',
+                                                'required' => 'true',
+                                                'data-parsley-length' => '[2,10]',
+                                                'maxlength' => '128',
+                                            ]) !!}
+                                            <label for="file-voice" class="custom-file-upload">
+                                                <i class="fa fa-cloud-upload text-blue"></i> 上传视频
+                                            </label>
+                                            {!! Form::file('file-video', [
+                                                'id' => 'file-video',
+                                                'accept' => 'audio/*',
+                                            ]) !!}
+                                            <p class="help-block">tips：视频格式支持mp4，大小不能超过10MB</p>
+                                            {!! Form::text('content_video', null, [
+                                                'class' => 'form-control',
+                                                'placeholder' => '请在此添加视频描述(选填)',
+                                            ]) !!}
                                         </div>
                                         <!-- 文件 -->
                                         <div class="tab-pane" id="content_file">
