@@ -468,7 +468,7 @@ class Message extends Model {
         if ($token['errcode']) {
             abort(
                 HttpStatusCode::INTERNAL_SERVER_ERROR,
-                $token['errmsg'] 
+                $token['errmsg']
             );
         }
         $message = json_decode(
