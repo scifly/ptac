@@ -123,7 +123,7 @@
                                         </div>
                                         <!-- 图片 -->
                                         <div class="tab-pane" id="content_image">
-                                            <i class="fa fa-plus text-blue"></i>&nbsp;添加图片
+                                            <i class="fa fa-plus text-blue">&nbsp;添加图片</i>
                                             {!! Form::hidden('type') !!}
                                             {!! Form::file('file-image', [
                                                 'id' => 'file-image',
@@ -143,7 +143,7 @@
                                                     {!! Form::file('file-voice', [
                                                         'id' => 'file-voice',
                                                         'accept' => 'audio/*',
-                                                        'class' => 'upload'
+                                                        /*'class' => 'upload'*/
                                                     ]) !!}
                                                 </i>
                                             </button>
