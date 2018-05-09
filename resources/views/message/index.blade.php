@@ -119,34 +119,30 @@
                                                 'id' => 'text-content',
                                                 'placeholder' => '（请在此输入文本消息内容）',
                                                 'class' => 'form-control text-blue',
+                                                'title' => '消息内容'
                                             ]) !!}
                                         </div>
                                         <!-- 图片 -->
                                         <div class="tab-pane" id="content_image">
-                                            <label for="file-image" class="custom-file-upload text-blue">
-                                                <i class="fa fa-cloud-upload"></i> 上传图片
-                                            </label>
-                                            {!! Form::file('file-image', [
+                                            @include('message.file_upload', [
                                                 'id' => 'file-image',
-                                                'accept' => 'image/*',
-                                            ]) !!}
+                                                'label' => '上传图片',
+                                                'accept' => 'image/*'
+                                            ])
                                         </div>
                                         <!-- 语音 -->
                                         <div class="tab-pane" id="content_voice">
-                                            <label for="file-voice" class="custom-file-upload text-blue">
-                                                <i class="fa fa-cloud-upload"></i> 上传语音
-                                            </label>
-                                            {!! Form::file('file-voice', [
+                                            @include('message.file_upload', [
                                                 'id' => 'file-voice',
-                                                'accept' => 'audio/*',
-                                            ]) !!}
+                                                'label' => '上传语音',
+                                                'accept' => 'audio/*'
+                                            ])
                                         </div>
                                         <!-- 视频 -->
                                         <div class="tab-pane" id="content_video">
                                             {!! Form::text('video-title', null, [
                                                 'class' => 'form-control',
                                                 'placeholder' => '请在此输入视频标题',
-                                                'required' => 'true',
                                                 'data-parsley-length' => '[2,10]',
                                                 'maxlength' => '128',
                                             ]) !!}
@@ -154,14 +150,12 @@
                                                 'class' => 'form-control',
                                                 'placeholder' => '请在此添加视频描述(选填)',
                                             ]) !!}
-                                            <label for="file-voice" class="custom-file-upload text-blue">
-                                                <i class="fa fa-cloud-upload"></i> 上传视频
-                                            </label>
-                                            {!! Form::file('file-video', [
+                                            @include('message.file_upload', [
                                                 'id' => 'file-video',
-                                                'accept' => 'audio/*',
-                                            ]) !!}
-                                            <p class="help-block">tips：视频格式支持mp4，大小不能超过10MB</p>
+                                                'label' => '上传视频',
+                                                'accept' => 'video/mp4',
+                                                'note' => 'tips：视频格式支持mp4，大小不能超过10MB'
+                                            ])
                                         </div>
                                         <!-- 文件 -->
                                         <div class="tab-pane" id="content_file">
@@ -178,7 +172,6 @@
                                             {!! Form::text('textcard-title', null, [
                                                 'class' => 'form-control',
                                                 'placeholder' => '请在此输入卡片标题',
-                                                'required' => 'true',
                                                 'title' => '卡片标题',
                                                 'data-parsley-length' => '[2,10]',
                                                 'maxlength' => '128',
@@ -186,13 +179,11 @@
                                             {!! Form::textarea('textcard-description', null, [
                                                 'class' => 'form-control',
                                                 'placeholder' => '请在此添加卡片描述',
-                                                'required' => 'true',
                                                 'title' => '卡片描述'
                                             ]) !!}
                                             {!! Form::text('textcard-url', null, [
                                                 'class' => 'form-control',
                                                 'placeholder' => '请在此输入卡片链接地址',
-                                                'required' => 'true',
                                                 'title' => '链接地址'
                                             ]) !!}
                                             {!! Form::text('textcard-btntext', '详情', [
@@ -251,5 +242,3 @@
     </div>
 </div>
 @include('message.modal_mpnews')
-@include('message.modal_video')
-
