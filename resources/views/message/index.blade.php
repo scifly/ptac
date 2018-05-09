@@ -123,8 +123,8 @@
                                         </div>
                                         <!-- 图片 -->
                                         <div class="tab-pane" id="content_image">
-                                            <label for="file-image" class="custom-file-upload">
-                                                <i class="fa fa-cloud-upload text-blue"></i> 上传图片
+                                            <label for="file-image" class="custom-file-upload text-blue">
+                                                <i class="fa fa-cloud-upload"></i> 上传图片
                                             </label>
                                             {!! Form::file('file-image', [
                                                 'id' => 'file-image',
@@ -133,8 +133,8 @@
                                         </div>
                                         <!-- 语音 -->
                                         <div class="tab-pane" id="content_voice">
-                                            <label for="file-voice" class="custom-file-upload">
-                                                <i class="fa fa-cloud-upload text-blue"></i> 上传语音
+                                            <label for="file-voice" class="custom-file-upload text-blue">
+                                                <i class="fa fa-cloud-upload"></i> 上传语音
                                             </label>
                                             {!! Form::file('file-voice', [
                                                 'id' => 'file-voice',
@@ -179,21 +179,25 @@
                                                 'class' => 'form-control',
                                                 'placeholder' => '请在此输入卡片标题',
                                                 'required' => 'true',
+                                                'title' => '卡片标题',
                                                 'data-parsley-length' => '[2,10]',
                                                 'maxlength' => '128',
                                             ]) !!}
                                             {!! Form::textarea('textcard-description', null, [
                                                 'class' => 'form-control',
                                                 'placeholder' => '请在此添加卡片描述',
-                                                'required' => 'true'
+                                                'required' => 'true',
+                                                'title' => '卡片描述'
                                             ]) !!}
                                             {!! Form::text('textcard-url', null, [
                                                 'class' => 'form-control',
                                                 'placeholder' => '请在此输入卡片链接地址',
-                                                'required' => 'true'
+                                                'required' => 'true',
+                                                'title' => '链接地址'
                                             ]) !!}
                                             {!! Form::text('textcard-btntext', '详情', [
                                                 'class' => 'form-control',
+                                                'title' => '卡片按钮名称'
                                             ]) !!}
                                         </div>
                                         <!-- 图文 -->
