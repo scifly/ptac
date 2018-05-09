@@ -465,11 +465,12 @@ class Message extends Model {
         # 上传到企业号后台
         list($corpid, $secret) = $this->tokenParams();
         $token = Wechat::getAccessToken($corpid, $secret);
-        abort_if(
-            $token['errcode'] > 0,
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            $token['errmsg']
-        );
+        if ($token['errcode']) {
+            abort(
+                HttpStatusCode::INTERNAL_SERVER_ERROR,
+                $token['errmsg'] 
+            );
+        }
         $message = json_decode(
             Wechat::uploadMedia(
                 $token['access_token'],
