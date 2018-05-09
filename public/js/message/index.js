@@ -274,15 +274,13 @@ function upload(file, type) {
     page.inform(title, '文件上传中...', page.info);
     var $messageContent = $('#message-content');
     $('.overlay').show();
+    var data = new FormData();
+    data.append('file', file).append('_token', token).append('type', type);
     //请求接口
     $.ajax({
         type: 'POST',
         url: page.siteRoot() + "messages/index",
-        data: {
-            file: file,
-            _token: token,
-            type: type
-        },
+        data: data,
         contentType: false,
         processData: false,
         success: function (result) {
