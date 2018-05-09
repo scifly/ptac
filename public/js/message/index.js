@@ -251,17 +251,17 @@ function upload(file, type) {
     switch (type) {
         case 'image':
             if (ext !== 'JPG' && ext !== 'PNG') {
-                error('请上传JPG或PNG格式的图片');
+                warning('请上传JPG或PNG格式的图片');
             }
             break;
         case 'voice':// 上传语音文件仅支持AMR格式
             if (ext !== 'AMR') {
-                error('请上传AMR格式的文件');
+                warning('请上传AMR格式的文件');
             }
             break;
         case 'video':// 上传视频文件仅支持MP4格式
             if (ext !== 'MP4') {
-                error('请上传MP4格式的视频');
+                warning('请上传MP4格式的视频');
             } else {
                 if ($this[0].files[0].size > 10485760) {
                     error('请上传10MB以内的视频');
@@ -281,7 +281,7 @@ function upload(file, type) {
         dataType: 'json',
         url: page.siteRoot() + "messages/index",
         data: {
-            uploadFile: $this[0].files[0],
+            file: $this[0].files[0],
             _token: token,
             type: type
         },
@@ -408,7 +408,7 @@ function uploadCover() {
         url: page.siteRoot() + "messages/index",
         type: 'POST',
         data: {
-            _token: $token.attr('content'),
+            _token: token,
             uploadFile: $coverImage[0].files[0],
             type: 'image'
         },
@@ -450,7 +450,7 @@ function removeCover() {
     });
 }
 
-function error(message) {
+function warning(message) {
     page.inform('上传文件', message, page.failure);
     return false;
 }
