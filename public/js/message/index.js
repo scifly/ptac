@@ -84,16 +84,16 @@ $(document).on('click', '#cancel .close-targets', function () {
 });
 
 /** 图片 ------------------------------------------------------------------------------------------------------------- */
-$fileImage.on('change', function () { upload(this, 'image')});
+$fileImage.on('change', function () { upload($fileImage[0].files[0], 'image')});
 
 /** 语音 ------------------------------------------------------------------------------------------------------------- */
-$fileVoice.on('change', function () { upload(this, 'voice')});
+$fileVoice.on('change', function () { upload($fileVoice[0].files[0], 'voice')});
 
 /** 视频 ------------------------------------------------------------------------------------------------------------- */
-$fileVideo.on('change', function () { upload(this, 'video')});
+$fileVideo.on('change', function () { upload($fileVideo[0].files[0], 'video')});
 
 /** 文件 ------------------------------------------------------------------------------------------------------------- */
-$fileFile.on('change', function () { upload(this, 'file')});
+$fileFile.on('change', function () { upload($fileFile[0].files[0], 'file')});
 
 /** 图文 ------------------------------------------------------------------------------------------------------------- */
 // 上传图片
@@ -244,8 +244,7 @@ $send.on('click', function () {
 /** Helper functions ------------------------------------------------------------------------------------------------ */
 // 上传文件
 function upload(file, type) {
-    var $this = $(file),
-        filename = $this[0].files[0].name.split('.'),
+    var filename = file.name.split('.'),
         ext = filename[filename.length - 1].toUpperCase();
 
     switch (type) {
@@ -263,7 +262,7 @@ function upload(file, type) {
             if (ext !== 'MP4') {
                 warning('请上传MP4格式的视频');
             } else {
-                if ($this[0].files[0].size > 10485760) {
+                if (file.size > 10485760) {
                     warning('请上传10MB以内的视频');
                 }
             }
@@ -281,7 +280,7 @@ function upload(file, type) {
         dataType: 'json',
         url: page.siteRoot() + "messages/index",
         data: {
-            file: $this[0].files[0],
+            file: file,
             _token: token,
             type: type
         },
