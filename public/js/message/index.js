@@ -275,7 +275,7 @@ function upload(file, type) {
     var $messageContent = $('#message-content');
     $('.overlay').show();
     var data = new FormData();
-    data.append('file', file);
+    data.append('uploadFile', file);
     data.append('_token', token);
     data.append('type', type);
     //请求接口
