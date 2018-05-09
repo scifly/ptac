@@ -466,7 +466,7 @@ class Message extends Model {
         list($corpid, $secret) = $this->tokenParams();
         $token = Wechat::getAccessToken($corpid, $secret);
         abort_if(
-            $token['errcode'],
+            $token['errcode'] > 0,
             HttpStatusCode::INTERNAL_SERVER_ERROR,
             $token['errmsg']
         );
