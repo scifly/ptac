@@ -464,9 +464,15 @@ class Message extends Model {
         $result['message'] = '上传成功！';
         # 上传到企业号后台
         list($corpid, $secret) = $this->tokenParams();
+        $token = Wechat::getAccessToken($corpid, $secret);
+        abort_if(
+            $token['errcode'],
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            $token['errmsg']
+        );
         $message = json_decode(
             Wechat::uploadMedia(
-                Wechat::getAccessToken($corpid, $secret),
+                $token['access_token'],
                 Request::input('type'),
                 ['media' => curl_file_create($uploadedFile['path'])]
             )
