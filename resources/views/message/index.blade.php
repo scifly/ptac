@@ -165,15 +165,36 @@
                                         </div>
                                         <!-- 文件 -->
                                         <div class="tab-pane" id="content_file">
-                                            <button id="add-file" class="btn btn-box-tool" type="button" style="margin-top: 3px; display: block">
-                                                <i class="fa fa-plus text-blue">&nbsp;添加文件</i>
-                                            </button>
+                                            <label for="file-voice" class="custom-file-upload text-blue">
+                                                <i class="fa fa-cloud-upload"></i> 上传文件
+                                            </label>
+                                            {!! Form::file('file-file', [
+                                                'id' => 'file-file',
+                                                'accept' => '*',
+                                            ]) !!}
                                         </div>
                                         <!-- 卡片 -->
                                         <div class="tab-pane" id="content_textcard">
-                                            <button id="add-textcard" class="btn btn-box-tool" type="button">
-                                                <i class="fa fa-plus text-blue">&nbsp;添加卡片</i>
-                                            </button>
+                                            {!! Form::text('textcard-title', null, [
+                                                'class' => 'form-control',
+                                                'placeholder' => '请在此输入卡片标题',
+                                                'required' => 'true',
+                                                'data-parsley-length' => '[2,10]',
+                                                'maxlength' => '128',
+                                            ]) !!}
+                                            {!! Form::textarea('textcard-description', null, [
+                                                'class' => 'form-control',
+                                                'placeholder' => '请在此添加卡片描述',
+                                                'required' => 'true'
+                                            ]) !!}
+                                            {!! Form::text('textcard-url', null, [
+                                                'class' => 'form-control',
+                                                'placeholder' => '请在此输入卡片链接地址',
+                                                'required' => 'true'
+                                            ]) !!}
+                                            {!! Form::text('textcard-btntext', '详情', [
+                                                'class' => 'form-control',
+                                            ]) !!}
                                         </div>
                                         <!-- 图文 -->
                                         <div class="tab-pane" id="content_mpnews">
