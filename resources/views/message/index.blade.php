@@ -141,7 +141,7 @@
                                                     {!! Form::file('file-voice', [
                                                         'id' => 'file-voice',
                                                         'accept' => 'audio/*',
-                                                        'class' => 'upload'
+                                                        /*'class' => 'upload'*/
                                                     ]) !!}
                                                 </i>
                                             </button>
