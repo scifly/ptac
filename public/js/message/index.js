@@ -264,7 +264,7 @@ function upload(file, type) {
                 warning('请上传MP4格式的视频');
             } else {
                 if ($this[0].files[0].size > 10485760) {
-                    error('请上传10MB以内的视频');
+                    warning('请上传10MB以内的视频');
                 }
             }
             break;
