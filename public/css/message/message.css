@@ -84,15 +84,15 @@
     -webkit-line-clamp: 4;
 }
 
-#file-image {
-    position: absolute;
-    z-index: 1;
-    opacity: 0;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-}
+/*#file-image {*/
+    /*position: absolute;*/
+    /*z-index: 1;*/
+    /*opacity: 0;*/
+    /*width: 100%;*/
+    /*height: 100%;*/
+    /*top: 0;*/
+    /*left: 0;*/
+/*}*/
 
 .file-del {
     position: absolute;
