@@ -128,7 +128,7 @@
                                             {!! Form::file('file-image', [
                                                 'id' => 'file-image',
                                                 'accept' => 'image/*',
-                                                'class' => 'upload'
+                                                /*'class' => 'upload'*/
                                             ]) !!}
                                             {{--<button id="add-image" class="btn btn-box-tool add-btn" type="button">--}}
                                                 {{----}}
