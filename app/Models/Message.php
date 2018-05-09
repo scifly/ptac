@@ -481,7 +481,7 @@ class Message extends Model {
         abort_if(
             $message->{'errcode'} != 0,
             HttpStatusCode::INTERNAL_SERVER_ERROR,
-            '上传微信服务器失败！'
+            Wechat::ERRMSGS[$message->{'errcode'}]
         );
         $uploadedFile['media_id'] = $message->{'media_id'};
         $result['data'] = $uploadedFile;
