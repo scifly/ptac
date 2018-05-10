@@ -476,11 +476,12 @@ class Message extends Model {
             'content-type' => 'image/jpg',
             'filelength' => $file->getSize()
         ];
+        
         $message = json_decode(
             Wechat::uploadMedia(
                 $token['access_token'],
                 Request::input('type'),
-                array_merge(['media' => '@/var/www/ptac/public/' . $uploadedFile['path']], $fileInfo)
+                array_merge(['file-contents' => curl_file_create(public_path($uploadedFile['path']))], $fileInfo)
             )
         );
         abort_if(
