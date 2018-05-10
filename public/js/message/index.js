@@ -83,7 +83,7 @@ $(document).on('click', '#cancel .close-targets', function () {
 // 初始化上传文件的事件
 $(document).on('change', '.file-upload', function () { upload($(this))});
 // 初始化移除上传文件的事件
-$(document).on('click', '.tab-pane.active .file-del', function () {
+$(document).on('click', '.tab-pane.active .remove-file', function () {
     var btntxt = '',
         types = $(this).prev().attr('id').split('-'),
         type = types[types.length - 1];
