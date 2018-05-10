@@ -115,7 +115,7 @@
                                     </ul>
                                     <div class="tab-content" id="message-content">
                                         <!-- 文本 -->
-                                        <div class="active tab-pane file-display" id="content_text">
+                                        <div class="active tab-pane" id="content_text">
                                             {!! Form::textarea('text-content', null, [
                                                 'id' => 'text-content',
                                                 'placeholder' => '（请在此输入文本消息内容）',
@@ -124,7 +124,7 @@
                                             ]) !!}
                                         </div>
                                         <!-- 图片 -->
-                                        <div class="tab-pane file-display" id="content_image">
+                                        <div class="tab-pane" id="content_image">
                                             @include('message.file_upload', [
                                                 'id' => 'file-image',
                                                 'label' => '上传图片',
@@ -152,14 +152,12 @@
                                                 'class' => 'form-control',
                                                 'placeholder' => '请在此添加视频描述(选填)',
                                             ]) !!}
-                                            <div class="file-display">
-                                                @include('message.file_upload', [
-                                                    'id' => 'file-video',
-                                                    'label' => '上传视频',
-                                                    'accept' => 'video/mp4',
-                                                    'note' => '文件大小不得超过20M, 格式: rm, rmvb, wmv, avi, mpg, mpeg, mp4等'
-                                                ])
-                                            </div>
+                                            @include('message.file_upload', [
+                                                'id' => 'file-video',
+                                                'label' => '上传视频',
+                                                'accept' => 'video/mp4',
+                                                'note' => '文件大小不得超过20M, 格式: rm, rmvb, wmv, avi, mpg, mpeg, mp4等'
+                                            ])
                                         </div>
                                         <!-- 文件 -->
                                         <div class="tab-pane" id="content_file">
