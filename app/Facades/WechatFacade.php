@@ -289,7 +289,7 @@ class Wechat extends Facade {
         
     }
     
-    static function curlPost($url, $post = '') {
+    static function curlPost($url, $post) {
         
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -1005,7 +1005,7 @@ class Wechat extends Facade {
 
     static function uploadMedia($accessToken, $type, $data) {
 
-        return self::curlPost(sprintf(self::URL_UPLOAD_MEDIA, $accessToken, $type), json_encode($data));
+        return self::curlPost(sprintf(self::URL_UPLOAD_MEDIA, $accessToken, $type), $data);
 
     }
 
