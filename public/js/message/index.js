@@ -318,16 +318,19 @@ function upload($file) {
             var html = '<form id="uploadForm" enctype="multipart/form-data">';
             switch (type) {
                 case 'image':
-                    html +=
-                        '<div class="fileshow" style="display: inline-block;width: auto;position: relative;">' +
-                            '<img src="../../' + result.data.path + '" style="height: 200px;">' +
-                            '<input id="image_media_id" type="hidden" value="' + result.data.media_id + '"/>' +
-                            '<input id="image-media-id" type="hidden" value="' + result.data.id + '"/>' +
-                            '<input type="hidden" value="image" name="type" />' +
-                            '<input type="file" id="file-image" onchange="upload(this)" name="uploadFile" accept="image/*"/>' +
-                            '<i class="fa fa-close file-del"></i>' +
-                        '</div>' +
-                    '</form>';
+                    html = '<img src="../../' + result.data.path + '" style="height: 200px;" class="custom-file-upload">' +
+                    '<input type="file" id="file-image" class="upload-file" accept="image/*"/>';
+
+                    // html +=
+                    //     '<div class="fileshow" style="display: inline-block;width: auto;position: relative;">' +
+                    //         '<img src="../../' + result.data.path + '" style="height: 200px;">' +
+                    //         '<input id="image_media_id" type="hidden" value="' + result.data.media_id + '"/>' +
+                    //         '<input id="image-media-id" type="hidden" value="' + result.data.id + '"/>' +
+                    //         '<input type="hidden" value="image" name="type" />' +
+                    //         '<input type="file" id="file-image" onchange="upload(this)" name="uploadFile" accept="image/*"/>' +
+                    //         '<i class="fa fa-close file-del"></i>' +
+                    //     '</div>' +
+                    // '</form>';
                     $messageContent.find('.tab-pane.active').html(html);
                     break;
                 case 'voice':
