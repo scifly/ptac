@@ -84,31 +84,31 @@ $(document).on('click', '#cancel .close-targets', function () {
 $(document).on('change', '.file-upload', function () { upload($(this))});
 // 初始化移除上传文件的事件
 $(document).on('click', '.tab-pane.active .file-del', function () {
-    var btntxt = '', fileaccept = '',
+    var btntxt = '',
         types = $(this).prev().attr('id').split('-'),
         type = types[types.length - 1];
 
     switch (type) {
         case 'image':
             btntxt = '上传图片';
-            fileaccept = 'image/*';
             break;
         case 'voice':
             btntxt = '上传语音';
-            fileaccept = 'audio/*';
             break;
         case 'video':
             btntxt = '上传视频';
-            fileaccept = 'video/mp4';
             break;
         case 'file':
             btntxt = '上传文件';
+            break;
+        default:
+            break;
     }
     var html =
         '<label for="file-' + type + '"' + ' class="custom-file-upload">' +
         '<i class="fa fa-cloud-upload"></i>' + btntxt +
         '</label>' +
-        '<input id="file-' + type + '" accept="' + fileaccept + '/*" type="file">';
+        '<input id="file-' + type + '" accept="' + (type === 'file' ? '*"' : type + '/*"') + ' type="file">';
     $messageContent.find('.tab-pane.active').html(html);
 });
 /** 图片 ------------------------------------------------------------------------------------------------------------- */
