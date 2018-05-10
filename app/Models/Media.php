@@ -152,7 +152,6 @@ class Media extends Model {
     function upload($file, $remark = '') {
 
         if ($file->isValid()) {
-            // 获取文件相关信息
             # 扩展名
             $ext = $file->getClientOriginalExtension();
             # 临时文件的绝对路径
@@ -164,7 +163,7 @@ class Media extends Model {
             // 使用新建的uploads本地存储空间（目录）
             if (
                 Storage::disk('uploads')->put(
-                    date('Y/m/d', time()) . $filename,
+                    date('Y/m/d/', time()) . $filename,
                     file_get_contents($realPath)
                 )
             ) {

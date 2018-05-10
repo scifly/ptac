@@ -448,7 +448,6 @@ class Message extends Model {
         
         # 上传到本地后台
         $media = new Media();
-        $result = [];
         $file = Request::file('file');
         abort_if(
             empty($file),
@@ -461,7 +460,6 @@ class Message extends Model {
             HttpStatusCode::INTERNAL_SERVER_ERROR,
             '文件上传失败'
         );
-        $result['message'] = '上传成功！';
         # 上传到企业号后台
         list($corpid, $secret) = $this->tokenParams();
         $token = Wechat::getAccessToken($corpid, $secret);
@@ -471,29 +469,29 @@ class Message extends Model {
                 $token['errmsg']
             );
         }
-        $data = [
-            'file-contents' => curl_file_create(public_path($uploadedFile['path'])),
-            'filename' => $uploadedFile['filename'],
-            'content-type' => 'image/jpg',
-            'filelength' => $file->getSize(),
-        ];
-        
-        $message = json_decode(
+        $result = json_decode(
             Wechat::uploadMedia(
                 $token['access_token'],
                 Request::input('type'),
-                $data
+                [
+                    'file-contents' => curl_file_create(public_path($uploadedFile['path'])),
+                    'filename' => $uploadedFile['filename'],
+                    'content-type' => 'image/jpg',
+                    'filelength' => $file->getSize(),
+                ]
             )
         );
         abort_if(
-            $message->{'errcode'} != 0,
+            $result->{'errcode'} != 0,
             HttpStatusCode::INTERNAL_SERVER_ERROR,
-            Wechat::ERRMSGS[$message->{'errcode'}]
+            Wechat::ERRMSGS[$result->{'errcode'}]
         );
-        $uploadedFile['media_id'] = $message->{'media_id'};
-        $result['data'] = $uploadedFile;
+        $uploadedFile['media_id'] = $result->{'media_id'};
         
-        return response()->json($result);
+        return response()->json([
+            'message' => __('messages.message.uploaded'),
+            'data' => $uploadedFile
+        ]);
         
     }
     
