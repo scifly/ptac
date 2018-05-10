@@ -58,6 +58,7 @@
                                 ]) !!}
                             </div>
                         </div>
+                        <!-- 消息类型 -->
                         @include('partials.single_select', [
                             'label' => '消息类型',
                             'id' => 'message_type_id',
@@ -114,7 +115,7 @@
                                     </ul>
                                     <div class="tab-content" id="message-content">
                                         <!-- 文本 -->
-                                        <div class="active tab-pane" id="content_text">
+                                        <div class="active tab-pane file-display" id="content_text">
                                             {!! Form::textarea('text-content', null, [
                                                 'id' => 'text-content',
                                                 'placeholder' => '（请在此输入文本消息内容）',
@@ -123,7 +124,7 @@
                                             ]) !!}
                                         </div>
                                         <!-- 图片 -->
-                                        <div class="tab-pane" id="content_image">
+                                        <div class="tab-pane file-display" id="content_image">
                                             @include('message.file_upload', [
                                                 'id' => 'file-image',
                                                 'label' => '上传图片',
@@ -150,12 +151,14 @@
                                                 'class' => 'form-control',
                                                 'placeholder' => '请在此添加视频描述(选填)',
                                             ]) !!}
-                                            @include('message.file_upload', [
-                                                'id' => 'file-video',
-                                                'label' => '上传视频',
-                                                'accept' => 'video/mp4',
-                                                'note' => 'tips：视频格式支持mp4，大小不能超过10MB'
-                                            ])
+                                            <div class="file-display">
+                                                @include('message.file_upload', [
+                                                    'id' => 'file-video',
+                                                    'label' => '上传视频',
+                                                    'accept' => 'video/mp4',
+                                                    'note' => 'tips：视频格式支持mp4，大小不能超过10MB'
+                                                ])
+                                            </div>
                                         </div>
                                         <!-- 文件 -->
                                         <div class="tab-pane" id="content_file">
@@ -205,7 +208,7 @@
                                                 'id' => 'sms-content',
                                                 'class' => 'form-control text-blue',
                                             ]) !!}
-                                            <span id="content-sms-length" style="color: #777;margin-top: 10px;display: inline-block;"></span>
+                                            <span id="content-sms-length" style="color: #777; margin-top: 10px;display: inline-block;"></span>
                                         </div>
                                     </div>
                                 </div>

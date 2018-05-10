@@ -482,7 +482,7 @@ class Message extends Model {
             )
         );
         abort_if(
-            $result->{'errcode'} != 0,
+            $result->{'errcode'},
             HttpStatusCode::INTERNAL_SERVER_ERROR,
             Wechat::ERRMSGS[$result->{'errcode'}]
         );
@@ -519,7 +519,7 @@ class Message extends Model {
     }
     
     /**
-     * 搜索已发货收到的消息
+     * 搜索已发或收到的消息
      *
      * @return array
      */

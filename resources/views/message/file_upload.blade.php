@@ -4,6 +4,7 @@
 {!! Form::file($id, [
     'id' => $id,
     'accept' => $accept,
+    'class' => 'file-upload'
 ]) !!}
 @if (isset($note))
     <p class="help-block">{{ $note }}</p>

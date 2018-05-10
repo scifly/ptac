@@ -2,6 +2,7 @@
 var title,
     token = $('#csrf_token').attr('content'),
     $message = $('#message'),
+    $messageContent = $('#message-content'),
 
     // 发送对象
     $targets = $('#targets'),
@@ -11,18 +12,14 @@ var title,
     $textContent = $('#text-content'),
 
     // 图片
-    $fileImage = $('#file-image'),
 
     // 语音
-    $fileVoice = $('#file-voice'),
 
     // 视频
     $videoTitle = $('#video-title'),
     $videoDescription = $('#video-description'),
-    $fileVideo = $('#file-video'),
 
     // 文件
-    $fileFile = $('#file-file'),
 
     // 卡片
     $textcardTitle = $('#textcard-title'),
@@ -83,21 +80,44 @@ $(document).on('click', '#cancel .close-targets', function () {
     $targets.hide();
 });
 
+// 初始化上传文件的事件
+$(document).on('change', '.file-upload', function () { upload($(this))});
+// 初始化移除上传文件的事件
+$(document).on('click', '.tab-pane.active .file-del', function () {
+    var btntxt = '';
+    var fileaccept = '';
+    switch (type) {
+        case 'image':
+            btntxt = '上传图片';
+            fileaccept = 'image/*';
+            break;
+        case 'voice':
+            btntxt = '上传语音';
+            fileaccept = 'audio/*';
+            break;
+        case 'video':
+            btntxt = '上传视频';
+            fileaccept = 'video/mp4';
+            break;
+        case 'file':
+            btntxt = '上传文件';
+    }
+    var html =
+        '<label for="file-' + type + '"' + ' class="custom-file-upload">' +
+        '<i class="fa fa-cloud-upload"></i>' + btntxt +
+        '</label>' +
+        '<input id="file-' + type + '" accept="' + fileaccept + '/*" type="file">';
+    $messageContent.find('.tab-pane.active').html(html);
+});
 /** 图片 ------------------------------------------------------------------------------------------------------------- */
-$fileImage.on('change', function () { upload($fileImage[0].files[0], 'image')});
 
 /** 语音 ------------------------------------------------------------------------------------------------------------- */
-$fileVoice.on('change', function () { upload($fileVoice[0].files[0], 'voice')});
 
 /** 视频 ------------------------------------------------------------------------------------------------------------- */
-$fileVideo.on('change', function () { upload($fileVideo[0].files[0], 'video')});
 
 /** 文件 ------------------------------------------------------------------------------------------------------------- */
-$fileFile.on('change', function () { upload($fileFile[0].files[0], 'file')});
 
 /** 图文 ------------------------------------------------------------------------------------------------------------- */
-// 上传图片
-$fileMpnewsImage.on('change', function () { upload(this, 'image'); });
 // 添加图文
 $addMpnews.on('click', function () { $modalMpnews.modal({backdrop: true}); });
 // 保存图文
@@ -243,27 +263,30 @@ $send.on('click', function () {
 
 /** Helper functions ------------------------------------------------------------------------------------------------ */
 // 上传文件
-function upload(file, type) {
-    var filename = file.name.split('.'),
-        ext = filename[filename.length - 1].toUpperCase();
+function upload($file) {
+    var file = $file[0].files[0],
+        types = $file.attr('id').split('-'),
+        type = types[types.length - 1],
+        names = file.name.split('.'),
+        ext = names[names.length - 1].toUpperCase();
 
     switch (type) {
         case 'image':
             if (ext !== 'JPG' && ext !== 'PNG') {
-                warning('请上传JPG或PNG格式的图片');
+                return warning('请上传JPG或PNG格式的图片');
             }
             break;
         case 'voice':// 上传语音文件仅支持AMR格式
             if (ext !== 'AMR') {
-                warning('请上传AMR格式的文件');
+                return warning('请上传AMR格式的文件');
             }
             break;
         case 'video':// 上传视频文件仅支持MP4格式
             if (ext !== 'MP4') {
-                warning('请上传MP4格式的视频');
+                return warning('请上传MP4格式的视频');
             } else {
-                if (file.size > 10485760) {
-                    warning('请上传10MB以内的视频');
+                if ($file.size > 10485760) {
+                    return warning('请上传10MB以内的视频');
                 }
             }
             break;
@@ -272,7 +295,6 @@ function upload(file, type) {
     }
 
     page.inform(title, '文件上传中...', page.info);
-    var $messageContent = $('#message-content');
     $('.overlay').show();
     var data = new FormData();
     data.append('file', file);
@@ -293,14 +315,14 @@ function upload(file, type) {
                 case 'image':
                     html +=
                         '<div class="fileshow" style="display: inline-block;width: auto;position: relative;">' +
-                        '<img src="../../' + result.data.path + '" style="height: 200px;">' +
-                        '<input id="image_media_id" type="hidden" value="' + result.data.media_id + '"/>' +
-                        '<input id="image-media-id" type="hidden" value="' + result.data.id + '"/>' +
-                        '<input type="hidden" value="image" name="type" />' +
-                        '<input type="file" id="file-image" onchange="upload(this)" name="uploadFile" accept="image/*"/>' +
-                        '<i class="fa fa-close file-del"></i>' +
+                            '<img src="../../' + result.data.path + '" style="height: 200px;">' +
+                            '<input id="image_media_id" type="hidden" value="' + result.data.media_id + '"/>' +
+                            '<input id="image-media-id" type="hidden" value="' + result.data.id + '"/>' +
+                            '<input type="hidden" value="image" name="type" />' +
+                            '<input type="file" id="file-image" onchange="upload(this)" name="uploadFile" accept="image/*"/>' +
+                            '<i class="fa fa-close file-del"></i>' +
                         '</div>' +
-                        '</form>';
+                    '</form>';
                     $messageContent.find('.tab-pane.active').html(html);
                     removeFile(type);
                     break;
@@ -360,35 +382,7 @@ function upload(file, type) {
 
 // 移除文件
 function removeFile(type) {
-    $('.tab-pane.active .file-del').click(function () {
-        var btntxt = '';
-        var fileaccept = '';
-        switch (type) {
-            case 'image':
-                btntxt = '添加图片';
-                fileaccept = 'image/*';
-                break;
-            case 'voice':
-                btntxt = '添加音频';
-                fileaccept = '';
-                break;
-            case 'video':
-                btntxt = '添加视频';
-                fileaccept = 'video/mp4';
-                break;
-        }
-        var html =
-            '<form id="uploadForm" enctype="multipart/form-data">' +
-            '<button id="add-' + type + '" class="btn btn-box-tool" type="button" style="margin-top: 3px;position: relative;border: 0;">' +
-            '<i class="fa fa-plus text-blue">' +
-            '&nbsp;' + btntxt + '' +
-            '<input type="hidden" value="' + type + '" name="type" />' +
-            '<input type="file" id="file-' + type + '" onchange="upload(this)" name="uploadFile" accept="' + fileaccept + '" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>' +
-            '</i>' +
-            '</button>' +
-            '</form>';
-        $('#message-content').find('.tab-pane.active').html(html);
-    });
+
 }
 
 // 上传图文消息封面图
