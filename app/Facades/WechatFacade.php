@@ -3,6 +3,7 @@ namespace App\Facades;
 
 use App\Models\App;
 use App\Models\Corp;
+use Exception;
 use Illuminate\Support\Facades\Facade;
 
 class Wechat extends Facade {
@@ -290,19 +291,28 @@ class Wechat extends Facade {
     }
     
     static function curlPost($url, $post = '') {
-        
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $result = curl_exec($ch);
-        curl_close($ch);
+
+        $result = null;
+        try {
+    
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+            curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+            curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $result = curl_exec($ch);
+            curl_close($ch);
+        } catch (Exception $e) {
+            trigger_error(sprintf(
+                'Curl failed with error #%d: %s',
+                $e->getCode(), $e->getMessage()),
+                E_USER_ERROR);
+        }
         return $result;
         
     }
