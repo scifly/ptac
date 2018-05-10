@@ -267,13 +267,23 @@ class Grade extends Model {
                 },
             ],
         ];
+        $joins = [
+            [
+                'table' => 'schools',
+                'alias' => 'School',
+                'type' => 'INNER',
+                'conditions' => [
+                    'School.id = Grade.school_id'
+                ]
+            ]
+        ];
         $condition = 'School.id = ' . $this->schoolId();
         if (!in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
             $condition .= ' AND Grade.id IN (' . implode(',', $this->gradeIds()) . ')';
         }
         
         return Datatable::simple(
-            $this->getModel(), $columns, null, $condition
+            $this->getModel(), $columns, $joins, $condition
         );
         
     }
