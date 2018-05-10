@@ -136,7 +136,8 @@
                                             @include('message.file_upload', [
                                                 'id' => 'file-voice',
                                                 'label' => '上传语音',
-                                                'accept' => 'audio/*'
+                                                'accept' => 'audio/*',
+                                                'note' => '支持mp3、wma、wav、amr等格式，文件大小不的超过5M，语音时长不得超过1分钟'
                                             ])
                                         </div>
                                         <!-- 视频 -->
@@ -156,7 +157,7 @@
                                                     'id' => 'file-video',
                                                     'label' => '上传视频',
                                                     'accept' => 'video/mp4',
-                                                    'note' => 'tips：视频格式支持mp4，大小不能超过10MB'
+                                                    'note' => '不超过20M, 文件格式: rm, rmvb, wmv, avi, mpg, mpeg, mp4'
                                                 ])
                                             </div>
                                         </div>
