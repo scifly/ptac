@@ -137,7 +137,7 @@
                                                 'id' => 'file-voice',
                                                 'label' => '上传语音',
                                                 'accept' => 'audio/*',
-                                                'note' => '支持mp3、wma、wav、amr等格式，文件大小不的超过5M，语音时长不得超过1分钟'
+                                                'note' => '支持mp3、wma、wav、amr等格式，大小不得超过5M，时长不得超过1分钟'
                                             ])
                                         </div>
                                         <!-- 视频 -->
@@ -157,7 +157,7 @@
                                                     'id' => 'file-video',
                                                     'label' => '上传视频',
                                                     'accept' => 'video/mp4',
-                                                    'note' => '不超过20M, 文件格式: rm, rmvb, wmv, avi, mpg, mpeg, mp4'
+                                                    'note' => '文件大小不得超过20M, 格式: rm, rmvb, wmv, avi, mpg, mpeg, mp4等'
                                                 ])
                                             </div>
                                         </div>
