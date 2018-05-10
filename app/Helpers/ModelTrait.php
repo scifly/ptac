@@ -464,7 +464,7 @@ trait ModelTrait {
      */
     function uploadedFilePath($filename): string {
         
-        return 'public/uploads/'
+        return 'uploads/'
             . date('Y') . '/' . date('m') . '/' . date('d') . '/'
             . $filename;
         
