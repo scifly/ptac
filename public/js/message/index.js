@@ -308,11 +308,11 @@ function upload($file) {
             switch (type) {
                 case 'image':
                     html =
-                        '<a title="更改" href="#" style="margin-right: 10px;">' +
+                        '<label for="file-image" style="margin-right: 10px;" class="custom-file-upload text-blue">' +
                             '<i class="fa fa-pencil modify-file"> 更换</i>' +
-                            '<input type="file" id="file-image" class="file-upload" accept="image/*"/>' +
-                        '</a>   ' +
-                        '<a title="删除" href="#"><i class="fa fa-remove remove-file text-red"> 删除</i></a><br />' +
+                        '</label>' +
+                        '<input type="file" id="file-image" class="file-upload" accept="image/*"/>' +
+                        '<i class="fa fa-remove remove-file text-red"> 删除</i></><br />' +
                         '<img src="../../' + result.data.path + '" style="height: 200px;">' +
                         '<input id="image_media_id" type="hidden" value="' + result.data.media_id + '"/>' +
                         '<input id="image-media-id" type="hidden" value="' + result.data.id + '"/>';
