@@ -11,10 +11,6 @@ var title,
     // 文本
     $textContent = $('#text-content'),
 
-    // 图片
-
-    // 语音
-
     // 视频
     $videoTitle = $('#video-title'),
     $videoDescription = $('#video-description'),
@@ -32,7 +28,6 @@ var title,
     $modalMpnews = $('#modal-mpnews'),
     $mpnewsTitle = $('#mpnews-title'),
     $mpnewsContent = $('#mpnews-content'),
-    $fileMpnewsImage = $('#file-mpnews-image'),
     $contentSourceUrl = $('#content-source-url'),
     $mpnewsAutho = $('#mpnews-author'),
     $saveMpnews = $('#save-mpnews'),
