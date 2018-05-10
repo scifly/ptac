@@ -187,7 +187,7 @@ class Media extends Model {
             }
         }
 
-        return false;
+        return null;
 
     }
 

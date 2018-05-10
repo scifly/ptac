@@ -45,6 +45,7 @@ return [
         'title' => '消息中心',
         'sent' => '消息已发送',
         'failed' => '消息发送失败',
+        'uploaded' => '文件上传成功',
         'sms_send_failed' => '短信推送失败',
         'invalid_app_list' => '应用不存在，请检查后重试',
         'invalid_corp' => '企业号不存在，请检查后重试',
