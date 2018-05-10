@@ -320,9 +320,9 @@ function upload($file) {
                 case 'image':
                     html = '<img src="../../' + result.data.path + '" style="height: 200px;">' +
                         '<input type="file" id="file-image" class="file-upload" accept="image/*"/>' +
+                        '<i class="fa fa-close file-del"></i>' +
                         '<input id="image_media_id" type="hidden" value="' + result.data.media_id + '"/>' +
-                        '<input id="image-media-id" type="hidden" value="' + result.data.id + '"/>' +
-                        '<i class="fa fa-close file-del"></i>';
+                        '<input id="image-media-id" type="hidden" value="' + result.data.id + '"/>';
                     $messageContent.find('.tab-pane.active').html(html);
                     break;
                 case 'voice':
