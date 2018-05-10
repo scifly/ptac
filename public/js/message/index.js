@@ -319,7 +319,7 @@ function upload($file) {
             switch (type) {
                 case 'image':
                     html = '<img src="../../' + result.data.path + '" style="height: 200px;" class="custom-file-upload">' +
-                    '<input type="file" id="file-image" class="upload-file" accept="image/*"/>';
+                    '<input type="file" id="file-image" class="file-upload" accept="image/*"/>';
 
                     // html +=
                     //     '<div class="fileshow" style="display: inline-block;width: auto;position: relative;">' +
