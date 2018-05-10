@@ -84,8 +84,10 @@ $(document).on('click', '#cancel .close-targets', function () {
 $(document).on('change', '.file-upload', function () { upload($(this))});
 // 初始化移除上传文件的事件
 $(document).on('click', '.tab-pane.active .file-del', function () {
-    var btntxt = '';
-    var fileaccept = '';
+    var btntxt = '', fileaccept = '',
+        types = $(this).prev().attr('id').split('-'),
+        type = types[types.length - 1];
+
     switch (type) {
         case 'image':
             btntxt = '上传图片';
@@ -324,7 +326,6 @@ function upload($file) {
                         '</div>' +
                     '</form>';
                     $messageContent.find('.tab-pane.active').html(html);
-                    removeFile(type);
                     break;
                 case 'voice':
                     html +=
@@ -340,7 +341,6 @@ function upload($file) {
                         '</div>' +
                         '</form>';
                     $messageContent.find('.tab-pane.active').html(html);
-                    removeFile(type);
                     break;
                 case 'video':
                     html +=
@@ -378,11 +378,6 @@ function upload($file) {
             page.errorHandler(e);
         }
     })
-}
-
-// 移除文件
-function removeFile(type) {
-
 }
 
 // 上传图文消息封面图
