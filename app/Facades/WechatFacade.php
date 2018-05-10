@@ -221,12 +221,6 @@ class Wechat extends Facade {
         
     }
     
-    /**
-     * 发送GET请求
-     *
-     * @param $url
-     * @return mixed
-     */
     static function curlGet($url) {
         
         $ch = curl_init();
@@ -290,19 +284,12 @@ class Wechat extends Facade {
         
         return self::curlPost(
             sprintf(self::URL_GET_USERDETAIL, $accessToken),
-            ['user_ticket' => 'USER_TICKET']
+            json_encode(['user_ticket' => 'USER_TICKET'])
         );
         
     }
     
-    /**
-     * 发送POST请求
-     * 
-     * @param $url
-     * @param array $formData - Form Data
-     * @return mixed
-     */
-    static function curlPost($url, array $formData = []) {
+    static function curlPost($url, $post = '') {
         
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -312,13 +299,32 @@ class Wechat extends Facade {
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $formData);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $result = curl_exec($ch);
         curl_close($ch);
-        
         return $result;
         
+    }
+    
+    static function curl_post($url, $data = null) {
+        //创建一个新cURL资源
+        $curl = curl_init();
+        //设置URL和相应的选项
+        curl_setopt($curl, CURLOPT_URL, $url);
+        // curl_setopt ($curl, CURLOPT_SAFE_UPLOAD, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+        if (!empty($data)) {
+            curl_setopt($curl, CURLOPT_POST, 1);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        }
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        //执行curl，抓取URL并把它传递给浏览器
+        $output = curl_exec($curl);
+        //关闭cURL资源，并且释放系统资源
+        curl_close($curl);
+        return $output;
     }
     
     /**
@@ -333,7 +339,7 @@ class Wechat extends Facade {
         
         return self::curlPost(
             sprintf(self::URL_USERID_TO_OPENID, $accessToken),
-            ['userid' => $userId, 'agentid' => $agentId]
+            json_encode(['userid' => $userId, 'agentid' => $agentId])
         );
         
     }
@@ -349,7 +355,7 @@ class Wechat extends Facade {
         
         return self::curlPost(
             sprintf(self::URL_OPENID_TO_USERID, $accessToken),
-            ['openid' => $openid]
+            json_encode(['openid' => $openid])
         );
         
     }
@@ -365,7 +371,7 @@ class Wechat extends Facade {
         
         return self::curlPost(
             sprintf(self::URL_GET_LOGIN_INFO, $accessToken),
-            ['auth_code' => $authCode]
+            json_encode(['auth_code' => $authCode])
         );
         
     }
@@ -383,11 +389,11 @@ class Wechat extends Facade {
         
         return self::curlPost(
             sprintf(self::URL_GET_LOGIN_URL, $accessToken),
-            [
+            json_encode([
                 'login_ticket' => $loginTicket,
                 'target'       => $target,
                 'agentid'      => $agentId,
-            ]
+            ])
         );
         
     }
@@ -418,7 +424,7 @@ class Wechat extends Facade {
     ) {
         return self::curlPost(
             sprintf(self::URL_CREATE_USER, $accessToken),
-            $data
+            json_encode($data)
         );
         
     }
@@ -462,7 +468,7 @@ class Wechat extends Facade {
         
         return self::curlPost(
             sprintf(self::URL_UPDATE_USER, $accessToken),
-            $data
+            json_encode($data)
         );
         
     }
@@ -535,7 +541,7 @@ class Wechat extends Facade {
         
         return self::curlPost(
             sprintf(self::URL_CREATE_DEPT, $accessToken),
-            $data
+            json_encode($data)
         );
     }
     
@@ -550,7 +556,7 @@ class Wechat extends Facade {
         
         return self::curlPost(
             sprintf(self::URL_UPDATE_DEPT, $accessToken),
-            $data
+            json_encode($data)
         );
         
     }
@@ -848,7 +854,7 @@ class Wechat extends Facade {
     static function configApp($accessToken, array $data) {
         return self::curlPost(
             sprintf(self::URL_CONFIG_APP, $accessToken),
-            $data
+            json_encode($data)
         );
         
     }
@@ -870,7 +876,7 @@ class Wechat extends Facade {
         
         return self::curlPost(
             sprintf(self::URL_CREATE_MENU, $accessToken, $agentId),
-            $menu
+            json_encode($menu)
         );
         
     }
@@ -996,21 +1002,10 @@ class Wechat extends Facade {
         return self::curlGet(sprintf(self::URL_DEL_MENU, $accessToken, $agentId));
         
     }
-    
-    /**
-     * 上传临时素材文件
-     * 
-     * @param string $accessToken
-     * @param string $type
-     * @param array $data
-     * @return mixed
-     */
-    static function uploadMedia($accessToken, $type, array $data) {
 
-        return self::curlPost(
-            sprintf(self::URL_UPLOAD_MEDIA, $accessToken, $type), 
-            $data
-        );
+    static function uploadMedia($accessToken, $type, $data) {
+
+        return self::curlPost(sprintf(self::URL_UPLOAD_MEDIA, $accessToken, $type),$data);
 
     }
 
