@@ -312,7 +312,7 @@ function upload($file) {
                             '<i class="fa fa-pencil modify-file"> 更换</i>' +
                         '</label>' +
                         '<input type="file" id="file-image" class="file-upload" accept="image/*"/>' +
-                        '<a href="#"><i class="fa fa-remove remove-file text-red"> 删除</i></a><br />' +
+                        '<a href="#" class="remove-file"><i class="fa fa-remove text-red"> 删除</i></a><br />' +
                         '<img src="../../' + result.data.path + '" style="height: 200px;">' +
                         '<input id="image_media_id" type="hidden" value="' + result.data.media_id + '"/>' +
                         '<input id="image-media-id" type="hidden" value="' + result.data.id + '"/>';
