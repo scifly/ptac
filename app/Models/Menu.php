@@ -175,9 +175,9 @@ class Menu extends Model {
             DB::transaction(function () use ($request, &$menu) {
                 $data = $request->all();
                 $data['position'] = $this->all()->max('position') + 1;
-                $menu = $this->create($menu);
+                $menu = $this->create($data);
                 $tabIds = $request->input('tab_ids', []);
-                $menu->menuType->storeByMenuId($menu->id, $tabIds);
+                (new MenuTab())->storeByMenuId($menu->id, $tabIds);
             });
         } catch (Exception $e) {
             throw $e;
