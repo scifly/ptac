@@ -449,6 +449,7 @@ class Message extends Model {
         # 上传到本地后台
         $media = new Media();
         $file = Request::file('file');
+        $type = Request::input('type');
         abort_if(
             empty($file),
             HttpStatusCode::NOT_ACCEPTABLE,
@@ -469,6 +470,14 @@ class Message extends Model {
                 $token['errmsg']
             );
         }
+        $contentType = '';
+        switch ($type) {
+            case 'image': $contentType = 'image/*'; break;
+            case 'voice': $contentType = 'audio/*'; break;
+            case 'video': $contentType = 'video/*'; break;
+            case 'file': $contentType = '*'; break;
+            default: break;
+        }
         $result = json_decode(
             Wechat::uploadMedia(
                 $token['access_token'],
@@ -476,7 +485,7 @@ class Message extends Model {
                 [
                     'file-contents' => curl_file_create(public_path($uploadedFile['path'])),
                     'filename' => $uploadedFile['filename'],
-                    'content-type' => 'image/jpg',
+                    'content-type' => $contentType,
                     'filelength' => $file->getSize(),
                 ]
             )
