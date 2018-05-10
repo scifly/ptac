@@ -416,7 +416,7 @@ class School extends Model {
             ],
         ];
         # 仅在企业级显示学校列表
-        $rootMenuId = $this->menu->rootMenuId(true);
+        $rootMenuId = (new Menu())->rootMenuId(true);
         $condition = 'Corp.id = ' . Corp::whereMenuId($rootMenuId)->first()->id;
         
         return Datatable::simple(
