@@ -164,8 +164,8 @@ class Media extends Model {
             // 上传文件
             $filename = uniqid() . '.' . $ext;
             // 使用新建的uploads本地存储空间（目录）
-            if (Storage::disk('uploads')->put($filename, file_get_contents($realPath))) {
-                $filePath = $this->uploadedFilePath($filename);
+            $filePath = $this->uploadedFilePath($filename);
+            if (Storage::disk('uploads')->put($filePath, file_get_contents($realPath))) {
                 $media = $this->create([
                     'path'          => $filePath,
                     'remark'        => $remark,
