@@ -476,7 +476,7 @@ class Message extends Model {
                 [
                     'file-contents' => curl_file_create(public_path($uploadedFile['path'])),
                     'filename' => $uploadedFile['filename'],
-                    'content-type' => Request::input('type') . '/*',
+                    'content-type' => $file->getClientMimeType(),
                     'filelength' => $file->getSize(),
                 ]
             )
