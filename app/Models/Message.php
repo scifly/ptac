@@ -480,7 +480,7 @@ class Message extends Model {
             Wechat::uploadMedia(
                 $token['access_token'],
                 Request::input('type'),
-                ['media' => '@' . public_path($uploadedFile['path'])]
+                ['media' => '@' . $uploadedFile['path']]
             )
         );
         abort_if(
