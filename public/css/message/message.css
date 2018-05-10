@@ -177,3 +177,6 @@ input[type="file"] {
     height: 100%;
     opacity: 0;
 }
+#content_image {
+    position: relative;
+}
