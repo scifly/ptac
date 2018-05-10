@@ -476,11 +476,16 @@ class Message extends Model {
             'content-type' => 'image/jpg',
             'filelength' => $file->getSize()
         ];
+        $curlfile = public_path($uploadedFile['path']);
+        $miniType = mime_content_type($curlfile);
+        $media = new \CURLFile($curlfile);
+        $media->setMimeType($miniType);
+        $data = ['media' => $media];
         $message = json_decode(
             Wechat::uploadMedia(
                 $token['access_token'],
                 Request::input('type'),
-                ['media' => curl_file_create(public_path($uploadedFile['path'])), 'form-data' => $fileInfo]
+                $data
             )
         );
         abort_if(
