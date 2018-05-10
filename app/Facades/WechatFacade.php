@@ -307,6 +307,23 @@ class Wechat extends Facade {
         
     }
     
+    static function curl_post($url, $data = null) {
+        //创建一个新cURL资源
+        $curl = curl_init();
+        //设置URL和相应的选项
+        curl_setopt($curl, CURLOPT_URL, $url);
+        if (!empty($data)){
+            curl_setopt($curl, CURLOPT_POST, 1);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        }
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        //执行curl，抓取URL并把它传递给浏览器
+        $output = curl_exec($curl);
+        //关闭cURL资源，并且释放系统资源
+        curl_close($curl);
+        return $output;
+    }
+    
     /**
      * 根据access_token, userid和agentid将userid转换成openid
      *
@@ -985,7 +1002,7 @@ class Wechat extends Facade {
 
     static function uploadMedia($accessToken, $type, $data) {
 
-        return self::curlPost(sprintf(self::URL_UPLOAD_MEDIA, $accessToken, $type), json_encode($data));
+        return self::curl_post(sprintf(self::URL_UPLOAD_MEDIA, $accessToken, $type), $data);
 
     }
 
