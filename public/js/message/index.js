@@ -315,7 +315,7 @@ function upload($file) {
                         '<a title="删除" href="#"><i class="fa fa-remove remove-file text-red"></i></a><br />' +
                         '<img src="../../' + result.data.path + '" style="height: 200px;">' +
                         '<input id="image_media_id" type="hidden" value="' + result.data.media_id + '"/>' +
-                        '<input id="image-media-id" type="hidden" value="' + result.data.id + '"/>' +
+                        '<input id="image-media-id" type="hidden" value="' + result.data.id + '"/>';
                         // '<i class="fa fa-close file-del"></i>';
                         $messageContent.find('.tab-pane.active').html(html);
                     break;
