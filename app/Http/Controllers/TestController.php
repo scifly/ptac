@@ -50,7 +50,6 @@ class TestController extends Controller {
     
     public function index() {
 
-        $mobiles = Mobile::whereIn('user_id', [5, 8])->pluck('mobile')->toArray();
         dd(public_path(date('Y/m/d', time())));
         $corpid = 'wxe75227cead6b8aec';
         $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIE';

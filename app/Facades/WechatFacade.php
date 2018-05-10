@@ -299,10 +299,10 @@ class Wechat extends Facade {
      * 发送POST请求
      * 
      * @param $url
-     * @param array $post - Form Data
+     * @param array $formData - Form Data
      * @return mixed
      */
-    static function curlPost($url, array $post = []) {
+    static function curlPost($url, array $formData = []) {
         
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -312,10 +312,11 @@ class Wechat extends Facade {
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $formData);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $result = curl_exec($ch);
         curl_close($ch);
+        
         return $result;
         
     }
