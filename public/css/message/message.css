@@ -176,8 +176,9 @@ input[type="file"] {
     width: 100%;
     height: 100%;
     opacity: 0;
-    display: block;
+    display: block !important;
     cursor: pointer;
+    position:absolute;
 }
 #content_image {
     position: relative;
