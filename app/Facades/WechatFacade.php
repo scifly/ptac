@@ -312,7 +312,10 @@ class Wechat extends Facade {
         $curl = curl_init();
         //设置URL和相应的选项
         curl_setopt($curl, CURLOPT_URL, $url);
-        if (!empty($data)){
+        curl_setopt ($curl, CURLOPT_SAFE_UPLOAD, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+        if (!empty($data)) {
             curl_setopt($curl, CURLOPT_POST, 1);
             curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         }
