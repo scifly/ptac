@@ -162,7 +162,7 @@ class Media extends Model {
             # image/jpeg/
             $type = self::mediaTypeId($file->getClientMimeType());
             // 上传文件
-            $filename = date('Y') . '/' . date('m') . '/' . date('d') . '/ ' . uniqid() . '.' . $ext;
+            $filename = date('Y') . '/' . date('m') . '/' . date('d') . '/' . uniqid() . '.' . $ext;
             // 使用新建的uploads本地存储空间（目录）
             if (Storage::disk('uploads')->put($filename, file_get_contents($realPath))) {
                 $filePath = $this->uploadedFilePath($filename);
