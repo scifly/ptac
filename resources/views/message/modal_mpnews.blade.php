@@ -56,11 +56,12 @@
                     </div>
                     <div class="form-group">
                         <label for="" class="col-sm-3"></label>
-                        <div class="col-sm-6 file-display">
+                        <div class="col-sm-6 cover-container">
                             @include('message.file_upload', [
                                 'id' => 'file-mpnews-image',
                                 'label' => '上传封面图',
-                                'accept' => 'image/*'
+                                'accept' => 'image/*',
+                                'note' => '建议尺寸:1068*534'
                             ])
                         </div>
                     </div>

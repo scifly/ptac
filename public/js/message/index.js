@@ -282,7 +282,7 @@ function upload($file) {
             return warning('不支持这种文件格式');
         }
     }
-    if (type === 'voice' && $.inArray(ext, ['MP3', 'WAV']) > -1) {
+    if (type === 'audio' && $.inArray(ext, ['MP3', 'WAV']) > -1) {
         mediaType = ext === 'MP3' ? 'audio/mpeg' : 'audio/wav';
     }
     if (type === 'video' && ext === 'MP4') {
@@ -304,63 +304,41 @@ function upload($file) {
         success: function (result) {
             $('.overlay').hide();
             page.inform(result.title, result.message, page.success);
-            var html = '';
+            var html =
+                '<label for="file-' + type + '" style="margin-right: 10px;" class="custom-file-upload text-blue">' +
+                    '<i class="fa fa-pencil"> 更换</i>' +
+                '</label>' +
+                '<input type="file" id="file-' + type + '" class="file-upload" accept="' + type + '/*"/>' +
+                '<a href="#" class="remove-file"><i class="fa fa-remove text-red"> 删除</i></a><br />' +
+                '<input id="media_id" type="hidden" value="' + result.data.media_id + '"/>' +
+                '<input id="media-id" type="hidden" value="' + result.data.id + '"/>',
+                $container = $messageContent.find('.tab-pane.active');
             switch (type) {
                 case 'image':
-                    html =
-                        '<label for="file-image" style="margin-right: 10px;" class="custom-file-upload text-blue">' +
-                            '<i class="fa fa-pencil modify-file"> 更换</i>' +
-                        '</label>' +
-                        '<input type="file" id="file-image" class="file-upload" accept="image/*"/>' +
-                        '<a href="#" class="remove-file"><i class="fa fa-remove text-red"> 删除</i></a><br />' +
-                        '<img src="../../' + result.data.path + '" style="height: 200px;">' +
-                        '<input id="image_media_id" type="hidden" value="' + result.data.media_id + '"/>' +
-                        '<input id="image-media-id" type="hidden" value="' + result.data.id + '"/>';
-                        $messageContent.find('.tab-pane.active').html(html);
+                    html += '<img src="../../' + result.data.path + '" style="height: 200px;">';
                     break;
                 case 'voice':
-                    html = (
+                    html += (
                         mediaType
                             ? '<audio controls><source src="../../' + result.data.path + '" type="' + mediaType + '"></audio>'
                             : '<i class="fa fa-file-sound-o"></i>' + '<span id="voice">' + result.data.filename + '</span>'
-                        ) +
-                        '<input  id="voice_media_id"  type="hidden" value="' + result.data.media_id + '"/>' +
-                        '<input  id="voice-media-id"  type="hidden" value="' + result.id + '"/>' +
-                        '<input id="file-voice" type="file" class="file-upload" name="uploadFile"/>' +
-                        '<i class="fa fa-close file-del"></i>' +
-                        $messageContent.find('.tab-pane.active').html(html);
+                        );
                     break;
                 case 'video':
-                    html = (
+                    html += (
                         mediaType
                             ? '<video width="400" controls><source src="../../' + result.data.path + '" type="' + mediaType + '"></video>'
                             : '<i class="fa fa-file-movie-o"></i>' + '<span id="video">' + result.data.filename + '</span>'
-                        ) +
-                        '<a class="changefile" style="position: relative;margin-left: 10px;">更改' +
-                            '<input  id="video_media_id"  type="hidden" value="' + result.data.media_id + '"/>' +
-                            '<input  id="video-media-id"  type="hidden" value="' + result.data.id + '"/>' +
-                            '<input type="file" id="file-video" onchange="upload(this)" name="uploadFile" accept="video/mp4"/>' +
-                        '</a>' +
-                        '<a class="delfile file-del video-del">删除</a>';
-                    $('#filevideo').html(html);
-                    // 初始化移除视频事件
-                    $('.video-del').on('click', function () {
-                        var html =
-                            '<form id="form-cover" enctype="multipart/form-data">' +
-                            '<a href="#" style="position: relative;">' +
-                            '添加视频' +
-                            '<input type="hidden" value="video" name="type" />' +
-                            '<input type="file" id="file-video" onchange="upload(this)" name="input-video" accept="video/mp4" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>' +
-                            '</a>' +
-                            '&nbsp;&nbsp;<span class="text-gray">(支持MP4)</span>' +
-                            '</form>';
-
-                        $('#filevideo').html(html);
-                    });
+                        );
+                    $container = $('#video-container');
+                    break;
+                case 'file':
+                    html += '<i class="fa fa-file-sound-o"></i>' + '<span id="voice">' + result.data.filename + '</span>';
                     break;
                 default:
                     return false;
             }
+            $container.html(html);
         },
         error: function (e) {
             page.errorHandler(e);

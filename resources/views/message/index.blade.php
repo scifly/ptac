@@ -83,7 +83,7 @@
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="#content_voice" data-toggle="tab" class="tab">
+                                            <a href="#content_audio" data-toggle="tab" class="tab">
                                                 <i class="fa fa-file-sound-o"></i>&nbsp;语音
                                             </a>
                                         </li>
@@ -132,9 +132,9 @@
                                             ])
                                         </div>
                                         <!-- 语音 -->
-                                        <div class="tab-pane" id="content_voice">
+                                        <div class="tab-pane" id="content_audio">
                                             @include('message.file_upload', [
-                                                'id' => 'file-voice',
+                                                'id' => 'file-audio',
                                                 'label' => '上传语音',
                                                 'accept' => 'audio/*',
                                                 'note' => '支持mp3、wma、wav、amr等格式，大小不得超过5M，时长不得超过1分钟'
@@ -152,12 +152,14 @@
                                                 'class' => 'form-control',
                                                 'placeholder' => '请在此添加视频描述(选填)',
                                             ]) !!}
-                                            @include('message.file_upload', [
-                                                'id' => 'file-video',
-                                                'label' => '上传视频',
-                                                'accept' => 'video/mp4',
-                                                'note' => '文件大小不得超过20M, 格式: rm, rmvb, wmv, avi, mpg, mpeg, mp4等'
-                                            ])
+                                            <div id="video-container">
+                                                @include('message.file_upload', [
+                                                    'id' => 'file-video',
+                                                    'label' => '上传视频',
+                                                    'accept' => 'video/mp4',
+                                                    'note' => '文件大小不得超过20M, 格式: rm, rmvb, wmv, avi, mpg, mpeg, mp4等'
+                                                ])
+                                            </div>
                                         </div>
                                         <!-- 文件 -->
                                         <div class="tab-pane" id="content_file">
