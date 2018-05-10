@@ -179,6 +179,8 @@ input[type="file"] {
     display: block !important;
     cursor: pointer;
     position:absolute;
+    top: 0;
+    left: 0;
 }
 #content_image {
     position: relative;
