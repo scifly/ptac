@@ -306,6 +306,10 @@ class Wechat extends Facade {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $result = curl_exec($ch);
+            // Check the return value of curl_exec(), too
+            if (!$result) {
+                throw new Exception(curl_error($ch), curl_errno($ch));
+            }
             curl_close($ch);
         } catch (Exception $e) {
             trigger_error(sprintf(
