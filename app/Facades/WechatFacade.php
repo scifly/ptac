@@ -1005,7 +1005,7 @@ class Wechat extends Facade {
 
     static function uploadMedia($accessToken, $type, $data) {
 
-        return self::curl_post(sprintf(self::URL_UPLOAD_MEDIA, $accessToken, $type), $data);
+        return self::curlPost(sprintf(self::URL_UPLOAD_MEDIA, $accessToken, $type), json_encode($data));
 
     }
 
