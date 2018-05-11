@@ -330,6 +330,7 @@ function upload($file) {
                     return false;
             }
             $container.find('.upload-button').hide();
+            $container.find('.file-content').remove();
             $container.append(html);
         },
         error: function (e) {
