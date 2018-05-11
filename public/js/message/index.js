@@ -99,7 +99,7 @@ $addMpnews.on('click', function () { $modalMpnews.modal({ backdrop: true }); });
 // 编辑图文
 $(document).on('click', '.mpnews', function () {
     var $cover = $('#cover-container'),
-        ids = $(this).attr('id').split('_'),
+        ids = $(this).attr('id').split('-'),
         id = ids[ids.length - 1],
         news = mpnews['articles'][id];
 
