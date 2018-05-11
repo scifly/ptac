@@ -292,15 +292,15 @@ function upload($file) {
                         .prop('outerHTML');
                     break;
                 case 'voice':
-                    html += $('<i></i>', {'class': 'fa fa-file-sound-o'}).prop('outerHTML') +
-                        $('<span></span>', {id: 'voice'}).prop('innerHTML', result.data.filename).prop('outerHTML');
+                    html += $('<i>', {'class': 'fa fa-file-sound-o'}).prop('outerHTML') +
+                        $('<span>', {id: 'voice'}).prop('innerHTML', result.data.filename).prop('outerHTML');
                     break;
                 case 'video':
                     html += '<video width="400" controls><source src="../../' + result.data.path + '" type="video/mp4"></video>';
                     $container = $('#video-container');
                     break;
                 case 'file':
-                    html += '<i class="fa fa-file-sound-o"></i><span id="file">' + result.data.filename + '</span>';
+                    html += '<i class="fa fa-file"></i><span id="file">' + result.data.filename + '</span>';
                     break;
                 case 'mpnews':
                     html += '<img src="../../' + result.data.path + '" style="height: 200px;">';
