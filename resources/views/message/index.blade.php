@@ -66,7 +66,7 @@
                         ])
                         <!-- 消息内容 -->
                         <div class="form-group">
-                            {!! Form::label('departmentId', '消息内容', [
+                            {!! Form::label('content', '消息内容', [
                                 'class' => 'col-sm-3 control-label'
                             ]) !!}
                             <div class="col-sm-6">

@@ -272,6 +272,7 @@ function upload($file) {
         formats = ['MP3', 'WMA', 'WAV', 'AMR', 'RM', 'RMVB', 'WMV', 'AVI', 'MPG', 'MPEG', 'MP4'],
         mediaType = false;
 
+    if (types.length === 3) { type = types[1]; }
     if ($.inArray(type, ['voice', 'video']) > -1) {
         if ($.inArray(ext, formats) === -1) {
             return warning('不支持这种文件格式');
@@ -329,6 +330,10 @@ function upload($file) {
                     break;
                 case 'file':
                     html += '<i class="fa fa-file-sound-o"></i>' + '<span id="voice">' + result.data.filename + '</span>';
+                    break;
+                case 'mpnews':
+                    html += '<img src="../../' + result.data.path + '" style="height: 200px;">';
+                    $container = $('.cover-container');
                     break;
                 default:
                     return false;
