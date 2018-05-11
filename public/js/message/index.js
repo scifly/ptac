@@ -168,7 +168,7 @@ $contentSms.attr('maxlength', smsMaxlength);
 $smsContent.on('keyup', function () {
     currentLength = $(this).val().length;
     availableLength = smsMaxlength - currentLength;
-    if (availableLength <= 0) {
+    if (availableLength < 0) {
         return false;
     }
     $smsLength.text('已输入' + currentLength + '个字符， 还可输入' + availableLength + '个字符');
