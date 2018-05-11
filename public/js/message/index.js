@@ -148,7 +148,6 @@ $saveMpnews.on('click', function () {
             digest: digest,
             image_url: imageUrl
         });
-        mpnewsCount += 1;
         imgAttrs = {
             'class': 'mpnews',
             'src': imageUrl,
@@ -156,6 +155,7 @@ $saveMpnews.on('click', function () {
             'id': 'mpnews-' + mpnewsCount
         };
         $container.append($('<img' + ' />', imgAttrs).prop('outerHTML'));
+        mpnewsCount += 1;
     } else {
         var $mpnews = $($container.children('img')[id]);
         $mpnews.attr('src', imageUrl);
