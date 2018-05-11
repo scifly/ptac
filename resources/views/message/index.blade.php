@@ -209,12 +209,14 @@
                                         </div>
                                         <!-- 短信 -->
                                         <div class="tab-pane" id="content_sms">
-                                            <input id="content-sms-maxlength" type="hidden" value="{{ $messageMaxSize }}">
+                                            {!! Form::hidden('sms-maxlength', $smsMaxLength, [
+                                                'id' => 'sms-maxlength',
+                                            ]) !!}
                                             {!! Form::textarea('sms-content', null, [
                                                 'id' => 'sms-content',
                                                 'class' => 'form-control text-blue',
                                             ]) !!}
-                                            <span id="content-sms-length" style="color: #777; margin-top: 10px;display: inline-block;"></span>
+                                            <span id="sms-length" style="color: #777; margin-top: 10px;display: inline-block;"></span>
                                         </div>
                                     </div>
                                 </div>

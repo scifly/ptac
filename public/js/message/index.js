@@ -34,9 +34,9 @@ var title,
     $coverImage = $('#cover-image'),
 
     // 短信
-    smsMaxlength = $('#content-sms-maxlength').val(),
-    $contentSmsLength = $('#content-sms-length'),
-    $contentSms = $('.tab-pane.active #content-sms'),
+    smsMaxlength = $('#sms-maxlength').val(),
+    $smsLength = $('#sms-length'),
+    $contentSms = $('#content_sms'),
     currentLength = '',
     availableLength = '',
 
@@ -153,15 +153,21 @@ $saveMpnews.on('click', function () {
         $modalMpnews.show();
     });
 });
+$(document).on('click', '.edit-mpnews', function () {
+
+});
+$(document).on('click', '.remove-mpnews', function () {
+
+});
 
 /** 短信 ------------------------------------------------------------------------------------------------------------- */
 // 获取短信输入字符数
-$contentSmsLength.text('已输入0个字符， 还可输入' + smsMaxlength + '个字符');
+$smsLength.text('已输入0个字符， 还可输入' + smsMaxlength + '个字符');
 $contentSms.attr('maxlength', smsMaxlength);
 $contentSms.bind("input propertychange", function () {
     currentLength = $(this).val().length;
     availableLength = smsMaxlength - currentLength;
-    $contentSmsLength.text('已输入' + currentLength + '个字符， 还可输入' + availableLength + '个字符');
+    $smsLength.text('已输入' + currentLength + '个字符， 还可输入' + availableLength + '个字符');
 });
 
 /** 发送消息 ---------------------------------------------------------------------------------------------------------- */
