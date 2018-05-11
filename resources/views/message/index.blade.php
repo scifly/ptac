@@ -153,6 +153,7 @@
                                             {!! Form::textarea('video-description', null, [
                                                 'class' => 'form-control',
                                                 'placeholder' => '请在此添加视频描述(选填)',
+                                                'style' => 'margin-bottom: 5px;'
                                             ]) !!}
                                             <div id="video-container">
                                                 @include('message.file_upload', [
