@@ -282,11 +282,11 @@ function upload($file) {
                     '<label for="file-' + type + '" style="margin-right: 10px;" class="custom-file-upload text-blue">' +
                         '<i class="fa fa-pencil"> 更换</i>' +
                     '</label>' +
-                    '<input type="file" id="file-' + type + '" class="file-upload" accept="' + type + '/*"/>' +
+                    $('<input />', {'class': 'file-upload', id: 'file-' + type, type: file, accept: type + '/*'}).prop('outerHTML') +
+                    // '<input type="file" id="file-' + type + '" class="file-upload" accept="' + type + '/*"/>' +
                     '<a href="#" class="remove-file"><i class="fa fa-remove text-red"> 删除</i></a><br />' +
                     $('<input />', {'class': 'media_id', type: 'hidden', value: result.data.media_id}).prop('outerHTML') +
-                    // '<input class="media_id" type="hidden" value="' + result.data.media_id + '"/>' +
-                    '<input class="media-id" type="hidden" value="' + result.data.id + '"/>',
+                    $('<input />', {'class': 'media-id', type: 'hidden', value: result.data.id}).prop('outerHTML'),
                 $container = $messageContent.find('.tab-pane.active');
             switch (type) {
                 case 'image':
