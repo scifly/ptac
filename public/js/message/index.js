@@ -79,39 +79,21 @@ $(document).on('click', '#cancel .close-targets', function () {
 $(document).on('change', '.file-upload', function () { upload($(this))});
 // 初始化移除上传文件的事件
 $(document).on('click', '.remove-file', function () {
-    var btntxt = '', $container = $messageContent.find('.tab-pane.active'),
+    var $container = $messageContent.find('.tab-pane.active'),
         types = $(this).prev().attr('id').split('-'),
         type = types[types.length - 1];
 
     switch (type) {
-        // case 'image':
-        //     btntxt = '上传图片';
-        //     break;
         case 'mpnews':
-            // btntxt = '上传封面图';
             $container = $('#cover-container');
             break;
-        // case 'voice':
-        //     btntxt = '上传语音';
-        //     break;
         case 'video':
             // btntxt = '上传视频';
             $container = $('#video-container');
             break;
-        // case 'file':
-        //     btntxt = '上传文件';
-        //     break;
         default:
             break;
     }
-    // var html =
-    //     '<label for="file-' + type + '"' + ' class="custom-file-upload text-blue">' +
-    //         '<i class="fa fa-cloud-upload"></i>' + btntxt +
-    //     '</label>' +
-    //     '<input id="file-' + type + '" ' +
-    //             'accept="' + (type === 'file' ? '*' : type + '/*') + '" ' +
-    //             'type="file" class="file-upload"' +
-    //     '>';
     $container.find('.upload-button').show();
     $container.find('.file-content').remove();
 });
@@ -296,13 +278,15 @@ function upload($file) {
             $('.overlay').hide();
             page.inform(result.title, result.message, page.success);
             var html =
-                '<div class="file-content"><label for="file-' + type + '" style="margin-right: 10px;" class="custom-file-upload text-blue">' +
-                    '<i class="fa fa-pencil"> 更换</i>' +
-                '</label>' +
-                '<input type="file" id="file-' + type + '" class="file-upload" accept="' + type + '/*"/>' +
-                '<a href="#" class="remove-file"><i class="fa fa-remove text-red"> 删除</i></a><br />' +
-                '<input class="media_id" type="hidden" value="' + result.data.media_id + '"/>' +
-                '<input class="media-id" type="hidden" value="' + result.data.id + '"/>',
+                '<div class="file-content">' +
+                    '<label for="file-' + type + '" style="margin-right: 10px;" class="custom-file-upload text-blue">' +
+                        '<i class="fa fa-pencil"> 更换</i>' +
+                    '</label>' +
+                    '<input type="file" id="file-' + type + '" class="file-upload" accept="' + type + '/*"/>' +
+                    '<a href="#" class="remove-file"><i class="fa fa-remove text-red"> 删除</i></a><br />' +
+                    $('input', {'class': 'media_id', type: hidden, value: result.data.media_id}) +
+                    // '<input class="media_id" type="hidden" value="' + result.data.media_id + '"/>' +
+                    '<input class="media-id" type="hidden" value="' + result.data.id + '"/>',
                 $container = $messageContent.find('.tab-pane.active');
             switch (type) {
                 case 'image':
