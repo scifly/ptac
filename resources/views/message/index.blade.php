@@ -148,6 +148,7 @@
                                                 'placeholder' => '请在此输入视频标题',
                                                 'data-parsley-length' => '[2,10]',
                                                 'maxlength' => '128',
+                                                'style' => 'margin-bottom: 5px;'
                                             ]) !!}
                                             {!! Form::textarea('video-description', null, [
                                                 'class' => 'form-control',

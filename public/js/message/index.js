@@ -323,65 +323,6 @@ function upload($file) {
     })
 }
 
-// 上传图文消息封面图
-function uploadCover() {
-    var ext = $coverImage[0].files[0].name.split('.');
-
-    ext = ext[ext.length - 1].toUpperCase();
-    if (ext !== 'JPG' && ext !== 'PNG') {
-        page.inform(title, '请上传JPG或PNG格式的图片', page.info);
-        return false;
-    }
-    page.inform(title, '图片上传中...', page.info);
-
-    $('.overlay').show();
-    //请求接口
-    $.ajax({
-        url: page.siteRoot() + "messages/index",
-        type: 'POST',
-        data: {
-            _token: token,
-            uploadFile: $coverImage[0].files[0],
-            type: 'image'
-        },
-        success: function (result) {
-            $('.overlay').hide();
-            page.inform(result.title, result.message, page.success);
-            var html =
-                '<form id="uploadForm" enctype="multipart/form-data">' +
-                    '<div class="show-cover" style="position: relative; height: 130px; width: 130px; background-image: url(../../' + result.data.path + '); background-size: cover;">' +
-                        '<input type="hidden" value="' + result.data.media_id + '" name="media_id" />' +
-                        '<input type="hidden" value="' + result.data.id + '" name="news-media-id" />' +
-                        '<input type="hidden" value="image" name="type" />' +
-                        '<input type="file" id="file-cover" onchange="uploadCover(this)" name="input-cover" accept="image/*"/>' +
-                        '<i class="fa fa-close cover-del" id="cover"></i>' +
-                    '</div>' +
-                '</form>';
-            $('#cover').html(html);
-            removeCover();
-        },
-        error: function (e) {
-            page.errorHandler(e);
-        }
-    })
-}
-
-// 移除图文消息封面图
-function removeCover() {
-    $('.cover-del').on('click', function () {
-        var html =
-            '<form id="form-cover" enctype="multipart/form-data">' +
-                '<a href="#" style="position: relative;">' +
-                    '添加封面图' +
-                    '<input type="hidden" value="image" name="type" />' +
-                    '<input type="file" id="file-cover" onchange="uploadCover(this)" name="input-cover" accept="image/*" style="position: absolute;z-index: 1;opacity: 0;width: 100%;height: 100%;top: 0;left: 0;"/>' +
-                '</a>' +
-                '&nbsp;&nbsp;<span class="text-gray">建议尺寸:1068*534</span>' +
-            '</form>';
-        $('#cover').html(html);
-    });
-}
-
 function warning(message) {
     page.inform('上传文件', message, page.failure);
     return false;
