@@ -300,10 +300,12 @@ function upload($file) {
                     $container = $('#video-container');
                     break;
                 case 'file':
-                    html += '<i class="fa fa-file"></i><span id="file">' + result.data.filename + '</span>';
+                    html += $('<i>', {'class': 'fa fa-file'}).prop('outerHTML') +
+                        $('<span>', {id: 'file'}).prop('innerHTML', result.data.filename).prop('outerHTML');
                     break;
                 case 'mpnews':
-                    html += '<img src="../../' + result.data.path + '" style="height: 200px;">';
+                    html += $('<img' + ' />', {'src': '../../' + result.data.path, 'style': 'height: 200px;'})
+                        .prop('outerHTML');
                     $container = $('#cover-container');
                     break;
                 default:
