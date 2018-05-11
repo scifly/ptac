@@ -509,7 +509,7 @@
                         $tree = $('#tree'),
                         $selectedDepartmentIds = $('#selected-node-ids'),
                         // 点击保存时获取所有选中的节点 返回数组
-                        selectedNodes = $tree.jstree('get_selected').attr('id'),
+                        selectedNodes = $tree.jstree.get_selected(),
                         $checkedNodes = $('#checked-nodes');
 
                     $checkedNodes.empty();
