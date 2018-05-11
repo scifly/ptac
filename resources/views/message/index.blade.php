@@ -223,7 +223,7 @@
                         <div class="form-group">
                             <label for="" class="col-sm-3"></label>
                             <div class="col-sm-6">
-                                <button class="btn btn-default" id="send">
+                                <button class="btn btn-primary btn-sm" id="send">
                                     <i class="fa fa-send-o"> 发送</i>
                                 </button>
                                 <input type="button" class="btn btn-default" id="time-send" value="定时发送" disabled>
