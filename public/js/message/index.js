@@ -311,9 +311,9 @@ function upload($file) {
             }
             $container.find('.upload-button').hide();
             $container.find('.file-content').remove();
-            $container.append($('<div>', {'class': 'file-content'})
-                .prop('innerHTML', html)
-                .prop('outerHTML'));
+            $container.append(
+                $('<div>', {'class': 'file-content'}).prop('innerHTML', html).prop('outerHTML')
+            );
         },
         error: function (e) {
             page.errorHandler(e);
