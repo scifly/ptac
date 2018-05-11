@@ -26,7 +26,6 @@ var title,
     $addMpnews = $('#add-mpnews'),
     $modalMpnews = $('#modal-mpnews'),
     $saveMpnews = $('#save-mpnews'),
-    $coverImage = $('#cover-image'),
 
     // 短信
     smsMaxlength = $('#sms-maxlength').val(),
@@ -139,7 +138,7 @@ $saveMpnews.on('click', function () {
         mediaId = $form.find('.media_id').val(),
         imageUrl = $('#cover-container').find('img').attr('src');
 
-    if (id === '') {
+    if (typeof id === 'undefined') {
         mpnews['articles'].push({
             title: title,
             thumb_media_id: mediaId,
