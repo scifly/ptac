@@ -84,35 +84,36 @@ $(document).on('click', '.remove-file', function () {
         type = types[types.length - 1];
 
     switch (type) {
-        case 'image':
-            btntxt = '上传图片';
-            break;
+        // case 'image':
+        //     btntxt = '上传图片';
+        //     break;
         case 'mpnews':
-            btntxt = '上传封面图';
+            // btntxt = '上传封面图';
             $container = $('#cover-container');
             break;
-        case 'voice':
-            btntxt = '上传语音';
-            break;
+        // case 'voice':
+        //     btntxt = '上传语音';
+        //     break;
         case 'video':
-            btntxt = '上传视频';
+            // btntxt = '上传视频';
             $container = $('#video-container');
             break;
-        case 'file':
-            btntxt = '上传文件';
-            break;
+        // case 'file':
+        //     btntxt = '上传文件';
+        //     break;
         default:
             break;
     }
-    var html =
-        '<label for="file-' + type + '"' + ' class="custom-file-upload text-blue">' +
-            '<i class="fa fa-cloud-upload"></i>' + btntxt +
-        '</label>' +
-        '<input id="file-' + type + '" ' +
-                'accept="' + (type === 'file' ? '*' : type + '/*') + '" ' +
-                'type="file" class="file-upload"' +
-        '>';
-    $container.html(html);
+    // var html =
+    //     '<label for="file-' + type + '"' + ' class="custom-file-upload text-blue">' +
+    //         '<i class="fa fa-cloud-upload"></i>' + btntxt +
+    //     '</label>' +
+    //     '<input id="file-' + type + '" ' +
+    //             'accept="' + (type === 'file' ? '*' : type + '/*') + '" ' +
+    //             'type="file" class="file-upload"' +
+    //     '>';
+    $container.find('.upload-button').show();
+    $container.find('.file-content').remove();
 });
 /** 图片 ------------------------------------------------------------------------------------------------------------- */
 
@@ -295,7 +296,7 @@ function upload($file) {
             $('.overlay').hide();
             page.inform(result.title, result.message, page.success);
             var html =
-                '<label for="file-' + type + '" style="margin-right: 10px;" class="custom-file-upload text-blue">' +
+                '<div class="file-content"><label for="file-' + type + '" style="margin-right: 10px;" class="custom-file-upload text-blue">' +
                     '<i class="fa fa-pencil"> 更换</i>' +
                 '</label>' +
                 '<input type="file" id="file-' + type + '" class="file-upload" accept="' + type + '/*"/>' +
@@ -305,7 +306,7 @@ function upload($file) {
                 $container = $messageContent.find('.tab-pane.active');
             switch (type) {
                 case 'image':
-                    html += '<img src="../../' + result.data.path + '" style="height: 200px;">';
+                    html += '<img src="../../' + result.data.path + '" style="height: 200px;"></div>';
                     break;
                 case 'voice':
                     html += '<i class="fa fa-file-sound-o"></i>' +
@@ -314,21 +315,22 @@ function upload($file) {
                 case 'video':
                     html += '<video width="400" controls>' +
                             '<source src="../../' + result.data.path + '" type="video/mp4">' +
-                        '</video>';
+                        '</video></div>';
                     $container = $('#video-container');
                     break;
                 case 'file':
                     html += '<i class="fa fa-file-sound-o"></i>' +
-                        '<span id="file">' + result.data.filename + '</span>';
+                        '<span id="file">' + result.data.filename + '</span></div>';
                     break;
                 case 'mpnews':
-                    html += '<img src="../../' + result.data.path + '" style="height: 200px;">';
+                    html += '<img src="../../' + result.data.path + '" style="height: 200px;"></div>';
                     $container = $('#cover-container');
                     break;
                 default:
                     return false;
             }
-            $container.html(html);
+            $container.find('.upload-buton').hide();
+            $container.append(html);
         },
         error: function (e) {
             page.errorHandler(e);
