@@ -50,7 +50,7 @@
                             ]) !!}
                             <div class="col-sm-6">
                                 <div id="checked-nodes"></div>
-                                {!! Form::hidden('selected-node-ids', [
+                                {!! Form::hidden('selected-node-ids', null, [
                                     'id' => 'selected-node-ids'
                                 ]) !!}
                                 {!! Form::button('<i class="fa fa-user-plus text-blue">&nbsp;选择</i>', [
