@@ -128,7 +128,8 @@
                                             @include('message.file_upload', [
                                                 'id' => 'file-image',
                                                 'label' => '上传图片',
-                                                'accept' => 'image/*'
+                                                'accept' => 'image/*',
+                                                'note' => '支持jpg, png两种格式，大小不得超过2M'
                                             ])
                                         </div>
                                         <!-- 语音 -->
@@ -137,7 +138,7 @@
                                                 'id' => 'file-audio',
                                                 'label' => '上传语音',
                                                 'accept' => 'audio/*',
-                                                'note' => '支持mp3、wma、wav、amr等格式，大小不得超过5M，时长不得超过1分钟'
+                                                'note' => '仅支持amr格式，大小不得超过2M，时长不得超过60秒'
                                             ])
                                         </div>
                                         <!-- 视频 -->
@@ -157,19 +158,18 @@
                                                     'id' => 'file-video',
                                                     'label' => '上传视频',
                                                     'accept' => 'video/mp4',
-                                                    'note' => '文件大小不得超过20M, 格式: rm, rmvb, wmv, avi, mpg, mpeg, mp4等'
+                                                    'note' => '支持mp4格式，大小不得超过10M'
                                                 ])
                                             </div>
                                         </div>
                                         <!-- 文件 -->
                                         <div class="tab-pane" id="content_file">
-                                            <label for="file-voice" class="custom-file-upload text-blue">
-                                                <i class="fa fa-cloud-upload"></i> 上传文件
-                                            </label>
-                                            {!! Form::file('file-file', [
+                                            @include('message.file_upload', [
                                                 'id' => 'file-file',
-                                                'accept' => '*',
-                                            ]) !!}
+                                                'label' => '上传文件',
+                                                'accept' => 'video/mp4',
+                                                'note' => '大小不得超过20M'
+                                            ])
                                         </div>
                                         <!-- 卡片 -->
                                         <div class="tab-pane" id="content_textcard">

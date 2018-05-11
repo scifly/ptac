@@ -306,8 +306,8 @@ function upload($file) {
                 '</label>' +
                 '<input type="file" id="file-' + type + '" class="file-upload" accept="' + type + '/*"/>' +
                 '<a href="#" class="remove-file"><i class="fa fa-remove text-red"> 删除</i></a><br />' +
-                '<input id="media_id" type="hidden" value="' + result.data.media_id + '"/>' +
-                '<input id="media-id" type="hidden" value="' + result.data.id + '"/>',
+                '<input class="media_id" type="hidden" value="' + result.data.media_id + '"/>' +
+                '<input class="media-id" type="hidden" value="' + result.data.id + '"/>',
                 $container = $messageContent.find('.tab-pane.active');
             switch (type) {
                 case 'image':
