@@ -223,7 +223,9 @@
                         <div class="form-group">
                             <label for="" class="col-sm-3"></label>
                             <div class="col-sm-6">
-                                <input type="button" class="btn btn-default" id="send" value="发送">
+                                <button class="btn btn-default" id="send">
+                                    <i class="fa fa-send-o"> 发送</i>
+                                </button>
                                 <input type="button" class="btn btn-default" id="time-send" value="定时发送" disabled>
                                 <input type="button" class="btn btn-default" id="draft" value="存为草稿" disabled>
                                 <input type="button" class="btn btn-default" id="preview" value="预览" disabled>
