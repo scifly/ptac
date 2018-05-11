@@ -61,7 +61,7 @@
                         <div class="col-sm-6">
                             {!! Form::text('mpnews-digest', null, [
                                 'class' => 'form-control',
-                                'placeholder' => '(可选，如不填写则自动截取正文的前54字)',
+                                'placeholder' => '(如不填写则自动截取正文的前54字)',
                             ]) !!}
                         </div>
                     </div>
