@@ -278,7 +278,6 @@ function upload($file) {
             $('.overlay').hide();
             page.inform(result.title, result.message, page.success);
             var html =
-                '<div class="file-content">' +
                     '<label for="file-' + type + '" style="margin-right: 10px;" class="custom-file-upload text-blue">' +
                         '<i class="fa fa-pencil"> 更换</i>' +
                     '</label>' +
@@ -289,24 +288,22 @@ function upload($file) {
                 $container = $messageContent.find('.tab-pane.active');
             switch (type) {
                 case 'image':
-                    html += $('<img />', {'src': '../../' + result.data.path, 'style': 'height: 200px;'}).prop('outerHTML') + '</div>';
+                    html += $('<img' + ' />', {'src': '../../' + result.data.path, 'style': 'height: 200px;'})
+                        .prop('outerHTML');
                     break;
                 case 'voice':
                     html += $('<i></i>', {'class': 'fa fa-file-sound-o'}).prop('outerHTML') +
                         $('<span></span>', {id: 'voice'}).prop('innerHTML', result.data.filename).prop('outerHTML');
                     break;
                 case 'video':
-                    html += '<video width="400" controls>' +
-                            '<source src="../../' + result.data.path + '" type="video/mp4">' +
-                        '</video></div>';
+                    html += '<video width="400" controls><source src="../../' + result.data.path + '" type="video/mp4"></video>';
                     $container = $('#video-container');
                     break;
                 case 'file':
-                    html += '<i class="fa fa-file-sound-o"></i>' +
-                        '<span id="file">' + result.data.filename + '</span></div>';
+                    html += '<i class="fa fa-file-sound-o"></i><span id="file">' + result.data.filename + '</span>';
                     break;
                 case 'mpnews':
-                    html += '<img src="../../' + result.data.path + '" style="height: 200px;"></div>';
+                    html += '<img src="../../' + result.data.path + '" style="height: 200px;">';
                     $container = $('#cover-container');
                     break;
                 default:
@@ -314,7 +311,9 @@ function upload($file) {
             }
             $container.find('.upload-button').hide();
             $container.find('.file-content').remove();
-            $container.append(html);
+            $container.append($('<div>', {'class': 'file-content'})
+                .prop('innerHTML', html)
+                .prop('outerHTML'));
         },
         error: function (e) {
             page.errorHandler(e);
