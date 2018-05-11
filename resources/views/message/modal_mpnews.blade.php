@@ -55,14 +55,14 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="" class="col-sm-3"></label>
-                        <div class="col-sm-6 cover-container">
-                            @include('message.file_upload', [
-                                'id' => 'file-mpnews-image',
-                                'label' => '上传封面图',
-                                'accept' => 'image/*',
-                                'note' => '建议尺寸:1068*534'
-                            ])
+                        {!! Form::label('mpnews-digest', '摘要', [
+                            'class' => 'col-sm-3'
+                        ]) !!}
+                        <div class="col-sm-6">
+                            {!! Form::text('mpnews-digest', null, [
+                                'class' => 'form-control',
+                                'placeholder' => '(可选，如不填写则自动截取正文的前54字)',
+                            ]) !!}
                         </div>
                     </div>
                     <div class="form-group">
@@ -74,6 +74,19 @@
                                 'class' => 'form-control',
                                 'placeholder' => '(可选)',
                             ]) !!}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {!! Form::label('file-mpnews', '封面图', [
+                            'class' => 'col-sm-3'
+                        ]) !!}
+                        <div id="cover-container" class="col-sm-6">
+                            @include('message.file_upload', [
+                                'id' => 'file-mpnews',
+                                'label' => '上传封面图',
+                                'accept' => 'image/*',
+                                'note' => '建议尺寸:1068*598'
+                            ])
                         </div>
                     </div>
                 </div>

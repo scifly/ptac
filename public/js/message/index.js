@@ -79,7 +79,7 @@ $(document).on('click', '#cancel .close-targets', function () {
 $(document).on('change', '.file-upload', function () { upload($(this))});
 // 初始化移除上传文件的事件
 $(document).on('click', '.tab-pane.active .remove-file', function () {
-    var btntxt = '',
+    var btntxt = '', $container = $messageContent.find('.tab-pane.active'),
         types = $(this).prev().attr('id').split('-'),
         type = types[types.length - 1];
 
@@ -87,11 +87,16 @@ $(document).on('click', '.tab-pane.active .remove-file', function () {
         case 'image':
             btntxt = '上传图片';
             break;
+        case 'mpnews':
+            btntxt = '上传封面图';
+            $container = $('#cover-container');
+            break;
         case 'voice':
             btntxt = '上传语音';
             break;
         case 'video':
             btntxt = '上传视频';
+            $container = $('#video-container');
             break;
         case 'file':
             btntxt = '上传文件';
@@ -107,7 +112,7 @@ $(document).on('click', '.tab-pane.active .remove-file', function () {
                 'accept="' + (type === 'file' ? '*' : type + '/*') + '" ' +
                 'type="file" class="file-upload"' +
         '>';
-    $messageContent.find('.tab-pane.active').html(html);
+    $container.html(html);
 });
 /** 图片 ------------------------------------------------------------------------------------------------------------- */
 
@@ -268,21 +273,10 @@ function upload($file) {
         types = $file.attr('id').split('-'),
         type = types[types.length - 1],
         names = file.name.split('.'),
-        ext = names[names.length - 1].toUpperCase(),
-        formats = ['MP3', 'WMA', 'WAV', 'AMR', 'RM', 'RMVB', 'WMV', 'AVI', 'MPG', 'MPEG', 'MP4'],
-        mediaType = false;
+        ext = names[names.length - 1].toUpperCase();
 
-    if (types.length === 3) { type = types[1]; }
-    if ($.inArray(type, ['voice', 'video']) > -1) {
-        if ($.inArray(ext, formats) === -1) {
-            return warning('不支持这种文件格式');
-        }
-    }
-    if (type === 'audio' && $.inArray(ext, ['MP3', 'WAV']) > -1) {
-        mediaType = ext === 'MP3' ? 'audio/mpeg' : 'audio/wav';
-    }
-    if (type === 'video' && ext === 'MP4') {
-        mediaType = 'video/mp4';
+    if ($.inArray(ext, ['JPG', 'PNG', 'AMR', 'MP4']) === -1) {
+        return warning('不支持这种文件格式');
     }
     page.inform(title, '文件上传中...', page.info);
     $('.overlay').show();
@@ -314,26 +308,22 @@ function upload($file) {
                     html += '<img src="../../' + result.data.path + '" style="height: 200px;">';
                     break;
                 case 'voice':
-                    html += (
-                        mediaType
-                            ? '<audio controls><source src="../../' + result.data.path + '" type="' + mediaType + '"></audio>'
-                            : '<i class="fa fa-file-sound-o"></i>' + '<span id="voice">' + result.data.filename + '</span>'
-                        );
+                    html += '<i class="fa fa-file-sound-o"></i>' +
+                        '<span id="voice">' + result.data.filename + '</span>';
                     break;
                 case 'video':
-                    html += (
-                        mediaType
-                            ? '<video width="400" controls><source src="../../' + result.data.path + '" type="' + mediaType + '"></video>'
-                            : '<i class="fa fa-file-movie-o"></i>' + '<span id="video">' + result.data.filename + '</span>'
-                        );
+                    html += '<video width="400" controls>' +
+                            '<source src="../../' + result.data.path + '" type="video/mp4">' +
+                        '</video>';
                     $container = $('#video-container');
                     break;
                 case 'file':
-                    html += '<i class="fa fa-file-sound-o"></i>' + '<span id="voice">' + result.data.filename + '</span>';
+                    html += '<i class="fa fa-file-sound-o"></i>' +
+                        '<span id="file">' + result.data.filename + '</span>';
                     break;
                 case 'mpnews':
                     html += '<img src="../../' + result.data.path + '" style="height: 200px;">';
-                    $container = $('.cover-container');
+                    $container = $('#cover-container');
                     break;
                 default:
                     return false;
