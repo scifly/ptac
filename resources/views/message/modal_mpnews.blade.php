@@ -56,7 +56,7 @@
                     </div>
                     <div class="form-group">
                         {!! Form::label('mpnews-digest', '摘要', [
-                            'class' => 'col-sm-3'
+                            'class' => 'col-sm-3 control-label'
                         ]) !!}
                         <div class="col-sm-6">
                             {!! Form::text('mpnews-digest', null, [
@@ -78,7 +78,7 @@
                     </div>
                     <div class="form-group">
                         {!! Form::label('file-mpnews', '封面图', [
-                            'class' => 'col-sm-3'
+                            'class' => 'col-sm-3 control-label'
                         ]) !!}
                         <div id="cover-container" class="col-sm-6">
                             @include('message.file_upload', [
