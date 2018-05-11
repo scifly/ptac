@@ -282,7 +282,7 @@ function upload($file) {
                     '<label for="file-' + type + '" style="margin-right: 10px;" class="custom-file-upload text-blue">' +
                         '<i class="fa fa-pencil"> 更换</i>' +
                     '</label>' +
-                    $('<input />', {'class': 'file-upload', id: 'file-' + type, type: file, accept: type + '/*'}).prop('outerHTML') +
+                    $('<input />', {'class': 'file-upload', id: 'file-' + type, type: 'file', accept: type + '/*'}).prop('outerHTML') +
                     // '<input type="file" id="file-' + type + '" class="file-upload" accept="' + type + '/*"/>' +
                     '<a href="#" class="remove-file"><i class="fa fa-remove text-red"> 删除</i></a><br />' +
                     $('<input />', {'class': 'media_id', type: 'hidden', value: result.data.media_id}).prop('outerHTML') +
