@@ -11,7 +11,8 @@
                 <h4 class="modal-title">添加图文</h4>
             </div>
             <div class="modal-body">
-                <div class="form-horizontal" id="imagetext">
+                <div class="form-horizontal">
+                    {!! Form::hidden('mpnews-id', null) !!}
                     <!-- 标题 -->
                     <div class="form-group">
                         {!! Form::label('mpnews-title', '标题', [
@@ -36,6 +37,7 @@
                             {!! Form::textarea('mpnews-content', null, [
                                 'id' => 'content',
                                 'class' => 'form-control',
+                                'required' => 'true',
                                 'maxlength' => '666',
                             ]) !!}
                         </div>
@@ -93,6 +95,7 @@
             </div>
             <div class="modal-footer">
                 <a id="save-mpnews" href="#" class="btn btn-sm btn-success" data-dismiss="modal">确定</a>
+                <a id="remove-mpnews" href="#" class="btn btn-sm btn-danger" data-dismiss="modal" style="display: none;">移除</a>
                 <a href="#" class="btn btn-sm btn-white" data-dismiss="modal">取消</a>
             </div>
         </div>

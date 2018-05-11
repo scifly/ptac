@@ -100,7 +100,7 @@
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="#content_textcard" data-toggle="tab" class="tab">
+                                            <a href="#content_card" data-toggle="tab" class="tab">
                                                 <i class="fa fa-file"></i>&nbsp;卡片
                                             </a>
                                         </li>
@@ -176,8 +176,8 @@
                                             ])
                                         </div>
                                         <!-- 卡片 -->
-                                        <div class="tab-pane" id="content_textcard">
-                                            {!! Form::text('textcard-title', null, [
+                                        <div class="tab-pane" id="content_card">
+                                            {!! Form::text('card-title', null, [
                                                 'class' => 'form-control',
                                                 'placeholder' => '请在此输入卡片标题',
                                                 'title' => '卡片标题',
@@ -185,19 +185,19 @@
                                                 'maxlength' => '128',
                                                 'style' => 'margin-bottom: 5px;'
                                             ]) !!}
-                                            {!! Form::textarea('textcard-description', null, [
+                                            {!! Form::textarea('card-description', null, [
                                                 'class' => 'form-control',
                                                 'placeholder' => '请在此添加卡片描述',
                                                 'title' => '卡片描述',
                                                 'style' => 'margin-bottom: 5px;'
                                             ]) !!}
-                                            {!! Form::text('textcard-url', null, [
+                                            {!! Form::text('card-url', null, [
                                                 'class' => 'form-control',
                                                 'placeholder' => '请在此输入卡片链接地址',
                                                 'title' => '链接地址',
                                                 'style' => 'margin-bottom: 5px;'
                                             ]) !!}
-                                            {!! Form::text('textcard-btntxt', '详情', [
+                                            {!! Form::text('card-btntxt', '详情', [
                                                 'class' => 'form-control',
                                                 'title' => '卡片按钮名称'
                                             ]) !!}

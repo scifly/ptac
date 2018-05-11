@@ -2,6 +2,7 @@
 var title,
     token = $('#csrf_token').attr('content'),
     $message = $('#message'),
+    $messageTypeId = $('#message_type_id'),
     $messageContent = $('#message-content'),
 
     // 发送对象
@@ -15,21 +16,15 @@ var title,
     $videoTitle = $('#video-title'),
     $videoDescription = $('#video-description'),
 
-    // 文件
-
     // 卡片
-    $textcardTitle = $('#textcard-title'),
-    $textcardDescription = $('#textcard-description'),
-    $textcardUrl = $('#textcard-url'),
-    $textcardBtntxt = $('#textcard-btntxt'),
+    $cardTitle = $('#card-title'),
+    $cardDescription = $('#card-description'),
+    $cardUrl = $('#card-url'),
+    $cardBtntxt = $('#card-btntxt'),
 
     // 图文
     $addMpnews = $('#add-mpnews'),
     $modalMpnews = $('#modal-mpnews'),
-    $mpnewsTitle = $('#mpnews-title'),
-    $mpnewsContent = $('#mpnews-content'),
-    $contentSourceUrl = $('#content-source-url'),
-    $mpnewsAutho = $('#mpnews-author'),
     $saveMpnews = $('#save-mpnews'),
     $coverImage = $('#cover-image'),
 
@@ -75,7 +70,6 @@ $(document).on('click', '#cancel .close-targets', function () {
     $message.show();
     $targets.hide();
 });
-
 // 初始化上传文件的事件
 $(document).on('change', '.file-upload', function () { upload($(this))});
 // 初始化移除上传文件的事件
@@ -98,62 +92,88 @@ $(document).on('click', '.remove-file', function () {
     $container.find('.upload-button').show();
     $container.find('.file-content').remove();
 });
+
 /** 图文 ------------------------------------------------------------------------------------------------------------- */
+var mpnews = { articles: [] }, mpnewsCount = mpnews['articles'].length;
 // 添加图文
-$addMpnews.on('click', function () { $modalMpnews.modal({backdrop: true}); });
+$addMpnews.on('click', function () { $modalMpnews.modal({ backdrop: true }); });
+// 编辑图文
+$(document).on('click', '.mpnews', function () {
+    var $cover = $('#cover-container'),
+        ids = $(this).attr('id').split('_'),
+        id = ids[ids.length - 1],
+        news = mpnews['articles'][id];
+
+    $('#mpnews-id').val(id);
+    $('#mpnews-title').val(news['title']);
+    $('#mpnews-content').val(news['title']);
+    $('#content-source-url').val(news['content_source_url']);
+    $('#mpnews-author').val(news['author']);
+    $('#mpnews-digest').val(news['digest']);
+    $cover.find('.upload-button').hide();
+    $cover.append(
+        '<div class="file-content">' +
+            '<label for="file-mpnews" style="margin-right: 10px;" class="custom-file-upload text-blue">' +
+                '<i class="fa fa-pencil"> 更换</i>' +
+            '</label>' +
+            $('<input />', {'class': 'file-upload', id: 'file-mpnews', type: 'image', 'accept': 'image/*'}).prop('outerHTML') +
+            '<a href="#" class="remove-file"><i class="fa fa-remove text-red"> 删除</i></a><br />' +
+            $('<input />', {'class': 'media_id', type: 'hidden', value: news['thumb_media_id']}).prop('outerHTML') +
+            $('<img' + ' />', {'src': news['image_url'], 'style': 'height: 200px;'}).prop('outerHtml') +
+        '</div>'
+    );
+    $('#remove-mpnews').show();
+    $modalMpnews.modal({ backdrop: true });
+});
 // 保存图文
 $saveMpnews.on('click', function () {
-    var $imageTextTitle = $('.imagetext-title'),
-        $cover = $('#cover'),
-        title = $imageTextTitle.val();
-    if (title === '') {
-        page.inform(title, '请输入标题', page.info);
-        return false;
-    }
-    var content = $imageTextTitle.val();
-    if (content === '') {
-        page.inform(title, '请编辑内容', page.info);
-        return false;
-    }
-    var picurl = $cover.find('.show').find('.show-cover');
-    if (!picurl) {
-        page.inform(title, '请添加封面图', page.info);
-        return false;
+    var $form = $('#formMpnews'),
+        imgAttrs = {},
+        $container = $('#content_mpnews'),
+        id = $('#mpnews-id').val(),
+        title = $('#mpnews-title').val(),
+        content = $('#mpnews-content').val(),
+        contentSourceUrl = $('#content-source-url').val(),
+        author = $('#mpnews-author').val(),
+        digest = $('#mpnews-digest').val(),
+        mediaId = $form.find('.media_id').val(),
+        imageUrl = $('#cover-container').find('img').attr('src');
+
+    if (id === '') {
+        mpnews['articles'].push({
+            title: title,
+            thumb_media_id: mediaId,
+            author: author,
+            content_source_url: contentSourceUrl,
+            content: content,
+            digest: digest,
+            image_url: imageUrl
+        });
+        mpnewsCount += 1;
+        imgAttrs = {
+            'class': 'mpnews',
+            'src': imageUrl,
+            'title': title,
+            'id': 'mpnews-' + mpnewsCount
+        };
+        $container.append($('<img' + ' />', imgAttrs).prop('outerHTML'));
     } else {
-        picurl = picurl.replace('url("', '').replace('")', '');
-        var picid = $cover.find('.show-cover input').eq(0).val();
-        var picMediaId = $cover.find('.show-cover input').eq(1).val();
+        var $mpnews = $($container.children('img')[id]);
+        $mpnews.attr('src', imageUrl);
+        $mpnews.attr('title', title);
     }
-
-    var content_source_url = $('.imagetext-content_source_url').val();
-    var author = $('.imagetext-author').val();
-    var html =
-        '<div class="show_imagetext">' +
-            '<div class="show_imagetext_title">' + title + '</div>' +
-            '<div class="show_imagetext_pic' + picurl + '"></div>' +
-            '<div class="show_imagetext_content">' + content + '</div>' +
-            '<input type="hidden" class="show_imagetext_pic_media_id" value="' + picid + '">' +
-            '<input type="hidden" class="show_imagetext_media_id" value="' + picMediaId + '">' +
-            '<input type="hidden" class="show_imagetext_author" value="' + author + '">' +
-            '<input type="hidden" class="show_imagetext_content_source_url" value="' + content_source_url + '">' +
-        '</div>';
-    $('.tab-pane.active#content_mpnews').html(html);
-    $message.show();
-    $modalMpnews.hide();
-    // 初始化图文显示事件
-    $('.show_imagetext').click(function () {
-        $message.hide();
-        $modalMpnews.show();
-    });
-});
-// 编辑图文
-$(document).on('click', '.edit-mpnews', function () {
-
 });
 // 删除图文
-$(document).on('click', '.remove-mpnews', function () {
+$(document).on('click', '#remove-mpnews', function () {
+    var id = $('#mpnews-id').val(), i = 0;
 
+    mpnews['articles'].splice(id, 1);
+    $('#content_mpnews').find('img').each(function () {
+        $(this).attr('id', '#mpnews-' + i);
+        i++;
+    });
 });
+
 /** 短信 ------------------------------------------------------------------------------------------------------------- */
 // 获取短信输入字符数
 $smsLength.text('已输入0个字符， 还可输入' + smsMaxlength + '个字符');
@@ -168,17 +188,57 @@ $smsContent.on('keyup', function () {
     }
     $smsLength.text('已输入' + currentLength + '个字符， 还可输入' + availableLength + '个字符');
 });
+
 /** 发送消息 ---------------------------------------------------------------------------------------------------------- */
 $send.on('click', function () {
     var appIds = $('#app_ids').val(),
-        targetIds = $('#selected-node-ids').val();
-    var type = $('#message-content').find('.tab-pane.active').attr('id');
-    type = type.substring('8');
-    var content = '';
-    var mediaId = '';
+        targetIds = $('#selected-node-ids').val(),
+        types = $('#message-content').find('.tab-pane.active').attr('id').split('_'),
+        type = types[types.length - 1],
+        $container = $('#content_' + type),
+        content = null,
+        mediaId = '',
+        formData = {
+            _token: token,
+            type: type,
+            appIds: appIds,
+            targetIds: targetIds,
+            messageTypeId: $messageTypeId.val(),
+        };
+
     switch (type) {
-        case 'text': // 文本
-            content = {text: $('#messageText').val()};
+        case 'text':    // 文本
+            content = { text: { content: $textContent.val() }};
+            break;
+        case 'image':   // 图片
+            content = { image: { media_id: $container.find('.media_id').val() } };
+            break;
+        case 'audio':   // 语音
+            content = { voice: { media_id: $container.find('.media_id').val() } };
+            formData['type'] = 'voice';
+            break;
+        case 'video':   // 视频
+            content = {
+                video: {
+                    media_id: $container.find('.media_id').val(),
+                    title: $videoTitle.val(),
+                    description: $videoDescription.val()
+                }
+            };
+            break;
+        case 'file':   // 文件
+            content = { file: { media_id: $container.find('.media_id').val() } };
+            break;
+        case 'card':    // 卡片
+            content = {
+                textcard: {
+                    title: $cardTitle.val(),
+                    description: $cardDescription.val(),
+                    url: $cardUrl.val(),
+                    btntxt: $cardBtntxt.val()
+                }
+            };
+            formData['type'] = 'textcard';
             break;
         case 'mpnews': // 图文
             var articles = {
@@ -190,23 +250,6 @@ $send.on('click', function () {
             };
             content = {articles: articles};
             mediaId = $('.show_imagetext_media_id').val();
-            break;
-        case 'image': // 图片
-            content = {media_id: $('#image_media_id').val()};
-            mediaId = $('#image-media-id').val();
-            break;
-        case 'voice': // 音频
-            content = {media_id: $('#voice_media_id').val()};
-            mediaId = $('#voice-media-id').val();
-            break;
-        case 'video': // 视频
-            var video = {
-                media_id: $('#video_media_id').val(),
-                title: $('.show_video_title').text(),
-                description: $('.show_video_description').text(),
-            };
-            content = {video: video};
-            mediaId = $('#video-media-id').val();
             break;
         case 'sms': // 短信
             appIds = [0];
@@ -236,14 +279,7 @@ $send.on('click', function () {
         url: page.siteRoot() + "messages/store",
         type: 'POST',
         dataType: 'json',
-        data: {
-            appIds: appIds,
-            targetIds: targetIds,
-            messageTypeId: $('#message_type_id').val(),
-            type: type,
-            content: content,
-            _token: token
-        },
+        data: $.extend(formData, content),
         success: function (result) {
             page.inform(result.title, result.message, page.success);
         },

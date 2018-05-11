@@ -173,3 +173,8 @@ input[type="file"] {
 .tab-pane.active {
     position: relative;
 }
+.mpnews {
+    margin-right: 10px;
+    height: 30px;
+    width: 30px;
+}
