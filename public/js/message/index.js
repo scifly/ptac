@@ -283,14 +283,14 @@ function upload($file) {
                         '<i class="fa fa-pencil"> 更换</i>' +
                     '</label>' +
                     $('<input />', {'class': 'file-upload', id: 'file-' + type, type: 'file', 'accept': type + '/*'}).prop('outerHTML') +
-                    // '<input type="file" id="file-' + type + '" class="file-upload" accept="' + type + '/*"/>' +
                     '<a href="#" class="remove-file"><i class="fa fa-remove text-red"> 删除</i></a><br />' +
                     $('<input />', {'class': 'media_id', type: 'hidden', value: result.data.media_id}).prop('outerHTML') +
                     $('<input />', {'class': 'media-id', type: 'hidden', value: result.data.id}).prop('outerHTML'),
                 $container = $messageContent.find('.tab-pane.active');
             switch (type) {
                 case 'image':
-                    html += '<img src="../../' + result.data.path + '" style="height: 200px;"></div>';
+                    html += $('<img />', {'src': '../..' + result.data.path, 'style': 'height: 200px;'}).prop('outerHTML') + '</div>';
+                        // '<img src="../../' + result.data.path + '" style="height: 200px;"></div>';
                     break;
                 case 'voice':
                     html += '<i class="fa fa-file-sound-o"></i>' +
