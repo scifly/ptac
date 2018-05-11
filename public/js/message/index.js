@@ -289,12 +289,11 @@ function upload($file) {
                 $container = $messageContent.find('.tab-pane.active');
             switch (type) {
                 case 'image':
-                    html += $('<img />', {'src': '../..' + result.data.path, 'style': 'height: 200px;'}).prop('outerHTML') + '</div>';
-                        // '<img src="../../' + result.data.path + '" style="height: 200px;"></div>';
+                    html += $('<img />', {'src': '../../' + result.data.path, 'style': 'height: 200px;'}).prop('outerHTML') + '</div>';
                     break;
                 case 'voice':
-                    html += '<i class="fa fa-file-sound-o"></i>' +
-                        '<span id="voice">' + result.data.filename + '</span>';
+                    html += $('<i></i>', {'class': 'fa fa-file-sound-o'}).prop('outerHTML') +
+                        $('<span></span>', {id: 'voice'}).prop('innerHTML', result.data.filename).prop('outerHTML');
                     break;
                 case 'video':
                     html += '<video width="400" controls>' +
