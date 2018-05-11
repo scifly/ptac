@@ -508,13 +508,13 @@
                     var nodeArray = [],
                         $tree = $('#tree'),
                         $selectedDepartmentIds = $('#selected-node-ids'),
-                        //点击保存时获取所有选中的节点 返回数组
+                        // 点击保存时获取所有选中的节点 返回数组
                         selectedNodes = $tree.jstree().get_selected(),
                         $checkedNodes = $('#checked-nodes');
 
                     $checkedNodes.empty();
                     for (var i = 0; i < selectedNodes.length; i++) {
-                        //通过id查找节点
+                        // 通过id查找节点
                         var node = $tree.jstree("get_node", selectedNodes[i]);
                         var checkedNode =
                             '<button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">' +
