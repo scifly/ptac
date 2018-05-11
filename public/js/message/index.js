@@ -289,7 +289,7 @@ function upload($file) {
     var data = new FormData();
     data.append('file', file);
     data.append('_token', token);
-    data.append('type', type);
+    data.append('type', type === 'mpnews' ? 'image' : type);
     //请求接口
     $.ajax({
         type: 'POST',
