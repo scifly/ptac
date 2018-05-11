@@ -24,7 +24,7 @@ class MessageIndexComposer {
         $view->with([
             'titles'         => ['#', '通信方式', '应用', '消息批次', '接收者', '类型', '发送于', '状态(发送/阅读)'],
             'apps'           => $apps,
-            'smsMaxLength'   => env('MESSAGE_MAX_SIZE'),
+            'smsMaxLength'   => 70,
             'messageTypes'   => MessageType::pluck('name', 'id')->toArray(),
             'uris'           => $this->uris(),
         ]);
