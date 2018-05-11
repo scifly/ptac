@@ -163,7 +163,7 @@ $smsContent.on('keyup', function () {
     availableLength = smsMaxlength - currentLength;
     if (availableLength < 0) {
         var str = $smsContent.val();
-        $smsContent.val(str.substring(0, str.length - 1));
+        $smsContent.val(str.substring(0, smsMaxlength - 1));
         return false;
     }
     $smsLength.text('已输入' + currentLength + '个字符， 还可输入' + availableLength + '个字符');
