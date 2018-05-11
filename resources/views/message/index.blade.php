@@ -215,6 +215,7 @@
                                             {!! Form::textarea('sms-content', null, [
                                                 'id' => 'sms-content',
                                                 'class' => 'form-control text-blue',
+                                                'rows' => '5'
                                             ]) !!}
                                             <span id="sms-length" style="color: #777; margin-top: 10px;display: inline-block;"></span>
                                         </div>
