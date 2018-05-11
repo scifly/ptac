@@ -181,16 +181,19 @@
                                                 'title' => '卡片标题',
                                                 'data-parsley-length' => '[2,10]',
                                                 'maxlength' => '128',
+                                                'style' => 'margin-bottom: 5px;'
                                             ]) !!}
                                             {!! Form::textarea('textcard-description', null, [
                                                 'class' => 'form-control',
                                                 'placeholder' => '请在此添加卡片描述',
-                                                'title' => '卡片描述'
+                                                'title' => '卡片描述',
+                                                'style' => 'margin-bottom: 5px;'
                                             ]) !!}
                                             {!! Form::text('textcard-url', null, [
                                                 'class' => 'form-control',
                                                 'placeholder' => '请在此输入卡片链接地址',
-                                                'title' => '链接地址'
+                                                'title' => '链接地址',
+                                                'style' => 'margin-bottom: 5px;'
                                             ]) !!}
                                             {!! Form::text('textcard-btntxt', '详情', [
                                                 'class' => 'form-control',
