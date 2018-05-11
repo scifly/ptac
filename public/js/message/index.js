@@ -98,14 +98,6 @@ $(document).on('click', '.remove-file', function () {
     $container.find('.upload-button').show();
     $container.find('.file-content').remove();
 });
-/** 图片 ------------------------------------------------------------------------------------------------------------- */
-
-/** 语音 ------------------------------------------------------------------------------------------------------------- */
-
-/** 视频 ------------------------------------------------------------------------------------------------------------- */
-
-/** 文件 ------------------------------------------------------------------------------------------------------------- */
-
 /** 图文 ------------------------------------------------------------------------------------------------------------- */
 // 添加图文
 $addMpnews.on('click', function () { $modalMpnews.modal({backdrop: true}); });
@@ -154,13 +146,14 @@ $saveMpnews.on('click', function () {
         $modalMpnews.show();
     });
 });
+// 编辑图文
 $(document).on('click', '.edit-mpnews', function () {
 
 });
+// 删除图文
 $(document).on('click', '.remove-mpnews', function () {
 
 });
-
 /** 短信 ------------------------------------------------------------------------------------------------------------- */
 // 获取短信输入字符数
 $smsLength.text('已输入0个字符， 还可输入' + smsMaxlength + '个字符');
@@ -169,11 +162,12 @@ $smsContent.on('keyup', function () {
     currentLength = $(this).val().length;
     availableLength = smsMaxlength - currentLength;
     if (availableLength < 0) {
+        var str = $smsContent.val();
+        $smsContent.val(str.substring(0, str.length - 1));
         return false;
     }
     $smsLength.text('已输入' + currentLength + '个字符， 还可输入' + availableLength + '个字符');
 });
-
 /** 发送消息 ---------------------------------------------------------------------------------------------------------- */
 $send.on('click', function () {
     var appIds = $('#app_ids').val();
