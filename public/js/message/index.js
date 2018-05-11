@@ -329,7 +329,7 @@ function upload($file) {
                 default:
                     return false;
             }
-            $container.find('.upload-buton').hide();
+            $container.find('.upload-button').hide();
             $container.append(html);
         },
         error: function (e) {
