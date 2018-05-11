@@ -226,9 +226,9 @@
                                 <button class="btn btn-primary btn-sm" id="send">
                                     <i class="fa fa-send-o"> 发送</i>
                                 </button>
-                                <input type="button" class="btn btn-default" id="time-send" value="定时发送" disabled>
-                                <input type="button" class="btn btn-default" id="draft" value="存为草稿" disabled>
-                                <input type="button" class="btn btn-default" id="preview" value="预览" disabled>
+                                <input type="button" class="btn btn-default btn-sm" id="time-send" value="定时发送" disabled>
+                                <input type="button" class="btn btn-default btn-sm" id="draft" value="存为草稿" disabled>
+                                <input type="button" class="btn btn-default btn-sm" id="preview" value="预览" disabled>
                             </div>
                         </div>
                         {!! Form::close() !!}
