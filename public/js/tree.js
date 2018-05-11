@@ -518,7 +518,7 @@
                         var node = $tree.jstree("get_node", selectedNodes[i]),
                             checkedNode =
                                 '<button type="button" class="btn btn-flat" style="margin-right: 5px;margin-bottom: 5px">' +
-                                    '<i class="' + node.icon + '"></i>' + node.text +
+                                    '<i class="' + node.icon + '"> ' + node.text + '</i> ' +
                                     '<i class="fa fa-close remove-selected"></i>' +
                                     '<input type="hidden" name="selectedDepartments[]" value="' + node.id + '"/>' +
                                 '</button>';
