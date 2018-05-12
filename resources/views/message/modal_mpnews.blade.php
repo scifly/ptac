@@ -92,7 +92,8 @@
                                 'id' => 'file-mpnews',
                                 'label' => '上传封面图',
                                 'accept' => 'image/*',
-                                'note' => '建议尺寸:1068*598'
+                                'note' => '建议尺寸:1068*598',
+                                'required' => true
                             ])
                         </div>
                     </div>
