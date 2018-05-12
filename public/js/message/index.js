@@ -108,6 +108,10 @@ var mpnews = { articles: [] },  // 文章数组
     mpnewsCount = mpnews['articles'].length;    // 文章数量
 // 添加图文
 $addMpnews.on('click', function () {
+    if (mpnewsCount === 8) {
+        page.inform('消息中心', '最多添加8条图文', page.failure);
+        return false;
+    }
     $mpnewsId.val('');
     $mpnewsTitle.val('');
     $mpnewsContent.val('');
