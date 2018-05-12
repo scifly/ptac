@@ -62,20 +62,35 @@ page.initDatatable('messages', [
 // 加载消息中心css
 page.loadCss('css/message/message.css');
 page.loadCss(plugins.htmleditor.css);
+
 var javascripts = [
+    plugins.handlebar.js,
+    plugins.htmleditor.all,
     plugins.htmleditor.js,
-    plugins.htmleditor.alljs,
+    plugins.htmleditor.locale
 ];
-$.getMultiScripts([plugins.handlebar.js]).done(function () {
-    $.getMultiScripts([plugins.htmleditor.alljs]).done(function () {
-        $.getMultiScripts([plugins.htmleditor.js]).done(function () {
-            $.getMultiScripts([['js/plugins/wysihtml5/locales/bootstrap-wysihtml5.zh-CN.js']]).done(function () {
-                $('#card-description').wysihtml5({size: 'xs', locale: 'zh-CN'});
-                // $('#mpnews-content').wysihtml5();
-            });
-        });
-    });
+$.getMultiScripts(javascripts).done(function () {
+    var options = {
+        size: 'xs',
+        locale: 'zh-CN'
+    };
+    $('#card-description').wysihtml5(options);
+    $('#mpnews-content').wysihtml5(options);
 });
+// $.getMultiScripts([plugins.handlebar.js]).done(function () {
+//     $.getMultiScripts([plugins.htmleditor.all]).done(function () {
+//         $.getMultiScripts([plugins.htmleditor.js]).done(function () {
+//             $.getMultiScripts([plugins.htmleditor.locale]).done(function () {
+//                 var options = {
+//                     size: 'xs',
+//                     locale: 'zh-CN'
+//                 };
+//                 $('#card-description').wysihtml5(options);
+//                 $('#mpnews-content').wysihtml5(options);
+//             });
+//         });
+//     });
+// });
 
 /** 发送对象 ---------------------------------------------------------------------------------------------------------- */
 // 选择发送对象
