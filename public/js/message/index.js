@@ -195,7 +195,11 @@ $formMpnews.parsley().on('form:validated', function () {
 $(document).on('click', '#remove-mpnews', function () {
     var id = $mpnewsId.val(), i = 0;
 
+    // 从数组中移除图文
     mpnews['articles'].splice(id, 1);
+    // 从图文列表中移除
+    $('#mpnews-' + id).remove();
+    // 重建图文索引
     $contentMpnews.find('img').each(function () {
         $(this).attr('id', '#mpnews-' + i);
         i++;
