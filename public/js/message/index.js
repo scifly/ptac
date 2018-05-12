@@ -428,6 +428,7 @@ function initEditor() {
                         toolbar: {
                             html: false,
                             size: 'xs',
+                            color: true,
                             font_styles: false
                         },
                         locale: 'zh-CN'
