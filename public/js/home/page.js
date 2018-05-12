@@ -728,7 +728,7 @@ var page = {
     getScripts: function (scripts, callback) {
         var progress = 0;
         scripts.forEach(function(script) {
-            $.getScript(script, function () {
+            $.getScript(page.siteRoot() + script, function () {
                 if (++progress === scripts.length) callback();
             });
         });
