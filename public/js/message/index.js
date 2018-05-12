@@ -63,12 +63,12 @@ page.initDatatable('messages', [
 page.loadCss('css/message/message.css');
 page.loadCss(plugins.htmleditor.css);
 
-var javascripts = [
-    plugins.handlebar.js,
-    plugins.htmleditor.all,
-    plugins.htmleditor.js,
-    plugins.htmleditor.locale
-];
+// var javascripts = [
+//     plugins.handlebar.js,
+//     plugins.htmleditor.all,
+//     plugins.htmleditor.js,
+//     plugins.htmleditor.locale
+// ];
 // $.getMultiScripts(javascripts).done(function () {
 //     var options = {
 //         size: 'xs',
@@ -77,28 +77,28 @@ var javascripts = [
 //     $('#card-description').wysihtml5(options);
 //     $('#mpnews-content').wysihtml5(options);
 // });
-page.getScripts(javascripts, function () {
-    var options = {
-        size: 'xs',
-        locale: 'zh-CN'
-    };
-    $('#card-description').wysihtml5(options);
-    $('#mpnews-content').wysihtml5(options);
-});
-// $.getMultiScripts([plugins.handlebar.js]).done(function () {
-//     $.getMultiScripts([plugins.htmleditor.all]).done(function () {
-//         $.getMultiScripts([plugins.htmleditor.js]).done(function () {
-//             $.getMultiScripts([plugins.htmleditor.locale]).done(function () {
-//                 var options = {
-//                     size: 'xs',
-//                     locale: 'zh-CN'
-//                 };
-//                 $('#card-description').wysihtml5(options);
-//                 $('#mpnews-content').wysihtml5(options);
-//             });
-//         });
-//     });
+// page.getScripts(javascripts, function () {
+//     var options = {
+//         size: 'xs',
+//         locale: 'zh-CN'
+//     };
+//     $('#card-description').wysihtml5(options);
+//     $('#mpnews-content').wysihtml5(options);
 // });
+$.getMultiScripts([plugins.handlebar.js]).done(function () {
+    $.getMultiScripts([plugins.htmleditor.all]).done(function () {
+        $.getMultiScripts([plugins.htmleditor.js]).done(function () {
+            $.getMultiScripts([plugins.htmleditor.locale]).done(function () {
+                var options = {
+                    size: 'xs',
+                    locale: 'zh-CN'
+                };
+                $('#card-description').wysihtml5(options);
+                $('#mpnews-content').wysihtml5(options);
+            });
+        });
+    });
+});
 
 /** 发送对象 ---------------------------------------------------------------------------------------------------------- */
 // 选择发送对象

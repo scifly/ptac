@@ -725,14 +725,14 @@ var page = {
         }
         return vars;
     },
-    getScripts: function (scripts, callback) {
-        var progress = 0;
-        scripts.forEach(function(script) {
-            $.getScript(page.siteRoot() + script, function () {
-                if (++progress === scripts.length) callback();
-            });
-        });
-    }
+    // getScripts: function (scripts, callback) {
+    //     var progress = 0;
+    //     scripts.forEach(function(script) {
+    //         $.getScript(page.siteRoot() + script, function () {
+    //             if (++progress === scripts.length) callback();
+    //         });
+    //     });
+    // }
 };
 $.getMultiScripts = function (arr) {
     var path = page.siteRoot();
