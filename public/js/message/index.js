@@ -65,13 +65,14 @@ page.loadCss(plugins.htmleditor.css);
 var javascripts = [
     plugins.htmleditor.js,
     plugins.htmleditor.alljs,
-    'js/plugins/wysihtml5/locales/bootstrap-wysihtml5.zh-CN.js'
 ];
 $.getMultiScripts([plugins.handlebar.js]).done(function () {
-    $.getMultiScripts(javascripts).done(function () {
-        $('#card-description').wysihtml5({size: 'xs'});
-        $('#mpnews-content').wysihtml5();
-    });    
+    $.getMultiScripts(['js/plugins/wysihtml5/locales/bootstrap-wysihtml5.zh-CN.js']).done(function () {
+        $.getMultiScripts(javascripts).done(function () {
+            $('#card-description').wysihtml5({size: 'xs'});
+            $('#mpnews-content').wysihtml5();
+        });
+    });
 });
 
 /** 发送对象 ---------------------------------------------------------------------------------------------------------- */
