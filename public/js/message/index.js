@@ -90,7 +90,7 @@ $.getMultiScripts([plugins.handlebar.js]).done(function () {
         $.getMultiScripts([plugins.htmleditor.js]).done(function () {
             $.getMultiScripts([plugins.htmleditor.locale]).done(function () {
                 var options = {
-                    toolbar: { html: true },
+                    toolbar: { 'html': true },
                     size: 'xs',
                     locale: 'zh-CN'
                 };
