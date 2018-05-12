@@ -88,7 +88,7 @@ var plugins = {
         }
     },
     handlebar: {
-        js: 'js/plugins/handlebar/handlebars-v4.0.11.js'
+        js: 'js/plugins/handlebar/handlebars.min.js'
     },
     htmleditor: {
         css: 'js/plugins/wysihtml5/bootstrap3-wysihtml5.min.css',
