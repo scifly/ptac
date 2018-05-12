@@ -64,9 +64,9 @@ page.loadCss('css/message/message.css');
 page.loadCss(plugins.htmleditor.css);
 var javascripts = [
     plugins.handlebar.js,
-    plugins.htmleditor.js,
-    plugins.htmleditor.alljs,
-    'js/plugins/wysihtml5/locales/bootstrap-wysihtml5.zh-CN.js'
+    // plugins.htmleditor.js,
+    // plugins.htmleditor.alljs,
+    // 'js/plugins/wysihtml5/locales/bootstrap-wysihtml5.zh-CN.js'
 ];
 $.getMultiScripts(javascripts).done(function () {
     $('#card-description').wysihtml5({size: 'xs'});
