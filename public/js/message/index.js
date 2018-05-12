@@ -69,7 +69,7 @@ var javascripts = [
     'js/plugins/wysihtml5/locales/bootstrap-wysihtml5.zh-CN.js'
 ];
 $.getMultiScripts(javascripts).done(function () {
-    $('#card-description').wysihtml5({size: 'xs', locale: 'zh-CN'});
+    $('#card-description').wysihtml5({size: 'xs'});
     $('#mpnews-content').wysihtml5();
 });
 
