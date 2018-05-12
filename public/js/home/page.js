@@ -724,6 +724,14 @@ var page = {
             vars[hash[0]] = hash[1];
         }
         return vars;
+    },
+    getScripts: function (scripts, callback) {
+        var progress = 0;
+        scripts.forEach(function(script) {
+            $.getScript(script, function () {
+                if (++progress === scripts.length) callback();
+            });
+        });
     }
 };
 $.getMultiScripts = function (arr) {
