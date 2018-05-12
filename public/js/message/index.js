@@ -62,36 +62,13 @@ page.initDatatable('messages', [
 // 加载消息中心css
 page.loadCss('css/message/message.css');
 page.loadCss(plugins.htmleditor.css);
-
-// var javascripts = [
-//     plugins.handlebar.js,
-//     plugins.htmleditor.all,
-//     plugins.htmleditor.js,
-//     plugins.htmleditor.locale
-// ];
-// $.getMultiScripts(javascripts).done(function () {
-//     var options = {
-//         size: 'xs',
-//         locale: 'zh-CN'
-//     };
-//     $('#card-description').wysihtml5(options);
-//     $('#mpnews-content').wysihtml5(options);
-// });
-// page.getScripts(javascripts, function () {
-//     var options = {
-//         size: 'xs',
-//         locale: 'zh-CN'
-//     };
-//     $('#card-description').wysihtml5(options);
-//     $('#mpnews-content').wysihtml5(options);
-// });
+// 加载html5编辑器js
 $.getMultiScripts([plugins.handlebar.js]).done(function () {
     $.getMultiScripts([plugins.htmleditor.all]).done(function () {
         $.getMultiScripts([plugins.htmleditor.js]).done(function () {
             $.getMultiScripts([plugins.htmleditor.locale]).done(function () {
                 var options = {
-                    toolbar: { 'html': true },
-                    size: 'xs',
+                    toolbar: { 'html': true, 'size': 'xs' },
                     locale: 'zh-CN'
                 };
                 $('#card-description').wysihtml5(options);
