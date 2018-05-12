@@ -102,7 +102,6 @@
                 {!! Form::submit('确定', [
                     'id' => 'save-mpnews',
                     'class' => 'btn btn-sm btn-success',
-                    'data-dismiss' => 'modal'
                 ]) !!}
                 {{--<a id="save-mpnews" href="#" class="">确定</a>--}}
                 <a id="remove-mpnews" href="#" class="btn btn-sm btn-danger" data-dismiss="modal" style="display: none;">移除</a>
