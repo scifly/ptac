@@ -71,7 +71,7 @@ $.getMultiScripts([plugins.handlebar.js]).done(function () {
         $.getMultiScripts([plugins.htmleditor.alljs]).done(function () {
             $.getMultiScripts([plugins.htmleditor.js]).done(function () {
                 $('#card-description').wysihtml5({size: 'xs'});
-                $('#mpnews-content').wysihtml5();
+                // $('#mpnews-content').wysihtml5();
             });
         });
     });
