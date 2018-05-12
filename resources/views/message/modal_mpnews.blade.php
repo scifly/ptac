@@ -65,7 +65,7 @@
                         ]) !!}
                         <div class="col-sm-6">
                             {!! Form::text('mpnews-digest', null, [
-                                'id' => 'mpnews-title',
+                                'id' => 'mpnews-digest',
                                 'class' => 'form-control',
                                 'placeholder' => '(如不填写则自动截取正文前54字)',
                             ]) !!}
@@ -101,7 +101,8 @@
             <div class="modal-footer">
                 {!! Form::submit('确定', [
                     'id' => 'save-mpnews',
-                    'class' => 'btn btn-sm btn-success'
+                    'class' => 'btn btn-sm btn-success',
+                    'data-dismiss' => 'modal'
                 ]) !!}
                 {{--<a id="save-mpnews" href="#" class="">确定</a>--}}
                 <a id="remove-mpnews" href="#" class="btn btn-sm btn-danger" data-dismiss="modal" style="display: none;">移除</a>
