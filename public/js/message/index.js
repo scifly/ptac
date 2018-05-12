@@ -426,9 +426,9 @@ function initEditor() {
                 $.getMultiScripts([plugins.htmleditor.locale]).done(function () {
                     var options = {
                         toolbar: {
-                            html: true,
+                            html: false,
                             size: 'xs',
-                            font_styles: true
+                            font_styles: false
                         },
                         locale: 'zh-CN'
                     };
