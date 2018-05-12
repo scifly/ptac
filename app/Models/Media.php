@@ -153,7 +153,7 @@ class Media extends Model {
 
         if ($file->isValid()) {
             # 文件名
-            $filename = $file->getClientOriginalName() . uniqid();
+            $filename = uniqid() . '-' . $file->getClientOriginalName();
             # 扩展名
             $ext = $file->getClientOriginalExtension();
             # 临时文件的绝对路径
