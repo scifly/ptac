@@ -12,7 +12,9 @@
             </div>
             <div class="modal-body">
                 <div class="form-horizontal">
-                    {!! Form::hidden('mpnews-id', null) !!}
+                    {!! Form::hidden('mpnews-id', null, [
+                        'id' => 'mpnews-id'
+                    ]) !!}
                     <!-- 标题 -->
                     <div class="form-group">
                         {!! Form::label('mpnews-title', '标题', [
