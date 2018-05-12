@@ -1,6 +1,5 @@
 //# sourceURL=index.js
-var title,
-    token = $('#csrf_token').attr('content'),
+var token = $('#csrf_token').attr('content'),
     $message = $('#message'),
     $messageTypeId = $('#message_type_id'),
     $messageContent = $('#message-content'),
@@ -117,48 +116,6 @@ $addMpnews.on('click', function () {
     $coverContainer.find('.upload-button').show();
     $modalMpnews.modal({ backdrop: true });
 });
-// 保存图文
-$formMpnews.parsley().on('form:validated', function () {
-    if ($('.parsley-error').length === 0) {
-        var imgAttrs = {},
-            id = $mpnewsId.val(),
-            title = $mpnewsTitle.val(),
-            content = $mpnewsContent.val(),
-            contentSourceUrl = $contentSourceUrl.val(),
-            author = $mpnewsAuthor.val(),
-            digest = $mpnewsDigest.val(),
-            mediaId = $formMpnews.find('.media_id').val(),
-            imageUrl = $coverContainer.find('img').attr('src');
-
-        if (id === '') {
-            mpnews['articles'].push({
-                title: title,
-                thumb_media_id: mediaId,
-                author: author,
-                content_source_url: contentSourceUrl,
-                content: content,
-                digest: digest,
-                image_url: imageUrl
-            });
-            imgAttrs = {
-                'class': 'mpnews',
-                'src': imageUrl,
-                'title': title,
-                'id': 'mpnews-' + mpnewsCount
-            };
-            $contentMpnews.append($('<img' + ' />', imgAttrs).prop('outerHTML'));
-            mpnewsCount += 1;
-        } else {
-            var $mpnews = $($contentMpnews.children('img')[id]);
-            $mpnews.attr('src', imageUrl);
-            $mpnews.attr('title', title);
-        }
-        $modalMpnews.modal('hide');
-    }
-    return false;
-}).on('form:submit', function () {
-    return false;
-});
 // 编辑图文
 $(document).on('click', '.mpnews', function () {
     var ids = $(this).attr('id').split('-'),
@@ -186,6 +143,53 @@ $(document).on('click', '.mpnews', function () {
     );
     $removeMpnews.show();
     $modalMpnews.modal({ backdrop: true });
+});
+// 保存图文
+$formMpnews.parsley().on('form:validated', function () {
+    if ($('.parsley-error').length === 0) {
+        var imgAttrs = {},
+            id = $mpnewsId.val(),
+            title = $mpnewsTitle.val(),
+            content = $mpnewsContent.val(),
+            contentSourceUrl = $contentSourceUrl.val(),
+            author = $mpnewsAuthor.val(),
+            digest = $mpnewsDigest.val(),
+            mediaId = $formMpnews.find('.media_id').val(),
+            imageUrl = $coverContainer.find('img').attr('src'),
+            article = {
+                title: title,
+                thumb_media_id: mediaId,
+                author: author,
+                content_source_url: contentSourceUrl,
+                content: content,
+                digest: digest,
+                image_url: imageUrl
+            };
+
+        if (id === '') {
+            // 新增图文
+            mpnews['articles'].push(article);
+            imgAttrs = {
+                'class': 'mpnews',
+                'src': imageUrl,
+                'title': title,
+                'id': 'mpnews-' + mpnewsCount
+            };
+            $contentMpnews.append($('<img' + ' />', imgAttrs).prop('outerHTML'));
+            mpnewsCount += 1;
+        } else {
+            // 更新图文
+            var $mpnews = $($contentMpnews.children('img')[id]);
+
+            mpnews['articles'][id] = article;
+            $mpnews.attr('src', imageUrl);
+            $mpnews.attr('title', title);
+        }
+        $modalMpnews.modal('hide');
+    }
+    return false;
+}).on('form:submit', function () {
+    return false;
 });
 // 删除图文
 $(document).on('click', '#remove-mpnews', function () {
@@ -314,7 +318,7 @@ $send.on('click', function () {
 });
 
 /** Helper functions ------------------------------------------------------------------------------------------------ */
-// 上传文件
+// 上传文件 (图片、语音、视频、文件、封面图）
 function upload($file) {
     var file = $file[0].files[0],
         types = $file.attr('id').split('-'),
