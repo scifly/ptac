@@ -333,6 +333,7 @@ function upload($file) {
         types = $file.attr('id').split('-'),
         type = types[types.length - 1],
         names = file.name.split('.'),
+        imgAttrs = {},
         ext = names[names.length - 1].toUpperCase();
 
     if ($.inArray(ext, ['JPG', 'PNG', 'AMR', 'MP4']) === -1) {
@@ -364,8 +365,12 @@ function upload($file) {
                 $container = $messageContent.find('.tab-pane.active');
             switch (type) {
                 case 'image':
-                    html += $('<img' + ' />', {'src': '../../' + result.data.path, 'style': 'height: 200px;'})
-                        .prop('outerHTML');
+                    imgAttrs = {
+                        'src': '../../' + result.data.path,
+                        'style': 'height: 200px;',
+                        'title': '文件名：' + result.data.filename
+                    };
+                    html += $('<img' + ' />', imgAttrs).prop('outerHTML');
                     break;
                 case 'voice':
                     html += $('<i>', {'class': 'fa fa-file-sound-o'}).prop('outerHTML') +
@@ -380,8 +385,12 @@ function upload($file) {
                         $('<span>', {id: 'file'}).prop('innerHTML', result.data.filename).prop('outerHTML');
                     break;
                 case 'mpnews':
-                    html += $('<img' + ' />', {'src': '../../' + result.data.path, 'style': 'height: 200px;'})
-                        .prop('outerHTML');
+                    imgAttrs = {
+                        'src': '../../' + result.data.path,
+                        'style': 'height: 200px;',
+                        'title': '文件名：' + result.data.filename
+                    };
+                    html += $('<img' + ' />', imgAttrs).prop('outerHTML');
                     $container = $('#cover-container');
                     break;
                 default:
@@ -396,7 +405,7 @@ function upload($file) {
         error: function (e) {
             page.errorHandler(e);
         }
-    })
+    });
 }
 
 function warning(message) {
