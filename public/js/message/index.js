@@ -428,6 +428,7 @@ function initEditor() {
                         toolbar: {
                             html: false,
                             size: 'xs',
+                            fa: true,
                             color: true,
                             font_styles: false
                         },
