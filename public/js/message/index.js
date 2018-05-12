@@ -78,7 +78,9 @@ $(document).on('click', '#cancel .close-targets', function () {
     $targets.hide();
 });
 // 初始化上传文件的事件
-$(document).on('input', '.file-upload', function () { upload($(this))});
+$(document).on('change', '.file-upload', function () {
+    if ($(this).val() !== '') { upload($(this)); }
+});
 // 初始化移除上传文件的事件
 $(document).on('click', '.remove-file', function () {
     var $container = $messageContent.find('.tab-pane.active'),
@@ -97,6 +99,7 @@ $(document).on('click', '.remove-file', function () {
             break;
     }
     $container.find('.upload-button').show();
+    $container.find('.file-upload').val('');
     $container.find('.file-content').remove();
 });
 
@@ -111,6 +114,7 @@ $addMpnews.on('click', function () {
     $contentSourceUrl.val('');
     $mpnewsDigest.val('');
     $mpnewsAuthor.val('');
+    $coverContainer.find('.file-upload').val('');
     $removeMpnews.hide();
     $coverContainer.find('.file-content').remove();
     $coverContainer.find('.upload-button').show();
@@ -132,13 +136,13 @@ $(document).on('click', '.mpnews', function () {
     $coverContainer.find('.file-content').remove();
     $coverContainer.append(
         '<div class="file-content">' +
-            '<label for="file-mpnews" style="margin-right: 10px;" class="custom-file-upload text-blue">' +
-                '<i class="fa fa-pencil"> 更换</i>' +
-            '</label>' +
-            $('<input />', {'class': 'file-upload', id: 'file-mpnews', type: 'file', 'accept': 'image/*'}).prop('outerHTML') +
-            '<a href="#" class="remove-file"><i class="fa fa-remove text-red"> 删除</i></a><br />' +
-            $('<input />', {'class': 'media_id', type: 'hidden', value: news['thumb_media_id']}).prop('outerHTML') +
-            $('<img' + ' />', {'src': news['image_url'], 'style': 'height: 200px;'}).prop('outerHTML') +
+        '<label for="file-mpnews" style="margin-right: 10px;" class="custom-file-upload text-blue">' +
+        '<i class="fa fa-pencil"> 更换</i>' +
+        '</label>' +
+        $('<input />', {'class': 'file-upload', id: 'file-mpnews', type: 'file', 'accept': 'image/*'}).prop('outerHTML') +
+        '<a href="#" class="remove-file"><i class="fa fa-remove text-red"> 删除</i></a><br />' +
+        $('<input />', {'class': 'media_id', type: 'hidden', value: news['thumb_media_id']}).prop('outerHTML') +
+        $('<img' + ' />', {'src': news['image_url'], 'style': 'height: 200px;'}).prop('outerHTML') +
         '</div>'
     );
     $removeMpnews.show();
@@ -350,13 +354,13 @@ function upload($file) {
             $('.overlay').hide();
             page.inform(result.title, result.message, page.success);
             var html =
-                    '<label for="file-' + type + '" style="margin-right: 10px;" class="custom-file-upload text-blue">' +
-                        '<i class="fa fa-pencil"> 更换</i>' +
-                    '</label>' +
-                    $('<input />', {'class': 'file-upload', id: 'file-' + type, type: 'file', 'accept': type + '/*'}).prop('outerHTML') +
-                    '<a href="#" class="remove-file"><i class="fa fa-remove text-red"> 删除</i></a><br />' +
-                    $('<input />', {'class': 'media_id', type: 'hidden', value: result.data.media_id}).prop('outerHTML') +
-                    $('<input />', {'class': 'media-id', type: 'hidden', value: result.data.id}).prop('outerHTML'),
+                '<label for="file-' + type + '" style="margin-right: 10px;" class="custom-file-upload text-blue">' +
+                '<i class="fa fa-pencil"> 更换</i>' +
+                '</label>' +
+                $('<input />', {'class': 'file-upload', id: 'file-' + type, type: 'file', 'accept': type + '/*'}).prop('outerHTML') +
+                '<a href="#" class="remove-file"><i class="fa fa-remove text-red"> 删除</i></a><br />' +
+                $('<input />', {'class': 'media_id', type: 'hidden', value: result.data.media_id}).prop('outerHTML') +
+                $('<input />', {'class': 'media-id', type: 'hidden', value: result.data.id}).prop('outerHTML'),
                 $container = $messageContent.find('.tab-pane.active');
             switch (type) {
                 case 'image':
