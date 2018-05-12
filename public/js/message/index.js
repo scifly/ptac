@@ -329,7 +329,7 @@ function upload($file) {
     if ($.inArray(ext, ['JPG', 'PNG', 'AMR', 'MP4']) === -1) {
         return warning('不支持这种文件格式');
     }
-    page.inform(title, '文件上传中...', page.info);
+    page.inform('消息中心', '文件上传中...', page.info);
     $('.overlay').show();
     var data = new FormData();
     data.append('file', file);
