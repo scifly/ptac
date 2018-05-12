@@ -33,7 +33,7 @@
                     <div class="form-horizontal form-main" id="message">
                     {!! Form::open([
                         'method' => 'post',
-                        'id' => 'message',
+                        'id' => 'formMessage',
                         'data-parsley-validate' => 'true'
                     ]) !!}
                         <!-- 选择应用 -->
@@ -41,7 +41,8 @@
                             'label' => '应用',
                             'id' => 'app_ids',
                             'icon' => 'fa fa-weixin text-green',
-                            'items' => $apps
+                            'items' => $apps,
+                            'required' => true
                         ])
                         <!-- 发送对象 -->
                         <div class="form-group">
@@ -149,8 +150,6 @@
                                                 'id' => 'video-title',
                                                 'class' => 'form-control',
                                                 'placeholder' => '请在此输入视频标题',
-                                                'data-parsley-length' => '[2,10]',
-                                                'maxlength' => '128',
                                                 'style' => 'margin-bottom: 5px;'
                                             ]) !!}
                                             {!! Form::textarea('video-description', null, [
@@ -184,8 +183,6 @@
                                                 'class' => 'form-control',
                                                 'placeholder' => '请在此输入卡片标题',
                                                 'title' => '卡片标题',
-                                                'data-parsley-length' => '[2,10]',
-                                                'maxlength' => '128',
                                                 'style' => 'margin-bottom: 5px;'
                                             ]) !!}
                                             {!! Form::textarea('card-description', null, [

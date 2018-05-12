@@ -7,7 +7,10 @@
             <div class="input-group-addon">
                 <i class="{{ $icon ?? 'fa fa-list-alt' }}" style="width: 20px;"></i>
             </div>
-            <select multiple="multiple" name="{{ $id }}[]" id="{{ $id }}" class='form-control select2' style="width: 100%;">
+            <select multiple="multiple" name="{{ $id }}[]" id="{{ $id }}"
+                    class='form-control select2' style="width: 100%;"
+                    {!! $required ? 'required' : '' !!}
+            >
                 @foreach ($items as $key => $value)
                     @if (isset($selectedItems))
                         <option value="{{ $key }}"

@@ -11,9 +11,19 @@ var token = $('#csrf_token').attr('content'),
     // 文本
     $textContent = $('#text-content'),
 
+    // 图片
+    $fileImage = $('#file-image'),
+
+    // 语音
+    $fileAudio = $('#file-audio'),
+
     // 视频
     $videoTitle = $('#video-title'),
     $videoDescription = $('#video-description'),
+    $fileVideo = $('#file-video'),
+
+    // 文件
+    $fileFile = $('#file-file'),
 
     // 卡片
     $cardTitle = $('#card-title'),
@@ -105,8 +115,51 @@ $(document).on('click', '.remove-file', function () {
 });
 $('.tab').on('click', function () {
     $messageContent.find('input').removeAttr(
-        'required data'
+        'required data-parsley-length maxlength'
     );
+    switch ($(this).attr('href')) {
+        case '#content_text':
+            $textContent.attr('required', 'true');
+            break;
+        case '#content_image':
+            $fileImage.attr('required', 'true');
+            break;
+        case '#content_audio':
+            $fileAudio.attr('required', 'true');
+            break;
+        case '#content_video':
+            $videoTitle.attr('maxlength', 128);
+            $videoDescription.attr('maxlength', 512);
+            $fileVideo.attr('required', 'true');
+            break;
+        case '#content_file':
+            $fileFile.attr('required', 'true');
+            break;
+        case '#content_card':
+            $cardTitle.attr({
+                'required': 'true',
+                'data-parsley-length': '[2,128]',
+            });
+            $cardDescription({
+                'required': 'true',
+                'data-parsley-length': '[2,512]'
+            });
+            $cardUrl.attr({
+                'required': 'true',
+                'type': 'url'
+            });
+            break;
+        case '#content_mpnews':
+            break;
+        case '#content_sms':
+            $smsContent.attr({
+                'required': 'true',
+                'data-parsley-length': '[2,300]'
+            });
+            break;
+        default:
+            break;
+    }
 });
 
 /** 图文 ------------------------------------------------------------------------------------------------------------- */
@@ -254,6 +307,7 @@ $send.on('click', function () {
             messageTypeId: $messageTypeId.val(),
         };
 
+    if (!$('#formMessage').parsley().validate()) { return false }
     switch (type) {
         case 'text':    // 文本
             $textContent.attr('required', 'true');
@@ -308,22 +362,22 @@ $send.on('click', function () {
             break;
     }
 
-    if (appIds.toString() === '') {
-        page.inform(title, '应用不能为空', page.failure);
-        return false
-    }
-    if (targetIds === '') {
-        page.inform(title, '对象不能为空', page.failure);
-        return false
-    }
-    if (content['text'] === '') {
-        page.inform(title, '内容不能为空', page.failure);
-        return false
-    }
-    if (content['sms'] === '') {
-        page.inform(title, '短信内容不能为空', page.failure);
-        return false
-    }
+    // if (appIds.toString() === '') {
+    //     page.inform(title, '应用不能为空', page.failure);
+    //     return false
+    // }
+    // if (targetIds === '') {
+    //     page.inform(title, '对象不能为空', page.failure);
+    //     return false
+    // }
+    // if (content['text'] === '') {
+    //     page.inform(title, '内容不能为空', page.failure);
+    //     return false
+    // }
+    // if (content['sms'] === '') {
+    //     page.inform(title, '短信内容不能为空', page.failure);
+    //     return false
+    // }
     $.ajax({
         url: page.siteRoot() + "messages/store",
         type: 'POST',
