@@ -154,6 +154,7 @@ $formMpnews.parsley().on('form:validated', function () {
             $mpnews.attr('title', title);
         }
         $modalMpnews.modal('hide');
+        return false
     }
 }).on('form:submit', function () {
     return false;
