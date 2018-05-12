@@ -112,6 +112,7 @@ $addMpnews.on('click', function () {
     $contentSourceUrl.val('');
     $mpnewsDigest.val('');
     $mpnewsAuthor.val('');
+    $removeMpnews.hide();
     $coverContainer.find('.file-content').remove();
     $coverContainer.find('.upload-button').show();
     $modalMpnews.modal({ backdrop: true });
