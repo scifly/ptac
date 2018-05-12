@@ -70,7 +70,7 @@ $.getMultiScripts([plugins.handlebar.js]).done(function () {
     $.getMultiScripts([plugins.htmleditor.alljs]).done(function () {
         $.getMultiScripts([plugins.htmleditor.js]).done(function () {
             $.getMultiScripts([['js/plugins/wysihtml5/locales/bootstrap-wysihtml5.zh-CN.js']]).done(function () {
-                $('#card-description').wysihtml5({size: 'xs'});
+                $('#card-description').wysihtml5({size: 'xs', locale: 'zh-CN'});
                 // $('#mpnews-content').wysihtml5();
             });
         });
