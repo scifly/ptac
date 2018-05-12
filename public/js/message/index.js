@@ -61,8 +61,8 @@ page.initDatatable('messages', [
 
 // 加载消息中心css
 page.loadCss('css/message/message.css');
-page.loadCss(plugins.html5editor.css);
-$.getMultiScripts([plugins.html5editor.js]).done(function () {
+page.loadCss(plugins.htmleditor.css);
+$.getMultiScripts([plugins.htmleditor.js]).done(function () {
     $('#card-description').wysihtml5();
     $('#mpnews-content').wysihtml5();
 });
