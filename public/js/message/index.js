@@ -110,7 +110,7 @@ $(document).on('click', '.mpnews', function () {
     $('#mpnews-author').val(news['author']);
     $('#mpnews-digest').val(news['digest']);
     $cover.find('.upload-button').hide();
-    $cover.append(
+    $cover.html(
         '<div class="file-content">' +
             '<label for="file-mpnews" style="margin-right: 10px;" class="custom-file-upload text-blue">' +
                 '<i class="fa fa-pencil"> 更换</i>' +
