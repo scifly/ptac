@@ -146,7 +146,7 @@ $formMpnews.parsley().on('form:validated', function () {
                 'title': title,
                 'id': 'mpnews-' + mpnewsCount
             };
-            $container.append($('<img' + ' />', imgAttrs).prop('outerHTML'));
+            $coverContainer.append($('<img' + ' />', imgAttrs).prop('outerHTML'));
             mpnewsCount += 1;
         } else {
             var $mpnews = $($contentMpnews.children('img')[id]);
