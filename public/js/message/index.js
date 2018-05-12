@@ -61,6 +61,11 @@ page.initDatatable('messages', [
 
 // 加载消息中心css
 page.loadCss('css/message/message.css');
+page.loadCss(plugins.html5editor.css);
+$.getMultiScripts([plugins.html5editor.js]).done(function () {
+    $('#card-description').wysihtml5();
+    $('#mpnews-content').wysihtml5();
+});
 
 /** 发送对象 ---------------------------------------------------------------------------------------------------------- */
 // 选择发送对象
@@ -212,6 +217,7 @@ $(document).on('click', '#remove-mpnews', function () {
         $(this).attr('id', '#mpnews-' + i);
         i++;
     });
+    mpnewsCount--;
     page.inform('消息中心', '已将指定图文删除', page.success);
 });
 
