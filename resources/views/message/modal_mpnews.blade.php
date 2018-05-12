@@ -20,6 +20,7 @@
                         ]) !!}
                         <div class="col-sm-6">
                             {!! Form::text('mpnews-title', null, [
+                                'id' => 'mpnwes-title',
                                 'class' => 'form-control',
                                 'placeholder' => '(请输入标题)',
                                 'required' => 'true',
@@ -35,7 +36,7 @@
                         ]) !!}
                         <div class="col-sm-6">
                             {!! Form::textarea('mpnews-content', null, [
-                                'id' => 'content',
+                                'id' => 'mpnews-content',
                                 'class' => 'form-control',
                                 'required' => 'true',
                                 'maxlength' => '666',
@@ -62,8 +63,9 @@
                         ]) !!}
                         <div class="col-sm-6">
                             {!! Form::text('mpnews-digest', null, [
+                                'id' => 'mpnews-title',
                                 'class' => 'form-control',
-                                'placeholder' => '(如不填写则自动截取正文的前54字)',
+                                'placeholder' => '(如不填写则自动截取正文前54字)',
                             ]) !!}
                         </div>
                     </div>
@@ -73,6 +75,7 @@
                         ]) !!}
                         <div class="col-sm-6">
                             {!! Form::text('mpnews-author', null, [
+                                'id' => 'mpnews-author',
                                 'class' => 'form-control',
                                 'placeholder' => '(可选)',
                             ]) !!}
