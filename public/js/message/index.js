@@ -116,7 +116,7 @@ $(document).on('click', '.mpnews', function () {
             '<label for="file-mpnews" style="margin-right: 10px;" class="custom-file-upload text-blue">' +
                 '<i class="fa fa-pencil"> 更换</i>' +
             '</label>' +
-            $('<input />', {'class': 'file-upload', id: 'file-mpnews', type: 'image', 'accept': 'image/*'}).prop('outerHTML') +
+            $('<input />', {'class': 'file-upload', id: 'file-mpnews', type: 'file', 'accept': 'image/*'}).prop('outerHTML') +
             '<a href="#" class="remove-file"><i class="fa fa-remove text-red"> 删除</i></a><br />' +
             $('<input />', {'class': 'media_id', type: 'hidden', value: news['thumb_media_id']}).prop('outerHTML') +
             $('<img' + ' />', {'src': news['image_url'], 'style': 'height: 200px;'}).prop('outerHTML') +
