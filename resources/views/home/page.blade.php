@@ -54,6 +54,7 @@
 <script src="{{ URL::asset('js/plugins/parsley/parsley.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.extra.js') }}"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.3.0/handlebars.min.js"></script>
 <script src="{{ URL::asset('js/home/plugins.js') }}"></script>
 <script src="{{ URL::asset($js) }}"></script>
 </body>
