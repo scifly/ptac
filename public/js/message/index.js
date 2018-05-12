@@ -23,9 +23,17 @@ var title,
     $cardBtntxt = $('#card-btntxt'),
 
     // 图文
+    $formMpnews = $('#formMpnews'),
     $addMpnews = $('#add-mpnews'),
+    $mpnewsId = $('#mpnews-id'),
+    $mpnewsTitle = $('#mpnews-title'),
+    $mpnewsContent = $('#mpnews-content'),
+    $mpnewsUrl = $('#mpnews-url'),
+    $mpnewsDigest = $('#mpnews-digest'),
+    $mpnewsAuthor = $('#mpnews-author'),
     $modalMpnews = $('#modal-mpnews'),
     $saveMpnews = $('#save-mpnews'),
+    $coverContainer = $('#cover-container'),
 
     // 短信
     smsMaxlength = $('#sms-maxlength').val(),
@@ -95,7 +103,59 @@ $(document).on('click', '.remove-file', function () {
 /** 图文 ------------------------------------------------------------------------------------------------------------- */
 var mpnews = { articles: [] }, mpnewsCount = mpnews['articles'].length;
 // 添加图文
-$addMpnews.on('click', function () { $modalMpnews.modal({ backdrop: true }); });
+$addMpnews.on('click', function () {
+    $mpnewsId.val('');
+    $mpnewsTitle.val('');
+    $mpnewsContent.val('');
+    $mpnewsUrl.val('');
+    $mpnewsDigest.val('');
+    $mpnewsAuthor.val('');
+    $coverContainer.find('.file-content').remove();
+    $coverContainer.find('.upload-button').show();
+    $modalMpnews.modal({ backdrop: true });
+});
+$formMpnews.parsley().on('form:validated', function () {
+    if ($('.parsley-error').length === 0) {
+        var $form = $('#formMpnews'),
+            imgAttrs = {},
+            $container = $('#content_mpnews'),
+            id = $('#mpnews-id').val(),
+            title = $('#mpnews-title').val(),
+            content = $('#mpnews-content').val(),
+            contentSourceUrl = $('#content-source-url').val(),
+            author = $('#mpnews-author').val(),
+            digest = $('#mpnews-digest').val(),
+            mediaId = $form.find('.media_id').val(),
+            imageUrl = $('#cover-container').find('img').attr('src');
+
+        if (id === '') {
+            mpnews['articles'].push({
+                title: title,
+                thumb_media_id: mediaId,
+                author: author,
+                content_source_url: contentSourceUrl,
+                content: content,
+                digest: digest,
+                image_url: imageUrl
+            });
+            imgAttrs = {
+                'class': 'mpnews',
+                'src': imageUrl,
+                'title': title,
+                'id': 'mpnews-' + mpnewsCount
+            };
+            $container.append($('<img' + ' />', imgAttrs).prop('outerHTML'));
+            mpnewsCount += 1;
+        } else {
+            var $mpnews = $($container.children('img')[id]);
+            $mpnews.attr('src', imageUrl);
+            $mpnews.attr('title', title);
+        }
+        $modalMpnews.hide();
+    }
+}).on('form:submit', function () {
+    return false;
+});
 // 编辑图文
 $(document).on('click', '.mpnews', function () {
     var $cover = $('#cover-container'),
@@ -127,41 +187,7 @@ $(document).on('click', '.mpnews', function () {
 });
 // 保存图文
 $saveMpnews.on('click', function () {
-    var $form = $('#formMpnews'),
-        imgAttrs = {},
-        $container = $('#content_mpnews'),
-        id = $('#mpnews-id').val(),
-        title = $('#mpnews-title').val(),
-        content = $('#mpnews-content').val(),
-        contentSourceUrl = $('#content-source-url').val(),
-        author = $('#mpnews-author').val(),
-        digest = $('#mpnews-digest').val(),
-        mediaId = $form.find('.media_id').val(),
-        imageUrl = $('#cover-container').find('img').attr('src');
 
-    if (id === '') {
-        mpnews['articles'].push({
-            title: title,
-            thumb_media_id: mediaId,
-            author: author,
-            content_source_url: contentSourceUrl,
-            content: content,
-            digest: digest,
-            image_url: imageUrl
-        });
-        imgAttrs = {
-            'class': 'mpnews',
-            'src': imageUrl,
-            'title': title,
-            'id': 'mpnews-' + mpnewsCount
-        };
-        $container.append($('<img' + ' />', imgAttrs).prop('outerHTML'));
-        mpnewsCount += 1;
-    } else {
-        var $mpnews = $($container.children('img')[id]);
-        $mpnews.attr('src', imageUrl);
-        $mpnews.attr('title', title);
-    }
 });
 // 删除图文
 $(document).on('click', '#remove-mpnews', function () {

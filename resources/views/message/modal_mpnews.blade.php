@@ -22,7 +22,7 @@
                         ]) !!}
                         <div class="col-sm-6">
                             {!! Form::text('mpnews-title', null, [
-                                'id' => 'mpnwes-title',
+                                'id' => 'mpnews-title',
                                 'class' => 'form-control',
                                 'placeholder' => '(请输入标题)',
                                 'required' => 'true',
@@ -99,7 +99,11 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <a id="save-mpnews" href="#" class="btn btn-sm btn-success" data-dismiss="modal">确定</a>
+                {!! Form::submit('确定', [
+                    'id' => 'save-mpnews',
+                    'class' => 'btn btn-sm btn-success'
+                ]) !!}
+                {{--<a id="save-mpnews" href="#" class="">确定</a>--}}
                 <a id="remove-mpnews" href="#" class="btn btn-sm btn-danger" data-dismiss="modal" style="display: none;">移除</a>
                 <a href="#" class="btn btn-sm btn-white" data-dismiss="modal">取消</a>
             </div>
