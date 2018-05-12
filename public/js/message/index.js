@@ -105,12 +105,12 @@ $(document).on('click', '.mpnews', function () {
 
     $('#mpnews-id').val(id);
     $('#mpnews-title').val(news['title']);
-    $('#mpnews-content').val(news['title']);
+    $('#mpnews-content').val(news['content']);
     $('#content-source-url').val(news['content_source_url']);
     $('#mpnews-author').val(news['author']);
     $('#mpnews-digest').val(news['digest']);
     $cover.find('.upload-button').hide();
-    $cover.find('.file-content').hide();
+    $cover.find('.file-content').remove();
     $cover.append(
         '<div class="file-content">' +
             '<label for="file-mpnews" style="margin-right: 10px;" class="custom-file-upload text-blue">' +
@@ -119,7 +119,7 @@ $(document).on('click', '.mpnews', function () {
             $('<input />', {'class': 'file-upload', id: 'file-mpnews', type: 'image', 'accept': 'image/*'}).prop('outerHTML') +
             '<a href="#" class="remove-file"><i class="fa fa-remove text-red"> 删除</i></a><br />' +
             $('<input />', {'class': 'media_id', type: 'hidden', value: news['thumb_media_id']}).prop('outerHTML') +
-            $('<img' + ' />', {'src': news['image_url'], 'style': 'height: 200px;'}).prop('outerHtml') +
+            $('<img' + ' />', {'src': news['image_url'], 'style': 'height: 200px;'}).prop('outerHTML') +
         '</div>'
     );
     $('#remove-mpnews').show();
