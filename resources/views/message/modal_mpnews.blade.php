@@ -104,7 +104,11 @@
                     'class' => 'btn btn-sm btn-success',
                 ]) !!}
                 {{--<a id="save-mpnews" href="#" class="">确定</a>--}}
-                <a id="remove-mpnews" href="#" class="btn btn-sm btn-danger" data-dismiss="modal" style="display: none;">移除</a>
+                <a id="remove-mpnews" href="#" class="btn btn-sm btn-danger"
+                   data-dismiss="modal" style="display: none;"
+                >
+                    移除当前图文
+                </a>
                 <a href="#" class="btn btn-sm btn-white" data-dismiss="modal">取消</a>
             </div>
         </div>

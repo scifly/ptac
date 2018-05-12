@@ -78,7 +78,7 @@ $(document).on('click', '#cancel .close-targets', function () {
     $targets.hide();
 });
 // 初始化上传文件的事件
-$(document).on('change', '.file-upload', function () { upload($(this))});
+$(document).on('change input', '.file-upload', function () { upload($(this))});
 // 初始化移除上传文件的事件
 $(document).on('click', '.remove-file', function () {
     var $container = $messageContent.find('.tab-pane.active'),
