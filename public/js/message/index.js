@@ -58,25 +58,10 @@ page.initSelect2([{
 page.initDatatable('messages', [
     {className: 'text-center', targets: [1, 2, 3, 4, 5, 6]}
 ]);
-
 // 加载消息中心css
 page.loadCss('css/message/message.css');
-page.loadCss(plugins.htmleditor.css);
-// 加载html5编辑器js
-$.getMultiScripts([plugins.handlebar.js]).done(function () {
-    $.getMultiScripts([plugins.htmleditor.all]).done(function () {
-        $.getMultiScripts([plugins.htmleditor.js]).done(function () {
-            $.getMultiScripts([plugins.htmleditor.locale]).done(function () {
-                var options = {
-                    toolbar: { 'html': true, 'size': 'xs' },
-                    locale: 'zh-CN'
-                };
-                $('#card-description').wysihtml5(options);
-                $('#mpnews-content').wysihtml5(options);
-            });
-        });
-    });
-});
+// 初始化html5编辑器
+initEditor();
 
 /** 发送对象 ---------------------------------------------------------------------------------------------------------- */
 // 选择发送对象
@@ -432,4 +417,25 @@ function upload($file) {
 function warning(message) {
     page.inform('上传文件', message, page.failure);
     return false;
+}
+function initEditor() {
+    page.loadCss(plugins.htmleditor.css);
+    $.getMultiScripts([plugins.handlebar.js]).done(function () {
+        $.getMultiScripts([plugins.htmleditor.all]).done(function () {
+            $.getMultiScripts([plugins.htmleditor.js]).done(function () {
+                $.getMultiScripts([plugins.htmleditor.locale]).done(function () {
+                    var options = {
+                        toolbar: {
+                            html: true,
+                            size: 'xs',
+                            font_styles: true
+                        },
+                        locale: 'zh-CN'
+                    };
+                    $('#card-description').wysihtml5(options);
+                    $('#mpnews-content').wysihtml5(options);
+                });
+            });
+        });
+    });
 }
