@@ -89,6 +89,7 @@ var plugins = {
     },
     htmleditor: {
         css: 'js/plugins/wysihtml5/bootstrap3-wysihtml5.min.css',
+        alljs: 'js/plugins/wysihtml5/bootstrap3-wysihtml5.all.min.js',
         js: 'js/plugins/wysihtml5/bootstrap3-wysihtml5.min.js'
     }
 };
