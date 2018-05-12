@@ -110,7 +110,8 @@ $(document).on('click', '.mpnews', function () {
     $('#mpnews-author').val(news['author']);
     $('#mpnews-digest').val(news['digest']);
     $cover.find('.upload-button').hide();
-    $cover.html(
+    $cover.find('.file-content').hide();
+    $cover.append(
         '<div class="file-content">' +
             '<label for="file-mpnews" style="margin-right: 10px;" class="custom-file-upload text-blue">' +
                 '<i class="fa fa-pencil"> 更换</i>' +
@@ -306,7 +307,6 @@ function upload($file) {
     data.append('file', file);
     data.append('_token', token);
     data.append('type', type === 'mpnews' ? 'image' : type);
-    //请求接口
     $.ajax({
         type: 'POST',
         url: page.siteRoot() + "messages/index",
