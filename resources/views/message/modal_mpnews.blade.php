@@ -56,6 +56,7 @@
                                 'class' => 'form-control',
                                 'placeholder' => '请在此插入原文链接地址（可选）',
                                 'maxlength' => '255',
+                                'type' => 'url'
                             ]) !!}
                         </div>
                     </div>
@@ -93,7 +94,7 @@
                                 'label' => '上传封面图',
                                 'accept' => 'image/*',
                                 'note' => '建议尺寸:1068*598',
-                                'required' => true
+                                'required' => 'true'
                             ])
                         </div>
                     </div>
