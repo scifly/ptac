@@ -68,7 +68,7 @@ var javascripts = [
     plugins.htmleditor.alljs
 ];
 $.getMultiScripts(javascripts).done(function () {
-    $('#card-description').wysihtml5();
+    $('#card-description').wysihtml5({size: 'xs', locale: 'zh-CN'});
     $('#mpnews-content').wysihtml5();
 });
 
