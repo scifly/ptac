@@ -33,7 +33,6 @@ var title,
     $mpnewsDigest = $('#mpnews-digest'),
     $mpnewsAuthor = $('#mpnews-author'),
     $modalMpnews = $('#modal-mpnews'),
-    $saveMpnews = $('#save-mpnews'),
     $removeMpnews = $('#remove-mpnews'),
     $coverContainer = $('#cover-container'),
 
@@ -146,7 +145,7 @@ $formMpnews.parsley().on('form:validated', function () {
                 'title': title,
                 'id': 'mpnews-' + mpnewsCount
             };
-            $coverContainer.append($('<img' + ' />', imgAttrs).prop('outerHTML'));
+            $contentMpnews.append($('<img' + ' />', imgAttrs).prop('outerHTML'));
             mpnewsCount += 1;
         } else {
             var $mpnews = $($contentMpnews.children('img')[id]);
