@@ -139,7 +139,7 @@ $saveMpnews.on('click', function () {
         mediaId = $form.find('.media_id').val(),
         imageUrl = $('#cover-container').find('img').attr('src');
 
-    if (typeof id === 'undefined') {
+    if (id === '') {
         mpnews['articles'].push({
             title: title,
             thumb_media_id: mediaId,
