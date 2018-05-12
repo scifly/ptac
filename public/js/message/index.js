@@ -103,6 +103,11 @@ $(document).on('click', '.remove-file', function () {
     $container.find('.file-upload').val('');
     $container.find('.file-content').remove();
 });
+$('.tab').on('click', function () {
+    $messageContent.find('input').removeAttr(
+        'required data'
+    );
+});
 
 /** 图文 ------------------------------------------------------------------------------------------------------------- */
 var mpnews = { articles: [] },  // 文章数组
@@ -251,6 +256,7 @@ $send.on('click', function () {
 
     switch (type) {
         case 'text':    // 文本
+            $textContent.attr('required', 'true');
             content = { text: { content: $textContent.val() }};
             break;
         case 'image':   // 图片
@@ -413,7 +419,6 @@ function upload($file) {
         }
     });
 }
-
 function warning(message) {
     page.inform('上传文件', message, page.failure);
     return false;
