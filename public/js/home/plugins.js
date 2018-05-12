@@ -87,6 +87,9 @@ var plugins = {
             radioClass: 'iradio_minimal-blue'
         }
     },
+    handlebar: {
+        js: 'js/plugins/handlebar/handlebars-v4.0.11.js'
+    },
     htmleditor: {
         css: 'js/plugins/wysihtml5/bootstrap3-wysihtml5.min.css',
         alljs: 'js/plugins/wysihtml5/bootstrap3-wysihtml5.all.min.js',
