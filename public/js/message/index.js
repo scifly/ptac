@@ -72,7 +72,6 @@ page.initDatatable('messages', [
 page.loadCss('css/message/message.css');
 // 初始化html5编辑器
 initEditor();
-$textContent.attr('required', 'true');
 /** 发送对象 ---------------------------------------------------------------------------------------------------------- */
 // 选择发送对象
 $choose.on('click', function () {

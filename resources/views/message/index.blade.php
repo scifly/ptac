@@ -42,7 +42,7 @@
                             'id' => 'app_ids',
                             'icon' => 'fa fa-weixin text-green',
                             'items' => $apps,
-                            'required' => true
+                            'required' => 'true'
                         ])
                         <!-- 发送对象 -->
                         <div class="form-group">
@@ -52,7 +52,8 @@
                             <div class="col-sm-6">
                                 <div id="checked-nodes"></div>
                                 {!! Form::hidden('selected-node-ids', null, [
-                                    'id' => 'selected-node-ids'
+                                    'id' => 'selected-node-ids',
+                                    'required' => 'true'
                                 ]) !!}
                                 {!! Form::button('<i class="fa fa-user-plus text-blue">&nbsp;选择</i>', [
                                     'id' => 'choose',
@@ -123,7 +124,8 @@
                                                 'id' => 'text-content',
                                                 'placeholder' => '（请在此输入文本消息内容）',
                                                 'class' => 'form-control text-blue',
-                                                'title' => '消息内容'
+                                                'title' => '消息内容',
+                                                'required' => 'true'
                                             ]) !!}
                                         </div>
                                         <!-- 图片 -->
