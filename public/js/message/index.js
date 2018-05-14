@@ -307,7 +307,7 @@ $send.on('click', function () {
             messageTypeId: $messageTypeId.val(),
         };
 
-    if (!$('#formMessage').parsley().validate()) { return false }
+    if (!$('#formMessage').parsley().validate()) { return false; }
     switch (type) {
         case 'text':    // 文本
             $textContent.attr('required', 'true');
