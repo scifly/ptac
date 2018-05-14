@@ -293,7 +293,7 @@ $smsContent.on('keyup', function () {
 
 /** 发送消息 ---------------------------------------------------------------------------------------------------------- */
 $send.on('click', function () {
-    var appIds = $('#app_ids').val(),
+    var appIds = [$('#app_ids').val()],
         targetIds = $('#selected-node-ids').val(),
         types = $('#message-content').find('.tab-pane.active').attr('id').split('_'),
         type = types[types.length - 1],

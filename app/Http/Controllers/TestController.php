@@ -51,7 +51,9 @@ class TestController extends Controller {
     
     public function index() {
 
-        dd(new Message());
+        $m = new Message();
+        list($users) = $m->targets([1], []);
+        dd($users);
         die;
         $corpid = 'wxe75227cead6b8aec';
         $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIE';
