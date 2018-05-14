@@ -137,6 +137,7 @@ $(document).on('change', '.file-upload', function () {
     if ($(this).val() !== '') { upload($(this)); }
 });
 // 初始化移除上传文件的事件
+var uploadBtnHtml = '';
 $(document).on('click', '.remove-file', function () {
     var $container = $messageContent.find('.tab-pane.active'),
         types = $(this).prev().attr('id').split('-'),
@@ -153,14 +154,11 @@ $(document).on('click', '.remove-file', function () {
         default:
             break;
     }
-    $container.find('.upload-button').show();
+    $container.append(uploadBtnHtml);
+    // $container.find('.upload-button').show();
     $container.find('.file-upload').val('');
     $container.find('.file-content').remove();
 });
-
-// $('.tab').on('click', function () {
-//
-// });
 // 初始化html5编辑器
 initEditor();
 
@@ -474,7 +472,8 @@ function upload($file) {
                 default:
                     return false;
             }
-            $container.find('.upload-button').hide();
+            uploadBtnHtml = $container.find('.upload-button').prop('outerHTML');
+            $container.find('.upload-button').remove();
             $container.find('.file-content').remove();
             $container.append(
                 $('<div>', {'class': 'file-content'}).prop('innerHTML', html).prop('outerHTML')
@@ -482,9 +481,9 @@ function upload($file) {
         },
         error: function (e) {
             page.errorHandler(e);
+            $('.file-upload').val('');
         }
     });
-    $('.file-upload').val('');
     return false;
 }
 function initEditor() {
