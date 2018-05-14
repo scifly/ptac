@@ -82,7 +82,7 @@ $('.tab').hover(
         }
     }
 ).click(function () {
-    $messageContent.find('input').removeAttr(
+    $messageContent.find(':input').removeAttr(
         'required data-parsley-length maxlength'
     );
     switch ($(this).attr('href')) {
