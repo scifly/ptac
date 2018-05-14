@@ -6,7 +6,7 @@
         'id' => $id,
         'accept' => $accept,
         'class' => 'file-upload',
-        $required ?? 'required'
+        $required ?? ''
     ]) !!}
     @if (isset($note))
         <p class="help-block">{{ $note }}</p>
