@@ -43,7 +43,7 @@ return [
     ],
     'message' => [
         'title' => '消息中心',
-        'sent' => '消息已发送',
+        'sent' => '已发消息数量：%s<br />发送成功：%s<br />发送失败：%s<br />请点击已发送卡片查看详情。',
         'failed' => '消息发送失败',
         'uploaded' => '文件上传成功',
         'sms_send_failed' => '短信推送失败',

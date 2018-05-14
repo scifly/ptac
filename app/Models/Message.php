@@ -389,10 +389,7 @@ class Message extends Model {
         $commType = !$appId ? '短信' : '微信';
         $failedUserIds = [];
         if ($commType === '微信') {
-            $userIds = User::whereIn('userid', explode('|', $sent['invaliduser']))->pluck('id')->toArray();
-            $deptIds = explode('|', $sent['invalidparty']);
-            list($failedUsers) = $this->targets($userIds, $deptIds);
-            $failedUserIds = $failedUsers->pluck('id')->toArray();
+            $failedUserIds = $this->failedUserIds($sent['invaliduser'], $sent['invalidparty']);
         }
         foreach ($users as $user) {
             if ($commType === '微信') {
@@ -437,6 +434,23 @@ class Message extends Model {
         $mobiles = Mobile::whereIn('user_id', $userIds)->where('enabled', 1)->pluck('mobile')->toArray();
         
         return [$users, $mobiles];
+        
+    }
+    
+    /**
+     * 获取发送失败的接收者用户id
+     *
+     * @param $userids
+     * @param $deptIds
+     * @return mixed
+     */
+    function failedUserIds($userids, $deptIds) {
+    
+        $userIds = User::whereIn('userid', explode('|', $userids))->pluck('id')->toArray();
+        $deptIds = explode('|', $deptIds);
+        list($failedUsers) = $this->targets($userIds, $deptIds);
+        
+        return $failedUsers->pluck('id')->toArray();
         
     }
     

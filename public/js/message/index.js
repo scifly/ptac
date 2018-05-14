@@ -364,7 +364,7 @@ $send.on('click', function () {
         dataType: 'json',
         data: $.extend(formData, content),
         success: function (result) {
-            page.inform(result.title, result.message, page.success);
+            page.inform(result.title, result.message, page.info);
         },
         error: function (e) {
             page.errorHandler(e);
