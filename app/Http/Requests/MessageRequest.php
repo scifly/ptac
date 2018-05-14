@@ -59,7 +59,7 @@ class MessageRequest extends FormRequest {
         $input['sent'] = 0;
         $deptIds = $userIds = [];
         if (isset($input['targetIds'])) {
-            $targetIds = implode(',', $input['targetIds']);
+            $targetIds = explode(',', $input['targetIds']);
             foreach ($targetIds as $targetId) {
                 # paths[2] = user-[departmentId]-[userId]
                 $paths = explode('-', $targetId);
