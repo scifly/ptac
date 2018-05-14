@@ -16,6 +16,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class SendMessage implements ShouldQueue {
@@ -108,6 +109,7 @@ class SendMessage implements ShouldQueue {
             # 创建广播消息
             if (sizeof($results) == 1) {
                 $result = [$results[key($results)]];
+                Log::debug(json_encode($result));
                 if ($result['errcode']) {
                     $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
                     $response['message'] = $result['errmsg'];
