@@ -71,6 +71,7 @@ page.initSelect2([{
 page.initDatatable('messages', [
     {className: 'text-center', targets: [1, 2, 3, 4, 5, 6]}
 ]);
+// 初始化消息类型卡片悬停特效、input parsley验证规则
 $('.tab').hover(
     function () {
         $(this).removeClass('text-gray').addClass('text-blue');
@@ -156,7 +157,7 @@ $(document).on('click', '.remove-file', function () {
     $container.find('.file-upload').val('');
     $container.find('.file-content').remove();
 });
-// 初始化input的parsley验证规则
+
 // $('.tab').on('click', function () {
 //
 // });
@@ -483,6 +484,8 @@ function upload($file) {
             page.errorHandler(e);
         }
     });
+    $('.file-upload').val('');
+    return false;
 }
 function initEditor() {
     page.loadCss(plugins.htmleditor.css);
