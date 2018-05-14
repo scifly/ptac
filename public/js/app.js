@@ -1004,7 +1004,16 @@ Vue.component('example', __webpack_require__(40));
 // );
 
 var notify = function notify(e) {
-    page.inform(e['response']['title'], e['response']['message'], e['response']['statusCode'] === 200 ? page.success : page.failure);
+    var image = page.success;
+    switch (e['response']['statusCode']) {
+        case 200:
+            break;
+        case 202:
+            image = page.info;break;
+        default:
+            image = page.failure;break;
+    }
+    page.inform(e['response']['title'], e['response']['message'], image);
 };
 // noinspection JSUnusedLocalSymbols
 var app = new Vue({
