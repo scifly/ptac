@@ -384,9 +384,19 @@ class Message extends Model {
      * @param null $appId - 应用id
      */
     function log($users, $sUserId, $mslId, $title, $content, $sent, $read, $msgTypeId, $appId = null) {
-        
+    
+        $commType = !$appId ? '短信' : '微信';
+        $failedUserIds = [];
+        if ($commType === '微信') {
+            $userIds = User::whereIn('userid', explode('|', $sent['invaliduser']))->pluck('id')->toArray();
+            $deptIds = explode('|', $sent['invalidparty']);
+            list($failedUsers) = $this->targets($userIds, $deptIds);
+            $failedUserIds = $failedUsers->pluck('id')->toArray();
+        }
         foreach ($users as $user) {
-            $commType = !$appId ? '短信' : '微信';
+            if ($commType === '微信') {
+                $sent = !in_array($user->id, $failedUserIds);
+            }
             $this->create([
                 'comm_type_id'    => CommType::whereName($commType)->first()->id,
                 'app_id'          => $appId ?? 0,
@@ -400,8 +410,8 @@ class Message extends Model {
                 's_user_id'       => $sUserId,
                 'r_user_id'       => $user->id,
                 'message_type_id' => $msgTypeId,
-                'sent'            => $sent ? 0 : 1,
-                'read'            => $read ? 0 : 1,
+                'sent'            => $sent ? 1 : 0,
+                'read'            => $read ? 1 : 0,
             ]);
         }
         

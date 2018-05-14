@@ -70,7 +70,6 @@ class SendMessage implements ShouldQueue {
             'recipient_count' => count($users),
         ];
         $mslId = MessageSendingLog::create($msl)->id;
-        Log::debug($this->data['type']);
         # 发送消息
         if ($this->data['type'] == 'sms') {
             # 发送短信消息
@@ -85,7 +84,7 @@ class SendMessage implements ShouldQueue {
             # 创建用户消息发送日志
             $message->log(
                 $users, $this->userId, $mslId, '', $this->data['sms'],
-                $result > 0, $result > 0, $this->data['message_type_id']
+                $result <= 0, $result <= 0, $this->data['message_type_id']
             );
         } else {
             # 发送微信消息
@@ -99,15 +98,13 @@ class SendMessage implements ShouldQueue {
                     $this->data['type'] => $this->data[$this->data['type']]
                 ];
                 # 发送消息
-                Log::debug('content: ' . json_encode($content));
                 $result = $this->sendMessage($this->corp, $app, $content);
                 # 创建用户消息发送日志
                 $message->log(
                     $users, $this->userId, $mslId, '', json_encode($content),
-                    $result['errcode'], 0, $this->data['message_type_id'], $app['id']
+                    $result, 0, $this->data['message_type_id'], $app['id']
                 );
                 $results[$app['id']] = $result;
-                Log::debug(json_encode($results));
             }
             # 创建广播消息
             if (sizeof($results) == 1) {

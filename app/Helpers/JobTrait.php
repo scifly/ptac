@@ -74,7 +74,10 @@ trait JobTrait {
         
         return [
             'errcode' => $result->{'errcode'},
-            'errmsg' => Wechat::ERRMSGS[$result->{'errcode'}]
+            'errmsg' => Wechat::ERRMSGS[$result->{'errcode'}],
+            'invaliduser' => $result->{'invaliduser'},
+            'invalidparty' => $result->{'invalidparty'},
+            'invalidtag' => $result->{'invalidtag'}
         ];
         
     }
