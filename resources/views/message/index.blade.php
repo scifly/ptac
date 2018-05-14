@@ -37,12 +37,11 @@
                         'data-parsley-validate' => 'true'
                     ]) !!}
                         <!-- 选择应用 -->
-                        @include('partials.multiple_select', [
+                        @include('partials.single_select', [
                             'label' => '应用',
                             'id' => 'app_ids',
                             'icon' => 'fa fa-weixin text-green',
                             'items' => $apps,
-                            'required' => 'true'
                         ])
                         <!-- 发送对象 -->
                         <div class="form-group">
