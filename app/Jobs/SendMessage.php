@@ -22,7 +22,7 @@ class SendMessage implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait, JobTrait;
 
-    protected $data, $userIds, $deptIds, $userId, $corp, $apps, $message;
+    protected $data, $userId, $corp, $apps, $message;
     
     /**
      * SendMessage constructor.
@@ -35,14 +35,9 @@ class SendMessage implements ShouldQueue {
      * @param array $apps
      * @param Message $message
      */
-    public function __construct(
-        array $data, array $userIds, array $deptIds, $userId,
-        Corp $corp = null, array $apps = [], Message $message
-    ) {
+    public function __construct(array $data, $userId, Corp $corp = null, array $apps = [], Message $message) {
         
         $this->data = $data;
-        $this->userIds = $userIds;
-        $this->deptIds = $deptIds;
         $this->userId = $userId;
         $this->corp = $corp;
         $this->apps = $apps;
@@ -63,7 +58,7 @@ class SendMessage implements ShouldQueue {
             'message' => __('messages.sent')
         ];
         list($users, $mobiles) = $this->message->targets(
-            $this->userIds, $this->deptIds
+            $this->data['user_ids'], $this->data['dept_ids']
         );
         # 创建发送日志
         $msl = [
@@ -99,8 +94,8 @@ class SendMessage implements ShouldQueue {
             $results = [];
             foreach ($this->apps as $app) {
                 $message = [
-                    'touser'  => implode('|', User::whereIn('id', $this->userIds)->pluck('userid')->toArray()),
-                    'toparty' => implode('|', $this->deptIds),
+                    'touser'  => implode('|', User::whereIn('id', $this->data['user_ids'])->pluck('userid')->toArray()),
+                    'toparty' => implode('|', $this->data['dept_ids']),
                     'agentid' => $app['agentid'],
                     'msgtype' => $this->data['type']
                 ];

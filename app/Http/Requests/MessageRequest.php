@@ -57,11 +57,21 @@ class MessageRequest extends FormRequest {
         $input['message_type_id'] = 5;
         $input['read'] = 0;
         $input['sent'] = 0;
-        $input['media_ids'] = $input['media_ids'] ? implode(',', $input['media_ids']) : [];
-    
-        if (isset($input['selectedDepartments'])) {
-            $input['department_ids'] = $this->getInputUserIds($input['selectedDepartments']);
+        $deptIds = $userIds = [];
+        if (isset($input['targetIds'])) {
+            foreach ($input['targetIds'] as $targetId) {
+                # paths[2] = user-[departmentId]-[userId]
+                $paths = explode('-', $targetId);
+                if (isset($paths[2])) {
+                    $userIds[] = $paths[2];
+                } else {
+                    $deptIds[] = $targetId;
+                }
+            }
         }
+        $input['user_ids'] = array_unique($userIds);
+        $input['dept_ids'] = array_unique($deptIds);
+        
         $this->replace($input);
         
     }

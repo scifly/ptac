@@ -343,18 +343,8 @@ class Message extends Model {
         $corp = School::find($this->schoolId())->corp;
         abort_if(!$corp, HttpStatusCode::NOT_FOUND, __('messages.message.invalid_corp'));
         # 获取发送对象(部门和用户）
-        $deptIds = $userIds = [];
-        foreach ($targetIds as $targetId) {
-            # paths[2] = user-[departmentId]-[userId]
-            $paths = explode('-', $targetId);
-            if (isset($paths[2])) {
-                $userIds[] = $paths[2];
-            } else {
-                $deptIds[] = $targetId;
-            }
-        }
-        $userIds = array_unique($userIds);
-        $deptIds = array_unique($deptIds);
+        
+        
         SendMessage::dispatch($data, $userIds, $deptIds, Auth::id(), $corp, $apps);
         
         return true;
