@@ -389,6 +389,7 @@ class Message extends Model {
         $commType = !$appId ? '短信' : '微信';
         $failedUserIds = [];
         if ($commType === '微信') {
+            Log::debug(json_encode($sent));
             $userIds = User::whereIn('userid', explode('|', $sent['invaliduser']))->pluck('id')->toArray();
             $deptIds = explode('|', $sent['invalidparty']);
             list($failedUsers) = $this->targets($userIds, $deptIds);
