@@ -478,6 +478,7 @@ function upload($file) {
             $container.append(
                 $('<div>', {'class': 'file-content'}).prop('innerHTML', html).prop('outerHTML')
             );
+            $('#file-' + type).val(result.data.filename);
         },
         error: function (e) {
             page.errorHandler(e);
