@@ -304,7 +304,7 @@ $send.on('click', function () {
             type: type,
             appIds: appIds,
             targetIds: targetIds,
-            messageTypeId: $messageTypeId.val(),
+            message_type_id: $messageTypeId.val(),
         };
 
     if (!$('#formMessage').parsley().validate()) { return false; }
