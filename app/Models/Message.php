@@ -374,6 +374,7 @@ class Message extends Model {
      * 记录消息发送日志
      *
      * @param $users - 发送对象
+     * @param $sUserId
      * @param $mslId - 发送日志id
      * @param $title - 消息抬头
      * @param $content - 消息内容（文本）
@@ -385,8 +386,7 @@ class Message extends Model {
     function log($users, $sUserId, $mslId, $title, $content, $sent, $read, $msgTypeId, $appId = null) {
         
         foreach ($users as $user) {
-            $commType = empty($app) ? '短信' : '微信';
-            $mediaIds = $content['media_ids'] ?? 0;
+            $commType = $appId ? '短信' : '微信';
             $this->create([
                 'comm_type_id'    => CommType::whereName($commType)->first()->id,
                 'app_id'          => $appId ?? 0,
@@ -396,7 +396,7 @@ class Message extends Model {
                 'serviceid'       => 0,
                 'message_id'      => 0,
                 'url'             => '',
-                'media_ids'       => $mediaIds,
+                'media_ids'       => '0',
                 's_user_id'       => $sUserId,
                 'r_user_id'       => $user->id,
                 'message_type_id' => $msgTypeId,
