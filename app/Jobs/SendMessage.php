@@ -1,23 +1,22 @@
 <?php
 namespace App\Jobs;
 
-use App\Events\JobResponse;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\JobTrait;
-use App\Helpers\ModelTrait;
+use Throwable;
+use Exception;
 use App\Models\App;
 use App\Models\Corp;
-use App\Models\Message;
-use App\Models\MessageSendingLog;
 use App\Models\User;
-use Exception;
+use App\Models\Message;
+use App\Helpers\JobTrait;
+use App\Events\JobResponse;
+use App\Helpers\ModelTrait;
 use Illuminate\Bus\Queueable;
+use App\Helpers\HttpStatusCode;
+use App\Models\MessageSendingLog;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
-use Throwable;
 
 class SendMessage implements ShouldQueue {
     

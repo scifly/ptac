@@ -1,8 +1,10 @@
 //# sourceURL=index.js
 var token = $('#csrf_token').attr('content'),
+    $targetIds = $('#selected-node-ids'),
     $message = $('#message'),
     $messageTypeId = $('#message_type_id'),
     $messageContent = $('#message-content'),
+
 
     // 发送对象
     $targets = $('#targets'),
@@ -54,7 +56,8 @@ var token = $('#csrf_token').attr('content'),
     availableLength = '',
 
     // 发送按钮
-    $send = $('#send');
+    $send = $('#send'),
+    $preview = $('#preview');
 
 // 初始化select2控件
 page.initSelect2([{
@@ -293,20 +296,34 @@ $smsContent.on('keyup', function () {
 
 /** 发送消息 ---------------------------------------------------------------------------------------------------------- */
 $send.on('click', function () {
+    $targetIds.attr('required', 'true');
+    send(false);
+});
+
+$preview.on('click', function () {
+    $targetIds.removeAttr('required');
+    send(true);
+});
+
+/** Helper functions ------------------------------------------------------------------------------------------------ */
+function send(preview) {
     var appIds = [$('#app_ids').val()],
         targetIds = $('#selected-node-ids').val(),
         types = $('#message-content').find('.tab-pane.active').attr('id').split('_'),
         type = types[types.length - 1],
         $container = $('#content_' + type),
-        content = null,
-        formData = {
-            _token: token,
-            type: type,
-            app_ids: appIds,
-            targetIds: targetIds,
-            message_type_id: $messageTypeId.val(),
-        };
+        content = null, formData;
 
+    if (preview) {
+        targetIds = 'user-0-' . $('#userId').val();
+    }
+    formData = {
+        _token: token,
+        type: type,
+        app_ids: appIds,
+        targetIds: targetIds,
+        message_type_id: $messageTypeId.val(),
+    };
     if (!$('#formMessage').parsley().validate()) { return false; }
     switch (type) {
         case 'text':    // 文本
@@ -364,7 +381,7 @@ $send.on('click', function () {
         dataType: 'json',
         data: $.extend(formData, content),
         success: function (result) {
-            page.inform(result.title, result.message, page.info);
+            page.inform(result.title, !preview ? result.message : '预览消息已发送至您的手机微信，请打开相关应用查看', page.info);
         },
         error: function (e) {
             page.errorHandler(e);
@@ -372,9 +389,7 @@ $send.on('click', function () {
     });
 
     return false;
-});
-
-/** Helper functions ------------------------------------------------------------------------------------------------ */
+}
 // 上传文件 (图片、语音、视频、文件、封面图）
 function upload($file) {
     var file = $file[0].files[0],

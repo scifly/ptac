@@ -236,7 +236,7 @@
                                 </button>
                                 <input type="button" class="btn btn-default btn-sm" id="time-send" value="定时发送" disabled>
                                 <input type="button" class="btn btn-default btn-sm" id="draft" value="存为草稿" disabled>
-                                <input type="button" class="btn btn-default btn-sm" id="preview" value="预览" disabled>
+                                <input type="button" class="btn btn-default btn-sm" id="preview" value="预览">
                             </div>
                         </div>
                         {!! Form::close() !!}
