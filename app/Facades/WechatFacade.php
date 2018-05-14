@@ -333,7 +333,7 @@ class Wechat extends Facade {
      */
     static function getAccessToken($corpid, $secret, $contactSync = false) {
         
-        function token($corpid, $secret) {
+        function _token($corpid, $secret) {
 
             $result = json_decode(
                 Wechat::curlGet(sprintf(Wechat::URL_GET_ACCESSTOKEN, $corpid, $secret))
@@ -351,7 +351,7 @@ class Wechat extends Facade {
             : Corp::whereContactSyncSecret($secret)->first();
         if ($app) {
             if ($app['expire_at'] < time() || !isset($app['expire_at'])) {
-                $token = token($corpid, $secret);
+                $token = _token($corpid, $secret);
                 if ($token['errcode'] == 0) {
                     $app->update([
                         'expire_at' => date('Y-m-d H:i:s', time() + 7000),
@@ -362,7 +362,7 @@ class Wechat extends Facade {
                 $token = ['errcode' => 0, 'access_token' => $app['access_token']];
             }
         } else {
-            $token = token($corpid, $secret);
+            $token = _token($corpid, $secret);
         }
 
         return $token;

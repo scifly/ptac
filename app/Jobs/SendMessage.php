@@ -63,7 +63,6 @@ class SendMessage implements ShouldQueue {
         list($users, $mobiles) = $message->targets(
             $this->data['user_ids'], $this->data['dept_ids']
         );
-        Log::debug(json_encode($users));
         # 创建发送日志
         $msl = [
             'read_count'      => 0,
