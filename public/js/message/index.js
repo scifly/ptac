@@ -71,35 +71,16 @@ page.initSelect2([{
 page.initDatatable('messages', [
     {className: 'text-center', targets: [1, 2, 3, 4, 5, 6]}
 ]);
-// 加载消息中心css
-page.loadCss('css/message/message.css');
-// 初始化上传文件的事件
-$(document).on('change', '.file-upload', function () {
-    if ($(this).val() !== '') { upload($(this)); }
-});
-// 初始化移除上传文件的事件
-$(document).on('click', '.remove-file', function () {
-    var $container = $messageContent.find('.tab-pane.active'),
-        types = $(this).prev().attr('id').split('-'),
-        type = types[types.length - 1];
-
-    switch (type) {
-        case 'mpnews':
-            $container = $('#cover-container');
-            break;
-        case 'video':
-            // btntxt = '上传视频';
-            $container = $('#video-container');
-            break;
-        default:
-            break;
+$('.tab').hover(
+    function () {
+        $(this).removeClass('text-gray').addClass('text-blue');
+    },
+    function () {
+        if (!($(this).parent().hasClass('active'))) {
+            $(this).removeClass('text-blue').addClass('text-gray');
+        }
     }
-    $container.find('.upload-button').show();
-    $container.find('.file-upload').val('');
-    $container.find('.file-content').remove();
-});
-// 初始化input的parsley验证规则
-$('.tab').on('click', function () {
+).click(function () {
     $messageContent.find('input').removeAttr(
         'required data-parsley-length maxlength'
     );
@@ -147,6 +128,38 @@ $('.tab').on('click', function () {
             break;
     }
 });
+page.refreshTabs();
+// 加载消息中心css
+page.loadCss('css/message/message.css');
+// 初始化上传文件的事件
+$(document).on('change', '.file-upload', function () {
+    if ($(this).val() !== '') { upload($(this)); }
+});
+// 初始化移除上传文件的事件
+$(document).on('click', '.remove-file', function () {
+    var $container = $messageContent.find('.tab-pane.active'),
+        types = $(this).prev().attr('id').split('-'),
+        type = types[types.length - 1];
+
+    switch (type) {
+        case 'mpnews':
+            $container = $('#cover-container');
+            break;
+        case 'video':
+            // btntxt = '上传视频';
+            $container = $('#video-container');
+            break;
+        default:
+            break;
+    }
+    $container.find('.upload-button').show();
+    $container.find('.file-upload').val('');
+    $container.find('.file-content').remove();
+});
+// 初始化input的parsley验证规则
+// $('.tab').on('click', function () {
+//
+// });
 // 初始化html5编辑器
 initEditor();
 
