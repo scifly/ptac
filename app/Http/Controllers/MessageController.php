@@ -63,7 +63,7 @@ class MessageController extends Controller {
      * @throws Exception
      * @throws Throwable
      */
-    public function send(MessageRequest $request) {
+    public function store(MessageRequest $request) {
         
         return $this->result(
             $this->message->send($request->all()),

@@ -248,7 +248,7 @@ Route::group(['prefix' => 'messages'], function () {
     $c = 'MessageController';
     Route::get('index', $c . '@index');
     Route::post('index', $c . '@index');
-    Route::get('send', $c . '@send');
+    Route::get('store', $c . '@store');
     Route::any('uploadFile', $c . '@uploadFile');
 });
 # 日历
