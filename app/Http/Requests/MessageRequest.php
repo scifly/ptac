@@ -31,8 +31,8 @@ class MessageRequest extends FormRequest {
             'message_type_id' => 'required|integer',
             'read'            => 'required|boolean',
             'sent'            => 'required|boolean',
-            'user_ids'        => 'required|array',
-            'dept_ids'        => 'required|array',
+            'user_ids'        => 'nullable|array',
+            'dept_ids'        => 'nullable|array',
             'app_ids'         => 'required|array'
         ];
         
