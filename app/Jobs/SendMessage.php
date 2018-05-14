@@ -58,7 +58,7 @@ class SendMessage implements ShouldQueue {
             'userId' => $this->userId,
             'title' => __('messages.message.title'),
             'statusCode' => HttpStatusCode::OK,
-            'message' => __('messages.sent')
+            'message' => __('messages.message.sent')
         ];
         list($users, $mobiles) = $message->targets(
             $this->data['user_ids'], $this->data['dept_ids']
