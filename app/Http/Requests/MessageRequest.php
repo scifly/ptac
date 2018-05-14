@@ -77,36 +77,4 @@ class MessageRequest extends FormRequest {
         
     }
     
-    /**
-     *
-     * 参数 传入选中的department和user的id
-     * 返回 获得输入框中部门下的user和选择的user的id
-     * @param $ids
-     * @return array
-     */
-    private function getInputUserIds($ids) {
-        
-        $accordUserGetId = [];
-        $accordDepartGetId = [];
-        $str = 'UserId_';
-        foreach ($ids as $userId) {
-            #筛选出是user的id
-            if (strpos($userId, $str) !== false) {
-                $deleteHeaderNum = strstr($userId, $str);
-                $accordUserGetId[] = substr($deleteHeaderNum, 7);
-            } else {
-                #这里是部门对应的userId
-                $department = Department::find($userId);
-                foreach ($department->users as $user) {
-                    $accordDepartGetId[] = $user['id'];
-                }
-            }
-        }
-        
-        return $receiveUserIds = array_unique(
-            array_merge($accordUserGetId, $accordDepartGetId)
-        );
-        
-    }
-    
 }
