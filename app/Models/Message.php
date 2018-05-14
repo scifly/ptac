@@ -386,7 +386,7 @@ class Message extends Model {
     function log($users, $sUserId, $mslId, $title, $content, $sent, $read, $msgTypeId, $appId = null) {
         
         foreach ($users as $user) {
-            $commType = $appId ? '短信' : '微信';
+            $commType = !$appId ? '短信' : '微信';
             $this->create([
                 'comm_type_id'    => CommType::whereName($commType)->first()->id,
                 'app_id'          => $appId ?? 0,
