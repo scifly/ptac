@@ -336,15 +336,14 @@ class Message extends Model {
      */
     function send($data) {
         
-        $targetIds = explode(',', $data['departIds']);
-        abort_if(empty($targetIds), HttpStatusCode::NOT_ACCEPTABLE, __('messages.message.empty_targets'));
+        abort_if(
+            empty($data['user_ids']) && empty($data['dept_ids']) && empty($data['app_ids']),
+            HttpStatusCode::NOT_ACCEPTABLE,
+            __('messages.message.empty_targets')
+        );
         $apps = App::whereIn('id', $data['app_ids'])->get()->toArray();
-        // abort_if(empty($apps), HttpStatusCode::NOT_ACCEPTABLE, __('messages.message.invalid_app_list'));
         $corp = School::find($this->schoolId())->corp;
         abort_if(!$corp, HttpStatusCode::NOT_FOUND, __('messages.message.invalid_corp'));
-        # 获取发送对象(部门和用户）
-        
-        
         SendMessage::dispatch($data, Auth::id(), $corp, $apps);
         
         return true;
