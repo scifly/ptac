@@ -168,6 +168,7 @@ input[type="file"] {
 .custom-file-upload {
     display: inline-block;
     cursor: pointer;
+    margin-right: 10px;
 }
 .tab-pane.active {
     position: relative;

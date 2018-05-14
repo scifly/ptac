@@ -56,7 +56,7 @@ var token = $('#csrf_token').attr('content'),
     // 发送按钮
     $send = $('#send');
 
-// 初始化select2
+// 初始化select2控件
 page.initSelect2([{
     option: {
         templateResult: page.formatStateImg,
@@ -70,23 +70,6 @@ page.initDatatable('messages', [
 ]);
 // 加载消息中心css
 page.loadCss('css/message/message.css');
-// 初始化html5编辑器
-initEditor();
-/** 发送对象 ---------------------------------------------------------------------------------------------------------- */
-// 选择发送对象
-$choose.on('click', function () {
-    $message.hide();
-    $targets.show();
-});
-// 部门及联系人树加载
-$.getMultiScripts(['js/tree.js']).done(function () {
-    $.tree().list('messages/index', 'contact');
-});
-// 关闭发送对象选择窗口
-$(document).on('click', '#cancel .close-targets', function () {
-    $message.show();
-    $targets.hide();
-});
 // 初始化上传文件的事件
 $(document).on('change', '.file-upload', function () {
     if ($(this).val() !== '') { upload($(this)); }
@@ -112,6 +95,7 @@ $(document).on('click', '.remove-file', function () {
     $container.find('.file-upload').val('');
     $container.find('.file-content').remove();
 });
+// 初始化input的parsley验证规则
 $('.tab').on('click', function () {
     $messageContent.find('input').removeAttr(
         'required data-parsley-length maxlength'
@@ -160,6 +144,24 @@ $('.tab').on('click', function () {
             break;
     }
 });
+// 初始化html5编辑器
+initEditor();
+
+/** 发送对象 ---------------------------------------------------------------------------------------------------------- */
+// 选择发送对象
+$choose.on('click', function () {
+    $message.hide();
+    $targets.show();
+});
+// 部门及联系人树加载
+$.getMultiScripts(['js/tree.js']).done(function () {
+    $.tree().list('messages/index', 'contact');
+});
+// 关闭发送对象选择窗口
+$(document).on('click', '#cancel .close-targets', function () {
+    $message.show();
+    $targets.hide();
+});
 
 /** 图文 ------------------------------------------------------------------------------------------------------------- */
 var mpnews = { articles: [] },  // 文章数组
@@ -198,7 +200,7 @@ $(document).on('click', '.mpnews', function () {
     $coverContainer.find('.file-content').remove();
     $coverContainer.append(
         '<div class="file-content">' +
-        '<label for="file-mpnews" style="margin-right: 10px;" class="custom-file-upload text-blue">' +
+        '<label for="file-mpnews" class="custom-file-upload text-blue">' +
         '<i class="fa fa-pencil"> 更换</i>' +
         '</label>' +
         $('<input />', {'class': 'file-upload', id: 'file-mpnews', type: 'file', 'accept': 'image/*'}).prop('outerHTML') +
@@ -210,7 +212,7 @@ $(document).on('click', '.mpnews', function () {
     $removeMpnews.show();
     $modalMpnews.modal({ backdrop: true });
 });
-// 保存图文
+// 保存/更新图文
 $formMpnews.parsley().on('form:validated', function () {
     if ($('.parsley-error').length === 0) {
         var imgAttrs = {},
@@ -297,7 +299,6 @@ $send.on('click', function () {
         type = types[types.length - 1],
         $container = $('#content_' + type),
         content = null,
-        mediaId = '',
         formData = {
             _token: token,
             type: type,
@@ -343,15 +344,11 @@ $send.on('click', function () {
             formData['type'] = 'textcard';
             break;
         case 'mpnews': // 图文
-            var articles = {
-                title: $('.show_imagetext_title').text(),
-                content: $('.show_imagetext_content').html(),
-                author: $('.show_imagetext_author').val(),
-                content_source_url: $('.show_imagetext_content_source_url').val(),
-                thumb_media_id: $('.show_imagetext_pic_media_id').val(),
+            content = {
+                mpnews: {
+                    articles: mpnews['articles']
+                }
             };
-            content = {articles: articles};
-            mediaId = $('.show_imagetext_media_id').val();
             break;
         case 'sms': // 短信
             appIds = [0];
@@ -361,22 +358,6 @@ $send.on('click', function () {
             break;
     }
 
-    // if (appIds.toString() === '') {
-    //     page.inform(title, '应用不能为空', page.failure);
-    //     return false
-    // }
-    // if (targetIds === '') {
-    //     page.inform(title, '对象不能为空', page.failure);
-    //     return false
-    // }
-    // if (content['text'] === '') {
-    //     page.inform(title, '内容不能为空', page.failure);
-    //     return false
-    // }
-    // if (content['sms'] === '') {
-    //     page.inform(title, '短信内容不能为空', page.failure);
-    //     return false
-    // }
     $.ajax({
         url: page.siteRoot() + "messages/store",
         type: 'POST',
@@ -402,7 +383,8 @@ function upload($file) {
         ext = names[names.length - 1].toUpperCase();
 
     if ($.inArray(ext, ['JPG', 'PNG', 'AMR', 'MP4']) === -1) {
-        return warning('不支持这种文件格式');
+        page.inform('消息中心', '不支持这种文件格式', page.failure);
+        return false;
     }
     page.inform('消息中心', '文件上传中...', page.info);
     $('.overlay').show();
@@ -420,7 +402,7 @@ function upload($file) {
             $('.overlay').hide();
             page.inform(result.title, result.message, page.success);
             var html =
-                '<label for="file-' + type + '" style="margin-right: 10px;" class="custom-file-upload text-blue">' +
+                '<label for="file-' + type + '" class="custom-file-upload text-blue">' +
                 '<i class="fa fa-pencil"> 更换</i>' +
                 '</label>' +
                 $('<input />', {'class': 'file-upload', id: 'file-' + type, type: 'file', 'accept': type + '/*'}).prop('outerHTML') +
@@ -471,10 +453,6 @@ function upload($file) {
             page.errorHandler(e);
         }
     });
-}
-function warning(message) {
-    page.inform('上传文件', message, page.failure);
-    return false;
 }
 function initEditor() {
     page.loadCss(plugins.htmleditor.css);
