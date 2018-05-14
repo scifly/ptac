@@ -99,6 +99,7 @@ class SendMessage implements ShouldQueue {
                     $this->data['type'] => $this->data[$this->data['type']]
                 ];
                 # 发送消息
+                Log::debug('content: ' . json_encode($content));
                 $result = $this->sendMessage($this->corp, $app, $content);
                 # 创建用户消息发送日志
                 $message->log(
