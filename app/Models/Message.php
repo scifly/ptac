@@ -382,7 +382,7 @@ class Message extends Model {
      * @param $msgTypeId - 消息类型
      * @param null $appId - 应用id
      */
-    function log($users, $mslId, $title, $content, $sent, $read, $msgTypeId, $appId = null) {
+    function log($users, $sUserId, $mslId, $title, $content, $sent, $read, $msgTypeId, $appId = null) {
         
         foreach ($users as $user) {
             $commType = empty($app) ? '短信' : '微信';
@@ -397,7 +397,7 @@ class Message extends Model {
                 'message_id'      => 0,
                 'url'             => '',
                 'media_ids'       => $mediaIds,
-                's_user_id'       => Auth::id(),
+                's_user_id'       => $sUserId,
                 'r_user_id'       => $user->id,
                 'message_type_id' => $msgTypeId,
                 'sent'            => $sent ? 0 : 1,
