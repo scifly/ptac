@@ -345,7 +345,7 @@ class Message extends Model {
         # 获取发送对象(部门和用户）
         
         
-        SendMessage::dispatch($data, $userIds, $deptIds, Auth::id(), $corp, $apps);
+        SendMessage::dispatch($data, Auth::id(), $corp, $apps);
         
         return true;
         
