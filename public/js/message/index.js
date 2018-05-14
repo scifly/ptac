@@ -370,6 +370,8 @@ $send.on('click', function () {
             page.errorHandler(e);
         }
     });
+
+    return false;
 });
 
 /** Helper functions ------------------------------------------------------------------------------------------------ */
