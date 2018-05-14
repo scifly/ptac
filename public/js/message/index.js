@@ -123,7 +123,7 @@ $('.tab').on('click', function () {
                 'required': 'true',
                 'data-parsley-length': '[2,128]',
             });
-            $cardDescription({
+            $cardDescription.attr({
                 'required': 'true',
                 'data-parsley-length': '[2,512]'
             });
