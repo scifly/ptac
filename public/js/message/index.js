@@ -476,10 +476,14 @@ function upload($file) {
                 default:
                     return false;
             }
-            var $uploadBtn = $container.find('.upload-button');
+            var $uploadBtn = $container.find('.upload-button'),
+                $filename = $uploadBtn.find('.media_id').next();
             $uploadBtn.find('.remove-file').show();
             $uploadBtn.find('label').html('<i class="fa fa-pencil"> 更换</i>');
-            $uploadBtn.find('.media_id').next().remove();
+            if ($filename.attr('class') !== 'help-block') {
+                $filename.remove();
+            }
+            $uploadBtn.find('.media_id').after(html);
             $uploadBtn.append(html);
         },
         error: function (e) {
