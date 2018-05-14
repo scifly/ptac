@@ -392,6 +392,7 @@ class Message extends Model {
             $userIds = User::whereIn('userid', explode('|', $sent['invaliduser']))->pluck('id')->toArray();
             $deptIds = explode('|', $sent['invalidparty']);
             list($failedUsers) = $this->targets($userIds, $deptIds);
+            Log::debug(json_encode($failedUsers));
             $failedUserIds = $failedUsers->pluck('id')->toArray();
             Log::debug('failed_userIds ' . json_encode($failedUserIds));
         }
