@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
@@ -392,6 +393,7 @@ class Message extends Model {
             $deptIds = explode('|', $sent['invalidparty']);
             list($failedUsers) = $this->targets($userIds, $deptIds);
             $failedUserIds = $failedUsers->pluck('id')->toArray();
+            Log::debug('failed_userIds ' . json_encode($failedUserIds));
         }
         foreach ($users as $user) {
             if ($commType === '微信') {
