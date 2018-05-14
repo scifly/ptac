@@ -219,7 +219,12 @@ $addMpnews.on('click', function () {
 $(document).on('click', '.mpnews', function () {
     var ids = $(this).attr('id').split('-'),
         id = ids[ids.length - 1],
-        news = mpnews['articles'][id];
+        news = mpnews['articles'][id],
+        $uploadBtn = $coverContainer.find('.upload-button'),
+        $label = $uploadBtn.find('label'),
+        $removeFile = $uploadBtn.find('.remove-file'),
+        $mediaId = $uploadBtn.find('.media_id'),
+        $file = $mediaId.next();
 
     $mpnewsId.val(id);
     $mpnewsTitle.val(news['title']);
@@ -227,19 +232,11 @@ $(document).on('click', '.mpnews', function () {
     $contentSourceUrl.val(news['content_source_url']);
     $mpnewsAuthor.val(news['author']);
     $mpnewsDigest.val(news['digest']);
-    $coverContainer.find('.upload-button').hide();
-    $coverContainer.find('.file-content').remove();
-    $coverContainer.append(
-        '<div class="file-content">' +
-        '<label for="file-mpnews" class="custom-file-upload text-blue">' +
-        '<i class="fa fa-pencil"> 更换</i>' +
-        '</label>' +
-        $('<input />', {'class': 'file-upload', id: 'file-mpnews', type: 'file', 'accept': 'image/*'}).prop('outerHTML') +
-        '<a href="#" class="remove-file"><i class="fa fa-remove text-red"> 删除</i></a><br />' +
-        $('<input />', {'class': 'media_id', type: 'hidden', value: news['thumb_media_id']}).prop('outerHTML') +
-        $('<img' + ' />', {'src': news['image_url'], 'style': 'height: 200px;'}).prop('outerHTML') +
-        '</div>'
-    );
+    $label.html('<i class="fa fa-pencil"></i> 更换');
+    $removeFile.show();
+    $mediaId.val(news['thumb_media_id']);
+    if ($file.attr('class') !== 'help-block') { $file.remove(); }
+    $mediaId.after($('<img' + ' />', {'src': news['image_url'], 'style': 'height: 200px;'}).prop('outerHTML'));
     $removeMpnews.show();
     $modalMpnews.modal({ backdrop: true });
 });
