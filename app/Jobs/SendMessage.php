@@ -109,16 +109,13 @@ class SendMessage implements ShouldQueue {
             # 创建广播消息
             if (sizeof($results) == 1) {
                 $result = $results[key($results)];
-                Log::debug(json_encode($result));
                 if ($result['errcode']) {
                     $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
                     $response['message'] = $result['errmsg'];
                 } else {
                     $total = count($users);
-                    Log::debug('youarehere');
-                    $failed = count($message->targets($result['invaliduser'], $result['invalidparty']));
+                    $failed = count($message->failedUserIds($result['invaliduser'], $result['invalidparty']));
                     $succeeded = $total - $failed;
-                    Log::debug($total . ':' . $succeeded . ':' . $failed);
                     if (!$succeeded) { $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR; }
                     if ($succeeded > 0 && $succeeded < $total) {
                         $response['statusCode'] = HttpStatusCode::ACCEPTED;
