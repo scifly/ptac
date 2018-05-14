@@ -315,7 +315,7 @@ function send(preview) {
         content = null, formData;
 
     if (preview) {
-        targetIds = 'user-0-' . $('#userId').val();
+        targetIds = 'user-0-' + $('#userId').val();
     }
     formData = {
         _token: token,
