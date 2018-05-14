@@ -114,6 +114,7 @@ class SendMessage implements ShouldQueue {
                     $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
                     $response['message'] = $result['errmsg'];
                 } else {
+                    Log::debug('youarehere');
                     $total = count($users);
                     $failed = count($message->targets($result['invaliduser'], $result['invalidparty']));
                     $succeeded = $total - $failed;
