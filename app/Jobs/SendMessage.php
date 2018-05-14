@@ -23,7 +23,7 @@ class SendMessage implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait, JobTrait;
 
-    protected $data, $userId, $corp, $apps, $message;
+    protected $data, $userId, $corp, $apps;
     
     /**
      * SendMessage constructor.
@@ -32,21 +32,18 @@ class SendMessage implements ShouldQueue {
      * @param $userId
      * @param Corp|null $corp
      * @param array $apps
-     * @param Message $message
      */
     public function __construct(
         array $data,
         $userId,
         Corp $corp = null,
-        array $apps = [],
-        Message $message
+        array $apps = []
     ) {
         
         $this->data = $data;
         $this->userId = $userId;
         $this->corp = $corp;
         $this->apps = $apps;
-        $this->message = $message;
         
     }
     
@@ -55,14 +52,15 @@ class SendMessage implements ShouldQueue {
      * @throws Throwable
      */
     public function handle() {
-    
+        
+        $message = new Message();
         $response = [
             'userId' => $this->userId,
             'title' => __('messages.message.title'),
             'statusCode' => HttpStatusCode::OK,
             'message' => __('messages.sent')
         ];
-        list($users, $mobiles) = $this->message->targets(
+        list($users, $mobiles) = $message->targets(
             $this->data['user_ids'], $this->data['dept_ids']
         );
         Log::debug(json_encode($users));
@@ -77,7 +75,7 @@ class SendMessage implements ShouldQueue {
         # 发送消息
         if ($this->data['type'] == 'sms') {
             # 发送短信消息
-            $result = $this->message->sendSms(
+            $result = $message->sendSms(
                 $mobiles, $this->data['sms']
             );
             # 创建广播消息
@@ -86,7 +84,7 @@ class SendMessage implements ShouldQueue {
                 $response['message'] = __('messages.message.sms_send_failed');
             }
             # 创建用户消息发送日志
-            $this->message->log(
+            $message->log(
                 $users, $mslId, '', $this->data['sms'],
                 $result > 0, $result > 0, $this->data['message_type_id']
             );
@@ -94,7 +92,7 @@ class SendMessage implements ShouldQueue {
             # 发送微信消息
             $results = [];
             foreach ($this->apps as $app) {
-                $message = [
+                $content = [
                     'touser'  => implode('|', User::whereIn('id', $this->data['user_ids'])->pluck('userid')->toArray()),
                     'toparty' => implode('|', $this->data['dept_ids']),
                     'agentid' => $app['agentid'],
@@ -102,10 +100,10 @@ class SendMessage implements ShouldQueue {
                     $this->data['type'] => $this->data[$this->data['type']]
                 ];
                 # 发送消息
-                $result = $this->sendMessage($this->corp, $app, $message);
+                $result = $this->sendMessage($this->corp, $app, $content);
                 # 创建用户消息发送日志
-                $this->message->log(
-                    $users, $mslId, '', json_encode($message),
+                $message->log(
+                    $users, $mslId, '', json_encode($content),
                     $result['errcode'], 0, $this->data['message_type_id'], $app['id']
                 );
                 $results[$app['id']] = $result;
@@ -122,15 +120,15 @@ class SendMessage implements ShouldQueue {
                     $errors += $result['errcode'] ? 1 : 0;
                 }
                 if ($errors > 0) {
-                    $message = '';
+                    $content = '';
                     $response['statusCode'] = $errors < sizeof($results)
                         ? HttpStatusCode::ACCEPTED
                         : HttpStatusCode::INTERNAL_SERVER_ERROR;
                     foreach ($results as $appId => $result) {
-                        $message .= App::find($appId)->name . ': '
+                        $content .= App::find($appId)->name . ': '
                             . (!$result['errcode'] ? __('messages.message.sent') : $result['errmsg']) . "\n";
                     }
-                    $response['message'] = $message;
+                    $response['message'] = $content;
                 }
             }
         }
