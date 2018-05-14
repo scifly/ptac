@@ -31,14 +31,14 @@ Vue.component('example', require('./components/Example.vue'));
 //     require('./components/passport/PersonalAccessTokens.vue')
 // );
 
-// noinspection JSUnusedLocalSymbols
 var notify = function (e) {
     page.inform(
-        e.data['title'],
-        e.data['message'],
-        e.data['statusCode'] === 200 ? page.success : page.failure
+        e['response']['title'],
+        e['response']['message'],
+        e['response']['statusCode'] === 200 ? page.success : page.failure
     );
 };
+// noinspection JSUnusedLocalSymbols
 const app = new Vue({
     // el: '#app',
     created() {
