@@ -22,7 +22,6 @@ class MessageRequest extends FormRequest {
             'app_id'          => 'required|integer',
             'msl_id'          => 'required|integer',
             'title'           => 'required|string|max:64',
-            'content'         => 'required|string|max:255',
             'serviceid'       => 'required|string|max:255',
             'message_id'      => 'required|integer',
             'url'             => 'required|string|max:255',

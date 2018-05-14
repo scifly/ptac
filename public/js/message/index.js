@@ -302,7 +302,7 @@ $send.on('click', function () {
         formData = {
             _token: token,
             type: type,
-            appIds: appIds,
+            app_ids: appIds,
             targetIds: targetIds,
             message_type_id: $messageTypeId.val(),
         };
