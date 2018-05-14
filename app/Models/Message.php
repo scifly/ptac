@@ -344,7 +344,7 @@ class Message extends Model {
         $apps = App::whereIn('id', $data['app_ids'])->get()->toArray();
         $corp = School::find($this->schoolId())->corp;
         abort_if(!$corp, HttpStatusCode::NOT_FOUND, __('messages.message.invalid_corp'));
-        SendMessage::dispatch($data, Auth::id(), $corp, $apps);
+        SendMessage::dispatch($data, Auth::id(), $corp, $apps, new Message());
         
         return true;
         
