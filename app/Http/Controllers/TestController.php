@@ -7,6 +7,7 @@ use App\Models\Action;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Group;
+use App\Models\Message;
 use App\Models\Mobile;
 use App\Models\User;
 use App\Services\Test;
@@ -50,7 +51,7 @@ class TestController extends Controller {
     
     public function index() {
 
-        phpinfo();
+        dd(json_encode(new Message()));
         die;
         $corpid = 'wxe75227cead6b8aec';
         $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIE';

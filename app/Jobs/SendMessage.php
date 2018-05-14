@@ -54,7 +54,6 @@ class SendMessage implements ShouldQueue {
     public function handle() {
         
         $message = new Message();
-        Log::debug('message: ' . json_encode($message));
         $response = [
             'userId' => $this->userId,
             'title' => __('messages.message.title'),
