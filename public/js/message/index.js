@@ -142,7 +142,11 @@ $(document).on('click', '.remove-file', function () {
         types = $(this).prev().attr('id').split('-'),
         type = types[types.length - 1],
         label = '',
-        $uploadBtn = $container.find('.upload-button');
+        $uploadBtn = $container.find('.upload-button'),
+        $label = $uploadBtn.find('label'),
+        $removeFile = $uploadBtn.find('.remove-file'),
+        $mediaId = $uploadBtn.find('.media_id'),
+        $file = $mediaId.next();
 
     switch (type) {
         case 'image':
@@ -165,9 +169,11 @@ $(document).on('click', '.remove-file', function () {
         default:
             break;
     }
-    $uploadBtn.find('label').html('<i class="fa fa-cloud-upload"></i> ' + label);
-    $container.find('.remove-file').hide();
-    $container.find('.media_id').val('').next().remove();
+    $label.html('<i class="fa fa-cloud-upload"></i> ' + label);
+    $removeFile.hide();
+    $mediaId.val('');
+    $file.remove();
+    $('#file-' + type).val('');
 });
 // 初始化html5编辑器
 initEditor();
@@ -477,14 +483,17 @@ function upload($file) {
                     return false;
             }
             var $uploadBtn = $container.find('.upload-button'),
-                $filename = $uploadBtn.find('.media_id').next();
-            $uploadBtn.find('.remove-file').show();
-            $uploadBtn.find('label').html('<i class="fa fa-pencil"> 更换</i>');
-            if ($filename.attr('class') !== 'help-block') {
-                $filename.remove();
+                $label = $uploadBtn.find('label'),
+                $mediaId = $uploadBtn.find('.media_id'),
+                $removeFile = $uploadBtn.find('.remove-file'),
+                $file = $mediaId.next();
+
+            $label.html('<i class="fa fa-pencil"> 更换</i>');
+            $removeFile.show();
+            if ($file.attr('class') !== 'help-block') {
+                $file.remove();
             }
-            $uploadBtn.find('.media_id').after(html);
-            $uploadBtn.append(html);
+            $mediaId.after(html);
         },
         error: function (e) {
             page.errorHandler(e);
