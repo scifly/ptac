@@ -1172,7 +1172,7 @@ class Wechat extends Facade {
 
         return self::curlPost(
             sprintf(self::URL_UPLOAD_MEDIA, $accessToken, $type),
-            json_encode($data)
+            $data
         );
 
     }
