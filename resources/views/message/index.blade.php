@@ -12,7 +12,7 @@
                 </li>
                 <li>
                     <a href="#tab02" data-toggle="tab">
-                        <i class="fa fa-archive"></i>&nbsp;已发送
+                        <i class="fa fa-history"></i>&nbsp;已发送
                     </a>
                 </li>
                 <li class="active">
@@ -234,9 +234,15 @@
                                 <button class="btn btn-primary btn-sm" id="send">
                                     <i class="fa fa-send-o"> 发送</i>
                                 </button>
-                                <input type="button" class="btn btn-default btn-sm" id="time-send" value="定时发送" disabled>
-                                <input type="button" class="btn btn-default btn-sm" id="draft" value="存为草稿" disabled>
-                                <input type="button" class="btn btn-default btn-sm" id="preview" value="预览">
+                                <button class="btn btn-success btn-sm" id="preview">
+                                    <i class="fa fa-play-circle"> 预览</i>
+                                </button>
+                                <button class="btn btn-warning btn-sm" id="schedule" disabled="disabled">
+                                    <i class="fa fa-clock-o"> 定时发送</i>
+                                </button>
+                                <button class="btn btn-default btn-sm" id="draft" disabled="disabled">
+                                    <i class="fa fa-save"> 存为草稿</i>
+                                </button>
                             </div>
                         </div>
                         {!! Form::close() !!}
