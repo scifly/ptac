@@ -322,12 +322,12 @@ $smsContent.on('keyup', function () {
 /** 发送消息 ---------------------------------------------------------------------------------------------------------- */
 $send.on('click', function () {
     $targetIds.attr('required', 'true');
-    send(false);
+    return send(false);
 });
 
 $preview.on('click', function () {
     $targetIds.removeAttr('required');
-    send(true);
+    return send(true);
 });
 
 /** Helper functions ------------------------------------------------------------------------------------------------ */
