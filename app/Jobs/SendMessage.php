@@ -16,6 +16,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class SendMessage implements ShouldQueue {
@@ -64,6 +65,7 @@ class SendMessage implements ShouldQueue {
         list($users, $mobiles) = $this->message->targets(
             $this->data['user_ids'], $this->data['dept_ids']
         );
+        Log::debug(json_encode($users));
         # 创建发送日志
         $msl = [
             'read_count'      => 0,
