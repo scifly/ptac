@@ -70,7 +70,7 @@ class SendMessage implements ShouldQueue {
             'recipient_count' => count($users),
         ];
         $mslId = MessageSendingLog::create($msl)->id;
-        
+        Log::debug($this->data['type']);
         # 发送消息
         if ($this->data['type'] == 'sms') {
             # 发送短信消息
