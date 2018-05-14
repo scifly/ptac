@@ -1167,7 +1167,15 @@ class Wechat extends Facade {
         );
         
     }
-
+    
+    /**
+     * 上传临时素材
+     *
+     * @param $accessToken
+     * @param $type
+     * @param $data
+     * @return mixed|null
+     */
     static function uploadMedia($accessToken, $type, $data) {
 
         return self::curlPost(
