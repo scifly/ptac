@@ -43,15 +43,6 @@ const app = new Vue({
     // el: '#app',
     created() {
         Echo.private('user.' + document.getElementById('userId').value)
-            .listen('ContactImportTrigger', (e) => {
-                if (e.data['type'] === 'educator') {
-                    page.inform('导入通讯录', '教职员工队列导入成功', page.success)
-                }
-                if (e.data['type'] === 'student') {
-                    page.inform('导入通讯录', '学生队列导入成功', page.success)
-                }
-            })
-            .listen('ContactSyncTrigger', (e) => { notify(e); })
-            .listen('DepartmentSyncTrigger', (e) => { notify(e); });
+            .listen('JobResponse', (e) => { notify(e); })
     }
 });
