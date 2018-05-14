@@ -16,6 +16,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class SendMessage implements ShouldQueue {
@@ -105,6 +106,7 @@ class SendMessage implements ShouldQueue {
                     $result['errcode'], 0, $this->data['message_type_id'], $app['id']
                 );
                 $results[$app['id']] = $result;
+                Log::debug(json_encode($results));
             }
             # 创建广播消息
             if (sizeof($results) == 1) {
