@@ -28,14 +28,18 @@ class SendMessage implements ShouldQueue {
      * SendMessage constructor.
      *
      * @param array $data
-     * @param array $userIds
-     * @param array $deptIds
      * @param $userId
      * @param Corp|null $corp
      * @param array $apps
      * @param Message $message
      */
-    public function __construct(array $data, $userId, Corp $corp = null, array $apps = [], Message $message) {
+    public function __construct(
+        array $data,
+        $userId,
+        Corp $corp = null,
+        array $apps = [],
+        Message $message
+    ) {
         
         $this->data = $data;
         $this->userId = $userId;
@@ -69,15 +73,10 @@ class SendMessage implements ShouldQueue {
         $mslId = MessageSendingLog::create($msl)->id;
         
         # 发送消息
-        $title = 'n/a';
-        $content = null;
         if ($this->data['type'] == 'sms') {
             # 发送短信消息
-            $content = $this->data['content']['sms'];
-            $content['media_ids'] = 0;
-            # 发送消息
             $result = $this->message->sendSms(
-                $mobiles, $content
+                $mobiles, $this->data['sms']
             );
             # 创建广播消息
             if ($result > 0) {
@@ -86,8 +85,8 @@ class SendMessage implements ShouldQueue {
             }
             # 创建用户消息发送日志
             $this->message->log(
-                $users, $mslId, $title, $content,
-                $result > 0, $result > 0
+                $users, $mslId, '', $this->data['sms'],
+                $result > 0, $result > 0, $this->data['message_type_id']
             );
         } else {
             # 发送微信消息
@@ -97,55 +96,15 @@ class SendMessage implements ShouldQueue {
                     'touser'  => implode('|', User::whereIn('id', $this->data['user_ids'])->pluck('userid')->toArray()),
                     'toparty' => implode('|', $this->data['dept_ids']),
                     'agentid' => $app['agentid'],
-                    'msgtype' => $this->data['type']
+                    'msgtype' => $this->data['type'],
+                    $this->data['type'] => $this->data[$this->data['type']]
                 ];
-                $content = $this->data['content'];
-                $content['media_ids'] = 0;
-                switch ($this->data['type']) {
-                    case 'text':
-                        $content = $this->data['content']['text'];
-                        $message['text'] = ['content' => $content];
-                        break;
-                    case 'image' :
-                        $mediaId = $this->data['content']['media_id'];
-                        $message['image'] = ['media_id' => $mediaId];
-                        $content['media_ids'] = $mediaId;
-                        break;
-                    case 'voice' :
-                        $mediaId = $this->data['content']['media_id'];
-                        $message['voice'] = ['media_id' => $mediaId];
-                        $content['media_ids'] = $mediaId;
-                        break;
-                    case 'video' :
-                        $title = $this->data['content']['video']['title'];
-                        $message['video'] = $this->data['content']['video'];
-                        break;
-                    case 'file':
-                        $mediaId = $this->data['content']['media_id'];
-                        $message['file'] = ['media_id' => $mediaId];
-                        $content['media_ids'] = $mediaId;
-                        break;
-                    case 'textcard':
-                        $message['textcard'] = [
-                            'title' => $this->data['content']['title'],
-                            'description' => $this->data['content']['description'],
-                            'url' => $this->data['content']['url']
-                        ];
-                        break;
-                    case 'mpnews' :
-                        $message['mpnews'] = [
-                            'articles' => $this->data['content']['articles']
-                        ];
-                        break;
-                    default:
-                        break;
-                }
                 # 发送消息
                 $result = $this->sendMessage($this->corp, $app, $message);
                 # 创建用户消息发送日志
                 $this->message->log(
-                    $users, $mslId, $title, $content,
-                    $result['errcode'], 0, $app
+                    $users, $mslId, '', json_encode($message),
+                    $result['errcode'], 0, $this->data['message_type_id'], $app['id']
                 );
                 $results[$app['id']] = $result;
             }

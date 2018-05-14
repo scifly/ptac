@@ -380,16 +380,17 @@ class Message extends Model {
      * @param $content - 消息内容（文本）
      * @param $sent - 是否已发送
      * @param $read - 是否已读
-     * @param array $app - 应用详情
+     * @param $msgTypeId - 消息类型
+     * @param null $appId - 应用id
      */
-    function log($users, $mslId, $title, $content, $sent, $read, array $app = []) {
+    function log($users, $mslId, $title, $content, $sent, $read, $msgTypeId, $appId = null) {
         
         foreach ($users as $user) {
             $commType = empty($app) ? '短信' : '微信';
             $mediaIds = $content['media_ids'] ?? 0;
             $this->create([
                 'comm_type_id'    => CommType::whereName($commType)->first()->id,
-                'app_id'          => !empty($app) ? $app['id'] : 0,
+                'app_id'          => $appId ?? 0,
                 'msl_id'          => $mslId,
                 'title'           => $title,
                 'content'         => json_encode($content),
@@ -399,7 +400,7 @@ class Message extends Model {
                 'media_ids'       => $mediaIds,
                 's_user_id'       => Auth::id(),
                 'r_user_id'       => $user->id,
-                'message_type_id' => MessageType::whereName('消息通知')->first()->id,
+                'message_type_id' => $msgTypeId,
                 'sent'            => $sent ? 0 : 1,
                 'read'            => $read ? 0 : 1,
             ]);

@@ -54,7 +54,6 @@ class MessageRequest extends FormRequest {
         $input['media_ids'] = '0';
         $input['s_user_id'] = Auth::id();
         $input['r_user_id'] = '0';
-        $input['message_type_id'] = 5;
         $input['read'] = 0;
         $input['sent'] = 0;
         $deptIds = $userIds = [];
