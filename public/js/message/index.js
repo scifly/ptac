@@ -140,22 +140,34 @@ $(document).on('change', '.file-upload', function () {
 $(document).on('click', '.remove-file', function () {
     var $container = $messageContent.find('.tab-pane.active'),
         types = $(this).prev().attr('id').split('-'),
-        type = types[types.length - 1];
+        type = types[types.length - 1],
+        label = '',
+        $uploadBtn = $container.find('.upload-button');
 
     switch (type) {
-        case 'mpnews':
-            $container = $('#cover-container');
+        case 'image':
+            label = '上传图片';
+            break;
+        case 'audio':
+            label = '上传语音';
             break;
         case 'video':
-            // btntxt = '上传视频';
+            label = '上传视频';
             $container = $('#video-container');
+            break;
+        case 'file':
+            label = '上传文件';
+            break;
+        case 'mpnews':
+            label = '上传封面图';
+            $container = $('#cover-container');
             break;
         default:
             break;
     }
-    $container.find('.upload-button').show();
-    $container.find('.file-upload').val('');
-    $container.find('.file-content').remove();
+    $uploadBtn.find('label').html('<i class="fa fa-cloud-upload"></i> ' + label);
+    $container.find('.remove-file').hide();
+    $container.find('.media_id').val('').next().remove();
 });
 // 初始化html5编辑器
 initEditor();
@@ -428,14 +440,9 @@ function upload($file) {
         success: function (result) {
             $('.overlay').hide();
             page.inform(result.title, result.message, page.success);
-            var html =
-                '<label for="file-' + type + '" class="custom-file-upload text-blue">' +
-                '<i class="fa fa-pencil"> 更换</i>' +
-                '</label>' +
-                $('<input />', {'class': 'file-upload', id: 'file-' + type, type: 'file', 'accept': type + '/*'}).prop('outerHTML') +
-                '<a href="#" class="remove-file"><i class="fa fa-remove text-red"> 删除</i></a><br />' +
-                $('<input />', {'class': 'media_id', type: 'hidden', value: result.data.media_id}).prop('outerHTML'),
-                $container = $messageContent.find('.tab-pane.active');
+            var html = '', $container = $messageContent.find('.tab-pane.active');
+
+            $container.find('.media_id').val(result.data.media_id);
             switch (type) {
                 case 'image':
                     imgAttrs = {
@@ -469,11 +476,11 @@ function upload($file) {
                 default:
                     return false;
             }
-            $container.find('.upload-button').hide();
-            $container.find('.file-content').remove();
-            $container.append(
-                $('<div>', {'class': 'file-content'}).prop('innerHTML', html).prop('outerHTML')
-            );
+            var $uploadBtn = $container.find('.upload-button');
+            $uploadBtn.find('.remove-file').show();
+            $uploadBtn.find('label').html('<i class="fa fa-pencil"> 更换</i>');
+            $uploadBtn.find('.media_id').next().remove();
+            $uploadBtn.append(html);
         },
         error: function (e) {
             page.errorHandler(e);
