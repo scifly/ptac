@@ -16,6 +16,7 @@ class MessageIndexComposer {
         $school = School::find($this->schoolId());
         $data = App::whereEnabled(1)
             ->where('corp_id', $school->corp_id)
+            ->whereIn('name', ['布置作业', '消息中心'])
             ->get(['id', 'name', 'square_logo_url']);
         $apps = [];
         foreach ($data as $datum) {
