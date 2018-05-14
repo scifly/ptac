@@ -137,7 +137,6 @@ $(document).on('change', '.file-upload', function () {
     if ($(this).val() !== '') { upload($(this)); }
 });
 // 初始化移除上传文件的事件
-var uploadBtnHtml = '';
 $(document).on('click', '.remove-file', function () {
     var $container = $messageContent.find('.tab-pane.active'),
         types = $(this).prev().attr('id').split('-'),
@@ -154,8 +153,7 @@ $(document).on('click', '.remove-file', function () {
         default:
             break;
     }
-    $container.append(uploadBtnHtml);
-    // $container.find('.upload-button').show();
+    $container.find('.upload-button').show();
     $container.find('.file-upload').val('');
     $container.find('.file-content').remove();
 });
@@ -436,8 +434,7 @@ function upload($file) {
                 '</label>' +
                 $('<input />', {'class': 'file-upload', id: 'file-' + type, type: 'file', 'accept': type + '/*'}).prop('outerHTML') +
                 '<a href="#" class="remove-file"><i class="fa fa-remove text-red"> 删除</i></a><br />' +
-                $('<input />', {'class': 'media_id', type: 'hidden', value: result.data.media_id}).prop('outerHTML') +
-                $('<input />', {'class': 'media-id', type: 'hidden', value: result.data.id}).prop('outerHTML'),
+                $('<input />', {'class': 'media_id', type: 'hidden', value: result.data.media_id}).prop('outerHTML'),
                 $container = $messageContent.find('.tab-pane.active');
             switch (type) {
                 case 'image':
@@ -472,13 +469,11 @@ function upload($file) {
                 default:
                     return false;
             }
-            uploadBtnHtml = $container.find('.upload-button').prop('outerHTML');
-            $container.find('.upload-button').remove();
+            $container.find('.upload-button').hide();
             $container.find('.file-content').remove();
             $container.append(
                 $('<div>', {'class': 'file-content'}).prop('innerHTML', html).prop('outerHTML')
             );
-            $('#file-' + type).val(result.data.filename);
         },
         error: function (e) {
             page.errorHandler(e);
