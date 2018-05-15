@@ -225,7 +225,6 @@ class Group extends Model {
             ],
         ];
         $condition = 'Groups.school_id IS NOT NULL ';
-        $user = Auth::user();
         $joins = [
             [
                 'table' => 'schools',
@@ -244,27 +243,21 @@ class Group extends Model {
                 ]
             ]
         ];
-        switch ($user->group->name) {
-            case '运营':
-                break;
-            case '企业':
-                $departmentId = $this->head($user);
-                $corpId = Corp::whereDepartmentId($departmentId)->first()->id;
-                $joins[] = [
-                    'table' => 'corps',
-                    'alias' => 'Corp',
-                    'type' => 'INNER',
-                    'conditions' => [
-                        'Corp.id = School.corp_id'
-                    ]
-                ];
-                $condition .= 'AND Corp.id = ' . $corpId;
-                break;
-            case '学校':
-                $departmentId = $this->head($user);
-                $schoolId = School::whereDepartmentId($departmentId)->first()->id;
-                $condition .= 'AND School.id = ' . $schoolId;
-                break;
+        $menu = new Menu();
+        $currentMenuId = session('menuId');
+        if ($this->schoolId()) {
+            $condition .= 'AND School.id = ' . $this->schoolId();
+        } else if ($corpMenuId = $menu->menuId($currentMenuId, '企业')) {
+            $corpId = Corp::whereMenuId($corpMenuId)->first()->id;
+            $condition .= 'AND Corp.id = ' . $corpId;
+            $joins[] = [
+                'table' => 'corps',
+                'alias' => 'Corp',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Corp.id = School.corp_id'
+                ]
+            ];
         }
 
         return Datatable::simple(
