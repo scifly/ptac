@@ -44,7 +44,7 @@
                         @include('partials.single_select', [
                             'id' => 'school_id',
                             'label' => '所属学校',
-                            'icon' => 'fa fa-university',
+                            'icon' => 'fa fa-university text-purple',
                             'items' => $schools
                         ])
                         <!-- 角色备注 -->
