@@ -69,9 +69,14 @@ page.initSelect2([{
     id: 'app_ids'
 }]);
 // 初始化"已发送"datatable
-page.initDatatable('messages', [
+var options = [
     {className: 'text-center', targets: [1, 2, 3, 4, 5, 6]}
-]);
+];
+page.initDatatable('messages', options);
+$('a[href="#tab02"]').on('click', function () {
+    $('#data-table').dataTable().fnDestroy();
+    page.initDatatable('messages', options);
+});
 // 初始化消息类型卡片悬停特效、input parsley验证规则
 $('.tab').hover(
     function () {
@@ -178,6 +183,7 @@ $(document).on('click', '.remove-file', function () {
 });
 // 初始化html5编辑器
 // initEditor();
+
 
 /** 发送对象 ---------------------------------------------------------------------------------------------------------- */
 // 选择发送对象
