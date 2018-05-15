@@ -456,7 +456,7 @@ function upload($file) {
                     html += $('<img' + ' />', imgAttrs).prop('outerHTML');
                     break;
                 case 'audio':
-                    html += $('<i>', {'class': 'fa fa-file-sound-o'}).prop('outerHTML') +
+                    html += $('<i>', {'class': 'fa fa-file-sound-o'}).prop('outerHTML') + ' ' +
                         $('<span>').prop('innerHTML', result.data.filename).prop('outerHTML');
                     break;
                 case 'video':
