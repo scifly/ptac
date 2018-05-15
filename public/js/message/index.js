@@ -61,14 +61,13 @@ var token = $('#csrf_token').attr('content'),
     $preview = $('#preview');
 
 // 初始化select2控件
-page.initSelect2([{
+$.when(page.initSelect2([{
     option: {
         templateResult: page.formatStateImg,
         templateSelection: page.formatStateImg
     },
     id: 'app_ids'
-}]);
-$messageTypeId.select2();
+}])).then(function () { $messageTypeId.select2(); });
 // 初始化"已发送"datatable
 var options = [
     {className: 'text-center', targets: [1, 2, 3, 4, 5, 6]}
