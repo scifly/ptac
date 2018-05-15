@@ -59,7 +59,7 @@
                             </div>
                             <div class="list-layout">
                                 @if (sizeof($sent) > 0)
-                                    @foreach($sendMessages as $type => $messages)
+                                    @foreach($sent as $type => $messages)
                                         @foreach($messages as $message)
                                             <div class="table-list list-{{ $type }}">
                                                 <div class="line"></div>
@@ -123,8 +123,8 @@
                             <div class="select-container" style="display: none;"></div>
                         </div>
                         <div class="list-layout">
-                            @if( sizeof($receiveMessages) != 0)
-                                @foreach($receiveMessages as $type => $messages)
+                            @if( sizeof($received) != 0)
+                                @foreach($received as $type => $messages)
                                     @foreach($messages as $message)
                                         <div class="table-list list-{{ $type }}">
                                             <div class="line"></div>
