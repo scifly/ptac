@@ -44,16 +44,12 @@
                         <div class="form-group">
                             <label for="school_id" class="col-sm-3 control-label">所属学校</label>
                             <div class="col-sm-6">
-                                @if(!isset($group))
-                                    <select name="school_id" class="form-control menu" id="school_id" style="width: 100%">
-                                        @foreach ($schools as $key => $value)
-                                            <option value="{{ $key }}" >{{ $value }}</option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    {!! Form::hidden('school_id', $group['school_id'], ['id' => 'school_id']) !!}
-                                    <label class="control-label" style="font-weight: normal;">{!! $group->school->name !!}</label>
-                                @endif
+                                @include('partials.single_select', [
+                                    'id' => 'school_id',
+                                    'label' => '所属学校',
+                                    'icon' => 'fa fa-university',
+                                    'items' => $schools
+                                ])
                             </div>
                         </div>
                         <!-- 角色备注 -->
