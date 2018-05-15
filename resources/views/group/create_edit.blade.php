@@ -27,12 +27,17 @@
                                 'class' => 'col-sm-3 control-label'
                             ]) !!}
                             <div class="col-sm-6">
-                                {!! Form::text('name', null, [
-                                    'class' => 'form-control text-blue',
-                                    'placeholder' => '(不得超过20个汉字)',
-                                    'required' => 'true',
-                                    'data-parsley-length' => '[2, 20]'
-                                ]) !!}
+                                <div class="input-group">
+                                    @include('partials.icon_addon', [
+                                        'class' => 'fa-meh-o'
+                                    ])
+                                    {!! Form::text('name', null, [
+                                        'class' => 'form-control text-blue',
+                                        'placeholder' => '(不得超过20个汉字)',
+                                        'required' => 'true',
+                                        'data-parsley-length' => '[2, 20]'
+                                    ]) !!}
+                                </div>
                             </div>
                         </div>
                         <!-- 角色所属学校 -->
