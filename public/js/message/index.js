@@ -445,7 +445,6 @@ function upload($file) {
             page.inform(result.title, result.message, page.success);
             var html = '', $container = $messageContent.find('.tab-pane.active');
 
-            $container.find('.media_id').val(result.data.media_id);
             switch (type) {
                 case 'image':
                     imgAttrs = {
@@ -479,6 +478,8 @@ function upload($file) {
                 default:
                     return false;
             }
+            $container.find('.media_id').val(result.data.media_id);
+
             var $uploadBtn = $container.find('.upload-button'),
                 $label = $uploadBtn.find('label'),
                 $mediaId = $uploadBtn.find('.media_id'),
