@@ -113,6 +113,7 @@ class App extends Model {
         $data = [
             'name' => $result->{'name'},
             'menu' => '0',
+            'allow_tags' => '0',
             'corp_id' => $corpId,
             'agentid' => $agentid,
             'secret' => $secret,
