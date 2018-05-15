@@ -38,7 +38,7 @@ trait WechatTrait {
             abort_if(
                 $result['errcode'],
                 HttpStatusCode::INTERNAL_SERVER_ERROR,
-                Wechat::ERRMSGS[$result['errmsg']]
+                Wechat::ERRMSGS[$result['errcode']]
             );
             $user = User::whereEnabled(1)->where('userid', $result['UserId'])->first();
             abort_if(
