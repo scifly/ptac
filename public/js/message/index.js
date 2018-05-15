@@ -36,6 +36,7 @@ var token = $('#csrf_token').attr('content'),
     // 图文
     $contentMpnews = $('#content_mpnews'),
     $formMpnews = $('#formMpnews'),
+    $fileMpnews = $('#file-mpnews'),
     $addMpnews = $('#add-mpnews'),
     $mpnewsId = $('#mpnews-id'),
     $mpnewsTitle = $('#mpnews-title'),
@@ -203,16 +204,26 @@ $addMpnews.on('click', function () {
         page.inform('消息中心', '最多添加8条图文', page.failure);
         return false;
     }
+    var $uploadBtn = $coverContainer.find('.upload-button'),
+        $label = $uploadBtn.find('label'),
+        $removeFile = $uploadBtn.find('.remove-file'),
+        $mediaId = $uploadBtn.find('.media_id'),
+        $file = $mediaId.next();
+
     $mpnewsId.val('');
     $mpnewsTitle.val('');
     $mpnewsContent.val('');
     $contentSourceUrl.val('');
     $mpnewsDigest.val('');
     $mpnewsAuthor.val('');
-    $coverContainer.find('.file-upload').val('');
     $removeMpnews.hide();
-    $coverContainer.find('.file-content').remove();
-    $coverContainer.find('.upload-button').show();
+    $removeFile.hide();
+    $mediaId.val('');
+    $label.html('<i class="fa fa-cloud-upload"></i> 上传封面图');
+    if ($file.attr('class') !== 'help-block') {
+        $file.remove();
+    }
+    $fileMpnews.val('');
     $modalMpnews.modal({ backdrop: true });
 });
 // 编辑图文
