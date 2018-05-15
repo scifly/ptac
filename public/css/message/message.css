@@ -19,7 +19,7 @@ input[type="file"] {
     height: 30px;
     cursor: pointer;
 }
-.overlay {
+.upload-overlay.overlay, .mpnews-overlay.overlay {
     display: none;
     position: fixed;
     top: 0;

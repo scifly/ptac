@@ -11,7 +11,7 @@
                 <h4 class="modal-title">添加图文</h4>
             </div>
             <div class="modal-body">
-                <div class="overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;">
+                <div class="overlay mpnews-overlay">
                     <i class="fa fa-refresh fa-spin"></i>
                 </div>
                 <div class="form-horizontal">
