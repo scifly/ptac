@@ -58,7 +58,7 @@
                                 <div class="select-container" style="display: none;"></div>
                             </div>
                             <div class="list-layout">
-                                @if (sizeof($sendMessages) > 0)
+                                @if (sizeof($sent) > 0)
                                     @foreach($sendMessages as $type => $messages)
                                         @foreach($messages as $message)
                                             <div class="table-list list-{{ $type }}">

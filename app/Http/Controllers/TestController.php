@@ -50,7 +50,11 @@ class TestController extends Controller {
     protected $department;
     
     public function index() {
-
+    
+        $mesages = Message::whereSUserId(1)->get()
+            ->unique('msl_id')->sortByDesc('created_at')
+            ->groupBy('message_type_id');
+        dd($mesages);
         $m = new Message();
         list($users) = $m->targets([1], []);
         dd($users);
