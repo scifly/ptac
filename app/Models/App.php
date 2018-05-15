@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * App\Models\App
@@ -151,7 +152,7 @@ class App extends Model {
         $app = $this->find($id);
         $updated = $app->update($data);
         if ($updated) {
-            WechatApp::dispatch($this->find($id));
+            WechatApp::dispatch($this->find($id), Auth::id());
         }
 
         return $updated ? $this->find($id) : false;
