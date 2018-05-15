@@ -146,7 +146,7 @@ class SendMessage implements ShouldQueue {
         event(new JobResponse($response));
     
         // return true;
-        $this->release();
+        // $this->release();
         
     }
     
