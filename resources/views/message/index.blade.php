@@ -97,12 +97,12 @@
                                         </li>
                                         <li>
                                             <a href="#content_file" data-toggle="tab" class="tab">
-                                                <i class="fa fa-file-movie-o"></i>&nbsp;文件
+                                                <i class="fa fa-file-o"></i>&nbsp;文件
                                             </a>
                                         </li>
                                         <li>
                                             <a href="#content_card" data-toggle="tab" class="tab">
-                                                <i class="fa fa-file"></i>&nbsp;卡片
+                                                <i class="fa fa-folder-o"></i>&nbsp;卡片
                                             </a>
                                         </li>
                                         <li>
@@ -112,7 +112,7 @@
                                         </li>
                                         <li>
                                             <a href="#content_sms" data-toggle="tab" class="tab">
-                                                <i class="fa fa-file-text"></i>&nbsp;短信
+                                                <i class="fa fa-file-text-o"></i>&nbsp;短信
                                             </a>
                                         </li>
                                     </ul>

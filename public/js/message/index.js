@@ -455,17 +455,17 @@ function upload($file) {
                     };
                     html += $('<img' + ' />', imgAttrs).prop('outerHTML');
                     break;
-                case 'voice':
+                case 'audio':
                     html += $('<i>', {'class': 'fa fa-file-sound-o'}).prop('outerHTML') +
-                        $('<span>', {id: 'voice'}).prop('innerHTML', result.data.filename).prop('outerHTML');
+                        $('<span>').prop('innerHTML', result.data.filename).prop('outerHTML');
                     break;
                 case 'video':
                     html += '<video width="400" controls><source src="../../' + result.data.path + '" type="video/mp4"></video>';
                     $container = $('#video-container');
                     break;
                 case 'file':
-                    html += $('<i>', {'class': 'fa fa-file'}).prop('outerHTML') +
-                        $('<span>', {id: 'file'}).prop('innerHTML', result.data.filename).prop('outerHTML');
+                    html += $('<i>', {'class': 'fa fa-file-o'}).prop('outerHTML') + ' ' +
+                        $('<span>').prop('innerHTML', result.data.filename).prop('outerHTML');
                     break;
                 case 'mpnews':
                     imgAttrs = {
