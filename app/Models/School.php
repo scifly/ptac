@@ -377,7 +377,7 @@ class School extends Model {
             [
                 'db'        => 'School.name as schoolname', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-university', '') . $d;
+                    return sprintf(Snippet::ICON, 'fa-university text-purple', '') . $d;
                 },
             ],
             ['db' => 'School.address', 'dt' => 2],
@@ -385,7 +385,7 @@ class School extends Model {
             [
                 'db'        => 'Corp.name as corpname', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-weixin', '') . $d;
+                    return sprintf(Snippet::ICON, 'fa-weixin text-green', '') . $d;
                 },
             ],
             ['db' => 'School.created_at', 'dt' => 5],
