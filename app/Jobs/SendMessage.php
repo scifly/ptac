@@ -145,9 +145,6 @@ class SendMessage implements ShouldQueue {
         # 发送广播消息
         event(new JobResponse($response));
     
-        // return true;
-        // $this->release();
-        
     }
     
 }
