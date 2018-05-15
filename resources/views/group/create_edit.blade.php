@@ -41,17 +41,12 @@
                             </div>
                         </div>
                         <!-- 角色所属学校 -->
-                        <div class="form-group">
-                            <label for="school_id" class="col-sm-3 control-label">所属学校</label>
-                            <div class="col-sm-6">
-                                @include('partials.single_select', [
-                                    'id' => 'school_id',
-                                    'label' => '所属学校',
-                                    'icon' => 'fa fa-university',
-                                    'items' => $schools
-                                ])
-                            </div>
-                        </div>
+                        @include('partials.single_select', [
+                            'id' => 'school_id',
+                            'label' => '所属学校',
+                            'icon' => 'fa fa-university',
+                            'items' => $schools
+                        ])
                         <!-- 角色备注 -->
                         @include('partials.remark')
                         <!-- 状态 -->
