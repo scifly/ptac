@@ -76,7 +76,7 @@ trait JobTrait {
             'errcode' => $result->{'errcode'},
             'errmsg' => Wechat::ERRMSGS[$result->{'errcode'}],
             'invaliduser' => $result->{'invaliduser'},
-            'invalidparty' => $result->{'invalidparty'},
+            'invalidparty' => isset($result->{'invalidparty'}) ? $result->{'invalidparty'} : '',
         ];
         
     }
