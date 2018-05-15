@@ -440,7 +440,7 @@ function upload($file) {
         return false;
     }
     page.inform('消息中心', '文件上传中...', page.info);
-    $('.overlay').show();
+    $('.mpnews-overlay').show();
     var data = new FormData();
     data.append('file', file);
     data.append('_token', token);
