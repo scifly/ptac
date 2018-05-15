@@ -112,6 +112,7 @@ class App extends Model {
         # 更新/创建本地应用记录
         $data = [
             'name' => $result->{'name'},
+            'menu' => '0',
             'corp_id' => $corpId,
             'agentid' => $agentid,
             'secret' => $secret,
