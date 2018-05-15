@@ -27,7 +27,7 @@
             <div class="tab-content">
                 <div class="tab-pane active" id="tab01">
                     @include('message.targets')
-                    <div class="overlay" style="">
+                    <div class="overlay">
                         <i class="fa fa-refresh fa-spin"></i>
                     </div>
                     <div class="form-horizontal form-main" id="message">
