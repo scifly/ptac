@@ -29,6 +29,7 @@ input[type="file"] {
 }
 .mpnews-overlay.overlay {
     text-align: center;
+    z-index: 999;
     padding: 50%;
     opacity: 0.5;
     background-color: #fff;
