@@ -112,7 +112,7 @@
                                         </li>
                                         <li>
                                             <a href="#content_sms" data-toggle="tab" class="tab">
-                                                <i class="fa fa-file-text-o"></i>&nbsp;短信
+                                                <i class="fa fa-file-text"></i>&nbsp;短信
                                             </a>
                                         </li>
                                     </ul>
