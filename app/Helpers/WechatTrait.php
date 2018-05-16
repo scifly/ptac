@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Request;
 
 trait WechatTrait {
 
-    function signin($appName) {
+    function signin($appName, $returnUrl) {
         
         $acronym = explode('/', Request::path())[0];
         $corp = Corp::whereAcronym($acronym)->first();
@@ -48,8 +48,9 @@ trait WechatTrait {
             __('messages.not_found')
         );
         session(['corpId' => $corp->id]);
+        Auth::loginUsingId($user->id);
         
-        return  Auth::loginUsingId($user->id);
+        return $returnUrl;
         
     }
     

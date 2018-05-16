@@ -73,7 +73,7 @@ class MessageCenterController extends Controller {
     public function index() {
         
         if (!Auth::id()) {
-            return $this->signin(self::APP);
+            return $this->signin(self::APP, Request::url());
         }
         if (Request::method() == 'POST') {
             return response()->json(
