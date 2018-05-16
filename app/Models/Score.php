@@ -11,15 +11,18 @@ use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\View\View;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Throwable;
 
@@ -1444,7 +1447,7 @@ class Score extends Model {
     
     
     /**
-     * 根据监护人获取学生相关考试信息
+     * 获取指定监护人绑定学生的相关考试信息
      * @param $userId
      * @return array
      */
@@ -1549,6 +1552,77 @@ class Score extends Model {
         
         return $allScores;
         
+    }
+    
+    /**
+     * 返回微信端成绩中心首页
+     *
+     * @return Factory|JsonResponse|View
+     * @throws Throwable
+     */
+    function wIndex() {
+    
+        $user = Auth::user();
+        $role = $user->group->name;
+        $pageSize = 4;
+        $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
+        $exams = [];
+        $exam = new Exam();
+        abort_if(
+            !in_array($role, ['监护人', '教职员工']),
+            HttpStatusCode::UNAUTHORIZED,
+            __('messages.unauthorized')
+        );
+        $content = '';
+        if ($role === '监护人') {
+            if (Request::method() == 'POST') {
+                $studentId = Request::get('student_id');
+                $classId = Student::find($studentId)->class_id;
+                $keyword = Request::has('keywords') ? Request::input('keywords') : null;
+                $exams = array_slice($exam->examsByClassId($classId, $keyword), $start, $pageSize);
+        
+                return response()->json([
+                    'data'      => $exams,
+                    'studentId' => $studentId,
+                ]);
+            }
+            $data = $this->getStudentScore($user->id);
+            $scores = $data['score'];
+            $studentName = $data['studentName'];
+            if (sizeof($scores) != 0) {
+                $exams = array_slice($scores[0], $start, $pageSize);
+            }
+            $content = view('wechat.score.index_custodian', [
+                'scores'      => $exams,
+                'studentName' => json_encode($studentName, JSON_UNESCAPED_UNICODE),
+                'pageSize'    => $pageSize,
+            ])->render();
+        } elseif ($role == '教职员工') {
+            if (Request::method() == 'POST') {
+                $classId = Request::get('class_id');
+                $keyword = Request::has('keywords') ? Request::input('keywords') : null;
+                $exams = array_slice($exam->examsByClassId($classId, $keyword), $start, $pageSize);
+            
+                return response()->json(['data' => $exams]);
+            }
+            list($scores, $classNames) = $exam->examsByEducator();
+            abort_if(
+                empty($classNames),
+                HttpStatusCode::BAD_REQUEST,
+                __('messages.score.zero_classes')
+            );
+            $exams = array_slice($scores[0], $start, $pageSize);
+        
+            $content = view('wechat.score.index_educator', [
+                'scores'    => $exams,
+                'className' => json_encode($classNames, JSON_UNESCAPED_UNICODE),
+                'pageSize'  => $pageSize,
+            ])->render();
+    
+        }
+        
+        return view('wechat.score.index', ['content' => $content]);
+    
     }
     
 }

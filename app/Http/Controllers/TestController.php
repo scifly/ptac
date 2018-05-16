@@ -51,13 +51,10 @@ class TestController extends Controller {
     
     public function index() {
     
-        $mesages = Message::whereSUserId(1)->get()
-            ->unique('msl_id')->sortByDesc('created_at')
-            ->groupBy('message_type_id');
-        dd($mesages);
-        $m = new Message();
-        list($users) = $m->targets([1], []);
-        dd($users);
+        $messages = Message::all();
+        foreach ($messages as $key => $message) {
+            echo $key . ' : ' . $message->id . '<br />';
+        }
         die;
         $corpid = 'wxe75227cead6b8aec';
         $secret = 'uorwAVlN3_EU31CDX0X1oQJk9lB0Or41juMH-cLcIE';

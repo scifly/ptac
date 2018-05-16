@@ -9,7 +9,7 @@ body{
     background-color: #fff;
     font-family: "微软雅黑";
 }
-.main{
+.main {
     height: 100%;
     width: 100%;
 }
@@ -27,8 +27,7 @@ body{
     position: relative;
 }
 .multi-role .switchclass-item {
-    padding: 0px;
-    padding-right: 0;
+    padding: 0;
     display: -webkit-box;
     line-height: 30px;
     border-bottom: 5px solid #f8f8f8;
@@ -39,7 +38,6 @@ body{
 }
 .title-name{
     font-size: 18px;
-    color: #686868;
     width: 100%;
     display: inline-block;
     white-space: nowrap;

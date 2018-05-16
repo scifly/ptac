@@ -207,11 +207,6 @@ class WapSite extends Model {
     function wIndex() {
     
         $user = Auth::user();
-        abort_if(
-            !$user,
-            HttpStatusCode::UNAUTHORIZED,
-            __('messages.unauthorized')
-        );
         $schoolId = Group::find($user->group_id)->school_id;
         if (!$schoolId) {
             # todo 显示微网站列表

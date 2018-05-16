@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers\Wechat;
 
-use App\Facades\Wechat;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\WechatTrait;
 use App\Http\Controllers\Controller;
@@ -10,11 +9,10 @@ use App\Models\Score;
 use App\Models\Squad;
 use App\Models\Student;
 use App\Models\Subject;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Session;
+use Throwable;
 
 /**
  * 微信端成绩
@@ -46,102 +44,13 @@ class ScoreCenterController extends Controller {
      * 微信端成绩
      *
      * @return string
+     * @throws Throwable
      */
     public function index() {
         
-        $corpId = 'wxe75227cead6b8aec';
-        $secret = 'viHdGD1DaiDAOwbrxCZP5wT7QYNNqJpPnr3Sw5YPio4';
-        $agentId = 1000008;
-        $userId = Session::get('userId') ? Session::get('userId') : null;
-        $code = Request::input('code');
-        if (empty($code) && empty($userId)) {
-            $codeUrl = Wechat::getCodeUrl($corpId, $agentId, 'http://weixin.028lk.com/wechat/score/score_lists');
-            
-            return redirect($codeUrl);
-        } elseif (!empty($code) && empty($userId)) {
-            $accessToken = Wechat::getAccessToken($corpId, $secret);
-            $userInfo = json_decode(Wechat::getUserInfo($accessToken, $code), JSON_UNESCAPED_UNICODE);
-            $userId = $userInfo['UserId'];
-            Session::put('userId', $userId);
-        }
-        $role = User::where($userId)->first()->group->name;
-        $pageSize = 4;
-        $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
-        $exams = [];
-        switch ($role) {
-            case '监护人':
-                if (Request::isMethod('post')) {
-                    $studentId = Request::get('student_id');
-                    $classId = Student::whereId($studentId)->first()->class_id;
-                    if (Request::has('keywords')) {
-                        $exams = array_slice(
-                            $this->exam->examsByClassId(
-                                $classId, Request::get('keywords')
-                            ),
-                            $start, $pageSize
-                        );
-                    } else {
-                        $exams = array_slice(
-                            $this->exam->examsByClassId($classId),
-                            $start, $pageSize
-                        );
-                    }
-                    
-                    return response()->json([
-                        'data'      => $exams,
-                        'studentId' => $studentId,
-                    ]);
-                }
-                $data = $this->score->getStudentScore($userId);
-                $score = $data['score'];
-                $studentName = $data['studentName'];
-                if (sizeof($score) != 0) {
-                    $exams = array_slice($score[0], $start, $pageSize);
-                }
-                
-                return view('wechat.score.students_score_lists', [
-                    'scores'      => $exams,
-                    'studentName' => json_encode($studentName, JSON_UNESCAPED_UNICODE),
-                    'pageSize'    => $pageSize,
-                ]);
-                break;
-            case '教职员工':
-                if (Request::isMethod('post')) {
-                    $classId = Request::get('class_id');
-                    if (Request::has('keywords')) {
-                        $exams = array_slice(
-                            $this->exam->examsByClassId(
-                                $classId, Request::get('keywords')
-                            ),
-                            $start, $pageSize
-                        );
-                    } else {
-                        $exams = array_slice(
-                            $this->exam->examsByClassId($classId),
-                            $start, $pageSize
-                        );
-                    }
-                    
-                    return response()->json(['data' => $exams]);
-                }
-                $datas = $this->exam->examsByEducator();
-                if (!$datas) {
-                    return '你还没有绑定班级';
-                }
-                $score = $datas['score'];
-                $className = $datas['className'];
-                if (sizeof($score) != 0) {
-                    $exams = array_slice($score[0], $start, $pageSize);
-                }
-                
-                return view('wechat.score.educator_score_lists', [
-                    'scores'    => $exams,
-                    'className' => json_encode($className, JSON_UNESCAPED_UNICODE),
-                    'pageSize'  => $pageSize,
-                ]);
-            default:
-                return abort(HttpStatusCode::BAD_REQUEST, '请求无效');
-        }
+        return Auth::id()
+            ? $this->signin(self::APP, Request::url())
+            : $this->score->wIndex();
         
     }
     
@@ -369,4 +278,3 @@ class ScoreCenterController extends Controller {
     }
     
 }
-

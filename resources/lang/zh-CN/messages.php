@@ -52,6 +52,10 @@ return [
         'empty_targets' => '请选择发送对象',
         'submitted' => '已提交消息发送请求',
     ],
+    'score' => [
+        'title' => '成绩中心',
+        'zero_classes' => '您尚未绑定任何班级'
+    ],
     'student' => [
         'title' => '学籍管理',
         'invalid_file_format' => '文件格式错误',

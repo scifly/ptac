@@ -169,9 +169,13 @@ class Exam extends Model {
     function examsByClassId($classId, $keyword = null) {
         
         $values = [];
-        $exams = $this->when($keyword, function (Exam $query) use ($keyword) {
-            return $query->where('name', 'like', '%' . $keyword . '%');
-        })->whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')->get();
+        $exams = $this->when(
+            $keyword,
+            function (Exam $query) use ($keyword) {
+                return $query->where('name', 'like', '%' . $keyword . '%');
+            }
+        )->whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')->get();
+        
         foreach ($exams as $key => $e) {
             $values[$key]['id'] = $e->id;
             $values[$key]['name'] = $e->name;
@@ -185,7 +189,7 @@ class Exam extends Model {
     }
     
     /**
-     * 根据教职员工userId获取所在班级的考试
+     * 获取指定教职员工所在班级的所有考试及分数
      *
      * @return array|bool
      */

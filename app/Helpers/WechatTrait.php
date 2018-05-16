@@ -5,11 +5,20 @@ use App\Models\App;
 use App\Models\Corp;
 use App\Models\User;
 use App\Facades\Wechat;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
 trait WechatTrait {
-
+    
+    /**
+     * 登录
+     *
+     * @param $appName
+     * @param $returnUrl
+     * @return RedirectResponse|Redirector
+     */
     function signin($appName, $returnUrl) {
         
         $acronym = explode('/', Request::path())[0];
