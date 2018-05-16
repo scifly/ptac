@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Wechat;
 
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 use App\Facades\Wechat;
 use App\Helpers\HttpStatusCode;
@@ -71,6 +72,7 @@ class MessageCenterController extends Controller {
      */
     public function index() {
         
+        Log::debug(json_encode(Auth::user()));
         if (!Auth::id()) {
             $this->signin(self::APP);
         }
