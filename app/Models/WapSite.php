@@ -11,6 +11,7 @@ use App\Http\Requests\WapSiteRequest;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -22,6 +23,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 use Throwable;
 
 /**
@@ -200,7 +202,7 @@ class WapSite extends Model {
     /**
      * 返回微官网首页
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View|string
      */
     function wIndex() {
     
@@ -220,7 +222,7 @@ class WapSite extends Model {
                 default:
                     break;
             }
-            return view();
+            return '学校列表';
         } else {
             $wapSite = WapSite::whereSchoolId($schoolId)->first();
             abort_if(
