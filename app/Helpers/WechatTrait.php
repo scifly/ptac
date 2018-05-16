@@ -6,7 +6,6 @@ use App\Models\Corp;
 use App\Models\User;
 use App\Facades\Wechat;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 trait WechatTrait {

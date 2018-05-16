@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Wechat;
 use App\Helpers\WechatTrait;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 
 class HomeWorkController extends Controller {
     
@@ -19,7 +20,7 @@ class HomeWorkController extends Controller {
     
         return Auth::id()
             ? $this->hw->wIndex()
-            : $this->signin(self::APP);
+            : $this->signin(self::APP, Request::url());
         
     }
     

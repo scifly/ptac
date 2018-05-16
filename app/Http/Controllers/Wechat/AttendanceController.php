@@ -7,6 +7,7 @@ use App\Models\StudentAttendance;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 use Throwable;
 
@@ -39,7 +40,7 @@ class AttendanceController extends Controller {
         
         return Auth::id()
             ? $this->sa->wIndex()
-            : $this->signin(self::APP);
+            : $this->signin(self::APP, Request::url());
         
     }
     

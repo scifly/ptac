@@ -8,6 +8,7 @@ use App\Models\WapSiteModule;
 use App\Models\WsmArticle;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 
 class MobileSiteController extends Controller {
@@ -35,7 +36,7 @@ class MobileSiteController extends Controller {
         
         return Auth::id()
             ? $this->ws->wIndex()
-            : $this->signin(self::APP);
+            : $this->signin(self::APP, Request::url());
         
     }
     
