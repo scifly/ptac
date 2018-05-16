@@ -48,10 +48,8 @@ trait WechatTrait {
             __('messages.not_found')
         );
         session(['corpId' => $corp->id]);
-        $user = Auth::loginUsingId($user->id);
-        Log::debug(json_encode($user));
         
-        return $user;
+        return  Auth::loginUsingId($user->id);
         
     }
     

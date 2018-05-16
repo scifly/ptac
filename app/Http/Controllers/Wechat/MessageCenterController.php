@@ -72,9 +72,8 @@ class MessageCenterController extends Controller {
      */
     public function index() {
         
-        Log::debug(json_encode(Auth::user()));
         if (!Auth::id()) {
-            $this->signin(self::APP);
+            return $this->signin(self::APP);
         }
         if (Request::method() == 'POST') {
             return response()->json(
