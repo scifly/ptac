@@ -48,6 +48,7 @@ var sync = function () {
             }
             $('.overlay').hide();
             page.inform('同步应用', '操作成功', page.success);
+            $('#id').val('');
         },
         error: function(e) {
             page.errorHandler(e);
@@ -117,24 +118,29 @@ $('#confirm-delete').on('click', function () {
 // 选择/取消选择应用
 $('tbody tr').on('click', function () {
     var $this = $(this),
+        $id = $('#id'),
         $agentid = $('#agentid'),
         $name = $('#name'),
         $secret = $('#secret');
     $this.toggleClass('text-bold');
     if ($this.hasClass('text-bold')) {
-        var agentid = $this.find('td').eq(1).text(),
-            name = $this.find('td').eq(2).text(),
-            secret = $this.find('td').eq(4).text(),
+        var $tds = $this.find('td'),
+            id = $tds.eq(0).text(),
+            agentid = $tds.eq(1).text(),
+            name = $tds.eq(2).text(),
+            secret = $tds.eq(4).text(),
             $rows = $('tbody tr');
         $.each($rows, function () {
             if ($(this).find('td').eq(1).text() !== agentid) {
                 $(this).removeClass('text-bold');
             }
         });
+        $id.val(id);
         $agentid.val(agentid);
         $name.val(name);
         $secret.val(secret);
     } else {
+        $id.val('');
         $agentid.val('');
         $name.val('');
         $secret.val('');

@@ -9,6 +9,7 @@
             'data-parsley-validate' => 'true'
         ]) !!}
         <div class="form-inline">
+            {!! Form::hidden('id', null, ['id' => 'id']) !!}
             <!-- 所属企业 -->
             <div class="form-group" style="margin-right: 10px">
                 {!! Form::label('corp_id', '所属企业：', [
