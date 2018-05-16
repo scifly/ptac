@@ -50,7 +50,7 @@ trait WechatTrait {
         session(['corpId' => $corp->id]);
         Auth::loginUsingId($user->id);
         
-        return $returnUrl;
+        return redirect($returnUrl);
         
     }
     
