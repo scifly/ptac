@@ -41,7 +41,6 @@ trait WechatTrait {
                 HttpStatusCode::INTERNAL_SERVER_ERROR,
                 Wechat::ERRMSGS[$result['errcode']]
             );
-            Log::debug(json_encode($result));
             $user = User::whereEnabled(1)->where('userid', $result['UserId'])->first();
             abort_if(
                 !$user,
