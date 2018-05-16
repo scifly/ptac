@@ -222,7 +222,7 @@ class WapSite extends Model {
                 default:
                     break;
             }
-            return '学校列表';
+            return '<h1>学校列表</h1>';
         } else {
             $wapSite = WapSite::whereSchoolId($schoolId)->first();
             abort_if(
