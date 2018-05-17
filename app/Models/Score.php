@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -1382,11 +1383,12 @@ class Score extends Model {
     function wIndex() {
         
         $user = Auth::user();
+        Log::debug(Auth::id());
         $pageSize = 4;
         $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
         $exam = new Exam();
         abort_if(
-            !($user->custodian) && !($user->educator),
+            !$user->custodian && !$user->educator,
             HttpStatusCode::UNAUTHORIZED,
             __('messages.unauthorized')
         );
