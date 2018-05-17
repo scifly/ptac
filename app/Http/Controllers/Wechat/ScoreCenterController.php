@@ -47,10 +47,23 @@ class ScoreCenterController extends Controller {
      */
     public function index() {
         
-        return !(Auth::id())
-            ? $this->signin(self::APP, Request::url())
-            : $this->score->wIndex();
+        return Auth::id()
+            ? $this->score->wIndex()
+            : $this->signin(self::APP, Request::url());
         
+    }
+    
+    public function detail() {
+        
+        $user = Auth::user();
+        if ($user->custodian) {
+            return $this->score->studentDetail();
+        } elseif ($user->educator) {
+            return $this->score->classDetail();
+        }
+
+        return __('messages.unauthorzied');
+    
     }
     
     /**
