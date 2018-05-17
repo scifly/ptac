@@ -61,7 +61,7 @@ class TestController extends Controller {
             ['id' => '321', 'name' => 'exam02'],
         ];
         
-        foreach ($exams as $exam) {
+        foreach ($exams as &$exam) {
             $exam['url'] = $exam['id'] . ':' . $exam['name'];
         }
         
