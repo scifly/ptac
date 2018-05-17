@@ -66,9 +66,9 @@ class TestController extends Controller {
             curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
             curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+            curl_setopt($ch, CURLOPT_POSTFIELDS, [
                 'Command' => '<Root><Function>SendMessage</Function><LoginName>test</LoginName><Password>link123</Password ><SignedData></SignedData><RequestData><Title>EUCP</Title><MessageType>0</MessageType><ReceiveNum>15881004695</ReceiveNum><Content>您好，您的验证码是680680【技术部】</Content ></RequestData></Root>'
-            ]));
+            ]);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $result = curl_exec($ch);
             // Check the return value of curl_exec(), too
