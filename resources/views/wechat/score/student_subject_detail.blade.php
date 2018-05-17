@@ -18,16 +18,16 @@
             margin: 0;
             padding:0;
             background-color: #f2f2f2;
-            font-family: "微软雅黑";
+            font-family: "微软雅黑", serif;
         }
         a{
             color: #333;
         }
         ::-webkit-scrollbar {
-            width: 0em;
+            width: 0;
         }
         ::-webkit-scrollbar:horizontal {
-            height: 0em;
+            height: 0;
         }
         .main{
             height: 100%;
@@ -122,7 +122,6 @@
             border-top: 1px solid #ccc;
             text-align: center;
         }
-
         .otherinfo{
             width: 94%;
             margin:10px 3%;
@@ -154,73 +153,67 @@
             padding-bottom: 20px;
         }
     </style>
-    <head>
+</head>
 <body ontouchstart>
-
 <div class="header">
     <div class="info">
+        {!! Form::hidden('exam_id', $examId, ['id' => 'exam_id']) !!}
+        {!! Form::hidden('student_id', $studentId, ['id' => 'student_id']) !!}
+        {!! Form::hidden('names', $total['name'], ['id' => 'names']) !!}
+        {!! Form::hidden('scores', $total['score'], ['id' => 'scores']) !!}
+        {!! Form::hidden('avgs', $total['avg'], ['id' => 'avgs']) !!}
         <div class="time">
-            @if( sizeof($scores) !== 0)
-            <div class="subtitle">{{ substr($scores->start_date,0,7) }}</div>
-            <div class="days">{{ substr($scores->start_date,8,10) }}日</div>
-                @else
-                <div class="subtitle">--</div>
-                <div class="days">--日</div>
-            @endif
+            <div class="subtitle">
+                {{ $score ? date('Y-m', strtotime($score->exam->start_date)) : '--' }}
+            </div>
+            <div class="days">
+                {{ $score ? date('d', strtotime($score->exam->start_date) }} 日
+            </div>
         </div>
         <div class="subject">
             <div class="subtitle">科目</div>
-            <input style="text-align: center;" id="subjests" class="weui-input subject-choose" type="text"
-                   value="@if(!empty($scores)){{$scores->subject->name}} @else {{null}} @endif"
-                   readonly="" data-values="@if(!empty($scores)){{$scores->subject_id}} @else {{0}} @endif">
+            {!! Form::select('subject_id', $subjects, ($score ? $score->subject_id : null), [
+                'id' => 'subject_id',
+                'class' => 'weui-input subject-choose',
+            ]) !!}
         </div>
         <div class="test">
             <div class="subtitle">考试名</div>
             <div class="testName">
-                @if(!empty($scores)){{$scores->examName}} @else -- @endif
+                {{ $score ? $score->exam->name : '--' }}
             </div>
         </div>
     </div>
     <div class="score">
-        @if( !empty($scores))
-            {{$scores->score}}
-        @else
-            --
-        @endif
+        {{ $score ? $score->score : '--' }}
     </div>
 </div>
-
 <div class="otherinfo">
     <div class="average">
         <div class="byclass">
-            <p>@if( sizeof($data) !== 0){{ $data['avg'] }}@else -- @endif</p>
+            <p>{{ $stat['classAvg'] }}</p>
             <p class="subtitle">班平均</p>
         </div>
         <div class="byschool">
-            <p>@if( sizeof($data) !== 0){{ $data['gradeavg'] }}@else -- @endif</p>
+            <p>{{ $stat['gradeAvg'] }}</p>
             <p class="subtitle">年平均</p>
         </div>
     </div>
     <div class="ranke">
         <div class="byclass">
-            <p>@if(!empty($scores)){{ $scores->class_rank }} @else {{0}} @endif/{{ $data['nums'] }}</p>
+            <p>{!! ($score ? $score->class_rank : 'na') . ' / ' . $stat['nClassScores']  !!}</p>
             <p class="subtitle">班排名</p>
         </div>
         <div class="byschool">
-            <p>@if(!empty($scores)){{ $scores->grade_rank }} @else{{0}} @endif/{{ $data['gradeNums'] }}</p>
+            <p>{!! ($score ? $score->grade_rank : 'na') . ' / ' . $stat['nGradeScores']  !!}</p>
             <p class="subtitle">年排名</p>
         </div>
     </div>
-
 </div>
 
 <div class="tablemain">
-    <div class="main" style="width: 100%;height: 350px;">
-
-    </div>
+    <div class="main" style="width: 100%;height: 350px;"></div>
 </div>
-
-
 <div style="height: 70px;width: 100%;"></div>
 <div class="footerTab" >
     <a class="btnItem footer-active" href="#">
@@ -231,173 +224,91 @@
         <i class="icon iconfont icon-renzheng7"></i>
         <p>综合</p>
     </a>
-
 </div>
-
 <script src="{{URL::asset('js/jquery.min.js')}}"></script>
 <script src="{{URL::asset('js/fastclick.js')}}"></script>
-
-<script>
-    $(function() {
-        FastClick.attach(document.body);
-    });
-</script>
 <script src="{{URL::asset('js/jquery-weui.min.js')}}"></script>
 <script src="{{URL::asset('js/plugins/echarts.common.min.js')}}"></script>
 <script>
-    var subjects = $.parseJSON('{{$subjects}}'.replace(/&quot;/g,'"'));
-    var total = $.parseJSON('{{$total}}'.replace(/&quot;/g,'"'));
-    var examId = '{{$examId}}';
-    var studentId = '{{$studentId}}';
-    //班级列表
-    $("#subjests").select({
-        title: "选择科目",
-        items: subjects,
-    });
-    var tmp = $("#subjests").attr('data-values');
+    var $subjectId = $('#subject_id'),
+        $examId = $('#exam_id'),
+        $studentId = $('#student_id'),
+        $names = $('#names'),
+        $scores = $('#scores'),
+        $avgs = $('#avgs');
 
-    $("#subjests").on("change",function(){
-        var subject_id = $(this).attr('data-values');
+    FastClick.attach(document.body);
+    showtable($scores.val(), $avgs.val(), $names.val());
+    $subjectId.on("change", function () {
         $.ajax({
-            type: 'post',
+            type: 'POST',
             dataType: 'json',
-            url: '../score/student_detail?examId='+ examId +'&studentId='+ studentId,
-            data: {subject_id : subject_id, _token: $('#csrf_token').attr('content')},
-            success: function ($data) {
-                var html= '';
-                if($data.scores.length !==0)
-                {
-                    var scores = $data.scores;
-                    $('.time .subject-title').html(scores.start_date.substring(0,7));
-                    $('.time .days').html(scores.start_date.substring(8,10)+'日');
-                    $('.test .testName').html(scores.examName);
-                    $('.header .score').html(scores.score);
-                }
-                if($data.data.length !==0){
-                    var score = $data.scores;
-                    var data = $data.data;
-                    html += '<div class="average">' +
+            url: '../sc/detail',
+            data: {
+                examId: $examId.val(),
+                studentId: $studentId.val(),
+                subject_id : $subjectId.val(),
+                _token: $('#csrf_token').attr('content')
+            },
+            success: function (result) {
+                var html= '',
+                    score = result['score'],
+                    stat = result['stat'],
+                    total = result['total'],
+                    names = total['name'],
+                    scores = total['score'],
+                    avgs = total['avg'];
+
+                $('.time .subject-title').html(score['start_date'].substring(0,7));
+                $('.time .days').html(score['start_date'].substring(8,10) + '日');
+                $('.test .testName').html(score['exam_name']);
+                $('.header .score').html(score['score']);
+                html +=
+                    '<div class="average">' +
+                        '<div class="byclass">' + '<p>'+ stat['classAvg'] + '</p>' + '<p class="subtitle">班平均</p>' + '</div>'+
+                        '<div class="byschool">' + '<p>'+ stat['gradeAvg'] + '</p>' + '<p class="subtitle">年平均</p>' + '</div>' +
+                    '</div>' +
+                    '<div class="ranke">' +
                         '<div class="byclass">' +
-                        '<p>'+ data.avg +'</p>' +
-                        '<p class="subtitle">班平均</p>' +
-                        '</div>'+
-                        '<div class="byschool">' +
-                        '<p>'+ data.gradeavg+'</p>' +
-                        '<p class="subtitle">年平均</p>' +
-                        '</div>' +
-                        '</div>' +
-                        '<div class="ranke">' +
-                        '<div class="byclass">' +
-                        '<p>'+ score.class_rank +'/'+ data.nums+'</p>' +
-                        '<p class="subtitle">班排名</p>' +
+                            '<p>'+ score['class_rank'] +'/'+ stat['nClassScores'] + '</p>' +
+                            '<p class="subtitle">班排名</p>' +
                         '</div>' +
                         '<div class="byschool">' +
-                        '<p>'+ score.grade_rank +'/'+ data.gradeNums+'</p>' +
-                        '<p class="subtitle">年排名</p>' +
+                            '<p>'+ score['grade_rank'] +'/'+ stat['nGradeScores']+'</p>' +
+                            '<p class="subtitle">年排名</p>' +
                         '</div>' +
-                        '</div>';
-                    $('.otherinfo').html(html);
-                }
-                if($data.total.length !==0){
-                    console.log($data.total);
-                    var total = $data.total;
-                    tmp = $("#subjests").val();
-                    var test_name = total.name;
-                    var myscore = total.score;
-                    var class_score = total.avg;
-                    showtable(myscore,class_score,test_name);
-                }
+                    '</div>';
+                $('.otherinfo').html(html);
+
+                showtable(scores, avgs, names);
             }
         });
-        // if(tmp != name){
-        //     attendances();
-        // }
-
-    })
-    getdata();
-    function getdata(){
-        tmp = $("#subjests").val();
-        var test_name = total.name;
-        var myscore = total.score;
-        var class_score = total.avg;
-        showtable(myscore,class_score,test_name);
-    }
-
-    function showtable(myscore,class_score,test_name){
-        var myChart = echarts.init($('.main')[0]);
-
-        option = {
-            title: {
-                x: 'center',
-                text: '本考次该科成绩趋势图',
-                textStyle: {
-                    fontWeight: '100',
-                    fontSize: '16',
+    });
+    function showtable(myscore, class_score, test_name){
+        var myChart = echarts.init($('.main')[0]),
+            option = {
+                title: {
+                    x: 'center',
+                    text: '本考次该科成绩趋势图',
+                    textStyle: { fontWeight: '100', fontSize: '16' },
+                    top: 15,
                 },
-                top: 15,
-            },
-            grid:{
-                y:'80',
-                bottom:'80',
-            },
-            tooltip: {
-                trigger: 'axis'
-            },
-            legend: {
-                data:['我的成绩','班平均成绩'],
-                x: 'left',
-                left:10,
-                top:45,
-            },
-
-            xAxis:  {
-                type: 'category',
-                data: test_name,
-                boundaryGap : false,
-            },
-            yAxis: {
-                type: 'value',
-                axisLabel: {
-                    formatter: '{value}'
-                },
-            },
-            dataZoom: [
-                {
-                    type: 'slider',
-                    show: true,
-                    xAxisIndex: [0],
-                    start: 0,
-                    end: 50
-                }
-            ],
-            series: [
-                {
-                    name:'我的成绩',
-                    type:'line',
-                    data:myscore,
-                },
-                {
-                    name:'班平均成绩',
-                    type:'line',
-                    data:class_score,
-                },
-            ]
-        };
+                grid: { y:'80', bottom:'80' },
+                tooltip: { trigger: 'axis' },
+                legend: { data:['我的成绩','班平均成绩'], x: 'left', left:10, top:45 },
+                xAxis:  { type: 'category', data: test_name, boundaryGap : false },
+                yAxis: { type: 'value', axisLabel: { formatter: '{value}' } },
+                dataZoom: [
+                    { type: 'slider', show: true, xAxisIndex: [0], start: 0, end: 50 }
+                ],
+                series: [
+                    { name:'我的成绩', type:'line', data:myscore },
+                    { name:'班平均成绩', type:'line', data:class_score },
+                ]
+            };
 
         myChart.setOption(option);
     }
-
-    //		var tmp = $('#subjests').val('data-values');
-    //
-    //		$('#subjests').change(function(){
-    //			var id = $('#subjests').attr('data-values');
-    //			console.log(id);
-    //
-    //			if(tmp != id){
-    ////
-    //			}
-    //
-    //		});
 </script>
 </body>
 </html>

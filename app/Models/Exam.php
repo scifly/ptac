@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -49,25 +48,25 @@ use ReflectionException;
  * @property-read Collection|Score[] $score
  */
 class Exam extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $table = 'exams';
-
+    
     protected $fillable = [
         'name', 'remark', 'exam_type_id',
         'class_ids', 'subject_ids', 'max_scores',
         'pass_scores', 'start_date', 'end_date',
         'enabled',
     ];
-
+    
     /**
      * 返回指定考试所属的考试类型对象
      *
      * @return BelongsTo
      */
     function examType() { return $this->belongsTo('App\models\ExamType'); }
-
+    
     /**
      * 返回考试
      *
@@ -91,9 +90,9 @@ class Exam extends Model {
         }
         
         return $selectedClasses;
-
+        
     }
-
+    
     /**
      * 获取指定考试包含的所有科目列表
      *
@@ -101,17 +100,17 @@ class Exam extends Model {
      * @return array
      */
     function selectedSubjects($subjectIds = null) {
-
+        
         $subjectIds = explode(",", $subjectIds);
         $selectedSubjects = [];
         foreach ($subjectIds as $subjectId) {
             $selectedSubjects[$subjectId] = Subject::find($subjectId)->name;
         }
+        
         return $selectedSubjects;
-
+        
     }
     
-
     /**
      * 保存考试
      *
@@ -121,11 +120,11 @@ class Exam extends Model {
     function store(array $data) {
         
         $exam = self::create($data);
-
+        
         return $exam ? true : false;
-
+        
     }
-
+    
     /**
      * 更新考试
      *
@@ -136,10 +135,12 @@ class Exam extends Model {
     function modify(array $data, $id) {
         
         $exam = self::find($id);
-        if (!$exam) { return false; }
-
+        if (!$exam) {
+            return false;
+        }
+        
         return $exam->update($data);
-
+        
     }
     
     /**
@@ -153,7 +154,9 @@ class Exam extends Model {
     function remove($id) {
         
         $exam = $this->find($id);
-        if (!$exam) { return false; }
+        if (!$exam) {
+            return false;
+        }
         
         return $this->removable($exam) ? $exam->delete() : false;
         
@@ -219,7 +222,7 @@ class Exam extends Model {
      * @return mixed
      */
     function classList($id, $action = null) {
-    
+        
         $exam = $this->find($id);
         if (!$exam) {
             $classes = [];
@@ -231,7 +234,7 @@ class Exam extends Model {
         }
         
         return response()->json([
-            'html' => $this->singleSelectList($classes, $action ? $action . '_class_id' : 'class_id')
+            'html' => $this->singleSelectList($classes, $action ? $action . '_class_id' : 'class_id'),
         ]);
         
     }
@@ -255,7 +258,7 @@ class Exam extends Model {
             ['db' => 'Exam.created_at', 'dt' => 8],
             ['db' => 'Exam.updated_at', 'dt' => 9],
             [
-                'db' => 'Exam.enabled', 'dt' => 10,
+                'db'        => 'Exam.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
@@ -263,9 +266,9 @@ class Exam extends Model {
         ];
         $joins = [
             [
-                'table' => 'exam_types',
-                'alias' => 'ExamType',
-                'type' => 'INNER',
+                'table'      => 'exam_types',
+                'alias'      => 'ExamType',
+                'type'       => 'INNER',
                 'conditions' => [
                     'ExamType.id = Exam.exam_type_id',
                 ],
@@ -279,7 +282,7 @@ class Exam extends Model {
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition
         );
-
+        
     }
-
+    
 }

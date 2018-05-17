@@ -376,7 +376,7 @@ Route::delete($p . 'replydel/{id}', $c . '@replyDestroy');
 
 /** 考勤中心 */
 $c = 'Wechat\AttendanceController';
-$p = $acronym . '/attendance/';
+$p = $acronym . '/at/';
 Route::get($p, $c . '@index');
 Route::get($p . 'detail/{id}', $c . '@detail');
 Route::post($p . 'detail/{id?}', $c . '@detail');
@@ -384,21 +384,21 @@ Route::post($p . 'chart', $c . '@chart');
 
 /** 成绩中心 */
 $c = 'Wechat\ScoreCenterController';
-$p = $acronym . '/score_center/';
+$p = $acronym . '/sc/';
 Route::any($p, $c . '@index');
-Route::get($p . 'detail', $c . '@detail');
-Route::get($p . 'student_detail', $c . '@subjectDetail');
-Route::post($p . 'student_detail', $c . '@subjectDetail');
+Route::get($p . 'squad', $c . '@squad');
+Route::get($p . 'student', $c . '@student');
+Route::post($p . 'student', $c . '@student');
 Route::any($p . 'show', $c . '@show');
-Route::get($p . 'analysis', $c . '@analysis');
-Route::get($p . 'cus_total', $c . '@cusTotal');
+Route::get($p . 'analyze', $c . '@analyze');
+Route::get($p . 'stat', $c . '@stat');
 
 /** 布置作业 */
 Route::get($acronym . '/homework', 'Wechat\HomeWorkController@index');
 
 /** 微网站 */
 $c = 'Wechat\MobileSiteController';
-$p = $acronym . '/wapsite/';
+$p = $acronym . '/ws/';
 Route::any($p, $c . '@index');
 Route::any($p . 'module', $c . '@module');
 Route::any($p . 'article', $c . '@article');
