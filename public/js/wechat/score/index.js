@@ -10,7 +10,7 @@ $targetId.on('change', function () { examList(false); });
 $search.on("input propertychange change", function () { examList(false) });
 $loadMore.click(function () { start++; examList(true); });
 $examLink.on('click', function () {
-    window.location = '../detail?examId=' + $(this).data('value') + '&targetId=' + $targetId.val();
+    window.location = '../../detail?examId=' + $(this).data('value') + '&targetId=' + $targetId.val();
 });
 function examList(more) {
     $loadMore.show();

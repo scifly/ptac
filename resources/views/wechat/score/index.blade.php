@@ -12,7 +12,10 @@
                 <div class="switchclass-head">
                     <div class="weui-cell">
                         <div class="weui-cell__bd title-name">
-                            {!! Form::select('target_id', $targets, null, ['class' => 'weui-input'] ) !!}
+                            {!! Form::select('target_id', $targets, null, [
+                                'id' => 'target_id',
+                                'class' => 'weui-input'
+                            ] ) !!}
                         </div>
                     </div>
                 </div>
