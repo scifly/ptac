@@ -662,4 +662,8 @@ class Student extends Model {
         
     }
     
+    function exams($id) {
+    
+    }
+    
 }

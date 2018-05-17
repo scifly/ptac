@@ -4,6 +4,7 @@ namespace App\Models;
 use Eloquent;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 use Carbon\Carbon;
@@ -381,6 +382,28 @@ class Custodian extends Model {
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition
         );
+        
+    }
+    
+    /**
+     * 获取指定监护人在指定企业绑定的学生列表
+     *
+     * @param null $userId
+     * @param null $corpId
+     * @return array
+     */
+    function myStudents($userId = null, $corpId = null) {
+
+        $custodian = isset($userId) ? User::find($userId)->custodian : Auth::user()->custodian;
+        $corpId = $corpId ?? session('corp_id');
+        $students = [];
+        foreach ($custodian->students as $student) {
+            if ($student->squad->grade->school->corp_id == $corpId) {
+                $students[] = [$student->id => $student->user->realname];
+            }
+        }
+        
+        return $students;
         
     }
     

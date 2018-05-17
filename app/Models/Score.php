@@ -1448,35 +1448,34 @@ class Score extends Model {
     
     /**
      * 获取指定监护人绑定学生的相关考试信息
-     * @param $userId
      * @return array
      */
-    function getStudentScore($userId) {
+    private function getStudentScore() {
         
-        $students = User::whereUserid($userId)->first()->custodian->students;
-        $score = $data = $studentName = [];
+        $students = Auth::user()->custodian->students;
+        $scores = $studentNames = [];
         foreach ($students as $k => $s) {
             $exams = Exam::whereEnabled(1)->get();
             foreach ($exams as $key => $e) {
                 if (in_array($s->class_id, explode(',', $e->class_ids))) {
-                    $score[$k][$key]['id'] = $e->id;
-                    $score[$k][$key]['student_id'] = $s->id;
-                    $score[$k][$key]['name'] = $e->name;
-                    $score[$k][$key]['start_date'] = $e->start_date;
-                    $score[$k][$key]['realname'] = $s->user->realname;
-                    $score[$k][$key]['class_id'] = $s->class_id;
-                    $score[$k][$key]['subject_ids'] = $e->subject_ids;
+                    $scores[$k][$key]['id'] = $e->id;
+                    $scores[$k][$key]['student_id'] = $s->id;
+                    $scores[$k][$key]['name'] = $e->name;
+                    $scores[$k][$key]['start_date'] = $e->start_date;
+                    $scores[$k][$key]['realname'] = $s->user->realname;
+                    $scores[$k][$key]['class_id'] = $s->class_id;
+                    $scores[$k][$key]['subject_ids'] = $e->subject_ids;
                 }
             }
-            $studentName[] = [
+            $studentNames[] = [
                 'title' => $s->user->realname,
                 'value' => $s->id,
             ];
         }
         
         return [
-            'score'       => $score,
-            'studentName' => $studentName,
+            'scores'       => $scores,
+            'studentNames' => $studentNames,
         ];
         
     }
@@ -1586,15 +1585,16 @@ class Score extends Model {
                     'studentId' => $studentId,
                 ]);
             }
-            $data = $this->getStudentScore($user->id);
-            $scores = $data['score'];
-            $studentName = $data['studentName'];
+            $students = $user->custodian->myStudents();
+            reset($students);
+            $exams = key($students);
+            list($scores, $studentNames) = $this->getStudentScore();
             if (sizeof($scores) != 0) {
                 $exams = array_slice($scores[0], $start, $pageSize);
             }
             $content = view('wechat.score.index_custodian', [
-                'scores'      => $exams,
-                'studentName' => json_encode($studentName, JSON_UNESCAPED_UNICODE),
+                'students'      => (new Custodian())->myStudents(),
+                'studentName' => json_encode($studentNames, JSON_UNESCAPED_UNICODE),
                 'pageSize'    => $pageSize,
             ])->render();
         } elseif ($role == '教职员工') {

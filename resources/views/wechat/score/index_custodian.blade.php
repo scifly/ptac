@@ -4,10 +4,11 @@
             <div class="switchclass-head">
                 <div class="weui-cell">
                     <div class="weui-cell__bd title-name">
-                        <input style="text-align: center;" id="studentList" class="weui-input" type="text" title=""
-                               value="@if (!empty($scores)) {{$scores[0]['realname']}} @else {{ null }} @endif"
-                               readonly=""
-                               data-values="@if (!empty($scores)) {{$scores[0]['student_id']}} @else {{ null }} @endif">
+                        {{--<input style="text-align: center;" id="studentList" class="weui-input" type="text" title=""--}}
+                               {{--value="@if (!empty($scores)) {{$scores[0]['realname']}} @else {{ null }} @endif"--}}
+                               {{--readonly=""--}}
+                               {{--data-values="@if (!empty($scores)) {{$scores[0]['student_id']}} @else {{ null }} @endif">--}}
+                        {!! Form::select('student_id', $students, null, ['class' => 'weui-input']) !!}
                     </div>
                 </div>
             </div>
@@ -16,7 +17,8 @@
             <form class="weui-search-bar__form" action="#">
                 <div class="weui-search-bar__box">
                     <i class="weui-icon-search"></i>
-                    <input type="search" class="weui-search-bar__input" id="searchInput" placeholder="搜索" required="">
+                    {!! Form::search('', null, ['class' => 'sc-search', 'placeholder' => '搜索', 'required' => '']) !!}
+                    {{--<input type="search" class="weui-search-bar__input" id="searchInput" placeholder="搜索" required="">--}}
                     <a href="#" class="weui-icon-clear" id="searchClear"></a>
                 </div>
                 <label class="weui-search-bar__label" id="searchText"
@@ -28,7 +30,7 @@
             <a href="#" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
         </div>
     </div>
-    <!--列表-->
+    <!--考试列表-->
     <div class="weui-cells" style="margin-top: 0;">
         @if (!empty($scores))
             @foreach ($scores as $s)
