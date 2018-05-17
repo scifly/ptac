@@ -168,23 +168,12 @@ class Exam extends Model {
      */
     function examsByClassId($classId, $keyword = null) {
         
-        $values = [];
-        $exams = $this->when(
+        return $this->when(
             $keyword,
             function (Exam $query) use ($keyword) {
                 return $query->where('name', 'like', '%' . $keyword . '%');
             }
-        )->whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')->get();
-        
-        foreach ($exams as $key => $e) {
-            $values[$key]['id'] = $e->id;
-            $values[$key]['name'] = $e->name;
-            $values[$key]['start_date'] = $e->start_date;
-            $values[$key]['class_id'] = $classId;
-            $values[$key]['subject_ids'] = $e->subject_ids;
-        }
-        
-        return $values;
+        )->whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')->get()->toArray();
         
     }
     

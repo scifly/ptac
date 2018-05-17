@@ -662,8 +662,20 @@ class Student extends Model {
         
     }
     
+    /**
+     * 返回指定学生参加的所有考试
+     *
+     * @param $id
+     * @return array
+     */
     function exams($id) {
-    
+        
+        $student = $this->find($id);
+        
+        return (new Exam())->where('enabled', 1)->orderBy('start_date', 'desc')
+            ->whereRaw('FIND_IN_SET(' . $student->class_id . ', class_ids')
+            ->get()->toArray();
+        
     }
     
 }

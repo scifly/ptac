@@ -56,32 +56,16 @@ class TestController extends Controller {
      */
     public function index() {
     
-        $result = null;
-        try {
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'http://192.168.5.14:2018/Api/Execute');
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-            curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-            curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, [
-                'Command' => '<Root><Function>SendMessage</Function><LoginName>test</LoginName><Password>link123</Password ><SignedData></SignedData><RequestData><Title>EUCP</Title><MessageType>0</MessageType><ReceiveNum>15881004695</ReceiveNum><Content>您好，您的验证码是680680【技术部】</Content ></RequestData></Root>'
-            ]);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            $result = curl_exec($ch);
-            // Check the return value of curl_exec(), too
-            if (!$result) {
-                throw new Exception(curl_error($ch), curl_errno($ch));
-            }
-            curl_close($ch);
-        } catch (Exception $e) {
-            throw $e;
+        $exams = [
+            ['id' => '123', 'name' => 'exam01'],
+            ['id' => '321', 'name' => 'exam02'],
+        ];
+        
+        foreach ($exams as $exam) {
+            $exam['url'] = $exam['id'] . ':' . $exam['name'];
         }
-    
-        return $result;
-    
+        
+        dd($exams);
     
         $messages = Message::all();
         foreach ($messages as $key => $message) {

@@ -4,11 +4,11 @@
             <div class="switchclass-head">
                 <div class="weui-cell">
                     <div class="weui-cell__bd title-name">
-                        {{--<input style="text-align: center;" id="studentList" class="weui-input" type="text" title=""--}}
-                               {{--value="@if (!empty($scores)) {{$scores[0]['realname']}} @else {{ null }} @endif"--}}
-                               {{--readonly=""--}}
-                               {{--data-values="@if (!empty($scores)) {{$scores[0]['student_id']}} @else {{ null }} @endif">--}}
-                        {!! Form::select('student_id', $students, null, ['class' => 'weui-input']) !!}
+                        {!! Form::select(
+                            $role == '监护人' ? 'student_id' : 'class_id',
+                            $role == '监护人' ? $students : $classes,
+                            null, ['class' => 'weui-input']
+                        ) !!}
                     </div>
                 </div>
             </div>
@@ -17,8 +17,12 @@
             <form class="weui-search-bar__form" action="#">
                 <div class="weui-search-bar__box">
                     <i class="weui-icon-search"></i>
-                    {!! Form::search('', null, ['class' => 'sc-search', 'placeholder' => '搜索', 'required' => '']) !!}
-                    {{--<input type="search" class="weui-search-bar__input" id="searchInput" placeholder="搜索" required="">--}}
+                    {!! Form::search('search', null, [
+                        'id' => 'search',
+                        'class' => 'weui-search-bar__input',
+                        'placeholder' => '搜索',
+                        'data-type' => $role == '监护人' ? 'custodian' : 'educator'
+                    ]) !!}
                     <a href="#" class="weui-icon-clear" id="searchClear"></a>
                 </div>
                 <label class="weui-search-bar__label" id="searchText"
@@ -32,14 +36,14 @@
     </div>
     <!--考试列表-->
     <div class="weui-cells" style="margin-top: 0;">
-        @if (!empty($scores))
-            @foreach ($scores as $s)
+        @if (!empty($exams))
+            @foreach ($exams as $exam)
                 <a class="weui-cell weui-cell_access"
-                   href='{{ url("wechat/score/student_detail?examId=".$s['id']."&studentId=".$s['student_id']) }}'>
+                   href='{{ url("wechat/score/student_detail?examId=" . $exam['id'] . "&studentId=" . $exam['student_id']) }}'>
                     <div class="weui-cell__bd">
-                        <p>{{ $s['name'] }}</p>
+                        <p>{{ $exam['name'] }}</p>
                     </div>
-                    <div class="weui-cell__ft time">{{ $s['start_date'] }}</div>
+                    <div class="weui-cell__ft time">{{ $exam['start_date'] }}</div>
                 </a>
             @endforeach
         @else

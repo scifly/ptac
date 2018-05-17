@@ -60,12 +60,12 @@ class Score extends Model {
     
     # 导出格式
     const EXPORT_TITLES = [
-        '姓名', '班级', '学号', '考试', '科目', '分数', '班排名', '年排名'
+        '姓名', '班级', '学号', '考试', '科目', '分数', '班排名', '年排名',
     ];
     
     # 导入格式
     const IMPORT_TITLES = [
-        '班级', '学号', '姓名'
+        '班级', '学号', '姓名',
     ];
     
     protected $fillable = [
@@ -121,7 +121,10 @@ class Score extends Model {
         
         if (isset($id)) {
             $score = self::find($id);
-            if (!$score) { return false; }
+            if (!$score) {
+                return false;
+            }
+            
             return $score->update($data) ? true : false;
         }
         
@@ -140,7 +143,10 @@ class Score extends Model {
         
         if (isset($id)) {
             $score = self::find($id);
-            if (!$score) { return false; }
+            if (!$score) {
+                return false;
+            }
+            
             return $score->delete() ? true : false;
         }
         
@@ -161,12 +167,10 @@ class Score extends Model {
         $classIds = Squad::whereEnabled(1)
             ->whereIn('id', explode(',', $exam->class_ids))
             ->get()->pluck('id')->toArray();
-    
         # 指定考试对应的科目列表
         $subjectList = Subject::whereEnabled(1)
             ->whereIn('id', explode(',', $exam->subject_ids))
             ->pluck('name', 'id')->toArray();
-    
         # 指定考试对应的且对当前用户可见的学生列表
         $studentList = [];
         $students = Student::whereEnabled(1)
@@ -177,7 +181,7 @@ class Score extends Model {
         
         return response()->json([
             'students' => $this->singleSelectList($studentList, 'student_id'),
-            'subjects' => $this->singleSelectList($subjectList, 'subject_id')
+            'subjects' => $this->singleSelectList($subjectList, 'subject_id'),
         ]);
         
     }
@@ -453,14 +457,11 @@ class Score extends Model {
         
         $studentIds = $this->whereExamId($examId)
             ->get()->pluck('student_id');
-        
         # 当前班级下的所有参加考试的学生
         $students = Student::whereClassId($classId)->whereIn('id', $studentIds)->get();
-        
         # 当前选择班级的所属年级下 的所有班级 id
         $classes = Squad::where('grade_id', Squad::whereId($classId)->first()->grade_id)
             ->get()->pluck('id');
-        
         # 统计当前学生年级 的所有参加考试的学生
         $gradeStudents = Student::whereIn('class_id', $classes)
             ->whereIn('id', $studentIds)->get();
@@ -623,7 +624,7 @@ class Score extends Model {
                             break;
                         default:
                             break;
-    
+                        
                     }
                 }
             }
@@ -753,7 +754,7 @@ class Score extends Model {
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
     function upload() {
-    
+        
         $file = Request::file('file');
         abort_if(
             !$file || !$file->isValid(),
@@ -836,15 +837,16 @@ class Score extends Model {
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     function export() {
-    
+        
         $classId = Request::query('classId');
         $examId = Request::query('examId');
-        
         $studentIds = Student::whereClassId($classId)->get()->pluck('id')->toArray();
         $scores = $this->whereExamId($examId)->whereIn('student_id', $studentIds)->get();
         $records = [self::EXPORT_TITLES];
         foreach ($scores as $score) {
-            if (!$score->student) { continue; }
+            if (!$score->student) {
+                continue;
+            }
             $records[] = [
                 $score->student->user->realname,
                 $score->squad->name,
@@ -853,7 +855,7 @@ class Score extends Model {
                 $score->subject->name,
                 $score->score,
                 $score->class_rank,
-                $score->grade_rank
+                $score->grade_rank,
             ];
         }
         
@@ -958,7 +960,7 @@ class Score extends Model {
                 'student'     => $data['student'],
             ])->render();
         }
-
+        
         return response()->json(['html' => $view]);
         
     }
@@ -979,7 +981,7 @@ class Score extends Model {
         }
         
         return response()->json([
-            'html' => $html
+            'html' => $html,
         ]);
         
     }
@@ -1444,8 +1446,6 @@ class Score extends Model {
         return $data;
     }
     
-    
-    
     /**
      * 获取指定监护人绑定学生的相关考试信息
      * @return array
@@ -1479,7 +1479,6 @@ class Score extends Model {
         ];
         
     }
-    
     
     /**
      * 获取学生某次考试在班上的平均分
@@ -1560,12 +1559,11 @@ class Score extends Model {
      * @throws Throwable
      */
     function wIndex() {
-    
+        
         $user = Auth::user();
         $role = $user->group->name;
         $pageSize = 4;
         $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
-        $exams = [];
         $exam = new Exam();
         abort_if(
             !in_array($role, ['监护人', '教职员工']),
@@ -1575,11 +1573,11 @@ class Score extends Model {
         $content = '';
         if ($role === '监护人') {
             if (Request::method() == 'POST') {
-                $studentId = Request::get('student_id');
+                $studentId = Request::query('student_id');
                 $classId = Student::find($studentId)->class_id;
-                $keyword = Request::has('keywords') ? Request::input('keywords') : null;
+                $keyword = Request::has('keyword') ? Request::input('keyword') : null;
                 $exams = array_slice($exam->examsByClassId($classId, $keyword), $start, $pageSize);
-        
+                
                 return response()->json([
                     'data'      => $exams,
                     'studentId' => $studentId,
@@ -1587,22 +1585,22 @@ class Score extends Model {
             }
             $students = $user->custodian->myStudents();
             reset($students);
-            $exams = key($students);
-            list($scores, $studentNames) = $this->getStudentScore();
-            if (sizeof($scores) != 0) {
-                $exams = array_slice($scores[0], $start, $pageSize);
+            $exams = (new Student())->exams(key($students));
+            foreach ($exams as $exam) {
+                $exam['url'] = 'wechat/score/detail?examId=' . $exam['id'] . '&studentId=' . key($students);
             }
             $content = view('wechat.score.index_custodian', [
-                'students'      => (new Custodian())->myStudents(),
-                'studentName' => json_encode($studentNames, JSON_UNESCAPED_UNICODE),
-                'pageSize'    => $pageSize,
+                'students' => $students,
+                'exams'    => array_slice($exams, $start, $pageSize),
+                'role'     => $role,
+                'pageSize' => $pageSize,
             ])->render();
         } elseif ($role == '教职员工') {
             if (Request::method() == 'POST') {
                 $classId = Request::get('class_id');
                 $keyword = Request::has('keywords') ? Request::input('keywords') : null;
                 $exams = array_slice($exam->examsByClassId($classId, $keyword), $start, $pageSize);
-            
+                
                 return response()->json(['data' => $exams]);
             }
             list($scores, $classNames) = $exam->examsByEducator();
@@ -1612,17 +1610,16 @@ class Score extends Model {
                 __('messages.score.zero_classes')
             );
             $exams = array_slice($scores[0], $start, $pageSize);
-        
             $content = view('wechat.score.index_educator', [
                 'scores'    => $exams,
                 'className' => json_encode($classNames, JSON_UNESCAPED_UNICODE),
                 'pageSize'  => $pageSize,
             ])->render();
-    
+            
         }
         
         return view('wechat.score.index', ['content' => $content]);
-    
+        
     }
     
 }
