@@ -905,7 +905,7 @@ class Score extends Model {
     
     function classDetail() {
     
-        $classId = Request::input('classId');
+        $classId = Request::input('targetId');
         $examId = Request::input('examId');
         $student = Request::input('student');
         if ($classId && $examId) {
