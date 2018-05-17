@@ -8,7 +8,6 @@ use App\Facades\Wechat;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 trait WechatTrait {
@@ -27,7 +26,6 @@ trait WechatTrait {
         $app = App::whereCorpId($corp->id)->where('name', $appName)->first();
         $agentid = $app->agentid;
         $secret = $app->secret;
-        Log::debug($agentid);
         $code = Request::input('code');
         if (!$code) {
             return redirect(

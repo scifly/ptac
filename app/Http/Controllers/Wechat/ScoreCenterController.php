@@ -47,7 +47,7 @@ class ScoreCenterController extends Controller {
      */
     public function index() {
         
-        return Auth::id()
+        return !(Auth::id())
             ? $this->signin(self::APP, Request::url())
             : $this->score->wIndex();
         
