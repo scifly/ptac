@@ -3,7 +3,7 @@
     <title>成绩中心</title>
 @endsection
 @section('css')
-    <link rel="stylesheet" href="{{ asset('squad.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/wechat/score/squad.css') }}">
 @endsection
 @section('content')
     <div class="header">
@@ -71,7 +71,7 @@
             <i class="icon iconfont icon-document"></i>
             <p>详情</p>
         </a>
-        <a class="btnItem" href='{{ url("sc/analyze?examId=". $examId ."&classId=". $classId) }}'>
+        <a class="btnItem" href='{{ url("wlrj/sc/analyze?examId=". $examId ."&classId=". $classId) }}'>
             <i class="icon iconfont icon-renzheng7"></i>
             <p>统计</p>
         </a>
