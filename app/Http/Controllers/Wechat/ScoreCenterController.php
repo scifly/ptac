@@ -86,7 +86,9 @@ class ScoreCenterController extends Controller {
     }
     
     /**
-     * 微信 监护人端综合
+     * 返回指定学生指定考试的综合成绩分析结果
+     *
+     * @return Factory|View|string
      */
     public function stat() {
         
