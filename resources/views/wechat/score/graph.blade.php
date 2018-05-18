@@ -1,6 +1,6 @@
 @extends('wechat.layouts.master')
 @section('css')
-	<link rel="stylesheet" href="{{ asset('graph.css') }}">
+	<link rel="stylesheet" href="{{ asset('css/wechat/score/graph.css') }}">
 @endsection
 @section('content')
 	<div class="header">

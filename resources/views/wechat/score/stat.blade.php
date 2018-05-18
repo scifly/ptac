@@ -78,5 +78,5 @@
 	</div>
 @endsection
 @section('script')
-<script src="{{ asset('stat.js') }}"></script>
+<script src="{{ asset('js/wechat/score/stat.js') }}"></script>
 @endsection

@@ -102,7 +102,7 @@
         </ul>
     </div>
     <div class="footerTab">
-        <a class="btnItem" href='{{ url("wechat/score/detail?examId=". $examId ."&classId=". $classId) }}'>
+        <a class="btnItem" href='{{ url("wechat/score/detail?examId=". $examId ."&targetId=". $classId) }}'>
             <i class="icon iconfont icon-document"></i>
             <p>详情</p>
         </a>

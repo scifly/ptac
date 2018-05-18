@@ -857,7 +857,7 @@ class Score extends Model {
         if ($classId && $examId) {
             $data = $this->examDetail($examId, $classId, $student);
             
-            return view('wechat.score.detail', [
+            return view('wechat.score.squad', [
                 'data'    => $data,
                 'classId' => $classId,
                 'examId'  => $examId,
@@ -931,34 +931,31 @@ class Score extends Model {
     }
     
     /**
-     *
+     * 成绩综合分析
      *
      * @return Factory|View|string
      */
     function wStat() {
     
-        $input['exam_id'] = Request::get('examId');
-        $input['student_id'] = Request::get('studentId');
-        $exam = Exam::whereId($input['exam_id'])->first();
-        $student = Student::whereId($input['student_id'])->first();
-        if (!$exam) {
-            $examName = '';
-            $examDate = '';
-        } else {
-            $examName = $exam->name;
-            $examDate = $exam->start_date;
-        }
-        if (!$student) {
-            return '暂未该学生相关数据';
-        }
-        $data = $this->wAnalyze($input);
-        
+        $examId = Request::get('examId');
+        $studentId = Request::get('studentId');
+        $exam = Exam::find($examId);
+        $student = Student::find($studentId);
+        abort_if(
+            !$student || !$exam,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
+    
         return view('wechat.score.stat', [
-            'data'      => $data,
-            'examName'  => $examName,
-            'examDate'  => $examDate,
-            'studentId' => $input['student_id'],
-            'examId'    => $input['exam_id'],
+            'data'      => $this->wAnalyze([
+                'exam_id' => $examId,
+                'student_id' => $studentId
+            ]),
+            'examName'  => $exam->name,
+            'examDate'  => $exam->start_date,
+            'studentId' => $studentId,
+            'examId'    => $examId,
         ]);
         
     }
