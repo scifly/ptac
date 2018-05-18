@@ -35,9 +35,8 @@ class ScoreCenterController extends Controller {
 
         $this->score = $score;
         $this->exam = $exam;
-        if (!Auth::id()) {
-            $this->signin(self::APP, Request::url());
-        }
+        
+        return $this->signin(self::APP, Request::url());
         
     }
     
