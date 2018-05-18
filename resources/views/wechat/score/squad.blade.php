@@ -71,7 +71,7 @@
             <i class="icon iconfont icon-document"></i>
             <p>详情</p>
         </a>
-        <a class="btnItem" href='{{ url("wechat/score/analysis?examId=". $examId ."&classId=". $classId) }}'>
+        <a class="btnItem" href='{{ url("sc/analyze?examId=". $examId ."&classId=". $classId) }}'>
             <i class="icon iconfont icon-renzheng7"></i>
             <p>统计</p>
         </a>

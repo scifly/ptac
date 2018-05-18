@@ -58,7 +58,7 @@
             </div>
         @endforeach
     </div>
-    <div style="height: 70px;width: 100%;"></div>
+    <div style="height: 70px; width: 100%;"></div>
     <div class="footerTab">
         <a class="btnItem exam-link" href='{{ url("sc/detail?examId=". $examId ."&targetId=". $studentId) }}'>
             <i class="icon iconfont icon-document"></i>

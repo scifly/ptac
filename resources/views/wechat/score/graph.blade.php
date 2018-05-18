@@ -36,6 +36,5 @@
 	</div>
 @endsection
 @section('script')
-	<script src="{{asset('/js/wechat/score/graph.js')}}"></script>
+	<script src="{{ asset('/js/wechat/score/graph.js') }}"></script>
 @endsection
-

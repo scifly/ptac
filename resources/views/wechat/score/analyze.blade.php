@@ -7,20 +7,14 @@
 @endsection
 @section('content')
     <div class="header">
-        <div class="title">
-            {{ $data['examName'] }}
-        </div>
-        <div class="time">
-            {{ $data['className'] }}
-        </div>
+        <div class="title">{{ $data['examName'] }}</div>
+        <div class="time">{{ $data['className'] }}</div>
     </div>
     <div class="main" style="width: 92%;padding: 0 4%;">
         @if(!empty($data['oneData']))
             @foreach($data['oneData'] as $one)
                 <div class="subjectItem" id="lie-{{ $one['subId'] }}">
-                    <div class="subj-title">
-                        {{ $one['sub'] }}
-                    </div>
+                    <div class="subj-title">{{ $one['sub'] }}</div>
                     <div class="subj-tab">
                         <a class="tab-item cur" data-type="score">分数统计</a>
                         <a class="tab-item" data-type="score-level">分数段统计</a>
@@ -57,27 +51,29 @@
                             </table>
                         </div>
                         @if(!empty($data['rangs']))
-                        <div class="show-item score-level">
-                            <div class="table-title">{{ $one['sub'] }}分数统计详情</div>
-                            <table class="table-count">
-                                <tr>
-                                    <td class="subtit">统计人数</td>
-                                    @if(!empty($data['rangs'][$one['subId']][0]['score']['count']))
-                                    <td>{{ $data['rangs'][$one['subId']][0]['score']['count'] }}</td>
-                                    @else
-                                        <td>0</td>
-                                    @endif
-                                </tr>
-                                @if(!empty($data['rangs'][$one['subId']]))
-                                @foreach($data['rangs'][$one['subId']] as $ran)
+                            <div class="show-item score-level">
+                                <div class="table-title">{{ $one['sub'] }}分数统计详情</div>
+                                <table class="table-count">
                                     <tr>
-                                        <td class="subtit">{{ $ran['range']['min'] }} - {{ $ran['range']['max'] }}分</td>
-                                        <td>{{ $ran['score']['number'] }}</td>
+                                        <td class="subtit">统计人数</td>
+                                        @if(!empty($data['rangs'][$one['subId']][0]['score']['count']))
+                                            <td>{{ $data['rangs'][$one['subId']][0]['score']['count'] }}</td>
+                                        @else
+                                            <td>0</td>
+                                        @endif
                                     </tr>
-                                @endforeach
-                                @endif
-                            </table>
-                        </div>
+                                    @if(!empty($data['rangs'][$one['subId']]))
+                                        @foreach($data['rangs'][$one['subId']] as $ran)
+                                            <tr>
+                                                <td class="subtit">{{ $ran['range']['min'] }}
+                                                    - {{ $ran['range']['max'] }}分
+                                                </td>
+                                                <td>{{ $ran['score']['number'] }}</td>
+                                            </tr>
+                                        @endforeach
+                                    @endif
+                                </table>
+                            </div>
                         @endif
                         <div class="show-item table">
                             <div id="main"></div>
@@ -85,7 +81,7 @@
                     </div>
                 </div>
             @endforeach
-            @else
+        @else
             <div>
                 <p style="text-align: center;">本场考试未录入本班数据！</p>
             </div>

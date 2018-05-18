@@ -904,12 +904,13 @@ class Score extends Model {
      */
     function analyze() {
     
+        $allowedClassIds = $this->classIds(Auth::user()->educator->school_id);
         $examId = Request::query('examId');
         $classId = Request::query('classId');
         $exam = Exam::find($examId);
         $class = Squad::find($classId);
         abort_if(
-            !$exam || !$class,
+            !$exam || !$class || !in_array($classId, $allowedClassIds),
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
@@ -937,8 +938,8 @@ class Score extends Model {
      */
     function wStat() {
     
-        $examId = Request::get('examId');
-        $studentId = Request::get('studentId');
+        $examId = Request::query('examId');
+        $studentId = Request::query('studentId');
         $exam = Exam::find($examId);
         $student = Student::find($studentId);
         abort_if(
