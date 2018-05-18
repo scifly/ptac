@@ -8,9 +8,9 @@
     <title>家校通</title>
 </head>
 <body>
-    <div>
-        <h1>403 {{ $exception->getMessage() }}</h1>
-        <a href="javascript:history.back();">Back</a>
-    </div>
+<div>
+    <h1>401 {{ $exception->getMessage() }}</h1>
+    <a href="javascript:history.back();">Back</a>
+</div>
 </body>
 </html>

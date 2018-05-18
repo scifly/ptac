@@ -1383,7 +1383,6 @@ class Score extends Model {
     function wIndex() {
         
         $user = Auth::user();
-        Log::debug(Auth::id());
         $pageSize = 4;
         $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
         $exam = new Exam();

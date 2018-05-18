@@ -8,9 +8,11 @@ use App\Models\Score;
 use App\Models\Squad;
 use App\Models\Student;
 use App\Models\Subject;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
+use Illuminate\View\View;
 use Throwable;
 
 /**
@@ -53,6 +55,11 @@ class ScoreCenterController extends Controller {
         
     }
     
+    /**
+     * 考试详情
+     *
+     * @return array|Factory|JsonResponse|View|null|string|
+     */
     public function detail() {
         
         $user = Auth::user();
@@ -64,26 +71,6 @@ class ScoreCenterController extends Controller {
 
         return __('messages.unauthorzied');
     
-    }
-    
-    /**
-     * 学生考试详情页
-     */
-    public function student() {
-        
-        return $this->score->studentDetail();
-        
-    }
-    
-    /**
-     * 班级成绩详情
-     *
-     * @return bool|JsonResponse
-     */
-    public function squad() {
-        
-        return $this->score->classDetail();
-        
     }
     
     /**
