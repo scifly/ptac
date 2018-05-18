@@ -36,8 +36,6 @@ class ScoreCenterController extends Controller {
         $this->score = $score;
         $this->exam = $exam;
         
-        return $this->signin(self::APP, Request::url());
-        
     }
     
     /**
@@ -48,7 +46,9 @@ class ScoreCenterController extends Controller {
      */
     public function index() {
         
-        return $this->score->wIndex();
+        return Auth::id()
+            ? $this->score->wIndex()
+            : $this->signin(self::APP, Request::url());
         
     }
     

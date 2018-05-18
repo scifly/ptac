@@ -21,7 +21,6 @@ trait WechatTrait {
      */
     function signin($appName, $returnUrl) {
         
-        if (Auth::id()) { return true; }
         $acronym = explode('/', Request::path())[0];
         $corp = Corp::whereAcronym($acronym)->first();
         $app = App::whereCorpId($corp->id)->where('name', $appName)->first();
