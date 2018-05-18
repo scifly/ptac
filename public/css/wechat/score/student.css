@@ -1,0 +1,143 @@
+body, html {
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+}
+body{
+    margin: 0;
+    padding:0;
+    background-color: #f2f2f2;
+    font-family: "微软雅黑", serif;
+}
+a{
+    color: #333;
+}
+::-webkit-scrollbar {
+    width: 0;
+}
+::-webkit-scrollbar:horizontal {
+    height: 0;
+}
+.main{
+    height: 100%;
+    width: 100%;
+    background-color: #f2f2f2;
+}
+.footerTab{
+    position: fixed;
+    bottom: 0;
+    height: 50px;
+    width: 100%;
+    background-color: #fff;
+    opacity: 0.7;
+    border-top: 1px solid #ddd;
+}
+.footerTab .btnItem{
+    display: inline-block;
+    width: 50%;
+    float: left;
+    height: 100%;
+    text-align: center;
+    position: relative;
+}
+.footerTab .btnItem i{
+    font-size: 24px;
+    margin-top: -3px;
+}
+.footerTab .btnItem p{
+    font-size: 14px;
+    top: 28px;
+    position: absolute;
+    width: 100%;
+}
+.footer-active {
+    color: #1aad19;
+}
+
+.header{
+    background-color: #1aad19;
+    width: 94%;
+    color: #fff;
+    padding: 5px 3% 0px;
+}
+.header .info{
+    padding-bottom: 10px;
+}
+.header .info:after , .otherinfo:after , .footerTab:after{
+    content: "\0020";
+    display: block;
+    height: 0;
+    clear: both;
+}
+
+
+.subject-title{
+    font-size: 12px;
+}
+.header .subject-title{
+    color: #ddd;
+}
+.otherinfo .subject-title{
+    color: #999;
+}
+.time ,.subject ,.test{
+    /*display: inline-block;*/
+    float: left;
+}
+.header .time{
+    width: 22%;
+    border-right: 1px solid #ddd;
+}
+.header .subject{
+    width: 25%;
+    margin-left: 10px;
+}
+.header .test{
+    width: calc(53% - 21px);
+    margin-left: 10px;
+}
+.header .subject .subject-choose{
+    border: 1px solid #fff;
+    width: 90%;
+}
+.header .time .days{
+    font-size: 20px;
+    margin-top: -5px;
+}
+.header .score{
+    height: 40px;
+    line-height: 40px;
+    font-size: 20px;
+    border-top: 1px solid #ccc;
+    text-align: center;
+}
+.otherinfo{
+    width: 94%;
+    margin:10px 3%;
+    text-align: center;
+}
+.otherinfo .average ,.otherinfo .ranke{
+    background-color: #fff;
+    float: left;
+    padding: 5px 0;
+}
+.otherinfo .average{
+    width: 40%;
+}
+.otherinfo .ranke{
+    width:calc(60% - 10px);
+    margin-left: 10px;
+}
+.byclass,.byschool{
+    width:calc(50% - 1px) ;
+    float: left;
+}
+.byclass{
+    border-right: 1px solid #ddd;
+}
+.tablemain{
+    width: 94%;
+    margin: 10px 3%;
+    background-color: #fff;
+    padding-bottom: 20px;
+}

@@ -19,7 +19,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -662,75 +661,6 @@ class Score extends Model {
     }
     
     /**
-     * 检查每行数据 是否符合导入数据
-     *
-     * @param array $data
-     * @param $input
-     * @return bool
-     */
-    private function checkData(array $data, $input) {
-        $rules = [
-            'student_number' => 'required',
-            'subject_id'     => 'required|integer',
-            'exam_id'        => 'required|integer',
-            'score'          => 'required|numeric',
-        ];
-        # 不合法的数据
-        $invalidRows = [];
-        # 更新的数据
-        $updateRows = [];
-        # 需要添加的数据
-        $rows = [];
-        for ($i = 0; $i < count($data); $i++) {
-            $datum = $data[$i];
-            $score = [
-                'student_number' => $datum['student_number'],
-                'subject_id'     => $datum['subject_id'],
-                'exam_id'        => $datum['exam_id'],
-                'score'          => $datum['score'],
-            ];
-            $status = Validator::make($score, $rules);
-            if ($status->fails()) {
-                $invalidRows[] = $datum;
-                unset($data[$i]);
-                continue;
-            }
-            $student = Student::whereStudentNumber($score['student_number'])->first();
-            # 数据非法
-            if (!$student) {
-                $invalidRows[] = $datum;
-                unset($data[$i]);
-                continue;
-            }
-            #判断这个学生是否在这个班级
-            if ($student->class_id != $input['class_id']) {
-                $invalidRows[] = $datum;
-                unset($data[$i]);
-                continue;
-            }
-            $existScore = Score::whereEnabled(1)
-                ->whereExamId($score['exam_id'])
-                ->whereStudentId($student->id)
-                ->whereSubjectId($score['subject_id'])
-                ->first();
-            if ($existScore) {
-                $updateRows[] = $score;
-            } else {
-                $rows[] = $score;
-            }
-            unset($score);
-        }
-        event(new ScoreUpdated($updateRows));
-        event(new ScoreImported($rows));
-        if (empty($rows) && empty($updateRows)) {
-            return false;
-        }
-        
-        return true;
-        
-    }
-    
-    /**
      * 成绩分析
      *
      * @return JsonResponse
@@ -784,58 +714,69 @@ class Score extends Model {
         
     }
     
+    /** 微信端 ------------------------------------------------------------------------------------------------------- */
     /**
-     * 获取指定考试和班级的指定学生或所有学生的各科目考试详情
+     * 返回微信端成绩中心首页
      *
-     * @param integer $examId
-     * @param integer $classId
-     * @param null|string $realname - 学生姓名
-     * @return array
+     * @return Factory|JsonResponse|View
+     * @throws Throwable
      */
-    function examDetail($examId, $classId, $realname = null) {
+    function wIndex() {
         
-        $studentIds = $this->where('exam_id', $examId)
-            ->get()->pluck('student_id');
-        if ($realname) {
-            $userIds = User::whereRealname($realname)->first()->pluck('id');
-            # 当前班级下的所有参加考试的学生
-            $students = Student::whereClassId($classId)
-                ->whereIn('id', $studentIds)
-                ->whereIn('user_id', $userIds)->get();
-        } else {
-            # 当前班级下的所有参加考试的学生
-            $students = Student::whereClassId($classId)
-                ->whereIn('id', $studentIds)->get();
+        $user = Auth::user();
+        $pageSize = 4;
+        $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
+        $exam = new Exam();
+        abort_if(
+            !$user->custodian && !$user->educator,
+            HttpStatusCode::UNAUTHORIZED,
+            __('messages.unauthorized')
+        );
+        if (Request::method() == 'POST') {
+            $targetId = Request::input('target_id');
+            $classId = $user->custodian ? Student::find($targetId)->class_id : $targetId;
+            $keyword = Request::has('keyword') ? Request::input('keyword') : null;
+            $exams = array_slice($exam->examsByClassId($classId, $keyword), $start, $pageSize);
+            
+            return response()->json([
+                'exams' => $exams,
+            ]);
         }
-        $result = [
-            'exam'  => Exam::find($examId)->name,
-            'squad' => Squad::find($classId)->name,
-            'items' => [],
-        ];
-        foreach ($students as $s) {
-            $scores = $this->whereExamId($examId)
-                ->where('student_id', $s->id)->get();
-            $detail = [];
-            foreach ($scores as $score) {
-                $detail[] = [
-                    'subject' => $score->subject->name,
-                    'score'   => $score->score,
-                ];
-            }
-            $result['items'][] = [
-                'student_id'     => $s->id,
-                'exam_id'        => $examId,
-                'realname'       => $s->user['realname'],
-                'student_number' => $s->student_number,
-                'class_rank'     => 3,
-                'grade_rank'     => 5,
-                'total'          => 623,
-                'detail'         => $detail,
-            ];
+        $targets = $exams = [];
+        if ($user->custodian) {
+            $targets = $user->custodian->myStudents();
+            reset($targets);
+            $exams = array_slice((new Student())->exams(key($targets)), $start, $pageSize);
+        } elseif ($user->educator) {
+            $targets = Squad::whereIn('id', $this->classIds($user->educator->school_id))
+                ->where('enabled', 1)->pluck('name', 'id')->toArray();
+            reset($targets);
+            $exams = array_slice($exam->examsByClassId(key($targets)), $start, $pageSize);
         }
         
-        return $result;
+        return view('wechat.score.index', [
+            'targets' => $targets,
+            'exams'   => $exams,
+        ]);
         
+    }
+    
+    /**
+     * 返回考试详情数据
+     *
+     * @return array|Factory|JsonResponse|View|null|string
+     */
+    function detail() {
+    
+        $user = Auth::user();
+        if ($user->custodian) {
+            return $this->studentDetail();
+        } elseif ($user->educator) {
+            return $this->classDetail();
+        }
+    
+        return __('messages.unauthorzied');
+    
     }
     
     /**
@@ -892,7 +833,7 @@ class Score extends Model {
                 'stat'  => $stat,
                 'total' => $total,
             ])
-            : view('wechat.score.student_subject_detail', [
+            : view('wechat.score.student', [
                 'score'     => $score,
                 'stat'      => $stat,
                 'subjects'  => $subjects,
@@ -903,81 +844,123 @@ class Score extends Model {
         
     }
     
+    /**
+     * 指定班级的考试详情
+     *
+     * @return Factory|View
+     */
     function classDetail() {
-    
+        
         $classId = Request::input('targetId');
         $examId = Request::input('examId');
         $student = Request::input('student');
         if ($classId && $examId) {
             $data = $this->examDetail($examId, $classId, $student);
-        
+            
             return view('wechat.score.detail', [
                 'data'    => $data,
                 'classId' => $classId,
                 'examId'  => $examId,
             ]);
         }
-    
+        
         return abort(HttpStatusCode::BAD_REQUEST, '请求无效');
         
     }
     
-    function getGraphData($studentId, $examId, $subjectId) {
-        $exam = Exam::whereId($examId)->first();
-        if ($subjectId == '-1') {
-//            $exams = Exam::where('start_date', '<=', $exam->start_date)
-//                ->orderBy('start_date', 'asc')
-//                ->limit(10)
-//                ->get();
-            $scores = DB::table('score_totals')
-                ->join('exams', 'exams.id', '=', 'score_totals.exam_id')
-//                ->select('users.id', 'contacts.phone', 'orders.price')
-                ->where('student_id', $studentId)
-                ->where('exams.start_date', '<=', $exam->start_date)
-                ->orderBy('exams.start_date', 'asc')
-                ->limit(10)
-                ->get();
-            $es = [];
-            $class_rank = [];
-            $grade_rank = [];
-//            foreach ($exams as $e) {
-//                $total = ScoreTotal::whereExamId($e->id)->where('student_id', $studentId)->first();
-//                $es[] = $e->name;
-//                $class_rank[] = $total->class_rank;
-//                $grade_rank[] = $total->grade_rank;
-//            }
-            foreach ($scores as $s) {
-                $es[] = $s->name;
-                $class_rank[] = $s->class_rank;
-                $grade_rank[] = $s->grade_rank;
-            }
-            
-        } else {
-            $es = [];
-            $class_rank = [];
-            $grade_rank = [];
-            $scores = DB::table('scores')
-                ->join('exams', 'exams.id', '=', 'scores.exam_id')
-//                ->select('users.id', 'contacts.phone', 'orders.price')
-                ->where('subject_id', $subjectId)
-                ->where('student_id', $studentId)
-                ->where('exams.start_date', '<=', $exam->start_date)
-                ->orderBy('exams.start_date', 'asc')
-                ->limit(10)
-                ->get();
-            foreach ($scores as $s) {
-                $es[] = $s->name;
-                $class_rank[] = $s->class_rank;
-                $grade_rank[] = $s->grade_rank;
+    /**
+     * 返回用于显示指定学生、考试、科目成绩的图表数据
+     *
+     * @return Factory|JsonResponse|View
+     */
+    function graph() {
+    
+        $studentId = Request::input('student_id');
+        $examId = Request::input('exam_id');
+        $subjectId = Request::input('subject_id');
+        if (Request::method() == 'POST') {
+            if ($examId && $subjectId) {
+                return response()->json(
+                    $this->graphData($studentId, $examId, $subjectId)
+                );
             }
         }
-        $result = [
-            'exam'       => $es,
-            'class_rank' => $class_rank,
-            'grade_rank' => $grade_rank,
-        ];
+        $exam = Exam::find($examId);
+        $student = Student::find($studentId);
+        $subjects = Subject::whereIn('id', explode(',', $exam->subject_ids))->pluck('name', 'id');
+    
+        return view('wechat.score.graph', [
+            'subjects' => $subjects,
+            'student'  => $student,
+            'exam'     => $exam,
+        ]);
         
-        return $result;
+    }
+    
+    /**
+     * 返回指定班级、考试的成绩分析数据
+     *
+     * @return Factory|View|string
+     */
+    function analyze() {
+    
+        $examId = Request::query('examId');
+        $classId = Request::query('classId');
+        $exam = Exam::find($examId);
+        $class = Squad::find($classId);
+        abort_if(
+            !$exam || !$class,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
+        $data = $this->classStat(true)
+            ?? [
+                'className'   => $exam->start_date,
+                'examName'    => $exam->name,
+                'oneData'     => [],
+                'rangs'       => [],
+                'totalRanges' => [],
+            ];
+    
+        return view('wechat.score.analyze', [
+            'data'    => $data,
+            'examId'  => $examId,
+            'classId' => $classId,
+        ]);
+        
+    }
+    
+    /**
+     *
+     *
+     * @return Factory|View|string
+     */
+    function wStat() {
+    
+        $input['exam_id'] = Request::get('examId');
+        $input['student_id'] = Request::get('studentId');
+        $exam = Exam::whereId($input['exam_id'])->first();
+        $student = Student::whereId($input['student_id'])->first();
+        if (!$exam) {
+            $examName = '';
+            $examDate = '';
+        } else {
+            $examName = $exam->name;
+            $examDate = $exam->start_date;
+        }
+        if (!$student) {
+            return '暂未该学生相关数据';
+        }
+        $data = $this->wAnalyze($input);
+        
+        return view('wechat.score.stat', [
+            'data'      => $data,
+            'examName'  => $examName,
+            'examDate'  => $examDate,
+            'studentId' => $input['student_id'],
+            'examId'    => $input['exam_id'],
+        ]);
+        
     }
     
     /**
@@ -986,7 +969,7 @@ class Score extends Model {
      * @param $wechat
      * @return array|bool
      */
-    function classStat($wechat = false) {
+    private function classStat($wechat = false) {
         
         #第一个表格数据
         $firstTableData = [];
@@ -1147,7 +1130,7 @@ class Score extends Model {
      *
      * @return mixed
      */
-    function studentStat() {
+    private function studentStat() {
         
         #学生对象
         $student = Student::find(Request::input('studentId'));
@@ -1246,7 +1229,7 @@ class Score extends Model {
      * @param $input
      * @return array|bool
      */
-    function totalAnalysis($input) {
+    private function wAnalyze($input) {
         
         #根据当前学生取的班级
         $student = Student::whereId($input['student_id'])->first();
@@ -1336,7 +1319,7 @@ class Score extends Model {
      * @param $studentsIds
      * @return mixed
      */
-    function subjectAvg($examId, $subjectId, array $studentsIds) {
+    private function subjectAvg($examId, $subjectId, array $studentsIds) {
         
         $scores = Score::whereExamId($examId)
             ->whereIn('student_id', $studentsIds)
@@ -1359,7 +1342,7 @@ class Score extends Model {
      * @param null $examId
      * @return array|Collection|static[]
      */
-    function subjectScores($studentId, $subjectId, $examId = null) {
+    private function subjectScores($studentId, $subjectId, $examId = null) {
         
         return !$examId
             ? Score::whereStudentId($studentId)
@@ -1375,48 +1358,71 @@ class Score extends Model {
     }
     
     /**
-     * 返回微信端成绩中心首页
+     * 检查每行数据合法性
      *
-     * @return Factory|JsonResponse|View
-     * @throws Throwable
+     * @param array $data
+     * @param $input
+     * @return bool
      */
-    function wIndex() {
-        
-        $user = Auth::user();
-        $pageSize = 4;
-        $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
-        $exam = new Exam();
-        abort_if(
-            !$user->custodian && !$user->educator,
-            HttpStatusCode::UNAUTHORIZED,
-            __('messages.unauthorized')
-        );
-        if (Request::method() == 'POST') {
-            $targetId = Request::input('target_id');
-            $classId = $user->custodian ? Student::find($targetId)->class_id : $targetId;
-            $keyword = Request::has('keyword') ? Request::input('keyword') : null;
-            $exams = array_slice($exam->examsByClassId($classId, $keyword), $start, $pageSize);
-            
-            return response()->json([
-                'exams' => $exams,
-            ]);
+    private function checkData(array $data, $input) {
+        $rules = [
+            'student_number' => 'required',
+            'subject_id'     => 'required|integer',
+            'exam_id'        => 'required|integer',
+            'score'          => 'required|numeric',
+        ];
+        # 不合法的数据
+        $invalidRows = [];
+        # 更新的数据
+        $updateRows = [];
+        # 需要添加的数据
+        $rows = [];
+        for ($i = 0; $i < count($data); $i++) {
+            $datum = $data[$i];
+            $score = [
+                'student_number' => $datum['student_number'],
+                'subject_id'     => $datum['subject_id'],
+                'exam_id'        => $datum['exam_id'],
+                'score'          => $datum['score'],
+            ];
+            $status = Validator::make($score, $rules);
+            if ($status->fails()) {
+                $invalidRows[] = $datum;
+                unset($data[$i]);
+                continue;
+            }
+            $student = Student::whereStudentNumber($score['student_number'])->first();
+            # 数据非法
+            if (!$student) {
+                $invalidRows[] = $datum;
+                unset($data[$i]);
+                continue;
+            }
+            #判断这个学生是否在这个班级
+            if ($student->class_id != $input['class_id']) {
+                $invalidRows[] = $datum;
+                unset($data[$i]);
+                continue;
+            }
+            $existScore = Score::whereEnabled(1)
+                ->whereExamId($score['exam_id'])
+                ->whereStudentId($student->id)
+                ->whereSubjectId($score['subject_id'])
+                ->first();
+            if ($existScore) {
+                $updateRows[] = $score;
+            } else {
+                $rows[] = $score;
+            }
+            unset($score);
         }
-        $targets = $exams = [];
-        if ($user->custodian) {
-            $targets = $user->custodian->myStudents();
-            reset($targets);
-            $exams = array_slice((new Student())->exams(key($targets)), $start, $pageSize);
-        } elseif ($user->educator) {
-            $targets = Squad::whereIn('id', $this->classIds($user->educator->school_id))
-                ->where('enabled', 1)->pluck('name', 'id')->toArray();
-            reset($targets);
-            $exams = array_slice($exam->examsByClassId(key($targets)), $start, $pageSize);
+        event(new ScoreUpdated($updateRows));
+        event(new ScoreImported($rows));
+        if (empty($rows) && empty($updateRows)) {
+            return false;
         }
         
-        return view('wechat.score.index', [
-            'targets' => $targets,
-            'exams'   => $exams,
-        ]);
+        return true;
         
     }
     
@@ -1617,6 +1623,116 @@ class Score extends Model {
             unset($message);
             
         }
+        
+        return $result;
+        
+    }
+    
+    /**
+     * 获取指定考试和班级的指定学生或所有学生的各科目考试详情
+     *
+     * @param integer $examId
+     * @param integer $classId
+     * @param null|string $realname - 学生姓名
+     * @return array
+     */
+    private function examDetail($examId, $classId, $realname = null) {
+        
+        $studentIds = $this->where('exam_id', $examId)
+            ->get()->pluck('student_id');
+        if ($realname) {
+            $userIds = User::whereRealname($realname)->first()->pluck('id');
+            # 当前班级下的所有参加考试的学生
+            $students = Student::whereClassId($classId)
+                ->whereIn('id', $studentIds)
+                ->whereIn('user_id', $userIds)->get();
+        } else {
+            # 当前班级下的所有参加考试的学生
+            $students = Student::whereClassId($classId)
+                ->whereIn('id', $studentIds)->get();
+        }
+        $result = [
+            'exam'  => Exam::find($examId)->name,
+            'squad' => Squad::find($classId)->name,
+            'items' => [],
+        ];
+        foreach ($students as $s) {
+            $scores = $this->whereExamId($examId)
+                ->where('student_id', $s->id)->get();
+            $detail = [];
+            foreach ($scores as $score) {
+                $detail[] = [
+                    'subject' => $score->subject->name,
+                    'score'   => $score->score,
+                ];
+            }
+            $result['items'][] = [
+                'student_id'     => $s->id,
+                'exam_id'        => $examId,
+                'realname'       => $s->user['realname'],
+                'student_number' => $s->student_number,
+                'class_rank'     => 3,
+                'grade_rank'     => 5,
+                'total'          => 623,
+                'detail'         => $detail,
+            ];
+        }
+        
+        return $result;
+        
+    }
+    
+    /**
+     * 获取用于显示指定学生指定科目成绩的图标数据
+     *
+     * @param $studentId
+     * @param $examId
+     * @param $subjectId
+     * @return array
+     */
+    private function graphData($studentId, $examId, $subjectId) {
+        
+        $exam = Exam::find($examId);
+        if ($subjectId == '-1') {
+            $scores = DB::table('score_totals')
+                ->join('exams', 'exams.id', '=', 'score_totals.exam_id')
+                ->where('student_id', $studentId)
+                ->where('exams.start_date', '<=', $exam->start_date)
+                ->orderBy('exams.start_date', 'asc')
+                ->limit(10)
+                ->get();
+            $es = [];
+            $class_rank = [];
+            $grade_rank = [];
+            foreach ($scores as $s) {
+                $es[] = $s->name;
+                $class_rank[] = $s->class_rank;
+                $grade_rank[] = $s->grade_rank;
+            }
+            
+        } else {
+            $es = [];
+            $class_rank = [];
+            $grade_rank = [];
+            $scores = DB::table('scores')
+                ->join('exams', 'exams.id', '=', 'scores.exam_id')
+                ->where('subject_id', $subjectId)
+                ->where('student_id', $studentId)
+                ->where('exams.start_date', '<=', $exam->start_date)
+                ->orderBy('exams.start_date', 'asc')
+                ->limit(10)
+                ->get();
+            foreach ($scores as $s) {
+                $es[] = $s->name;
+                $class_rank[] = $s->class_rank;
+                $grade_rank[] = $s->grade_rank;
+            }
+        }
+        $result = [
+            'exam'       => $es,
+            'class_rank' => $class_rank,
+            'grade_rank' => $grade_rank,
+        ];
         
         return $result;
         

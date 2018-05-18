@@ -3,12 +3,12 @@
     <title>成绩中心</title>
 @endsection
 @section('css')
-    <link rel="stylesheet" href="{{ asset('css/wechat/score/detail.css') }}">
+    <link rel="stylesheet" href="{{ asset('squad.css') }}">
 @endsection
 @section('content')
     <div class="header">
-        <div class="title">{{$data['exam']}}</div>
-        <div class="myclass">{{$data['exam']}}</div>
+        <div class="title">{{ $data['exam'] }}</div>
+        <div class="myclass">{{ $data['exam'] }}</div>
     </div>
     <div class="weui-search-bar" id="searchBar">
         <form class="weui-search-bar__form" action="">
@@ -16,7 +16,6 @@
                 <i class="weui-icon-search"></i>
                 <input type="search" class="weui-search-bar__input" name="student" id="searchInput" placeholder="搜索"
                        required="">
-
                 <a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
             </div>
             <label class="weui-search-bar__label" id="searchText"
@@ -39,11 +38,9 @@
                 <td width="80">成绩详情</td>
             </tr>
             </thead>
-
             <tbody>
             @if($data['items'])
                 @foreach($data['items'] as $d)
-
                     <tr class="tongji-item" data-s="{{$d['student_id']}}" data-e="{{$d['exam_id']}}">
                         <td>{{$d['realname']}}</td>
                         <td>{{$d['student_number']}}</td>
@@ -53,7 +50,6 @@
                         <td>
                             @if($d['detail'])
                                 @foreach($d['detail'] as $t)
-
                                     <div>
                                         <span class="subj">{{$t['subject']}}</span>
                                         <span class="score">{{$t['score']}}</span>
@@ -63,16 +59,13 @@
                             @endif
 
                         </td>
-
                     </tr>
                 @endforeach
-
             @endif
             </tbody>
         </table>
     </div>
     <div style="height: 70px;width: 100%;"></div>
-
     <div class="footerTab">
         <a class="btnItem footer-active">
             <i class="icon iconfont icon-document"></i>
@@ -84,8 +77,6 @@
         </a>
         <div style="clear: both;"></div>
     </div>
-
-
 @endsection
 @section('script')
     <script>
@@ -94,7 +85,6 @@
             var exam = $(this).attr('data-e');
             window.location.href = '../score/show?student=' + student + '&exam=' + exam;
         });
-
     </script>
 @endsection
 

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{{ URL::asset('css/weui.min.css') }}"/>
     <link rel="stylesheet" href="{{ URL::asset('css/jquery-weui.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/wechat/icon/iconfont.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('css/wechat/attendance/detail.css') }}">
+    <link rel="stylesheet" href="{{ URL::asset('squad.css') }}">
 </head>
 <body ontouchstart>
 <div class="multi-role">
