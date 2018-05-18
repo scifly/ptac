@@ -7,6 +7,8 @@ use App\Models\WapSite;
 use App\Models\WapSiteModule;
 use App\Models\WsmArticle;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
@@ -30,7 +32,7 @@ class MobileSiteController extends Controller {
     /**
      * 微网站首页
      *
-     * @return Factory|View
+     * @return bool|Factory|RedirectResponse|Redirector|View
      */
     public function index() {
         

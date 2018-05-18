@@ -13,7 +13,7 @@
                     <div class="title-name"> 消息中心</div>
                     @if ($isEducator)
                         <span class="addworkicon">
-							<a class="icon iconfont icon-add c-green" href="{{ url('create') }}"></a>
+							<a class="icon iconfont icon-add c-green" href="{{ url('wlrj/sc/create') }}"></a>
 						</span>
                     @endif
                 </div>
