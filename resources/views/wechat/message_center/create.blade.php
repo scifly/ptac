@@ -29,7 +29,7 @@
         <div id="title-container" class="mt5px msg-send-bg b-bottom hw-title" style="display: none;">
             <div class="weui-cell">
                 <div class="weui-cell__bd js-title">
-                    {!! Form::text('title', $message ? $message->title : '', [
+                    {!! Form::text('title', isset($message) ? $message->title : '', [
                         'id' => 'title',
                         'class' => 'weui-input fs18 one-line title',
                         'placeholder' => '标题',
@@ -40,7 +40,7 @@
         </div>
         <div id="content-container" class="msg-send-conwrap msg-send-bg">
             <div contenteditable="true" id="content" class="wangEditor-mobile-txt">
-                {!! $message ? $message->content : ''!!}
+                {!! isset($message) ? $message->content : ''!!}
             </div>
         </div>
         <div id="url-container" class="msg-send-bg b-bottom hw-title extra" style="display: none;">
