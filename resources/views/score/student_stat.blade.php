@@ -22,7 +22,7 @@
             <th>序号</th>
             <th>考试名称</th>
             <th>考试时间</th>
-            @foreach ($subjecs as $id => $value)
+            @foreach ($subjects as $id => $value)
                 <th class="subject-name">{{ $value }}</th>
                 <th>班排</th>
                 <th>年排</th>
