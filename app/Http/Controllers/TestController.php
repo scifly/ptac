@@ -62,6 +62,7 @@ class TestController extends Controller {
         echo get_class($corp->schools) . '<br />';
         echo get_class($user->mobiles) . '<br />';
         echo get_class($user->educator) . '<br />';
+        echo get_class($user->custodian) . '<br />';
         die;
         
         
