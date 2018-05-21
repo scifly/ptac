@@ -4,7 +4,7 @@ $.getMultiScripts(['js/score/score.js']).done(function () {
 var statType = 0;
 $('input[name="type"]').on('ifClicked', function () {
     alert("You clicked " + this.value);
-    statType = 20; /*(this.value === 1 ? 1 : 0)*/
+    statType = this.value;
 });
 // page.initSelect2();
 // page.initMinimalIcheck();
