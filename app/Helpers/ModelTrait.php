@@ -72,9 +72,10 @@ trait ModelTrait {
             }
         }
         foreach ($relations as $relation) {
-            
-            if (!is_null($model->{$relation}) || $model->{$relation}->count()) {
-                return false;
+            if (get_class($model->{$relation}) == 'Illuminate\Database\Eloquent\Collection') {
+                if (count($model->{$relation})) { return false; }
+            } else {
+                if ($model->{$relation}) { return false; }
             }
         }
         
