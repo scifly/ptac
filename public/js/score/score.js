@@ -1,3 +1,4 @@
+//# sourceURL=score.js
 (function ($) {
     $.score = function (options) {
         var score = {
