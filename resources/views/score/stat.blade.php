@@ -30,7 +30,12 @@
 				'icon' => 'fa fa-child',
 				'divId' => 'student'
 			])
-			<div class="form-group" id="result"></div>
+			<div class="form-group">
+				{!! Form::label('result', ['class' => 'col-sm-3 control-label']) !!}
+				<div id="result" class="col-sm-6">
+					
+				</div>
+			</div>
 		</div>
 	</div>
 	@include('partials.form_buttons', [
