@@ -708,9 +708,7 @@ class Score extends Model {
             $html = (new Squad())->studentList($value);
         }
         
-        return response()->json([
-            'html' => $html,
-        ]);
+        return response()->json($html);
         
     }
     
