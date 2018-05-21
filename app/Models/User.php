@@ -202,13 +202,6 @@ class User extends Authenticatable {
     }
     
     /**
-     * 获取指定用户发出的消息对象
-     *
-     * @return HasMany
-     */
-    function messages() { return $this->hasMany('App\Models\Message'); }
-    
-    /**
      * 返回用户列表(id, name)
      *
      * @param array $ids
