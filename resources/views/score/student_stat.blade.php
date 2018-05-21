@@ -17,7 +17,7 @@
     ]) !!}
     <div style="display: block; overflow-x: auto; clear: both; width: 100%; margin-top: 10px;">
         <table id="scores" style="white-space: nowrap; width: 100%;"
-           class="display nowrap table table-striped table-bordered table-hover table-condensed">
+           class="table-striped table-bordered table-hover table-condensed">
         <thead>
         <tr class="bg-info">
             <th>序号</th>
