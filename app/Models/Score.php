@@ -1132,7 +1132,6 @@ class Score extends Model {
             ->whereIn('id', $subjectIds)
             ->pluck('name', 'id')
             ->toArray();
-        Log::debug(json_encode($subjects));
         ksort($subjects);
         $examScores = [];
         foreach ($exams as $exam) {
@@ -1149,6 +1148,7 @@ class Score extends Model {
                     'grade_rank' => $score ? $score->grade_rank : '——',
                 ];
             }
+            Log::debug(json_encode($scores));
             #处理$studentScore 按照key值升序
             ksort($scores);
             $scoreTotal = ScoreTotal::whereStudentId($studentId)
