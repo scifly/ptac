@@ -1121,8 +1121,10 @@ class Score extends Model {
             __('messages.score.unauthorized_stat')
         );
         # 指定学生的最近十场考试
+        Log::debug(Exam::whereRaw('FIND_IN_SET(\'' . $classId . '\', class_ids)')
+            ->whereEnabled(1)->orderBy('start_date', 'desc')->take(10)->toSql());
         $exams = Exam::whereRaw('FIND_IN_SET(\'' . $classId . '\', class_ids)')
-            ->whereEnabled(1)->orderBy('start_date', 'desc')->take(10);
+            ->whereEnabled(1)->orderBy('start_date', 'desc')->take(10)->toSql();
         Log::debug(json_encode($exams));
         $subjectIds = array_unique(
             explode(
