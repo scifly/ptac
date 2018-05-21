@@ -22,16 +22,16 @@ class ScoreStatComposer {
         # 对当前用户可见的考试列表
         $examList = Exam::whereEnabled(1)
             ->whereIn('id', $this->examIds())
-            ->get()->pluck('name', 'id')->toArray();
+            ->get()->pluck('name', 'id')
+            ->toArray();
         reset($examList);
         $exam = Exam::find(key($examList));
-        Log::debug('examId: ' . $exam->id);
         
         # 指定考试对应的班级
         $classes = Squad::whereEnabled(1)
             ->whereIn('id', $exam ? explode(',', $exam->class_ids) : [])
             ->get();
-        $classList = $classes->pluck('name', 'id');
+        $classList = $classes->pluck('name', 'id')->toArray();
         reset($classList);
         $class = Squad::find(key($classList));
         
