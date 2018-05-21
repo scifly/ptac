@@ -504,7 +504,7 @@
                         type: 'POST',
                         data: $.extend(
                             data,
-                            type === 'class' ? {examId: $('#exam_id').val()} : {studentId: $('#student_id').val()}
+                            statType === 1 ? {examId: $('#exam_id').val()} : {studentId: $('#student_id').val()}
                         ),
                         url: '../scores/stat',
                         success: function (result) {

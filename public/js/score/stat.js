@@ -1,10 +1,10 @@
 $.getMultiScripts(['js/score/score.js']).done(function () {
     $.score().stat();
 });
-var type = 'student';
+var statType = 0;
 $('input[name="type"]').on('ifClicked', function () {
     // alert("You clicked " + this.value);
-    type = this.value === 1 ? 'class' : 'student';
+    statType = this.value === 1 ? 1 : 0;
 });
 // page.initSelect2();
 // page.initMinimalIcheck();
