@@ -58,7 +58,7 @@ class TestController extends Controller {
     public function index() {
     
         $user = Auth::user();
-        dd(count($user->educator));
+        dd($user->educator->count());
         
         $exams = [
             ['id' => '123', 'name' => 'exam01'],
