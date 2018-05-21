@@ -123,7 +123,7 @@ trait JobTrait {
         
         return [
             'errcode' => $result->{'errcode'},
-            'errmsg' => Wechat::ERRMSGS[$result->{'errcoce'}]
+            'errmsg' => Wechat::ERRMSGS[$result->{'errcode'}]
         ];
     }
     
