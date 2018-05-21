@@ -15,6 +15,7 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use ReflectionClass;
 use ReflectionMethod;
@@ -56,6 +57,9 @@ class TestController extends Controller {
      */
     public function index() {
     
+        $id = 'id';
+        dd(Auth::$$id());
+        
         $exams = [
             ['id' => '123', 'name' => 'exam01'],
             ['id' => '321', 'name' => 'exam02'],
