@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -1131,6 +1132,7 @@ class Score extends Model {
             ->whereIn('id', $subjectIds)
             ->pluck('name', 'id')
             ->toArray();
+        Log::debug(json_encode($subjects));
         ksort($subjects);
         $examScores = [];
         foreach ($exams as $exam) {
