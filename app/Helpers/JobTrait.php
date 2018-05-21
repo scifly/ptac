@@ -115,7 +115,7 @@ trait JobTrait {
             ];
         }
         $action .= 'User';
-        $result = json_decode(Wechat::$$action($accessToken, $params));
+        $result = json_decode(Wechat::$action($accessToken, $params));
         if (!$result->{'errcode'} && $action !== 'delete') {
             $user = User::whereUserid($member['userid'])->first();
             $user->update(['synced' => 1]);
