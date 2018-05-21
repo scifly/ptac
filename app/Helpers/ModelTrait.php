@@ -72,6 +72,7 @@ trait ModelTrait {
             }
         }
         foreach ($relations as $relation) {
+            
             if (!is_null($model->{$relation}) || $model->{$relation}->count()) {
                 return false;
             }

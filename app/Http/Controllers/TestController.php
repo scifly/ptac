@@ -58,7 +58,12 @@ class TestController extends Controller {
     public function index() {
     
         $user = Auth::user();
-        dd(is_null($user->educator) && $user->educator->count());
+        $corp = Corp::find(4);
+        echo get_class($corp->schools) . '<br />';
+        echo get_class($user->mobiles) . '<br />';
+        echo get_class($user->educator) . '<br />';
+        die;
+        
         
         $exams = [
             ['id' => '123', 'name' => 'exam01'],
