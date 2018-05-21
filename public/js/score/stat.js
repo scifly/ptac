@@ -1,6 +1,10 @@
 $.getMultiScripts(['js/score/score.js']).done(function () {
     $.score().stat();
 });
+var type = 'student';
+$('input[name="type"]').on('ifClicked', function () {
+    alert("You clicked " + this.value);
+});
 // page.initSelect2();
 // page.initMinimalIcheck();
 // page.loadCss('css/score/stat.css');
