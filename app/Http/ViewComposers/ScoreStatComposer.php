@@ -9,6 +9,7 @@ use App\Models\Squad;
 use App\Models\Student;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 class ScoreStatComposer {
@@ -29,9 +30,8 @@ class ScoreStatComposer {
         $classes = Squad::whereEnabled(1)
             ->whereIn('id', $exam ? explode(',', $exam->class_ids) : [])
             ->get();
-        dd($classes);
+        Log::debug(json_encode($classes));
         $classList = $classes->pluck('name', 'id');
-        dd($classList);
         reset($classList);
         $class = Squad::find(key($classList));
         
