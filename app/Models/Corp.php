@@ -187,11 +187,16 @@ class Corp extends Model {
         
         $corp = $this->find($id);
         if ($this->removable($corp)) {
-            $department = $corp->department;
-            $menu = $corp->menu;
-            return $corp->delete()
-                && (new Department())->removeDepartment($department)
-                && (new Menu())->removeMenu($menu);
+            try {
+                DB::transaction(function () use ($corp) {
+                    $corp->department->delete();
+                    $corp->menu->delete();
+                    $corp->delete();
+                });
+            } catch (Exception $e) {
+                throw $e;
+            }
+            return true;
         }
         
         return false;

@@ -510,7 +510,7 @@
 
                     $.ajax({
                         type: 'POST',
-                        data: $.extends(
+                        data: $.extend(
                             data,
                             type === 0 ? {examId: $('#exam_id').val()} : {studentId: $('#student_id').val()}
                         ),
