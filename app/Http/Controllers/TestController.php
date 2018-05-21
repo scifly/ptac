@@ -57,8 +57,8 @@ class TestController extends Controller {
      */
     public function index() {
     
-        $id = 'updateUser';
-        dd(Wechat::$id('abc', 'def'));
+        $user = Auth::user();
+        dd(is_array($user->educator));
         
         $exams = [
             ['id' => '123', 'name' => 'exam01'],
