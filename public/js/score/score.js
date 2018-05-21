@@ -495,8 +495,7 @@
                 });
             },
             onClassIdChange: function () {
-                var $classId = $('#class_id');
-                $classId.on('change', function () {
+                $(document).on('change', '#class_id', function () {
                     score.list('student', $('#class_id').val());
                 });
             },
