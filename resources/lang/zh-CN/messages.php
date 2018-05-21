@@ -54,7 +54,8 @@ return [
     ],
     'score' => [
         'title' => '成绩中心',
-        'zero_classes' => '您尚未绑定任何班级'
+        'zero_classes' => '您尚未绑定任何班级',
+        'unauthorized_stat' => '您无权进行该成绩分析'
     ],
     'student' => [
         'title' => '学籍管理',

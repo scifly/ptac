@@ -1,25 +1,20 @@
 <div class="row">
     <div class="title">
-        @if (isset($student))
-            {{ $student->user->realname }} 学生成绩统计
-        @else
-            学生成绩统计
-        @endif
+        {{ $student ? $student->user->realname : '' }}学生成绩统计
     </div>
     <div class="box-tools pull-right">
         <i class="fa fa-close " id="close-data"></i>
     </div>
 </div>
-
 <div class="row">
     <div class="subject-title">
-        @if (isset($student))
-            {{ $student->user->realname }}同学考试情况
-        @else
-            考试情况
-        @endif
+        {{ $student ? $student->user->realname . '同学' : '' }}考试情况
     </div>
-    <input class="number" id="sub_number" value="{{ count($subjectName) }}" type="hidden" title="专业序号">
+    {!! Form::hidden('subject-quantity', count($subjects), [
+        'id' => 'subject-quantity',
+        'class' => 'number',
+        'title' => '科目数量',
+    ]) !!}
     <table id="scores" style="width: 100%;"
            class="display nowrap table table-striped table-bordered table-hover table-condensed">
         <thead>
@@ -27,60 +22,44 @@
             <th>序号</th>
             <th>考试名称</th>
             <th>考试时间</th>
-            @if (!empty($subjectName))
-                @foreach ($subjectName as $key => $name)
-                    <th class="subjectName"> {{ $name }} </th>
-                    <th>班排</th>
-                    <th>年排</th>
-                @endforeach
-                <th class="subjectName">总分</th>
+            @foreach ($subjecs as $id => $value)
+                <th class="subject-name">{{ $value }}</th>
                 <th>班排</th>
                 <th>年排</th>
-            @endif
+            @endforeach
+            <th class="subjectName">总分</th>
+            <th>班排</th>
+            <th>年排</th>
         </tr>
         </thead>
         <tbody>
-        @if(!empty($examScore))
-            @foreach($examScore as $exam)
+            @foreach ($examScores as $examScore)
                 <tr>
-                    <td>{{ $exam['examId'] }}</td>
-                    <td class="testName">{{ $exam['examName'] }}</td>
-                    <td>{{ $exam['examTime'] }}</td>
-                    @foreach($exam['score'] as $item)
-                        <td>{{ $item['score'] }}</td>
-                        <td class="classrankeItem">{{ $item['class_rank'] }}</td>
-                        <td class="graderankeItem">{{ $item['grade_rank'] }}</td>
+                    <td>{{ $examScore['examId'] }}</td>
+                    <td class="exam-name">{{ $examScore['examName'] }}</td>
+                    <td>{{ $examScore['examTime'] }}</td>
+                    @foreach ($examScore['scores'] as $score)
+                        <td>{{ $score['score'] }}</td>
+                        <td class="class-rank">{{ $score['class_rank'] }}</td>
+                        <td class="grade-rank">{{ $score['grade_rank'] }}</td>
                     @endforeach
-                    <td>{{ $exam['scoreTotal']['score'] }}</td>
-                    <td class="classrankeItem">{{ $exam['scoreTotal']['class_rank'] }}</td>
-                    <td class="graderankeItem">{{ $exam['scoreTotal']['grade_rank'] }}</td>
+                    <td>{{ $examScore['examTotal']['score'] }}</td>
+                    <td class="class-rank">{{ $examScore['examTotal']['class_rank'] }}</td>
+                    <td class="grade-rank">{{ $examScore['examTotal']['grade_rank'] }}</td>
                 </tr>
             @endforeach
-        @endif
         </tbody>
     </table>
 </div>
-
 <div class="row">
     <div class="subject-title">
-        @if(count($student) != 0)
-            {{ $student->user->realname }}各科班级排名变化
-        @else
-            各科班级排名变化
-        @endif
+        {{ $student ? $student->user->realname : ''}}各科班级排名变化
     </div>
-    <div id="class-rank">
-
-    </div>
+    <div id="class-rank"></div>
 </div>
 <div class="row">
     <div class="subject-title">
-        @if(count($student) != 0)
-            {{ $student->user->realname }}各科班级排名变化
-        @else
-            各科年级排名变化
-        @endif
+        {{ $student ? $student->user->realname : ''}}各科年级排名变化
     </div>
-    <div id="grade-rank">
-    </div>
+    <div id="grade-rank"></div>
 </div>

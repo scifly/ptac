@@ -70,40 +70,34 @@
                 score.pieChart(arrayTime, legendData, title);
             },
             studentData: function () {
-                var $classranke = $('#classranke'),
-                    $graderanke = $('#graderanke'),
-                    subjectNum = parseInt($('#sub_number').val()) + 1, // 科目数量（包括总分）
+                var $classRank = $('#class-rank'),
+                    $gradeRank = $('#grade-rank'),
+                    subjectQty = parseInt($('#subject-quantity').val()) + 1, // 科目数量（包括总分）
                     $data = $('#scores tbody tr'),
                     subjects = [],
                     classRanks = [],
                     gradeRanks = [],
                     exams = [];
+
                 for (var i = 0; i < $data.length; i++) {
-                    exams.push($data.eq(i).find('.testName').text());
+                    exams.push($data.eq(i).find('.exam-name').text());
                 }
-                for (var p = 0; p < subjectNum; p++) {
+                for (var p = 0; p < subjectQty; p++) {
                     classRanks[p] = [];
                     gradeRanks[p] = [];
                     for (var q = 0; q < $data.length; q++) {
-                        var $datacon = $data.eq(q);
-                        var name = $datacon.find('.testName').text();
-                        var classval = $datacon.find('.classrankeItem').eq(p).text();
-                        var json1 = {
-                            'name': name,
-                            'value': classval
-                        };
-                        classRanks[p].push(json1);
-                        var gradeval = $datacon.find('.graderankeItem').eq(p).text();
-                        var json2 = {
-                            'name': name,
-                            'value': gradeval
-                        };
-                        gradeRanks[p].push(json2);
-                    }
+                        var $datacon = $data.eq(q),
+                            examName = $datacon.find('.exam-name').text(),
+                            classRank = $datacon.find('.class-rank').eq(p).text(),
+                            gradeRank = $datacon.find('.grade-rank').eq(p).text();
 
-                    subjects.push($('#scores thead tr .subjectName').eq(p).text());
-                    //班级排名图表
-                    $classranke.append('<div class="linetableitem" id="class-' + p + '">');
+                        classRanks[p].push({ 'name': examName, 'value': classRank });
+                        gradeRanks[p].push({ 'name': examName, 'value': gradeRank });
+                    }
+                    subjects.push($('#scores thead tr .subject-name').eq(p).text());
+
+                    // 班级排名图表
+                    $classRank.append('<div class="linetableitem" id="class-' + p + '"></div>');
                     var classtmp = 0;
                     for (var k = 0; k < classRanks[p].length; k++) {
                         if (classRanks[p][k].value !== '——') {
@@ -115,8 +109,9 @@
                     } else {
                         $('#class-' + [p]).remove();
                     }
-                    //年级排名图表
-                    $graderanke.append('<div class="linetableitem" id="grade-' + p + '">');
+
+                    // 年级排名图表
+                    $gradeRank.append('<div class="linetableitem" id="grade-' + p + '"></div>');
                     var gradetmp = 0;
                     for (var j = 0; j < gradeRanks[p].length; j++) {
                         if (gradeRanks[p][j].value !== '——') {
@@ -175,10 +170,7 @@
                         title: {
                             x: 'center',
                             text: subject,
-                            textStyle: {
-                                fontWeight: '100',
-                                fontSize: '16'
-                            },
+                            textStyle: { fontWeight: '100', fontSize: '16' },
                             top: 15
                         },
                         grid: { bottom: '80' },
@@ -192,16 +184,14 @@
                             type: 'value',
                             axisLabel: { formatter: '{value}' },
                         },
-
-                        series: [
-                            {
-                                name: '排名',
-                                type: 'line',
-                                data: data,
-                                connectNulls: true,
-                            }
-                        ]
+                        series: [{
+                            name: '排名',
+                            type: 'line',
+                            data: data,
+                            connectNulls: true,
+                        }]
                     };
+
                 myChart.setOption(option);
             },
             /** public functions */
