@@ -40,7 +40,7 @@ class ScoreStatComposer {
         
         # 指定考试对应的且对当前用户可见的学生列表
         $studentList = [];
-        $students = Student::whereClassId($class->id, $class ? $class->id : 0)->get();
+        $students = Student::whereClassId($class ? $class->id : 0)->get();
         // $students = Student::whereEnabled(1)
         //     ->whereIn('class_id', array_intersect($classes->pluck('id')->toArray(), $this->classIds()))
         //     ->get();
