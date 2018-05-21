@@ -31,9 +31,9 @@
 				'divId' => 'student'
 			])
 			<div class="form-group">
-				{!! Form::label('result', ['class' => 'col-sm-3 control-label']) !!}
+				{!! Form::label('result', '结果', ['class' => 'col-sm-3 control-label']) !!}
 				<div id="result" class="col-sm-6">
-					
+
 				</div>
 			</div>
 		</div>
