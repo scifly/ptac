@@ -25,12 +25,12 @@ class ScoreStatComposer {
             ->get()->pluck('name', 'id');
         reset($examList);
         $exam = Exam::find(key($examList));
+        Log::debug('examId: ' . $exam->id);
         
         # 指定考试对应的班级
         $classes = Squad::whereEnabled(1)
             ->whereIn('id', $exam ? explode(',', $exam->class_ids) : [])
             ->get();
-        Log::debug(json_encode($classes));
         $classList = $classes->pluck('name', 'id');
         reset($classList);
         $class = Squad::find(key($classList));
