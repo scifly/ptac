@@ -509,7 +509,7 @@
                         url: '../scores/stat',
                         success: function (result) {
                             $('#result').html(result['html']);
-                            type === 0 ? score.classData() : score.studentData();
+                            statType === 1 ? score.classData() : score.studentData();
                         },
                         error: function (e) {
                             page.errorHandler(e);
