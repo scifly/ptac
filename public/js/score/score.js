@@ -494,7 +494,7 @@
             },
             onAnalyzeClick: function () {
                 $('#analyze').off('click').on('click', function () {
-                    var type = $('#type').val(),
+                    var /*type = $('#type').val(),*/
                         data = {
                             _token: score.token(),
                             classId: $('#class_id').val()
@@ -504,7 +504,7 @@
                         type: 'POST',
                         data: $.extend(
                             data,
-                            type === 0 ? {examId: $('#exam_id').val()} : {studentId: $('#student_id').val()}
+                            type === 'class' ? {examId: $('#exam_id').val()} : {studentId: $('#student_id').val()}
                         ),
                         url: '../scores/stat',
                         success: function (result) {

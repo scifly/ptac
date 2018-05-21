@@ -3,7 +3,8 @@ $.getMultiScripts(['js/score/score.js']).done(function () {
 });
 var type = 'student';
 $('input[name="type"]').on('ifClicked', function () {
-    alert("You clicked " + this.value);
+    // alert("You clicked " + this.value);
+    type = this.value === 1 ? 'class' : 'student';
 });
 // page.initSelect2();
 // page.initMinimalIcheck();
