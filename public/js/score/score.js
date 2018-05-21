@@ -110,7 +110,7 @@
                         }
                     }
                     if (classtmp === 1) {
-                        chart(classRanks[p], subjects[p], exams, 'class', p);
+                        score.pieChart(classRanks[p], subjects[p], exams, 'class', p);
                     } else {
                         $('#class-' + [p]).remove();
                     }
@@ -123,7 +123,7 @@
                         }
                     }
                     if (gradetmp === 1) {
-                        chart(gradeRanks[p], subjects[p], exams, 'grade', p);
+                        score.pieChart(gradeRanks[p], subjects[p], exams, 'grade', p);
                     } else {
                         $('#grade-' + [p]).remove();
                     }
