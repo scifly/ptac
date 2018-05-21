@@ -30,7 +30,7 @@
 				'icon' => 'fa fa-child',
 				'divId' => 'student'
 			])
-			<div id="result" class="form-group col-sm-11"></div>
+			<div id="result" class="form-group col-sm-10"></div>
 		</div>
 	</div>
 	@include('partials.form_buttons', [
