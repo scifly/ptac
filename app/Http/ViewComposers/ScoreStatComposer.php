@@ -29,6 +29,7 @@ class ScoreStatComposer {
         $classes = Squad::whereEnabled(1)
             ->whereIn('id', $exam ? explode(',', $exam->class_ids) : [])
             ->get();
+        dd($classes);
         $classList = $classes->pluck('name', 'id');
         dd($classList);
         reset($classList);
