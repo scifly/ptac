@@ -28,7 +28,7 @@ class ScoreStatComposer {
         # 指定考试对应的班级
         $classIds = Squad::whereEnabled(1)
             ->whereIn('id', $exam ? explode(',', $exam->class_ids) : [])
-            ->get()->pluck('id')->toArray();
+            ->pluck('id')->toArray();
         
         # 指定考试对应的科目列表
         $subjectList = Subject::whereEnabled(1)
@@ -38,7 +38,8 @@ class ScoreStatComposer {
         # 指定考试对应的且对当前用户可见的学生列表
         $studentList = [];
         $students = Student::whereEnabled(1)
-            ->whereIn('class_id', array_intersect($classIds, $this->classIds()))->get();
+            ->whereIn('class_id', array_intersect($classIds, $this->classIds()))
+            ->get();
         foreach ($students as $student) {
             $studentList[$student->id] = $student->student_number . ' - ' . $student->user->realname;
         }
