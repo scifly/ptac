@@ -1,9 +1,9 @@
 $.getMultiScripts(['js/score/score.js']).done(function () {
     $.score().stat();
 });
-var statType = 0;
+var statType = '0';
 $('input[name="type"]').on('ifClicked', function () {
-    alert("You clicked " + this.value);
+    // alert("You clicked " + this.value);
     statType = this.value;
 });
 // page.initSelect2();

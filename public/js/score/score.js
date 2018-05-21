@@ -504,12 +504,12 @@
                         type: 'POST',
                         data: $.extend(
                             data,
-                            statType === 1 ? {examId: $('#exam_id').val()} : {studentId: $('#student_id').val()}
+                            parseInt(statType) === 1 ? {examId: $('#exam_id').val()} : {studentId: $('#student_id').val()}
                         ),
                         url: '../scores/stat',
                         success: function (result) {
                             $('#result').html(result['html']);
-                            statType === 1 ? score.classData() : score.studentData();
+                            parseInt(statType) === 1 ? score.classData() : score.studentData();
                         },
                         error: function (e) {
                             page.errorHandler(e);
