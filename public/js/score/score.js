@@ -41,7 +41,6 @@
                         $typeNext.remove();
                         $typeId.remove();
                         $typePrev.after(result.original['html']);
-
                         page.initSelect2();
                     }
                 });
@@ -101,7 +100,7 @@
                     var classtmp = 0;
                     for (var k = 0; k < classRanks[p].length; k++) {
                         if (classRanks[p][k].value !== '——') {
-                            classtmp = 1;
+                            classtmp = 1; break;
                         }
                     }
                     if (classtmp === 1) {
@@ -115,7 +114,7 @@
                     var gradetmp = 0;
                     for (var j = 0; j < gradeRanks[p].length; j++) {
                         if (gradeRanks[p][j].value !== '——') {
-                            gradetmp = 1;
+                            gradetmp = 1; break;
                         }
                     }
                     if (gradetmp === 1) {
