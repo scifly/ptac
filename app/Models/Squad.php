@@ -180,7 +180,9 @@ class Squad extends Model {
                 '(' . $student->student_number . ')';
         }
         
-        return $this->singleSelectList($items, 'student_id');
+        return response()->json([
+            'html' => $this->singleSelectList($items, 'student_id')
+        ]);
         
     }
     
