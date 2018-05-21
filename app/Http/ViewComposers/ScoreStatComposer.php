@@ -30,7 +30,7 @@ class ScoreStatComposer {
             ->whereIn('id', $exam ? explode(',', $exam->class_ids) : [])
             ->get();
         $classList = $classes->pluck('name', 'id');
-        reset($classIds);
+        reset($classList);
         $class = Squad::find(key($classList));
         
         # 指定考试对应的科目列表
