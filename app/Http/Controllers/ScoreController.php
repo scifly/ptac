@@ -104,6 +104,7 @@ class ScoreController extends Controller {
      * @param ScoreRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Exception
      */
     public function update(ScoreRequest $request, $id = null) {
         

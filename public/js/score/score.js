@@ -42,6 +42,9 @@
                         $typeId.remove();
                         $typePrev.after(result.original['html']);
                         page.initSelect2();
+                        if (type === 'class') {
+                            score.list('student', $('#class_id').val());
+                        }
                     }
                 });
             },
