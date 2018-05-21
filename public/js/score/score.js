@@ -39,7 +39,7 @@
 
                         $typeNext.remove();
                         $typeId.remove();
-                        $typePrev.after(result['html']);
+                        $typePrev.after(result.original['html']);
 
                         page.initSelect2();
                     }
