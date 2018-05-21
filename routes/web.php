@@ -355,11 +355,12 @@ Route::group(['prefix' => 'attachment_types'], routes('AttachmentTypeController'
 Route::group(['prefix' => 'school_types'], routes('SchoolTypeController'));
 
 /** 微信端路由 -------------------------------------------------------------------------------------------------------- */
-# 万浪软件
-app_routes('wlrj');
-// $acronym = 'wlrj';
-app_routes('zhjyaqpt');
-
+app_routes(env('CORP_ACRONYM'));
+/**
+ * 微信端应用路由
+ *
+ * @param $acronym - 企业微信名称首字母缩略词
+ */
 function app_routes($acronym) {
     /** 消息中心 */
     $c = 'Wechat\MessageCenterController';
