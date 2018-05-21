@@ -30,9 +30,7 @@
 				'icon' => 'fa fa-child',
 				'divId' => 'student'
 			])
-			<div id="result" class="form-group"
-				 style="display: block; overflow-x: auto; clear: both; width: 100%; margin-top: 10px;">
-			</div>
+			<div id="result" class="form-group"></div>
 		</div>
 	</div>
 	@include('partials.form_buttons', [
