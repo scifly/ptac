@@ -275,11 +275,11 @@
                 page.initMinimalIcheck();
                 page.loadCss('css/score/stat.css');
                 page.initBackBtn('scores');
-                $.getMultiScripts([plugins.echarts_common.js]);
-
-                score.onExamIdChange();
-                score.onClassIdChange();
-                score.onAnalyzeClick();
+                $.getMultiScripts([plugins.echarts_common.js]).done(function () {
+                    score.onExamIdChange();
+                    score.onClassIdChange();
+                    score.onAnalyzeClick();
+                });
             },
             /** 成绩发送 */
             onSendClick: function () {
