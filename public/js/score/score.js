@@ -516,7 +516,7 @@
                         ),
                         url: '../scores/stat',
                         success: function (result) {
-                            $('#result').html(result.message);
+                            $('#result').html(result['html']);
                             type === 0 ? score.classData() : score.studentData();
                         },
                         error: function (e) {
