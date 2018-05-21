@@ -58,7 +58,7 @@ class TestController extends Controller {
     public function index() {
     
         $user = Auth::user();
-        dd(is_array($user->orders));
+        dd(is_array($user->mobiles));
         
         $exams = [
             ['id' => '123', 'name' => 'exam01'],
