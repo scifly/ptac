@@ -3,7 +3,7 @@ $.getMultiScripts(['js/score/score.js']).done(function () {
 });
 var statType = 0;
 $('input[name="type"]').on('ifClicked', function () {
-    // alert("You clicked " + this.value);
+    alert("You clicked " + this.value);
     statType = this.value === 1 ? 1 : 0;
 });
 // page.initSelect2();
