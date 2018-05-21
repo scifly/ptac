@@ -1,21 +1,22 @@
+{{--<div class="row">--}}
+    {{--<div class="title">--}}
+        {{--{{ $student ? $student->user->realname : '' }}学生成绩统计--}}
+    {{--</div>--}}
+    {{--<div class="box-tools pull-right">--}}
+        {{--<i class="fa fa-close " id="close-data"></i>--}}
+    {{--</div>--}}
+{{--</div>--}}
 <div class="row">
-    <div class="title">
-        {{ $student ? $student->user->realname : '' }}学生成绩统计
-    </div>
-    <div class="box-tools pull-right">
-        <i class="fa fa-close " id="close-data"></i>
-    </div>
-</div>
-<div class="row">
-    <div class="subject-title">
-        {{ $student ? $student->user->realname . '同学' : '' }}考试情况
-    </div>
+    {{--<div class="subject-title">--}}
+        {{--{{ $student ? $student->user->realname . '同学' : '' }}考试情况--}}
+    {{--</div>--}}
     {!! Form::hidden('subject-quantity', count($subjects), [
         'id' => 'subject-quantity',
         'class' => 'number',
         'title' => '科目数量',
     ]) !!}
-    <table id="scores" style="width: 100%;"
+    <div style="display: block; overflow-x: auto; clear: both; width: 100%; margin-top: 10px;">
+        <table id="scores" style="white-space: nowrap; width: 100%;"
            class="display nowrap table table-striped table-bordered table-hover table-condensed">
         <thead>
         <tr class="bg-info">
@@ -50,6 +51,7 @@
             @endforeach
         </tbody>
     </table>
+    </div>
 </div>
 <div class="row">
     <div class="subject-title">

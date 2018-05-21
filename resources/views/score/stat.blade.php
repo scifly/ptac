@@ -30,11 +30,8 @@
 				'icon' => 'fa fa-child',
 				'divId' => 'student'
 			])
-			<div class="form-group">
-				{!! Form::label('result', '结果', ['class' => 'col-sm-3 control-label']) !!}
-				<div id="result" class="col-sm-6">
-
-				</div>
+			<div id="result" class="form-group"
+				 style="display: block; overflow-x: auto; clear: both; width: 100%; margin-top: 10px;">
 			</div>
 		</div>
 	</div>
