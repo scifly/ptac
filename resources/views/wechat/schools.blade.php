@@ -17,6 +17,3 @@
         @endforeach
     </div>
 @endsection
-@section('script')
-    <script src="{{ asset('/js/wechat/schools.js') }}"></script>
-@endsection
