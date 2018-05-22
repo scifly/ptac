@@ -163,10 +163,10 @@
                     };
 
                 myChart.setOption(option);
-                $(window).resize(function(){
-                    myChart.style.width = window.innerWidth+'px';
-                    myChart.resize();
-                });
+                $('.table-pie div').eq(0).css('margin', '0 auto;');
+                // $(window).resize(function(){
+                //     myChart.resize();
+                // });
 
 
             },
