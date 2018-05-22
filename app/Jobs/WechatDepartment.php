@@ -90,13 +90,13 @@ class WechatDepartment implements ShouldQueue {
         if ($result->{'errcode'} == 0 && $this->action !== 'delete') {
             Department::find($departmentId)->first()->update(['synced' => 1]);
         }
-        Log::debug(json_encode($result));
         if ($result->{'errcode'}) {
             $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
             $response['message'] = Wechat::ERRMSGS[$result->{'errcode'}];
             event(new JobResponse($response));
             return false;
         }
+        Log::debug(json_encode($result));
         event(new JobResponse($response));
         
         return true;
