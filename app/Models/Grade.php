@@ -210,7 +210,7 @@ class Grade extends Model {
     }
     
     /**
-     * 返回对指定用户可见的所有年级类部门对象
+     * 返回对指定用户(教职员工)可见的所有年级类部门对象
      *
      * @param null $userId
      * @return Department[]|Collection
@@ -218,6 +218,11 @@ class Grade extends Model {
     function departments($userId = null) {
         
         $user = $userId ? User::find($userId) : Auth::user();
+        abort_if(
+            !$user->educator,
+            HttpStatusCode::UNAUTHORIZED,
+            __('messages.unauthorzied')
+        );
         $ids = $this->gradeIds($user->educator->school_id, $user->id);
         $departmentIds = $this->whereIn('id', $ids)->pluck('department_id')->toArray();
         
