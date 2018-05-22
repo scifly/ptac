@@ -78,8 +78,9 @@ trait ModelTrait {
             if ($model->{$relation}) {
                 if (get_class($model->{$relation}) == 'Illuminate\Database\Eloquent\Collection') {
                     if (count($model->{$relation})) { return false; }
+                } else {
+                    return false;
                 }
-                return false;
             }
         }
         
