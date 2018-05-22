@@ -516,10 +516,19 @@ class Message extends Model {
         if (Request::method() == 'POST') {
             return $this->search();
         }
-        $user = Auth::user();
-        $schoolIds = $user->schoolIds($user->id, session('corpId'));
-        if (Request::query(''))
-        if (count($schoolIds) > 1)
+        if (!Request::query('schoolId')) {
+            $user = Auth::user();
+            $schoolIds = $user->schoolIds($user->id, session('corpId'));
+            if (count($schoolIds) > 1) {
+                return view(
+                    'wechat.schools',
+                    ['schools' => School::whereIn('id', $schoolIds)->pluck('name', 'id')]
+                );
+            }
+            session(['schoolId' => $schoolIds[0]]);
+            return view('wechat.message_center.index');
+        }
+        session(['schoolId' => Request::query('schoolId')]);
         
         return view('wechat.message_center.index');
         
