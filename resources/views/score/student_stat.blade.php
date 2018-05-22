@@ -9,7 +9,7 @@
             </div>
             <div class="modal-body with-border">
                 <div class="form-horizontal clearfix">
-                    <div class="form-group col-sm-12" style="margin: 0 auto">
+                    <div class="form-group col-sm-12" style="margin: 10px auto; ">
                         {!! Form::hidden('subject-quantity', count($subjects), [
                             'id' => 'subject-quantity',
                             'class' => 'number',
@@ -53,11 +53,11 @@
                             </table>
                         </div>
                     </div>
-                    <div class="form-group col-sm-12" style="margin: 0 auto">
+                    <div class="form-group col-sm-12" style="margin: 0 auto;">
                         <div class="subject-title">各科班级排名变化</div>
                         <div id="class-rank"></div>
                     </div>
-                    <div class="form-group col-sm-12" style="margin: 0 auto">
+                    <div class="form-group col-sm-12" style="margin: 0 auto;">
                         <div class="subject-title">各科年级排名变化</div>
                         <div id="grade-rank"></div>
                     </div>
