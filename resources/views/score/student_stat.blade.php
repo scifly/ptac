@@ -9,7 +9,7 @@
             </div>
             <div class="modal-body with-border">
                 <div class="form-horizontal clearfix">
-                    <div class="form-group col-sm-12" style="margin: 10px auto; ">
+                    <div class="form-group col-sm-12" style="margin: 0 auto 10px auto;">
                         {!! Form::hidden('subject-quantity', count($subjects), [
                             'id' => 'subject-quantity',
                             'class' => 'number',
