@@ -39,7 +39,12 @@ return [
     ],
     'department' => [
         'title' => '部门管理',
-        'department_sync' => '%企业微信部门',
+        'department_sync' => '%s企业微信部门',
+        'has_children' => '请先删除自部门',
+    ],
+    'menu' => [
+        'title' => '菜单管理',
+        'has_children' => '请先删除子菜单'
     ],
     'message' => [
         'title' => '消息中心',

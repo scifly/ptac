@@ -255,11 +255,19 @@ class Department extends Model {
     function remove($id) {
 
         $department = $this->find($id);
-        if ($this->removable($department)) {
-            if ($this->needSync($department)) {
-                $this->sync($id, 'delete');
+        if (!count($department->children)) {
+            try {
+                DB::transaction(function () use ($id, $department) {
+                    if ($this->needSync($department)) {
+                        $this->sync($id, 'delete');
+                    }
+                    DepartmentUser::whereDepartmentId($id)->delete();
+                    $department->delete();
+                });
+            } catch (Exception $e) {
+                throw $e;
             }
-            return $department->delete();
+            return true;
         }
         
         return false;
@@ -276,7 +284,7 @@ class Department extends Model {
     function removeDepartment(Model $model) {
         
         return $this->remove(
-            $this->find($model->{'department_id'})->id
+            $model->{'department_id'}
         );
         
     }

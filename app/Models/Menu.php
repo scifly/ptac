@@ -275,17 +275,27 @@ class Menu extends Model {
     /**
      * 删除Menu记录
      *
-     * @param $menuId
+     * @param $id
      * @return bool|mixed
      * @throws Throwable
      */
-    function remove($menuId) {
+    function remove($id) {
         
-        $menu = self::find($menuId);
+        $menu = $this->find($id);
+
+        if (!count($menu->children)) {
+            try {
+                DB::transaction(function () use ($id, $menu) {
+                    GroupMenu::whereMenuId($id)->delete();
+                    $menu->delete();
+                });
+            } catch (Exception $e) {
+                throw $e;
+            }
+            return true;
+        }
         
-        return $this->removable($menu)
-            ? $menu->delete()
-            : false;
+        return false;
         
     }
     

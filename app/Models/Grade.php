@@ -176,10 +176,15 @@ class Grade extends Model {
         
         $grade = self::find($id);
         if ($this->removable($grade)) {
-            $department = $grade->department;
-            
-            return $grade->delete()
-                && (new Department())->removeDepartment($department);
+            try {
+                DB::transaction(function () use ($grade) {
+                    (new Department())->removeDepartment($grade);
+                    $grade->delete();
+                });
+            } catch (Exception $e) {
+                throw $e;
+            }
+            return true;
         }
         
         return false;

@@ -124,7 +124,9 @@ class MenuController extends Controller {
     public function destroy($id) {
         
         return $this->result(
-            $this->menu->remove($id)
+            $this->menu->remove($id),
+            __('messages.ok'),
+            __('messages.menu.has_children')
         );
         
     }

@@ -149,9 +149,15 @@ class Squad extends Model {
         
         $class = self::find($id);
         if ($this->removable($class)) {
-            $department = $class->department;
-            return $class->delete()
-                && (new Department())->removeDepartment($department);
+            try {
+                DB::transaction(function () use ($class) {
+                    (new Department())->removeDepartment($class);
+                    $class->delete();
+                });
+            } catch (Exception $e) {
+                throw $e;
+            }
+            return true;
         }
         
         return false;

@@ -42,7 +42,6 @@ use Throwable;
  * @method static Builder|Company whereEnabled($value)
  * @mixin Eloquent
  * @property-read Collection|Company[] $corps
- * @property-read Collection|Operator[] $operators
  * @property-read Collection|School[] $schools
  * @property-read Department $department
  * @property-read Menu $menu
@@ -157,11 +156,16 @@ class Company extends Model {
         
         $company = $this->find($id);
         if ($this->removable($company)) {
-            $department = $company->department;
-            $menu = $company->menu;
-            return $company->delete()
-                && (new Department())->removeDepartment($department)
-                && (new Menu())->removeMenu($menu);
+            try {
+                DB::transaction(function () use ($id, $company) {
+                    $company->department->delete();
+                    $company->menu->delete();
+                    $company->delete();
+                });
+            } catch (Exception $e) {
+                throw $e;
+            }
+            return true;
         }
         
         return false;
