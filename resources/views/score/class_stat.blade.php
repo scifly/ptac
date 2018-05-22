@@ -4,7 +4,7 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 <h4 class="modal-title">
-                    <b>{{ $className }}</b> . 成绩分析
+                    <b>{{ $className }}</b>成绩分析
                 </h4>
             </div>
             <div class="modal-body with-border">
