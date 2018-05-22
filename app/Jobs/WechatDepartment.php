@@ -14,6 +14,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Log;
 
 /**
  * 企业号部门管理
@@ -82,6 +83,7 @@ class WechatDepartment implements ShouldQueue {
         }
         $action = $this->action . 'Dept';
         $result = json_decode(Wechat::$action($token['access_token'], $params));
+        Log::debug(json_encode($result));
         # 企业微信通讯录不存在需要更新的部门，则创建该部门
         if ($result->{'errcode'} == 600003 && $action == 'updateDept') {
             $result = json_decode(Wechat::createDept($token['access_token'], $params));
