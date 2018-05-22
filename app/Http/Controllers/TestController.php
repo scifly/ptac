@@ -57,6 +57,7 @@ class TestController extends Controller {
      */
     public function index() {
     
+        dd(__('messages.unauthorized'));
         $user = Auth::user();
         $corp = Corp::find(4);
         echo get_class($corp->schools) . '<br />';
