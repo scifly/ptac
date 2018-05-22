@@ -87,10 +87,10 @@ class WechatDepartment implements ShouldQueue {
         if ($result->{'errcode'} == 600003 && $action == 'updateDept') {
             $result = json_decode(Wechat::createDept($token['access_token'], $params));
         }
-        Log::debug(json_encode($result));
         if ($result->{'errcode'} == 0 && $this->action !== 'delete') {
             Department::find($departmentId)->first()->update(['synced' => 1]);
         }
+        Log::debug(json_encode($result));
         if ($result->{'errcode'}) {
             $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
             $response['message'] = Wechat::ERRMSGS[$result->{'errcode'}];
