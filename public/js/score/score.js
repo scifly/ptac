@@ -144,7 +144,6 @@
                             left: 'center',
                             data: legendData
                         },
-
                         series: [
                             {
                                 name: '成绩总分',
