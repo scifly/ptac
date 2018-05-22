@@ -1,6 +1,6 @@
 @extends('wechat.layouts.master')
 @section('title')
-    <title>消息中心</title>
+    <title>{{ $app }}</title>
 @endsection
 @section('css')
     <link rel="stylesheet" href="{{ asset('/css/wechat/schools.css') }}">
