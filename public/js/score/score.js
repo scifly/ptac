@@ -142,7 +142,9 @@
                             show: true,
                             bottom: 10,
                             left: 'center',
-                            data: legendData
+                            data: legendData,
+                            width: '550px',
+
                         },
                         series: [
                             {
