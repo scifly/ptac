@@ -58,15 +58,12 @@
                 $data.each(function (i, vo) {
                     if (i === 0 || i === 1) {
                     } else {
-                        var val = $(vo).text();
-                        var percent = (Math.round(val / sum * 10000) / 100.00).toFixed(2) + '%';
-                        var name = $('#sumscore thead tr th').eq(i).text() + '(' + percent + ')';
-                        var json1 = {
-                            'name': name,
-                            'value': val
-                        };
+                        var val = $(vo).text(),
+                            percent = (Math.round(val / sum * 10000) / 100.00).toFixed(2) + '%',
+                            name = $('#sumscore thead tr th').eq(i).text() + '(' + percent + ')';
+
                         legendData.push(name);
-                        arrayTime.push(json1);
+                        arrayTime.push({ 'name': name, 'value': val });
                     }
                 });
                 score.pieChart(arrayTime, legendData, title);
@@ -504,12 +501,13 @@
                         type: 'POST',
                         data: $.extend(
                             data,
-                            parseInt(statType) === 1 ? {examId: $('#exam_id').val()} : {studentId: $('#student_id').val()}
+                            statType === 1 ? {examId: $('#exam_id').val()} : {studentId: $('#student_id').val()}
                         ),
                         url: '../scores/stat',
                         success: function (result) {
-                            $('#result').html(result['html']);
-                            parseInt(statType) === 1 ? score.classData() : score.studentData();
+                            $('#params').after(result['html']);
+                            $('#modal-student').modal({ backdrop: true });
+                            statType === 1 ? score.classData() : score.studentData();
                         },
                         error: function (e) {
                             page.errorHandler(e);

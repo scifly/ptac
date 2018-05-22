@@ -1,4 +1,4 @@
-<div class="box box-default box-solid">
+<div class="box box-default box-solid" id="params">
 	<div class="box-header with-border">
 		@include('partials.form_header')
 	</div>
@@ -30,7 +30,6 @@
 				'icon' => 'fa fa-child',
 				'divId' => 'student'
 			])
-			<div id="result" class="form-group col-sm-10"></div>
 		</div>
 	</div>
 	@include('partials.form_buttons', [
@@ -38,3 +37,4 @@
 		'label' => '分析'
 	])
 </div>
+{{--<div id="result" class="form-group col-sm-10"></div>--}}
