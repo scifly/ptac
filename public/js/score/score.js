@@ -143,7 +143,7 @@
                             bottom: 10,
                             left: 'center',
                             data: legendData,
-                            width: '550px',
+                            width: '550',
 
                         },
                         series: [
