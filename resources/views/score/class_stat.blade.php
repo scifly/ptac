@@ -103,7 +103,9 @@
                         </div>
                     </div>
                 @endif
-                <div class="form-group col-sm-12 table-pie" style="width: 550px; height: 550px; ">
+                <div class="form-group col-sm-12" style="width:100%; height: 550px;text-align: center ">
+                    <div class="table-pie" style="width: 550px; height: 550px; ">
+                    </div>
                 </div>
             </div>
             </div>
