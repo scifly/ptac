@@ -143,8 +143,6 @@
                             bottom: 10,
                             left: 'center',
                             data: legendData,
-                            width: '550',
-
                         },
                         series: [
                             {
@@ -165,8 +163,11 @@
                     };
 
                 myChart.setOption(option);
-                $('.table-pie div').eq(0).css({'margin': '0 auto;', 'width': '550px'});
-                myChart.resize();
+                $(window).resize(function(){
+                    $('.table-pie div').eq(0).css({'margin': '0 auto;', 'width': '550px'});
+                    myChart.resize();
+                });
+
 
             },
             chart: function (data, subject, exam, type, i) {
