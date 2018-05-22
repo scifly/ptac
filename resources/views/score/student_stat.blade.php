@@ -7,7 +7,7 @@
             </div>
             <div class="modal-body with-border">
                 <div class="form-horizontal">
-                    <div class="form-group col-sm-12">
+                    <div class="form-group col-md-12">
                         {!! Form::hidden('subject-quantity', count($subjects), [
                             'id' => 'subject-quantity',
                             'class' => 'number',
