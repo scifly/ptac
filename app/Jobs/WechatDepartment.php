@@ -60,7 +60,7 @@ class WechatDepartment implements ShouldQueue {
             'message' => __('messages.wechat_synced')
         ];
         $params = $departmentId;
-        if (in_array($this->action, ['create, update'])) {
+        if (in_array($this->action, ['create', 'update'])) {
             $name = $this->department->name;
             $parent_id = $this->department->departmentType->name == '学校'
                 ? 1 : $this->department->parent->id;
