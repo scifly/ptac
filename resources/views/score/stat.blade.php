@@ -37,4 +37,3 @@
 		'label' => '分析'
 	])
 </div>
-{{--<div id="result" class="form-group col-sm-10"></div>--}}
