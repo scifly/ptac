@@ -337,11 +337,18 @@ class School extends Model {
     
         $school = $this->find($id);
         if ($this->removable($school)) {
-            $department = $school->department;
-            $menu = $school->menu;
-            return $school->delete()
-                && (new Department())->removeDepartment($department)
-                && (new Menu())->removeMenu($menu);
+            try {
+                DB::transaction(function () use ($school) {
+                    $department = $school->department;
+                    $menu = $school->menu;
+                    (new Department())->removeDepartment($department);
+                    (new Menu())->removeMenu($menu);
+                    $school->delete();
+                });
+            } catch (Exception $e) {
+                throw $e;
+            }
+            return true;
         }
     
         return false;
