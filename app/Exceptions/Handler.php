@@ -73,10 +73,10 @@ class Handler extends ExceptionHandler {
                     $status = HttpStatusCode::UNAUTHORIZED;
                     $response['message'] = __('messages.unauthorized');
                     break;
-                case 'InvalidPayloadException':
-                    $status = HttpStatusCode::INTERNAL_SERVER_ERROR;
-                    $response['message'] = json_last_error_msg();
-                    break;
+                // case 'InvalidPayloadException':
+                //     $status = HttpStatusCode::INTERNAL_SERVER_ERROR;
+                //     $response['message'] = json_last_error_msg();
+                //     break;
                 case 'AuthenticationException':
                     $status = HttpStatusCode::UNAUTHORIZED;
                     if ($request->method() == 'GET') {
