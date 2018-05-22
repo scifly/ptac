@@ -51,13 +51,13 @@
                             </table>
                         </div>
                     </div>
-                    <div class="form-group col-sm-12">
+                    <div class="form-group col-sm-12" style="margin: 0 auto">
                         <div class="subject-title">
                             {{ $student ? $student->user->realname : ''}}各科班级排名变化
                         </div>
                         <div id="class-rank"></div>
                     </div>
-                    <div class="form-group col-sm-12">
+                    <div class="form-group col-sm-12" style="margin: 0 auto">
                         <div class="subject-title">
                             {{ $student ? $student->user->realname : ''}}各科年级排名变化
                         </div>
