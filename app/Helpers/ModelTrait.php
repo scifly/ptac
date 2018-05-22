@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Policies\Route;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -72,6 +73,7 @@ trait ModelTrait {
                 }
             }
         }
+        Log::debug(json_encode($relations));
         foreach ($relations as $relation) {
             if ($model->{$relation}) {
                 if (get_class($model->{$relation}) == 'Illuminate\Database\Eloquent\Collection') {
