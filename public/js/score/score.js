@@ -163,12 +163,6 @@
                     };
 
                 myChart.setOption(option);
-                $('.table-pie div').eq(0).css('margin', '0 auto;');
-                // $(window).resize(function(){
-                //     myChart.resize();
-                // });
-
-
             },
             chart: function (data, subject, exam, type, i) {
                 var myChart = echarts.init($('#' + type + '-' + i)[0]),
@@ -503,7 +497,7 @@
                             _token: score.token(),
                             classId: $('#class_id').val()
                         };
-
+                    $('.overlay').show();
                     $.ajax({
                         type: 'POST',
                         data: $.extend(
@@ -512,6 +506,7 @@
                         ),
                         url: '../scores/stat',
                         success: function (result) {
+                            $('.overlay').hide();
                             $('#params').after(result['html']);
                             statType === 1 ? score.classData() : score.studentData();
                         },
