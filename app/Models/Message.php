@@ -522,7 +522,7 @@ class Message extends Model {
             if (count($schoolIds) > 1) {
                 return view('wechat.schools', [
                     'schools' => School::whereIn('id', $schoolIds)->pluck('name', 'id'),
-                    'url' => '/mc?schoolId='
+                    'url' => 'mc?schoolId='
                 ]);
             }
             session(['schoolId' => $schoolIds[0]]);
