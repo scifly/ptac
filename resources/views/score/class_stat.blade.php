@@ -7,6 +7,7 @@
                     <b>{{ $className }}</b> . 成绩分析
                 </h4>
             </div>
+            <div class="modal-body with-border">
             <div class="form-horizontal clearfix">
                 <div class="form-group col-sm-12" style="margin: 0 auto;">
                     <div class="subject-title">{{ $examName }}</div>
@@ -102,8 +103,12 @@
                         </div>
                     </div>
                 @endif
-                <div class="form-group col-sm-12" style="margin: 0 auto;">
+                <div class="form-group col-sm-12 table-pie" style="width: 100%; height:550px;">
                 </div>
+            </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-sm btn-white" data-dismiss="modal">关闭</a>
             </div>
         </div>
     </div>
