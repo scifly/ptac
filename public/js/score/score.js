@@ -55,6 +55,7 @@
                     legendData = [],
                     sum = $data.eq(1).text();
 
+                $('#modal-class').modal({backdrop: true});
                 $data.each(function (i, vo) {
                     if (i === 0 || i === 1) {
                     } else {
@@ -78,6 +79,7 @@
                     gradeRanks = [],
                     exams = [];
 
+                $('#modal-student').modal({backdrop: true});
                 for (var i = 0; i < $data.length; i++) {
                     exams.push($data.eq(i).find('.exam-name').text());
                 }
@@ -506,7 +508,6 @@
                         url: '../scores/stat',
                         success: function (result) {
                             $('#params').after(result['html']);
-                            $('#modal-student').modal({ backdrop: true });
                             statType === 1 ? score.classData() : score.studentData();
                         },
                         error: function (e) {
