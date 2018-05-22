@@ -164,7 +164,7 @@
 
                 myChart.setOption(option);
                 $(window).resize(function(){
-                    myChart.style.width = '550px';
+                    myChart.style.width = window.innerWidth+'px';
                     myChart.resize();
                 });
 
