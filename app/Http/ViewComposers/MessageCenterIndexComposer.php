@@ -30,7 +30,7 @@ class MessageCenterIndexComposer {
             'sent' => $sent,
             'received' => $received,
             'count' => $count,
-            'isEducator' => $user->educator ? true : false
+            'isEducator' => true # $user->educator ? true : false
         ]);
         
     }

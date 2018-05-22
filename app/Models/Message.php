@@ -19,7 +19,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
@@ -111,8 +110,18 @@ class Message extends Model {
      */
     function classes(array $classIds) { return Squad::whereIn('id', $classIds)->get(['id', 'name']); }
     
-    function messageSendinglogs() { return $this->belongsTo('App\Models\MessageSendingLog', 'msl_id', 'id'); }
+    /**
+     * 返回对应的消息发送日志对象
+     *
+     * @return BelongsTo
+     */
+    function messageSendinglog() { return $this->belongsTo('App\Models\MessageSendingLog', 'msl_id', 'id'); }
     
+    /**
+     * 返回对应的通信类型对象
+     *
+     * @return BelongsTo
+     */
     function commType() { return $this->belongsTo('App\Models\CommType'); }
     
     /**
@@ -121,7 +130,7 @@ class Message extends Model {
      * @param MessageRequest $request
      * @return bool
      * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     function store(MessageRequest $request) {
         
@@ -199,28 +208,6 @@ class Message extends Model {
     }
     
     /**
-     * @param $request
-     * @throws Exception
-     */
-    private function removeMedias(MessageRequest $request) {
-        
-        //删除原有的图片
-        $mediaIds = $request->input('del_ids');
-        if ($mediaIds) {
-            $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
-            foreach ($medias as $media) {
-                $paths = explode("/", $media->path);
-                Storage::disk('uploads')->delete($paths[5]);
-            }
-            try {
-                Media::whereIn('id', $mediaIds)->delete();
-            } catch (Exception $e) {
-                throw $e;
-            }
-        }
-    }
-    
-    /**
      * @param MessageRequest $request
      * @param $id
      * @return bool
@@ -246,7 +233,6 @@ class Message extends Model {
         return true;
         
     }
-    
     /**
      * 消息列表
      *
@@ -649,6 +635,31 @@ class Message extends Model {
         return $response;
         
     }
+    
+    /**
+     * 移除媒体对象
+     *
+     * @param $request
+     * @throws Exception
+     */
+    private function removeMedias(MessageRequest $request) {
+        
+        //删除原有的图片
+        $mediaIds = $request->input('del_ids');
+        if ($mediaIds) {
+            $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
+            foreach ($medias as $media) {
+                $paths = explode("/", $media->path);
+                Storage::disk('uploads')->delete($paths[5]);
+            }
+            try {
+                Media::whereIn('id', $mediaIds)->delete();
+            } catch (Exception $e) {
+                throw $e;
+            }
+        }
+    }
+    
     
 }
 

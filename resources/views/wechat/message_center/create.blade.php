@@ -74,22 +74,22 @@
                 </div>
             </div>
         </div>
-        {{--<div class="weui-cell weui-cell_switch b-top weui-cells_form mt5px msg-send-bg">--}}
-        {{--<div class="weui-cell__bd">定时发送</div> --}}
-        {{--<div class="weui-cell__ft">--}}
-        {{--<input type="checkbox" title="开启评论" name="openCom" class="weui-switch"></div>--}}
-        {{--</div>--}}
-        {{----}}
-        {{--<div class="hw-time b-top" style="display: none;">--}}
-        {{--<div class="weui-cell msg-send-bg">--}}
-        {{--<div class="weui-cell__hd">--}}
-        {{--<label for="" class="weui-label">发送日期</label>--}}
-        {{--</div> --}}
-        {{--<div class="weui-cell__bd">--}}
-        {{--<input id="time" name="time" readonly="readonly" type="text" placeholder="请选择日期" class="weui-input ma_expect_date" data-toggle='datetime-picker'>--}}
-        {{--</div>--}}
-        {{--</div>--}}
-        {{--</div>--}}
+        <div class="weui-cell weui-cell_switch b-top weui-cells_form mt5px msg-send-bg">
+            <div class="weui-cell__bd">定时发送</div>
+            <div class="weui-cell__ft">
+                <input type="checkbox" title="开启评论" name="openCom" class="weui-switch"></div>
+        </div>
+        <div class="hw-time b-top" style="display: none;">
+            <div class="weui-cell msg-send-bg">
+                <div class="weui-cell__hd">
+                    <label for="" class="weui-label">发送日期</label>
+                </div>
+                <div class="weui-cell__bd">
+                    <input id="time" name="time" readonly="readonly" type="text" placeholder="请选择日期"
+                           class="weui-input ma_expect_date" data-toggle='datetime-picker'>
+                </div>
+            </div>
+        </div>
         <div class="weui-flex mt5px">
             <div class="weui-flex__item">
                 <div class="placeholder msg-send-btn" style="padding: 15px;">

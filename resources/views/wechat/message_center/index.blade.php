@@ -27,9 +27,7 @@
                     @endif
                     <a class="weui-navbar__item" href="#tab2" data-type="received">
                         已接收
-                        <span class="received" style="">
-                            {{ $count }}
-                        </span>
+                        <span class="received">{{ $count }}</span>
                     </a>
                 </div>
                 <div class="weui-tab__bd ">

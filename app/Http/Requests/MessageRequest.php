@@ -2,7 +2,6 @@
 namespace App\Http\Requests;
 
 use App\Models\CommType;
-use App\Models\Department;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
