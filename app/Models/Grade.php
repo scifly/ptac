@@ -221,7 +221,7 @@ class Grade extends Model {
         abort_if(
             !$user->educator,
             HttpStatusCode::UNAUTHORIZED,
-            __('messages.unauthorzied')
+            __('messages.unauthorized')
         );
         $ids = $this->gradeIds($user->educator->school_id, $user->id);
         $departmentIds = $this->whereIn('id', $ids)->pluck('department_id')->toArray();

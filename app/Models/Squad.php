@@ -198,7 +198,7 @@ class Squad extends Model {
         abort_if(
             !$user->educator,
             HttpStatusCode::UNAUTHORIZED,
-            __('messages.unauthorzied')
+            __('messages.unauthorized')
         );
         $ids = $this->classIds($user->educator->school_id, $user->id);
         $departmentIds = $this->whereIn('id', $ids)->pluck('department_id')->toArray();
