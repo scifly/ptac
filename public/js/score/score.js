@@ -164,7 +164,7 @@
 
                 myChart.setOption(option);
                 $(window).resize(function(){
-                    $('.table-pie div').eq(0).css({'margin': '0 auto;', 'width': '550px'});
+                    myChart.style.width = '550px';
                     myChart.resize();
                 });
 
