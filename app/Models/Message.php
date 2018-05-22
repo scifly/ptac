@@ -520,10 +520,10 @@ class Message extends Model {
             $user = Auth::user();
             $schoolIds = $user->schoolIds($user->id, session('corpId'));
             if (count($schoolIds) > 1) {
-                return view(
-                    'wechat.schools',
-                    ['schools' => School::whereIn('id', $schoolIds)->pluck('name', 'id')]
-                );
+                return view('wechat.schools', [
+                    'schools' => School::whereIn('id', $schoolIds)->pluck('name', 'id'),
+                    'url' => session('acronym') . '/mc?schoolId='
+                ]);
             }
             session(['schoolId' => $schoolIds[0]]);
             return view('wechat.message_center.index');

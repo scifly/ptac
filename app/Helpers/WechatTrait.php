@@ -54,7 +54,11 @@ trait WechatTrait {
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        session(['corpId' => $corp->id]);
+        session([
+            'corpId' => $corp->id,
+            'acronym' => $acronym
+        ]);
+        
         Auth::loginUsingId($user->id);
         
         return redirect($returnUrl);

@@ -8,7 +8,7 @@
 @section('content')
     <div class="weui-cells" style="margin-top: 0;">
         @foreach ($schools as $id => $value)
-            <a class="weui-cell weui-cell_access school" href="" id="school-{!! $id !!}">
+            <a class="weui-cell weui-cell_access" href="{{ $url . $id }}">
                 <div class="weui-cell__bd">
                     <p>{{ $value }}</p>
                 </div>
