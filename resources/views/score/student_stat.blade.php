@@ -6,7 +6,7 @@
                 <h4 class="modal-title">{!! $student ? $student->user->realname : '' !!}同学成绩分析</h4>
             </div>
             <div class="modal-body with-border">
-                <div class="form-horizontal">
+                <div class="form-horizontal clearfix">
                     <div class="form-group col-sm-12" style="margin: 0 auto">
                         {!! Form::hidden('subject-quantity', count($subjects), [
                             'id' => 'subject-quantity',
