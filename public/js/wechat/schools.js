@@ -1,0 +1,3 @@
+$('.school').on('click', function () {
+
+});

@@ -58,7 +58,6 @@ use Throwable;
  * @property-read Collection|Message[] $messages
  * @property-read Collection|Mobile[] $mobiles
  * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
- * @property-read Operator $operator
  * @property-read Collection|Order[] $orders
  * @property-read Collection|PollQuestionnaireAnswer[] $pollQuestionnaireAnswers
  * @property-read Collection|PollQuestionnaireParticipant[] $pollQuestionnairePartcipants

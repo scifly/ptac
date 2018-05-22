@@ -7,6 +7,7 @@ use App\Models\Department;
 use App\Models\DepartmentUser;
 use App\Models\Menu;
 use App\Models\School;
+use App\Models\Squad;
 use App\Models\User;
 use App\Policies\Route;
 use Illuminate\Database\Eloquent\Model;
@@ -123,15 +124,18 @@ trait ModelTrait {
      * 返回对指定用户可见的所有学校Id
      *
      * @param null $userId
+     * @param null $corpId - 返回对指定用户可见的、指定企业的所有学校id
      * @return array
      */
-    function schoolIds($userId = null) {
+    function schoolIds($userId = null, $corpId = null) {
         
         $user = !$userId ? Auth::user() : User::find($userId);
         $role = $user->group->name;
         switch ($role) {
             case '运营':
-                return School::all()->pluck('id')->toArray();
+                return $corpId
+                    ? School::whereCorpId($corpId)->pluck('id')->toArray()
+                    : School::all()->pluck('id')->toArray();
             case '企业':
                 $departmentId = head($user->departments->pluck('id')->toArray());
                 $corp = Corp::whereDepartmentId($departmentId)->first();
@@ -139,6 +143,16 @@ trait ModelTrait {
             case '学校':
                 $departmentId = head($user->departments->pluck('id')->toArray());
                 return [School::whereDepartmentId($departmentId)->first()->id];
+            case '监护人':
+                $classes = Squad::whereIn('department_id', $user->departments->pluck('id')->toArray())->get();
+                $schoolIds = [];
+                if (!isset($corpId)) { return $schoolIds; }
+                foreach ($classes as $class) {
+                    if ($class->grade->school->corp_id == $corpId) {
+                        $schoolIds[] = $class->grade->school_id;
+                    }
+                }
+                return array_unique($schoolIds);
             default:
                 return [$user->educator->school_id];
         }

@@ -67,21 +67,14 @@ class MessageCenterController extends Controller {
     /**
      * 消息列表
      *
-     * @return RedirectResponse|Redirector|View|string
+     * @return array|RedirectResponse|Redirector|View|string
      * @throws Throwable
      */
     public function index() {
         
-        if (!Auth::id()) {
-            return $this->signin(self::APP, Request::url());
-        }
-        if (Request::method() == 'POST') {
-            return response()->json(
-                $this->message->search()
-            );
-        }
-        
-        return view('wechat.message_center.index');
+        return Auth::id()
+            ? $this->message->wIndex()
+            : $this->signin(self::APP, Request::url());
         
     }
     

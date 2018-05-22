@@ -3,20 +3,15 @@ namespace App\Http\Controllers;
 
 use App\Facades\Wechat;
 use App\Helpers\ModelTrait;
-use App\Models\Action;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Group;
 use App\Models\Message;
-use App\Models\Mobile;
-use App\Models\User;
-use App\Services\Test;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -57,7 +52,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        dd(__('messages.unauthorized'));
+        dd(Request::query('abc'));
         $user = Auth::user();
         $corp = Corp::find(4);
         echo get_class($corp->schools) . '<br />';

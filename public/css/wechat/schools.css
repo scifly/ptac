@@ -1,0 +1,55 @@
+body, html {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f2f2f2;
+    font-family: "微软雅黑", serif;
+    color: #686868;
+}
+
+a {
+    color: #333;
+}
+
+::-webkit-scrollbar {
+    width: 0em;
+}
+
+::-webkit-scrollbar:horizontal {
+    height: 0em;
+}
+
+.multi-role {
+    background-color: #fff;
+    position: relative;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.loadmore {
+    text-align: center;
+    height: 40px;
+    line-height: 40px;
+}
+
+.loadmore i {
+    font-size: 16px;
+    margin-top: -3px;
+    margin-right: 10px;
+}
+
+.weui-cell__bd {
+    width: 70%;
+}
+
+.weui-cell__bd p {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

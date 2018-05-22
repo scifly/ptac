@@ -506,6 +506,26 @@ class Message extends Model {
     }
     
     /**
+     * 微信端消息中心首页
+     *
+     * @return array
+     * @throws Throwable
+     */
+    function wIndex() {
+        
+        if (Request::method() == 'POST') {
+            return $this->search();
+        }
+        $user = Auth::user();
+        $schoolIds = $user->schoolIds($user->id, session('corpId'));
+        if (Request::query(''))
+        if (count($schoolIds) > 1)
+        
+        return view('wechat.message_center.index');
+        
+    }
+    
+    /**
      * 搜索（消息或发送对象）
      *
      * @param null $departmentId
