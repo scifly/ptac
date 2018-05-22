@@ -162,8 +162,8 @@
                         ]
                     };
 
-                myChart.setOption(option);
                 $('.table-pie div').eq(0).css({'margin': '0 auto;', 'width': '550px'});
+                myChart.setOption(option);
 
             },
             chart: function (data, subject, exam, type, i) {
