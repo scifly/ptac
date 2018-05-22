@@ -45,6 +45,8 @@ class WechatDepartment implements ShouldQueue {
     
     /**
      * Execute the job
+     *
+     * @return bool
      */
     public function handle() {
     
@@ -77,24 +79,26 @@ class WechatDepartment implements ShouldQueue {
             $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
             $response['message'] = $token['errmsg'];
             event(new JobResponse($response));
-        } else {
-            $action = $this->action . 'Dept';
-            $result = json_decode(Wechat::$action($token['access_token'], $params));
-            # 企业微信通讯录不存在需要更新的部门，则创建该部门
-            if ($result->{'errcode'} == 600003 && $action == 'updateDept') {
-                $result = json_decode(Wechat::createDept($token['access_token'], $params));
-            }
-            if ($result->{'errcode'} == 0 && $this->action !== 'delete') {
-                Department::find($departmentId)->first()->update(['synced' => 1]);
-            }
-            if ($result->{'errcode'}) {
-                $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-                $response['message'] = Wechat::ERRMSGS[$result->{'errcode'}];
-                event(new JobResponse($response));
-            } else {
-                event(new JobResponse($response));
-            }
+            return false;
         }
+        $action = $this->action . 'Dept';
+        $result = json_decode(Wechat::$action($token['access_token'], $params));
+        # 企业微信通讯录不存在需要更新的部门，则创建该部门
+        if ($result->{'errcode'} == 600003 && $action == 'updateDept') {
+            $result = json_decode(Wechat::createDept($token['access_token'], $params));
+        }
+        if ($result->{'errcode'} == 0 && $this->action !== 'delete') {
+            Department::find($departmentId)->first()->update(['synced' => 1]);
+        }
+        if ($result->{'errcode'}) {
+            $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+            $response['message'] = Wechat::ERRMSGS[$result->{'errcode'}];
+            event(new JobResponse($response));
+            return false;
+        }
+        event(new JobResponse($response));
+        
+        return true;
         
     }
     
