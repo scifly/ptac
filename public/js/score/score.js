@@ -163,6 +163,8 @@
                     };
 
                 myChart.setOption(option);
+                $('.table-pie div').eq(0).css({'margin': '0 auto;', 'width': '550px'});
+
             },
             chart: function (data, subject, exam, type, i) {
                 var myChart = echarts.init($('#' + type + '-' + i)[0]),
