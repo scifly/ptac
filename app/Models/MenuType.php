@@ -106,13 +106,11 @@ class MenuType extends Model {
             'corp'    => Icon::whereName('fa fa-weixin')->first()->id,
             'school'  => Icon::whereName('fa fa-university')->first()->id,
         ];
-        $mtType = array_search(
-            lcfirst((new ReflectionClass(get_class($model)))->getShortName()),
-            Constant::MENU_TYPES
-        );
+        $iconType =lcfirst((new ReflectionClass(get_class($model)))->getShortName());
+        $mtType = array_search($iconType, Constant::MENU_TYPES);
         
         return [
-            $icons[$mtType],
+            $icons[$iconType],
             $this->where('name', $mtType)->first()->id
         ];
         
