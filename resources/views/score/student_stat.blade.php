@@ -64,20 +64,10 @@
                         <div id="grade-rank"></div>
                     </div>
                 </div>
-                {{--<div class="row">--}}
-                    {{----}}
-                    {{----}}
-                {{--</div>--}}
-                {{--<div class="row">--}}
-                    {{----}}
-                {{--</div>--}}
-                {{--<div class="row">--}}
-                    {{----}}
-                {{--</div>--}}
             </div>
-            {{--<div class="modal-footer">--}}
-                {{--<a href="#" class="btn btn-sm btn-white" data-dismiss="modal">关闭</a>--}}
-            {{--</div>--}}
+            <div class="modal-footer">
+                <a href="#" class="btn btn-sm btn-white" data-dismiss="modal">关闭</a>
+            </div>
         </div>
     </div>
 </div>
