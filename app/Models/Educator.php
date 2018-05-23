@@ -162,7 +162,7 @@ class Educator extends Model {
     }
     
     /**
-     * 根据教职员工Id数组返回教职员工"id => 姓名"数组
+     * 返回教职员工列表
      *
      * @param array $ids
      * @return array
@@ -172,7 +172,9 @@ class Educator extends Model {
         $educators = [];
         foreach ($ids as $id) {
             $educator = self::find($id);
-            $educators[$id] = $educator->user->realname;
+            if ($educator) {
+                $educators[$id] = $educator->user->realname;
+            }
         }
         
         return $educators;
