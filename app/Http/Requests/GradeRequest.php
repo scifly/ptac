@@ -30,12 +30,8 @@ class GradeRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        if (isset($input['educator_ids'])) {
-            $input['educator_ids'] = implode(',', $input['educator_ids']);
-        }
-        if (!isset($input['educator_ids'])) {
-            $input['educator_ids'] = '';
-        }
+        $input['educator_ids'] = isset($input['educator_ids'])
+            ? implode(',', $input['educator_ids']) : '';
         if (!isset($input['department_id'])) {
             $input['department_id'] = 0;
         }
