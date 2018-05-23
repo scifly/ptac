@@ -557,7 +557,7 @@ class Department extends Model {
             $text = sprintf(
                 Snippet::NODE_TEXT,
                 $enabled ? $color : 'text-gray',
-                $title, $syncMark, $name
+                $title, $name, $syncMark
             );
             $selectable = $isSuperRole ? 1 : (in_array($id, $this->departmentIds($user->id)) ? 1 : 0);
             $corp_id = !in_array($type, ['root', 'company']) ? $this->corpId($id) : null;
