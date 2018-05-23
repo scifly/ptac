@@ -102,7 +102,7 @@ class DepartmentType extends Model {
         );
         
         return [
-            $dtType,
+            $dtType ?? '班级',
             $this->where('name', $dtType)->first()->id
         ];
         
