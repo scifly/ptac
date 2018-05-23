@@ -273,7 +273,10 @@ class Department extends Model {
             try {
                 DB::transaction(function () use ($id, $department) {
                     if ($this->needSync($department)) {
-                        $this->sync(['id' => $id], 'delete');
+                        $this->sync([
+                            'id' => $id,
+                            'corp_id' => $this->corpId($id)
+                        ], 'delete');
                     }
                     DepartmentUser::whereDepartmentId($id)->delete();
                     $department->delete();
