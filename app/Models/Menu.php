@@ -265,7 +265,7 @@ class Menu extends Model {
             'name' => $model->{'name'},
             'remark' => $model->{'remark'},
             'parent_id' => $belongsTo
-                ? $this->{$belongsTo}->deparmtent_id
+                ? $model->{$belongsTo}->menu_id
                 : $this::whereParentId(null)->first()->id,
             'enabled' => $model->{'enabled'}
         ]);
