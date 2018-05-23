@@ -258,9 +258,10 @@ class Squad extends Model {
             [
                 'db'        => 'Squad.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
+                    return $this->syncStatus($d, $row);
                 },
             ],
+            ['db' => 'Department.synced as synced', 'dt' => 7]
         ];
         $joins = [
             [
@@ -270,6 +271,14 @@ class Squad extends Model {
                 'conditions' => [
                     'Grade.id = Squad.grade_id',
                 ],
+            ],
+            [
+                'table' => 'departments',
+                'alias' => 'Department',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Department.id = Grade.department_id'
+                ]
             ]
         ];
         $condition = 'Squad.id IN (' . implode(',', $this->classIds()) . ')';

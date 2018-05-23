@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use ReflectionException;
 use Throwable;
@@ -395,9 +396,22 @@ class School extends Model {
             [
                 'db'        => 'School.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
+                    $user = Auth::user();
+                    $id = $row['id'];
+                    $status = Snippet::status($d);
+                    $status .= ($row['synced']
+                        ? sprintf(Snippet::ICON, 'fa-wechat text-green', '已同步')
+                        : sprintf(Snippet::ICON, 'fa-wechat text-gray', '未同步'));
+                    $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
+                    $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
+    
+                    return
+                        $status .
+                        ($user->can('act', $this->uris()['edit']) ? $editLink : '') .
+                        ($user->can('act', $this->uris()['destroy']) ? $delLink : '');
                 },
             ],
+            ['db' => 'Department.synced as synced', 'dt' => 8]
         ];
         $joins = [
             [
@@ -416,6 +430,14 @@ class School extends Model {
                     'Corp.id = School.corp_id',
                 ],
             ],
+            [
+                'table' => 'departments',
+                'alias' => 'Department',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Department.id = School.department_id'
+                ]
+            ]
         ];
         # 仅在企业级显示学校列表
         $rootMenuId = (new Menu())->rootMenuId(true);

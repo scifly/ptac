@@ -273,9 +273,10 @@ class Grade extends Model {
             [
                 'db'        => 'Grade.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
+                    return $this->syncStatus($d, $row);
                 },
             ],
+            ['db' => 'Department.synced as synced', 'dt' => 6]
         ];
         $joins = [
             [
@@ -284,6 +285,14 @@ class Grade extends Model {
                 'type' => 'INNER',
                 'conditions' => [
                     'School.id = Grade.school_id'
+                ]
+            ],
+            [
+                'table' => 'departments',
+                'alias' => 'Department',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Department.id = Grade.department_id'
                 ]
             ]
         ];
