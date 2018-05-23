@@ -277,7 +277,7 @@ class Squad extends Model {
                 'alias' => 'Department',
                 'type' => 'INNER',
                 'conditions' => [
-                    'Department.id = Grade.department_id'
+                    'Department.id = Squad.department_id'
                 ]
             ]
         ];
