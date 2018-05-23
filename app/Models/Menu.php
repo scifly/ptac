@@ -261,7 +261,7 @@ class Menu extends Model {
      */
     function modifyMenu(Model $model, $belongsTo = null) {
         
-        return $this->update([
+        return $this->find($model->{'menu_id'})->update([
             'name' => $model->{'name'},
             'remark' => $model->{'remark'},
             'parent_id' => $belongsTo
