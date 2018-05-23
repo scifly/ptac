@@ -52,9 +52,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        $updated = Department::find(7)->update(['synced' => 1]);
-        dd($updated);
-        dd(Request::query('abc'));
+        dd(Department::find(5)->toArray());
         $user = Auth::user();
         $corp = Corp::find(4);
         echo get_class($corp->schools) . '<br />';
