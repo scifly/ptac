@@ -29,7 +29,7 @@ class Snippet {
     const DT_UNLOCK = '<i class="fa fa-unlock"></i>&nbsp;空闲中';
     
     /** 菜单相关 */
-    const NODE_TEXT = '<span class="%s">%s</span>';
+    const NODE_TEXT = '<span class="%s" title="%s">%s</span>%s';
     const MENU_DEFAULT_ICON = '<i class="fa fa-circle-o" style="width: 20px;"></i>';
     const MENU_ICON = '<i class="%s" style="width: 20px;"></i>';
     # 不包含子菜单的模板

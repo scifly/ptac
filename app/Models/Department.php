@@ -545,10 +545,20 @@ class Department extends Model {
             $departmentType = DepartmentType::find($departmentTypeId)->name;
             $name = $departments[$i]['name'];
             $enabled = $departments[$i]['enabled'];
-            
             $color = Constant::NODE_TYPES[$departmentType]['color'];
             $type = Constant::DEPARTMENT_TYPES[$departmentType];
-            $text = sprintf(Snippet::NODE_TEXT, $enabled ? $color : 'text-gray', $name);
+            $title = '';
+            $syncMark = '';
+            if (!in_array($type, ['root', 'company', 'corp'])) {
+                $synced = $departments[$i]['synced'];
+                $title =  $synced ? '已同步' : '未同步';
+                $syncMark = $synced ? ' *' : '';
+            }
+            $text = sprintf(
+                Snippet::NODE_TEXT,
+                $enabled ? $color : 'text-gray',
+                $title, $syncMark, $name
+            );
             $selectable = $isSuperRole ? 1 : (in_array($id, $this->departmentIds($user->id)) ? 1 : 0);
             $corp_id = !in_array($type, ['root', 'company']) ? $this->corpId($id) : null;
             $nodes[] = [
