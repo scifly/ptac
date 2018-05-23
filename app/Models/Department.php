@@ -62,7 +62,7 @@ class Department extends Model {
 
     protected $fillable = [
         'parent_id', 'department_type_id', 'name',
-        'remark', 'order', 'enabled',
+        'remark', 'order', 'enabled', 'synced'
     ];
 
     /**
