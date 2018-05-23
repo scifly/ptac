@@ -1,11 +1,11 @@
 <?php
 namespace App\Jobs;
 
-use App\Events\JobResponse;
-use App\Helpers\Constant;
 use App\Models\Corp;
 use App\Facades\Wechat;
+use App\Helpers\Constant;
 use App\Models\Department;
+use App\Events\JobResponse;
 use App\Helpers\ModelTrait;
 use Illuminate\Bus\Queueable;
 use App\Helpers\HttpStatusCode;
