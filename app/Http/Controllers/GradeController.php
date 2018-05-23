@@ -7,6 +7,7 @@ use App\Models\Grade;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 年级
@@ -108,7 +109,7 @@ class GradeController extends Controller {
      *
      * @param $id
      * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     public function destroy($id) {
         

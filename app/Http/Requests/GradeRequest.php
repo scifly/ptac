@@ -31,7 +31,7 @@ class GradeRequest extends FormRequest {
         
         $input = $this->all();
         $input['educator_ids'] = isset($input['educator_ids'])
-            ? implode(',', $input['educator_ids']) : '';
+            ? implode(',', $input['educator_ids']) : '0';
         if (!isset($input['department_id'])) {
             $input['department_id'] = 0;
         }
