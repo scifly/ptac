@@ -246,7 +246,7 @@ class Department extends Model {
                  */
                 if (!$beLongsTo || in_array($beLongsTo, ['company', 'corp'])) {
                     $data['parent_id'] = $beLongsTo
-                        ? $this->{$beLongsTo}->department_id
+                        ? $model->{$beLongsTo}->department_id
                         : $this::whereParentId(null)->first()->id;
                 }
                 $department = $this->modify($data, $model->{'department_id'});
