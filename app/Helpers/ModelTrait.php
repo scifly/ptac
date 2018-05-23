@@ -73,7 +73,6 @@ trait ModelTrait {
                 }
             }
         }
-        Log::debug(json_encode($relations));
         foreach ($relations as $relation) {
             if ($model->{$relation}) {
                 if (get_class($model->{$relation}) == 'Illuminate\Database\Eloquent\Collection') {
