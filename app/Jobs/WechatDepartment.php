@@ -9,13 +9,10 @@ use App\Models\Department;
 use App\Helpers\ModelTrait;
 use Illuminate\Bus\Queueable;
 use App\Helpers\HttpStatusCode;
-use App\Events\DepartmentSyncTrigger;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Support\Facades\Log;
-
 /**
  * 企业号部门管理
  *
@@ -26,18 +23,18 @@ class WechatDepartment implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait;
     
-    protected $department, $userId, $action;
+    protected $data, $userId, $action;
     
     /**
      * Create a new job instance.
      *
-     * @param Department $department
+     * @param array $data
      * @param $userId
      * @param $action
      */
-    public function __construct(Department $department, $userId, $action) {
+    public function __construct(array $data, $userId, $action) {
         
-        $this->department = $department;
+        $this->data = $data;
         $this->action = $action;
         $this->userId = $userId;
         
@@ -50,8 +47,6 @@ class WechatDepartment implements ShouldQueue {
      */
     public function handle() {
     
-        Log::debug('hey');
-        $departmentId = $this->department->id;
         $response = [
             'userId' => $this->userId,
             'title' => sprintf(
@@ -61,20 +56,16 @@ class WechatDepartment implements ShouldQueue {
             'statusCode' => HttpStatusCode::OK,
             'message' => __('messages.wechat_synced')
         ];
-        $params = $departmentId;
+        $params = $this->data['id'];
         if (in_array($this->action, ['create', 'update'])) {
-            $name = $this->department->name;
-            $parent_id = $this->department->departmentType->name == '学校'
-                ? 1 : $this->department->parent->id;
-            $order = $this->department->order;
             $params = [
-                'id' => $departmentId,
-                'name' => $name,
-                'parentid' => $parent_id,
-                'order' => $order
+                'id' => $this->data['id'],
+                'name' => $this->data['name'],
+                'parentid' => $this->data['parent_id'],
+                'order' => $this->data['order']
             ];
         }
-        $corp = Corp::find($this->department->corpId($departmentId));
+        $corp = Corp::find($this->data['corp_id']);
         $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
         if ($token['errcode']) {
             $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
@@ -89,7 +80,7 @@ class WechatDepartment implements ShouldQueue {
             $result = json_decode(Wechat::createDept($token['access_token'], $params));
         }
         if ($result->{'errcode'} == 0 && $this->action !== 'delete') {
-            Department::find($departmentId)->first()->update(['synced' => 1]);
+            Department::find($this->data['id'])->first()->update(['synced' => 1]);
         }
         if ($result->{'errcode'}) {
             $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;

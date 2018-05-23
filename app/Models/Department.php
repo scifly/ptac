@@ -146,7 +146,14 @@ class Department extends Model {
 
         $department = $this->create($data);
         if ($department && $this->needSync($department)) {
-            $this->sync($department, 'create');
+            
+            $this->sync([
+                'id' => $department->id,
+                'name' => $department->name,
+                'parent_id' => $department->departmentType->name == '学校' ? 1 : $department->parent_id,
+                'order' => $department->order,
+                'corp_id' => $this->corpId($department->id)
+            ], 'create');
         }
 
         return $department;
@@ -200,7 +207,14 @@ class Department extends Model {
         $department = self::find($id);
         $updated = $department->update($data);
         if ($this->needSync($department) && $updated) {
-            $this->sync($department, 'update');
+            $department = $this->find($id);
+            $this->sync([
+                'id' => $department->id,
+                'name' => $department->name,
+                'parent_id' => $department->departmentType->name == '学校' ? 1 : $department->parent_id,
+                'order' => $department->order,
+                'corp_id' => $this->corpId($department->id)
+            ], 'update');
         }
         
         return $updated ?? $this->find($id);
@@ -259,7 +273,7 @@ class Department extends Model {
             try {
                 DB::transaction(function () use ($id, $department) {
                     if ($this->needSync($department)) {
-                        $this->sync($department, 'delete');
+                        $this->sync(['id' => $id], 'delete');
                     }
                     DepartmentUser::whereDepartmentId($id)->delete();
                     $department->delete();
@@ -329,7 +343,14 @@ class Department extends Model {
             if ($department->movable($id, $parentId)) {
                 $moved = $department->move($id, $parentId);
                 if ($moved && $this->needSync($department)) {
-                    $this->sync($department, 'update');
+                    $department = $this->find($id);
+                    $this->sync([
+                        'id' => $department->id,
+                        'name' => $department->name,
+                        'parent_id' => $department->departmentType->name == '学校' ? 1 : $department->parent_id,
+                        'order' => $department->order,
+                        'corp_id' => $this->corpId($department->id)
+                    ], 'update');
                 }
             }
         }
@@ -835,7 +856,7 @@ class Department extends Model {
      * @param $action
      * @return bool
      */
-    private function sync($department, $action) {
+    private function sync(array $department, $action) {
         
         WechatDepartment::dispatch($department, Auth::id(), $action);
         
