@@ -146,7 +146,7 @@ class Department extends Model {
 
         $department = $this->create($data);
         if ($department && $this->needSync($department)) {
-            $this->sync($department->id, 'create');
+            $this->sync($department, 'create');
         }
 
         return $department;
@@ -200,7 +200,7 @@ class Department extends Model {
         $department = self::find($id);
         $updated = $department->update($data);
         if ($this->needSync($department) && $updated) {
-            $this->sync($id, 'update');
+            $this->sync($department, 'update');
         }
         
         return $updated ?? $this->find($id);
@@ -259,7 +259,7 @@ class Department extends Model {
             try {
                 DB::transaction(function () use ($id, $department) {
                     if ($this->needSync($department)) {
-                        $this->sync($id, 'delete');
+                        $this->sync($department, 'delete');
                     }
                     DepartmentUser::whereDepartmentId($id)->delete();
                     $department->delete();
@@ -329,7 +329,7 @@ class Department extends Model {
             if ($department->movable($id, $parentId)) {
                 $moved = $department->move($id, $parentId);
                 if ($moved && $this->needSync($department)) {
-                    $this->sync($id, 'update');
+                    $this->sync($department, 'update');
                 }
             }
         }
@@ -831,13 +831,13 @@ class Department extends Model {
     /**
      * 同步企业微信部门
      *
-     * @param $id
+     * @param $department
      * @param $action
      * @return bool
      */
-    private function sync($id, $action) {
+    private function sync($department, $action) {
         
-        WechatDepartment::dispatch($this->find($id), Auth::id(), $action);
+        WechatDepartment::dispatch($department, Auth::id(), $action);
         
         return true;
         
