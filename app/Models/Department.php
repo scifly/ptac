@@ -244,7 +244,7 @@ class Department extends Model {
                  * 如果部门类型为年级或班级，则不更新其父部门id，
                  * 因为年级或班级可能是其他类型部门的子部门
                  */
-                if (!$beLongsTo || in_array($beLongsTo, ['company', 'corp'])) {
+                if ($beLongsTo && in_array($beLongsTo, ['company', 'corp'])) {
                     $data['parent_id'] = $beLongsTo
                         ? $model->{$beLongsTo}->department_id
                         : $this::whereParentId(null)->first()->id;
