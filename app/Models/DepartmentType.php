@@ -100,9 +100,9 @@ class DepartmentType extends Model {
             lcfirst((new ReflectionClass(get_class($model)))->getShortName()),
             Constant::DEPARTMENT_TYPES
         );
-        
+        $dtType = $dtType ? $dtType : '班级';
         return [
-            $dtType ?? '班级',
+            $dtType,
             $this->where('name', $dtType)->first()->id
         ];
         
