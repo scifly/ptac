@@ -76,7 +76,7 @@ class WechatDepartment implements ShouldQueue {
         $action = $this->action . 'Dept';
         $result = json_decode(Wechat::$action($token['access_token'], $params));
         # 企业微信通讯录不存在需要更新的部门，则创建该部门
-        if ($result->{'errcode'} == 600003 && $action == 'updateDept') {
+        if ($result->{'errcode'} == 60003 && $action == 'updateDept') {
             $result = json_decode(Wechat::createDept($token['access_token'], $params));
         }
         if ($result->{'errcode'} == 0 && $this->action !== 'delete') {
