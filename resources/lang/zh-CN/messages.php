@@ -57,6 +57,10 @@ return [
         'empty_targets' => '请选择发送对象',
         'submitted' => '已提交消息发送请求',
     ],
+    'school' => [
+        'title' => '学校管理',
+        'corp_changed' => '请先删除此学校所有相关数据(部门、部门用户绑定关系、角色、微网站等)，并在新的企业微信下创建该学校'
+    ],
     'score' => [
         'title' => '成绩中心',
         'zero_classes' => '您尚未绑定任何班级',

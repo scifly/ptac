@@ -298,14 +298,11 @@ class School extends Model {
         try {
             DB::transaction(function () use ($request, &$id, &$school) {
                 $school = $this->find($id);
-                $corpChanged = $school->corp_id !== $request->input('corp_id');
+                $corpChanged = $school->corp_id != $request->input('corp_id');
                 abort_if(
                     $corpChanged && !$this->removable($school),
                     HttpStatusCode::INTERNAL_SERVER_ERROR,
-                    __(
-                        '请先删除此学校所有相关数据(部门、部门用户绑定关系、角色、微网站等)，' .
-                        '并在新的企业微信下创建该学校'
-                    )
+                    __('messages.school.corp_changed')
                 );
                 if (!$corpChanged) {
                     $school->update($request->all());
@@ -313,7 +310,7 @@ class School extends Model {
                     (new Menu())->modifyMenu($school, 'corp');
                 } else {
                     $school = $this->create($request->except('id'));
-                    $school->remove($id);
+                    $this->remove($id);
                     $id = $school->id;
                 }
             });
