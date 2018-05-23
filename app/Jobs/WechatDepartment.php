@@ -82,7 +82,6 @@ class WechatDepartment implements ShouldQueue {
             $result = json_decode(Wechat::createDept($token['access_token'], $params));
         }
         if ($result->{'errcode'} == 0 && $this->action != 'deleteDept') {
-            Log::debug('hi there');
             Department::find($this->data['id'])->update(['synced' => 1]);
         }
         if ($result->{'errcode'}) {

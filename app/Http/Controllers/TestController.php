@@ -52,6 +52,8 @@ class TestController extends Controller {
      */
     public function index() {
     
+        $updated = Department::find(7)->update(['synced' => 1]);
+        dd($updated);
         dd(Request::query('abc'));
         $user = Auth::user();
         $corp = Corp::find(4);
