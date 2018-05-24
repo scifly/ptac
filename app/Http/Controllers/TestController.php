@@ -212,7 +212,7 @@ class TestController extends Controller {
             'parent_id' => '系统设置',
             'uri' => null,
             'icon' => 'fa fa-book',
-            'tabs' => ['科目', '科目此分类']
+            'tabs' => ['科目', '科目次分类']
         ],
         '学期设置' => [
             'id' => 0,
