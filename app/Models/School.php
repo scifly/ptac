@@ -6,6 +6,7 @@ use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use App\Http\Requests\SchoolRequest;
+use App\Jobs\CreateSchoolMenu;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -271,11 +272,13 @@ class School extends Model {
                 $school = $this->create($request->all());
                 $department = (new Department())->storeDepartment($school, 'corp');
                 $menu = (new Menu())->storeMenu($school, 'corp');
-                # 更新“学校”的部门id和菜单id
+                # 更新学校的部门id和菜单id
                 $school->update([
                     'department_id' => $department->id,
                     'menu_id' => $menu->id
                 ]);
+                # 创建学校后台管理菜单、菜单卡片绑定关系和微网站
+                CreateSchoolMenu::dispatch($school, Auth::id());
             });
         } catch (Exception $e) {
             throw $e;

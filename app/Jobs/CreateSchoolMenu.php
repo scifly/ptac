@@ -1,23 +1,25 @@
 <?php
 namespace App\Jobs;
 
-use App\Helpers\Constant;
-use App\Models\Icon;
-use App\Models\MenuType;
-use App\Models\School;
-use App\Models\Tab;
-use App\Models\WapSite;
 use Exception;
+use App\Models\Tab;
+use App\Models\Icon;
 use App\Models\Menu;
+use App\Models\School;
+use App\Models\WapSite;
 use App\Models\MenuTab;
+use App\Models\MenuType;
+use App\Helpers\Constant;
+use App\Events\JobResponse;
 use Illuminate\Bus\Queueable;
+use App\Helpers\HttpStatusCode;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class ManageCreateMenu implements ShouldQueue {
+class CreateSchoolMenu implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     
@@ -204,7 +206,7 @@ class ManageCreateMenu implements ShouldQueue {
             'parent_id' => '系统设置',
             'uri' => null,
             'icon' => 'fa fa-book',
-            'tabs' => ['科目', '科目此分类']
+            'tabs' => ['科目', '科目次分类']
         ],
         '学期设置' => [
             'id' => 0,
@@ -222,70 +224,83 @@ class ManageCreateMenu implements ShouldQueue {
         ],
     ];
     
-    protected $school;
+    protected $school, $userId;
     
     /**
      * Create ent job instncent   *
      * @param School $school
+     * @param $userId
      */
-    public function __construct(School $school) {
+    public function __construct(School $school, $userId) {
         
         $this->school = $school;
+        $this->userId = $userId;
         
     }
     
     /**
      * Exeute the job.
      *
-     * @return void
+     * @return bool
      * @throws Exception
      */
     public function handle() {
-        
-        $position = Menu::all()->max('position');
-        
+    
+        $response = [
+            'userId' => $this->userId,
+            'title' => '创建学校',
+            'statusCode' => HttpStatusCode::OK,
+            'message' => __('messages.wechat_synced')
+        ];
         try {
-            # 创建学校微网站
-            WapSite::create([
-                'school_id' => $this->school->id,
-                'site_title' => $this->school->name,
-                'media_ids' => '0',
-                'enabled' => 'enabled'
-            ]);
-            # 创建学校基础菜单
-            $menuTypeId = MenuType::whereName('其他')->first()->id;
-            foreach ($this->menus as &$data) {
-                if ($data['uri'] == 'schools/edit') {
-                    $data['uri'] .= $this->school->id;
-                }
-                # 创建
-                $menu = Menu::create([
-                    'parent_id' => !$data['parent_id']
-                        ? $this->school->menu_id
-                        : $this->menus[$data['parent_id']]['id'],
-                    'menu_type_id' => $menuTypeId,
-                    'name' => $data['name'],
-                    'uri' => $data['uri'],
-                    'position' => $position += 1,
-                    'icon_id' => Icon::whereName($data['icon'])->first()->id,
+            DB::transaction(function () {
+                $position = Menu::all()->max('position');
+                # 创建学校微网站
+                WapSite::create([
+                    'school_id' => $this->school->id,
+                    'site_title' => $this->school->name,
+                    'media_ids' => '0',
                     'enabled' => Constant::ENABLED
                 ]);
-                $data['id'] = $menu->id;
-                # 创建菜单卡片绑定关系
-                if ($data['tabs']) {
-                    foreach ($data['tabs'] as $name) {
-                        $tab = Tab::whereName($name)->first();
-                        MenuTab::create([
-                            'menu_id' => $menu->id,
-                            'tab_id' => $tab->id,
-                            'enabled' => Constant::ENABLED
-                        ]);
+                # 创建学校基础菜单
+                $menuTypeId = MenuType::whereName('其他')->first()->id;
+                foreach ($this->menus as $name => &$data) {
+                    if ($data['uri'] == 'schools/edit/') {
+                        $data['uri'] .= $this->school->id;
+                    }
+                    # 创建
+                    $menu = Menu::create([
+                        'parent_id' => !$data['parent_id']
+                            ? $this->school->menu_id
+                            : $this->menus[$data['parent_id']]['id'],
+                        'menu_type_id' => $menuTypeId,
+                        'name' => $name,
+                        'uri' => $data['uri'],
+                        'position' => $position += 1,
+                        'icon_id' => $data['icon'] ? Icon::whereName($data['icon'])->first()->id : null,
+                        'enabled' => Constant::ENABLED
+                    ]);
+                    $data['id'] = $menu->id;
+                    # 创建菜单卡片绑定关系
+                    if ($data['tabs']) {
+                        foreach ($data['tabs'] as $name) {
+                            $tab = Tab::whereName($name)->first();
+                            MenuTab::create([
+                                'menu_id' => $menu->id,
+                                'tab_id' => $tab->id,
+                                'enabled' => Constant::ENABLED
+                            ]);
+                        }
                     }
                 }
-            }
+            });
         } catch (Exception $e) {
-            throw $e;
+            $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+            $response['message'] = $e->getMessage();
         }
+        event(new JobResponse($response));
+
+        return true;
         
     }
     
