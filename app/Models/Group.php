@@ -249,7 +249,7 @@ class Group extends Model {
             $condition .= 'AND School.id = ' . $this->schoolId();
         } else if ($corpMenuId = $menu->menuId($currentMenuId, '企业')) {
             $corpId = Corp::whereMenuId($corpMenuId)->first()->id;
-            $condition .= 'AND Corp.id = ' . $corpId;
+            $condition .= ' AND Corp.id = ' . $corpId;
             $joins[] = [
                 'table' => 'corps',
                 'alias' => 'Corp',
