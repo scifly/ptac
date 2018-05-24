@@ -96,6 +96,13 @@ class CreateSchoolMenu implements ShouldQueue {
             'icon' => 'fa fa-commenting',
             'tabs' => ['教职员工考勤']
         ],
+        '学生消费管理' => [
+            'id' => 0,
+            'parent_id' => null,
+            'uri' => null,
+            'icon' => 'fa fa-money',
+            'tabs' => ['消费记录']
+        ],
         '成绩中心' => [
             'id' => 0,
             'parent_id' => null,
