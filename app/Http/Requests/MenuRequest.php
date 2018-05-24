@@ -23,7 +23,7 @@ class MenuRequest extends FormRequest {
         return [
             'name'         => 'required|string|max:30',
             'uri'          => 'nullable|string|max:255',
-            'remark'       => 'string|max:255',
+            'remark'       => 'nullable|string|max:255',
             'menu_type_id' => 'required|integer',
             'media_id'     => 'integer',
             'icon_id'      => 'integer',
