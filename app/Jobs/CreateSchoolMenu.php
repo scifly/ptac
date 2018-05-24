@@ -248,7 +248,6 @@ class CreateSchoolMenu implements ShouldQueue {
     /**
      * Exeute the job.
      *
-     * @return bool
      * @throws Exception
      */
     public function handle() {
@@ -257,7 +256,7 @@ class CreateSchoolMenu implements ShouldQueue {
             'userId' => $this->userId,
             'title' => '创建学校',
             'statusCode' => HttpStatusCode::OK,
-            'message' => __('messages.wechat_synced')
+            'message' => __('messages.school.menu_created')
         ];
         try {
             DB::transaction(function () {
@@ -305,10 +304,9 @@ class CreateSchoolMenu implements ShouldQueue {
             $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
             $response['message'] = $e->getMessage();
         }
+        
         event(new JobResponse($response));
 
-        return true;
-        
     }
     
 }
