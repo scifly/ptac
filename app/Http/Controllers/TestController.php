@@ -285,7 +285,7 @@ class TestController extends Controller {
                     'name' => $name,
                     'uri' => $data['uri'],
                     'position' => $position += 1,
-                    'icon_id' => Icon::whereName($data['icon'])->first()->id,
+                    'icon_id' => $data['icon'] ? Icon::whereName($data['icon'])->first()->id : null,
                     'enabled' => Constant::ENABLED
                 ]);
                 $data['id'] = $menu->id;
