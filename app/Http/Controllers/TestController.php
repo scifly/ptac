@@ -272,7 +272,7 @@ class TestController extends Controller {
             ]);
             # 创建学校基础菜单
             $menuTypeId = MenuType::whereName('其他')->first()->id;
-            foreach ($this->menus as &$data) {
+            foreach ($this->menus as $name => &$data) {
                 if ($data['uri'] == 'schools/edit') {
                     $data['uri'] .= $school->id;
                 }
@@ -282,7 +282,7 @@ class TestController extends Controller {
                         ? $school->menu_id
                         : $this->menus[$data['parent_id']]['id'],
                     'menu_type_id' => $menuTypeId,
-                    'name' => $data['name'],
+                    'name' => $name,
                     'uri' => $data['uri'],
                     'position' => $position += 1,
                     'icon_id' => Icon::whereName($data['icon'])->first()->id,
