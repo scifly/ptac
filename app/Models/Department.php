@@ -872,7 +872,7 @@ class Department extends Model {
                 'name'      => $department->name,
                 'parent_id' => $department->departmentType->name == '学校' ? 1 : $department->parent_id,
                 'order'     => $department->order,
-                'corp_id'   => $this->corpId($department->id),
+                'corp_id'   => $this->corpId($id),
             ];
         WechatDepartment::dispatch($data, Auth::id(), $action);
         
