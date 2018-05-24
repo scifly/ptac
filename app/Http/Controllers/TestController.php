@@ -259,7 +259,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        $school = School::find(11);
+        $school = School::find(2);
         $position = Menu::all()->max('position');
     
         try {
