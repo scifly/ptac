@@ -567,7 +567,7 @@ class Menu extends Model {
             $color = Constant::NODE_TYPES[$menuType]['color'];
             $text = sprintf(
                 Snippet::NODE_TEXT,
-                $menu['enabled'] ? $color : 'text-gray', '', $name, ''
+                $menu['enabled'] ? $color : 'text-gray', 'a', $name, 'a'
             );
             switch ($type) {
                 case '企业':
