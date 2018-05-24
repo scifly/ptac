@@ -541,7 +541,7 @@ class Department extends Model {
                 $title = $synced ? '已同步' : '未同步';
                 $syncMark = $synced
                     ? ' <span class="text-green">*</span>'
-                    : ' <span class="text-gray">*</span>';
+                    : ' <span class="text-red">*</span>';
             }
             $text = sprintf(
                 Snippet::NODE_TEXT,
