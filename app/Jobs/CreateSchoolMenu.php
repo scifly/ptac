@@ -58,14 +58,14 @@ class CreateSchoolMenu implements ShouldQueue {
             'id' => 0,
             'parent_id' => '通讯录',
             'uri' => null,
-            'icon' => 'fa fa-child',
+            'icon' => 'fa fa-user',
             'tabs' => ['教职员工', '教职员工组']
         ],
         '监护人' => [
             'id' => 0,
             'parent_id' => '通讯录',
             'uri' => null,
-            'icon' => 'fa fa-child',
+            'icon' => 'fa fa-user',
             'tabs' => ['监护人', '学生']
         ],
         '考勤管理' => [

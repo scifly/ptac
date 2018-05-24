@@ -574,17 +574,24 @@ class User extends Authenticatable {
         $schoolGId = Group::whereName('学校')->first()->id;
         $condition = '';
         $menu = new Menu();
-        $menuType = Menu::find($menu->rootMenuId(true))->menuType->name;
+        $rootMenu = Menu::find($menu->rootMenuId(true));
+        $menuType = $rootMenu->menuType->name;
         unset($menu);
         switch ($menuType) {
             case '根':
                 $condition = sprintf($sql, implode(',', [$rootGId, $corpGId, $schoolGId]));
                 break;
             case '企业':
-                $condition = sprintf($sql, implode(',', [$corpGId, $schoolGId]));
+                $userIds = Department::find(Corp::whereMenuId($rootMenu->id)->first()->department_id)
+                    ->users->pluck('id')->toArray();
+                $condition = sprintf($sql, implode(',', [$corpGId, $schoolGId])) .
+                    ' User.id IN (' . implode(',', $userIds) . ')';
                 break;
             case '学校':
-                $condition = sprintf($sql, implode(',', [$schoolGId]));
+                $userIds = Department::find(School::whereMenuId($rootMenu->id)->first()->department_id)
+                    ->users->pluck('id')->toArray();
+                $condition = sprintf($sql, implode(',', [$schoolGId])) .
+                    ' User.id IN (' . implode(',', $userIds) . ')';
                 break;
             default:
                 break;
