@@ -582,11 +582,15 @@ class User extends Authenticatable {
                 $condition = sprintf($sql, implode(',', [$rootGId, $corpGId, $schoolGId]));
                 break;
             case '企业':
-                $userIds = Department::find(Corp::whereMenuId($rootMenu->id)->first()->department_id)
+                $corp = Corp::whereMenuId($rootMenu->id)->first();
+                $userIds = Department::find($corp->department_id)
                     ->users->pluck('id')->toArray();
+                foreach ($corp->schools as $school) {
+                    array_merge($userIds, $school->department->users->pluck('id')->toArray());
+                }
                 if (empty($userIds)) { $userIds = [0]; }
                 $condition = sprintf($sql, implode(',', [$corpGId, $schoolGId])) .
-                    ' AND User.id IN (' . implode(',', $userIds) . ')';
+                    ' AND User.id IN (' . implode(',', array_unique($userIds)) . ')';
                 break;
             case '学校':
                 $userIds = Department::find(School::whereMenuId($rootMenu->id)->first()->department_id)
