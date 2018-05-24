@@ -274,7 +274,7 @@ class TestController extends Controller {
                 # 创建学校基础菜单
                 $menuTypeId = MenuType::whereName('其他')->first()->id;
                 foreach ($this->menus as $name => &$data) {
-                    if ($data['uri'] == 'schools/edit') {
+                    if ($data['uri'] == 'schools/edit/') {
                         $data['uri'] .= $school->id;
                     }
                     # 创建
