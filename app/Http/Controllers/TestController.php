@@ -268,7 +268,7 @@ class TestController extends Controller {
                 'school_id' => $school->id,
                 'site_title' => $school->name,
                 'media_ids' => '0',
-                'enabled' => 'enabled'
+                'enabled' => Constant::ENABLED
             ]);
             # 创建学校基础菜单
             $menuTypeId = MenuType::whereName('其他')->first()->id;
