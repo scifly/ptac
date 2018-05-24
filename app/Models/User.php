@@ -586,7 +586,10 @@ class User extends Authenticatable {
                 $userIds = Department::find($corp->department_id)
                     ->users->pluck('id')->toArray();
                 foreach ($corp->schools as $school) {
-                    array_merge($userIds, Department::find($school->department_id)->users->pluck('id')->toArray());
+                    $userIds = array_merge(
+                        $userIds,
+                        Department::find($school->department_id)->users->pluck('id')->toArray()
+                    );
                 }
                 if (empty($userIds)) { $userIds = [0]; }
                 $condition = sprintf($sql, implode(',', [$corpGId, $schoolGId])) .
