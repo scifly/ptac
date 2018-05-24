@@ -19,6 +19,7 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use ReflectionClass;
 use ReflectionMethod;
@@ -254,53 +255,54 @@ class TestController extends Controller {
     protected $department;
     
     /**
-     * @return mixed|null
+     * @return bool
      * @throws Exception
      */
     public function index() {
     
-        $school = School::find(2);
-        $position = Menu::all()->max('position');
-    
         try {
-            # 创建学校微网站
-            WapSite::create([
-                'school_id' => $school->id,
-                'site_title' => $school->name,
-                'media_ids' => '0',
-                'enabled' => Constant::ENABLED
-            ]);
-            # 创建学校基础菜单
-            $menuTypeId = MenuType::whereName('其他')->first()->id;
-            foreach ($this->menus as $name => &$data) {
-                if ($data['uri'] == 'schools/edit') {
-                    $data['uri'] .= $school->id;
-                }
-                # 创建
-                $menu = Menu::create([
-                    'parent_id' => !$data['parent_id']
-                        ? $school->menu_id
-                        : $this->menus[$data['parent_id']]['id'],
-                    'menu_type_id' => $menuTypeId,
-                    'name' => $name,
-                    'uri' => $data['uri'],
-                    'position' => $position += 1,
-                    'icon_id' => $data['icon'] ? Icon::whereName($data['icon'])->first()->id : null,
+            DB::transaction(function () {
+                $school = School::find(2);
+                $position = Menu::all()->max('position');
+                # 创建学校微网站
+                WapSite::create([
+                    'school_id' => $school->id,
+                    'site_title' => $school->name,
+                    'media_ids' => '0',
                     'enabled' => Constant::ENABLED
                 ]);
-                $data['id'] = $menu->id;
-                # 创建菜单卡片绑定关系
-                if ($data['tabs']) {
-                    foreach ($data['tabs'] as $name) {
-                        $tab = Tab::whereName($name)->first();
-                        MenuTab::create([
-                            'menu_id' => $menu->id,
-                            'tab_id' => $tab->id,
-                            'enabled' => Constant::ENABLED
-                        ]);
+                # 创建学校基础菜单
+                $menuTypeId = MenuType::whereName('其他')->first()->id;
+                foreach ($this->menus as $name => &$data) {
+                    if ($data['uri'] == 'schools/edit') {
+                        $data['uri'] .= $school->id;
+                    }
+                    # 创建
+                    $menu = Menu::create([
+                        'parent_id' => !$data['parent_id']
+                            ? $school->menu_id
+                            : $this->menus[$data['parent_id']]['id'],
+                        'menu_type_id' => $menuTypeId,
+                        'name' => $name,
+                        'uri' => $data['uri'],
+                        'position' => $position += 1,
+                        'icon_id' => $data['icon'] ? Icon::whereName($data['icon'])->first()->id : null,
+                        'enabled' => Constant::ENABLED
+                    ]);
+                    $data['id'] = $menu->id;
+                    # 创建菜单卡片绑定关系
+                    if ($data['tabs']) {
+                        foreach ($data['tabs'] as $name) {
+                            $tab = Tab::whereName($name)->first();
+                            MenuTab::create([
+                                'menu_id' => $menu->id,
+                                'tab_id' => $tab->id,
+                                'enabled' => Constant::ENABLED
+                            ]);
+                        }
                     }
                 }
-            }
+            });
         } catch (Exception $e) {
             throw $e;
         }
