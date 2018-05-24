@@ -1,17 +1,16 @@
 <?php
 namespace App\Jobs;
 
-use App\Events\JobResponse;
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\JobTrait;
 use App\Models\Corp;
-use App\Models\User;
+use App\Helpers\JobTrait;
+use App\Helpers\Constant;
+use App\Events\JobResponse;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
+use App\Helpers\HttpStatusCode;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 /**
  * 企业号会员管理
@@ -23,18 +22,18 @@ class WechatMember implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, JobTrait;
     
-    protected $member, $userId, $action;
+    protected $data, $userId, $action;
     
     /**
      * Create a new job instance.
      *
-     * @param User $member
+     * @param array $data
      * @param $userId - 后台登录用户的id
      * @param $action - create/update/delete操作
      */
-    public function __construct(User $member, $userId, $action) {
+    public function __construct($data, $userId, $action) {
         
-        $this->member = $member;
+        $this->data = $data;
         $this->userId = $userId;
         $this->action = $action;
         
@@ -53,7 +52,7 @@ class WechatMember implements ShouldQueue {
             'statusCode' => HttpStatusCode::OK,
             'message' => __('messages.wechat_synced')
         ];
-        $results = $this->syncMember($this->member, $this->action);
+        $results = $this->syncMember($this->data, $this->action);
         if (sizeof($results) == 1) {
             if ($results[key($results)]['errcode']) {
                 $response['message'] = $results[key($results)]['errmsg'];

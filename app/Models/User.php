@@ -652,7 +652,24 @@ class User extends Authenticatable {
      */
     private function sync($id, $action) {
         
-        WechatMember::dispatch($this->find($id), Auth::id(), $action);
+        $user = $this->find($id);
+        $data = $action == 'delete' ? $user->userid : [
+            'userid' => $user->userid,
+            'name' => $user->realname,
+            'english_name' => $user->english_name,
+            'position' => $user->group->name,
+            'mobile' => head(
+                $user->mobiles
+                    ->where('isdefault', 1)
+                    ->pluck('mobile')->toArray()
+            ),
+            'email' => $user->email,
+            'department' => in_array($user->group->name, ['运营', '企业'])
+                ? [1] : $user->departments->pluck('id')->toArray(),
+            'gender' => $user->gender,
+            'enable' => $user->enabled
+        ];
+        WechatMember::dispatch($data, Auth::id(), $action);
         
         return true;
         

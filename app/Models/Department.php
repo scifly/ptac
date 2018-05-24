@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Eloquent;
@@ -56,84 +55,84 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @mixin Eloquent
  */
 class Department extends Model {
-
+    
     // todo: needs to be optimized
     use ModelTrait;
-
+    
     protected $fillable = [
         'parent_id', 'department_type_id', 'name',
-        'remark', 'order', 'enabled', 'synced'
+        'remark', 'order', 'enabled', 'synced',
     ];
-
+    
     /**
      * 部门类型
      *
      * @return BelongsTo
      */
     function departmentType() { return $this->belongsTo('App\Models\DepartmentType'); }
-
+    
     /**
      * 运营者
      *
      * @return HasOne
      */
     function company() { return $this->hasOne('App\Models\Company'); }
-
+    
     /**
      * 企业
      *
      * @return HasOne
      */
     function corp() { return $this->hasOne('App\Models\Corp'); }
-
+    
     /**
      * 学校
      *
      * @return HasOne
      */
     function school() { return $this->hasOne('App\Models\School'); }
-
+    
     /**
      * 年级
      *
      * @return HasOne
      */
     function grade() { return $this->hasOne('App\Models\Grade'); }
-
+    
     /**
      * 班级
      *
      * @return HasOne
      */
     function squad() { return $this->hasOne('App\Models\Squad'); }
-
+    
     /**
      * 用户
      *
      * @return BelongsToMany
      */
     function users() { return $this->belongsToMany('App\Models\User', 'departments_users'); }
-
+    
     /**
      * 直接上级部门
      *
      * @return BelongsTo
      */
     function parent() {
-
+        
         return $this->belongsTo('App\Models\Department', 'parent_id');
-
+        
     }
-
+    
     /**
      * 直接子部门
      *
      * @return HasMany
      */
     function children() {
-
+        
         return $this->hasMany('App\Models\Department', 'parent_id', 'id');
-
+        
     }
     
     /**
@@ -143,21 +142,14 @@ class Department extends Model {
      * @return Department|bool|Model
      */
     function store(array $data) {
-
+        
         $department = $this->create($data);
         if ($department && $this->needSync($department)) {
-            
-            $this->sync([
-                'id' => $department->id,
-                'name' => $department->name,
-                'parent_id' => $department->departmentType->name == '学校' ? 1 : $department->parent_id,
-                'order' => $department->order,
-                'corp_id' => $this->corpId($department->id)
-            ], 'create');
+            $this->sync($department->id, 'create');
         }
-
+        
         return $department;
-
+        
     }
     
     /**
@@ -169,7 +161,7 @@ class Department extends Model {
      * @throws Exception
      */
     function storeDepartment(Model $model, $belongsTo = null) {
-    
+        
         $department = null;
         try {
             DB::transaction(function () use ($model, $belongsTo, &$department) {
@@ -192,7 +184,7 @@ class Department extends Model {
         }
         
         return $department;
-    
+        
     }
     
     /**
@@ -203,22 +195,15 @@ class Department extends Model {
      * @return bool|Collection|Model|null|static|static[]
      */
     function modify(array $data, $id) {
-
+        
         $department = self::find($id);
         $updated = $department->update($data);
         if ($this->needSync($department) && $updated) {
-            $department = $this->find($id);
-            $this->sync([
-                'id' => $department->id,
-                'name' => $department->name,
-                'parent_id' => $department->departmentType->name == '学校' ? 1 : $department->parent_id,
-                'order' => $department->order,
-                'corp_id' => $this->corpId($department->id)
-            ], 'update');
+            $this->sync($id, 'update');
         }
         
         return $updated ?? $this->find($id);
-
+        
     }
     
     /**
@@ -235,10 +220,10 @@ class Department extends Model {
             DB::transaction(function () use ($model, $beLongsTo) {
                 list($dtType, $dtId) = (new DepartmentType())->dtId($model);
                 $data = [
-                    'name' => $model->{'name'},
-                    'remark' => $model->{'remark'},
+                    'name'               => $model->{'name'},
+                    'remark'             => $model->{'remark'},
                     'department_type_id' => $dtId,
-                    'enabled' => $model->{'enabled'}
+                    'enabled'            => $model->{'enabled'},
                 ];
                 /**
                  * 如果部门类型为年级或班级，则不更新其父部门id，
@@ -267,16 +252,13 @@ class Department extends Model {
      * @throws Throwable
      */
     function remove($id) {
-
+        
         $department = $this->find($id);
         if (!count($department->children)) {
             try {
                 DB::transaction(function () use ($id, $department) {
                     if ($this->needSync($department)) {
-                        $this->sync([
-                            'id' => $id,
-                            'corp_id' => $this->corpId($id)
-                        ], 'delete');
+                        $this->sync($id, 'delete');
                     }
                     DepartmentUser::whereDepartmentId($id)->delete();
                     $department->delete();
@@ -284,6 +266,7 @@ class Department extends Model {
             } catch (Exception $e) {
                 throw $e;
             }
+            
             return true;
         }
         
@@ -315,7 +298,7 @@ class Department extends Model {
      * @throws Exception
      */
     function index($id = null, $parentId = null) {
-
+        
         if (Request::has('id')) {
             # 部门列表
             return response()->json(
@@ -332,7 +315,7 @@ class Department extends Model {
             foreach ($orders as $id => $order) {
                 $originalOrder = array_slice($originalOrders, $order, 1, true);
                 $this->find($id)->update([
-                    'order' => $originalOrder[key($originalOrder)]
+                    'order' => $originalOrder[key($originalOrder)],
                 ]);
             }
         } else {
@@ -348,11 +331,11 @@ class Department extends Model {
                 if ($moved && $this->needSync($department)) {
                     $department = $this->find($id);
                     $this->sync([
-                        'id' => $department->id,
-                        'name' => $department->name,
+                        'id'        => $department->id,
+                        'name'      => $department->name,
                         'parent_id' => $department->departmentType->name == '学校' ? 1 : $department->parent_id,
-                        'order' => $department->order,
-                        'corp_id' => $this->corpId($department->id)
+                        'order'     => $department->order,
+                        'corp_id'   => $this->corpId($department->id),
                     ], 'update');
                 }
             }
@@ -430,21 +413,21 @@ class Department extends Model {
                     $users = $this->find($node['id'])->users;
                     foreach ($users as $u) {
                         $contacts[] = [
-                            'id' => 'user-' . $node['id'] . '-' . $u->id,
-                            'parent' => $node['id'],
-                            'text' => $u->realname,
+                            'id'         => 'user-' . $node['id'] . '-' . $u->id,
+                            'parent'     => $node['id'],
+                            'text'       => $u->realname,
                             'selectable' => 1,
-                            'type' => 'user',
+                            'type'       => 'user',
                         ];
                     }
                 }
             }
         }
-    
+        
         return response()->json(
             array_merge($visibleNodes, $contacts)
         );
-    
+        
     }
     
     /**
@@ -454,7 +437,7 @@ class Department extends Model {
      * @return array
      */
     function partyUsers($ids) {
-
+        
         $departmentIds = [];
         foreach ($ids as $id) {
             $departmentIds = array_merge(
@@ -469,9 +452,9 @@ class Department extends Model {
             );
         }
         $userIds = array_unique($userIds);
-
+        
         return User::whereIn('id', $userIds)->get();
-
+        
     }
     
     /**
@@ -481,7 +464,7 @@ class Department extends Model {
      * @return array
      */
     function subDepartmentIds($id) {
-
+        
         static $subDepartmentIds;
         $childrenIds = Department::whereParentId($id)->pluck('id')->toArray();
         if ($childrenIds) {
@@ -490,9 +473,9 @@ class Department extends Model {
                 $this->subDepartmentIds($childId);
             }
         }
-
+        
         return $subDepartmentIds ?? [];
-
+        
     }
     
     /**
@@ -505,14 +488,18 @@ class Department extends Model {
         
         $department = $this->find($id);
         switch ($department->departmentType->name) {
-            case '运营': return null;
-            case '企业': return Corp::whereDepartmentId($id)->first()->id;
+            case '运营':
+                return null;
+            case '企业':
+                return Corp::whereDepartmentId($id)->first()->id;
             default:
                 $parent = $this->find($id)->parent;
                 while ($parent->departmentType->name != '企业') {
                     $id = $parent->id;
+                    
                     return $this->corpId($id);
                 }
+                
                 return Corp::whereDepartmentId($parent->id)->first()->id;
         }
         
@@ -551,7 +538,7 @@ class Department extends Model {
             $syncMark = '';
             if (!in_array($type, ['root', 'company', 'corp'])) {
                 $synced = $departments[$i]['synced'];
-                $title =  $synced ? '已同步' : '未同步';
+                $title = $synced ? '已同步' : '未同步';
                 $syncMark = $synced
                     ? ' <span class="text-green">*</span>'
                     : ' <span class="text-gray">*</span>';
@@ -564,19 +551,19 @@ class Department extends Model {
             $selectable = $isSuperRole ? 1 : (in_array($id, $this->departmentIds($user->id)) ? 1 : 0);
             $corp_id = !in_array($type, ['root', 'company']) ? $this->corpId($id) : null;
             $nodes[] = [
-                'id' => $id,
-                'parent' => $parentId,
-                'text' => $text,
-                'type' => $type,
+                'id'         => $id,
+                'parent'     => $parentId,
+                'text'       => $text,
+                'type'       => $type,
                 'selectable' => $selectable,
-                'corp_id' => $corp_id
+                'corp_id'    => $corp_id,
             ];
         }
         
         return $nodes;
         
     }
-
+    
     /**
      * 根据根部门ID返回所有下级部门对象
      *
@@ -652,7 +639,9 @@ class Department extends Model {
     private function level($id, &$level) {
         
         $department = self::find($id);
-        if (!$department) { return null; }
+        if (!$department) {
+            return null;
+        }
         $parent = $department->parent;
         if ($parent) {
             $level += 1;
@@ -706,19 +695,19 @@ class Department extends Model {
      * @return array
      */
     private function parentIds($id) {
-    
+        
         static $ids = [];
-    
         $d = $this->find($id);
         $p = $d->parent;
         while ($p->departmentType->name != '学校') {
             $ids[] = $p->id;
+            
             return $this->parentIds($p->id);
         }
         $ids[] = $p->id;
-    
+        
         return $ids;
-    
+        
     }
     
     /**
@@ -730,7 +719,9 @@ class Department extends Model {
      */
     private function movable($id, $parentId) {
         
-        if (!isset($id, $parentId)) { return false; }
+        if (!isset($id, $parentId)) {
+            return false;
+        }
         $allowedDepartmentIds = $this->departmentIds(Auth::id());
         # 如果部门(被移动的部门和目标部门）不在当前用户的可见范围内，则抛出401异常
         abort_if(
@@ -810,7 +801,7 @@ class Department extends Model {
                                 $company = Company::whereDepartmentId($parentId)->first();
                                 $corp->update(['company_id' => $company->id]);
                                 Menu::find($corp->menu_id)->first()->update([
-                                    'parent_id' => Menu::find($company->menu_id)->first()->id
+                                    'parent_id' => Menu::find($company->menu_id)->first()->id,
                                 ]);
                                 break;
                             case '学校':
@@ -867,13 +858,23 @@ class Department extends Model {
     /**
      * 同步企业微信部门
      *
-     * @param $department
+     * @param $id
      * @param $action
      * @return bool
      */
-    private function sync(array $department, $action) {
+    private function sync($id, $action) {
         
-        WechatDepartment::dispatch($department, Auth::id(), $action);
+        $department = $this->find($id);
+        $data = $action == 'delete'
+            ? ['id' => $id, 'corp_id' => $this->corpId($id)]
+            : [
+                'id'        => $department->id,
+                'name'      => $department->name,
+                'parent_id' => $department->departmentType->name == '学校' ? 1 : $department->parent_id,
+                'order'     => $department->order,
+                'corp_id'   => $this->corpId($department->id),
+            ];
+        WechatDepartment::dispatch($data, Auth::id(), $action);
         
         return true;
         

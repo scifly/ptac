@@ -11,13 +11,13 @@ trait JobTrait {
     /**
      * 企业微信会员同步
      *
-     * @param User $member - 需同步的会员对象
+     * @param $data
      * @param $action - create/
      * @return array
      */
-    function syncMember(User $member, $action): array {
+    function syncMember($data, $action): array {
         
-        $user = User::whereUserid($member->userid)->first();
+        $user = User::whereUserid($action == 'delete'? $data : $data['userid'])->first();
         switch ($user->group->name) {
             case '运营':
                 $corps = Corp::all();
@@ -50,7 +50,7 @@ trait JobTrait {
         $results = [];
         foreach ($corps as $corp) {
             $results[$corp->id] = $this->operate(
-                $corp->corpid, $corp->contact_sync_secret, $member, $action
+                $corp->corpid, $corp->contact_sync_secret, $data, $action
             );
         }
         
@@ -84,41 +84,21 @@ trait JobTrait {
     /**
      * 同步会员信息
      *
-     * @param $corpid
-     * @param $secret
-     * @param User $member
-     * @param $action
+     * @param string $corpid
+     * @param string $secret
+     * @param mixed $data
+     * @param string $action
      * @return bool|mixed
      */
-    private function operate($corpid, $secret, User $member, $action) {
+    private function operate($corpid, $secret, $data, $action) {
         
         $token = Wechat::getAccessToken($corpid, $secret, true);
         if ($token['errcode']) { return $token; }
         $accessToken = $token['access_token'];
-        $params = $member->userid;
-        if (in_array($action, ['create', 'update'])) {
-            $params = [
-                'userid' => $member->userid,
-                'name' => $member->realname,
-                'english_name' => $member->english_name,
-                'position' => $member->group->name,
-                'mobile' => head(
-                    $member->mobiles
-                        ->where('isdefault', 1)
-                        ->pluck('mobile')->toArray()
-                ),
-                'email' => $member->email,
-                'department' => in_array($member->group->name, ['运营', '企业'])
-                    ? [1] : $member->departments->pluck('id')->toArray(),
-                'gender' => $member->gender,
-                'enable' => $member->enabled
-            ];
-        }
         $action .= 'User';
-        $result = json_decode(Wechat::$action($accessToken, $params));
-        if (!$result->{'errcode'} && $action !== 'delete') {
-            $user = User::whereUserid($member['userid'])->first();
-            $user->update(['synced' => 1]);
+        $result = json_decode(Wechat::$action($accessToken, $data));
+        if (!$result->{'errcode'} && $action != 'deleteUser') {
+            User::whereUserid($data['userid'])->first()->update(['synced' => 1]);
         }
         
         return [
@@ -128,4 +108,3 @@ trait JobTrait {
     }
     
 }
-

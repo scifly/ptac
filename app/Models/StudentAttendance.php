@@ -2,7 +2,6 @@
 namespace App\Models;
 
 use Eloquent;
-use Illuminate\Validation\Rule;
 use Throwable;
 use Carbon\Carbon;
 use App\Helpers\Snippet;
@@ -10,6 +9,7 @@ use App\Helpers\Constant;
 use Illuminate\View\View;
 use App\Helpers\ModelTrait;
 use App\Helpers\HttpStatusCode;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -111,7 +111,7 @@ class StudentAttendance extends Model {
         $school = $grade->school;
         abort_if(!$school, HttpStatusCode::NOT_FOUND, __('messages.school_not_found'));
         $dateTime = strtotime($data['punch_time']);
-        $day = Constant::DAYS[date('w', $dateTime)];
+        $day = Constant::WEEK_DAYS[date('w', $dateTime)];
         $strDateTime = date('Y-m-d', $dateTime);
         $semester = Semester::where('start_date', '<=', $strDateTime)
             ->where('end_date', '>=', $strDateTime)
