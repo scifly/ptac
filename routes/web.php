@@ -358,5 +358,5 @@ Route::group(['prefix' => 'school_types'], routes('SchoolTypeController'));
 /** 微信端路由 -------------------------------------------------------------------------------------------------------- */
 $acronyms = Corp::pluck('acronym')->toArray();
 foreach ($acronyms as $acronym) {
-    app_routes('acronym');
+    app_routes($acronym);
 }
