@@ -223,12 +223,12 @@ class Grade extends Model {
     function departments($userId = null) {
         
         $user = $userId ? User::find($userId) : Auth::user();
-        abort_if(
-            !$user->educator,
-            HttpStatusCode::UNAUTHORIZED,
-            __('messages.unauthorized')
-        );
-        $ids = $this->gradeIds($user->educator->school_id, $user->id);
+        // abort_if(
+        //     !$user->educator,
+        //     HttpStatusCode::UNAUTHORIZED,
+        //     __('messages.unauthorized')
+        // );
+        $ids = $this->gradeIds(session('schoolId'), $user->id);
         $departmentIds = $this->whereIn('id', $ids)->pluck('department_id')->toArray();
         
         return Department::whereIn('id', $departmentIds)->get();
