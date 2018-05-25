@@ -260,7 +260,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        dd(session('menuId'));
+        dd(env('CORP_ACRONYM'));
         try {
             DB::transaction(function () {
                 $school = School::find(2);
