@@ -18,4 +18,5 @@ _ide_helper_models.php
 resources/views/test/
 public/css/test.css
 public/js/test/
+resources/assets/js/bootstrap.js
 public/uploads/
