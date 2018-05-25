@@ -357,7 +357,7 @@ Route::group(['prefix' => 'school_types'], routes('SchoolTypeController'));
 /** 微信端路由 -------------------------------------------------------------------------------------------------------- */
 // app_routes(env('CORP_ACRONYM'));
 /** 消息中心 */
-$acronym = env('CORP_ACRONYM');
+$acronym = 'wlrj'; # env('CORP_ACRONYM');
 $c = 'Wechat\MessageCenterController';
 $p = $acronym . '/mc/';
 Route::get($p, $c . '@index');
