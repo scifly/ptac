@@ -44,7 +44,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('comm_type.create_edit', $ns . 'CommTypeComposer');
     
         # 套餐类型 - ComboType
-        View::composer('combo_type', $ns . 'ComboTypeIndexComposer');
+        View::composer('combo_type.index', $ns . 'ComboTypeIndexComposer');
         View::composer('combo_type.create_edit', $ns . 'ComboTypeComposer');
     
         # 运营者 - Company
