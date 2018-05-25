@@ -14,7 +14,6 @@
         </div>
         <div class="weui-cell" style="background-color: #fff;">
             <div class="weui-cell__hd">
-                <label for="msg-type" class="weui-label">消息类型</label>
                 {!! Form::label('msg-type', '消息类型', ['class' => 'weui-label']) !!}
             </div>
             <div class="weui-cell__bd">
