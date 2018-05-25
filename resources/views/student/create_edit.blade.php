@@ -94,46 +94,53 @@
                 </div>
             </div>
             <!-- 所属年级 -->
-            @if (isset($grades))
-                @if(count($grades) > 1)
-                    @include('partials.single_select', [
-                        'label' => '所属年级',
-                        'id' => 'grade_id',
-                        'items' => $grades,
-                        'icon' => 'fa fa-object-group',
-                    ])
-                @else
-                    <div class="form-group">
-                        {{ Form::label('grade_id', '所属年级', [
-                            'class' => 'col-sm-3 control-label'
-                        ]) }}
-                        <div class="col-sm-6" style="margin-top: 7px;">
-                            <div class="input-group">
-                                @include('partials.icon_addon', ['class' => 'fa-object-group'])
-                                &nbsp;{{ $grades[array_keys($grades)[0]] }}
-                                {{ Form::hidden('grade_id', array_keys($grades)[0], ['id' => 'grade_id']) }}
-                            </div>
-                        </div>
-                    </div>
-                @endif
-            @endif
+            @include('partials.single_select', [
+                'label' => '所属年级',
+                'id' => 'grade_id',
+                'items' => $grades,
+                'icon' => 'fa fa-object-group',
+            ])
+            @include('partials.single_select', [
+                'label' => '所属班级',
+                'id' => 'class_id',
+                'items' => $classes,
+                'icon' => 'fa fa-users',
+            ])
+            {{--@if (isset($grades))--}}
+                {{--@if(count($grades) > 1)--}}
+                    {{----}}
+                {{--@else--}}
+                    {{--<div class="form-group">--}}
+                        {{--{{ Form::label('grade_id', '所属年级', [--}}
+                            {{--'class' => 'col-sm-3 control-label'--}}
+                        {{--]) }}--}}
+                        {{--<div class="col-sm-6" style="margin-top: 7px;">--}}
+                            {{--<div class="input-group">--}}
+                                {{--@include('partials.icon_addon', ['class' => 'fa-object-group'])--}}
+                                {{--&nbsp;{{ $grades[array_keys($grades)[0]] }}--}}
+                                {{--{{ Form::hidden('grade_id', array_keys($grades)[0], ['id' => 'grade_id']) }}--}}
+                            {{--</div>--}}
+                        {{--</div>--}}
+                    {{--</div>--}}
+                {{--@endif--}}
+            {{--@endif--}}
             <!-- 所属班级 -->
-            <div class="form-group">
-                {!! Form::label('class_id', '所属班级', [
-                    'class' => 'col-sm-3 control-label',
-                ]) !!}
-                <div class="col-sm-6">
-                    <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-users'])
-                        {!! Form::select('class_id', $classes, null, [
-                            'class' => 'form-control select2',
-                            'id' => 'class_id',
-                            'style' => 'width: 100%;',
-                            'disabled' => sizeof($classes) <= 1
-                        ]) !!}
-                    </div>
-                </div>
-            </div>
+            {{--<div class="form-group">--}}
+                {{--{!! Form::label('class_id', '所属班级', [--}}
+                    {{--'class' => 'col-sm-3 control-label',--}}
+                {{--]) !!}--}}
+                {{--<div class="col-sm-6">--}}
+                    {{--<div class="input-group">--}}
+                        {{--@include('partials.icon_addon', ['class' => 'fa-users'])--}}
+                        {{--{!! Form::select('class_id', $classes, null, [--}}
+                            {{--'class' => 'form-control select2',--}}
+                            {{--'id' => 'class_id',--}}
+                            {{--'style' => 'width: 100%;',--}}
+                            {{--'disabled' => sizeof($classes) <= 1--}}
+                        {{--]) !!}--}}
+                    {{--</div>--}}
+                {{--</div>--}}
+            {{--</div>--}}
             <!-- 学号 -->
             <div class="form-group">
                 {!! Form::label('student_number', '学号', [
