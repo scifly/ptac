@@ -1,6 +1,8 @@
 <?php
 namespace App\Jobs;
 
+use App\Models\Action;
+use App\Models\Group;
 use Exception;
 use App\Models\Tab;
 use App\Models\Icon;
@@ -136,7 +138,7 @@ class CreateSchoolMenu implements ShouldQueue {
             'parent_id' => null,
             'uri' => null,
             'icon' => 'fa fa-user',
-            'tabs' => ['微网站栏目', '微网站文章', '微网站']
+            'tabs' => null
         ],
         '个人信息' => [
             'id' => 0,
@@ -231,6 +233,17 @@ class CreateSchoolMenu implements ShouldQueue {
         ],
     ];
     
+    protected $educatorMenus = [
+        '首页', '消息中心', '通讯录', '学生', '教职员工', '监护人', '考勤管理',
+        '学生考勤查询统计', '学生消费管理', '成绩中心', '考试设置', '成绩管理',
+        '用户中心', '个人信息', '重置密码', '我的消息'
+    ];
+    
+    protected $educatorTabs = [
+        '消息中心', '学生', '班级', '教职员工', '监护人', '学生考勤记录',
+        '消费记录', '考试', '成绩', '成绩统计项', '总成绩'
+    ];
+    
     protected $school, $userId;
     
     /**
@@ -298,6 +311,23 @@ class CreateSchoolMenu implements ShouldQueue {
                             ]);
                         }
                     }
+                    # 创建“教职员工”基本角色
+                    $menuIds = $tabIds = $actionIds = [];
+                    foreach ($this->educatorMenus as $name) {
+                        $menuIds[] = $this->menus[$name]['id'];
+                    }
+                    $tabIds = Tab::whereIn('name', $this->educatorTabs)->pluck('id')->toArray();
+                    $controllers = Tab::whereIn('name', $this->educatorTabs)->pluck('controller')->toArray();
+                    $actionIds = Action::whereIn('controller', $controllers)->pluck('id')->toArray();
+                    (new Group())->store([
+                        'name' => '教职员工',
+                        'remark' => '基本角色',
+                        'school_id' => $this->school->id,
+                        'enabled' => Constant::ENABLED,
+                        'menu_ids' => $menuIds,
+                        'tab_ids' => $tabIds,
+                        'action_ids' => $actionIds
+                    ]);
                 }
             });
         } catch (Exception $e) {
