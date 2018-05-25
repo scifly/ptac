@@ -114,26 +114,19 @@
                     </div>
                     <div class="chosen-breadcrumb js-chosen-breadcrumb">
                         <ol class="breadcrumb js-chosen-breadcrumb-ol">
-                            <li data-id="{{ $schoolDept->id }}" class="js-chosen-breadcrumb-li headclick">
-                                <a>{{ $schoolDept->name }}</a>
-                            </li>
+                            {{--<li data-id="{{ $schoolDept->id }}" class="js-chosen-breadcrumb-li headclick">--}}
+                                {{--<a>{{ $schoolDept->name }}</a>--}}
+                            {{--</li>--}}
                         </ol>
                     </div>
                     <div class="chosen-items js-chosen-items">
                         <div class="weui-cells weui-cells_checkbox" style="padding-bottom: 60px;">
                             <div id="targets-container">
                                 {{--年级列表--}}
-                                @foreach ($gradeDepts as $dept)
+                                @foreach ($departments as $department)
                                     @include('wechat.message_center.target', [
                                         'type' => 'department',
-                                        'target' => $dept
-                                    ])
-                                @endforeach
-                                {{--班级列表--}}
-                                @foreach ($classDepts as $dept)
-                                    @include('wechat.message_center.target', [
-                                        'type' => 'department',
-                                        'target' => $dept
+                                        'target' => $department
                                     ])
                                 @endforeach
                                 {{--用户列表--}}
