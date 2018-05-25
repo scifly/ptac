@@ -126,14 +126,14 @@
                                 @foreach ($gradeDepts as $dept)
                                     @include('wechat.message_center.target', [
                                         'type' => 'department',
-                                        'target' => $dept->name
+                                        'target' => $dept
                                     ])
                                 @endforeach
                                 {{--班级列表--}}
                                 @foreach ($classDepts as $dept)
                                     @include('wechat.message_center.target', [
                                         'type' => 'department',
-                                        'target' => $dept->name
+                                        'target' => $dept
                                     ])
                                 @endforeach
                                 {{--用户列表--}}
