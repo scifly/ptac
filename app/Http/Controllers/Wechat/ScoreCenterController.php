@@ -23,7 +23,6 @@ class ScoreCenterController extends Controller {
     use WechatTrait;
     
     protected $score, $exam;
-    
     const APP = '成绩中心';
     
     /**
