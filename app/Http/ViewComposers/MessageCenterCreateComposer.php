@@ -2,7 +2,9 @@
 namespace App\Http\ViewComposers;
 
 use App\Models\App;
+use App\Models\Department;
 use App\Models\Grade;
+use App\Models\School;
 use App\Models\Squad;
 use App\Helpers\ModelTrait;
 use App\Models\MessageType;
@@ -26,6 +28,7 @@ class MessageCenterCreateComposer {
         
         $user = Auth::user();
         $view->with([
+            'schoolDept'   => Department::find(School::find(session('schoolId'))->department_id),
             'gradeDepts'   => $this->grade->departments($user->id),
             'classDepts'   => $this->squad->departments($user->id),
             'messageTypes' => MessageType::pluck('name', 'id'),
