@@ -1,6 +1,7 @@
 <?php
 include_once 'common.php';
 
+use App\Models\Corp;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -355,4 +356,7 @@ Route::group(['prefix' => 'attachment_types'], routes('AttachmentTypeController'
 Route::group(['prefix' => 'school_types'], routes('SchoolTypeController'));
 
 /** 微信端路由 -------------------------------------------------------------------------------------------------------- */
-app_routes('wlrj');
+$acronyms = Corp::pluck('acronym')->toArray();
+foreach ($acronyms as $acronym) {
+    app_routes('acronym');
+}
