@@ -182,5 +182,5 @@
     </div>
 @endsection
 @section('script')
-    <script src="{{asset('/js/wechat/message_center/create.js')}}"></script>
+    <script src="{{ asset('/js/wechat/message_center/create.js') }}"></script>
 @endsection

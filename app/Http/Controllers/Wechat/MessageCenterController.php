@@ -79,7 +79,7 @@ class MessageCenterController extends Controller {
     }
     
     /**
-     * 发送消息页面
+     * 创建消息
      *
      * @param $departmentId
      * @return Factory|View
@@ -98,7 +98,7 @@ class MessageCenterController extends Controller {
     }
     
     /**
-     * 发送消息
+     * 保存并发送消息
      *
      * @param MessageRequest $request
      * @return JsonResponse
