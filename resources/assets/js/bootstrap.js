@@ -44,19 +44,15 @@ if (token) {
  */
 
 import Echo from "laravel-echo";
-
 window.Pusher = require('pusher-js');
 
 // noinspection JSUnusedLocalSymbols
 var pusher = new Pusher('bc8e8ee821cf30234a31', {
     authEndpoint: '/broadcasting/auth',
     auth: {
-        headers: {
-            'X-CSRF-Token': token.content
-        }
+        headers: { 'X-CSRF-Token': token.content }
     }
 });
-
 window.Echo = new Echo({
     authEndpoint: '/broadcasting/auth',
     broadcaster: 'pusher',
