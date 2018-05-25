@@ -311,24 +311,24 @@ class CreateSchoolMenu implements ShouldQueue {
                             ]);
                         }
                     }
-                    # 创建“教职员工”基本角色
-                    $menuIds = $tabIds = $actionIds = [];
-                    foreach ($this->educatorMenus as $name) {
-                        $menuIds[] = $this->menus[$name]['id'];
-                    }
-                    $tabIds = Tab::whereIn('name', $this->educatorTabs)->pluck('id')->toArray();
-                    $controllers = Tab::whereIn('name', $this->educatorTabs)->pluck('controller')->toArray();
-                    $actionIds = Action::whereIn('controller', $controllers)->pluck('id')->toArray();
-                    (new Group())->store([
-                        'name' => '教职员工',
-                        'remark' => '基本角色',
-                        'school_id' => $this->school->id,
-                        'enabled' => Constant::ENABLED,
-                        'menu_ids' => $menuIds,
-                        'tab_ids' => $tabIds,
-                        'action_ids' => $actionIds
-                    ]);
                 }
+                # 创建“教职员工”基本角色
+                $menuIds = $tabIds = $actionIds = [];
+                foreach ($this->educatorMenus as $name) {
+                    $menuIds[] = $this->menus[$name]['id'];
+                }
+                $tabIds = Tab::whereIn('name', $this->educatorTabs)->pluck('id')->toArray();
+                $controllers = Tab::whereIn('name', $this->educatorTabs)->pluck('controller')->toArray();
+                $actionIds = Action::whereIn('controller', $controllers)->pluck('id')->toArray();
+                (new Group())->store([
+                    'name' => '教职员工',
+                    'remark' => '基本角色',
+                    'school_id' => $this->school->id,
+                    'enabled' => Constant::ENABLED,
+                    'menu_ids' => $menuIds,
+                    'tab_ids' => $tabIds,
+                    'action_ids' => $actionIds
+                ]);
             });
         } catch (Exception $e) {
             $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
