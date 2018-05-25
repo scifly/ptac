@@ -260,6 +260,7 @@ class TestController extends Controller {
      */
     public function index() {
     
+        dd(session('menuId'));
         try {
             DB::transaction(function () {
                 $school = School::find(2);
