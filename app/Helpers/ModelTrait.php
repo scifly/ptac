@@ -394,9 +394,9 @@ trait ModelTrait {
         $departmentIds = [];
         $user = User::find($userId);
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {
-            $department = $this->schoolId()
-                ? School::find($schoolId ?? $this->schoolId())->department
-                : Department::find($this->head($user));
+            $department = $schoolId
+                ? Department::find($this->head($user))
+                : School::find($this->schoolId())->department;
             $departmentIds[] = $department->id;
             
             return array_unique(
