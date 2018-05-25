@@ -6,7 +6,7 @@
 @section('content')
     <div class="msg-send-wrap">
         <div id="chosen-container" class="scui-chosen js-scui-chosen-container3 js-scui-chosen scui-form-group">
-            <label class="scui-control-label mr4">发送对象</label>
+            {!! Form::label('', '发送对象', ['class' => 'scui-control-label mr4']) !!}
             <div id="chosen-results"></div>
             <span class="icons-chosen chosen-icon js-chosen-icon">
                 <a class="icon iconfont icon-add c-green open-popup" href="#" data-target="#targets"></a>
