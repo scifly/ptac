@@ -161,7 +161,7 @@
                         确定<i class="expand"></i>
                     </span>
                     <span id="count"><!--  eslint-disable -->
-					    已选0个分组, 0名用户
+					    已选0个部门, 0名用户
                     </span>
                 </div>
             </div>
