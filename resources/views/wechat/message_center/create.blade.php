@@ -102,7 +102,7 @@
         <div class="weui-popup__modal">
             <div class="js-scui-chosen-layer">
                 <div class="chosen-container-fixed">
-                    <div class="chosen-header js-chosen-header">
+                    <div class="chosen-header js-chosen-header weui-cell">
                         <div class="chosen-header-result js-chosen-header-result"></div>
                         <div class="common-left-search">
                             <i class="icon iconfont icon-search3 search-logo icons2x-search"></i>
