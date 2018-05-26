@@ -328,8 +328,22 @@ $send.on('click', function () {
     content = $content.html();
     var departmentIds = [],
         userIds = [],
+        formData,
         type = $msgType.val();
 
+    $chosenResults.find('a.department').each(function () {
+        departmentIds.push($(this).attr('data-uid'));
+    });
+    $chosenResults.find('a.user').each(function () {
+        userIds.push($(this).attr('data-uid'));
+    });
+    formData = {
+        _token: token,
+        type: type,
+        user_ids: userIds,
+        dept_ids: departmentIds,
+
+    };
     switch (type) {
         case 'video':
             content = $('#description-video').val();
@@ -361,12 +375,7 @@ $send.on('click', function () {
     $('.uploadimg-item').each(function () {
         mediaIds.push($(this).attr('data-media-id'));
     });
-    $chosenResults.find('a.department').each(function () {
-        departmentIds.push($(this).attr('data-uid'));
-    });
-    $chosenResults.find('a.user').each(function () {
-        userIds.push($(this).attr('data-uid'));
-    });
+
     if (
         (userIds.length === 0) && (departmentIds.length === 0) ||
         !title || !content
@@ -425,7 +434,7 @@ function countTargets() {
     var departments = $('#chosen-results .js-chosen-results-item.department').length,
         users = $('#chosen-results .js-chosen-results-item.user').length;
 
-    $('#count').text('已选' + departments + '个分组,' + users + '名用户');
+    $('#count').text('已选' + departments + '个部门,' + users + '名用户');
 }
 function removeTarget() {
     var id = $(this).attr('data-list'),

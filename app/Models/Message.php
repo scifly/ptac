@@ -208,32 +208,6 @@ class Message extends Model {
     }
     
     /**
-     * @param MessageRequest $request
-     * @param $id
-     * @return bool
-     * @throws Exception
-     * @throws \Throwable
-     */
-    function modify(MessageRequest $request, $id) {
-        
-        $message = self::find($id);
-        if (!$message) {
-            return false;
-        }
-        try {
-            DB::transaction(function () use ($request, $id) {
-                self::removeMedias($request);
-                
-                return self::find($id)->update($request->except('_method', '_token'));
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    /**
      * 消息列表
      *
      * @return array

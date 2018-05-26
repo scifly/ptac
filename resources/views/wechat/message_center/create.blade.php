@@ -14,13 +14,25 @@
         </div>
         <div class="weui-cell" style="background-color: #fff;">
             <div class="weui-cell__hd">
-                {!! Form::label('msg-type', '消息类型', ['class' => 'weui-label']) !!}
+                {!! Form::label('msg-type', '信息类型', ['class' => 'weui-label']) !!}
             </div>
             <div class="weui-cell__bd">
                 {!! Form::select('msg-type', $msgTypes, null, [
                     'id' => 'msg-type',
                     'class' => 'weui-input',
                     'disabled' => sizeof($msgTypes) <= 1
+                ]) !!}
+            </div>
+        </div>
+        <div class="weui-cell" style="background-color: #fff;">
+            <div class="weui-cell__hd">
+                {!! Form::label('message-type', '消息类型', ['class' => 'weui-label']) !!}
+            </div>
+            <div class="weui-cell__bd">
+                {!! Form::select('message-type', $messageTypes, null, [
+                    'id' => 'message-type',
+                    'class' => 'weui-input',
+                    'disabled' => sizeof($messageTypes) <= 1
                 ]) !!}
             </div>
         </div>
