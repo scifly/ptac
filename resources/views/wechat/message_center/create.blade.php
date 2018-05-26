@@ -100,7 +100,7 @@
     <div id="targets" class='weui-popup__container'>
         <div class="weui-popup__overlay"></div>
         <div class="weui-popup__modal">
-            <div class="js-scui-chosen-layer">
+            <div class="chosen-container js-scui-chosen-layer">
                 <div class="chosen-container-fixed">
                     <div class="chosen-header js-chosen-header weui-cell">
                         <div class="chosen-header-result js-chosen-header-result"></div>
