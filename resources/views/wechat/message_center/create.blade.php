@@ -220,49 +220,77 @@
         <div class="weui-popup__modal">
             <!-- 图文标题 -->
             <div class="weui-cell">
+                <div class="weui-uploader__hd">
+                    {!! Form::label('mpnews-title', '标题', ['class' => 'weui-label']) !!}
+                </div>
                 <div class="weui-cell__bd js-title">
                     {!! Form::text('mpnews-title', null, [
                         'id' => 'mpnews-title',
                         'class' => 'weui-input fs18 one-line title',
-                        'placeholder' => '标题',
                         'maxlength' => 30
                     ]) !!}
                 </div>
             </div>
             <!-- 图文内容 -->
             <div class="weui-cell">
-                <div contenteditable="true" id="mpnews-content" class="wangEditor-mobile-txt"></div>
+                <div class="weui-cell_bd">
+                    {!! Form::textarea('mpnews-content', null, [
+                        'id' => 'mpnews-content',
+                        'class' => 'weui-textarea',
+                        'placeholder' => '描述',
+                        'rows' => 3
+                    ]) !!}
+                </div>
             </div>
             <!-- 原文链接 -->
             <div class="weui-cell">
-                {!! Form::text('content-source-url', null, [
-                    'id' => 'content-source-url',
-                    'class' => 'weui-input',
-                    'placeholder' => '原文链接(可选)',
-                ]) !!}
+                <div class="weui-uploader__hd">
+                    {!! Form::label('content-source-url', '原文链接', [
+                        'class' => 'weui-label'
+                    ]) !!}
+                </div>
+                <div class="weui-cell__bd">
+                    {!! Form::text('content-source-url', null, [
+                        'id' => 'content-source-url',
+                        'class' => 'weui-input',
+                    ]) !!}
+                </div>
             </div>
             <!-- 图文作者 -->
             <div class="weui-cell">
-                {!! Form::text('author', null, [
-                    'id' => 'author',
-                    'class' => 'weui-input',
-                    'placeholder' => '作者(可选)',
-                ]) !!}
+                <div class="weui-uploader__hd">
+                    {!! Form::label('author', '作者', [
+                        'class' => 'weui-label'
+                    ]) !!}
+                </div>
+                <div class="weui-cell__bd">
+                    {!! Form::text('author', null, [
+                        'id' => 'author',
+                        'class' => 'weui-input',
+                        'placeholder' => '选填'
+                    ]) !!}
+                </div>
             </div>
             <!-- 图文摘要 -->
             <div class="weui-cell">
-                {!! Form::text('digest', null, [
-                    'id' => 'digest',
-                    'class' => 'weui-input',
-                    'placeholder' => '摘要(可选)',
-                ]) !!}
+                <div class="weui-uploader__hd">
+                    {!! Form::label('digest', '摘要', [
+                        'class' => 'weui-label'
+                    ]) !!}
+                </div>
+                <div class="weui-cell__bd">
+                    {!! Form::text('digest', null, [
+                        'id' => 'digest',
+                        'class' => 'weui-input',
+                    ]) !!}
+                </div>
             </div>
             <!-- 封面图 -->
             <div class="msg-send-conicon msg-send-bg b-top weui-cell">
-                <div class="weui-cell__bd">
+                <div class="weui-cell">
                     <div class="weui-uploader">
                         <div class="weui-uploader__hd">
-                            <p id="upload-title" class="weui-uploader__title"></p>
+                            <p id="upload-title" class="weui-uploader__title">封面图</p>
                         </div>
                         <div class="weui-uploader__bd">
                             <div class="weui-uploader__input-box">
