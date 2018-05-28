@@ -210,9 +210,9 @@
                     {{--</span>--}}
                     <a id="confirm" href="#" class="scui-pull-right weui-btn weui-btn_mini weui-btn_primary close-popup">选定</a>
                     <a id="add" href="#" class="scui-pull-right weui-btn weui-btn_mini weui-btn_default close-popup">取消</a>
-                    <span id="count"><!--  eslint-disable -->
-					    已选0个部门, 0名用户
-                    </span>
+                    {{--<span id="count"><!--  eslint-disable -->--}}
+					    {{--已选0个部门, 0名用户--}}
+                    {{--</span>--}}
                 </div>
             </div>
         </div>
