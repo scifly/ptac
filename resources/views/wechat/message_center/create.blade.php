@@ -108,12 +108,14 @@
         </div>
         <!-- 图文消息 -->
         <div id="mpnews-container" class="msg-send-conicon msg-send-bg b-top" style="display: none;">
-            <div class="weui-uploader">
-                <div class="weui-uploader__hd">
-                    <p class="weui-uploader__title">添加图文</p>
-                </div>
-                <div class="weui-uploader__bd">
-                    <a href="#" class="open-popup weui-uploader__input-box" data-target="#mpnews"></a>
+            <div class="weui-cell">
+                <div class="weui-uploader">
+                    <div class="weui-uploader__hd">
+                        <p class="weui-uploader__title">添加图文</p>
+                    </div>
+                    <div class="weui-uploader__bd">
+                        <a href="#" class="open-popup weui-uploader__input-box" data-target="#mpnews"></a>
+                    </div>
                 </div>
             </div>
         </div>
