@@ -18,12 +18,22 @@ var token = $('#csrf_token').attr('content'),
         mpnews: { articles: [] },
         sms: ''
     },
-    $msgType = $('#msg-type'),
-    $messageTypeId = $('#message_type_id'),
     $search = $('#search'),
     $send = $('#send'),
     $notification = $('#notification'),
 
+    // 发送对象
+    $targetsContainer = $('#targets-container'),
+    $targetCheck = $('.target-check'),
+    $checkAll = $('#check-all'),
+    $confirm = $('#confirm'),
+    $chosenResults = $('#chosen-results'),
+
+    // 信息类型、消息类型
+    $msgType = $('#msg-type'),
+    $messageTypeId = $('#message_type_id'),
+
+    // 消息 - 文本、图片、语音、视频、文件、卡片、短信
     $extra = $('.extra'),   // 消息的附加属性(文件、url、图片、语音等)
     $titleContainer = $('#title-container'),
     $title = $('#title'),
@@ -37,14 +47,15 @@ var token = $('#csrf_token').attr('content'),
     $uploadContainer = $('#upload-container'),
     $upload = $('#upload'),
     $uploadTitle = $('#upload-title'),
-    $mpnewsContainer = $('#mpnews-container'),
-    $url = $('#url'),
 
-    $targetsContainer = $('#targets-container'),
-    $targetCheck = $('.target-check'),
-    $checkAll = $('#check-all'),
-    $confirm = $('#confirm'),
-    $chosenResults = $('#chosen-results'),
+    // 消息 - 图文
+    $mpContainer = $('#mpnews-container'),
+    $mpTitle = $('#mpnews-title'),
+    $mpContent = $('#mpnews-content'),
+    $mpUrl = $('#content-source-url'),
+    $mpAuthor = $('#author'),
+    $mpDigest = $('#digest'),
+    $mpMediaId = $('#thumb_media_id'),
 
     allowedTypes = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'], // 允许上传的图片类型
     maxSize = 1024 * 1024,  // 1024KB，也就是 1MB
@@ -73,10 +84,6 @@ $(document).on('change', '.target-check', function () {
     }
     countTargets();
 });
-getDept();
-expand();
-// $(".ma_expect_date").datetimePicker();
-
 // 初始化移除发送对象的事件
 $(document).on('click', '.js-chosen-results-item', function () {
     removeTarget();
@@ -95,20 +102,21 @@ $(".js-chosen-breadcrumb-ol li").off('click').click(function () {
 // 初始化选择微信消息类型的事件
 $msgType.on('change', function () {
     var type = $(this).val();
+    console.log(type);
     $('.js-content-item input').val('');
     $content.html('');
     switch (type) {
         case 'text':
             $extra.hide();
             $titleContainer.hide();
-            $mpnewsContainer.hide();
+            $mpContainer.hide();
             $contentContainer.show();
             break;
         case 'image':
             $extra.hide();
             $titleContainer.hide();
             $contentContainer.hide();
-            $mpnewsContainer.hide();
+            $mpContainer.hide();
             $uploadContainer.show();
             $mediaId.val('');
             $upload.attr('accept', 'image/*');
@@ -118,7 +126,7 @@ $msgType.on('change', function () {
             $extra.hide();
             $titleContainer.hide();
             $contentContainer.hide();
-            $mpnewsContainer.hide();
+            $mpContainer.hide();
             $uploadContainer.show();
             $mediaId.val('');
             $upload.attr('accept', 'audio/*');
@@ -126,7 +134,7 @@ $msgType.on('change', function () {
             break;
         case 'video':
             $extra.hide();
-            $mpnewsContainer.hide();
+            $mpContainer.hide();
             $title.attr('placeholder', '视频标题');
             $content.attr('placeholder', '视频描述');
             $uploadTitle.text('上传视频');
@@ -140,14 +148,14 @@ $msgType.on('change', function () {
             $extra.hide();
             $titleContainer.hide();
             $contentContainer.hide();
-            $mpnewsContainer.hide();
+            $mpContainer.hide();
             $uploadContainer.show();
             $upload.attr('accept', '*');
             $uploadTitle.text('上传文件');
             break;
         case 'textcard':
             $extra.hide();
-            $mpnewsContainer.hide();
+            $mpContainer.hide();
             $title.attr('placeholder', '标题');
             $cardUrl.attr('placeholder', '链接地址');
             $titleContainer.show();     // title
@@ -159,17 +167,19 @@ $msgType.on('change', function () {
             $extra.hide();
             $titleContainer.hide();
             $contentContainer.hide();
-            $mpnewsContainer.show();
+            $mpContainer.show();
             break;
         case 'sms':
             $extra.hide();
-            $mpnewsContainer.hide();
+            $mpContainer.hide();
             $titleContainer.hide();
             $contentContainer.show();
             break;
         default:
             break;
     }
+}).on('focus', function () {
+    console.log('current value: ' + $(this).val());
 });
 // 初始化搜索发送对象的事件
 $search.on("input propertychange change", function () {
@@ -524,9 +534,9 @@ function chosenHtml(id, type, imgSrc) {
         imgStyle = (type === 'department' ? '' : '" style="border-radius: 50%;');
 
     return '<a class="chosen-results-item js-chosen-results-item ' + type + '" ' +
-            targetId + '" data-list="' + id + '" data-uid="' + id + '" ' +
-            'data-type="' + type + '">' +
-            '<img src="' + imgSrc + imgStyle + '">' +
+        targetId + '" data-list="' + id + '" data-uid="' + id + '" ' +
+        'data-type="' + type + '">' +
+        '<img src="' + imgSrc + imgStyle + '">' +
         '</a>';
 }
 function targetHtml(target, type) {
@@ -537,15 +547,15 @@ function targetHtml(target, type) {
 
     return '<div style="position: relative;">' +
         '<label class="weui-cell weui-check__label" id="' + type + '-' + id +
-            '" data-item="' + id + '" data-uid="' + id + '" data-type="' + type + '">' +
-            '<div class="weui-cell__hd">' +
-                '<input type="checkbox" class="weui-check target-check" name="targets[]" >' +
-                '<i class="weui-icon-checked"></i>' +
-            '</div>' +
-            '<div class="weui-cell__bd">' +
-                '<img src="' + imgSrc + '"' + imgStyle + ' class="js-go-detail lazy" width="75" height="75">' +
-                '<span class="contacts-text">' + name + '</span>' +
-            '</div>' +
+        '" data-item="' + id + '" data-uid="' + id + '" data-type="' + type + '">' +
+        '<div class="weui-cell__hd">' +
+        '<input type="checkbox" class="weui-check target-check" name="targets[]" >' +
+        '<i class="weui-icon-checked"></i>' +
+        '</div>' +
+        '<div class="weui-cell__bd">' +
+        '<img src="' + imgSrc + '"' + imgStyle + ' class="js-go-detail lazy" width="75" height="75">' +
+        '<span class="contacts-text">' + name + '</span>' +
+        '</div>' +
         '</label>' +
         (type === 'department' ? '<a class="icon iconfont icon-jiantouyou show-group targets"></a>' : '') +
         '</div>';
