@@ -237,7 +237,7 @@
                     {!! Form::textarea('mpnews-content', null, [
                         'id' => 'mpnews-content',
                         'class' => 'weui-textarea',
-                        'placeholder' => '描述',
+                        'placeholder' => '(图文内容)',
                         'rows' => 3
                     ]) !!}
                 </div>
@@ -245,7 +245,7 @@
             <!-- 原文链接 -->
             <div class="weui-cell">
                 <div class="weui-uploader__hd">
-                    {!! Form::label('content-source-url', '原文链接', [
+                    {!! Form::label('content-source-url', '链接', [
                         'class' => 'weui-label'
                     ]) !!}
                 </div>
@@ -253,6 +253,7 @@
                     {!! Form::text('content-source-url', null, [
                         'id' => 'content-source-url',
                         'class' => 'weui-input',
+                        'placeholder' => '(原文链接，选填)'
                     ]) !!}
                 </div>
             </div>
@@ -267,7 +268,7 @@
                     {!! Form::text('author', null, [
                         'id' => 'author',
                         'class' => 'weui-input',
-                        'placeholder' => '选填'
+                        'placeholder' => '(选填)'
                     ]) !!}
                 </div>
             </div>
@@ -282,6 +283,7 @@
                     {!! Form::text('digest', null, [
                         'id' => 'digest',
                         'class' => 'weui-input',
+                        'placeholder' => '(选填)'
                     ]) !!}
                 </div>
             </div>
