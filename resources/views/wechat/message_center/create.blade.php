@@ -217,7 +217,7 @@
     </div>
     <div id="mpnews" class="weui-popup__container">
         <div class="weui-popup__overlay"></div>
-        <div class="weui-popup__modal">
+        <div class="weui-popup__modal" style="background-color: #fff;">
             <!-- 图文标题 -->
             <div class="weui-cell">
                 <div class="weui-uploader__hd">
