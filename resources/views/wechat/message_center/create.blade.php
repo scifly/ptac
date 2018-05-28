@@ -308,9 +308,9 @@
                 </div>
             </div>
             <div class="mt5px">
-                <a id="add" href="#" class="weui-btn weui-btn_primary close-popup">确定</a>
-                <a id="add" href="#" class="weui-btn weui-btn_default close-popup">取消</a>
-                <a id="add" href="#" class="weui-btn weui-btn_warn close-popup">删除</a>
+                <a id="add" href="#" class="weui-btn weui-btn_mini weui-btn_primary close-popup">确定</a>
+                <a id="add" href="#" class="weui-btn weui-btn_mini weui-btn_default close-popup">取消</a>
+                <a id="add" href="#" class="weui-btn weui-btn_mini weui-btn_warn close-popup">删除</a>
             </div>
         </div>
     </div>
