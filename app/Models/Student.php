@@ -358,7 +358,7 @@ class Student extends Model {
         // 上传文件
         $filename = uniqid() . '.' . $ext;
         $stored = Storage::disk('uploads')->put(
-            $filename, file_get_contents($realPath)
+            date('Y/m/d/', time()) . $filename, file_get_contents($realPath)
         );
         if ($stored) {
             $spreadsheet = IOFactory::load(
