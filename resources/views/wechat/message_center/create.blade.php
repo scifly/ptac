@@ -241,7 +241,7 @@
             <div class="weui-cell">
                 {!! Form::text('author', null, [
                     'id' => 'author',
-                    'class' => 'weiui-input',
+                    'class' => 'weui-input',
                     'placeholder' => '作者(可选)',
                 ]) !!}
             </div>
@@ -254,7 +254,7 @@
                 ]) !!}
             </div>
             <!-- 封面图 -->
-            <div class="msg-send-conicon msg-send-bg b-top">
+            <div class="msg-send-conicon msg-send-bg b-top weui-cell">
                 <div class="weui-cell__bd">
                     <div class="weui-uploader">
                         <div class="weui-uploader__hd">
