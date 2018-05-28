@@ -285,10 +285,7 @@
                         contentType: false,
                         processData: false,
                         success: function (result) {
-                            page.inform(
-                                '导入通讯录', result.message,
-                                result.error === 0 ? page.success : page.failure
-                            );
+                            page.inform('导入通讯录', result.message,  page.success);
                         },
                         error: function (e) {
                             page.errorHandler(e);
