@@ -344,6 +344,5 @@ body {
     float: left;
 }
 .contacts-text {
-    float: left;
-    margin: 4px 0 0 10px;
+    margin-left: 10px;
 }
