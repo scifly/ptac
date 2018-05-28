@@ -6,7 +6,7 @@ use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
-use App\Jobs\WechatMember;
+use App\Jobs\SyncMember;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -685,7 +685,7 @@ class User extends Authenticatable {
             'gender' => $user->gender,
             'enable' => $user->enabled
         ];
-        WechatMember::dispatch($data, Auth::id(), $action);
+        SyncMember::dispatch($data, Auth::id(), $action);
         
         return true;
         

@@ -5,7 +5,7 @@ use Eloquent;
 use Exception;
 use Carbon\Carbon;
 use App\Facades\Wechat;
-use App\Jobs\WechatApp;
+use App\Jobs\SyncApp;
 use App\Helpers\HttpStatusCode;
 use App\Http\Requests\AppRequest;
 use Illuminate\Http\JsonResponse;
@@ -152,7 +152,7 @@ class App extends Model {
         $app = $this->find($id);
         $updated = $app->update($data);
         if ($updated) {
-            WechatApp::dispatch($this->find($id), Auth::id());
+            SyncApp::dispatch($this->find($id), Auth::id());
         }
 
         return $updated ? $this->find($id) : false;

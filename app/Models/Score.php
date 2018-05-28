@@ -1,13 +1,12 @@
 <?php
 namespace App\Models;
 
-use App\Events\ScoreImported;
-use App\Events\ScoreUpdated;
 use App\Facades\DatatableFacade as Datatable;
 use App\Facades\Wechat;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
+use App\Jobs\ImportScore;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -22,7 +21,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Throwable;
@@ -611,15 +609,12 @@ class Score extends Model {
                                 'exam_id'        => Request::input('examId'),
                             ];
                         }
-                        abort_if(
-                            !self::checkData($data, Request::all()),
-                            HttpStatusCode::INTERNAL_SERVER_ERROR,
-                            __('messages.internal_server_error')
+                        ImportScore::dispatch(
+                            $data, Request::input('class_id'), Auth::id()
                         );
                     }
                 }
             }
-            
             return true;
         }
         
@@ -1280,75 +1275,6 @@ class Score extends Model {
                 ->where('subject_id', $subjectId)
                 ->where('enabled', Constant::ENABLED)
                 ->first();
-        
-    }
-    
-    /**
-     * 检查每行数据合法性
-     *
-     * @param array $data
-     * @param $input
-     * @return bool
-     */
-    private function checkData(array $data, $input) {
-        $rules = [
-            'student_number' => 'required',
-            'subject_id'     => 'required|integer',
-            'exam_id'        => 'required|integer',
-            'score'          => 'required|numeric',
-        ];
-        # 不合法的数据
-        $invalidRows = [];
-        # 更新的数据
-        $updateRows = [];
-        # 需要添加的数据
-        $rows = [];
-        for ($i = 0; $i < count($data); $i++) {
-            $datum = $data[$i];
-            $score = [
-                'student_number' => $datum['student_number'],
-                'subject_id'     => $datum['subject_id'],
-                'exam_id'        => $datum['exam_id'],
-                'score'          => $datum['score'],
-            ];
-            $status = Validator::make($score, $rules);
-            if ($status->fails()) {
-                $invalidRows[] = $datum;
-                unset($data[$i]);
-                continue;
-            }
-            $student = Student::whereStudentNumber($score['student_number'])->first();
-            # 数据非法
-            if (!$student) {
-                $invalidRows[] = $datum;
-                unset($data[$i]);
-                continue;
-            }
-            #判断这个学生是否在这个班级
-            if ($student->class_id != $input['class_id']) {
-                $invalidRows[] = $datum;
-                unset($data[$i]);
-                continue;
-            }
-            $existScore = Score::whereEnabled(1)
-                ->whereExamId($score['exam_id'])
-                ->whereStudentId($student->id)
-                ->whereSubjectId($score['subject_id'])
-                ->first();
-            if ($existScore) {
-                $updateRows[] = $score;
-            } else {
-                $rows[] = $score;
-            }
-            unset($score);
-        }
-        event(new ScoreUpdated($updateRows));
-        event(new ScoreImported($rows));
-        if (empty($rows) && empty($updateRows)) {
-            return false;
-        }
-        
-        return true;
         
     }
     

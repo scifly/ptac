@@ -15,10 +15,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 /**
  * 企业号会员管理
  *
- * Class WechatMember
+ * Class SyncMember
  * @package App\Jobs
  */
-class WechatMember implements ShouldQueue {
+class SyncMember implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, JobTrait;
     

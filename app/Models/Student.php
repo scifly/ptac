@@ -1,35 +1,29 @@
 <?php
 namespace App\Models;
 
-use App\Events\ContactImportTrigger;
-use App\Events\StudentImported;
-use App\Events\StudentUpdated;
-use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
-use App\Jobs\ImportStudent;
-use App\Rules\Mobiles;
-use Carbon\Carbon;
 use Eloquent;
+use Throwable;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Carbon\Carbon;
+use App\Helpers\Snippet;
+use App\Helpers\Constant;
+use App\Helpers\ModelTrait;
+use App\Jobs\ImportStudent;
+use App\Helpers\HttpStatusCode;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use Throwable;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * App\Models\Student 学生
@@ -324,21 +318,17 @@ class Student extends Model {
             abort_if(
                 empty($file),
                 HttpStatusCode::INTERNAL_SERVER_ERROR,
-                '您还没选择文件！'
+                __('messages.empty_file')
             );
             // 文件是否上传成功
             if ($file->isValid()) {
-                if ($this->upload($file)) {
-                    return response()->json(['message' => __('messages.message.uploaded')]);
-                } else {
-                    return response()->json(['message' => __('messages.fail')], HttpStatusCode::NOT_ACCEPTABLE);
-                }
+                return $this->upload($file);
             }
         }
     
         return abort(
             HttpStatusCode::INTERNAL_SERVER_ERROR,
-            '上传失败'
+            __('messages.file_upload_failed')
         );
         
     }
@@ -370,7 +360,7 @@ class Student extends Model {
             abort_if(
                 !empty(array_diff(self::EXCEL_FILE_TITLE, $students[1])),
                 HttpStatusCode::NOT_ACCEPTABLE,
-                '文件格式错误'
+                __('messages.student.invalid_file_format')
             );
             unset($students[0]);
             $students = array_values($students);
@@ -565,97 +555,6 @@ class Student extends Model {
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition
         );
-        
-    }
-    
-    /**
-     * 检查每行数据 是否符合导入数据
-     *
-     * @param array $data
-     */
-    private function validateData(array $data) {
-        
-        $rules = [
-            'name'           => 'required|string|between:2,6',
-            'gender'         => ['required', Rule::in(['男', '女'])],
-            'birthday'       => 'required|date',
-            'school'         => 'required|string|between:4,20',
-            'grade'          => 'required|string|between:3,20',
-            'class'          => 'required|string|between:2,20',
-            'mobile'         => 'required', new Mobiles(),
-            'student_number' => 'required|alphanum|between:2,32',
-            'card_number'    => 'required|alphanum|between:2,32',
-            'oncampus'       => ['required', Rule::in(['住读', '走读'])],
-            'remark'         => 'string|nullable',
-            'relationship'   => 'string',
-        ];
-        # 不合法的数据
-        $invalidRows = [];
-        # 更新的数据
-        $updateRows = [];
-        # 需要添加的数据
-        $rows = [];
-        for ($i = 0; $i < count($data); $i++) {
-            $user = [
-                'name'           => $data[$i]['A'],
-                'gender'         => $data[$i]['B'],
-                'birthday'       => $data[$i]['C'],
-                'school'         => $data[$i]['D'],
-                'grade'          => $data[$i]['E'],
-                'class'          => $data[$i]['F'],
-                'mobile'         => $data[$i]['G'],
-                'student_number' => $data[$i]['H'],
-                'card_number'    => $data[$i]['I'],
-                'oncampus'       => $data[$i]['J'],
-                'remark'         => $data[$i]['K'],
-                'relationship'   => $data[$i]['L'],
-                'class_id'       => 0,
-                'department_id'  => 0,
-            ];
-            $status = Validator::make($user, $rules);
-            if ($status->fails()) {
-                $invalidRows[] = $data[$i];
-                unset($data[$i]);
-                continue;
-            }
-            $school = School::whereName($user['school'])->first();
-            if (!$school) {
-                $invalidRows[] = $data[$i];
-                unset($data[$i]);
-                continue;
-            }
-            $grade = Grade::whereName($user['grade'])
-                ->where('school_id', $school->id)
-                ->first();
-            # 数据非法
-            if (!$grade) {
-                $invalidRows[] = $data[$i];
-                unset($data[$i]);
-                continue;
-            }
-            $class = Squad::whereName($user['class'])
-                ->where('grade_id', $grade->id)
-                ->first();
-            if (!$class) {
-                $invalidRows[] = $data[$i];
-                unset($data[$i]);
-                continue;
-            }
-            $student = Student::whereStudentNumber($user['student_number'])
-                ->where('class_id', $class->id)
-                ->first();
-            $user['class_id'] = $class->id;
-            $user['department_id'] = $class->department_id;
-            # 学生数据已存在 更新操作
-            if ($student) {
-                $updateRows[] = $user;
-            } else {
-                $rows[] = $user;
-            }
-            unset($user);
-        }
-        event(new StudentUpdated($updateRows));
-        event(new StudentImported($rows));
         
     }
     

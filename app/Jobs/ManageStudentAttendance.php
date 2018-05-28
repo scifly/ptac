@@ -1,27 +1,27 @@
 <?php
 namespace App\Jobs;
 
-use App\Facades\Wechat;
-use App\Models\App;
-use App\Models\AttendanceMachine;
-use App\Models\CommType;
-use App\Models\Media;
-use App\Models\Message;
-use App\Models\MessageSendingLog;
-use App\Models\MessageType;
-use App\Models\Mobile;
-use App\Models\Semester;
-use App\Models\Student;
-use App\Models\StudentAttendance;
-use App\Models\StudentAttendanceSetting;
-use App\Models\User;
 use Exception;
+use App\Models\App;
+use App\Models\User;
+use App\Models\Media;
+use App\Models\Mobile;
+use App\Models\Message;
+use App\Facades\Wechat;
+use App\Models\Student;
+use App\Models\Semester;
+use App\Models\CommType;
+use App\Models\MessageType;
 use Illuminate\Bus\Queueable;
+use App\Models\MessageSendingLog;
+use App\Models\AttendanceMachine;
+use App\Models\StudentAttendance;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
+use App\Models\StudentAttendanceSetting;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
 
 class ManageStudentAttendance implements ShouldQueue {
     
@@ -191,6 +191,7 @@ class ManageStudentAttendance implements ShouldQueue {
      * @return bool
      */
     private function pushMessage($userId, $msg) {
+        
         #应用发消息
         $corpId = 'wxe75227cead6b8aec';
         $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
@@ -212,4 +213,5 @@ class ManageStudentAttendance implements ShouldQueue {
         return $res->errcode == 0 ? true : false;
         
     }
+    
 }

@@ -17,10 +17,10 @@ use Illuminate\Foundation\Bus\Dispatchable;
 /**
  * 企业号部门管理
  *
- * Class WechatDepartment
+ * Class SyncDepartment
  * @package App\Jobs
  */
-class WechatDepartment implements ShouldQueue {
+class SyncDepartment implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait;
     

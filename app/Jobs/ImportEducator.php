@@ -1,7 +1,9 @@
 <?php
 namespace App\Jobs;
 
-use App\Events\ContactImportTrigger;
+use Exception;
+use App\Events\JobResponse;
+use App\Helpers\HttpStatusCode;
 use App\Models\Department;
 use App\Models\DepartmentUser;
 use App\Models\Educator;
@@ -12,29 +14,29 @@ use App\Models\Mobile;
 use App\Models\Squad;
 use App\Models\Subject;
 use App\Models\User;
-use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class ManageImportEducator implements ShouldQueue {
+class ImportEducator implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     
-    protected $data;
+    protected $data, $userId;
     
     /**
      * Create a new job instance.
      *
-     * @param $data
+     * @param array $data
+     * @param $userId
      */
-    public function __construct($data) {
+    public function __construct(array $data, $userId) {
         
         $this->data = $data;
+        $this->userId = $userId;
         
     }
     
@@ -44,7 +46,13 @@ class ManageImportEducator implements ShouldQueue {
      * @throws \Throwable
      */
     public function handle() {
-
+    
+        $response = [
+            'userId' => $this->userId,
+            'title' => '创建学校',
+            'statusCode' => HttpStatusCode::OK,
+            'message' => __('messages.educator.educator_imported')
+        ];
         $rows = $this->data;
         try {
             DB::transaction(function () use ($rows) {
@@ -192,13 +200,12 @@ class ManageImportEducator implements ShouldQueue {
                     unset($educatorId);
                 }
             });
-            $data['user'] = Auth::user();
-            $data['type'] = 'educator';
-            event(new ContactImportTrigger($data));
         } catch (Exception $e) {
-            throw $e;
+            $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+            $response['message'] = $e->getMessage();
         }
-        
+        event(new JobResponse($response));
+    
         return true;
         
     }

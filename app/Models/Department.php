@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use App\Helpers\Snippet;
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
-use App\Jobs\WechatDepartment;
+use App\Jobs\SyncDepartment;
 use App\Helpers\HttpStatusCode;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -874,7 +874,7 @@ class Department extends Model {
                 'order'     => $department->order,
                 'corp_id'   => $this->corpId($id),
             ];
-        WechatDepartment::dispatch($data, Auth::id(), $action);
+        SyncDepartment::dispatch($data, Auth::id(), $action);
         
         return true;
         

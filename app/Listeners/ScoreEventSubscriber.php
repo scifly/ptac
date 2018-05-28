@@ -1,14 +1,14 @@
 <?php
 namespace App\Listeners;
 
-use App\Jobs\ManageImportScore;
+use App\Jobs\ImportScore;
 use App\Jobs\ManageUpdateScore;
 use Illuminate\Events\Dispatcher;
 
 class ScoreEventSubscriber {
     
     public function onScoreImported($event) {
-        ManageImportScore::dispatch($event->data)->onQueue('import');
+        ImportScore::dispatch($event->data)->onQueue('import');
     
     }
     public function onScoreUpdated($event) {

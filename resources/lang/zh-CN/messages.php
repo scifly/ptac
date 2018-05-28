@@ -7,6 +7,9 @@ return [
     'edit_ok' => '保存成功',
     'del_ok' => '删除成功',
     'create_fail' => '创建失败',
+    'file_uploaded' => '文件上传成功',
+    'file_upload_failed' => '文件上传失败',
+    'empty_file' => '请选择需要上传的文件',
     'edit_fail' => '保存失败',
     'del_fail' => '删除失败',
     'bad_request' => '请求错误',
@@ -42,6 +45,10 @@ return [
         'department_sync' => '%s企业微信部门',
         'has_children' => '请先删除自部门',
     ],
+    'educator' => [
+        'title' => '教职员工管理',
+        'educator_imported' => '教职员工数据已导入',
+    ],
     'menu' => [
         'title' => '菜单管理',
         'has_children' => '请先删除子菜单'
@@ -65,10 +72,14 @@ return [
     'score' => [
         'title' => '成绩中心',
         'zero_classes' => '您尚未绑定任何班级',
-        'unauthorized_stat' => '您无权进行该成绩分析'
+        'unauthorized_stat' => '您无权进行该成绩分析',
+        'invalid_data_format' => '导入的数据格式不正确',
+        'score_imported' => '考试成绩已成功导入',
+        'import'
     ],
     'student' => [
         'title' => '学籍管理',
+        'import_started' => '文件上传成功，开始导入学籍...',
         'invalid_file_format' => '文件格式错误',
         'invalid_data_format' => '导入数据格式不正确',
         'import_request_submitted' => '已提交导入请求\n需要新增的学籍数：%s\n需要更新的学籍数：%s\n非法学籍数: %s, 请参考导出文件',

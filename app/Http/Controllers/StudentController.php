@@ -158,7 +158,11 @@ class StudentController extends Controller {
      */
     public function import() {
         
-        return $this->student->import();
+        return $this->result(
+            $this->student->import(),
+            __('messages.student.import_started'),
+            __('messages.file_upload_failed')
+        );
         
     }
     

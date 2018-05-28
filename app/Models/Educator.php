@@ -8,9 +8,9 @@ use Carbon\Carbon;
 use App\Rules\Mobiles;
 use App\Helpers\Snippet;
 use App\Helpers\ModelTrait;
+use App\Jobs\ImportEducator;
 use App\Helpers\HttpStatusCode;
 use Illuminate\Validation\Rule;
-use App\Events\EducatorImported;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -484,7 +484,7 @@ class Educator extends Model {
                 }
                 $rows = self::validateData($educators);
                 if (!empty($rows)) {
-                    event(new EducatorImported($rows));
+                    ImportEducator::dispatch($rows, Auth::id());
                 }
             }
             Storage::disk('uploads')->delete($filename);
