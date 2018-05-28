@@ -366,7 +366,7 @@ class Student extends Model {
                 null, true, true, true
             );
             abort_if(
-                !empty(array_diff(self::EXCEL_FILE_TITLE, $students[0])),
+                !empty(array_diff(self::EXCEL_FILE_TITLE, $students[1])),
                 HttpStatusCode::NOT_ACCEPTABLE,
                 '文件格式错误'
             );
