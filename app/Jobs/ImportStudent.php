@@ -24,7 +24,7 @@ class ImportStudent implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait;
     
-    protected $filename, $userId;
+    protected $students, $userId;
     
     const EXCEL_FILE_TITLE = [
         '姓名', '性别', '生日', '学校',
@@ -36,12 +36,12 @@ class ImportStudent implements ShouldQueue {
     /**
      * Create a new job instance.
      *
-     * @param string $filename - 学籍Excel文件
+     * @param array $students - 学籍Excel文件
      * @param integer $userId
      */
-    public function __construct($filename, $userId) {
+    public function __construct(array $students, $userId) {
         
-        $this->filename = $filename;
+        $this->students = $students;
         $this->userId = $userId;
         
     }
@@ -52,63 +52,35 @@ class ImportStudent implements ShouldQueue {
      */
     public function handle() {
 
-        Log::debug('filename: ' . $this->filename);
-        
         $response = $response = [
             'userId' => $this->userId,
             'title' => '批量导入学籍',
             'statusCode' => HttpStatusCode::OK,
             'message' => __('messages.ok')
         ];
-        $spreadsheet = IOFactory::load(
-            $this->uploadedFilePath($this->filename)
-        );
-        $students = $spreadsheet->getActiveSheet()->toArray(
-            null, true, true, true
-        );
-        if (!empty(array_diff(self::EXCEL_FILE_TITLE, $students[0]))) {
-            # 文件格式不正确，中止任务
+        list($updates, $inserts, $illegals) = $this->validate($this->students);
+        Log::debug(json_encode([$updates, $inserts, $illegals]));
+        return false;
+        if (empty($updates) && empty($inserts)) {
+            # 数据格式不正确，中止任务
             $response['statusCode'] = HttpStatusCode::NOT_ACCEPTABLE;
-            $response['message'] = __('messages.student.invalid_file_format');
+            $response['message'] = __('messages.student.invalid_import_data');
             event(new JobResponse($response));
             return false;
         }
-        unset($students[0]);
-        $students = array_values($students);
-        Log::debug(json_encode($students));
-        if (!empty($students)) {
-            # 去除表格的空数据
-            foreach ($students as $key => $v) {
-                if ((array_filter($v)) == null) {
-                    unset($students[$key]);
-                }
-            }
-            list($updates, $inserts, $illegals) = $this->validate($students);
-            if (empty($updates) && empty($inserts)) {
-                # 数据格式不正确，中止任务
-                $response['statusCode'] = HttpStatusCode::NOT_ACCEPTABLE;
-                $response['message'] = __('messages.student.invalid_import_data');
-                event(new JobResponse($response));
-                return false;
-            }
-            # 验证导入数据
-            $response['statusCode'] = HttpStatusCode::ACCEPTED;
-            $response['message'] = sprintf(
-                __('messages.student.import_request_submitted'),
-                sizeof($inserts), sizeof($updates), sizeof($illegals)
-            );
-            $response['url'] = ''; # todo: 生成非法数据excel文件及下载地址
-            event(new JobResponse($response));
-            # 新增数据
-            
-            # 更新数据
-        }
-        # 导入数据为空，中止任务
-        $response['statusCode'] = HttpStatusCode::NOT_ACCEPTABLE;
-        $response['message'] = __('messages.student.empty_import_file');
+        # 验证导入数据
+        $response['statusCode'] = HttpStatusCode::ACCEPTED;
+        $response['message'] = sprintf(
+            __('messages.student.import_request_submitted'),
+            sizeof($inserts), sizeof($updates), sizeof($illegals)
+        );
+        $response['url'] = ''; # todo: 生成非法数据excel文件及下载地址
         event(new JobResponse($response));
+        # 新增数据
         
-        return false;
+        # 更新数据
+        
+        return true;
         
     }
     

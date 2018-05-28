@@ -374,19 +374,13 @@ class Student extends Model {
             );
             unset($students[0]);
             $students = array_values($students);
-            if (!empty($students)) {
-                # 去除表格的空数据
-                foreach ($students as $key => $v) {
-                    if ((array_filter($v)) == null) {
-                        unset($students[$key]);
-                    }
+            foreach ($students as $key => $v) {
+                if ((array_filter($v)) == null) {
+                    unset($students[$key]);
                 }
-                $this->validateData($students);
             }
-            $data['user'] = Auth::user();
-            $data['type'] = 'student';
-            // event(new ContactImportTrigger($data));
-            ImportStudent::dispatch($filename, Auth::id());
+            ImportStudent::dispatch($students, Auth::id());
+            
             return true;
         }
         
