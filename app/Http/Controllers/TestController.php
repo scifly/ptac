@@ -15,14 +15,17 @@ use App\Models\Message;
 use App\Models\School;
 use App\Models\Tab;
 use App\Models\WapSite;
+use App\Rules\Mobiles;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Validation\Rule;
 use ReflectionClass;
 use ReflectionMethod;
+use Validator;
 
 /**
  * Class TestController
@@ -260,6 +263,37 @@ class TestController extends Controller {
      */
     public function index() {
     
+        $rules = [
+            'name'           => 'required|string|between:2,6',
+            'gender'         => ['required', Rule::in(['男', '女'])],
+            'birthday'       => 'required|date',
+            'school'         => 'required|string|between:4,20',
+            'grade'          => 'required|string|between:3,20',
+            'class'          => 'required|string|between:2,20',
+            'mobile'         => 'required', new Mobiles(),
+            'student_number' => 'required|alphanum|between:2,32',
+            'card_number'    => 'required|alphanum|between:2,32',
+            'oncampus'       => ['required', Rule::in(['住读', '走读'])],
+            'remark'         => 'string|nullable',
+            'relationship'   => 'string',
+        ];
+        $user = [
+            'name'           => '唐逸轩',
+            'gender'         => '男',
+            'birthday'       => '1980-01-01',
+            'school'         => '桐木小学幼儿园',
+            'grade'          => '幼教大班',
+            'class'          => '大一班级',
+            'mobile'         => '13600000000',
+            'student_number' => 'A00001',
+            'card_number'    => 'S00001',
+            'oncampus'       => '住读',
+            'remark'         => '我是备注',
+            'relationship'   => '父子:唐克林:男:13607412465',
+            'class_id'       => 0,
+            'department_id'  => 0,
+        ];
+        dd(Validator::make($user, $rules)->fails());
         dd(json_encode(School::whereName('成都外国语学校')->first()));
         try {
             DB::transaction(function () {
