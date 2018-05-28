@@ -1,26 +1,24 @@
 var token = $('#csrf_token').attr('content'),
     message = {
         text: { content: '' },
-        image: { media_id: '' },
-        voice: { media_id: ''},
+        image: { media_id: '', media_name: '', type: 'image/*' },
+        voice: { media_id: '', media_name: '', type: 'audio/*' },
         video: {
-            media_id: '',
-            title: '',
-            description: '',
+            media_id: '', media_name: '', type: 'video/*',
+            title: '', description: '',
         },
-        file: { media_id: '' },
+        file: { media_id: '', media_name: '', type: '' },
         textcard: {
             title: '',
             description: '',
-            url: '',
-            btnTxt: ''
         },
-        mpnews: { articles: [] },
         sms: ''
     },
     $search = $('#search'),
     $send = $('#send'),
     $notification = $('#notification'),
+    mpnews = { articles: [] },  // 文章数组
+    mpnewsCount = mpnews['articles'].length,    // 文章数量
 
     // 发送对象
     $targetsContainer = $('#targets-container'),
@@ -50,12 +48,16 @@ var token = $('#csrf_token').attr('content'),
 
     // 消息 - 图文
     $mpContainer = $('#mpnews-container'),
+    $addMpnews = $('#add-mpnews'),
     $mpTitle = $('#mpnews-title'),
     $mpContent = $('#mpnews-content'),
     $mpUrl = $('#content-source-url'),
     $mpAuthor = $('#author'),
     $mpDigest = $('#digest'),
+    $mpUpload = $('#mpnews-upload'),
     $mpMediaId = $('#thumb_media_id'),
+    $add = $('#add'),
+    $delete = $('#delete'),
 
     allowedTypes = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'], // 允许上传的图片类型
     maxSize = 1024 * 1024,  // 1024KB，也就是 1MB
@@ -88,17 +90,6 @@ $(document).on('change', '.target-check', function () {
 $(document).on('click', '.js-chosen-results-item', function () {
     removeTarget();
 });
-// 初始化上传封面事件
-$(document).on('change', '#mpnews-media-id', function() {
-    uploadCover();
-});
-// 初始化开启评论的事件
-$(".weui-switch").on('change', function () {
-    $('.hw-time').slideToggle('fast');
-});
-$(".js-chosen-breadcrumb-ol li").off('click').click(function () {
-    getDept(this)
-});
 // 初始化选择微信消息类型的事件
 $msgType.on('change', function () {
     var type = $(this).val();
@@ -111,6 +102,7 @@ $msgType.on('change', function () {
             $titleContainer.hide();
             $mpContainer.hide();
             $contentContainer.show();
+            $content.val(message[type]['content']);
             break;
         case 'image':
             $extra.hide();
@@ -118,7 +110,7 @@ $msgType.on('change', function () {
             $contentContainer.hide();
             $mpContainer.hide();
             $uploadContainer.show();
-            $mediaId.val('');
+            $mediaId.val(message[type]['media_id']);
             $upload.attr('accept', 'image/*');
             $uploadTitle.text('上传图片');
             break;
@@ -128,18 +120,18 @@ $msgType.on('change', function () {
             $contentContainer.hide();
             $mpContainer.hide();
             $uploadContainer.show();
-            $mediaId.val('');
+            $mediaId.val(message[type]['media_id']);
             $upload.attr('accept', 'audio/*');
             $uploadTitle.text('上传语音');
             break;
         case 'video':
             $extra.hide();
             $mpContainer.hide();
-            $title.attr('placeholder', '视频标题');
-            $content.attr('placeholder', '视频描述');
             $uploadTitle.text('上传视频');
-            $mediaId.val('');
-            $upload.attr('accept', 'video/*');
+            $title.attr('placeholder', '视频标题').val(message[type]['title']);
+            $content.attr('placeholder', '视频描述').val(message[type]['description']);
+            $upload.attr('accept', message[type]['type']);
+            $mediaId.val(message[type]['media_id']);
             $titleContainer.show();     // title
             $contentContainer.show();   // description
             $uploadContainer.show();    // media_id
@@ -150,7 +142,8 @@ $msgType.on('change', function () {
             $contentContainer.hide();
             $mpContainer.hide();
             $uploadContainer.show();
-            $upload.attr('accept', '*');
+            $mediaId.val(message[type]['media_id']);
+            $upload.attr('accept', message[type]['type']);
             $uploadTitle.text('上传文件');
             break;
         case 'textcard':
@@ -158,6 +151,8 @@ $msgType.on('change', function () {
             $mpContainer.hide();
             $title.attr('placeholder', '标题');
             $cardUrl.attr('placeholder', '链接地址');
+            $title.val(message[type]['title']);
+            $content.val(message[type]['description']);
             $titleContainer.show();     // title
             $contentContainer.show();   // description
             $cardUrlContainer.show();   // url
@@ -179,7 +174,37 @@ $msgType.on('change', function () {
             break;
     }
 }).on('focus', function () {
-    console.log('current value: ' + $(this).val());
+    var type = $(this).val();
+    switch (type) {
+        case 'text':
+            message[type]['content'] = $content.val();
+            break;
+        case 'image':
+            message[type]['media_id'] = $mediaId.val();
+            break;
+        case 'voice':
+            message[type]['media_id'] = $mediaId.val();
+            break;
+        case 'video':
+            message[type] = {
+                media_id: $mediaId.val(),
+                title: $title.val(),
+                description: $content.val()
+            };
+            break;
+        case 'file':
+            message[type]['media_id'] = $mediaId.val();
+            break;
+        case 'textcard':
+            message[type] = {
+                title: $title.val(),
+                description: $content.val(),
+            };
+            break;
+        case 'sms':
+            message[type] = $content.val();
+            break;
+    }
 });
 // 初始化搜索发送对象的事件
 $search.on("input propertychange change", function () {
@@ -191,7 +216,6 @@ $search.on("input propertychange change", function () {
             for (i = 0; i < result['classDepts'].length; i++) {
                 html += targetHtml(result['classDepts'][i], 'department');
             }
-            expand();
         },
         users = function (html, result) {
             for (i = 0; i < result['users'].length; i++) {
@@ -242,128 +266,37 @@ $checkAll.on('change', function () {
     }
 });
 // 初始化上传文件的事件
-$upload.on('change', function (event) {
-    var files = event.target.files;
+$upload.on('focus change', '#upload #mpnews-upload', function () {
+    upload(this);
+});
+// 上传文件
+$upload.on('focus change', function() { upload(this, false); });
+// 上传封面图
+$mpUpload.on('focus change', function() { upload(this, true); });
+// 添加图文
+$add.on('click', function () {
+    var title = $mpTitle.val(),
+        description = $mpContent.val(),
+        thumb_media_id = $mpMediaId.val();
 
-    // 如果没有选中文件，直接返回
-    if (files.length === 0) {
+    if (title === '' || description === '' || thumb_media_id === '') {
+        $.alert('标题/内容/封面图不得为空');
         return false;
     }
-
-    for (var i = 0, len = files.length; i < len; i++) {
-        var file = files[i],
-            reader = new FileReader();
-
-        // 如果类型不在允许的类型范围内
-        if (allowedTypes.indexOf(file.type) === -1) {
-            $.alert({text: '该类型不允许上传'});
-            continue;
-        }
-        if (file.size > maxSize) {
-            $.alert({text: '图片太大，不允许上传'});
-            continue;
-        }
-        if ($('.weui_uploader_file').length >= maxCount) {
-            $.alert({text: '最多只能上传' + maxCount + '张图片'});
-            return;
-        }
-        reader.onload = function (e) {
-            var img = new Image();
-            img.onload = function () {
-                // 不要超出最大宽度
-                var w = Math.min(maxWidth, img.width);
-                // 高度按比例计算
-                var h = img.height * (w / img.width);
-                var canvas = document.createElement('canvas');
-                var ctx = canvas.getContext('2d');
-                // 设置 canvas 的宽度和高度
-                canvas.width = w;
-                canvas.height = h;
-                ctx.drawImage(img, 0, 0, w, h);
-                var base64 = canvas.toDataURL('image/png');
-
-                // console.log(base64);
-                var html = '<img class="uploadimg-item" src="' + base64 + '" id="uploadimg-' + tmp + '" style="width: 300px;height: 187px">';
-                $content.append(html);
-                // 然后假装在上传，可以post base64格式，也可以构造blob对象上传，也可以用微信JSSDK上传
-            };
-            img.src = e.target['result'];
-        };
-        reader.readAsDataURL(file);
-    }
-    $.ajax({
-        url: '../message_upload',
-        type: 'POST',
-        data: {
-            file: $('#upload-file')[0].files[0],
-            _token: token
-        },
-        success: function (result) {
-            if (result.statusCode === 200) {
-                $('#uploadimg-' + tmp).attr('data-media-id', result.message.id);
-                $('#uploadimg-' + tmp).attr('src', 'http://weixin.028lk.com/' + result.message.path);
-            }
-        }
+    mpnews['articles'].push({
+        title: title,
+        thumb_media_id: thumb_media_id,
+        author: $mpAuthor.val(),
+        content_source_url: $mpUrl.val(),
+        content: description,
+        digest: $mpDigest.val()
     });
-    tmp++;
+    mpnewsCount++;
+    $('#mpnews').closePopup();
 });
-// 初始化上传视频的事件
-$upload.on('change', function () {
-    $notification.show();
-    var $this = $(this);
-    var formData = new FormData();
-    formData.append('file', $('#upload_video')[0].files[0]);
-    formData.append('_token', token);
-    formData.append('type', $msgType.val());
-    $.ajax({
-        url: "../message_upload",
-        data: formData,
-        type: 'POST',
-        dataType: 'json',
-        contentType: false,
-        processData: false,
-        cache: false,
-        success: function (result) {
-            $('#notification').hide();
-            if (result.statusCode === 1) {
-                var html = '<video class="video-id" id="' + result.data.id + '" src="' + 'http://weixin.028lk.com/' + result.data.path + '" controls="controls" style="height: 200px; width: 300px"></video>' +
-                    '<input id="video_media_id" name="video_media_id" value="' + result.data.media_id + '" hidden>';
-                $this.parent().parent().html(html);
-            } else {
-                $.alert('上传失败，请稍后重新尝试！')
-            }
-        }
-    });
-});
-// 初始化上传图片的事件
-$uploadImage.on('change', function () {
-    $('#notification').show();
-    var $this = $(this);
-    var formData = new FormData();
-    formData.append('file', $('#upload_image')[0].files[0]);
-    formData.append('_token', token);
-    formData.append('type', $msgType.val());
-    $.ajax({
-        url: "../message_upload",
-        data: formData,
-        type: 'POST',
-        dataType: 'json',
-        contentType: false,
-        processData: false,
-        cache: false,
-        success: function (result) {
-            $('#notification').hide();
-            if (result.statusCode === 1) {
-                var html = '<img class="img-id" id="' + result.data.id + '" src="' + 'http://weixin.028lk.com/' + result.data.path + '" style="height: 200px; width: 300px">' +
-                    '<input id="image_media_id" name="image_media_id" value="' + result.data.media_id + '" hidden>';
-                $this.parent().parent().html(html);
-            } else {
-                $.alert('上传失败，请稍后重新尝试！')
-            }
-        }
-    });
-});
+$delete.on('click', function () {
 
+});
 // 初始化提交消息发送请求的事件
 $send.on('click', function () {
     var departmentIds = [],
@@ -471,32 +404,41 @@ $send.on('click', function () {
         }
     });
 });
-function expand() {
-    $(document).on('click', '.targets', function () {
-        // 展示下一个分组
-        $(this).unbind("click");
-        var id = $(this).prev().attr('data-uid'),
-            name = $(this).prev().find('span').html(),
-            chosen_dept = $('.js-chosen-breadcrumb-ol'),
-            html = '<li data-id="' + id + '" class="js-chosen-breadcrumb-li headclick"><a>' + name + '</a></li>';
-        $.ajax({
-            type: 'GET',
-            data: {},
-            url: 'message_dept/' + id,
-            success: function (result) {
-                if (result.statusCode === 200) {
-                    $targetsContainer.html(result.message);
-                    chosen_dept.append(html);
-                    expand();
-                    removeTarget();
-                    getDept();
-                } else {
-                    $targetsContainer.empty();
-                }
-            }
-        });
+
+function upload(uploader, mpnews) {
+    var formData = new FormData();
+
+    formData.append('file', $(this)[0].files[0]);
+    formData.append('_token', token);
+    formData.append('type', $msgType.val());
+    $notification.show();
+    $.ajax({
+        url: "../create",
+        data: formData,
+        type: 'POST',
+        dataType: 'json',
+        contentType: false,
+        processData: false,
+        cache: false,
+        success: function (result) {
+            var filename = result['data']['filename'],
+                mediaId = result['data']['media_id'];
+
+            $notification.hide();
+            $(mpnews ? '#mp-upload-title' : '#upload-title').val(filename);
+            $(mpnews ? '#thumb_media_id' : '#media_id').val(mediaId);
+            if (mpnews) { $('#mps').append(filename); }
+            $.alert(result['message']);
+        },
+        error: function (e) {
+            var obj = JSON.parse(e.responseText);
+
+            $notification.hide();
+            $.alert(obj['statusCode'] + '\n' + obj['message']);
+        }
     });
 }
+
 function countTargets() {
     var departments = $('#chosen-results .js-chosen-results-item.department').length,
         users = $('#chosen-results .js-chosen-results-item.user').length;
@@ -509,25 +451,6 @@ function removeTarget() {
     $(this).remove();
     $('#' + type + '-' + id).find('.target-check').prop('checked', false);
     countTargets();
-}
-function getDept(obj) {
-    var id = $(obj).attr("data-id");
-
-    $(this).nextAll().remove();
-    $.ajax({
-        type: 'GET',
-        url: 'message_dept/' + id,
-        success: function (result) {
-            if (result.statusCode === 200) {
-                $targetsContainer.html(result.message);
-                expand();
-                removeTarget();
-                getDept();
-            } else {
-                $targetsContainer.empty();
-            }
-        }
-    });
 }
 function chosenHtml(id, type, imgSrc) {
     var targetId = (type === 'department' ? 'id="department-' : 'id="user-') + id,
@@ -559,35 +482,4 @@ function targetHtml(target, type) {
         '</label>' +
         (type === 'department' ? '<a class="icon iconfont icon-jiantouyou show-group targets"></a>' : '') +
         '</div>';
-}
-function uploadCover() {
-    $notification.show();
-    $.ajax({
-        url: '../message_upload',
-        type: 'POST',
-        cache: false,
-        data: {
-            file:  $uploadMpnews[0].files[0],
-            _token: token,
-            type: $msgType.val()
-        },
-        success: function (result) {
-            $notification.hide();
-            if (result.statusCode === 1) {
-                var html =
-                    '<img class="uploadimg-item upload_mpnews" id="' + result.data.id + '" ' +
-                    'src="http://weixin.028lk.com/' + result.data.path + '"  ' +
-                    'style="width: 100%" data-id="' + result.data.id +
-                    '">' +
-                    '<input id="mpnews-media-id" name="mpnews-media-id" ' +
-                    'data-content-id="' + result.data.media_id + '" ' +
-                    'class="weui-uploader__input" type="file" ' +
-                    'accept="image/*" multiple="" ' +
-                    '>';
-                $cover.html(html);
-            } else {
-                $.alert('上传失败，请稍后重新尝试！')
-            }
-        }
-    });
 }

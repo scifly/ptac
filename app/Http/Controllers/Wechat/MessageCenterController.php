@@ -82,15 +82,17 @@ class MessageCenterController extends Controller {
      * 创建消息
      *
      * @param $departmentId
-     * @return Factory|View
+     * @return Factory|JsonResponse|View
      * @throws Throwable
      */
     public function create($departmentId = null) {
         
         if (Request::method() == 'POST') {
-            return response()->json(
-                $this->message->search($departmentId)
-            );
+            return Request::has('file')
+                ? $this->message->upload()
+                : response()->json(
+                    $this->message->search($departmentId)
+                );
         }
         
         return view('wechat.message_center.create');

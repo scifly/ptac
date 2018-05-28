@@ -1,9 +1,12 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
 
 class GroupRequest extends FormRequest {
+    
+    use ModelTrait;
     
     public function authorize() { return true; }
     
@@ -46,6 +49,9 @@ class GroupRequest extends FormRequest {
         }
         if (isset($input['menu_ids'])) {
             $input['menu_ids'] = explode(',', $input['menu_ids']);
+        }
+        if (!isset($input['school_id'])) {
+            $input['school_id'] = $this->schoolId();
         }
         $this->replace($input);
         
