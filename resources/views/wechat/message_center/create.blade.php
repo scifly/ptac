@@ -112,7 +112,7 @@
                 <div class="weui-uploader__hd">
                     <p class="weui-uploader__title">添加图文</p>
                 </div>
-                <div class="weui-cell__bd">
+                <div class="weui-uploader__bd">
                     <a href="#" class="open-popup weui-uploader__input-box" data-target="#mpnews"></a>
                 </div>
             </div>
