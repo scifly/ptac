@@ -116,7 +116,7 @@ class ImportStudent implements ShouldQueue {
             $schoolName = $students[$i]['C'];
             $gradeName = $students[$i]['D'];
             $className = $students[$i]['E'];
-            $sn = $students[$i][7];
+            $sn = $students[$i]['G'];
             $user = [
                 'name'           => $students[$i]['A'],
                 'gender'         => $students[$i]['B'],
