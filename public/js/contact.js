@@ -282,6 +282,8 @@
                         dataType: 'json',
                         url: '../' + table + '/import',
                         data: formData,
+                        contentType: false,
+                        processData: false,
                         success: function (result) {
                             page.inform(
                                 '导入通讯录', result.message,
