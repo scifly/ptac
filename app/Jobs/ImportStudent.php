@@ -15,6 +15,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Validator;
@@ -72,6 +73,7 @@ class ImportStudent implements ShouldQueue {
         }
         unset($students[0]);
         $students = array_values($students);
+        Log::debug(json_encode($students));
         if (!empty($students)) {
             # 去除表格的空数据
             foreach ($students as $key => $v) {
