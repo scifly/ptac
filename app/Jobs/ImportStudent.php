@@ -139,15 +139,21 @@ class ImportStudent implements ShouldQueue {
                 'department_id'  => 0,
             ];
             Log::debug(json_encode($user));
-            $isValid = !Validator::make($user, $rules)->fails();
-            $school = $isValid ? School::whereName($schoolName)->first() : null;
+            $failed = Validator::make($user, $rules)->fails();
+            $school = !$failed ? School::whereName($schoolName)->first() : null;
             $isSchoolValid = $school ? in_array($school->id, $this->schoolIds($this->userId)) : false;
             $grade = $school ? Grade::whereName($gradeName)->where('school_id', $school->id)->first() : null;
             $isGradeValid = $grade ? in_array($grade->id, $this->gradeIds($school->id, $this->userId)) : false;
             $class = $grade ? Squad::whereName($className)->where('grade_id', $grade->id)->first() : null;
             $isClassValid = $class ? in_array($class->id, $this->classIds($school->id, $this->userId)) : false;
+            Log::debug(
+                'failed: ' . $failed . '  ' .
+                'isSchoolValid: ' . $isSchoolValid . '  ' .
+                'isGradeValid: ' . $isGradeValid . '  ' .
+                'isClassValid: ' . $isGradeValid . '  '
+            );
             # 数据非法
-            if (!($isValid && $isSchoolValid && $isGradeValid && $isClassValid)) {
+            if (!(!$failed && $isSchoolValid && $isGradeValid && $isClassValid)) {
                 $illegals[] = $students[$i];
                 continue;
             }
