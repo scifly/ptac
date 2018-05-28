@@ -108,6 +108,9 @@
         </div>
         <!-- 图文消息 -->
         <div id="mpnews-container" class="weui-cell msg-send-conicon msg-send-bg b-top" style="display: none;">
+            <div class="weui-uploader__hd">
+                <p class="weui-uploader__title">添加图文</p>
+            </div>
             <div class="weui-cell__bd">
                 <div class="weui-uploader__input-box">
                     <a href="#" class="open-popup" data-target="#mpnews"></a>
