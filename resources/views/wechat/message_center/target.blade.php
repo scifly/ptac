@@ -9,10 +9,10 @@
             ]) !!}
             <i class="weui-icon-checked"></i>
         </div>
-        <div class="weui-cell__bd">
+        <div class="weui-cell__bd clearfix">
             <img src="{{ $type == 'department' ? asset('img/department.png') : asset('img/personal.png') }}"
                  @if ($type == 'department') style="border-radius: 0;" @endif
-                 class="js-go-detail lazy" width="75" height="75">
+                 class="js-go-detail lazy target-image" width="25" height="25">
             <span class="contacts-text">
                 {{ $type == 'department' ? $target->name : $target->realname . ' - '. $target->mobiles->first()->mobile }}
             </span>
