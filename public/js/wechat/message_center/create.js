@@ -1,5 +1,25 @@
 var token = $('#csrf_token').attr('content'),
+    message = {
+        text: { content: '' },
+        image: { media_id: '' },
+        voice: { media_id: ''},
+        video: {
+            media_id: '',
+            title: '',
+            description: '',
+        },
+        file: { media_id: '' },
+        textcard: {
+            title: '',
+            description: '',
+            url: '',
+            btnTxt: ''
+        },
+        mpnews: { articles: [] },
+        sms: ''
+    },
     $msgType = $('#msg-type'),
+    $messageTypeId = $('#message_type_id'),
     $search = $('#search'),
     $send = $('#send'),
     $notification = $('#notification'),
@@ -9,6 +29,11 @@ var token = $('#csrf_token').attr('content'),
     $title = $('#title'),
     $contentContainer = $('#content-container'),
     $content = $('#content'),
+    $cardUrlContainer = $('#card-url-container'),
+    $cardUrl = $('#card-url'),
+    $btnTxtContainer = $('#btn-txt-container'),
+    $btnTxt = $('#btn-txt'),
+    $mediaId = $('#media_id'),
     $uploadContainer = $('#upload-container'),
     $upload = $('#upload'),
     $uploadTitle = $('#upload-title'),
@@ -85,6 +110,7 @@ $msgType.on('change', function () {
             $titleContainer.hide();
             $contentContainer.hide();
             $uploadContainer.show();
+            $mediaId.val('');
             $upload.attr('accept', 'image/*');
             $uploadTitle.text('上传图片');
             break;
@@ -93,6 +119,7 @@ $msgType.on('change', function () {
             $titleContainer.hide();
             $contentContainer.hide();
             $uploadContainer.show();
+            $mediaId.val('');
             $upload.attr('accept', 'audio/*');
             $uploadTitle.text('上传语音');
             break;
@@ -101,6 +128,7 @@ $msgType.on('change', function () {
             $title.attr('placeholder', '视频标题');
             $content.attr('placeholder', '视频描述');
             $uploadTitle.text('上传视频');
+            $mediaId.val('');
             $upload.attr('accept', 'video/*');
             $titleContainer.show();     // title
             $contentContainer.show();   // description
@@ -116,16 +144,18 @@ $msgType.on('change', function () {
             break;
         case 'textcard':
             $extra.hide();
-            $url.attr('placeholder', '链接地址');
+            $title.attr('placeholder', '标题');
+            $cardUrl.attr('placeholder', '链接地址');
             $titleContainer.show();     // title
             $contentContainer.show();   // description
-            $urlContainer.show();       // url
+            $cardUrlContainer.show();   // url
+            $btnTxtContainer.show();    // btnTxt
             break;
         case 'mpnews':
             $extra.hide();
             $url.attr('placeholder', '原文链接');
             $title.attr('placeholder', '标题');
-            $content.attr('placeholder', '');
+            $content.attr('placeholder', '描述');
             $uploadTitle.text('上传图片');
             $titleContainer.show();     // title
             $contentContainer.show();   // content
@@ -325,10 +355,10 @@ $uploadImage.on('change', function () {
 
 // 初始化提交消息发送请求的事件
 $send.on('click', function () {
-    content = $content.html();
     var departmentIds = [],
-        userIds = [],
-        formData,
+        userIds = [], mediaId,
+        title, text, cardUrl, btnTxt,
+        formData, content = null,
         type = $msgType.val();
 
     $chosenResults.find('a.department').each(function () {
@@ -337,69 +367,95 @@ $send.on('click', function () {
     $chosenResults.find('a.user').each(function () {
         userIds.push($(this).attr('data-uid'));
     });
+    switch (type) {
+        case 'text':
+            content = { text: { content: $content.html() }};
+            break;
+        case 'image':
+            mediaId = $mediaId.val();
+            if (mediaId === '') { $.alert('请上传图片'); return false; }
+            content = { image: { media_id: mediaId } };
+            break;
+        case 'voice':
+            mediaId = $mediaId.val();
+            if (mediaId === '') { $.alert('请上传语音'); return false; }
+            content = { voice: { media_id: mediaId } };
+            break;
+        case 'video':
+            title = $title.val();
+            text = $content.html();
+            mediaId = $mediaId.val();
+            if (mediaId === '') { $.alert('请上传视频'); return false; }
+            content = {
+                video: {
+                    media_id: mediaId,
+                    title: title,
+                    description: text
+                }
+            };
+            break;
+        case 'file':
+            mediaId = $mediaId.val();
+            if (mediaId === '') { $.alert('请上传文件'); return false; }
+            content = { file: { media_id: mediaId } };
+            break;
+        case 'textcard':
+            title = $title.val();
+            text = $content.html();
+            cardUrl = $cardUrl.val();
+            btnTxt = $btnTxt.val();
+            if (title === '' || text === '' || cardUrl === '') {
+                $.alert('标题/描述/链接地址不得为空');
+                return false;
+            }
+            content = {
+                textcard: {
+                    title: title,
+                    description: text,
+                    url: cardUrl,
+                    btntxt: btnTxt
+                }
+            };
+            break;
+        case 'mpnews':
+            if (mpnews['articles'].length === 0) {
+                $.alert('请添加图文');
+                return false;
+            }
+            content = {
+                mpnews: {
+                    articles: mpnews['articles']
+                }
+            };
+            break;
+        case 'sms':
+            text = $content.html();
+            if (text.length === 0) {
+                $.alert('请输入短信内容');
+            }
+            break;
+        default:
+            break;
+    }
+    if (userIds.length === 0 && departmentIds.length === 0) {
+        $.alert('请选择发送对象');
+        return false;
+    }
     formData = {
         _token: token,
         type: type,
         user_ids: userIds,
         dept_ids: departmentIds,
-
+        message_type_id: $messageTypeId.val()
     };
-    switch (type) {
-        case 'video':
-            content = $('#description-video').val();
-            wechatMediaId = $('#video_media_id').val();
-            mediaIds.push($('.video-id').attr('id'));
-            if (mediaIds.length === 0 || !content) {
-                $.alert('视频/描述不得为空');
-                return false;
-            }
-            break;
-        case 'image':
-            content = '0';
-            wechatMediaId = $('#image_media_id').val();
-            mediaIds.push($('.img-id').attr('id'));
-            if (mediaIds.length === 0) {
-                $.alert('请上传图片');
-                return false;
-            }
-            break;
-        case 'mpnews':
-            wechatMediaId = $('#mpnews_media_id').attr('data-content-id');
-            break;
-        case 'sms':
-            title = '短信消息';
-            break;
-        default:
-            break;
-    }
-    $('.uploadimg-item').each(function () {
-        mediaIds.push($(this).attr('data-media-id'));
-    });
-
-    if (
-        (userIds.length === 0) && (departmentIds.length === 0) ||
-        !title || !content
-    ) {
-        $.alert('发送对象/标题/内容不得为空');
-        return false;
-    }
     $.ajax({
         type: 'POST',
         dataType: 'json',
-        data: {
-            _token: token,
-            title: title,
-            content: content,
-            department_ids: departmentIds,
-            user_ids: userIds,
-            media_ids: mediaIds,
-            type: type,
-            mediaid: wechatMediaId,
-        },
+        data: $.extend(formData, content),
         url: 'store',
         success: function (result) {
             $.alert(result.message, function () {
-                window.location.href = '../message_center';
+                window.location.href = '../mc';
             });
         }
     });

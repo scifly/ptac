@@ -5,6 +5,7 @@
 @endsection
 @section('content')
     <div class="msg-send-wrap">
+        <!-- 发送对象 -->
         <div id="chosen-container" class="scui-chosen js-scui-chosen-container3 js-scui-chosen scui-form-group">
             {!! Form::label(null, '发送对象', ['class' => 'scui-control-label mr4']) !!}
             <div id="chosen-results"></div>
@@ -12,6 +13,7 @@
                 <a class="icon iconfont icon-add c-green open-popup" href="#" data-target="#targets"></a>
             </span>
         </div>
+        <!-- 信息类型 -->
         <div class="weui-cell" style="background-color: #fff;">
             <div class="weui-cell__hd">
                 {!! Form::label('msg-type', '信息类型', ['class' => 'weui-label']) !!}
@@ -24,19 +26,21 @@
                 ]) !!}
             </div>
         </div>
+        <!-- 消息类型 -->
         <div class="weui-cell" style="background-color: #fff;">
             <div class="weui-cell__hd">
-                {!! Form::label('message-type', '消息类型', ['class' => 'weui-label']) !!}
+                {!! Form::label('message_type_id', '消息类型', ['class' => 'weui-label']) !!}
             </div>
             <div class="weui-cell__bd">
-                {!! Form::select('message-type', $messageTypes, null, [
-                    'id' => 'message-type',
+                {!! Form::select('message_type_id', $messageTypes, null, [
+                    'id' => 'message_type_id',
                     'class' => 'weui-input',
                     'disabled' => sizeof($messageTypes) <= 1
                 ]) !!}
             </div>
         </div>
         <div style="height: 5px;"></div>
+        <!-- 标题(视频、卡片) -->
         <div id="title-container" class="mt5px msg-send-bg b-bottom hw-title" style="display: none;">
             <div class="weui-cell">
                 <div class="weui-cell__bd js-title">
@@ -49,24 +53,40 @@
                 </div>
             </div>
         </div>
+        <!-- 内容(文本、视频、卡片、短信) -->
         <div id="content-container" class="msg-send-conwrap msg-send-bg">
             <div contenteditable="true" id="content" class="wangEditor-mobile-txt">
                 {!! isset($message) ? $message->content : ''!!}
             </div>
         </div>
-        <div id="url-container" class="msg-send-bg b-bottom hw-title extra" style="display: none;">
+        <!-- 点击后跳转的链接(卡片) -->
+        <div id="card-url-container" class="msg-send-bg b-bottom hw-title extra" style="display: none;">
             <div class="weui-cell">
                 <div class="weui-cell__bd">
-                    {!! Form::text('url', null, [
-                        'id' => 'url',
+                    {!! Form::text('card-url', null, [
+                        'id' => 'card-url',
                         'class' => 'weui-input one-line title',
-                        'placeholder' => '原文链接(选填)',
+                        'placeholder' => '点击后跳转的地址',
+                        'maxlength' => 30
+                    ]) !!}
+                </div>
+            </div>
+        </div>
+        <!-- 按钮文字(卡片) -->
+        <div id="btn-txt-container" class="msg-send-bg b-bottom hw-title extra" style="display: none;">
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    {!! Form::text('btn-txt', null, [
+                        'id' => 'btn-txt',
+                        'class' => 'weui-input one-line title',
+                        'placeholder' => '按钮文字。默认为“详情”',
                         'maxlength' => 30
                     ]) !!}
                 </div>
             </div>
         </div>
         <div style="height: 5px;"></div>
+        <!-- 上传素材(图片、语音、视频、文件)-->
         <div id="upload-container" class="msg-send-conicon msg-send-bg b-top extra" style="display: none;">
             <div class="weui-cell__bd">
                 <div class="weui-uploader">
@@ -75,6 +95,7 @@
                     </div>
                     <div class="weui-uploader__bd">
                         <div class="weui-uploader__input-box">
+                            {!! Form::hidden('media_id', null, ['id' => 'media_id']) !!}
                             {!! Form::file('upload', [
                                 'id' => 'upload',
                                 'accept' => '',
@@ -85,6 +106,13 @@
                 </div>
             </div>
         </div>
+        <!-- 图文消息 -->
+        <div id="mpnews-container" class="msg-send-conicon msg-send-bg b-top extra" style="display: none;">
+            <div class="weui-cell__bd weui-uploader__input-box">
+                <a href="#" data-target="#mpnews"></a>
+            </div>
+        </div>
+        <!-- 定时发送 -->
         <div class="weui-cell weui-cell_switch b-top weui-cells_form mt5px msg-send-bg">
             <div class="weui-cell__bd">定时发送</div>
             <div class="weui-cell__ft">
@@ -101,10 +129,11 @@
                 </div>
             </div>
         </div>
+        <!-- 发送按钮 -->
         <div class="weui-flex mt5px">
             <div class="weui-flex__item">
                 <div class="placeholder msg-send-btn" style="padding: 15px;">
-                    <a id="send" href="#" class="weui-btn weui-btn_primary">发送消息</a>
+                    <a id="send" href="#" class="weui-btn weui-btn_primary">发送</a>
                 </div>
             </div>
         </div>
@@ -128,7 +157,7 @@
                     <div class="chosen-breadcrumb js-chosen-breadcrumb">
                         <ol class="breadcrumb js-chosen-breadcrumb-ol">
                             {{--<li data-id="{{ $schoolDept->id }}" class="js-chosen-breadcrumb-li headclick">--}}
-                                {{--<a>{{ $schoolDept->name }}</a>--}}
+                            {{--<a>{{ $schoolDept->name }}</a>--}}
                             {{--</li>--}}
                         </ol>
                     </div>
@@ -175,6 +204,67 @@
                     <span id="count"><!--  eslint-disable -->
 					    已选0个部门, 0名用户
                     </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="mpnews" class="weui-popup-container">
+        <div class="weui-popup__overlay"></div>
+        <div class="weui-popup__modal">
+            <!-- 图文标题 -->
+            <div class="weui-cell">
+                <div class="weui-cell__bd js-title">
+                    {!! Form::text('mpnews-title', null, [
+                        'id' => 'mpnews-title',
+                        'class' => 'weui-input fs18 one-line title',
+                        'placeholder' => '标题',
+                        'maxlength' => 30
+                    ]) !!}
+                </div>
+            </div>
+            <!-- 图文内容 -->
+            <div class="weui-cell">
+                <div contenteditable="true" id="mpnews-content" class="wangEditor-mobile-txt"></div>
+            </div>
+            <!-- 原文链接 -->
+            <div class="weui-cell">
+                {!! Form::text('content-source-url', null, [
+                    'id' => 'content-source-url',
+                    'placeholder' => '原文链接(可选)',
+                ]) !!}
+            </div>
+            <!-- 图文作者 -->
+            <div class="weui-cell">
+                {!! Form::text('author', null, [
+                    'id' => 'author',
+                    'placeholder' => '作者(可选)',
+                ]) !!}
+            </div>
+            <!-- 图文摘要 -->
+            <div class="weui-cell">
+                {!! Form::text('digest', null, [
+                    'id' => 'digest',
+                    'placeholder' => '摘要(可选)',
+                ]) !!}
+            </div>
+            <!-- 封面图 -->
+            <div class="msg-send-conicon msg-send-bg b-top extra">
+                <div class="weui-cell__bd">
+                    <div class="weui-uploader">
+                        <div class="weui-uploader__hd">
+                            <p id="upload-title" class="weui-uploader__title"></p>
+                        </div>
+                        <div class="weui-uploader__bd">
+                            <div class="weui-uploader__input-box">
+                                {!! Form::hidden('thumb_media_id', null, ['id' => 'media_id']) !!}
+                                {!! Form::file('mpnews-upload', [
+                                    'id' => 'mpnews-upload',
+                                    'accept' => '',
+                                    'class' => 'weui-uploader__input'
+                                ]) !!}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

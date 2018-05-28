@@ -303,7 +303,7 @@ class Message extends Model {
             __('messages.message.empty_targets')
         );
         $apps = App::whereIn('id', $data['app_ids'])->get()->toArray();
-        $corp = School::find($this->schoolId())->corp;
+        $corp = School::find($this->schoolId() ?? session('schoolId'))->corp;
         abort_if(!$corp, HttpStatusCode::NOT_FOUND, __('messages.message.invalid_corp'));
         SendMessage::dispatch($data, Auth::id(), $corp, $apps);
         
