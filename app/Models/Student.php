@@ -9,6 +9,7 @@ use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
+use App\Jobs\ImportStudent;
 use App\Rules\Mobiles;
 use Carbon\Carbon;
 use Eloquent;
@@ -353,9 +354,9 @@ class Student extends Model {
         $ext = $file->getClientOriginalExtension();     // 扩展名//xls
         $realPath = $file->getRealPath();   // 临时文件的绝对路径
         // 上传文件
-        $filename = date('His') . uniqid() . '.' . $ext;
+        $filename = uniqid() . '.' . $ext;
         $stored = Storage::disk('uploads')->put(
-            $filename, file_get_contents($realPath)
+            date('Y/m/d/', time()) . $filename, file_get_contents($realPath)
         );
         if ($stored) {
             $spreadsheet = IOFactory::load(
@@ -382,8 +383,8 @@ class Student extends Model {
             }
             $data['user'] = Auth::user();
             $data['type'] = 'student';
-            event(new ContactImportTrigger($data));
-
+            // event(new ContactImportTrigger($data));
+            ImportStudent::dispatch($this->uploadedFilePath($filename), Auth::id());
             return true;
         }
         
