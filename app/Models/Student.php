@@ -328,9 +328,11 @@ class Student extends Model {
             );
             // 文件是否上传成功
             if ($file->isValid()) {
-                return response()->json(
-                    $this->upload($file)
-                );
+                if ($this->upload($file)) {
+                    return response()->json(['message' => __('messages.message.uploaded')]);
+                } else {
+                    return response()->json(['message' => __('messages.fail')], HttpStatusCode::NOT_ACCEPTABLE);
+                }
             }
         }
     
