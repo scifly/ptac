@@ -386,7 +386,7 @@ class Student extends Model {
             $data['user'] = Auth::user();
             $data['type'] = 'student';
             // event(new ContactImportTrigger($data));
-            ImportStudent::dispatch($this->uploadedFilePath($filename), Auth::id());
+            ImportStudent::dispatch($filename, Auth::id());
             return true;
         }
         
