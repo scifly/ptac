@@ -271,15 +271,17 @@
             },
             onConfirmImportClick: function (table) {
                 $('#confirm-import').off('click').on('click', function () {
+                    var formData = new FormData();
+
+                    formData.append('_token', contact.token());
+                    formData.append('file', $('#fileupload')[0].files[0]);
                     page.inform("导入通讯录", '正在导入中...', page.info);
+
                     $.ajax({
                         type: 'POST',
                         dataType: 'json',
                         url: '../' + table + '/import',
-                        data: {
-                            file: $('#fileupload')[0].files[0],
-                            _token: contact.token()
-                        },
+                        data: formData,
                         success: function (result) {
                             page.inform(
                                 '导入通讯录', result.message,
