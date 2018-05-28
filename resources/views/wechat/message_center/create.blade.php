@@ -88,7 +88,7 @@
         <div style="height: 5px;"></div>
         <!-- 上传素材(图片、语音、视频、文件) -->
         <div id="upload-container" class="msg-send-conicon msg-send-bg b-top extra" style="display: none;">
-            <div class="weui-cell__bd">
+            <div class="weui-cell">
                 <div class="weui-uploader">
                     <div class="weui-uploader__hd">
                         <p id="upload-title" class="weui-uploader__title"></p>
