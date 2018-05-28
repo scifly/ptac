@@ -113,23 +113,23 @@ class ImportStudent implements ShouldQueue {
         # 需要添加的数据
         $inserts = [];
         for ($i = 0; $i < count($students); $i++) {
-            $schoolName = $students[$i][3];
-            $gradeName = $students[$i][4];
-            $className = $students[$i][5];
+            $schoolName = $students[$i]['C'];
+            $gradeName = $students[$i]['D'];
+            $className = $students[$i]['E'];
             $sn = $students[$i][7];
             $user = [
-                'name'           => $students[$i][0],
-                'gender'         => $students[$i][1],
-                'birthday'       => $students[$i][2],
+                'name'           => $students[$i]['A'],
+                'gender'         => $students[$i]['B'],
+                'birthday'       => $students[$i]['C'],
                 'school'         => $schoolName,
                 'grade'          => $gradeName,
                 'class'          => $className,
-                'mobile'         => $students[$i][6],
+                'mobile'         => $students[$i]['F'],
                 'student_number' => $sn,
-                'card_number'    => $students[$i][8],
-                'oncampus'       => $students[$i][9],
-                'remark'         => $students[$i][10],
-                'relationship'   => $students[$i][11],
+                'card_number'    => $students[$i]['H'],
+                'oncampus'       => $students[$i]['I'],
+                'remark'         => $students[$i]['J'],
+                'relationship'   => $students[$i]['K'],
                 'class_id'       => 0,
                 'department_id'  => 0,
             ];
