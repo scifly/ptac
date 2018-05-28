@@ -205,12 +205,8 @@
                             </div>
                         </label>
                     </div>
-                    {{--<span class="scui-pull-right js-chosen-sure def-color chosen-enable" id="confirm">--}}
-                        {{--确定<i class="expand"></i>--}}
-                    {{--</span>--}}
                     <a id="confirm" href="#" class="scui-pull-right weui-btn weui-btn_mini weui-btn_primary close-popup">确定</a>
-                    <span id="count"><!--  eslint-disable -->
-					    已选0个部门, 0名用户
+                    <span id="count">已选0个部门, 0名用户
                     </span>
                 </div>
             </div>
@@ -308,7 +304,8 @@
                     </div>
                 </div>
             </div>
-            <div class="mt5px">
+            <div style="height: 5px;"></div>
+            <div class="weui-cell scui-pull-right">
                 <a id="add" href="#" class="weui-btn weui-btn_mini weui-btn_primary close-popup">确定</a>
                 <a id="add" href="#" class="weui-btn weui-btn_mini weui-btn_default close-popup">取消</a>
                 <a id="add" href="#" class="weui-btn weui-btn_mini weui-btn_warn close-popup">删除</a>
