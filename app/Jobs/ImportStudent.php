@@ -52,6 +52,8 @@ class ImportStudent implements ShouldQueue {
      */
     public function handle() {
 
+        Log::debug('filename: ' . $this->filename);
+        
         $response = $response = [
             'userId' => $this->userId,
             'title' => '批量导入学籍',
