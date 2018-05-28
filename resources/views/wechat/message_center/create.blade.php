@@ -107,9 +107,11 @@
             </div>
         </div>
         <!-- 图文消息 -->
-        <div id="mpnews-container" class="msg-send-conicon msg-send-bg b-top" style="display: none;">
-            <div class="weui-cell__bd weui-uploader__input-box">
-                <a href="#" class="open-popup" data-target="#mpnews"></a>
+        <div id="mpnews-container" class="weui-cell msg-send-conicon msg-send-bg b-top" style="display: none;">
+            <div class="weui-cell__bd">
+                <div class="weui-uploader__input-box">
+                    <a href="#" class="open-popup" data-target="#mpnews"></a>
+                </div>
             </div>
         </div>
         <!-- 定时发送 -->
