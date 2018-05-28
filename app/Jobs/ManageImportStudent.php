@@ -56,7 +56,7 @@ class ManageImportStudent implements ShouldQueue {
                             'realname'   => $row['name'],
                             'gender'     => $row['gender'] == '男' ? '0' : '1',
                             'avatar_url' => '00001.jpg',
-                            'userid'     => uniqid('custodian_'),
+                            'userid'     => uniqid('student_'),
                             'isleader'   => 0,
                             'enabled'    => 1,
                         ]);
