@@ -33,7 +33,7 @@ class ImportStudent implements ShouldQueue {
     protected $students, $userId;
     
     const EXCEL_FILE_TITLE = [
-        '姓名', '性别', '生日', '学校',
+        '姓名', '性别', '学校', '生日',
         '年级', '班级', '手机号码',
         '学号', '卡号', '住校',
         '备注', '监护关系',
@@ -119,31 +119,28 @@ class ImportStudent implements ShouldQueue {
         $inserts = [];
         for ($i = 0; $i < count($students); $i++) {
             $schoolName = $students[$i]['C'];
-            $gradeName = $students[$i]['D'];
-            $className = $students[$i]['E'];
-            $sn = $students[$i]['G'];
+            $gradeName = $students[$i]['E'];
+            $className = $students[$i]['F'];
+            $sn = $students[$i]['H'];
             $user = [
                 'name'           => $students[$i]['A'],
                 'gender'         => $students[$i]['B'],
-                'birthday'       => $students[$i]['C'],
+                'birthday'       => $students[$i]['D'],
                 'school'         => $schoolName,
                 'grade'          => $gradeName,
                 'class'          => $className,
-                'mobile'         => $students[$i]['F'],
+                'mobile'         => $students[$i]['G'],
                 'student_number' => $sn,
-                'card_number'    => $students[$i]['H'],
-                'oncampus'       => $students[$i]['I'],
-                'remark'         => $students[$i]['J'],
-                'relationship'   => $students[$i]['K'],
+                'card_number'    => $students[$i]['I'],
+                'oncampus'       => $students[$i]['J'],
+                'remark'         => $students[$i]['K'],
+                'relationship'   => $students[$i]['L'],
                 'class_id'       => 0,
                 'department_id'  => 0,
             ];
             $isValid = Validator::make($user, $rules)->fails();
-            Log::debug(json_encode(School::whereName($schoolName)->first()));
             $school = $isValid ? School::whereName($schoolName)->first() : null;
-            Log::debug('school_id: ' . $school->id . '::::' . json_encode($this->schoolIds($this->userId)));
             $isSchoolValid = $school ? in_array($school->id, $this->schoolIds($this->userId)) : false;
-            Log::debug('isValid? ' . $isSchoolValid);
             $grade = $school ? Grade::whereName($gradeName)->where('school_id', $school->id)->first() : null;
             $isGradeValid = $grade ? in_array($grade->id, $this->gradeIds($school->id, $this->userId)) : false;
             $class = $grade ? Squad::whereName($className)->where('grade_id', $grade->id)->first() : null;
