@@ -139,8 +139,8 @@ class ImportStudent implements ShouldQueue {
                 'department_id'  => 0,
             ];
             $isValid = Validator::make($user, $rules)->fails();
-            Log::debug('isValid? ' . $isValid);
             $school = $isValid ? School::whereName($schoolName)->first() : null;
+            Log::debug('isValid? ' . $isValid);
             $isSchoolValid = $school ? in_array($school->id, $this->schoolIds($this->userId)) : false;
             $grade = $school ? Grade::whereName($gradeName)->where('school_id', $school->id)->first() : null;
             $isGradeValid = $grade ? in_array($grade->id, $this->gradeIds($school->id, $this->userId)) : false;
