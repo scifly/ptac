@@ -2,6 +2,7 @@
 namespace App\Jobs;
 
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Validator;
 use App\Models\User;
 use App\Models\Grade;
@@ -138,6 +139,7 @@ class ImportStudent implements ShouldQueue {
                 'department_id'  => 0,
             ];
             $isValid = Validator::make($user, $rules)->fails();
+            Log::debug('isValid? ' . $isValid);
             $school = $isValid ? School::whereName($schoolName)->first() : null;
             $isSchoolValid = $school ? in_array($school->id, $this->schoolIds($this->userId)) : false;
             $grade = $school ? Grade::whereName($gradeName)->where('school_id', $school->id)->first() : null;
