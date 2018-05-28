@@ -37,7 +37,7 @@ var token = $('#csrf_token').attr('content'),
     $uploadContainer = $('#upload-container'),
     $upload = $('#upload'),
     $uploadTitle = $('#upload-title'),
-    $urlContainer = $('#url-container'),
+    $mpnewsContainer = $('#mpnews-container'),
     $url = $('#url'),
 
     $targetsContainer = $('#targets-container'),
@@ -52,9 +52,7 @@ var token = $('#csrf_token').attr('content'),
     maxCount = 6,  // 最大上传图片数量
     tmp = 1,
     title = $title.val(),
-    content = '',
-    mediaIds = [],
-    wechatMediaId = '';
+    content = '';
 
 // 初始化发送对象选择事件
 $(document).on('change', '.target-check', function () {
@@ -101,14 +99,16 @@ $msgType.on('change', function () {
     $content.html('');
     switch (type) {
         case 'text':
-            $titleContainer.hide();
             $extra.hide();
+            $titleContainer.hide();
+            $mpnewsContainer.hide();
             $contentContainer.show();
             break;
         case 'image':
             $extra.hide();
             $titleContainer.hide();
             $contentContainer.hide();
+            $mpnewsContainer.hide();
             $uploadContainer.show();
             $mediaId.val('');
             $upload.attr('accept', 'image/*');
@@ -118,6 +118,7 @@ $msgType.on('change', function () {
             $extra.hide();
             $titleContainer.hide();
             $contentContainer.hide();
+            $mpnewsContainer.hide();
             $uploadContainer.show();
             $mediaId.val('');
             $upload.attr('accept', 'audio/*');
@@ -125,6 +126,7 @@ $msgType.on('change', function () {
             break;
         case 'video':
             $extra.hide();
+            $mpnewsContainer.hide();
             $title.attr('placeholder', '视频标题');
             $content.attr('placeholder', '视频描述');
             $uploadTitle.text('上传视频');
@@ -138,12 +140,14 @@ $msgType.on('change', function () {
             $extra.hide();
             $titleContainer.hide();
             $contentContainer.hide();
+            $mpnewsContainer.hide();
             $uploadContainer.show();
             $upload.attr('accept', '*');
             $uploadTitle.text('上传文件');
             break;
         case 'textcard':
             $extra.hide();
+            $mpnewsContainer.hide();
             $title.attr('placeholder', '标题');
             $cardUrl.attr('placeholder', '链接地址');
             $titleContainer.show();     // title
@@ -153,16 +157,13 @@ $msgType.on('change', function () {
             break;
         case 'mpnews':
             $extra.hide();
-            $url.attr('placeholder', '原文链接');
-            $title.attr('placeholder', '标题');
-            $content.attr('placeholder', '描述');
-            $uploadTitle.text('上传图片');
-            $titleContainer.show();     // title
-            $contentContainer.show();   // content
-            $uploadContainer.show();    // media_ids
+            $titleContainer.hide();
+            $contentContainer.hide();
+            $mpnewsContainer.show();
             break;
         case 'sms':
             $extra.hide();
+            $mpnewsContainer.hide();
             $titleContainer.hide();
             $contentContainer.show();
             break;

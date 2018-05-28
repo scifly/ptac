@@ -30,8 +30,6 @@ class MessageCenterCreateComposer {
         $view->with([
             'schoolDept'   => Department::find(School::find(session('schoolId'))->department_id),
             'departments'  => Department::whereIn('id', $this->departmentIds($user->id, session('schoolId')))->get(),
-            // 'gradeDepts'   => $this->grade->departments($user->id),
-            // 'classDepts'   => $this->squad->departments($user->id),
             'messageTypes' => MessageType::pluck('name', 'id'),
             'msgTypes'     => [
                 'text'     => '文本',

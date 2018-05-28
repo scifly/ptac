@@ -86,7 +86,7 @@
             </div>
         </div>
         <div style="height: 5px;"></div>
-        <!-- 上传素材(图片、语音、视频、文件)-->
+        <!-- 上传素材(图片、语音、视频、文件) -->
         <div id="upload-container" class="msg-send-conicon msg-send-bg b-top extra" style="display: none;">
             <div class="weui-cell__bd">
                 <div class="weui-uploader">
@@ -107,9 +107,9 @@
             </div>
         </div>
         <!-- 图文消息 -->
-        <div id="mpnews-container" class="msg-send-conicon msg-send-bg b-top extra" style="display: none;">
+        <div id="mpnews-container" class="msg-send-conicon msg-send-bg b-top" style="display: none;">
             <div class="weui-cell__bd weui-uploader__input-box">
-                <a href="#" data-target="#mpnews"></a>
+                <a href="#" class="open-popup" data-target="#mpnews"></a>
             </div>
         </div>
         <!-- 定时发送 -->
@@ -208,7 +208,7 @@
             </div>
         </div>
     </div>
-    <div id="mpnews" class="weui-popup-container">
+    <div id="mpnews" class="weui-popup__container">
         <div class="weui-popup__overlay"></div>
         <div class="weui-popup__modal">
             <!-- 图文标题 -->
@@ -230,6 +230,7 @@
             <div class="weui-cell">
                 {!! Form::text('content-source-url', null, [
                     'id' => 'content-source-url',
+                    'class' => 'weui-input',
                     'placeholder' => '原文链接(可选)',
                 ]) !!}
             </div>
@@ -237,6 +238,7 @@
             <div class="weui-cell">
                 {!! Form::text('author', null, [
                     'id' => 'author',
+                    'class' => 'weiui-input',
                     'placeholder' => '作者(可选)',
                 ]) !!}
             </div>
@@ -244,11 +246,12 @@
             <div class="weui-cell">
                 {!! Form::text('digest', null, [
                     'id' => 'digest',
+                    'class' => 'weui-input',
                     'placeholder' => '摘要(可选)',
                 ]) !!}
             </div>
             <!-- 封面图 -->
-            <div class="msg-send-conicon msg-send-bg b-top extra">
+            <div class="msg-send-conicon msg-send-bg b-top">
                 <div class="weui-cell__bd">
                     <div class="weui-uploader">
                         <div class="weui-uploader__hd">
