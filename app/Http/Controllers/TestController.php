@@ -260,7 +260,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        dd(School::whereName('成都外国语学校')->first());
+        dd(json_encode(School::whereName('成都外国语学校')->first()));
         try {
             DB::transaction(function () {
                 $school = School::find(2);
