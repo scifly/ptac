@@ -262,8 +262,12 @@ class TestController extends Controller {
      * @throws Exception
      */
     public function index() {
-
-        
+    
+    
+        $sent = Message::whereSUserId(1)->get()
+            ->unique('msl_id')->sortByDesc('created_at')
+            ->groupBy('message_type_id');
+        dd($sent->toArray());
         $messages = Message::all();
         foreach ($messages as $key => $message) {
             echo $key . ' : ' . $message->id . '<br />';
