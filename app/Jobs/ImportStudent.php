@@ -223,6 +223,7 @@ class ImportStudent implements ShouldQueue {
                                         'userid'     => uniqid('custodian_'),
                                         'isleader'   => 0,
                                         'enabled'    => 1,
+                                        'synced'     => 0
                                     ]);
                                     # 创建监护人
                                     $c = Custodian::create(['user_id' => $user['id']]);
