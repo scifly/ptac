@@ -189,7 +189,7 @@ $(document).on('click', '.targets', function () {
             _token: token
         },
         success: function (result) {
-            var html = '';
+            var html = result['targets'].length === 0 ? '暂无' : '';
             $('#back').show();
             $('#deptId').val(id);
             for (var i = 0; i < result['targets'].length; i++) {

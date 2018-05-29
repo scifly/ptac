@@ -175,7 +175,7 @@
                             {{--</li>--}}
                         {{--</ol>--}}
                     {{--</div>--}}
-                    <div class="weui-cell" id="back">
+                    <div class="weui-cell" id="back" style="display: none;">
                         <div class="weui-cell_bd">
                             <a href="#" class="weui-btn weui-btn_plain-default">返回部门列表</a>
                             {!! Form::hidden('deptId', null, ['id' => 'deptId']) !!}
