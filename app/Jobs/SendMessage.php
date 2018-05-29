@@ -82,7 +82,7 @@ class SendMessage implements ShouldQueue {
             }
             # 创建用户消息发送日志
             $message->log(
-                $users, $this->userId, $mslId, '', $this->data['sms'],
+                $users, $this->userId, $mslId, $this->data['title'], $this->data['sms'],
                 $result <= 0, $result <= 0, $this->data['message_type_id']
             );
         } else {
@@ -100,7 +100,7 @@ class SendMessage implements ShouldQueue {
                 $result = $this->sendMessage($this->corp, $app, $content);
                 # 创建用户消息发送日志
                 $message->log(
-                    $users, $this->userId, $mslId, '', json_encode($content),
+                    $users, $this->userId, $mslId, $this->data['title'], json_encode($content),
                     $result, 0, $this->data['message_type_id'], $app['id']
                 );
                 $results[$app['id']] = $result;

@@ -1,8 +1,10 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Helpers\Constant;
 use App\Models\App;
 use App\Models\CommType;
+use App\Models\MessageType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
@@ -46,7 +48,8 @@ class MessageRequest extends FormRequest {
             : CommType::whereName('应用')->first()->id;
         $input['app_id'] = 0;
         $input['msl_id'] = 0;
-        $input['title'] = $input['type'];
+        $input['title'] = MessageType::find($input['message_type_id'])->name
+            . '(' . Constant::INFO_TYPES[$input['type']] . ')';
         $input['serviceid'] = '0';
         $input['message_id'] = 0;
         $input['url'] = "http://";
