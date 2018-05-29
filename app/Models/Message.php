@@ -7,20 +7,16 @@ use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
-use App\Http\Requests\MessageRequest;
 use App\Jobs\SendMessage;
 use Carbon\Carbon;
 use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Storage;
 use Throwable;
 
 /**
@@ -127,82 +123,21 @@ class Message extends Model {
     /**
      * 创建并发送消息
      *
-     * @param MessageRequest $request
+     * @param array $data
      * @return bool
-     * @throws Exception
-     * @throws Throwable
      */
-    function store(MessageRequest $request) {
-        
-        list($users, $mobiles) = $this->targets(
-            $request['user_ids'], $request['department_ids']
+    function store(array $data) {
+    
+        abort_if(
+            empty($data['user_ids']) && empty($data['dept_ids']) && empty($data['app_ids']),
+            HttpStatusCode::NOT_ACCEPTABLE,
+            __('messages.message.empty_targets')
         );
-        #判断是否是短信，调用接口不一样
-        $msl = MessageSendingLog::create([
-            'read_count'      => count($users),
-            'received_count'  => count($users),
-            'recipient_count' => count($users),
-        ]);
-        if ($request['type'] == 'sms') {
-            try {
-                DB::transaction(function () use ($request, $msl, $users, $mobiles) {
-                    $request['content']['media_ids'] = 0;
-                    $result = $this->sendSms($mobiles, $request['content']);
-                    $sent = $read = count($users);
-                    if ($result > 0) {
-                        $sent = $read = 0;
-                        $msl->update([
-                            'received_count'  => $sent,
-                            'recipient_count' => $read,
-                        ]);
-                    }
-                    $this->log($users, $msl->id, 'n/a', $request['content'], $sent, $read);
-                });
-            } catch (Exception $e) {
-                throw $e;
-            }
-        } else {
-            try {
-                DB::transaction(function () use ($request, $msl, $users) {
-                    $request['content']['media_ids'] = isset($request['media_ids'])
-                        ? implode(',', $request['media_ids']) : 0;
-                    /** @var User $user */
-                    foreach ($users as $user) {
-                        $messageData = [
-                            'title'           => $request['title'],
-                            'comm_type_id'    => CommType::whereName('应用')->first()->id,
-                            'app_id'          => App::whereName('消息中心')->first()->id,
-                            'msl_id'          => $request['msl_id'],
-                            'content'         => $request['content'],
-                            'serviceid'       => 0,
-                            'message_id'      => 0,
-                            'url'             => '0',
-                            'media_ids'       => $request['media_ids'],
-                            's_user_id'       => Auth::id(),
-                            'r_user_id'       => $user->id,
-                            'message_type_id' => MessageType::whereName('消息通知')->first()->id,
-                            'read'            => 0,
-                            'sent'            => 0,
-                        ];
-                        $message = $this->message->create($messageData);
-                        //这里的判断是无效的，应该放在应用发送后返回正确的状态值后
-                        $message->sent = 1;
-                        $message->save();
-                        #更新msl表
-                        $msl->received_count = $msl->received_count + 1;
-                        $msl->save();
-                    }
-                    #推送微信服务器且显示详情页
-                    $msg = $this->message->where('msl_id', $request['msl_id'])->first();
-                    $url = 'http://weixin.028lk.com/message_show/' . $msg->id;
-                    
-                    return $this->frontSendMessage($request, $url);
-                });
-            } catch (Exception $e) {
-                throw $e;
-            }
-        }
-        
+        $apps = App::whereIn('id', $data['app_ids'])->get()->toArray();
+        $corp = School::find($this->schoolId() ?? session('schoolId'))->corp;
+        abort_if(!$corp, HttpStatusCode::NOT_FOUND, __('messages.message.invalid_corp'));
+        SendMessage::dispatch($data, Auth::id(), $corp, $apps);
+    
         return true;
         
     }
@@ -667,31 +602,6 @@ class Message extends Model {
         return $response;
         
     }
-    
-    /**
-     * 移除媒体对象
-     *
-     * @param $request
-     * @throws Exception
-     */
-    private function removeMedias(MessageRequest $request) {
-        
-        //删除原有的图片
-        $mediaIds = $request->input('del_ids');
-        if ($mediaIds) {
-            $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
-            foreach ($medias as $media) {
-                $paths = explode("/", $media->path);
-                Storage::disk('uploads')->delete($paths[5]);
-            }
-            try {
-                Media::whereIn('id', $mediaIds)->delete();
-            } catch (Exception $e) {
-                throw $e;
-            }
-        }
-    }
-    
     
 }
 

@@ -108,7 +108,9 @@ class MessageCenterController extends Controller {
     public function store(MessageRequest $request) {
         
         return $this->result(
-            $this->message->store($request)
+            $this->message->send(
+                $request->all()
+            )
         );
         
     }
