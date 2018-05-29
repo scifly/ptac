@@ -54,6 +54,7 @@ var token = $('#csrf_token').attr('content'),
     $mpUrl = $('#content-source-url'),
     $mpAuthor = $('#author'),
     $mpDigest = $('#digest'),
+    $mpUploadTitle = $('#mp-upload-title'),
     $mpUpload = $('#mpnews-upload'),
     $mpMediaId = $('#thumb_media_id'),
     $add = $('#add'),
@@ -279,17 +280,19 @@ $upload.on('focus change', '#upload #mpnews-upload', function () {
 $upload.on('focus change', function() { upload(this, false); });
 
 /** 图文消息 */
+// 添加图文消息
 $addMpnews.on('click', function () {
-    if (mpnewsCount >= 0) {
+    if (mpnewsCount >= 8) {
         $.alert('一条图文消息最多包含8个图文');
         return false;
     }
     $mpTitle.val('');
-    $mpContent.val('').attr('placeholder', '描述(选填)');
     $mpMediaId.val('');
     $mpAuthor.val('').attr('placeholder', '(选填)');
     $mpUrl.val('').attr('placeholder', '(选填)');
     $mpDigest.val('').attr('placeholder', '(选填)');
+    $mpUploadTitle.val('封面图');
+    $mpUpload.val('');
     $('#mpnews').popup();
 });
 // 上传封面图
