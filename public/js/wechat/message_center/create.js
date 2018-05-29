@@ -363,7 +363,7 @@ $add.on('click', function () {
         mpnews['articles'][id] = article;
         $mpnews.attr('style', '"background-image:url(' + filepath + ')"');
     }
-    $('#mpnews').closePopup();
+    $.closePopup();
 });
 // 编辑图文
 $(document).on('click', '.weui-uploader__file', function () {
