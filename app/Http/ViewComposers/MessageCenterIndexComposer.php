@@ -49,7 +49,7 @@ class MessageCenterIndexComposer {
     private function formatDateTime(array &$data, $direction) {
         
         foreach ($data as $type => &$messages) {
-            foreach ($messages as $message) {
+            foreach ($messages as &$message) {
                 Carbon::setLocale('zh');
                 $dt = Carbon::createFromFormat('Y-m-d H:i:s', $message['created_at']);
                 $message['created_at'] = $dt->diffForHumans();
