@@ -528,7 +528,7 @@ class Student extends Model {
             [
                 'db'        => 'Student.enabled', 'dt' => 11,
                 'formatter' => function ($d, $row) {
-                    return $this->syncStatus($d, $row); # Datatable::dtOps($d, $row, false);
+                    return $this->syncStatus($d, $row);
                 },
             ],
             ['db' => 'User.synced', 'dt' => 12]
