@@ -175,8 +175,10 @@
                             {{--</li>--}}
                         {{--</ol>--}}
                     {{--</div>--}}
-                    <a href="#" class="weui-btn weui-btn_plain-default" id="back" style="display: none;">返回部门列表</a>
-                    {!! Form::hidden('deptId', null, ['id' => 'deptId']) !!}
+                    <div class="weui-cell">
+                        <a href="#" class="weui-btn weui-btn_plain-default" id="back" style="display: none;">返回部门列表</a>
+                        {!! Form::hidden('deptId', null, ['id' => 'deptId']) !!}
+
                     {{--<div class="weui-cell" id="back" style="display: none;">--}}
                         {{--<div class="weui-cell_bd">--}}
                             {{----}}
@@ -202,6 +204,7 @@
                             </div>
                         </div>
                         <div style="height: 40px;"></div>
+                    </div>
                     </div>
                 </div>
                 <div class="chosen-footer js-chosen-footer">
