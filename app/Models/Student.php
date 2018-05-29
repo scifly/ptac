@@ -531,6 +531,7 @@ class Student extends Model {
                     return $this->syncStatus($d, $row); # Datatable::dtOps($d, $row, false);
                 },
             ],
+            ['db' => 'User.synced', 'dt' => 12]
         ];
         $joins = [
             [
