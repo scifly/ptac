@@ -81,17 +81,16 @@ class MessageCenterController extends Controller {
     /**
      * 创建消息
      *
-     * @param $departmentId
      * @return Factory|JsonResponse|View
      * @throws Throwable
      */
-    public function create($departmentId = null) {
+    public function create() {
         
         if (Request::method() == 'POST') {
             return Request::has('file')
                 ? $this->message->upload()
                 : response()->json(
-                    $this->message->search($departmentId)
+                    $this->message->search()
                 );
         }
         

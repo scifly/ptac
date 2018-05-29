@@ -113,8 +113,11 @@
                     <div class="weui-uploader__hd">
                         <p class="weui-uploader__title">添加图文</p>
                     </div>
-                    <div class="weui-uploader__bd" id="mps">
-                        <a id="add-mpnews" href="#" class="open-popup weui-uploader__input-box"{{-- data-target="#mpnews"--}}></a>
+                    <div class="weui-uploader__bd">
+                        <ul class="weui-uploader__files" id="mpnews-list">
+
+                        </ul>
+                        <a id="add-mpnews" href="#" class="open-popup weui-uploader__input-box"></a>
                     </div>
                 </div>
             </div>
@@ -166,6 +169,10 @@
                             {{--<li data-id="{{ $schoolDept->id }}" class="js-chosen-breadcrumb-li headclick">--}}
                             {{--<a>{{ $schoolDept->name }}</a>--}}
                             {{--</li>--}}
+                            <li style="display: none;" id="back">
+                                返回部门列表
+                                {!! Form::hidden('deptId', null, ['id' => 'deptId']) !!}
+                            </li>
                         </ol>
                     </div>
                     <div class="chosen-items js-chosen-items">
@@ -215,6 +222,7 @@
     <div id="mpnews" class="weui-popup__container">
         <div class="weui-popup__overlay"></div>
         <div class="weui-popup__modal" style="background-color: #fff;">
+            {!! Form::hidden('mpnews-id', null, ['id' => 'mpnews-id']) !!}
             <!-- 图文标题 -->
             <div class="weui-cell">
                 <div class="weui-uploader__hd">
@@ -294,9 +302,10 @@
                         <div class="weui-uploader__bd">
                             <div class="weui-uploader__input-box">
                                 {!! Form::hidden('thumb_media_id', null, ['id' => 'media_id']) !!}
+                                {!! Form::hidden('mp-file-path', null, ['id' => 'mp-file-path']) !!}
                                 {!! Form::file('mpnews-upload', [
                                     'id' => 'mpnews-upload',
-                                    'accept' => '',
+                                    'accept' => 'image/*',
                                     'class' => 'weui-uploader__input'
                                 ]) !!}
                             </div>
@@ -306,9 +315,9 @@
             </div>
             <div style="height: 5px;"></div>
             <div class="weui-cell scui-pull-right">
-                <a id="add" href="#" class="btn-mpnews weui-btn weui-btn_mini weui-btn_primary close-popup">确定</a>
-                <a id="cancel" href="#" class="btn-mpnews weui-btn weui-btn_mini weui-btn_default close-popup">取消</a>
-                <a id="delete" href="#" class="btn-mpnews weui-btn weui-btn_mini weui-btn_warn close-popup">删除</a>
+                <a id="add" href="#" class="btn-mpnews weui-btn weui-btn_mini weui-btn_primary">确定</a>
+                <a id="cancel" href="#" class="btn-mpnews weui-btn weui-btn_mini weui-btn_default">取消</a>
+                <a id="delete" href="#" class="btn-mpnews weui-btn weui-btn_mini weui-btn_warn">删除</a>
             </div>
         </div>
     </div>

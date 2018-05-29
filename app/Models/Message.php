@@ -586,27 +586,55 @@ class Message extends Model {
     
         # 搜索发送对象
         $user = Auth::user();
-        $response = [];
-        $keyword = Request::input('keyword');
-        if (empty($keyword)) {
-            $response = [
-                'gradeDepts' => (new Grade())->departments($user->id),
-                'classDepts' => (new Squad())->departments($user->id),
-                'schoolDept' => Department::find($user->educator->school->department_id),
-                'users'      => [],
-            ];
-        }
-        if (!in_array($user->group->name, Constant::SUPER_ROLES)) {
-            $keyword = '%' . $keyword . '%';
-            $studentIds = $this->contactIds('student', $user, $user->educator->school_id);
-            $userIds = Student::whereIn('id', $studentIds)->get()->pluck('user_id')->toArray();
-            $users = User::whereIn('id', $userIds)->where('realname', 'like', $keyword)->get();
-            $response = [
-                'users' => $users,
-            ];
+        $schoolId = $user->educator
+            ? $user->educator->school_id
+            : session('schoolId');
+        $targets = [];
+        if (Request::has('departmentId')) {
+            $users = Department::find(Request::input('departmentId'))->users;
+            foreach ($users as $user) {
+                if ($user->custodian) {
+                    $targets = [
+                        'id' => $user->id,
+                        'name' => $user->realname
+                    ];
+                }
+            }
+        } else {
+            $keyword = Request::input('keyword');
+            $target = Request::input('type');
+            switch ($target) {
+                case 'list': # 所有可见部门
+                    $targets = Department::whereIn('id', $this->departmentIds($user->id, $schoolId))
+                        ->get(['id', 'name'])->toArray();
+                    break;
+                case 'department': # 搜索指定的部门
+                    $targets = Department::whereIn('id', $this->departmentIds($user->id, $schoolId))
+                        ->where('name', 'like', '%' . $keyword . '%')
+                        ->get(['id', 'name'])->toArray();
+                    break;
+                case 'user': # 搜索指定的用户
+                    $deptId = Request::input('deptId');
+                    $deptUserIds = Department::find($deptId)->users->pluck('id')->toArray();
+                    $users = User::whereIn('id', $deptUserIds)
+                        ->where('realname', 'like', '%' . $keyword . '%')
+                        ->get();
+                    $targets = [];
+                    foreach ($users as $user) {
+                        if ($user->custodian) {
+                            $targets = [
+                                'id' => $user->id,
+                                'name' => $user->realname
+                            ];
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
         
-        return $response;
+        return ['targets' => $targets];
         
     }
     

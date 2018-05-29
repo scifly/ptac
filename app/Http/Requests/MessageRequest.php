@@ -45,7 +45,7 @@ class MessageRequest extends FormRequest {
             : CommType::whereName('应用')->first()->id;
         $input['app_id'] = 0;
         $input['msl_id'] = 0;
-        $input['title'] = $input['title'] ?? 'n/a';
+        $input['title'] = $input['type'];
         $input['serviceid'] = '0';
         $input['message_id'] = 0;
         $input['url'] = "http://";
@@ -66,10 +66,10 @@ class MessageRequest extends FormRequest {
                     $deptIds[] = $targetId;
                 }
             }
+            $input['user_ids'] = array_unique($userIds);
+            $input['dept_ids'] = array_unique($deptIds);
         }
-        $input['user_ids'] = array_unique($userIds);
-        $input['dept_ids'] = array_unique($deptIds);
-        
+
         $this->replace($input);
         
     }

@@ -45,10 +45,13 @@ var token = $('#csrf_token').attr('content'),
     $uploadTitle = $('#upload-title'),
 
     // 消息 - 图文
+    $mpnews = $('#mpnews'),
     mpnews = { articles: [] },  // 文章数组
     mpnewsCount = mpnews['articles'].length,    // 文章数量
+    $mpnewsList = $('#mpnews-list'),
     $mpContainer = $('#mpnews-container'),
     $addMpnews = $('#add-mpnews'),
+    $mpnewsId = $('#mpnews-id'),
     $mpTitle = $('#mpnews-title'),
     $mpContent = $('#mpnews-content'),
     $mpUrl = $('#content-source-url'),
@@ -56,14 +59,13 @@ var token = $('#csrf_token').attr('content'),
     $mpDigest = $('#digest'),
     $mpUploadTitle = $('#mp-upload-title'),
     $mpUpload = $('#mpnews-upload'),
+    $mpFilePath = $('#mp-file-path'),
     $mpMediaId = $('#thumb_media_id'),
     $add = $('#add'),
     $delete = $('#delete'),
 
-    allowedTypes = ['image/jpg', 'image/jpeg', 'image/png', 'image/gif'], // 允许上传的图片类型
     maxSize = 1024 * 1024,  // 1024KB，也就是 1MB
     maxWidth = 300, // 图片最大宽度
-    maxCount = 6,  // 最大上传图片数量
     tmp = 1,
     title = $title.val(),
     content = '';
@@ -125,31 +127,77 @@ $(document).on('click', '.js-chosen-results-item', function () {
 });
 // 搜索发送对象
 $search.on("input propertychange change", function () {
-    var keyword = $(this).val(), i, html = '',
-        departments = function (html, result) {
-            for (i = 0; i < result['gradeDepts'].length; i++) {
-                html += targetHtml(result['gradeDepts'][i], 'department');
-            }
-            for (i = 0; i < result['classDepts'].length; i++) {
-                html += targetHtml(result['classDepts'][i], 'department');
-            }
-        },
-        users = function (html, result) {
-            for (i = 0; i < result['users'].length; i++) {
-                html += targetHtml(result['users'][i]);
-            }
+    var $targets = $('.targets'),
+        type = $targets.length !== 0 ? 'department' : 'user',
+        keyword = $(this).val(), i, html = '',
+        data = {
+            keyword: keyword,
+            target: type,
+            _token: token
         };
 
     $.ajax({
         type: 'POST',
         dataType: 'json',
         url: '../create',
-        data: { keyword: keyword, _token: token },
+        data: type === 'user'
+            ? $.extend(data, {deptId: $('#deptId').val()})
+            : data,
         success: function (result) {
-            keyword === '' ? departments(html, result) : users(html, result);
+            for (i = 0; i < result['targets'].length; i++) {
+                html += targetHtml(result['targets'][i], type);
+            }
+            $targetsContainer.html(html);
+        },
+        error: function (e) { }
+    });
+});
+// 返回部门列表
+$('#back').on('click', function () {
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: '../create',
+        data: {
+            target: 'list',
+            _token: token
+        },
+        success: function (result) {
+            $('#back').hide();
+            for (var i = 0; i < result['targets'].length; i++) {
+                html += targetHtml(result['targets'][i], 'department');
+            }
+            $targetsContainer.html(html);
+        },
+        error: function (e) {
+
         }
     });
-    $targetsContainer.html(html);
+});
+// 显示指定部门的用户(监护人)列表
+$(document).on('click', '.targets', function () {
+    var ids = $(this).prev().attr('id').split('-'),
+        id = ids[ids.length - 1];
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: '../create',
+        data: {
+            departmentId: id,
+            _token: token
+        },
+        success: function (result) {
+            $('#back').show();
+            $('#deptId').val(id);
+            for (var i = 0; i < result['targets'].length; i++) {
+                html += targetHtml(result['targets'][i], type);
+            }
+            $targetsContainer.html(html);
+        },
+        error: function (e) {
+
+        }
+    });
 });
 
 /** 信息类型 */
@@ -280,12 +328,69 @@ $upload.on('focus change', '#upload #mpnews-upload', function () {
 $upload.on('focus change', function() { upload(this, false); });
 
 /** 图文消息 */
+// 上传封面图
+$mpUpload.on('focus change', function() { upload(this, true); });
+// 保存/更新图文
+$add.on('click', function () {
+    var id = $mpnewsId.val(),
+        title = $mpTitle.val(),
+        description = $mpContent.val(),
+        thumb_media_id = $mpMediaId.val(),
+        filepath = $mpFilePath.val(),
+        article = {
+            title: title,
+            thumb_media_id: thumb_media_id,
+            author: $mpAuthor.val(),
+            content_source_url: $mpUrl.val(),
+            content: description,
+            digest: $mpDigest.val(),
+            filename: $mpUploadTitle.val(),
+            filepath: $mpFilePath.val()
+        };
+
+    if (title === '' || description === '' || thumb_media_id === '') {
+        $.alert('标题/内容/封面图不得为空');
+        return false;
+    }
+    if (id === '') {
+        mpnews['articles'].push(article);
+        mpnewsCount += 1;
+        $mpnewsList.append(
+            '<li id="mpnews-' + mpnewsCount + '" class=weui-uploader__file style="background-image:url(' + filepath + ')"></li>'
+        );
+    } else {
+        var $mpnews = $('#mpnews-' + id);
+
+        mpnews['articles'][id] = article;
+        $mpnews.attr('style', '"background-image:url(' + filepath + ')"');
+    }
+    $('#mpnews').closePopup();
+});
+// 编辑图文
+$(document).on('click', '.weui-uploader__file', function () {
+    var ids = $(this).attr('id').split('-'),
+        id = ids[ids.length - 1],
+        news = mpnews['articles'][id];
+
+    $mpnewsId.val(id);
+    $mpTitle.val(news['title']);
+    $mpContent.val(news['content']);
+    $mpUrl.val(news['content_source_url']);
+    $mpAuthor.val(news['author']);
+    $mpDigest.val(news['digest']);
+    $mpMediaId.val(news['thumb_media_id']);
+    $mpUploadTitle.val(news['filename']);
+    $mpFilePath.val(news['filepath']);
+    $delete.show();
+    $mpnews.popup();
+});
 // 添加图文消息
 $addMpnews.on('click', function () {
     if (mpnewsCount >= 8) {
         $.alert('一条图文消息最多包含8个图文');
         return false;
     }
+    $mpnewsId.val('');
     $mpTitle.val('');
     $mpMediaId.val('');
     $mpAuthor.val('').attr('placeholder', '(选填)');
@@ -293,34 +398,24 @@ $addMpnews.on('click', function () {
     $mpDigest.val('').attr('placeholder', '(选填)');
     $mpUploadTitle.val('封面图');
     $mpUpload.val('');
+    $delete.hide();
     $('#mpnews').popup();
-});
-// 上传封面图
-$mpUpload.on('focus change', function() { upload(this, true); });
-// 保存图文
-$add.on('click', function () {
-    var title = $mpTitle.val(),
-        description = $mpContent.val(),
-        thumb_media_id = $mpMediaId.val();
-
-    if (title === '' || description === '' || thumb_media_id === '') {
-        $.alert('标题/内容/封面图不得为空');
-        return false;
-    }
-    mpnews['articles'].push({
-        title: title,
-        thumb_media_id: thumb_media_id,
-        author: $mpAuthor.val(),
-        content_source_url: $mpUrl.val(),
-        content: description,
-        digest: $mpDigest.val()
-    });
-    mpnewsCount++;
-    $('#mpnews').closePopup();
 });
 // 删除图文
 $delete.on('click', function () {
+    var id = $mpnewsId.val(), i = 0;
 
+    // 从数组中移除图文
+    mpnews['articles'].splice(id, 1);
+    // 从图文列表中移除
+    $('#mpnews-' + id).remove();
+    // 重建图文索引
+    $mpnewsList.find('li').each(function () {
+        $(this).attr('id', '#mpnews-' + i);
+        i++;
+    });
+    mpnewsCount--;
+    $.alert('已将指定图文删除');
 });
 
 /** 发送消息 */
@@ -432,6 +527,7 @@ $send.on('click', function () {
     });
 });
 
+/** Helper functions */
 function upload(uploader, mpnews) {
     var formData = new FormData();
 
@@ -449,12 +545,15 @@ function upload(uploader, mpnews) {
         cache: false,
         success: function (result) {
             var filename = result['data']['filename'],
-                mediaId = result['data']['media_id'];
+                mediaId = result['data']['media_id'],
+                path = '../../' + result['data']['path'];
 
             $notification.hide();
             $(mpnews ? '#mp-upload-title' : '#upload-title').val(filename);
             $(mpnews ? '#thumb_media_id' : '#media_id').val(mediaId);
-            if (mpnews) { $('#mps').append(filename); }
+            if (mpnews) {
+                $mpFilePath.val(path);
+            }
             $.alert(result['message']);
         },
         error: function (e) {
@@ -465,7 +564,6 @@ function upload(uploader, mpnews) {
         }
     });
 }
-
 function countTargets() {
     var departments = $('#chosen-results .js-chosen-results-item.department').length,
         users = $('#chosen-results .js-chosen-results-item.user').length;
@@ -491,22 +589,22 @@ function chosenHtml(id, type, imgSrc) {
 }
 function targetHtml(target, type) {
     var imgSrc = (type === 'department' ? 'img/department.png' : 'img/personal.png'),
-        name = (type === 'department' ? target['name'] : target['realname']),
+        name = target['name'],
         imgStyle = (type === 'department' ? ' style="border-radius: 0;"' : ''),
         id = target['id'];
 
     return '<div style="position: relative;">' +
         '<label class="weui-cell weui-check__label" id="' + type + '-' + id +
-        '" data-item="' + id + '" data-uid="' + id + '" data-type="' + type + '">' +
-        '<div class="weui-cell__hd">' +
-        '<input type="checkbox" class="weui-check target-check" name="targets[]" >' +
-        '<i class="weui-icon-checked"></i>' +
-        '</div>' +
-        '<div class="weui-cell__bd">' +
-        '<img src="' + imgSrc + '"' + imgStyle + ' class="js-go-detail lazy" width="75" height="75">' +
-        '<span class="contacts-text">' + name + '</span>' +
-        '</div>' +
+                '" data-item="' + id + '" data-uid="' + id + '" data-type="' + type + '">' +
+            '<div class="weui-cell__hd">' +
+                '<input type="checkbox" class="weui-check target-check" name="targets[]" >' +
+                '<i class="weui-icon-checked"></i>' +
+            '</div>' +
+            '<div class="weui-cell__bd">' +
+                '<img src="' + imgSrc + '"' + imgStyle + ' class="js-go-detail lazy" width="25" height="25">' +
+                '<span class="contacts-text">' + name + '</span>' +
+            '</div>' +
         '</label>' +
         (type === 'department' ? '<a class="icon iconfont icon-jiantouyou show-group targets"></a>' : '') +
-        '</div>';
+    '</div>';
 }
