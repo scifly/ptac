@@ -129,7 +129,7 @@ $(document).on('click', '.js-chosen-results-item', function () {
 $search.on("input propertychange change", function () {
     var $targets = $('.targets'),
         type = $targets.length !== 0 ? 'department' : 'user',
-        keyword = $(this).val(), i, html = '',
+        keyword = $(this).val(), i,
         data = {
             keyword: keyword,
             target: type,
@@ -144,6 +144,7 @@ $search.on("input propertychange change", function () {
             ? $.extend(data, {deptId: $('#deptId').val()})
             : data,
         success: function (result) {
+            var html = '';
             for (i = 0; i < result['targets'].length; i++) {
                 html += targetHtml(result['targets'][i], type);
             }
@@ -163,6 +164,7 @@ $('#back').on('click', function () {
             _token: token
         },
         success: function (result) {
+            var html = '';
             $('#back').hide();
             for (var i = 0; i < result['targets'].length; i++) {
                 html += targetHtml(result['targets'][i], 'department');
@@ -177,7 +179,7 @@ $('#back').on('click', function () {
 // 显示指定部门的用户(监护人)列表
 $(document).on('click', '.targets', function () {
     var ids = $(this).prev().attr('id').split('-'),
-        id = ids[ids.length - 1], html = '';
+        id = ids[ids.length - 1];
     $.ajax({
         type: 'POST',
         dataType: 'json',
@@ -187,6 +189,7 @@ $(document).on('click', '.targets', function () {
             _token: token
         },
         success: function (result) {
+            var html = '';
             $('#back').show();
             $('#deptId').val(id);
             for (var i = 0; i < result['targets'].length; i++) {

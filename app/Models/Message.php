@@ -602,7 +602,7 @@ class Message extends Model {
             }
         } else {
             $keyword = Request::input('keyword');
-            $target = Request::input('type');
+            $target = Request::input('target');
             switch ($target) {
                 case 'list': # 所有可见部门
                     $targets = Department::whereIn('id', $this->departmentIds($user->id, $schoolId))
