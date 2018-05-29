@@ -141,12 +141,7 @@ class ImportStudent implements ShouldQueue {
             ];
             $validator = Validator::make($user, $rules);
             $failed = $validator->fails();
-            Log::debug($failed ? 'failed' : 'succeeded');
-            Log::debug(School::whereName('桐木小学幼儿园')->first());
             $school = !$failed ? School::whereName($schoolName)->first() : null;
-            if ($school) {
-                Log::debug(json_encode($school));
-            }
             $isSchoolValid = $school ? in_array($school->id, $this->schoolIds($this->userId)) : false;
             $grade = $school ? Grade::whereName($gradeName)->where('school_id', $school->id)->first() : null;
             $isGradeValid = $grade ? in_array($grade->id, $this->gradeIds($school->id, $this->userId)) : false;
@@ -196,6 +191,7 @@ class ImportStudent implements ShouldQueue {
                         'userid'     => uniqid('student_'),
                         'isleader'   => 0,
                         'enabled'    => 1,
+                        'synced'     => 0
                     ]);
                     # 创建学生
                     $s = Student::create([
@@ -375,6 +371,7 @@ class ImportStudent implements ShouldQueue {
                                         'userid'     => uniqid('custodian_'),
                                         'isleader'   => 0,
                                         'enabled'    => 1,
+                                        'synced'     => 0
                                     ]);
                                     # 创建监护人
                                     $c = Custodian::create(['user_id' => $user['id']]);
