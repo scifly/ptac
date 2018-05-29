@@ -415,6 +415,7 @@ $delete.on('click', function () {
     });
     mpnewsCount--;
     $.alert('已将指定图文删除');
+    $.closePopup();
 });
 
 /** 发送消息 */
