@@ -531,7 +531,7 @@ $send.on('click', function () {
 function upload(uploader, mpnews) {
     var formData = new FormData();
 
-    formData.append('file', $(this)[0].files[0]);
+    formData.append('file', $(uploader)[0].files[0]);
     formData.append('_token', token);
     formData.append('type', $msgType.val());
     $notification.show();
