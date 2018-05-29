@@ -392,6 +392,7 @@ $addMpnews.on('click', function () {
     $mpnewsId.val('');
     $mpTitle.val('');
     $mpMediaId.val('');
+    $mpContent.val('');
     $mpAuthor.val('').attr('placeholder', '(选填)');
     $mpUrl.val('').attr('placeholder', '(选填)');
     $mpDigest.val('').attr('placeholder', '(选填)');
@@ -536,7 +537,7 @@ function upload(uploader, mpnews) {
     formData.append('_token', token);
     formData.append('type', type === 'mpnews' ? 'image' : type);
     $notification.show();
-    
+
     $.ajax({
         url: "create",
         data: formData,

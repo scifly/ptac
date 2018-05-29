@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Models\App;
 use App\Models\CommType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -68,6 +69,9 @@ class MessageRequest extends FormRequest {
             }
             $input['user_ids'] = array_unique($userIds);
             $input['dept_ids'] = array_unique($deptIds);
+        }
+        if (!isset($input['app_ids'])) {
+            $input['app_ids'] = [App::whereName('消息中心')->first()->id];
         }
 
         $this->replace($input);
