@@ -103,13 +103,13 @@ class StudentAttendance extends Model {
     function store(array $data) {
         
         $student = Student::whereCardNumber($data['card_number'])->first();
-        abort_if(!$student, HttpStatusCode::NOT_FOUND, __('messages.student_not_found'));
+        abort_if(!$student, HttpStatusCode::NOT_FOUND, __('messages.student.not_found'));
         $class = $student->squad;
-        abort_if(!$class, HttpStatusCode::NOT_FOUND, __('messages.class_not_found'));
+        abort_if(!$class, HttpStatusCode::NOT_FOUND, __('messages.class.not_found'));
         $grade = $class->grade;
-        abort_if(!$grade, HttpStatusCode::NOT_FOUND, __('messages.grade_not_found'));
+        abort_if(!$grade, HttpStatusCode::NOT_FOUND, __('messages.grade.not_found'));
         $school = $grade->school;
-        abort_if(!$school, HttpStatusCode::NOT_FOUND, __('messages.school_not_found'));
+        abort_if(!$school, HttpStatusCode::NOT_FOUND, __('messages.school.not_found'));
         $dateTime = strtotime($data['punch_time']);
         $day = Constant::WEEK_DAYS[date('w', $dateTime)];
         $strDateTime = date('Y-m-d', $dateTime);
@@ -117,14 +117,14 @@ class StudentAttendance extends Model {
             ->where('end_date', '>=', $strDateTime)
             ->where('enabled', 1)
             ->first();
-        abort_if(!$semester, HttpStatusCode::NOT_FOUND, __('messages.semester_not_found'));
+        abort_if(!$semester, HttpStatusCode::NOT_FOUND, __('messages.semester.not_found'));
         $machine = AttendanceMachine::whereMachineid($data['machineid'])
             ->where('school_id', $school->id)->first();
-        abort_if(!$machine, HttpStatusCode::NOT_FOUND, __('messages.machine_not_found'));
+        abort_if(!$machine, HttpStatusCode::NOT_FOUND, __('messages.attendance_machine.not_found'));
         $sases = StudentAttendanceSetting::whereGradeId($grade->id)
             ->where('semester_id', $semester->id)
             ->where('day', $day)->get();
-        abort_if(!$sases, HttpStatusCode::NOT_FOUND, __('messages.sas_not_found'));
+        abort_if(!$sases, HttpStatusCode::NOT_FOUND, __('messages.sas.not_found'));
         $punchTime = date('H:i:s', $dateTime);
         $status = 0; # 考勤异常
         $sasId = 0;
