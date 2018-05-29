@@ -107,11 +107,11 @@ class MessageCenterController extends Controller {
      */
     public function store(MessageRequest $request) {
         
-        return $this->result(
-            $this->message->send(
-                $request->all()
-            )
-        );
+        $sent = $this->message->send($request->all());
+        
+        return response()->json([
+            'message' => $sent ? __('messages.message.sent') : __('messages.message.failed')
+        ], $sent ? HttpStatusCode::OK : HttpStatusCode::INTERNAL_SERVER_ERROR);
         
     }
     
