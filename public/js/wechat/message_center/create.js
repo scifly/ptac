@@ -549,7 +549,7 @@ function upload(uploader, mpnews) {
                 path = '../../' + result['data']['path'];
 
             $notification.hide();
-            $(mpnews ? '#mp-upload-title' : '#upload-title').val(filename);
+            $(mpnews ? '#mp-upload-title' : '#upload-title').html(filename);
             $(mpnews ? '#thumb_media_id' : '#media_id').val(mediaId);
             if (mpnews) {
                 $mpFilePath.val(path);
