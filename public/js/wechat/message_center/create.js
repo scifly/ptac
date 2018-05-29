@@ -529,11 +529,12 @@ $send.on('click', function () {
 
 /** Helper functions */
 function upload(uploader, mpnews) {
-    var formData = new FormData();
+    var formData = new FormData(),
+        type = $msgType.val();
 
     formData.append('file', $(uploader)[0].files[0]);
     formData.append('_token', token);
-    formData.append('type', $msgType.val());
+    formData.append('type', type === 'mpnews' ? 'image' : type);
     $notification.show();
     $.ajax({
         url: "create",
