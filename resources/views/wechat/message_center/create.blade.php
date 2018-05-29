@@ -175,12 +175,13 @@
                             {{--</li>--}}
                         {{--</ol>--}}
                     {{--</div>--}}
-                    <div class="weui-cell" id="back" style="display: none;">
-                        <div class="weui-cell_bd">
-                            <a href="#" class="weui-btn weui-btn_plain-default">返回部门列表</a>
-                            {!! Form::hidden('deptId', null, ['id' => 'deptId']) !!}
-                        </div>
-                    </div>
+                    <a href="#" class="weui-btn weui-btn_plain-default">返回部门列表</a>
+                    {!! Form::hidden('deptId', null, ['id' => 'deptId']) !!}
+                    {{--<div class="weui-cell" id="back" style="display: none;">--}}
+                        {{--<div class="weui-cell_bd">--}}
+                            {{----}}
+                        {{--</div>--}}
+                    {{--</div>--}}
                     <div class="chosen-items js-chosen-items">
                         <div class="weui-cells weui-cells_checkbox" style="padding-bottom: 60px;">
                             <div id="targets-container">
