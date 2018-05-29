@@ -118,7 +118,7 @@ class ImportStudent implements ShouldQueue {
         $updates = [];
         # 需要添加的数据
         $inserts = [];
-        for ($i = 0; $i < count($students); $i++) {
+        for ($i = 1; $i <= count($students); $i++) {
             $schoolName = $students[$i]['C'];
             $gradeName = $students[$i]['E'];
             $className = $students[$i]['F'];
