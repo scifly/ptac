@@ -204,7 +204,6 @@ $(document).on('click', '.targets', function () {
 // 初始化选择信息类型的事件
 $msgType.on('change', function () {
     var type = $(this).val();
-    console.log(type);
     $('.js-content-item input').val('');
     $content.html('');
     switch (type) {

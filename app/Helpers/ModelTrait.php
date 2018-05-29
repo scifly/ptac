@@ -539,14 +539,18 @@ trait ModelTrait {
      */
     function tokenParams() {
         
-        $menu = new Menu();
-        $corpMenuId = $menu->menuId(session('menuId'), '企业');
-        abort_if(
-            !$corpMenuId,
-            HttpStatusCode::BAD_REQUEST,
-            __('messages.bad_request')
-        );
-        $corp = Corp::whereMenuId($corpMenuId)->first();
+        if (!session('corpId')) {
+            $menu = new Menu();
+            $corpMenuId = $menu->menuId(session('menuId'), '企业');
+            abort_if(
+                !$corpMenuId,
+                HttpStatusCode::BAD_REQUEST,
+                __('messages.bad_request')
+            );
+            $corp = Corp::whereMenuId($corpMenuId)->first();
+        } else {
+            $corp = Corp::find(session('corpId'));
+        }
         
         return [
             $corp->corpid,
