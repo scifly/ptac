@@ -395,7 +395,7 @@ $addMpnews.on('click', function () {
     $mpAuthor.val('').attr('placeholder', '(选填)');
     $mpUrl.val('').attr('placeholder', '(选填)');
     $mpDigest.val('').attr('placeholder', '(选填)');
-    $mpUploadTitle.val('封面图');
+    $mpUploadTitle.html('封面图');
     $mpUpload.val('');
     $delete.hide();
     $('#mpnews').popup();
@@ -536,6 +536,7 @@ function upload(uploader, mpnews) {
     formData.append('_token', token);
     formData.append('type', type === 'mpnews' ? 'image' : type);
     $notification.show();
+    
     $.ajax({
         url: "create",
         data: formData,
