@@ -91,10 +91,11 @@ return [
         'title' => '学籍管理',
         'not_found' => '未找到该学生的相关信息',
         'import_started' => '文件上传成功，开始导入学籍...',
+        'import_succeeded' => '已完成学籍导入',
         'invalid_file_format' => '文件格式错误',
         'invalid_data_format' => '导入数据格式不正确',
-        'import_request_submitted' => '已提交导入请求\n需要新增的学籍数：%s\n需要更新的学籍数：%s\n非法学籍数: %s, 请参考导出文件',
-        'empty_import_file' => '没有数据可以导入'
+        'import_request_submitted' => '已提交导入请求\\n需要新增的学籍数：%s\\n需要更新的学籍数：%s\\n非法学籍数: %s, 请参考导出文件',
+        'empty_import_file' => '没有数据可以导入',
     ],
     'user' => [
         'not_found' => '没有这个用户'

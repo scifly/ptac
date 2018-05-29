@@ -65,6 +65,7 @@ class ImportStudent implements ShouldQueue {
             'message' => __('messages.ok')
         ];
         list($updates, $inserts, $illegals) = $this->validate($this->students);
+        
         if (empty($updates) && empty($inserts)) {
             # 数据格式不正确，中止任务
             $response['statusCode'] = HttpStatusCode::NOT_ACCEPTABLE;
@@ -72,17 +73,22 @@ class ImportStudent implements ShouldQueue {
             event(new JobResponse($response));
             return false;
         }
+        
         # 验证导入数据
         $response['statusCode'] = HttpStatusCode::ACCEPTED;
         $response['message'] = sprintf(
             __('messages.student.import_request_submitted'),
             sizeof($inserts), sizeof($updates), sizeof($illegals)
         );
+        event(new JobResponse($response));
+        
         # 新增数据
         $this->insert($inserts);
         # 更新数据
         $this->update($updates);
         // $response['url'] = ''; # todo: 生成非法数据excel文件及下载地址
+        $response['statusCode'] = HttpStatusCode::OK;
+        $response['message'] = __('messages.student.import_succeeded');
         event(new JobResponse($response));
         
         return true;
