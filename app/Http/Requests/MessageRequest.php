@@ -73,6 +73,12 @@ class MessageRequest extends FormRequest {
         if (!isset($input['app_ids'])) {
             $input['app_ids'] = [App::whereName('消息中心')->first()->id];
         }
+        if (!isset($input['user_ids'])) {
+            $input['user_ids'] = [];
+        }
+        if (!isset($input['dept_ids'])) {
+            $input['dept_ids'] = [];
+        }
 
         $this->replace($input);
         
