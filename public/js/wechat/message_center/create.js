@@ -139,7 +139,7 @@ $search.on("input propertychange change", function () {
     $.ajax({
         type: 'POST',
         dataType: 'json',
-        url: '../create',
+        url: 'create',
         data: type === 'user'
             ? $.extend(data, {deptId: $('#deptId').val()})
             : data,
@@ -157,7 +157,7 @@ $('#back').on('click', function () {
     $.ajax({
         type: 'POST',
         dataType: 'json',
-        url: '../create',
+        url: 'create',
         data: {
             target: 'list',
             _token: token
@@ -181,7 +181,7 @@ $(document).on('click', '.targets', function () {
     $.ajax({
         type: 'POST',
         dataType: 'json',
-        url: '../create',
+        url: 'create',
         data: {
             departmentId: id,
             _token: token
