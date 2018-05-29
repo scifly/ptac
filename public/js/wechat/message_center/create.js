@@ -177,7 +177,7 @@ $('#back').on('click', function () {
 // 显示指定部门的用户(监护人)列表
 $(document).on('click', '.targets', function () {
     var ids = $(this).prev().attr('id').split('-'),
-        id = ids[ids.length - 1];
+        id = ids[ids.length - 1], html = '';
     $.ajax({
         type: 'POST',
         dataType: 'json',
