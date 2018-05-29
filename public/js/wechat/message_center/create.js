@@ -144,7 +144,7 @@ $search.on("input propertychange change", function () {
             ? $.extend(data, {deptId: $('#deptId').val()})
             : data,
         success: function (result) {
-            var html = '';
+            var html = result['targets'].length === 0 ? '暂无' : '';
             for (i = 0; i < result['targets'].length; i++) {
                 html += targetHtml(result['targets'][i], type);
             }

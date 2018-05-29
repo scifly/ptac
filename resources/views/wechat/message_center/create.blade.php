@@ -164,16 +164,22 @@
                             ]) !!}
                         </div>
                     </div>
-                    <div class="chosen-breadcrumb js-chosen-breadcrumb">
-                        <ol class="breadcrumb js-chosen-breadcrumb-ol">
+                    {{--<div class="chosen-breadcrumb js-chosen-breadcrumb">--}}
+                        {{--<ol class="breadcrumb js-chosen-breadcrumb-ol">--}}
                             {{--<li data-id="{{ $schoolDept->id }}" class="js-chosen-breadcrumb-li headclick">--}}
                             {{--<a>{{ $schoolDept->name }}</a>--}}
                             {{--</li>--}}
-                            <li style="display: none;" id="back">
-                                返回部门列表
-                                {!! Form::hidden('deptId', null, ['id' => 'deptId']) !!}
-                            </li>
-                        </ol>
+                            {{--<li style="display: none;" id="back">--}}
+                                {{--返回部门列表--}}
+                                {{--{!! Form::hidden('deptId', null, ['id' => 'deptId']) !!}--}}
+                            {{--</li>--}}
+                        {{--</ol>--}}
+                    {{--</div>--}}
+                    <div class="weui-cell" id="back">
+                        <div class="weui-cell_bd">
+                            <a href="#" class="weui-btn weui-btn_plain-default">返回部门列表</a>
+                            {!! Form::hidden('deptId', null, ['id' => 'deptId']) !!}
+                        </div>
                     </div>
                     <div class="chosen-items js-chosen-items">
                         <div class="weui-cells weui-cells_checkbox" style="padding-bottom: 60px;">

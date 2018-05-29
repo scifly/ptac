@@ -264,7 +264,6 @@ class TestController extends Controller {
     public function index() {
 
         
-        dd($departments)
         $messages = Message::all();
         foreach ($messages as $key => $message) {
             echo $key . ' : ' . $message->id . '<br />';
