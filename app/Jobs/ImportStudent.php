@@ -97,6 +97,7 @@ class ImportStudent implements ShouldQueue {
      */
     private function validate(array $students): array {
         
+        unset($students[0]);
         $rules = [
             'name'           => 'required|string|between:2,6',
             'gender'         => ['required', Rule::in(['男', '女'])],
