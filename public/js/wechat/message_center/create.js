@@ -594,7 +594,7 @@ function chosenHtml(id, type, imgSrc) {
         '</a>';
 }
 function targetHtml(target, type) {
-    var imgSrc = (type === 'department' ? 'img/department.png' : 'img/personal.png'),
+    var imgSrc = (type === 'department' ? '/img/department.png' : '/img/personal.png'),
         name = target['name'],
         imgStyle = (type === 'department' ? ' style="border-radius: 0;"' : ''),
         id = target['id'];
@@ -607,7 +607,7 @@ function targetHtml(target, type) {
                 '<i class="weui-icon-checked"></i>' +
             '</div>' +
             '<div class="weui-cell__bd">' +
-                '<img src="' + imgSrc + '"' + imgStyle + ' class="js-go-detail lazy" width="25" height="25">' +
+                '<img src="' + imgSrc + '"' + imgStyle + ' class="js-go-detail lazy target-image" width="25" height="25">' +
                 '<span class="contacts-text">' + name + '</span>' +
             '</div>' +
         '</label>' +
