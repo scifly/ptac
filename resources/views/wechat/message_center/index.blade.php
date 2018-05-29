@@ -11,16 +11,16 @@
             <div class="switchschool-item clearfix">
                 <div class="switchschool-head">
                     <div class="title-name"> 消息中心</div>
-                    @if ($isEducator)
+                    @if ($canSend)
                         <span class="addworkicon">
-							<a class="icon iconfont icon-add c-green" href="{{ url('wlrj/mc/create') }}"></a>
+							<a class="icon iconfont icon-add c-green" href="{{ url($acronym . '/mc/create') }}"></a>
 						</span>
                     @endif
                 </div>
             </div>
             <div class="weui-tab">
                 <div class="weui-navbar">
-                    @if ($isEducator)
+                    @if ($canSend)
                         <a class="weui-navbar__item weui-bar__item--on" href="#tab1" data-type="sent">
                             已发送
                         </a>
@@ -32,7 +32,7 @@
                 </div>
                 <div class="weui-tab__bd ">
                     <!-- 已发送-->
-                    @if ($isEducator)
+                    @if ($canSend)
                         <div id="tab1" class="weui-tab__bd-item weui-tab__bd-item--active">
                             <div class="tea-head">
 								<span class="tea-select-list-icon">
@@ -97,7 +97,7 @@
                 @endif
                     <!-- 已发送结束-->
                     <!--已接收-->
-                    <div id="tab2" class="weui-tab__bd-item @if(!$isEducator) weui-tab__bd-item--active @endif ">
+                    <div id="tab2" class="weui-tab__bd-item @if(!$canSend) weui-tab__bd-item--active @endif ">
                         <div class="tea-head">
                             <span class="tea-select-list-icon">
                                 <span class="searchicon">

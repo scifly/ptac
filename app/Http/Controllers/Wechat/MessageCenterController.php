@@ -110,77 +110,8 @@ class MessageCenterController extends Controller {
         $sent = $this->message->send($request->all());
         
         return response()->json([
-            'message' => $sent ? __('messages.message.sent') : __('messages.message.failed')
+            'message' => $sent ? __('messages.ok') : __('messages.message.failed')
         ], $sent ? HttpStatusCode::OK : HttpStatusCode::INTERNAL_SERVER_ERROR);
-        
-    }
-    
-    /**
-     * 前端应用消息推送 微信端
-     *
-     * @param $input
-     * @param null $url
-     * @return bool
-     */
-    private function frontSendMessage($input, $url = null) {
-        
-        $corpId = 'wxe75227cead6b8aec';
-        $secret = 'qv_kkW2S3zmMWIUrV3u2nydcyIoLknTvuDMq7ja4TYE';
-        $token = Wechat::getAccessToken($corpId, $secret);
-        $agentid = 3;
-        $users = [];
-        foreach ($input['user_ids'] as $u_id) {
-            $users[] = User::find($u_id)->userid;
-        }
-        if (!empty($input['department_ids'])) {
-            $toparty = implode('|', $input['department_ids']);
-        } else {
-            $toparty = '';
-        }
-        $topuser = implode('|', $users);
-        $message = [
-            'touser'  => $topuser,
-            'toparty' => $toparty,
-            'agentid' => $agentid,
-        ];
-        switch ($input['type']) {
-            case 'text' :
-                $message['text'] = ['content' => $input['content']];
-                break;
-            case 'textcard':
-                $message['textcard'] = [
-                    'title'       => $input['title'],
-                    'description' => strip_tags($input['content']),
-                    'url'         => $url,
-                ];
-                break;
-            case 'mpnews' :
-                $message['mpnews']['articles'] =
-                    [
-                        [
-                            'title'              => $input['title'],
-                            'thumb_media_id'     => $input['mediaid'],
-                            'content'            => $input['content'],
-                            'content_source_url' => $url,
-                            'digest'             => strip_tags($input['content']),
-                        ],
-                    ];
-                break;
-            case 'image' :
-                $message['image'] = ['media_id' => $input['mediaid']];
-                break;
-            case 'video' :
-                $message['video'] = [
-                    'media_id'    => $input['mediaid'],
-                    'title'       => $input['title'],
-                    'description' => strip_tags($input['content']),
-                ];
-                break;
-        }
-        $message['msgtype'] = $input['type'];
-        $status = json_decode(Wechat::sendMessage($token, $message));
-        
-        return $status->errcode == 0;
         
     }
     
