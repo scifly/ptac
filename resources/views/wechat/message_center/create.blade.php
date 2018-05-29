@@ -316,7 +316,7 @@
             <div style="height: 5px;"></div>
             <div class="weui-cell scui-pull-right">
                 <a id="add" href="#" class="btn-mpnews weui-btn weui-btn_mini weui-btn_primary">确定</a>
-                <a id="cancel" href="#" class="btn-mpnews weui-btn weui-btn_mini weui-btn_default">取消</a>
+                <a id="cancel" href="#" class="btn-mpnews weui-btn weui-btn_mini weui-btn_default close-popup">取消</a>
                 <a id="delete" href="#" class="btn-mpnews weui-btn weui-btn_mini weui-btn_warn">删除</a>
             </div>
         </div>
