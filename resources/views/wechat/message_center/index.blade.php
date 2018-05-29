@@ -61,21 +61,21 @@
                                         @foreach($messages as $message)
                                             <div class="table-list list-{{ $type }}">
                                                 <div class="line"></div>
-                                                <div class="teacher-list-box glayline" id="{{ $message->id }}">
+                                                <div class="teacher-list-box glayline" id="{{ $message['id'] }}">
                                                     <div class="teacher-work-box">
                                                         <a class="teacher-work-head" style="color:#000" href="#">
                                                             <div class="titleinfo">
                                                                 <div class="titleinfo-head">
                                                                     <div class="titleinfo-head-left fl">
-                                                                        <div class="title ml12">{{$message->title}}</div>
+                                                                        <div class="title ml12">{{$message['title']}}</div>
                                                                         <div class="title-info ml12">
-                                                                            接收者：{{ $message->user->realname }}...
+                                                                            接收者：{{ $message['recipient'] }} ...
                                                                         </div>
                                                                     </div>
                                                                     <span class="worktime">
-                                                                        {{substr($message->created_at,0,-8)}}
+                                                                        {{ $message['created_at'] }}
                                                                         <span class="info-status green">
-                                                                            {{ $message->sent ? '已发送' : '未发送' }}
+                                                                            {{ $message['sent'] ? '已发送' : '未发送' }}
                                                                         </span>
 													                </span>
                                                                 </div>
@@ -125,19 +125,19 @@
                                     @foreach($messages as $message)
                                         <div class="table-list list-{{ $type }}">
                                             <div class="line"></div>
-                                            <div class="teacher-list-box glayline" id="{{ $message->id }}">
+                                            <div class="teacher-list-box glayline" id="{{ $message['id'] }}">
                                                 <div class="teacher-work-box">
                                                     <a class="teacher-work-head" style="color:#000" href="#">
                                                         <div class="titleinfo">
                                                             <div class="titleinfo-head">
                                                                 <div class="titleinfo-head-left fl">
-                                                                    <div class="title ml12">{{ $message->title }}</div>
+                                                                    <div class="title ml12">{{ $message['title'] }}</div>
                                                                     <div class="title-info ml12">
-                                                                        发送者：{{ $message->user->realname }}
+                                                                        发送者：{{ $message['sender'] }}
                                                                     </div>
                                                                 </div>
                                                                 <span class="worktime">
-                                                                    {{ substr($message->created_at, 0, -8) }}
+                                                                    {{ $message['created_at'] }}
                                                                 </span>
                                                             </div>
                                                         </div>
