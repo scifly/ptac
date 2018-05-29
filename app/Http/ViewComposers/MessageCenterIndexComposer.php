@@ -23,7 +23,7 @@ class MessageCenterIndexComposer {
             ->groupBy('message_type_id');
         $count = Message::whereRUserId($user->id)
             ->where('read', '0')->count();
-        $school = School::find(session('school_id'));
+        $school = School::find(session('schoolId'));
     
         $view->with([
             'messageTypes' => MessageType::pluck('name', 'id'),

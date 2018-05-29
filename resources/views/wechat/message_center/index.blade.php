@@ -85,7 +85,6 @@
                                                 </div>
                                             </div>
                                         @endforeach
-
                                     @endforeach
                                 @else
                                     <div class="weui-loadmore weui-loadmore_line">
