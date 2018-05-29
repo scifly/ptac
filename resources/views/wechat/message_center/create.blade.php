@@ -301,7 +301,7 @@
                         </div>
                         <div class="weui-uploader__bd">
                             <div class="weui-uploader__input-box">
-                                {!! Form::hidden('thumb_media_id', null, ['id' => 'media_id']) !!}
+                                {!! Form::hidden('thumb_media_id', null, ['id' => 'thumb_media_id']) !!}
                                 {!! Form::hidden('mp-file-path', null, ['id' => 'mp-file-path']) !!}
                                 {!! Form::file('mpnews-upload', [
                                     'id' => 'mpnews-upload',
