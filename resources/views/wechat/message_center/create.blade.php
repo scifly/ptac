@@ -114,7 +114,7 @@
                         <p class="weui-uploader__title">添加图文</p>
                     </div>
                     <div class="weui-uploader__bd" id="mps">
-                        <a id="add-mpnews" href="#" class="open-popup weui-uploader__input-box" data-target="#mpnews"></a>
+                        <a id="add-mpnews" href="#" class="open-popup weui-uploader__input-box"{{-- data-target="#mpnews"--}}></a>
                     </div>
                 </div>
             </div>

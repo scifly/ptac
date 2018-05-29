@@ -17,8 +17,6 @@ var token = $('#csrf_token').attr('content'),
     $search = $('#search'),
     $send = $('#send'),
     $notification = $('#notification'),
-    mpnews = { articles: [] },  // 文章数组
-    mpnewsCount = mpnews['articles'].length,    // 文章数量
 
     // 发送对象
     $targetsContainer = $('#targets-container'),
@@ -47,6 +45,8 @@ var token = $('#csrf_token').attr('content'),
     $uploadTitle = $('#upload-title'),
 
     // 消息 - 图文
+    mpnews = { articles: [] },  // 文章数组
+    mpnewsCount = mpnews['articles'].length,    // 文章数量
     $mpContainer = $('#mpnews-container'),
     $addMpnews = $('#add-mpnews'),
     $mpTitle = $('#mpnews-title'),
@@ -67,7 +67,39 @@ var token = $('#csrf_token').attr('content'),
     title = $title.val(),
     content = '';
 
-// 初始化发送对象选择事件
+/** 发送对象 */
+// 初始化确认选定发送对象的事件
+$confirm.on('click', function () {
+    var html = $chosenResults.html();
+    $chosenResults.html(html);
+    $.closePopup();
+});
+// 选择所有发送对象
+$checkAll.on('change', function () {
+    if ($(this).is(':checked')) {
+        var html = '';
+
+        $targetCheck.prop('checked', true);
+        $('.js-chosen-items .weui-check__label').each(function (i, target) {
+            var $target = $(target),
+                type = $target.attr('data-type'),
+                id = $target.attr('data-item'),
+                imgSrc = $target.find('img').attr('src');
+
+            html += chosenHtml(id, type, imgSrc);
+        });
+        $chosenResults.html(html);
+        removeTarget();
+        $targetsContainer.addClass('air-checkall');
+        countTargets();
+    } else {
+        $targetCheck.prop('checked', false);
+        $chosenResults.html('');
+        $targetsContainer.removeClass('air-checkall');
+        countTargets();
+    }
+});
+// 选择单个发送对象
 $(document).on('change', '.target-check', function () {
     var $this = $(this).parents('.weui-check__label'),
         id = $this.attr('data-item'),
@@ -86,11 +118,41 @@ $(document).on('change', '.target-check', function () {
     }
     countTargets();
 });
-// 初始化移除发送对象的事件
+// 移除发送对象
 $(document).on('click', '.js-chosen-results-item', function () {
     removeTarget();
 });
-// 初始化选择微信消息类型的事件
+// 搜索发送对象
+$search.on("input propertychange change", function () {
+    var keyword = $(this).val(), i, html = '',
+        departments = function (html, result) {
+            for (i = 0; i < result['gradeDepts'].length; i++) {
+                html += targetHtml(result['gradeDepts'][i], 'department');
+            }
+            for (i = 0; i < result['classDepts'].length; i++) {
+                html += targetHtml(result['classDepts'][i], 'department');
+            }
+        },
+        users = function (html, result) {
+            for (i = 0; i < result['users'].length; i++) {
+                html += targetHtml(result['users'][i]);
+            }
+        };
+
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        url: '../create',
+        data: { keyword: keyword, _token: token },
+        success: function (result) {
+            keyword === '' ? departments(html, result) : users(html, result);
+        }
+    });
+    $targetsContainer.html(html);
+});
+
+/** 信息类型 */
+// 初始化选择信息类型的事件
 $msgType.on('change', function () {
     var type = $(this).val();
     console.log(type);
@@ -206,74 +268,33 @@ $msgType.on('change', function () {
             break;
     }
 });
-// 初始化搜索发送对象的事件
-$search.on("input propertychange change", function () {
-    var keyword = $(this).val(), i, html = '',
-        departments = function (html, result) {
-            for (i = 0; i < result['gradeDepts'].length; i++) {
-                html += targetHtml(result['gradeDepts'][i], 'department');
-            }
-            for (i = 0; i < result['classDepts'].length; i++) {
-                html += targetHtml(result['classDepts'][i], 'department');
-            }
-        },
-        users = function (html, result) {
-            for (i = 0; i < result['users'].length; i++) {
-                html += targetHtml(result['users'][i]);
-            }
-        };
 
-    $.ajax({
-        type: 'POST',
-        dataType: 'json',
-        url: '../create',
-        data: { keyword: keyword, _token: token },
-        success: function (result) {
-            keyword === '' ? departments(html, result) : users(html, result);
-        }
-    });
-    $targetsContainer.html(html);
-});
-// 初始化确认选定发送对象的事件
-$confirm.on('click', function () {
-    var html = $chosenResults.html();
-    $chosenResults.html(html);
-    $.closePopup();
-});
-// 初始化选择所有发送对象的事件
-$checkAll.on('change', function () {
-    if ($(this).is(':checked')) {
-        var html = '';
-
-        $targetCheck.prop('checked', true);
-        $('.js-chosen-items .weui-check__label').each(function (i, target) {
-            var $target = $(target),
-                type = $target.attr('data-type'),
-                id = $target.attr('data-item'),
-                imgSrc = $target.find('img').attr('src');
-
-            html += chosenHtml(id, type, imgSrc);
-        });
-        $chosenResults.html(html);
-        removeTarget();
-        $targetsContainer.addClass('air-checkall');
-        countTargets();
-    } else {
-        $targetCheck.prop('checked', false);
-        $chosenResults.html('');
-        $targetsContainer.removeClass('air-checkall');
-        countTargets();
-    }
-});
 // 初始化上传文件的事件
 $upload.on('focus change', '#upload #mpnews-upload', function () {
     upload(this);
 });
+
+/** 消息内容 */
 // 上传文件
 $upload.on('focus change', function() { upload(this, false); });
+
+/** 图文消息 */
+$addMpnews.on('click', function () {
+    if (mpnewsCount >= 8) {
+        $.alert('一条图文消息最多包含8个图文');
+        return false;
+    }
+    $mpTitle.val('');
+    $mpContent.val('').attr('placeholder', '描述');
+    $mpMediaId.val('');
+    $mpAuthor.val('').attr('placeholder', '（选填）');
+    $mpUrl.val('').attr('placeholder', '(选填)');
+    $mpDigest.val('').attr('placeholder', '摘要(选填)');
+    $('#mpnews').popup();
+});
 // 上传封面图
 $mpUpload.on('focus change', function() { upload(this, true); });
-// 添加图文
+// 保存图文
 $add.on('click', function () {
     var title = $mpTitle.val(),
         description = $mpContent.val(),
@@ -294,9 +315,12 @@ $add.on('click', function () {
     mpnewsCount++;
     $('#mpnews').closePopup();
 });
+// 删除图文
 $delete.on('click', function () {
 
 });
+
+/** 发送消息 */
 // 初始化提交消息发送请求的事件
 $send.on('click', function () {
     var departmentIds = [],
