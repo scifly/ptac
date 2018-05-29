@@ -280,16 +280,16 @@ $upload.on('focus change', function() { upload(this, false); });
 
 /** 图文消息 */
 $addMpnews.on('click', function () {
-    if (mpnewsCount >= 8) {
+    if (mpnewsCount >= 0) {
         $.alert('一条图文消息最多包含8个图文');
         return false;
     }
     $mpTitle.val('');
-    $mpContent.val('').attr('placeholder', '描述');
+    $mpContent.val('').attr('placeholder', '描述(选填)');
     $mpMediaId.val('');
-    $mpAuthor.val('').attr('placeholder', '（选填）');
+    $mpAuthor.val('').attr('placeholder', '(选填)');
     $mpUrl.val('').attr('placeholder', '(选填)');
-    $mpDigest.val('').attr('placeholder', '摘要(选填)');
+    $mpDigest.val('').attr('placeholder', '(选填)');
     $('#mpnews').popup();
 });
 // 上传封面图
