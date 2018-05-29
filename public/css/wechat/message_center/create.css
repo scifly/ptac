@@ -349,3 +349,6 @@ body {
 .btn-mpnews {
     margin:0 0 0 15px !important;
 }
+.back {
+    padding: 0 15px;
+}
