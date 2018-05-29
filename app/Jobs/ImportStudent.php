@@ -142,6 +142,7 @@ class ImportStudent implements ShouldQueue {
             $validator = Validator::make($user, $rules);
             $failed = $validator->fails();
             Log::debug($failed ? 'failed' : 'succeeded');
+            Log::debug(School::whereName('桐木小学幼儿园')->first());
             $school = !$failed ? School::whereName($schoolName)->first() : null;
             if ($school) {
                 Log::debug(json_encode($school));
