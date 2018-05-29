@@ -325,11 +325,11 @@ $upload.on('focus change', '#upload #mpnews-upload', function () {
 
 /** 消息内容 */
 // 上传文件
-$upload.on('focus change', function() { upload(this, false); });
+$upload.on('change', function() { upload(this, false); });
 
 /** 图文消息 */
 // 上传封面图
-$mpUpload.on('focus change', function() { upload(this, true); });
+$mpUpload.on('change', function() { upload(this, true); });
 // 保存/更新图文
 $add.on('click', function () {
     var id = $mpnewsId.val(),
@@ -536,7 +536,7 @@ function upload(uploader, mpnews) {
     formData.append('type', $msgType.val());
     $notification.show();
     $.ajax({
-        url: "../create",
+        url: "create",
         data: formData,
         type: 'POST',
         dataType: 'json',
