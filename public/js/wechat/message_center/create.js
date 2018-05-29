@@ -353,10 +353,10 @@ $add.on('click', function () {
     }
     if (id === '') {
         mpnews['articles'].push(article);
-        mpnewsCount += 1;
         $mpnewsList.append(
             '<li id="mpnews-' + mpnewsCount + '" class=weui-uploader__file style="background-image:url(' + filepath + ')"></li>'
         );
+        mpnewsCount += 1;
     } else {
         var $mpnews = $('#mpnews-' + id);
 
