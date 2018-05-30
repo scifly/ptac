@@ -35,7 +35,7 @@
                                                 <p>{!! $content['text']->{'content'} !!}</p>
                                                 @break
                                             @case ('image')
-                                                <p><img alt="" src="../../{!! $content['image']->{'path'} !!}" /></p>
+                                                <p><img alt="" src="/{!! $content['image']->{'path'} !!}" /></p>
                                                 @break
                                             @case ('voice')
                                                 <p><a href="../../{!! $content['voice']->{'path'} !!}">点击下载此语音</a></p>
@@ -44,11 +44,11 @@
                                                 <p>标题: {!! $content['video']->{'title'} !!}</p>
                                                 <p>描述: {!! $content['video']->{'description'} !!}</p>
                                                 <video width="400" controls>
-                                                    <source src="../../{!! $content['video']->{'path'} !!}" type="video/mp4">
+                                                    <source src="/{!! $content['video']->{'path'} !!}" type="video/mp4">
                                                 </video>
                                                 @break
                                             @case ('file')
-                                                <p><a href="{!! $content['file']->{'path'} !!}">点击下载此文件</a></p>
+                                                <p><a href="/{!! $content['file']->{'path'} !!}">点击下载此文件</a></p>
                                                 @break
                                             @case ('textcard')
                                                 <a href="{!! $content['textcard']->{'url'} !!}">
@@ -60,7 +60,7 @@
                                                 @foreach ($content['mpnews']->{'articles'} as $article)
                                                     <p>
                                                         <a href="{!! $article->{'title'} !!}">
-                                                            <img alt="" src="{!! $article->{'image_url'} !!}" />
+                                                            <img alt="" src="/{!! $article->{'image_url'} !!}" />
                                                         </a>
                                                     </p>
                                                 @endforeach
