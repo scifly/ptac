@@ -190,11 +190,10 @@ class MessageCenterController extends Controller {
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        
-        //只能删除查看的记录 不能删除多媒体文件 多媒体文件路径被多个记录存入
-        return $this->result(
-            $message->delete()
-        );
+        $deleted = $message->delete();
+        return response()->json([
+            'message' => $deleted ? __('messages.ok') : __('messages.fail')
+        ], $deleted ? HttpStatusCode::OK : HttpStatusCode::INTERNAL_SERVER_ERROR);
         
     }
     

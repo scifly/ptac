@@ -24,10 +24,9 @@ $delete.on('click', function () {
                         window.location.href = 'mc';
                     });
                 },
-                error: function (e) {}
+                error: function (e) { wap.errorHandler(e); }
             });
-        },
-        onCancel: function () { wap.errorHandler(e); }
+        }
     });
 });
 // 编辑消息
@@ -84,8 +83,7 @@ $(document).on('click', '.delete-replay', function () {
                 },
                 error: function (e) { wap.errorHandler(e); }
             });
-        },
-        onCancel: function () {}
+        }
     });
 });
 /** 异步获取回复列表 */
@@ -127,6 +125,6 @@ function replies() {
                 $('.discuss_list').html('');
             }
         },
-        error: function (e) { wap.wap.errorHandler(e); }
+        error: function (e) { wap.errorHandler(e); }
     });
 }
