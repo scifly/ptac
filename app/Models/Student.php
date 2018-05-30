@@ -157,6 +157,7 @@ class Student extends Model {
                     'enabled'      => $data['user']['enabled'],
                     'avatar_url'   => '',
                     'isleader'     => 0,
+                    'synced'       => 0
                 ]);
 
                 # 创建学籍
