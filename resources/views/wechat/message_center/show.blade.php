@@ -82,7 +82,7 @@
 <div id="mycomment" class="weui-popup__container popup-bottom">
     <div class="weui-popup__overlay"></div>
     <div class="weui-popup__modal comment-content" style="height: 80%;">
-        {!! Form::hidden('msl_id', $mesage->messageSendingLog->id, ['id' => 'msl_id']) !!}
+        {!! Form::hidden('msl_id', $message->messageSendingLog->id, ['id' => 'msl_id']) !!}
         <div style="background-color: #fff;height: 100%;">
             <div class="comment-edit-con">
                 <p style="float:left;width: 20%;" class="close-btn close-popup"><i class="icon iconfont icon-guanbi"></i></p>
