@@ -41,12 +41,10 @@ class TestController extends Controller {
      */
     public function index() {
     
-        $str = "成绩消息(卡片)";
-        echo 'null: ' . (array_search(null, Constant::INFO_TYPES)) . '<br />';
-        dd ('nothing' . array_search('', Constant::INFO_TYPES));
-        $str = "{\"touser\":\"\",\"toparty\":\"50\",\"agentid\":\"3\",\"msgtype\":\"image\",\"image\":{\"media_id\":\"3fVsVK0mz6GnFBcx1a6LYnlpZSPqgGEtTXPBBrchveTY\"}}";
+        
+        $str = "{\"touser\":\"\",\"toparty\":\"50\",\"agentid\":\"3\",\"msgtype\":\"text\",\"text\":{\"content\":\"test\"}}";
         $message = json_decode($str);
-        dd(property_exists(get_class($message), 'text'));
+        dd($message->{'text'});
         
         $sent = Message::whereSUserId(1)->get()
             ->unique('msl_id')->sortByDesc('created_at')
