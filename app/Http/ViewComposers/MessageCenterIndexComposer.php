@@ -9,6 +9,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class MessageCenterIndexComposer {
     
@@ -54,6 +55,7 @@ class MessageCenterIndexComposer {
                 $dt = Carbon::createFromFormat('Y-m-d H:i:s', $message['created_at']);
                 $message['created_at'] = $dt->diffForHumans();
                 if ($direction == 'sent') {
+                    Log::debug($message['r_user_id']);
                     $message['recipient'] = User::find($message['r_user_id'])->realname;
                 } else {
                     $message['sender'] = User::find($message['s_user_id'])->realname;
