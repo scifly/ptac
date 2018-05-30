@@ -92,17 +92,21 @@ trait JobTrait {
         $accessToken = $token['access_token'];
         $action .= 'User';
         $result = json_decode(Wechat::$action($accessToken, $data));
+        # 企业微信通讯录不存在需要更新的会员，则创建该会员
+        if ($result->{'errcode'} == 60111 && $action == 'updateUser') {
+            $result = json_decode(Wechat::createUser($accessToken, $data));
+        }
         if (!$result->{'errcode'} && $action != 'deleteUser') {
             User::whereUserid($data['userid'])->first()->update(['synced' => 1]);
         }
-        Log::debug(json_encode([
-            'errcode' => $result->{'errcode'},
-            'errmsg' => Wechat::ERRMSGS[$result->{'errcode'}]
-        ]));
-        return [
+        $response = [
             'errcode' => $result->{'errcode'},
             'errmsg' => Wechat::ERRMSGS[$result->{'errcode'}]
         ];
+        Log::debug(json_encode($response));
+        
+        return $response;
+        
     }
     
 }
