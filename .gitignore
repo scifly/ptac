@@ -19,4 +19,5 @@ resources/views/test/
 public/css/test.css
 public/js/test/
 resources/assets/js/bootstrap.js
+public/js/app.js
 public/uploads/
