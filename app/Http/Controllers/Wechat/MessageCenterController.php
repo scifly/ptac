@@ -166,16 +166,6 @@ class MessageCenterController extends Controller {
         
         $user = Auth::user();
         $message = $this->message->find($id);
-        if (json_decode($message->content)) {
-            $content = json_decode($message->content, true);
-            if (array_key_exists("content", $content)) {
-                $message->content = $content['content'];
-            } elseif (array_key_exists("articles", $content)) {
-                $message->content = $content['articles'][0]['content'];
-            } else {
-                $message->content = '';
-            }
-        }
         $edit = ($user->id == $message->s_user_id ? true : false);
         
         return view('wechat.message_center.show', [
