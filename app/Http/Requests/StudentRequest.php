@@ -39,6 +39,7 @@ class StudentRequest extends FormRequest {
             'user.email'     => 'nullable|email|unique:users,email,' .
                 $this->input('user_id') . ',id',
             'mobile.*'       => ['required', new Mobiles()],
+            'remark'         => 'required|string',
             'student_number' => 'required|alphanum|between:2,32|unique:students,student_number,' .
                 $this->input('user_id') . ',user_id',
             'birthday'       => 'required',
@@ -64,6 +65,9 @@ class StudentRequest extends FormRequest {
                     $input['mobile'][$i]['enabled'] = 1;
                 }
             }
+        }
+        if (!isset($input['remark'])) {
+            $input['remark'] = 'student';
         }
         $this->replace($input);
         
