@@ -172,9 +172,46 @@ class Message extends Model {
         $user = Auth::user();
         $message = $this->find($id);
         $edit = ($user->id == $message->s_user_id ? true : false);
-        $content = json_decode($message->content);
+        Carbon::setLocale('zh');
+        $content = [
+            'id' => $message->id,
+            'title' => $message->title,
+            'updated_at' => Carbon::createFromFormat('Y-m-d H:i:s', $message->updated_at)->diffForHumans(),
+            'sender' => $message->user->realname,
+            'recipients' => $message->messageSendinglog->recipient_count,
+            'msl_id' => $message->messageSendinglog->id
+        ];
+        $object = json_decode($message->content);
+        $class = get_class($object);
         
-        if ($content->{'text'}) {
+        if (property_exists($class, 'text')) {
+            $content['type'] = 'text';
+            $content['text'] = $object->{'text'};
+        }
+        if (property_exists($class, 'image')) {
+            $content['type'] = 'image';
+            $content['image'] = $object->{'image'};
+        }
+        if (property_exists($class, 'voice')) {
+            $content['type'] = 'voice';
+            $content['voice'] = $object->{'voice'};
+        }
+        if (property_exists($class, 'video')) {
+            $content['type'] = 'video';
+            $content['video'] = $object->{'video'};
+        }
+        if (property_exists($class, 'file')) {
+            $content['type'] = 'file';
+            $content['file'] = $object->{'file'};
+        }
+        if (property_exists($class, 'textcard')) {
+            $content['type'] = 'textcard';
+            $content['textcard'] = $object->
+        }
+        if (property_exists($class, 'mpnews')) {
+        
+        }
+        if (property_exists($class, 'sms')) {
         
         }
         return view('wechat.message_center.show', [
