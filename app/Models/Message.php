@@ -184,6 +184,7 @@ class Message extends Model {
         $type = $type ? $type : 'other';
         Log::debug($message->content);
         $object = json_decode($message->content);
+        Log::debug(json_encode($object));
         $content = [
             'id' => $message->id,
             'title' => $message->title,
