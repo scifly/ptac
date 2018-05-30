@@ -21,7 +21,7 @@ $delete.on('click', function () {
                 data: { _token: token },
                 success: function () {
                     $.alert("删除成功！", function () {
-                        window.location.href = '../mc';
+                        window.location.href = '../';
                     });
                 },
                 error: function (e) { wap.errorHandler(e); }
