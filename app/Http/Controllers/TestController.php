@@ -43,7 +43,7 @@ class TestController extends Controller {
     
         $str = "{\"touser\":\"\",\"toparty\":\"50\",\"agentid\":\"3\",\"msgtype\":\"image\",\"image\":{\"media_id\":\"3fVsVK0mz6GnFBcx1a6LYnlpZSPqgGEtTXPBBrchveTY\"}}";
         $message = json_decode($str);
-        dd($message->{'text'});
+        dd(property_exists(get_class($message), 'text'));
         
         $sent = Message::whereSUserId(1)->get()
             ->unique('msl_id')->sortByDesc('created_at')
