@@ -26,12 +26,6 @@ trait JobTrait {
                 $departmentIds = $user->departments->pluck('id')->toArray();
                 $corps = Collect([Corp::whereDepartmentId($departmentIds[0])->first()]);
                 break;
-            case '学校':
-                $departmentIds = $user->departments->pluck('id')->toArray();
-                $corps = Collect([Corp::find(
-                    School::whereDepartmentId($departmentIds[0])->first()->corp_id
-                )]);
-                break;
             case '学生':
                 $corps = Collect([Corp::find($user->student->squad->grade->school->corp_id)]);
                 break;
@@ -43,7 +37,7 @@ trait JobTrait {
                 }
                 $corps = Corp::whereIn('id', array_unique($corpIds))->get();
                 break;
-            default: # 教职员工或其他角色:
+            default: # 学校、教职员工或其他角色:
                 $corps = Collect([Corp::find($user->educator->school->corp_id)]);
                 break;
         }

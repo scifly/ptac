@@ -40,7 +40,7 @@ class EducatorComposer {
             ->where('enabled', 1)->pluck('name', 'id')
             ->toArray();
         $groups = Group::whereSchoolId($schoolId)
-            ->orWhere('name', '学校')->where('enabled', 1)
+            ->where('enabled', 1)
             ->pluck('name', 'id')->toArray();
         
         $subjects[0] = '(请选择)';
