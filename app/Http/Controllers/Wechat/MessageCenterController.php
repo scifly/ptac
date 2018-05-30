@@ -107,7 +107,9 @@ class MessageCenterController extends Controller {
      */
     public function store(MessageRequest $request) {
         
-        $sent = $this->message->send($request->all());
+        $sent = $this->message->send(
+            $request->all()
+        );
         
         return response()->json([
             'message' => $sent ? __('messages.ok') : __('messages.message.failed')
@@ -124,7 +126,11 @@ class MessageCenterController extends Controller {
     public function edit($id) {
         
         $message = $this->message->find($id);
-        abort_if(!$message, HttpStatusCode::NOT_FOUND);
+        abort_if(
+            !$message,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
         
         return view('wechat.message_center.create', [
             'message' => $message,
@@ -158,10 +164,9 @@ class MessageCenterController extends Controller {
      */
     public function show($id) {
         
-        $userId = Session::get('userId');
-        $user = $this->user->where('userid', $userId)->first();
+        $user = Auth::user();
         $message = $this->message->find($id);
-        if (json_decode($message->content) != null) {
+        if (json_decode($message->content)) {
             $content = json_decode($message->content, true);
             if (array_key_exists("content", $content)) {
                 $message->content = $content['content'];

@@ -41,7 +41,10 @@ class TestController extends Controller {
      */
     public function index() {
     
-    
+        $str = '"{\"touser\":\"\",\"toparty\":\"50\",\"agentid\":\"3\",\"msgtype\":\"image\",\"image\":{\"media_id\":\"3fVsVK0mz6GnFBcx1a6LYnlpZSPqgGEtTXPBBrchveTY\"}}"';
+        $message = json_decode($str);
+        dd($message->{'image'});
+        
         $sent = Message::whereSUserId(1)->get()
             ->unique('msl_id')->sortByDesc('created_at')
             ->groupBy('message_type_id');
