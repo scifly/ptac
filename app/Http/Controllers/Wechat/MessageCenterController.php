@@ -164,15 +164,8 @@ class MessageCenterController extends Controller {
      */
     public function show($id) {
         
-        $user = Auth::user();
-        $message = $this->message->find($id);
-        $edit = ($user->id == $message->s_user_id ? true : false);
+        return $this->message->show($id);
         
-        return view('wechat.message_center.show', [
-            'message' => $message,
-            'edit'    => $edit,
-            'show'    => true,
-        ]);
     }
     
     /**

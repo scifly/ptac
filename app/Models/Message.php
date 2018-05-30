@@ -167,6 +167,24 @@ class Message extends Model {
         
     }
     
+    function show($id) {
+    
+        $user = Auth::user();
+        $message = $this->find($id);
+        $edit = ($user->id == $message->s_user_id ? true : false);
+        $content = json_decode($message->content);
+        
+        if ($content->{'text'}) {
+        
+        }
+        return view('wechat.message_center.show', [
+            'message' => $message,
+            'edit'    => $edit,
+            'show'    => true,
+        ]);
+        
+    }
+    
     /**
      * 消息列表
      *
