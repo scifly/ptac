@@ -35,7 +35,7 @@
                                                 <p>{!! $content['text']->{'content'} !!}</p>
                                                 @break
                                             @case ('image')
-                                                <p><img alt="" src="{!! $content['image']->{'path'} !!}" /></p>
+                                                <p><img alt="" src="{!! $content['image']['path'] !!}" /></p>
                                                 @break
                                             @case ('voice')
                                                 <p><a href="{!! $content['voice']->{'path'} !!}">点击下载此语音</a></p>
