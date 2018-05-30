@@ -42,7 +42,8 @@ class TestController extends Controller {
     public function index() {
     
         $str = "成绩消息(卡片)";
-        dd(substr($str, -3, 2));
+        echo (array_search(null, Constant::INFO_TYPES));
+        dd (array_search('', Constant::INFO_TYPES));
         $str = "{\"touser\":\"\",\"toparty\":\"50\",\"agentid\":\"3\",\"msgtype\":\"image\",\"image\":{\"media_id\":\"3fVsVK0mz6GnFBcx1a6LYnlpZSPqgGEtTXPBBrchveTY\"}}";
         $message = json_decode($str);
         dd(property_exists(get_class($message), 'text'));
