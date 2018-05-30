@@ -56,6 +56,7 @@
                                                     <p class="card-detail">{!! $content['textcard']->{'description'} !!}</p>
                                                 </div>
                                                 <a class="card-url" href="{!! $content['textcard']->{'url'} !!}">
+                                                    {!! $content['textcard']->{'btntxt'} ? $content['textcard']->{'btntxt'} : '详情' !!}
                                                 </a>
                                                 @break
                                             @case ('mpnews')
