@@ -183,7 +183,7 @@ class Message extends Model {
         $type = array_search(mb_substr($message->title, -3, 2), Constant::INFO_TYPES);
         $type = $type ? $type : 'other';
         $object = json_decode($message->content);
-        Log::debug(json_encode($object[$type]));
+        Log::debug($object);
         $content = [
             'id' => $message->id,
             'title' => $message->title,
