@@ -252,7 +252,7 @@
                 $(document).off('click', '#' + contact.options.confirm);
                 $(document).on('click', '#' + contact.options.confirm, function () {
                     if (typeof relationship === 'undefined') {
-                        var range = parseInt($($('.checked').children[0]).val()),
+                        var range = parseInt($($('.checked').children()[0]).val()),
                             url = page.siteRoot() + table + '/export?range=' + range,
                             $ranges = $('#' + contact.options.ranges),
                             $gradeId = $('#' + contact.options.gradeId),
