@@ -353,9 +353,14 @@ div.weui_tab_bd {
 }
 .mpnews-item img{
     height:300px ;
+    width: auto;
 }
 .mpnews-url , .mpnews-title , .mpnews-digest{
     height: 50px;
     line-height: 50px;
-    margin:0;
+    margin:0 !important;
+
+}
+.mpnews-digest{
+    padding: 0 10px !important;
 }
