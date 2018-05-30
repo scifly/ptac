@@ -95,7 +95,7 @@ function replies() {
     $.ajax({
         type: 'POST',
         dataType: 'json',
-        url: 'mc/replies',
+        url: '../replies',
         data: {
             _token: $('#csrf_token').attr('content'),
             id: $id.val(),
