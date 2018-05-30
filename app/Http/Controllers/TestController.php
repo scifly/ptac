@@ -42,7 +42,7 @@ class TestController extends Controller {
     public function index() {
     
         
-        $str = "{\"touser\":\"\",\"toparty\":\"50\",\"agentid\":\"3\",\"msgtype\":\"text\",\"text\":{\"content\":\"test\"}}";
+        $str =  "{\"touser\":\"\",\"toparty\":\"50\",\"agentid\":\"3\",\"msgtype\":\"text\",\"text\":{\"content\":\"3217893720\"}}";
         $message = json_decode($str);
         dd($message->{'text'});
         
