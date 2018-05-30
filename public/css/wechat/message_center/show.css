@@ -355,4 +355,5 @@ div.weui_tab_bd {
 }
 .mpnews-url , .mpnews-title , .mpnews-digest{
     height: 50px;
+    line-height: 50px;
 }

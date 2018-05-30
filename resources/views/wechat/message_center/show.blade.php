@@ -58,20 +58,14 @@
                                                         {!! $content['textcard']->{'btntxt'} ? $content['textcard']->{'btntxt'} : '详情' !!}
                                                     </a>
                                                 </div>
-
                                                 @break
                                             @case ('mpnews')
                                                 @foreach ($content['mpnews']->{'articles'} as $article)
-                                                    <p>
-                                                        <a href="{!! $article->{'title'} !!}">
-
-                                                        </a>
-                                                    </p>
                                                     <div class="mpnews-item">
-                                                        <p class="mpnews-title"></p>
+                                                        <p class="mpnews-title">{!! $article->{'title'} !!}</p>
                                                         <img alt="" src="/{!! $article->{'image_url'} !!}" />
-                                                        <p class="mpnews-digest"></p>
-                                                        <a class="mpnews-url"></a>
+                                                        <p class="mpnews-digest">{!! $article->{'digest'} !!}</p>
+                                                        <a class="mpnews-url" href="{!! $article->{'content_source_url'} !!}">阅读全文</a>
                                                     </div>
                                                 @endforeach
                                                 @break
