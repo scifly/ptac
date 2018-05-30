@@ -99,14 +99,6 @@ class Message extends Model {
     function receiveUser() { return $this->belongsTo('App\Models\User', 'r_user_id', 'id'); }
     
     /**
-     * 获取
-     *
-     * @param array $classIds
-     * @return Collection|static[]
-     */
-    function classes(array $classIds) { return Squad::whereIn('id', $classIds)->get(['id', 'name']); }
-    
-    /**
      * 返回对应的消息发送日志对象
      *
      * @return BelongsTo

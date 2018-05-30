@@ -12,7 +12,7 @@
             <div class="content homework overflow-homework">
                 <div class="homework-wrap">
                     <div class="artic-head" style="font-size: 15px;">
-                        <input id="id" name="id" value="{{ $message->id }}" hidden>
+                        {!! Form::hidden('id', $message->id, ['id' => 'id']) !!}
                         <span class="artic-title word-warp" style="color:#000">{{ $message->title }}</span>
                         <span class="artic-time" style="color:#878787">时间：{{ $message->updated_at }}</span>
                     </div>
@@ -47,7 +47,7 @@
                                     <div class="js-show-comment">
                                         <div class="comment-selfEdit-con">
                                             <div class="edit-input">我来说点什么</div>
-                                            <img class="head avatar" src="http://wx.qlogo.cn/mmopen/QRbxqI6kLPHxib7JwKrqic1OX7RXqcLpVLibOwsz2MMFG81C26nk22ljrvvBx89GZdZnRtQhvgK6XjvjDqPMFZ0DDc0PGyv25Zia/0">
+                                            <img class="head avatar" src="/img/0.png">
                                         </div>
                                     </div>
                                     <ul class="discuss_list" style="position: relative;">
@@ -82,7 +82,7 @@
 <div id="mycomment" class="weui-popup__container popup-bottom">
     <div class="weui-popup__overlay"></div>
     <div class="weui-popup__modal comment-content" style="height: 80%;">
-        <input name="msl_id" id="msl_id" value="{{ $message->messageSendinglogs->id }}" hidden/>
+        {!! Form::hidden('msl_id', $mesage->messageSendingLog->id, ['id' => 'msl_id']) !!}
         <div style="background-color: #fff;height: 100%;">
             <div class="comment-edit-con">
                 <p style="float:left;width: 20%;" class="close-btn close-popup"><i class="icon iconfont icon-guanbi"></i></p>
@@ -92,7 +92,15 @@
             <div class="weui_cells vux-no-group-title">
                 <div class="weui_cell js-textarea-val" style="font-size: 16px">
                     <div class="weui_cell_bd weui_cell_primary">
-                        <textarea class="weui_textarea" spellcheck="false" placeholder="请输入评论..." rows="3" cols="30" maxlength="100" style="height: 150px;"></textarea>
+                        {!! Form::textarea('comment', null, [
+                            'class' => 'weui_textarea',
+                            'spellcheck' => 'false',
+                            'placeholder' => '请输入评论...',
+                            'rows' => 3,
+                            'cols' => 30,
+                            'maxlength' => 100,
+                            'style' => 'height: 150px;'
+                        ]) !!}
                         <div class="weui_textarea_counter">
                             <span>0</span>/100
                         </div>
@@ -103,7 +111,6 @@
     </div>
 </div>
 @endsection
-
 @section('script')
     <script src="{{ asset('/js/wechat/message_center/show.js') }}"></script>
 @endsection

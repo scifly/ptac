@@ -320,54 +320,17 @@ $msgType.on('change', function () {
     }
 });
 
+/** 消息内容 */
 // 初始化上传文件的事件
 $upload.on('focus change', '#upload #mpnews-upload', function () {
     upload(this);
 });
-
-/** 消息内容 */
 // 上传文件
 $upload.on('change', function() { upload(this, false); });
 
 /** 图文消息 */
 // 上传封面图
 $mpUpload.on('change', function() { upload(this, true); });
-// 保存/更新图文
-$add.on('click', function () {
-    var id = $mpnewsId.val(),
-        title = $mpTitle.val(),
-        description = $mpContent.val(),
-        thumb_media_id = $mpMediaId.val(),
-        filepath = $mpFilePath.val(),
-        article = {
-            title: title,
-            thumb_media_id: thumb_media_id,
-            author: $mpAuthor.val(),
-            content_source_url: $mpUrl.val(),
-            content: description,
-            digest: $mpDigest.val(),
-            filename: $mpUploadTitle.val(),
-            filepath: $mpFilePath.val()
-        };
-
-    if (title === '' || description === '' || thumb_media_id === '') {
-        $.alert('标题/内容/封面图不得为空');
-        return false;
-    }
-    if (id === '') {
-        mpnews['articles'].push(article);
-        $mpnewsList.append(
-            '<li id="mpnews-' + mpnewsCount + '" class=weui-uploader__file style="background-image:url(' + filepath + ')"></li>'
-        );
-        mpnewsCount += 1;
-    } else {
-        var $mpnews = $('#mpnews-' + id);
-
-        mpnews['articles'][id] = article;
-        $mpnews.attr('style', '"background-image:url(' + filepath + ')"');
-    }
-    $.closePopup();
-});
 // 编辑图文
 $(document).on('click', '.weui-uploader__file', function () {
     var ids = $(this).attr('id').split('-'),
@@ -419,6 +382,42 @@ $delete.on('click', function () {
     });
     mpnewsCount--;
     $.alert('已将指定图文删除');
+    $.closePopup();
+});
+// 保存/更新图文
+$add.on('click', function () {
+    var id = $mpnewsId.val(),
+        title = $mpTitle.val(),
+        description = $mpContent.val(),
+        thumb_media_id = $mpMediaId.val(),
+        filepath = $mpFilePath.val(),
+        article = {
+            title: title,
+            thumb_media_id: thumb_media_id,
+            author: $mpAuthor.val(),
+            content_source_url: $mpUrl.val(),
+            content: description,
+            digest: $mpDigest.val(),
+            filename: $mpUploadTitle.val(),
+            filepath: $mpFilePath.val()
+        };
+
+    if (title === '' || description === '' || thumb_media_id === '') {
+        $.alert('标题/内容/封面图不得为空');
+        return false;
+    }
+    if (id === '') {
+        mpnews['articles'].push(article);
+        $mpnewsList.append(
+            '<li id="mpnews-' + mpnewsCount + '" class=weui-uploader__file style="background-image:url(' + filepath + ')"></li>'
+        );
+        mpnewsCount += 1;
+    } else {
+        var $mpnews = $('#mpnews-' + id);
+
+        mpnews['articles'][id] = article;
+        $mpnews.attr('style', '"background-image:url(' + filepath + ')"');
+    }
     $.closePopup();
 });
 

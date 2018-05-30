@@ -37,7 +37,8 @@
                             <div class="tea-head">
 								<span class="tea-select-list-icon">
 									<span class="searchicon">
-										<a class="icon iconfont icon-search3 c-green open-popup" href="#" data-target="#search"></a>
+										<a class="icon iconfont icon-search3 c-green open-popup" href="#"
+                                           data-target="#search"></a>
 									</span>
 								</span>
                                 <div class="selectlist-layout">
@@ -94,7 +95,7 @@
                             </div>
                         </div>
                 @endif
-                    <!-- 已发送结束-->
+                <!-- 已发送结束-->
                     <!--已接收-->
                     <div id="tab2" class="weui-tab__bd-item @if(!$canSend) weui-tab__bd-item--active @endif ">
                         <div class="tea-head">
@@ -169,12 +170,14 @@
                 <form class="weui-search-bar__form" action="#">
                     <div class="weui-search-bar__box">
                         <i class="weui-icon-search"></i>
-                        <input type="search" class="weui-search-bar__input" id="searchInput" placeholder="请输入搜索内容" required="" />
+                        <input type="search" class="weui-search-bar__input" id="searchInput" placeholder="请输入搜索内容"
+                               required=""/>
 
                         <a href="#" class="weui-icon-clear" id="searchClear"></a>
                     </div>
                 </form>
-                <a href="#" class="weui-search-bar__cancel-btn close-popup" id="searchCancel" style="display: block;">取消</a>
+                <a href="#" class="weui-search-bar__cancel-btn close-popup" id="searchCancel"
+                   style="display: block;">取消</a>
             </div>
             <div class="weui-tab__bd-item weui-tab__bd-item--active">
                 <div class="weui-tab__bd-item weui-tab__bd-item--active">
