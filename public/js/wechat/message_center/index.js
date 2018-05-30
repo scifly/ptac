@@ -18,9 +18,9 @@ $('.teacher-list-box').on('click', function () {
     $.ajax({
         type: 'GET',
         dataType: 'json',
-        url: '../update/' + id,
+        url: 'update/' + id,
         success: function () {
-            window.location = '../show/' + id;
+            window.location = 'show/' + id;
         },
         error: function (e) {}
     });
