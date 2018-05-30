@@ -325,8 +325,9 @@ div.weui_tab_bd {
 .card-content ,.mpnews-item{
     width:calc(100% - 20px);
     border:1px solid #ddd;
-    padding: 10px;
+    padding: 10px 10px 0 10px;
     border-radius:5px;
+    background-color: beige;
 }
 .card-content .card-title ,.mpnews-item .mpnews-title{
     font-size:20px;
@@ -356,4 +357,5 @@ div.weui_tab_bd {
 .mpnews-url , .mpnews-title , .mpnews-digest{
     height: 50px;
     line-height: 50px;
+    margin:0;
 }
