@@ -12,7 +12,6 @@ use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
@@ -452,19 +451,21 @@ class Message extends Model {
             return $this->search();
         }
         if (!Request::query('schoolId')) {
-            $user = Auth::user();
-            $schoolIds = $user->schoolIds($user->id, session('corpId'));
-            if (count($schoolIds) > 1) {
-                return view('wechat.schools', [
-                    'app' => '消息中心',
-                    'schools' => School::whereIn('id', $schoolIds)->pluck('name', 'id'),
-                    'url' => 'mc?schoolId='
-                ]);
+            if (!session('schoolId')) {
+                $user = Auth::user();
+                $schoolIds = $user->schoolIds($user->id, session('corpId'));
+                if (count($schoolIds) > 1) {
+                    return view('wechat.schools', [
+                        'app' => '消息中心',
+                        'schools' => School::whereIn('id', $schoolIds)->pluck('name', 'id'),
+                        'url' => 'mc?schoolId='
+                    ]);
+                }
+                session(['schoolId' => $schoolIds[0]]);
             }
-            session(['schoolId' => $schoolIds[0]]);
-            return view('wechat.message_center.index');
+        } else {
+            session(['schoolId' => Request::query('schoolId')]);
         }
-        session(['schoolId' => Request::query('schoolId')]);
         
         return view('wechat.message_center.index');
         
