@@ -355,7 +355,7 @@ div.weui_tab_bd {
 .mpnews-item img{
     height:300px ;
     width: auto;
-    vert-align: top;
+    vertical-align: top;
 }
 .mpnews-url , .mpnews-title , .mpnews-digest{
     height: 50px;
