@@ -44,7 +44,8 @@ class TestController extends Controller {
         
         $str =  "{\"touser\":\"\",\"toparty\":\"50\",\"agentid\":\"3\",\"msgtype\":\"text\",\"text\":{\"content\":\"3217893720\"}}";
         $message = json_decode($str);
-        dd($message->{'text'});
+        $type = 'text';
+        dd($message->{$type});
         
         $sent = Message::whereSUserId(1)->get()
             ->unique('msl_id')->sortByDesc('created_at')
