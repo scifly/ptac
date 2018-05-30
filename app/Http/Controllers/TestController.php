@@ -42,7 +42,7 @@ class TestController extends Controller {
     public function index() {
     
         $str = "成绩消息(卡片)";
-        dd(mb_substr($str, -3, 2));
+        dd(substr($str, -3, 2));
         $str = "{\"touser\":\"\",\"toparty\":\"50\",\"agentid\":\"3\",\"msgtype\":\"image\",\"image\":{\"media_id\":\"3fVsVK0mz6GnFBcx1a6LYnlpZSPqgGEtTXPBBrchveTY\"}}";
         $message = json_decode($str);
         dd(property_exists(get_class($message), 'text'));
