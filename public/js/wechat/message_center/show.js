@@ -17,7 +17,7 @@ $delete.on('click', function () {
             $.ajax({
                 type: 'DELETE',
                 dataType: 'json',
-                url: 'mc/delete/' + $id.val(),
+                url: '../delete/' + $id.val(),
                 data: { _token: token },
                 success: function () {
                     $.alert("删除成功！", function () {
@@ -32,7 +32,7 @@ $delete.on('click', function () {
 });
 // 编辑消息
 $edit.on('click', function () {
-    window.location.href = 'mc/edit/' + $id.val();
+    window.location.href = '../edit/' + $id.val();
 });
 // 打开消息评论
 $showComment.click(function () {
@@ -53,7 +53,7 @@ $reply.off('click').on('click', function () {
     $.ajax({
         type: 'POST',
         dataType: 'json',
-        url: '../message_replay',
+        url: '../reply',
         data: {
             _token: token, content: content, msl_id: $mslId.val() },
         success: function () {
@@ -75,7 +75,7 @@ $(document).on('click', '.delete-replay', function () {
             $.ajax({
                 type: 'DELETE',
                 dataType: 'json',
-                url: 'mc/remove/' + id,
+                url: '../remove/' + id,
                 data: {_token: $('#csrf_token').attr('content')},
                 success: function () {
                     $.alert("删除成功！", function () {

@@ -22,7 +22,7 @@ use Throwable;
  */
 class HomeController extends Controller {
     
-    const PAGEJS = 'js/home/page';
+    const PAGEJS = 'js/home/page.js';
     const ROOT_MENU_ID = 1;
     
     protected $tab, $mt, $menu;
