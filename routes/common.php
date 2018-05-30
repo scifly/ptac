@@ -56,8 +56,8 @@ function app_routes($acronym) {
     Route::delete($p . 'delete/{id}', $c . '@destroy');
     Route::post($p . 'upload', $c . '@upload');
     Route::post($p . 'reply', $c . '@reply');
-    Route::post($p . 'replylist', $c . '@replyList');
-    Route::delete($p . 'replydel/{id}', $c . '@replyDestroy');
+    Route::post($p . 'replies', $c . '@replies');
+    Route::delete($p . 'remove/{id}', $c . '@remove');
     
     /** 考勤中心 */
     $c = 'Wechat\AttendanceController';

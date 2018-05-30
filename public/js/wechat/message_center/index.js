@@ -22,7 +22,7 @@ $('.teacher-list-box').on('click', function () {
         success: function () {
             window.location = 'mc/show/' + id;
         },
-        error: function (e) {}
+        error: function (e) { wap.errorHandler(e); }
     });
 });
 $('.weui-navbar__item').click(function(){
@@ -97,7 +97,7 @@ $("#searchInput").on("input propertychange change", function() {
             }
             $messageList.html(str);
         },
-        error: function (e) { }
+        error: function (e) { wap.errorHandler(e); }
     });
 });
 

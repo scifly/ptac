@@ -199,110 +199,65 @@ class MessageCenterController extends Controller {
     }
     
     /**
+     * 消息回复列表
+     *
+     * @return JsonResponse
+     */
+    public function replies() {
+        
+        $user = Auth::user();
+        $input = Request::all();
+        $message = $this->message->find($input['id']);
+        $messages = MessageReply::where('msl_id', $input['msl_id'])->get();
+        if ($user->id != $message->s_user_id) {
+            $messages = MessageReply::where('msl_id', $input['msl_id'])
+                ->where('user_id', $user->id)->get();
+        }
+        foreach ($messages as $message) {
+            $messages->name = $message->user->realname;
+        }
+        
+        return response()->json([
+            'messages' => $messages
+        ]);
+        
+    }
+    
+    /**
      * 消息回复
      *
      */
     public function reply() {
         
-        $userId = Session::get('userId');
-        $user = $this->user->where('userid', $userId)->first();
         $input = Request::all();
-        $input['user_id'] = $user->id;
+        $input['user_id'] = Auth::id();
+        $replied = $this->mr->store($input);
         
-        return $this->result(
-            $this->mr->store($input)
-        );
+        return response()->json([
+            'message' => $replied ? __('messages.ok') : __('messages.fail')
+        ], $replied ? HttpStatusCode::OK : HttpStatusCode::INTERNAL_SERVER_ERROR);
         
     }
     
     /**
-     * 消息回复列表
-     *
-     * @return JsonResponse
-     */
-    public function replyList() {
-        
-        $user = Auth::user();
-        $input = Request::all();
-        $message = $this->message->find($input['id']);
-        $lists = MessageReply::where('msl_id', $input['msl_id'])->get();
-        if ($user->id == $message->s_user_id) {
-            foreach ($lists as $list) {
-                $list->name = $list->user->realname;
-            }
-        } else {
-            $lists = MessageReply::where('msl_id', $input['msl_id'])
-                ->where('user_id', $user->id)->get();
-            foreach ($lists as $list) {
-                $list->name = $list->user->realname;
-            }
-        }
-        
-        return $this->result($lists, $lists);
-        
-    }
-    
-    /**
-     * 消息回复删除
+     * 删除指定的消息回复
      *
      * @param $id
      * @return JsonResponse
      * @throws Exception
      */
-    public function replyDestroy($id) {
+    public function remove($id) {
         
         $mr = MessageReply::find($id);
-        abort_if(!$mr, HttpStatusCode::NOT_FOUND);
-        
-        return $this->result(
-            $mr->delete()
+        abort_if(
+            !$mr, HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
         );
+        $removed = $mr->delete();
         
-    }
-    
-    /**
-     *上传图片和视频
-     *
-     * @return JsonResponse
-     */
-    public function upload() {
-        
-        $type = Request::input('type');
-        if (empty($type)) {
-            $data = $this->media->upload(Request::file('file'), '前端消息中心');
-            
-            return $this->result($data, $data);
-        }
-        if ($type == 'mpnews') {
-            $type = 'image';
-        }
-        $file = Request::file('file');
-        if (empty($file)) {
-            abort(HttpStatusCode::NOT_ACCEPTABLE, '您还未选择文件！');
-        } else {
-            $result['data'] = [];
-            $mes = $this->media->upload($file, ' 前端消息中心');
-            if ($mes) {
-                $this->result['message'] = '上传成功！';
-                $path = $mes['path'];
-                $data = ["media" => curl_file_create($path)];
-                $crop = Corp::whereName('万浪软件')->first();
-                $app = App::whereAgentid('999')->first();
-                $token = Wechat::getAccessToken($crop->corpid, $app->secret);
-                $status = Wechat::uploadMedia($token, $type, $data);
-                $message = json_decode($status);
-                if ($message->errcode == 0) {
-                    $mes['media_id'] = $message->media_id;
-                    $this->result['data'] = $mes;
-                } else {
-                    abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '微信服务器上传失败！');
-                }
-            } else {
-                abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '文件上传失败！');
-            }
-        }
-        
-        return response()->json($this->result);
+        return response()->json([
+            'message' => $removed ? __('messages.del_ok') : __('messages.del_fail')
+        ], $removed ? HttpStatusCode::OK : HttpStatusCode::INTERNAL_SERVER_ERROR);
         
     }
     
