@@ -378,10 +378,20 @@ function send(preview) {
             content = { text: { content: $textContent.val() }};
             break;
         case 'image':   // 图片
-            content = { image: { media_id: $container.find('.media_id').val() } };
+            content = {
+                image: {
+                    media_id: $container.find('.media_id').val(),
+                    path: $container.find('.media_id').attr('data-path')
+                }
+            };
             break;
         case 'audio':   // 语音
-            content = { voice: { media_id: $container.find('.media_id').val() } };
+            content = {
+                voice: {
+                    media_id: $container.find('.media_id').val(),
+                    path: $container.find('.media_id').attr('data-path')
+                }
+            };
             formData['type'] = 'voice';
             break;
         case 'video':   // 视频
@@ -389,12 +399,18 @@ function send(preview) {
                 video: {
                     media_id: $container.find('.media_id').val(),
                     title: $videoTitle.val(),
-                    description: $videoDescription.val()
+                    description: $videoDescription.val(),
+                    path: $container.find('.media_id').attr('data-path')
                 }
             };
             break;
         case 'file':   // 文件
-            content = { file: { media_id: $container.find('.media_id').val() } };
+            content = {
+                file: {
+                    media_id: $container.find('.media_id').val(),
+                    path: $container.find('.media_id').attr('data-path')
+                }
+            };
             break;
         case 'card':    // 卡片
             content = {
@@ -500,7 +516,7 @@ function upload($file) {
                 default:
                     return false;
             }
-            $container.find('.media_id').val(result.data.media_id);
+            $container.find('.media_id').val(result.data.media_id).attr('data-path', result.data.path);
 
             var $uploadBtn = $container.find('.upload-button'),
                 $label = $uploadBtn.find('label'),

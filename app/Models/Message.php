@@ -167,6 +167,12 @@ class Message extends Model {
         
     }
     
+    /**
+     * 显示指定消息的内容
+     *
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     function show($id) {
     
         $user = Auth::user();
@@ -174,7 +180,8 @@ class Message extends Model {
         $edit = ($user->id == $message->s_user_id ? true : false);
         Carbon::setLocale('zh');
         $type = array_search(mb_substr($message->title, -3, 2), Constant::INFO_TYPES);
-        
+        $type = $type ? $type : 'other';
+        $object = json_decode($message->content);
         $content = [
             'id' => $message->id,
             'title' => $message->title,
@@ -183,7 +190,7 @@ class Message extends Model {
             'recipients' => $message->messageSendinglog->recipient_count,
             'msl_id' => $message->messageSendinglog->id,
             'type' => $type,
-            $type => json_decode($message->content)
+            $type => $type == 'other' ? $message->content : $object->{$type}
         ];
         
         return view('wechat.message_center.show', [

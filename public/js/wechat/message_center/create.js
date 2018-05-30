@@ -345,7 +345,7 @@ $(document).on('click', '.weui-uploader__file', function () {
     $mpDigest.val(news['digest']);
     $mpMediaId.val(news['thumb_media_id']);
     $mpUploadTitle.val(news['filename']);
-    $mpFilePath.val(news['filepath']);
+    $mpFilePath.val(news['image_url']);
     $delete.show();
     $mpnews.popup();
 });
@@ -390,7 +390,7 @@ $add.on('click', function () {
         title = $mpTitle.val(),
         description = $mpContent.val(),
         thumb_media_id = $mpMediaId.val(),
-        filepath = $mpFilePath.val(),
+        image_url = $mpFilePath.val(),
         article = {
             title: title,
             thumb_media_id: thumb_media_id,
@@ -399,7 +399,7 @@ $add.on('click', function () {
             content: description,
             digest: $mpDigest.val(),
             filename: $mpUploadTitle.val(),
-            filepath: $mpFilePath.val()
+            image_url: $mpFilePath.val()
         };
 
     if (title === '' || description === '' || thumb_media_id === '') {
@@ -409,14 +409,14 @@ $add.on('click', function () {
     if (id === '') {
         mpnews['articles'].push(article);
         $mpnewsList.append(
-            '<li id="mpnews-' + mpnewsCount + '" class=weui-uploader__file style="background-image:url(' + filepath + ')"></li>'
+            '<li id="mpnews-' + mpnewsCount + '" class=weui-uploader__file style="background-image:url(' + image_url + ')"></li>'
         );
         mpnewsCount += 1;
     } else {
         var $mpnews = $('#mpnews-' + id);
 
         mpnews['articles'][id] = article;
-        $mpnews.attr('style', '"background-image:url(' + filepath + ')"');
+        $mpnews.attr('style', '"background-image:url(' + image_url + ')"');
     }
     $.closePopup();
 });
@@ -443,12 +443,22 @@ $send.on('click', function () {
         case 'image':
             mediaId = $mediaId.val();
             if (mediaId === '') { $.alert('请上传图片'); return false; }
-            content = { image: { media_id: mediaId } };
+            content = {
+                image: {
+                    media_id: mediaId,
+                    path: $mediaId.data('path')
+                }
+            };
             break;
         case 'voice':
             mediaId = $mediaId.val();
             if (mediaId === '') { $.alert('请上传语音'); return false; }
-            content = { voice: { media_id: mediaId } };
+            content = {
+                voice: {
+                    media_id: mediaId,
+                    path: $mediaId.data('path')
+                }
+            };
             break;
         case 'video':
             title = $title.val();
@@ -459,14 +469,20 @@ $send.on('click', function () {
                 video: {
                     media_id: mediaId,
                     title: title,
-                    description: text
+                    description: text,
+                    path: $mediaId.data('path')
                 }
             };
             break;
         case 'file':
             mediaId = $mediaId.val();
             if (mediaId === '') { $.alert('请上传文件'); return false; }
-            content = { file: { media_id: mediaId } };
+            content = {
+                file: {
+                    media_id: mediaId,
+                    path: $mediaId.data('path')
+                }
+            };
             break;
         case 'textcard':
             title = $title.val();
@@ -554,19 +570,14 @@ function upload(uploader, mpnews) {
                 path = '../../' + result['data']['path'];
 
             $notification.hide();
-            $(mpnews ? '#mp-upload-title' : '#upload-title').html(filename);
+            $(mpnews ? '#mp-upload-title' : '#upload-title').html(filename).attr('data-path', result['data']['path']);
             $(mpnews ? '#thumb_media_id' : '#media_id').val(mediaId);
             if (mpnews) {
                 $mpFilePath.val(path);
             }
             $.alert(result['message']);
         },
-        error: function (e) {
-            var obj = JSON.parse(e.responseText);
-
-            $notification.hide();
-            $.alert(obj['statusCode'] + '\n' + obj['message']);
-        }
+        error: function (e) { wap.errorHandler(e); }
     });
 }
 function countTargets() {
