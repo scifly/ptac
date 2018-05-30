@@ -327,6 +327,7 @@ div.weui_tab_bd {
     border:1px solid #ddd;
     border-bottom: 0;
     padding: 10px;
+    border-radius:5px 5px 0 0 ;
 }
 .card-content .card-title{
     font-size:20px;
@@ -341,4 +342,7 @@ div.weui_tab_bd {
     display: block;
     color:#333;
     font-size: 14px;
+    border-radius:0 0 5px 5px ;
+    text-align: right;
+    color: #00a0e9;
 }
