@@ -182,14 +182,12 @@ class Message extends Model {
         Carbon::setLocale('zh');
         $type = array_search(mb_substr($message->title, -3, 2), Constant::INFO_TYPES);
         $type = $type ? $type : 'other';
-        Log::debug($message->content);
         $object = json_decode($message->content);
-        Log::debug(json_encode($object));
         $content = [
             'id' => $message->id,
             'title' => $message->title,
             'updated_at' => Carbon::createFromFormat('Y-m-d H:i:s', $message->updated_at)->diffForHumans(),
-            'sender' => $message->user->realname,
+            'sender' => User::find($message->s_user_id)->realname,
             'recipients' => $message->messageSendinglog->recipient_count,
             'msl_id' => $message->messageSendinglog->id,
             'type' => $type,
