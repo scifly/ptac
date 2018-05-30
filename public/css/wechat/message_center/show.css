@@ -78,6 +78,9 @@ div.weui_tab_bd {
     padding-top: 11px;
     font-size: 17px;
 }
+.wwbw img {
+    width: 100%;
+}
 .bottom-artic{
     position: fixed;
     bottom: 0;
