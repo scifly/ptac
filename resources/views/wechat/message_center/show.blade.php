@@ -43,7 +43,7 @@
                                             @case ('video')
                                                 <p>标题: {!! $content['video']->{'title'} !!}</p>
                                                 <p>描述: {!! $content['video']->{'description'} !!}</p>
-                                                <video width="400" controls>
+                                                <video controls>
                                                     <source src="/{!! $content['video']->{'path'} !!}" type="video/mp4">
                                                 </video>
                                                 @break
@@ -51,9 +51,11 @@
                                                 <p><a href="/{!! $content['file']->{'path'} !!}">点击下载此文件</a></p>
                                                 @break
                                             @case ('textcard')
-                                                <a href="{!! $content['textcard']->{'url'} !!}">
-                                                    <p>{!! $content['textcard']->{'title'} !!}</p>
-                                                    <p>{!! $content['textcard']->{'description'} !!}</p>
+                                                <div class="card-content">
+                                                    <p class="card-title">{!! $content['textcard']->{'title'} !!}</p>
+                                                    <p class="card-detail">{!! $content['textcard']->{'description'} !!}</p>
+                                                </div>
+                                                <a class="card-url" href="{!! $content['textcard']->{'url'} !!}">
                                                 </a>
                                                 @break
                                             @case ('mpnews')
