@@ -5,6 +5,7 @@ use App\Models\Corp;
 use App\Models\User;
 use App\Models\School;
 use App\Facades\Wechat;
+use Illuminate\Support\Facades\Log;
 
 trait JobTrait {
     
@@ -94,7 +95,10 @@ trait JobTrait {
         if (!$result->{'errcode'} && $action != 'deleteUser') {
             User::whereUserid($data['userid'])->first()->update(['synced' => 1]);
         }
-        
+        Log::debug(json_encode([
+            'errcode' => $result->{'errcode'},
+            'errmsg' => Wechat::ERRMSGS[$result->{'errcode'}]
+        ]));
         return [
             'errcode' => $result->{'errcode'},
             'errmsg' => Wechat::ERRMSGS[$result->{'errcode'}]
