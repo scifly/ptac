@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
@@ -181,6 +182,7 @@ class Message extends Model {
         Carbon::setLocale('zh');
         $type = array_search(mb_substr($message->title, -3, 2), Constant::INFO_TYPES);
         $type = $type ? $type : 'other';
+        Log::debug($type);
         $object = json_decode($message->content);
         $content = [
             'id' => $message->id,
