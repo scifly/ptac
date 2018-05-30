@@ -10,12 +10,14 @@ use App\Helpers\Snippet;
 use App\Jobs\SendMessage;
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
@@ -130,6 +132,38 @@ class Message extends Model {
         abort_if(!$corp, HttpStatusCode::NOT_FOUND, __('messages.message.invalid_corp'));
         SendMessage::dispatch($data, Auth::id(), $corp, $apps);
     
+        return true;
+        
+    }
+    
+    /**
+     * 将指定消息的状态更新为已读，并更新指定消息的已读数量
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     * @throws Throwable
+     */
+    function read($id) {
+        
+        $message = $this->find($id);
+        abort_if(
+            !$message,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
+        try {
+            DB::transaction(function () use ($message, $id) {
+                $message->read = 1;
+                $message->save();
+                $msl = MessageSendingLog::find($message->msl_id);
+                $msl->read_count += 1;
+                $msl->save();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
         return true;
         
     }

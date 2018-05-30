@@ -140,41 +140,14 @@ class MessageCenterController extends Controller {
      * @throws Exception
      * @throws Throwable
      */
-    public function updateStatus($id) {
+    public function read($id) {
+
+        $this->message->read($id);
         
-        //操作 msl表 和 message表 暂时放在控制器
-        return $this->result(
-            $this->modifyReaded($id)
-        );
+        return response()->json([
+            'message' => __('messages.ok')
+        ]);
         
-    }
-    
-    /**
-     * 更新是否已读并且更新对应msl记录
-     *
-     * @param $id
-     * @return bool
-     * @throws Exception
-     * @throws Throwable
-     */
-    private function modifyReaded($id) {
-        
-        $message = $this->message->find($id);
-        abort_if(!$message, HttpStatusCode::NOT_FOUND);
-        try {
-            DB::transaction(function () use ($message, $id) {
-                $message->read = 1;
-                $message->save();
-                $msl = MessageSendingLog::whereId($message->msl_id)->first();
-                $msl->read_count = $msl->read_count + 1;
-                
-                return $msl->save() ? true : false;
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
     }
     
     /**
@@ -217,7 +190,11 @@ class MessageCenterController extends Controller {
     public function destroy($id) {
         
         $message = $this->message->find($id);
-        abort_if(!$message, HttpStatusCode::NOT_FOUND);
+        abort_if(
+            !$message,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
         
         //只能删除查看的记录 不能删除多媒体文件 多媒体文件路径被多个记录存入
         return $this->result(

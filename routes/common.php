@@ -52,7 +52,7 @@ function app_routes($acronym) {
     Route::post($p . 'create/{departmentId?}', $c . '@create');
     Route::post($p . 'store', $c . '@store');
     Route::get($p . 'show/{id}', $c . '@show');
-    Route::get($p . 'update/{id}', $c . '@updateStatus');
+    Route::get($p . 'read/{id}', $c . '@read');
     Route::delete($p . 'delete/{id}', $c . '@destroy');
     Route::post($p . 'upload', $c . '@upload');
     Route::post($p . 'reply', $c . '@reply');
