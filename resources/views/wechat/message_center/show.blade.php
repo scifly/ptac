@@ -54,18 +54,25 @@
                                                 <div class="card-content">
                                                     <p class="card-title">{!! $content['textcard']->{'title'} !!}</p>
                                                     <p class="card-detail">{!! $content['textcard']->{'description'} !!}</p>
+                                                    <a class="card-url" href="{!! $content['textcard']->{'url'} !!}">
+                                                        {!! $content['textcard']->{'btntxt'} ? $content['textcard']->{'btntxt'} : '详情' !!}
+                                                    </a>
                                                 </div>
-                                                <a class="card-url" href="{!! $content['textcard']->{'url'} !!}">
-                                                    {!! $content['textcard']->{'btntxt'} ? $content['textcard']->{'btntxt'} : '详情' !!}
-                                                </a>
+
                                                 @break
                                             @case ('mpnews')
                                                 @foreach ($content['mpnews']->{'articles'} as $article)
                                                     <p>
                                                         <a href="{!! $article->{'title'} !!}">
-                                                            <img alt="" src="/{!! $article->{'image_url'} !!}" />
+
                                                         </a>
                                                     </p>
+                                                    <div class="mpnews-item">
+                                                        <p class="mpnews-title"></p>
+                                                        <img alt="" src="/{!! $article->{'image_url'} !!}" />
+                                                        <p class="mpnews-digest"></p>
+                                                        <a class="mpnews-url"></a>
+                                                    </div>
                                                 @endforeach
                                                 @break
                                             @case ('sms')
