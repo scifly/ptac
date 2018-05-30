@@ -182,7 +182,7 @@ class Message extends Model {
         Carbon::setLocale('zh');
         $type = array_search(mb_substr($message->title, -3, 2), Constant::INFO_TYPES);
         $type = $type ? $type : 'other';
-        Log::debug($type);
+        Log::debug($message->content);
         $object = json_decode($message->content);
         $content = [
             'id' => $message->id,
