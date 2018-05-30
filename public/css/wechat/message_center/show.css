@@ -354,6 +354,7 @@ div.weui_tab_bd {
 .mpnews-item img{
     height:300px ;
     width: auto;
+    margin:0 auto;
 }
 .mpnews-url , .mpnews-title , .mpnews-digest{
     height: 50px;
@@ -361,6 +362,6 @@ div.weui_tab_bd {
     margin:0 !important;
 
 }
-.mpnews-digest{
+.mpnews-url{
     padding: 0 10px !important;
 }
