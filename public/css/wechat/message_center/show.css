@@ -346,6 +346,7 @@ div.weui_tab_bd {
 .mpnews-item{
     margin-bottom: 10px;
     height: 450px;
+    text-align: center;
 }
 .mpnews-item .mpnews-digest{
     font-size: 14px;
@@ -354,14 +355,14 @@ div.weui_tab_bd {
 .mpnews-item img{
     height:300px ;
     width: auto;
-    margin:0 auto;
 }
 .mpnews-url , .mpnews-title , .mpnews-digest{
     height: 50px;
     line-height: 50px;
     margin:0 !important;
-
+    text-align: left;
 }
 .mpnews-url{
     padding: 0 10px !important;
+    text-align: right;
 }
