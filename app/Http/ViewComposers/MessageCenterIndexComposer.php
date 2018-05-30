@@ -58,7 +58,8 @@ class MessageCenterIndexComposer {
                     $recipient = User::find($message['r_user_id']);
                     $message['recipient'] = $recipient ? $recipient->realname : '(未知)';
                 } else {
-                    $message['sender'] = User::find($message['s_user_id'])->realname;
+                    $sender = User::find($message['s_user_id']);
+                    $message['sender'] = $sender ? $sender->realname : '(未知)';
                 }
             }
         }
