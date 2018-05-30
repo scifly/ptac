@@ -19,8 +19,8 @@ $delete.on('click', function () {
                 dataType: 'json',
                 url: '../delete/' + $id.val(),
                 data: { _token: token },
-                success: function () {
-                    $.alert("删除成功！", function () {
+                success: function (result) {
+                    $.alert(result['message'], function () {
                         window.location.href = '../';
                     });
                 },
