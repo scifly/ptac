@@ -191,8 +191,8 @@ class Message extends Model {
             }
         } else {
             $title = '(未知消息)';
-            $type = $type ? $type : 'other';
         }
+        $type = $type ? $type : 'other';
         Carbon::setLocale('zh');
         $content = [
             'id' => $message->id,
