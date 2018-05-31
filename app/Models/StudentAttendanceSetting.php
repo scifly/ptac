@@ -110,7 +110,7 @@ class StudentAttendanceSetting extends Model {
         $sas = $this->find($id);
         if (!$sas) { return false; }
         
-        return $this->update($data);
+        return $sas->update($data);
         
     }
     
