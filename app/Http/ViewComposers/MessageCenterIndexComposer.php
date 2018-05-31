@@ -55,7 +55,7 @@ class MessageCenterIndexComposer {
                 Carbon::setLocale('zh');
                 $dt = Carbon::createFromFormat('Y-m-d H:i:s', $message['created_at']);
                 $message['created_at'] = $dt->diffForHumans();
-                $object = json_decode(json_decode($message['content']));
+                $object = json_decode($message['content']);
                 $type = array_search(mb_substr($message['title'], -3, 2), Constant::INFO_TYPES);
                 if (!$type) {
                     if (property_exists(get_class($object), 'msgtype')) {
