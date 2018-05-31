@@ -140,9 +140,9 @@
                         success: function (result) {
                             $('#ajaxLoader').remove();
                             $prev.after(result['html']['classes']);
-                            if (disabled) {
-                                $('#class_id').prop('disabled', true);
-                            }
+                            // if (disabled && result['html']['classes'].length <= 1) {
+                            //     $('#class_id').prop('disabled', true);
+                            // }
                             if (typeof relationship !== 'undefined') {
                                 var $studentId = $('#' + contact.options.studentId),
                                     $studentNext = $studentId.next(),
