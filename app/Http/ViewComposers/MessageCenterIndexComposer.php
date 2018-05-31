@@ -57,7 +57,7 @@ class MessageCenterIndexComposer {
                 $object = json_decode($message['content']);
                 $type = array_search(mb_substr($message['title'], -3, 2), Constant::INFO_TYPES);
                 if (!$type) {
-                    $messageType = MessageType::find($message->message_type_id);
+                    $messageType = MessageType::find($message['message_type_id']);
                     $messageTypeName = $messageType ? $messageType->name : '未知消息';
                     if (is_object($object) && property_exists(get_class($object), 'msgtype')) {
                         $type = $object->{'msgtype'};
