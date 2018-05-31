@@ -96,7 +96,7 @@ class Team extends Model {
         $team = $this->find($id);
         if (!$team) { return false; }
         
-        return $this->update($data);
+        return $team->update($data);
         
     }
     

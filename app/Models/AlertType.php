@@ -58,7 +58,7 @@ class AlertType extends Model {
         $at = $this->find($id);
         if (!$at) { return false; }
         
-        return $this->update($data);
+        return $at->update($data);
         
     }
     

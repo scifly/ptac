@@ -124,7 +124,7 @@ class PollQuestionnaire extends Model {
         $pq = $this->find($id);
         if (!$pq) { return false; }
         
-        return $this->update($data) ? true : false;
+        return $pq->update($data) ? true : false;
         
     }
     

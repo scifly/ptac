@@ -75,7 +75,7 @@ class PollQuestionnaireSubjectChoice extends Model {
         $pqsc = $this->find($id);
         if (!$pqsc) { return false; }
         
-        return $this->update($data);
+        return $pqsc->update($data);
     
     }
     

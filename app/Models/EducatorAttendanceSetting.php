@@ -89,7 +89,7 @@ class EducatorAttendanceSetting extends Model {
         $eas = $this->find($id);
         if (!$eas) { return false; }
         
-        return $this->update($data);
+        return $eas->update($data);
         
     }
     

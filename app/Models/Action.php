@@ -109,13 +109,14 @@ class Action extends Model {
      */
     function modify(array $data, $id) {
         
+        $action = $this->find($id);
         abort_if(
-            !$this->find($id),
+            !$action,
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
         
-        return $this->update($data);
+        return $action->update($data);
         
     }
     

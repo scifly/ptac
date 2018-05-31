@@ -79,7 +79,7 @@ class ComboType extends Model {
         $ct = $this->find($id);
         if (!$ct) { return false; }
         
-        return $this->update($data);
+        return $ct->update($data);
         
     }
     

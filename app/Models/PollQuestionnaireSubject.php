@@ -111,7 +111,7 @@ class PollQuestionnaireSubject extends Model {
         $pqs = $this->find($id);
         if (!$pqs) { return false; }
         
-        return $this->update($data);
+        return $pqs->update($data);
         
     }
     
