@@ -1,3 +1,4 @@
+//# sourceURL=wsm.js
 (function ($) {
     $.wsm = function (options) {
         var wsm = {
