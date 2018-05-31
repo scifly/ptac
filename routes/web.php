@@ -35,7 +35,7 @@ Route::get('event', function () {
         'userId' => 1,
         'title' => '广播测试',
         'statusCode' => \App\Helpers\HttpStatusCode::OK,
-        'message' => '测试'
+        'message' => '工作正常'
     ]));
 });
 Route::get('listen', 'TestController@listen');

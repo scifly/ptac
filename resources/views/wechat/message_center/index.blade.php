@@ -22,11 +22,11 @@
                 <div class="weui-navbar">
                     @if ($canSend)
                         <a class="weui-navbar__item weui-bar__item--on" href="#tab1" data-type="sent">
-                            已发送
+                            发件箱
                         </a>
                     @endif
                     <a class="weui-navbar__item" href="#tab2" data-type="received">
-                        已接收
+                        收件箱
                         <span class="received">{{ $count }}</span>
                     </a>
                 </div>
