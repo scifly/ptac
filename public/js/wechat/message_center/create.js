@@ -290,7 +290,7 @@ $msgType.on('change', function () {
     var type = $(this).val();
     switch (type) {
         case 'text':
-            message[type]['content'] = $content.val();
+            message[type]['content'] = $content.html();
             break;
         case 'image':
             message[type]['media_id'] = $mediaId.val();
@@ -302,7 +302,7 @@ $msgType.on('change', function () {
             message[type] = {
                 media_id: $mediaId.val(),
                 title: $title.val(),
-                description: $content.val()
+                description: $content.html()
             };
             break;
         case 'file':
@@ -311,11 +311,11 @@ $msgType.on('change', function () {
         case 'textcard':
             message[type] = {
                 title: $title.val(),
-                description: $content.val(),
+                description: $content.html(),
             };
             break;
         case 'sms':
-            message[type] = $content.val();
+            message[type] = $content.html();
             break;
     }
 });
