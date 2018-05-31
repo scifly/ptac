@@ -184,7 +184,17 @@ Route::group(['prefix' => 'wap_sites'], function () {
     Route::post('edit/{id}', $c . '@edit');
     Route::put('update/{id}', $c . '@update');
 });
-Route::group(['prefix' => 'wap_site_modules'], routes('WapSiteModuleController'));
+Route::group(['prefix' => 'wap_site_modules'], function () {
+    $c = 'WapSiteModuleController';
+    Route::get('index', $c . '@index');
+    Route::get('create', $c . '@create');
+    Route::post('create', $c . '@create');
+    Route::post('store', $c . '@store');
+    Route::get('edit/{id}', $c . '@edit');
+    Route::post('edit/{id}', $c . '@edit');
+    Route::put('update/{id}', $c . '@update');
+    Route::delete('delete/{id}', $c . '@destroy');
+});
 Route::group(['prefix' => 'wsm_articles'], routes('WsmArticleController'));
 
 /** 投票问卷 */
