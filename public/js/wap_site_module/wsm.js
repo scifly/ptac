@@ -5,7 +5,7 @@
             options: $.extend({
                 file: '#file-image',
                 mediaId: '#media_id',
-                preview: '#preview'
+                preview: '.preview'
             }, options),
             token: function () { return $('#csrf_token').attr('content'); },
             upload: function (action) {
