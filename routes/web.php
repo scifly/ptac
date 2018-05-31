@@ -31,18 +31,13 @@ Route::get('test/create', 'TestController@create');
 Route::get('test', 'TestController@test');
 /** Broadcasting test */
 Route::get('event', function () {
-    event(new \App\Events\ContactImportTrigger([
-        'user' => Auth::user(),
-        'type' => 'educator',
+    event(new \App\Events\JobResponse([
+        'userId' => 1,
+        'title' => '广播测试',
+        'statusCode' => \App\Helpers\HttpStatusCode::OK,
+        'message' => '测试'
     ]));
 });
-Route::get('event1', function () {
-    event(new \App\Events\ContactSyncTrigger([
-        'user' => Auth::user(),
-        'message' => 'working',
-    ]));
-});
-
 Route::get('listen', 'TestController@listen');
 
 /** 菜单入口路由 */
