@@ -34,8 +34,8 @@
                         'class' => 'form-control text-blue',
                         'placeholder' => '次分类权重是数字',
                         'required' => 'true',
-                        'type' => 'number',
-                        'data-parsley-min' => '101'
+                        'type' => 'range',
+                        'data-parsley-range' => '[1, 100]'
                     ]) !!}
                 </div>
             </div>
