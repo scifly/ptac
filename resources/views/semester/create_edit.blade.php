@@ -36,12 +36,13 @@
             </div>
             <div class="form-group">
                 {!! Form::label('end_date', '结束日期', [
-                    'class' => 'col-sm-3 control-label']) !!}
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group date">
-                        @include('partials.icon_addon', ['class' => 'calendar'])
+                        @include('partials.icon_addon', ['class' => 'fa-calendar'])
                         {!! Form::text('end_date', null, [
-                            'class' => 'form-control pull-right start_date',
+                            'class' => 'form-control pull-right end_date',
                             'placeholder' => '(请选择结束日期)',
                             'required' => 'true',
                         ]) !!}

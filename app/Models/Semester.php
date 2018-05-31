@@ -90,7 +90,7 @@ class Semester extends Model {
         $semester = $this->find($id);
         if (!$semester) { return false; }
         
-        return $this->update($data);
+        return $semester->update($data);
         
     }
     
