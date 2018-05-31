@@ -1,5 +1,5 @@
 {!! Form::model($wsm, [
-    'method' => 'put', 
+    'method' => 'put',
     'id' => 'formWapSiteModule',
     'data-parsley-validate' => 'true'
 ]) !!}
