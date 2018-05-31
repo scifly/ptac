@@ -5,3 +5,5 @@
 ]) !!}
 @include('custodian.create_edit')
 {!! Form::close() !!}
+<!-- 添加被监护人 -->
+@include('partials.contact_export')
