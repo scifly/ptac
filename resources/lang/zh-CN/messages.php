@@ -99,5 +99,9 @@ return [
     ],
     'user' => [
         'not_found' => '没有这个用户'
+    ],
+    'wap_site' => [],
+    'wap_site_module' => [
+        'title' => '微网站栏目'
     ]
 ];

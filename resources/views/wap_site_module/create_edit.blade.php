@@ -6,7 +6,6 @@
         <div class="form-horizontal">
             @if (!empty($wsm['id']))
                 {{ Form::hidden('id', $wsm['id'], ['id' => 'id']) }}
-
             @endif
             @include('partials.single_select', [
                 'label' => '所属网站',
@@ -32,15 +31,20 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="preview">
-                        @if(isset($media))
-                            <div class="img-item">
-                                <img src="../../{{$media->path}}" id="{{$media->id}}">
-                                <input type="hidden" name="media_id" value="{{$media->id}}"/>
-                                <div class="del-mask"><i class="delete fa fa-trash-o"></i></div>
-                            </div>
+                        {!! Form::hidden('media_id', isset($media) ? $media->id : null, ['id' => 'media_id']) !!}
+                        @if (isset($media))
+                            <img src="../../{{$media->path}}" id="{{$media->id}}">
                         @endif
                     </div>
-                    <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
+                    <label for="file-image" class="custom-file-upload text-blue">
+                        <i class="fa fa-cloud-upload"></i> 上传图片
+                    </label>
+                    {!! Form::file('file-image', [
+                        'id' => 'file-image',
+                        'accept' => 'image/*',
+                        'class' => 'file-upload',
+                    ]) !!}
+                    {{--<a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>--}}
                 </div>
             </div>
             @include('partials.enabled', [
@@ -59,7 +63,7 @@
                         aria-hidden="true">×
                 </button>
                 <h4 class="modal-title" id="myModalLabel">
-                    模态框（Modal）标题
+                    栏目图片
                 </h4>
             </div>
             <div class="modal-body">

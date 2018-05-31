@@ -435,13 +435,13 @@ class Message extends Model {
         abort_if(
             empty($file),
             HttpStatusCode::NOT_ACCEPTABLE,
-            '您还未选择文件！'
+            __('messages.empty_file')
         );
-        $uploadedFile = $media->upload($file, '消息中心');
+        $uploadedFile = $media->upload($file, __('messages.message.title'));
         abort_if(
             !$uploadedFile,
             HttpStatusCode::INTERNAL_SERVER_ERROR,
-            '文件上传失败'
+            __('messages.file_upload_failed')
         );
         # 上传到企业号后台
         list($corpid, $secret) = $this->tokenParams();

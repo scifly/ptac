@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
+use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Http\Requests\WapSiteModuleRequest;
 use Carbon\Carbon;
@@ -152,7 +153,33 @@ class WapSiteModule extends Model {
         return $this->removable($wsm) ? $wsm->delete() : false;
         
     }
-
+    
+    /**
+     * 上传微网站栏目图片
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    function upload() {
+        
+        $file = Request::file('file');
+        abort_if(
+            empty($file),
+            HttpStatusCode::NOT_ACCEPTABLE,
+            __('messages.empty_file')
+        );
+        $uploadedFile = (new Media())->upload(
+            $file, __('messages.wap_site_module.title')
+        );
+        abort_if(
+            !$uploadedFile,
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            __('messages.file_upload_failed')
+        );
+        
+        return response()->json($uploadedFile);
+        
+    }
+    
     /**
      * 返回微网站栏目列表（后台）
      *
