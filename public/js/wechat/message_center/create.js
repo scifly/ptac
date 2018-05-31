@@ -215,7 +215,7 @@ $msgType.on('change', function () {
             $titleContainer.hide();
             $mpContainer.hide();
             $contentContainer.show();
-            $content.val(message[type]['content']);
+            $content.html(message[type]['content']);
             break;
         case 'image':
             $extra.hide();
@@ -242,7 +242,7 @@ $msgType.on('change', function () {
             $mpContainer.hide();
             $uploadTitle.text('上传视频');
             $title.attr('placeholder', '视频标题').val(message[type]['title']);
-            $content.attr('placeholder', '视频描述').val(message[type]['description']);
+            $content.attr('placeholder', '视频描述').html(message[type]['description']);
             $upload.attr('accept', message[type]['type']);
             $mediaId.val(message[type]['media_id']);
             $titleContainer.show();     // title
@@ -265,7 +265,7 @@ $msgType.on('change', function () {
             $title.attr('placeholder', '标题');
             $cardUrl.attr('placeholder', '链接地址');
             $title.val(message[type]['title']);
-            $content.val(message[type]['description']);
+            $content.html(message[type]['description']);
             $titleContainer.show();     // title
             $contentContainer.show();   // description
             $cardUrlContainer.show();   // url
@@ -280,6 +280,7 @@ $msgType.on('change', function () {
         case 'sms':
             $extra.hide();
             $mpContainer.hide();
+            $content.html(message[type]);
             $titleContainer.hide();
             $contentContainer.show();
             break;
