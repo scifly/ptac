@@ -148,4 +148,4 @@
     @include('partials.form_buttons')
 </div>
 <!-- 添加被监护人 -->
-@include('partials.contact_exprot')
+@include('partials.contact_export')

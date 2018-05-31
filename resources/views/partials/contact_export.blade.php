@@ -56,7 +56,7 @@
                         @if (isset($relationship))
                             <!-- 学生列表 -->
                             @include('partials.single_select', [
-                                'id' => 'studentId',
+                                'id' => 'student_id',
                                 'label' => '被监护人',
                                 'icon' => 'fa fa-child',
                                 'items' => $students
