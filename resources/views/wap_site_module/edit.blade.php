@@ -1,3 +1,7 @@
-{!! Form::model($wapSiteModule, ['url' => '/wap_site_modules/' . $wapSiteModule->id, 'method' => 'put', 'id' => 'formWapSiteModule']) !!}
+{!! Form::model($wsm, [
+    'method' => 'put', 
+    'id' => 'formWapSiteModule',
+    'data-parsley-validate' => 'true'
+]) !!}
 @include('wap_site_module.create_edit')
 {!! Form::close() !!}
