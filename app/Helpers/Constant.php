@@ -102,7 +102,8 @@ class Constant {
         'file' => '文件',
         'textcard' => '卡片',
         'mpnews' => '图文',
-        'sms' => '短信'
+        'sms' => '短信',
+        'other' => '未知'
     ];
     
 }

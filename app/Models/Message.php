@@ -183,12 +183,13 @@ class Message extends Model {
         $title = $message->title;
         $type = array_search(mb_substr($message->title, -3, 2), Constant::INFO_TYPES);
         if (!$type) {
-            if (property_exists(get_class($object), 'msgtype')) {
+            $messageType = MessageType::find($message->message_type_id);
+            $messageTypeName = $messageType ? $messageType->name : '未知消息';
+            if (is_object($object) && property_exists(get_class($object), 'msgtype')) {
                 $type = $object->{'msgtype'};
-                $title = MessageType::find($message->message_type_id)->name
-                    . '(' . Constant::INFO_TYPES[$type] . ')';
+                $title = $messageTypeName . '(' . Constant::INFO_TYPES[$type] . ')';
             } else {
-                $title = '(未知消息)';
+                $title = $messageTypeName . '(未知)';
             }
             $message->update(['title' => $title]);
         }
