@@ -27,7 +27,8 @@ class SubjectComposer {
         if (Request::route('id')) {
             $subject = Subject::find(Request::route('id'));
             $selectedMajors = $subject->majors->pluck('name', 'id')->toArray();
-            $selectedGrades = $subject->grades->pluck('name', 'id')->toArray();
+            $gradeIds = explode(',', $subject->grade_ids);
+            $selectedGrades = empty($gradeIds) ? [] : Grade::whereIn('id', $gradeIds)->pluck('name', 'id')->toArray();
         }
         $view->with([
             'grades'         => $this->grade->gradeList(),
