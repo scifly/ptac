@@ -25,14 +25,16 @@
                         contentType: false,
                         processData: false,
                         success: function (result) {
-                            var imgAttrs = {
-                                'src': '../../' + result['path'],
-                                'style': 'height: 200px;',
-                                'title': '文件名：' + result['filename']
-                            };
+                            var $preview = $(wsm.options.preview),
+                                imgAttrs = {
+                                    'src': '../../' + result['path'],
+                                    'style': 'height: 200px;',
+                                    'title': '文件名：' + result['filename']
+                                };
+
                             $(wsm.options.mediaId).val(result['id']);
-                            $(wsm.options.preview).find('img').remove()
-                                .append($('<img' + ' />', imgAttrs).prop('outerHTML'));
+                            $preview.find('img').remove();
+                            $preview.append($('<img' + ' />', imgAttrs).prop('outerHTML'));
                             $('.overlay').hide();
                         },
                         error: function (e) {
