@@ -157,7 +157,7 @@
                                 <button type="button" class="btn btn-flat" style="margin-right: 5px; margin-bottom: 5px">
                                     <i class="{{ $department['icon'] }}"></i>
                                     {{ $department['text'] }}
-                                    <i class="fa fa-close close-selected" style="margin-left: 5px;"></i>
+                                    <i class="fa fa-close remove-selected" style="margin-left: 5px;"></i>
                                     <input type="hidden" name="selectedDepartments[]" value="{{ $department['id'] }}"/>
                                 </button>
                             @endforeach
