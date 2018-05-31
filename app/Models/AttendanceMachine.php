@@ -85,7 +85,7 @@ class AttendanceMachine extends Model {
         $am = $this->find($id);
         if (!$am) { return false; }
         
-        return $this->update($data);
+        return $am->update($data);
         
     }
     
