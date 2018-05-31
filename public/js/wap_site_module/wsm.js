@@ -36,6 +36,7 @@
                             $preview.find('img').remove();
                             $preview.append($('<img' + ' />', imgAttrs).prop('outerHTML'));
                             $('.overlay').hide();
+                            page.inform('微网站栏目', '图片上传成功', page.success)
                         },
                         error: function (e) {
                             page.errorHandler(e);
