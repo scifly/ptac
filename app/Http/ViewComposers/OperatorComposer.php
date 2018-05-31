@@ -43,8 +43,7 @@ class OperatorComposer {
                         $corps = Corp::all()->pluck('name', 'id')->toArray();
                     }
                     if ($operator->group->name == '学校') {
-                        $school = School::whereDepartmentId($departmentId)->first();
-                        $schools = School::whereCorpId($school->corp_id)
+                        $schools = School::whereCorpId($operator->educator->school->corp_id)
                             ->pluck('name', 'id')->toArray();
                     }
                 }
@@ -58,10 +57,10 @@ class OperatorComposer {
                             $corp = Corp::whereDepartmentId($departmentId)->first();
                             break;
                         case '学校':
-                            $school = School::whereDepartmentId($departmentId)->first();
-                            $corp = Corp::find($school->corp_id);
-                            $schools = School::whereCorpId($school->corp_id)
-                                ->get()->pluck('name', 'id')->toArray();
+                            $corpId = $operator->educator->school->corp_id;
+                            $corp = Corp::find($corpId);
+                            $schools = School::whereCorpId($corpId)
+                                ->pluck('name', 'id')->toArray();
                             break;
                         default:
                             break;
