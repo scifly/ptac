@@ -179,13 +179,24 @@ class Message extends Model {
         $user = Auth::user();
         $message = $this->find($id);
         $edit = ($user->id == $message->s_user_id ? true : false);
-        Carbon::setLocale('zh');
-        $type = array_search(mb_substr($message->title, -3, 2), Constant::INFO_TYPES);
-        $type = $type ? $type : 'other';
         $object = json_decode(json_decode($message->content));
+        $title = $message->title;
+        $type = array_search(mb_substr($message->title, -3, 2), Constant::INFO_TYPES);
+        if (!$type) {
+            if (property_exists(get_class($object), 'msgtype')) {
+                $type = $object->{'msgtype'};
+                $title = MessageType::find($message->message_type_id)->name
+                    . '(' . Constant::INFO_TYPES[$type] . ')';
+                $message->update(['title' => $title]);
+            }
+        } else {
+            $title = '(未知消息)';
+            $type = $type ? $type : 'other';
+        }
+        Carbon::setLocale('zh');
         $content = [
             'id' => $message->id,
-            'title' => $message->title,
+            'title' => $title,
             'updated_at' => Carbon::createFromFormat('Y-m-d H:i:s', $message->updated_at)->diffForHumans(),
             'sender' => User::find($message->s_user_id)->realname,
             'recipients' => $message->messageSendinglog->recipient_count,
@@ -193,7 +204,7 @@ class Message extends Model {
             'type' => $type,
             $type => $type == 'other' ? $message->content : $object->{$type}
         ];
-        
+    
         return view('wechat.message_center.show', [
             'content' => $content,
             'edit'    => $edit,
