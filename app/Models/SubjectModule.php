@@ -73,7 +73,7 @@ class SubjectModule extends Model {
         $sm = $this->find($id);
         if (!$sm) { return false; }
         
-        return $this->update($data);
+        return $sm->update($data);
         
     }
     
