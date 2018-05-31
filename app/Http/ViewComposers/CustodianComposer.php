@@ -35,7 +35,7 @@ class CustodianComposer {
             if (!isset($record['user'])) {
                 continue;
             }
-            $students[$record['id']] = $record['user']['realname'] . '(' . $record['card_number'] . ')';
+            $students[$record['id']] = $record['user']['realname'] . '-' . $record['card_number'];
         }
         $mobiles = $relations = [];
         if (Request::route('id') && Request::method() == 'GET') {
