@@ -32,6 +32,7 @@
                             $(wsm.options.mediaId).val(result['id']);
                             $(wsm.options.preview).find('img').remove()
                                 .append($('<img' + ' />', imgAttrs).prop('outerHTML'));
+                            $('.overlay').hide();
                         },
                         error: function (e) {
                             page.errorHandler(e);
