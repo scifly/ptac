@@ -1,10 +1,8 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
+
 use App\Http\Requests\WapSiteRequest;
-use App\Models\Media;
-use App\Models\School;
 use App\Models\WapSite;
 use Exception;
 use Illuminate\Http\JsonResponse;

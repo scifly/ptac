@@ -2,30 +2,15 @@
 namespace App\Http\Controllers;
 
 use App\Facades\Wechat;
-use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
-use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Group;
-use App\Models\Icon;
-use App\Models\Menu;
-use App\Models\MenuTab;
-use App\Models\MenuType;
 use App\Models\Message;
-use App\Models\School;
-use App\Models\Tab;
-use App\Models\WapSite;
-use App\Rules\Mobiles;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Validation\Rule;
 use ReflectionClass;
 use ReflectionMethod;
-use Validator;
 
 /**
  * Class TestController

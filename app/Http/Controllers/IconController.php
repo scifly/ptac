@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\IconRequest;
 use App\Models\Icon;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request as Request;
 use Throwable;

@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\EducatorAttendance;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;

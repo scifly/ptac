@@ -5,8 +5,6 @@ use App\Http\Requests\ScoreRangeRequest;
 use App\Models\ScoreRange;
 use App\Models\Subject;
 use Exception;
-use HttpRequest;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Request;

@@ -51,6 +51,7 @@ class Mobile extends Model {
      * @param array $mobiles
      * @param User $user
      * @return void
+     * @throws Exception
      */
     function store(array $mobiles, User $user) {
     

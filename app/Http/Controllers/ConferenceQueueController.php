@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ConferenceQueueRequest;
 use App\Models\ConferenceQueue;
 use Exception;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;

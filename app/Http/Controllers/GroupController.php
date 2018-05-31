@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\GroupRequest;
 use App\Models\Group;
 use App\Models\Menu;
-use App\Models\School;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
