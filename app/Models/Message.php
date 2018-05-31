@@ -188,9 +188,9 @@ class Message extends Model {
                 $title = MessageType::find($message->message_type_id)->name
                     . '(' . Constant::INFO_TYPES[$type] . ')';
                 $message->update(['title' => $title]);
+            } else {
+                $title = '(未知消息)';
             }
-        } else {
-            $title = '(未知消息)';
         }
         $type = $type ? $type : 'other';
         Carbon::setLocale('zh');
