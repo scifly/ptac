@@ -16,7 +16,7 @@
 
                     data.append('file', file);
                     data.append('_token', wsm.token());
-                    page.inform('微网站栏目', '文件上传中...', page.info);
+                    page.inform('微网站栏目', '图片上传中...', page.info);
                     $('.overlay').show();
                     $.ajax({
                         type: 'POST',

@@ -4,5 +4,5 @@ input[type="file"] {
 .custom-file-upload {
     display: inline-block;
     cursor: pointer;
-    margin-right: 10px;
+    margin: 5px 10px 0 0;
 }

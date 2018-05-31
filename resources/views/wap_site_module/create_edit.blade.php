@@ -44,7 +44,6 @@
                         'accept' => 'image/*',
                         'class' => 'file-upload',
                     ]) !!}
-                    {{--<a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>--}}
                 </div>
             </div>
             @include('partials.enabled', [
@@ -54,26 +53,4 @@
         </div>
     </div>
     @include('partials.form_buttons')
-</div>
-<div class="modal fade" id="modalPic">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"
-                        aria-hidden="true">×
-                </button>
-                <h4 class="modal-title" id="myModalLabel">
-                    栏目图片
-                </h4>
-            </div>
-            <div class="modal-body">
-                <input type="file" name="img[]" id="uploadFile" accept="image/jpeg,image/gif,image/png" multiple>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default"
-                        data-dismiss="modal">关闭
-                </button>
-            </div>
-        </div>
-    </div>
 </div>
