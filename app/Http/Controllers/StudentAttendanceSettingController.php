@@ -97,7 +97,7 @@ class StudentAttendanceSettingController extends Controller {
     public function update(StudentAttendanceSettingRequest $request, $id) {
         
         return $this->result(
-            $$this->sas->modify(
+            $this->sas->modify(
                 $request->all(), $id
             )
         );
