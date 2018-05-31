@@ -220,10 +220,10 @@
                     }
                 }
                 items++;
-                var html =
-                    '<input type="hidden" value="' + studentId + '" name="student_ids[' + items + ']">' +
-                    '<tr>' +
-                        '<td>' + student[0] + '</td>' +
+                var html = '<tr>' +
+                        '<td>' +
+                            student[0] + '<input type="hidden" value="' + studentId + '" name="student_ids[' + items + ']">' +
+                        '</td>' +
                         '<td>' + student[1] + '</td>' +
                         '<td>' +
                             '<input type="text" ' +
