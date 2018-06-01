@@ -6,6 +6,7 @@ use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\TrimStrings;
 use App\Http\Middleware\VerifyCsrfToken;
+use App\Http\Middleware\WechatAuth;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
 use Illuminate\Auth\Middleware\Authorize;
@@ -74,5 +75,6 @@ class Kernel extends HttpKernel {
         'guest'      => RedirectIfAuthenticated::class,
         'throttle'   => ThrottleRequests::class,
         'checkrole'  => CheckRole::class,
+        'wechat'     => WechatAuth::class,
     ];
 }

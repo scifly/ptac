@@ -12,18 +12,22 @@ use Illuminate\Support\Facades\Request;
 
 trait WechatTrait {
     
+    protected $apps = [
+        'sc' => '成绩中心',
+        'mc' => '消息中心',
+    ];
     /**
      * 登录
      *
-     * @param $appName
      * @param $returnUrl
      * @return bool|RedirectResponse|Redirector
      */
-    function signin($appName, $returnUrl) {
+    function signin($returnUrl) {
         
-        $acronym = explode('/', Request::path())[0];
+        $paths = explode('/', Request::path());
+        $acronym = $paths[0];
         $corp = Corp::whereAcronym($acronym)->first();
-        $app = App::whereCorpId($corp->id)->where('name', $appName)->first();
+        $app = App::whereCorpId($corp->id)->where('name', Constant::APPS[$paths[1]])->first();
         $agentid = $app->agentid;
         $secret = $app->secret;
         $code = Request::input('code');
