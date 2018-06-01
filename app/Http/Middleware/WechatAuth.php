@@ -65,9 +65,14 @@ class WechatAuth {
             Auth::loginUsingId($user->id);
         }
         # 学校列表。如果用户仅可见到一所学校，则直接进入需要访问的页面。
+        $user = Auth::user();
+        abort_if(
+            $user->group->name == '学生',
+            HttpStatusCode::UNAUTHORIZED,
+            __('messages.unauthorized')
+        );
         if (!Request::query('schoolId')) {
             if (!session('schoolId')) {
-                $user = Auth::user();
                 $schoolIds = $user->schoolIds($user->id, session('corpId'));
                 if (count($schoolIds) > 1) {
                     return redirect($paths[0] . '/schools?app=' . $paths[1]);

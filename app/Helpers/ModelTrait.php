@@ -158,7 +158,6 @@ trait ModelTrait {
     function schoolIds($userId = null, $corpId = null) {
         
         $user = !$userId ? Auth::user() : User::find($userId);
-        Log::debug($user->id);
         $role = $user->group->name;
         switch ($role) {
             case '运营':
@@ -182,6 +181,8 @@ trait ModelTrait {
                     }
                 }
                 return array_unique($schoolIds);
+            case '学生':
+                return [$user->student->squad->grade->school_id];
             default:
                 return [$user->educator->school_id];
         }
