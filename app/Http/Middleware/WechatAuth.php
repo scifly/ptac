@@ -66,11 +66,11 @@ class WechatAuth {
             Auth::loginUsingId($user->id);
         }
         if (!Request::query('schoolId')) {
-            Log::debug('you are here');
             if (!session('schoolId')) {
                 $user = Auth::user();
                 $schoolIds = $user->schoolIds($user->id, session('corpId'));
                 if (count($schoolIds) > 1) {
+                    Log::debug('you are here');
                     return view('wechat.schools', [
                         'app' => '消息中心',
                         'schools' => School::whereIn('id', $schoolIds)->pluck('name', 'id'),
