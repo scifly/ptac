@@ -18,34 +18,13 @@ trait JobTrait {
      */
     function syncMember($data, $action): array {
         
-        $user = User::whereUserid($action == 'delete'? $data : $data['userid'])->first();
-        switch ($user->group->name) {
-            case '运营':
-                $corps = Corp::all();
-                break;
-            case '企业':
-                $departmentIds = $user->departments->pluck('id')->toArray();
-                $corps = Collect([Corp::whereDepartmentId($departmentIds[0])->first()]);
-                break;
-            case '学生':
-                $corps = Collect([Corp::find($user->student->squad->grade->school->corp_id)]);
-                break;
-            case '监护人':
-                $students = $user->custodian->students;
-                $corpIds = [];
-                foreach ($students as $student) {
-                    $corpIds[] = $student->squad->grade->school->corp_id;
-                }
-                $corps = Corp::whereIn('id', array_unique($corpIds))->get();
-                break;
-            default: # 学校、教职员工或其他角色:
-                $corps = Collect([Corp::find($user->educator->school->corp_id)]);
-                break;
-        }
+        $corps = Corp::whereIn('id', $data['corpIds'])->get();
         $results = [];
         foreach ($corps as $corp) {
             $results[$corp->id] = $this->operate(
-                $corp->corpid, $corp->contact_sync_secret, $data, $action
+                $corp->corpid, $corp->contact_sync_secret,
+                $action == 'delete' ? $data['userid'] : $data,
+                $action
             );
         }
         
@@ -90,6 +69,7 @@ trait JobTrait {
         $token = Wechat::getAccessToken($corpid, $secret, true);
         if ($token['errcode']) { return $token; }
         $accessToken = $token['access_token'];
+        if ($action != 'delete') { unset($data['corpIds']); }
         $action .= 'User';
         $result = json_decode(Wechat::$action($accessToken, $data));
         # 企业微信通讯录不存在需要更新的会员，则创建该会员

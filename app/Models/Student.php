@@ -285,7 +285,6 @@ class Student extends Model {
                 $userId = $student->user_id;
                 #删除关联监护人
                 $custodians = $student->custodians;
-                Log::debug(json_encode($custodians));
                 foreach ($custodians as $custodian) {
                     #判断当前监护人下是否只有当前学生，是则删除监护人
                     $cusStuents = $custodian->students;

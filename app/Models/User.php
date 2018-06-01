@@ -669,22 +669,52 @@ class User extends Authenticatable {
     private function sync($id, $action) {
         
         $user = $this->find($id);
-        $data = $action == 'delete' ? $user->userid : [
-            'userid' => $user->userid,
-            'name' => $user->realname,
-            'english_name' => $user->english_name,
-            'position' => $user->group->name,
-            'mobile' => head(
-                $user->mobiles
-                    ->where('isdefault', 1)
-                    ->pluck('mobile')->toArray()
-            ),
-            'email' => $user->email,
-            'department' => in_array($user->group->name, ['运营', '企业'])
-                ? [1] : $user->departments->pluck('id')->toArray(),
-            'gender' => $user->gender,
-            'enable' => $user->enabled
-        ];
+        switch ($user->group->name) {
+            case '运营':
+                $corpIds = Corp::pluck('id')->toArray();
+                break;
+            case '企业':
+                $departmentIds = $user->departments->pluck('id')->toArray();
+                $corpIds = [Corp::whereDepartmentId(head($departmentIds))->first()->id];
+                break;
+            case '学生':
+                $corpIds = [$user->student->squad->grade->school->corp_id];
+                break;
+            case '监护人':
+                $students = $user->custodian->students;
+                $corpIds = [];
+                foreach ($students as $student) {
+                    $corpIds[] = $student->squad->grade->school->corp_id;
+                }
+                break;
+            default: # 学校、教职员工或其他角色:
+                $corpIds = [$user->educator->school->corp_id];
+                break;
+        }
+        if ($action == 'delete') {
+            $data = [
+                'userid' => $user->userid,
+                'corpIds' => $corpIds
+            ];
+        } else {
+            $data = [
+                'corpIds' => $corpIds,
+                'userid' => $user->userid,
+                'name' => $user->realname,
+                'english_name' => $user->english_name,
+                'position' => $user->group->name,
+                'mobile' => head(
+                    $user->mobiles
+                        ->where('isdefault', 1)
+                        ->pluck('mobile')->toArray()
+                ),
+                'email' => $user->email,
+                'department' => in_array($user->group->name, ['运营', '企业'])
+                    ? [1] : $user->departments->pluck('id')->toArray(),
+                'gender' => $user->gender,
+                'enable' => $user->enabled
+            ];
+        }
         SyncMember::dispatch($data, Auth::id(), $action);
         
         return true;
