@@ -227,7 +227,7 @@ class Custodian extends Model {
      */
     function remove($id = null) {
 
-        if (!isset($ic)) { return $this->batch($this); }
+        if (!isset($id)) { return $this->batch($this); }
         $custodian = self::find($id);
         if (!isset($custodian)) { return false; }
         try {
