@@ -4,7 +4,7 @@
     </label>
     {!! Form::file($id, [
         'id' => $id,
-        'accept' => $accept,
+        'accept' => $accept ?? '',
         'class' => 'file-upload',
         $required ?? ''
     ]) !!}
