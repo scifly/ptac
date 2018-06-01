@@ -74,20 +74,24 @@ class MessageCenterController extends Controller {
     /**
      * 创建消息
      *
-     * @return Factory|JsonResponse|View
+     * @return bool|Factory|JsonResponse|RedirectResponse|Redirector|View
      * @throws Throwable
      */
     public function create() {
-        
-        if (Request::method() == 'POST') {
-            return Request::has('file')
-                ? $this->message->upload()
-                : response()->json(
-                    $this->message->search()
-                );
+
+        if (Auth::id()) {
+            if (Request::method() == 'POST') {
+                return Request::has('file')
+                    ? $this->message->upload()
+                    : response()->json(
+                        $this->message->search()
+                    );
+            }
+    
+            return view('wechat.message_center.create');
         }
         
-        return view('wechat.message_center.create');
+        return $this->signin(self::APP, Request::url());
         
     }
     
@@ -95,18 +99,22 @@ class MessageCenterController extends Controller {
      * 保存并发送消息
      *
      * @param MessageRequest $request
-     * @return JsonResponse
+     * @return bool|JsonResponse|RedirectResponse|Redirector
      * @throws Throwable
      */
     public function store(MessageRequest $request) {
         
-        $sent = $this->message->send(
-            $request->all()
-        );
+        if (Auth::id()) {
+            $sent = $this->message->send(
+                $request->all()
+            );
+    
+            return response()->json([
+                'message' => $sent ? __('messages.ok') : __('messages.message.failed')
+            ], $sent ? HttpStatusCode::OK : HttpStatusCode::INTERNAL_SERVER_ERROR);
+        }
         
-        return response()->json([
-            'message' => $sent ? __('messages.ok') : __('messages.message.failed')
-        ], $sent ? HttpStatusCode::OK : HttpStatusCode::INTERNAL_SERVER_ERROR);
+        return $this->signin(self::APP, Request::url());
         
     }
     
@@ -114,20 +122,24 @@ class MessageCenterController extends Controller {
      * 消息编辑页面
      *
      * @param $id
-     * @return Factory|View
+     * @return bool|Factory|RedirectResponse|Redirector|View
      */
     public function edit($id) {
         
-        $message = $this->message->find($id);
-        abort_if(
-            !$message,
-            HttpStatusCode::NOT_FOUND,
-            __('messages.not_found')
-        );
-        
-        return view('wechat.message_center.create', [
-            'message' => $message,
-        ]);
+        if (Auth::id()) {
+            $message = $this->message->find($id);
+            abort_if(
+                !$message,
+                HttpStatusCode::NOT_FOUND,
+                __('messages.not_found')
+            );
+    
+            return view('wechat.message_center.create', [
+                'message' => $message,
+            ]);
+        }
+    
+        return $this->signin(self::APP, Request::url());
         
     }
     
@@ -135,18 +147,22 @@ class MessageCenterController extends Controller {
      * 更新已读状态
      *
      * @param $id
-     * @return JsonResponse
+     * @return bool|JsonResponse|RedirectResponse|Redirector
      * @throws Exception
      * @throws Throwable
      */
     public function read($id) {
 
-        $this->message->read($id);
-        
-        return response()->json([
-            'message' => __('messages.ok')
-        ]);
-        
+        if (Auth::id()) {
+            $this->message->read($id);
+    
+            return response()->json([
+                'message' => __('messages.ok')
+            ]);
+        }
+    
+        return $this->signin(self::APP, Request::url());
+    
     }
     
     /**

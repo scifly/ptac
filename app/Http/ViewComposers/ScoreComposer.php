@@ -21,7 +21,7 @@ class ScoreComposer {
         # 对当前用户可见的考试列表
         $examList = Exam::whereEnabled(1)
             ->whereIn('id', $this->examIds())
-            ->get()->pluck('name', 'id');
+            ->pluck('name', 'id')->toArray();
         if (Request::route('id')) {
             $exam = Score::find(Request::route('id'))->exam;
         } else {
@@ -32,7 +32,7 @@ class ScoreComposer {
         # 指定考试对应的班级
         $classIds = Squad::whereEnabled(1)
             ->whereIn('id', explode(',', $exam ? $exam->class_ids : ''))
-            ->get()->pluck('id')->toArray();
+            ->pluck('id')->toArray();
         
         # 指定考试对应的科目列表
         $subjectList = Subject::whereEnabled(1)
