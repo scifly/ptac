@@ -165,7 +165,7 @@ class Score extends Model {
         # 指定考试对应的班级
         $classIds = Squad::whereEnabled(1)
             ->whereIn('id', explode(',', $exam->class_ids))
-            ->get()->pluck('id')->toArray();
+            ->pluck('id')->toArray();
         # 指定考试对应的科目列表
         $subjectList = Subject::whereEnabled(1)
             ->whereIn('id', explode(',', $exam->subject_ids))

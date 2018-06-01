@@ -55,6 +55,10 @@ class MessageCenterController extends Controller {
         $this->mr = $mr;
         $this->du = $du;
         
+        return Auth::id()
+            ? redirect(Request::url())
+            : $this->signin(self::APP, Request::url());
+        
     }
     
     /**
@@ -65,9 +69,10 @@ class MessageCenterController extends Controller {
      */
     public function index() {
         
-        return Auth::id()
-            ? $this->message->wIndex()
-            : $this->signin(self::APP, Request::url());
+        return $this->message->wIndex();
+        // return Auth::id()
+        //     ? $this->message->wIndex()
+        //     : $this->signin(self::APP, Request::url());
         
     }
     
