@@ -5,6 +5,7 @@ use App\Helpers\ModelTrait;
 use App\Helpers\SignatureHelper;
 use App\Models\Department;
 use App\Models\Group;
+use App\Models\Student;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use ReflectionClass;
@@ -24,6 +25,12 @@ class TestController extends Controller {
     
     public function index() {
     
+
+        dd($records = Student::with('user:id,realname')
+            ->where('class_id', 1)
+            ->where('enabled', 1)
+            ->get()->toArray()
+        );
         $arrs = Group::whereIn('name', ['运营', '企业', '学校'])->get()->pluck('name', 'id')->toArray();
         dd(($arrs));
         
