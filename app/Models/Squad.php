@@ -173,12 +173,12 @@ class Squad extends Model {
     function studentList($id) {
         
         abort_if(
-            !in_array($id, $this->classIds()) ||
-            !$this->find($id),
+            isset($id) && (!in_array($id, $this->classIds()) || !$this->find($id)),
             HttpStatusCode::NOT_ACCEPTABLE,
             __('messages.not_acceptable')
         );
-        $students = $this->find($id)->students;
+        $class = $this->find($id);
+        $students = $class ? $class->students : null;
         $items = [];
         foreach ($students as $student) {
             if (!$student->user) { continue; }
