@@ -178,7 +178,7 @@ class Squad extends Model {
             __('messages.not_acceptable')
         );
         $class = $this->find($id);
-        $students = $class ? $class->students : null;
+        $students = $class ? $class->students : [];
         $items = [];
         foreach ($students as $student) {
             if (!$student->user) { continue; }
