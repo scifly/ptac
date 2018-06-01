@@ -335,7 +335,7 @@ class StudentAttendance extends Model {
         $user = Auth::user();
         #判断是否为教职工
         abort_if(
-            !$user || !in_array($user->group->name, ['教职员工', '监护人']),
+            !$user || $user->group->name == '学生',
             HttpStatusCode::UNAUTHORIZED,
             __('messages.unauthorized')
         );
