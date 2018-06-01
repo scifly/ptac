@@ -6,6 +6,7 @@ use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Models\App;
 use App\Models\Corp;
+use App\Models\School;
 use App\Models\User;
 use Closure;
 use Illuminate\Support\Facades\Auth;
@@ -63,8 +64,25 @@ class WechatAuth {
             ]);
             Auth::loginUsingId($user->id);
         }
+        if (!Request::query('schoolId')) {
+            if (!session('schoolId')) {
+                $user = Auth::user();
+                $schoolIds = $user->schoolIds($user->id, session('corpId'));
+                if (count($schoolIds) > 1) {
+                    return view('wechat.schools', [
+                        'app' => '消息中心',
+                        'schools' => School::whereIn('id', $schoolIds)->pluck('name', 'id'),
+                        'url' => 'mc?schoolId='
+                    ]);
+                }
+                session(['schoolId' => $schoolIds[0]]);
+            }
+        } else {
+            session(['schoolId' => Request::query('schoolId')]);
+        }
         
         return $next($request);
         
     }
+    
 }

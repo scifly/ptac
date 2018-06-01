@@ -15,9 +15,7 @@ use Illuminate\View\View;
 
 class MobileSiteController extends Controller {
     
-    use WechatTrait;
-    
-    protected $media, $department, $ws, $wsm, $wsma;
+    protected $ws, $wsm, $wsma;
     
     function __construct(WapSite $ws, WapSiteModule $wsm, WsmArticle $wsma) {
 

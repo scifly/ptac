@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers\Wechat;
 
-use App\Helpers\WechatTrait;
 use App\Http\Controllers\Controller;
 use App\Models\StudentAttendance;
 use Illuminate\Contracts\View\Factory;
@@ -16,8 +15,6 @@ use Throwable;
  * @package App\Http\Controllers\Wechat
  */
 class AttendanceController extends Controller {
-    
-    use WechatTrait;
     
     protected $sa;
     

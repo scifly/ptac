@@ -497,22 +497,22 @@ class Message extends Model {
         if (Request::method() == 'POST') {
             return $this->search();
         }
-        if (!Request::query('schoolId')) {
-            if (!session('schoolId')) {
-                $user = Auth::user();
-                $schoolIds = $user->schoolIds($user->id, session('corpId'));
-                if (count($schoolIds) > 1) {
-                    return view('wechat.schools', [
-                        'app' => '消息中心',
-                        'schools' => School::whereIn('id', $schoolIds)->pluck('name', 'id'),
-                        'url' => 'mc?schoolId='
-                    ]);
-                }
-                session(['schoolId' => $schoolIds[0]]);
-            }
-        } else {
-            session(['schoolId' => Request::query('schoolId')]);
-        }
+        // if (!Request::query('schoolId')) {
+        //     if (!session('schoolId')) {
+        //         $user = Auth::user();
+        //         $schoolIds = $user->schoolIds($user->id, session('corpId'));
+        //         if (count($schoolIds) > 1) {
+        //             return view('wechat.schools', [
+        //                 'app' => '消息中心',
+        //                 'schools' => School::whereIn('id', $schoolIds)->pluck('name', 'id'),
+        //                 'url' => 'mc?schoolId='
+        //             ]);
+        //         }
+        //         session(['schoolId' => $schoolIds[0]]);
+        //     }
+        // } else {
+        //     session(['schoolId' => Request::query('schoolId')]);
+        // }
         
         return view('wechat.message_center.index');
         
