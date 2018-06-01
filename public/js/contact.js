@@ -179,7 +179,7 @@
                         success: function (result) {
                             $next.remove();
                             $studentId.remove();
-                            $prev.after(result['html']['original']['html']);
+                            $prev.after(result['html']['students']['original']['html']);
                             page.initSelect2();
                         },
                         error: function (e) {
