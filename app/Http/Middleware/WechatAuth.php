@@ -10,6 +10,7 @@ use App\Models\School;
 use App\Models\User;
 use Closure;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 class WechatAuth {
@@ -65,6 +66,7 @@ class WechatAuth {
             Auth::loginUsingId($user->id);
         }
         if (!Request::query('schoolId')) {
+            Log::debug('you are here');
             if (!session('schoolId')) {
                 $user = Auth::user();
                 $schoolIds = $user->schoolIds($user->id, session('corpId'));
