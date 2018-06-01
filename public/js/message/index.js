@@ -93,6 +93,7 @@ $('.tab').hover(
         }
     }
 ).click(function () {
+    initUpload();
     $messageContent.find(':input').removeAttr(
         'required data-parsley-length maxlength'
     );
@@ -144,9 +145,7 @@ page.refreshTabs();
 // 加载消息中心css
 page.loadCss('css/message/message.css');
 // 初始化上传文件的事件
-$(document).on('change', '.file-upload', function () {
-    if ($(this).val() !== '') { upload($(this)); }
-});
+initUpload();
 // 初始化移除上传文件的事件
 $(document).on('click', '.remove-file', function () {
     var $container = $messageContent.find('.tab-pane.active'),
@@ -537,6 +536,11 @@ function upload($file) {
         }
     });
     return false;
+}
+function initUpload() {
+    $(document).off('change', '.file-upload').on('change', '.file-upload', function () {
+        if ($(this).val() !== '') { upload($(this)); }
+    });
 }
 function initEditor() {
     page.loadCss(plugins.htmleditor.css);
