@@ -10,17 +10,17 @@ class HomeWorkController extends Controller {
     
     use WechatTrait;
     
-    const APP = '成绩中心';
-    
     protected $hw;
     
-    function __construct() { }
+    function __construct() {
+        
+        $this->middleware('wechat');
+        
+    }
     
     public function index() {
     
-        return Auth::id()
-            ? $this->hw->wIndex()
-            : $this->signin(self::APP, Request::url());
+        return $this->hw->wIndex();
         
     }
     

@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Wechat;
 use Exception;
 use Throwable;
 use App\Helpers\HttpStatusCode;
-use App\Helpers\WechatTrait;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MessageRequest;
 use App\Models\Department;
@@ -63,9 +62,6 @@ class MessageCenterController extends Controller {
     public function index() {
         
         return $this->message->wIndex();
-        // return Auth::id()
-        //     ? $this->message->wIndex()
-        //     : $this->signin(self::APP, Request::url());
         
     }
     

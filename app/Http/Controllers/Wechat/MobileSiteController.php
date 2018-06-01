@@ -19,10 +19,9 @@ class MobileSiteController extends Controller {
     
     protected $media, $department, $ws, $wsm, $wsma;
     
-    const APP = '微网站';
-    
     function __construct(WapSite $ws, WapSiteModule $wsm, WsmArticle $wsma) {
-        
+
+        $this->middleware('wechat');
         $this->ws = $ws;
         $this->wsm = $wsm;
         $this->wsma = $wsma;
@@ -36,9 +35,7 @@ class MobileSiteController extends Controller {
      */
     public function index() {
         
-        return Auth::id()
-            ? $this->ws->wIndex()
-            : $this->signin(self::APP, Request::url());
+        return $this->ws->wIndex();
         
     }
     

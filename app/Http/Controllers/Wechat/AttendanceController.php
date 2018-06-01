@@ -6,8 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\StudentAttendance;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 use Throwable;
 
@@ -21,12 +19,11 @@ class AttendanceController extends Controller {
     
     use WechatTrait;
     
-    const APP = '考勤中心';
-    
     protected $sa;
     
     function __construct(StudentAttendance $sa) {
         
+        $this->middleware('wechat');
         $this->sa = $sa;
         
     }
@@ -38,9 +35,7 @@ class AttendanceController extends Controller {
      */
     public function index() {
         
-        return Auth::id()
-            ? $this->sa->wIndex()
-            : $this->signin(self::APP, Request::url());
+        return $this->sa->wIndex();
         
     }
     

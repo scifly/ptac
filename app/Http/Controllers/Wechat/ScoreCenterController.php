@@ -23,7 +23,6 @@ class ScoreCenterController extends Controller {
     use WechatTrait;
     
     protected $score, $exam;
-    const APP = '成绩中心';
     
     /**
      * MessageCenterController constructor.
@@ -32,6 +31,7 @@ class ScoreCenterController extends Controller {
      */
     public function __construct(Score $score, Exam $exam) {
 
+        $this->middleware('wechat');
         $this->score = $score;
         $this->exam = $exam;
         
@@ -45,9 +45,7 @@ class ScoreCenterController extends Controller {
      */
     public function index() {
         
-        return Auth::id()
-            ? $this->score->wIndex()
-            : $this->signin(self::APP, Request::url());
+        return $this->score->wIndex();
         
     }
     
