@@ -462,7 +462,7 @@ function upload($file) {
         imgAttrs = {},
         ext = names[names.length - 1].toUpperCase();
 
-    if ($.inArray(ext, ['JPG', 'PNG', 'AMR', 'MP4']) === -1) {
+    if ($.inArray(ext, ['JPG', 'PNG', 'AMR', 'MP4']) === -1 && type !== 'file') {
         page.inform('消息中心', '不支持这种文件格式', page.failure);
         return false;
     }
