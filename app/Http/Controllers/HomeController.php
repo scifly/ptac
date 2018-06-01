@@ -165,13 +165,13 @@ class HomeController extends Controller {
      */
     public function wIndex() {
     
-        $app = Constant::APPS[Request::query('app')];
+        $app = Request::query('app');
         $user = Auth::user();
         $schoolIds = $user->schoolIds($user->id, session('corpId'));
         return view('wechat.schools', [
-            'app' => $app,
+            'app' => Constant::APPS[$app],
             'schools' => School::whereIn('id', $schoolIds)->pluck('name', 'id'),
-            'url' => 'mc?schoolId='
+            'url' => $app . '?schoolId='
         ]);
         
     }
