@@ -333,13 +333,14 @@ class StudentAttendance extends Model {
     function wIndex() {
     
         $user = Auth::user();
-        #判断是否为教职工
+        # 禁止学生学生访问考勤记录
         abort_if(
             !$user || $user->group->name == '学生',
             HttpStatusCode::UNAUTHORIZED,
             __('messages.unauthorized')
         );
-        if ($user->educator) {
+        # 如果不是监护人，则返回教职员工页面
+        if (!$user->custodian) {
             return view(self::VIEW_NS . 'educator');
         }
         $students = $user->custodian->students;
