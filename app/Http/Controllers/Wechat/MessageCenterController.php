@@ -3,23 +3,23 @@ namespace App\Http\Controllers\Wechat;
 
 use Exception;
 use Throwable;
-use App\Helpers\HttpStatusCode;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\MessageRequest;
-use App\Models\Department;
-use App\Models\DepartmentUser;
+use App\Models\User;
 use App\Models\Media;
 use App\Models\Message;
-use App\Models\MessageReply;
 use App\Models\Student;
-use App\Models\User;
-use Illuminate\Contracts\View\Factory;
+use Illuminate\View\View;
+use App\Models\Department;
+use App\Models\MessageReply;
+use App\Models\DepartmentUser;
+use App\Helpers\HttpStatusCode;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\MessageRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Facades\Request;
-use Illuminate\View\View;
 
 class MessageCenterController extends Controller {
     

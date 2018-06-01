@@ -337,7 +337,7 @@ class StudentAttendance extends Model {
         abort_if(
             !$user || !in_array($user->group->name, ['教职员工', '监护人']),
             HttpStatusCode::UNAUTHORIZED,
-            '<h4>您无权访问此页面</h4>'
+            __('messages.unauthorized')
         );
         if ($user->educator) {
             return view(self::VIEW_NS . 'educator');
