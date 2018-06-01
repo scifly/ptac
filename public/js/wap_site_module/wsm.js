@@ -28,7 +28,6 @@
                             var $preview = $(wsm.options.preview),
                                 imgAttrs = {
                                     'src': '../../' + result['path'],
-                                    'style': 'height: 200px;',
                                     'title': '文件名：' + result['filename']
                                 };
 

@@ -15,8 +15,9 @@ class WapSiteModuleRequest extends FormRequest {
     public function rules() {
         
         return [
+            'name'        => 'required|string|max:255|unique:wap_site_modules,name,' .
+                $this->input('id') . ',id',
             'wap_site_id' => 'required|integer',
-            'name'        => 'required|string|max:255|unique:wap_site_modules,name,',
             'media_id'    => 'required|integer',
             'enabled'     => 'required|boolean',
         ];
