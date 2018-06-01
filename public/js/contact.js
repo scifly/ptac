@@ -122,7 +122,6 @@
                     var gradeId = $('#' + contact.options.gradeId).val(),
                         $classId = $('#' + contact.options.classId),
                         uri = table + '/' + action + (typeof id !== 'undefined' ? '/' + id : ''),
-                        disabled = $classId.prop('disabled'),
                         $next = $classId.next(),
                         $prev = $classId.prev();
                     $next.remove();
@@ -140,16 +139,13 @@
                         success: function (result) {
                             $('#ajaxLoader').remove();
                             $prev.after(result['html']['classes']);
-                            // if (disabled && result['html']['classes'].length <= 1) {
-                            //     $('#class_id').prop('disabled', true);
-                            // }
                             if (typeof relationship !== 'undefined') {
                                 var $studentId = $('#' + contact.options.studentId),
                                     $studentNext = $studentId.next(),
                                     $studentPrev = $studentId.prev();
                                 $studentNext.remove();
                                 $studentId.remove();
-                                $studentPrev.after(result['html']['students']);
+                                $studentPrev.after(result['html']['students']['original']['html']);
                             }
                             page.initSelect2();
                         },
