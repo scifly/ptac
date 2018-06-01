@@ -158,6 +158,7 @@ trait ModelTrait {
     function schoolIds($userId = null, $corpId = null) {
         
         $user = !$userId ? Auth::user() : User::find($userId);
+        Log::debug($user->id);
         $role = $user->group->name;
         switch ($role) {
             case '运营':
