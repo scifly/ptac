@@ -43,6 +43,8 @@ function routeItem($ctlr) {
  * @param $acronym - 企业微信名称首字母缩略词
  */
 function app_routes($acronym) {
+    
+    Route::get('schools', 'HomeController@wIndex');
     /** 消息中心 */
     $c = 'Wechat\MessageCenterController';
     $p = $acronym . '/mc/';

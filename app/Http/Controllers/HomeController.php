@@ -1,9 +1,11 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Models\Menu;
 use App\Models\MenuTab;
+use App\Models\School;
 use App\Models\Tab;
 use Exception;
 use Illuminate\Contracts\View\Factory;
@@ -152,6 +154,24 @@ class HomeController extends Controller {
             'menuId'     => $id,
             'department' => $this->menu->department($id),
             'js'         => self::PAGEJS,
+        ]);
+        
+    }
+    
+    /**
+     * （微信端）打开学校列表
+     *
+     * @return Factory|View
+     */
+    public function wIndex() {
+    
+        $app = Constant::APPS[Request::query('app')];
+        $user = Auth::user();
+        $schoolIds = $user->schoolIds($user->id, session('corpId'));
+        return view('wechat.schools', [
+            'app' => $app,
+            'schools' => School::whereIn('id', $schoolIds)->pluck('name', 'id'),
+            'url' => 'mc?schoolId='
         ]);
         
     }

@@ -24,8 +24,8 @@ class WechatAuth {
      */
     public function handle($request, Closure $next) {
     
+        $paths = explode('/', Request::path());
         if (!Auth::id()) {
-            $paths = explode('/', Request::path());
             $acronym = $paths[0];
             $corp = Corp::whereAcronym($acronym)->first();
             $app = App::whereCorpId($corp->id)->where('name', Constant::APPS[$paths[1]])->first();
@@ -65,17 +65,13 @@ class WechatAuth {
             ]);
             Auth::loginUsingId($user->id);
         }
+        
         if (!Request::query('schoolId')) {
             if (!session('schoolId')) {
                 $user = Auth::user();
                 $schoolIds = $user->schoolIds($user->id, session('corpId'));
                 if (count($schoolIds) > 1) {
-                    Log::debug('you are here');
-                    return view('wechat.schools', [
-                        'app' => '消息中心',
-                        'schools' => School::whereIn('id', $schoolIds)->pluck('name', 'id'),
-                        'url' => 'mc?schoolId='
-                    ]);
+                    return redirect('schools?app=' . $paths[1]);
                 }
                 session(['schoolId' => $schoolIds[0]]);
             }
