@@ -173,7 +173,6 @@
                                             @include('message.file_upload', [
                                                 'id' => 'file-file',
                                                 'label' => '上传文件',
-                                                'accept' => '*',
                                                 'note' => '大小不得超过20M'
                                             ])
                                         </div>
