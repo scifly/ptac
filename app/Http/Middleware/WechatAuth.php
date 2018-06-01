@@ -71,7 +71,7 @@ class WechatAuth {
                 $user = Auth::user();
                 $schoolIds = $user->schoolIds($user->id, session('corpId'));
                 if (count($schoolIds) > 1) {
-                    return redirect('schools?app=' . $paths[1]);
+                    return redirect($paths[0] . '/schools?app=' . $paths[1]);
                 }
                 session(['schoolId' => $schoolIds[0]]);
             }

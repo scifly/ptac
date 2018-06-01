@@ -44,7 +44,7 @@ function routeItem($ctlr) {
  */
 function app_routes($acronym) {
     
-    Route::get('schools', 'HomeController@wIndex');
+    Route::get($acronym . '/schools', 'HomeController@wIndex');
     /** 消息中心 */
     $c = 'Wechat\MessageCenterController';
     $p = $acronym . '/mc/';
