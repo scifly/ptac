@@ -1,16 +1,14 @@
 <?php
 namespace App\Http\Middleware;
 
+use Closure;
+use App\Models\App;
+use App\Models\User;
+use App\Models\Corp;
 use App\Facades\Wechat;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
-use App\Models\App;
-use App\Models\Corp;
-use App\Models\School;
-use App\Models\User;
-use Closure;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 class WechatAuth {
@@ -25,6 +23,7 @@ class WechatAuth {
     public function handle($request, Closure $next) {
     
         $paths = explode('/', Request::path());
+        # 登录先
         if (!Auth::id()) {
             $acronym = $paths[0];
             $corp = Corp::whereAcronym($acronym)->first();
@@ -65,7 +64,7 @@ class WechatAuth {
             ]);
             Auth::loginUsingId($user->id);
         }
-        
+        # 学校列表。如果用户仅可见到一所学校，则直接进入需要访问的页面。
         if (!Request::query('schoolId')) {
             if (!session('schoolId')) {
                 $user = Auth::user();
