@@ -16,7 +16,7 @@
                 {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
-                <div class="col-sm-3">
+                <div class="col-sm-6">
                     {!! Form::text('name', null, [
                         'class' => 'form-control text-blue',
                         'placeholder' => '不能超过40个汉字',
@@ -29,7 +29,7 @@
                 {!! Form::label('summary', '文章摘要', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
-                <div class="col-sm-3">
+                <div class="col-sm-6">
                     {!! Form::text('summary', null, [
                         'class' => 'form-control text-blue',
                         'placeholder' => '不能超过60个汉字',

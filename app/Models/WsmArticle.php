@@ -187,14 +187,14 @@ class WsmArticle extends Model {
         $files = Request::allFiles();
         $media = new Media();
         $uploadedFiles = [];
-        foreach ($files as $file) {
+        foreach ($files['images'] as $image) {
             abort_if(
-                empty($file),
+                empty($image),
                 HttpStatusCode::NOT_ACCEPTABLE,
                 __('messages.empty_file')
             );
             $uploadedFile = $media->upload(
-                $file, __('messages.wsm_article.title')
+                $image, __('messages.wsm_article.title')
             );
             abort_if(
                 !$uploadedFile,
