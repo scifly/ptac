@@ -1,6 +1,6 @@
 //# sourceURL=create.js
 var token = $('#csrf_token').attr('content');
-page.loadCss('js/wsm_article/wsma.css');
+page.loadCss('css/wsm_article/wsma.css');
 page.create('formWsmArticle', 'wsm_articles');
 page.loadCss(plugins.fileinput.css);
 $.getMultiScripts([plugins.fileinput.js]);
