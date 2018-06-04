@@ -42,7 +42,7 @@ $.getMultiScripts([plugins.ueditor_config.js, plugins.ueditor_all.js]).done(
             $.each(files, function (index, file) {
                 $preview.append(
                     '<div class="img-item">' +
-                        '<img src="../../' + file.path + '" id="' + file.id + '">' +
+                        '<img src="../../' + file.path + '" id="' + file.id + '" style="width: 100px;">' +
                         '<div class="del-mask">' +
                             '<i class="delete glyphicon glyphicon-trash"></i>' +
                         '</div>' +
