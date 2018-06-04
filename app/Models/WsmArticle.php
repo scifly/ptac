@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\HttpStatusCode;
 use Eloquent;
 use Exception;
 use Throwable;
@@ -176,9 +177,34 @@ class WsmArticle extends Model {
         
     }
     
+    /**
+     * 上传微网站文章轮播图
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     function upload() {
     
         $files = Request::allFiles();
+        $media = new Media();
+        $uploadedFiles = [];
+        foreach ($files as $file) {
+            abort_if(
+                empty($file),
+                HttpStatusCode::NOT_ACCEPTABLE,
+                __('messages.empty_file')
+            );
+            $uploadedFile = $media->upload(
+                $file, __('messages.wsm_article.title')
+            );
+            abort_if(
+                !$uploadedFile,
+                HttpStatusCode::INTERNAL_SERVER_ERROR,
+                __('messages.file_upload_failed')
+            );
+            $uploadedFiles[] = $uploadedFile;
+        }
+        
+        return response()->json($uploadedFiles);
     
     }
     

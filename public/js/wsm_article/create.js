@@ -1,5 +1,6 @@
+var token = $('#csrf_token').attr('content');
+
 page.create('formWsmArticle', 'wsm_articles');
-// page.loadCss(plugins.ueditor_all.css);
 page.loadCss(plugins.fileinput.css);
 $.getMultiScripts([plugins.fileinput.js]);
 $.getMultiScripts([plugins.ueditor_config.js, plugins.ueditor_all.js]).done(
@@ -7,7 +8,7 @@ $.getMultiScripts([plugins.ueditor_config.js, plugins.ueditor_all.js]).done(
         // var editor = UE.getEditor('container').render('container');//初始化富文本编辑器
         // $(function () {
         UE.delEditor('container');
-        var ue = UE.getEditor('container', {
+        UE.getEditor('container', {
             initialFrameHeight: 300
         });
         var $pre = $('.preview');
@@ -19,10 +20,10 @@ $.getMultiScripts([plugins.ueditor_config.js, plugins.ueditor_all.js]).done(
             uploadUrl: page.siteRoot() + "/wsm_articles/create",
             uploadAsync: false,
             maxFileCount: 5,
-            minImageWidth: 50, //图片的最小宽度
-            minImageHeight: 50,//图片的最小高度
-            maxImageWidth: 1000,//图片的最大宽度
-            maxImageHeight: 1000,//图片的最大高度
+            minImageWidth: 50,      // 最小宽度
+            minImageHeight: 50,     // 最小高度
+            maxImageWidth: 1000,    // 最大宽度
+            maxImageHeight: 1000,   // 最大高度
             allowedFileExtensions: ['jpg', 'gif', 'png'],//接收的文件后缀
             fileActionSettings: {
                 showRemove: true,
@@ -30,15 +31,22 @@ $.getMultiScripts([plugins.ueditor_config.js, plugins.ueditor_all.js]).done(
                 showDrag: false
             },
             uploadExtraData: {
-                '_token': $('#csrf_token').attr('content')
+                '_token': token
             }
         });
         // 上传成功
-        $uploadFile.on("filebatchuploadsuccess", function (event, data, previewId, index) {
+        $uploadFile.on("filebatchuploadsuccess", function (event, data/*, previewId, index*/) {
             // 填充数据
             var response = data.response.data;
             $.each(response, function (index, obj) {
-                $pre.append('<div class="img-item"><img src="../../' + obj.path + '" id="' + obj.id + '"><div class="del-mask"><i class="delete glyphicon glyphicon-trash"></i></div></div>');
+                $pre.append(
+                    '<div class="img-item">' +
+                        '<img src="../../' + obj.path + '" id="' + obj.id + '">' +
+                        '<div class="del-mask">' +
+                            '<i class="delete glyphicon glyphicon-trash"></i>' +
+                        '</div>' +
+                    '</div>'
+                );
                 $pre.append('<input type="hidden" name="media_ids[]" value="' + obj.id + '">');
             });
             // 成功后关闭弹窗

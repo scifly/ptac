@@ -99,6 +99,10 @@ class WsmArticleController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
+
+        if (Request::method() == 'POST') {
+            return $this->wsma->upload();
+        }
         
         return $this->output([
             'article' => WsmArticle::find($id)

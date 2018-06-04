@@ -108,5 +108,8 @@ return [
     'wap_site' => [],
     'wap_site_module' => [
         'title' => '微网站栏目'
+    ],
+    'wsm_article' => [
+        'title' => '微网站文章'
     ]
 ];
