@@ -1,20 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
-    <meta name="csrf_token" content="{{ csrf_token() }}" id="csrf_token">
-    <title>学生列表</title>
-    <link rel="stylesheet" href="{{ URL::asset('css/weui.min.css') }}"/>
-    <link rel="stylesheet" href="{{ URL::asset('css/jquery-weui.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('css/wechat/icon/iconfont.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('css/wechat/attendance/custodian.css') }}">
-</head>
-<body ontouchstart>
-<div class="main">
-    <div class="list">
-        @if (!empty($students))
-            @foreach($students as $s)
+@extends('wechat.layouts.master')
+@section('title')
+    <title>考勤中心</title>
+@endsection
+@section('css')
+    <link rel="stylesheet" href="{{ asset('/css/wechat/attendance/custodian.css') }}">
+@endsection
+@section('content')
+    <div class="main">
+        <div class="list">
+            @foreach ($students as $s)
                 <div class="list-item">
                     <div class="list-item-info">
                         <div class="username">姓名 : <span>{{ $s->studentname }}</span></div>
@@ -48,12 +42,6 @@
                     </div>
                 </div>
             @endforeach
-        @endif
+        </div>
     </div>
-</div>
-<script src="{{URL::asset('js/jquery.min.js')}}"></script>
-<script src="{{URL::asset('js/fastclick.js')}}"></script>
-<script src="{{URL::asset('js/jquery-weui.min.js')}}"></script>
-<script>FastClick.attach(document.body);</script>
-</body>
-</html>
+@endsection

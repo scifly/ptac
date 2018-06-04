@@ -1,29 +1,19 @@
-var token = $('#csrf_token').attr('content');
+var token = $('#csrf_token').attr('content'),
+    $startDate = $('#start-date');
 
-$("#start-date").calendar({value: []});
-
+$startDate.calendar({value: []});
 // 默认显示当天饼图数据
 attendances({'_token': token});
-
 // 初始化日期change事件
 onDateChange();
-
 // 获取考勤数据
 $('#choose .close-popup').on('click', function () {
     var squad = $('#squad').attr('data-values'),
         rule = $('#rule').attr('data-values'),
         date = $('#start-date').val();
 
-    if (!squad) {
-        $.alert('请选择班级！');
-        return false;
-    }
-    if (!rule) {
-        $.alert('请选择规则！');
-        return false;
-    }
-    if (!date) {
-        $.alert('请选择日期！');
+    if (!squad || !rule || !date) {
+        $.alert('请选择班级/规则/日期！');
         return false;
     }
     attendances({
@@ -33,7 +23,6 @@ $('#choose .close-popup').on('click', function () {
         date: date
     });
 });
-
 $('.kaoqin-tongji .open-popup').click(function () {
     var type = $(this).attr('data-type');
 
@@ -45,7 +34,7 @@ function attendances(data) {
     $.ajax({
         type: 'POST',
         data: data,
-        url: 'chart',
+        url: 'at/chart',
         success: function (result) {
             console.log(result.data);
             if (result.statusCode === 200) {
@@ -60,12 +49,11 @@ function attendances(data) {
                 $.alert(result.data);
             }
         },
-        error: function () {
-            $.alert('请加入相应的考勤规则！');
+        error: function (e) {
+            wap.errorHandler(e);
         }
     });
 }
-
 // 班级列表
 function onClassChange(squads) {
     var $class = $("#squad");
@@ -84,7 +72,7 @@ function onClassChange(squads) {
                 _token: token,
                 classId: classId,
             },
-            url: 'chart',
+            url: 'at/chart',
             success: function (result) {
                 if (result.statusCode === 200) {
                     $rule.select("update", {items: result.data});
@@ -93,13 +81,12 @@ function onClassChange(squads) {
                     $rule.select("update", {items: [{}]});
                 }
             },
-            error: function () {
-                $.alert('该年级未设置考勤规则！');
+            error: function (e) {
+                wap.errorHandler(e);
             }
         });
     });
 }
-
 // 规则列表
 function onRuleChange(rules) {
     var $rule = $('#rule');
@@ -117,7 +104,12 @@ function onRuleChange(rules) {
         checkRule();
     });
 }
-
+// 日期
+function onDateChange() {
+    $('#start-date').change(function () {
+        checkRule();
+    });
+}
 // 显示饼图
 function showPie(data, legend) {
     echarts.init(document.getElementById('main')).setOption({
@@ -149,14 +141,6 @@ function showPie(data, legend) {
         ]
     });
 }
-
-// 日期
-function onDateChange() {
-    $('#start-date').change(function () {
-        checkRule();
-    });
-}
-
 // 验证考勤规则
 function checkRule() {
     $.ajax({
@@ -167,14 +151,12 @@ function checkRule() {
             rule: $('#rule').attr('data-values'),
             check: true
         },
-        url: 'chart',
+        url: 'at/chart',
         success: function (result) {
-            if (result.statusCode !== 200) {
-                $.alert(result['message']);
-            }
+            $.alert(result['message']);
         },
-        error: function () {
-            $.alert('请选择和规则对应的星期！');
+        error: function (e) {
+            wap.errorHandler(e);
         }
     });
 }

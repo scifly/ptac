@@ -26,13 +26,13 @@ class TestController extends Controller {
     public function index() {
     
 
-        dd($records = Student::with('user:id,realname')
-            ->where('class_id', 1)
-            ->where('enabled', 1)
-            ->get()->toArray()
-        );
-        $arrs = Group::whereIn('name', ['运营', '企业', '学校'])->get()->pluck('name', 'id')->toArray();
-        dd(($arrs));
+        // dd($records = Student::with('user:id,realname')
+        //     ->where('class_id', 1)
+        //     ->where('enabled', 1)
+        //     ->get()->toArray()
+        // );
+        // $arrs = Group::whereIn('name', ['运营', '企业', '学校'])->get()->pluck('name', 'id')->toArray();
+        // dd(($arrs));
         
         $action = 'clickToDial';
         ini_set("display_errors", "on"); // 显示错误提示，仅用于测试时排查问题
