@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use App\Helpers\HttpStatusCode;
 use Eloquent;
 use Exception;
 use Throwable;
 use Carbon\Carbon;
 use Illuminate\View\View;
 use App\Helpers\ModelTrait;
+use App\Helpers\HttpStatusCode;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Model;

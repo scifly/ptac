@@ -3,7 +3,7 @@ var token = $('#csrf_token').attr('content');
 page.loadCss('css/wsm_article/wsma.css');
 page.create('formWsmArticle', 'wsm_articles');
 page.loadCss(plugins.fileinput.css);
-$.getMultiScripts([plugins.fileinput.js]);
+$.getMultiScripts([plugins.fileinput.js, plugins.fileinput.language]);
 $.getMultiScripts([plugins.ueditor_config.js, plugins.ueditor_all.js]).done(
     function () {
         // var editor = UE.getEditor('container').render('container');//初始化富文本编辑器
@@ -44,7 +44,7 @@ $.getMultiScripts([plugins.ueditor_config.js, plugins.ueditor_all.js]).done(
                     '<div class="img-item">' +
                         '<img src="../../' + file.path + '" id="' + file.id + '">' +
                         '<div class="del-mask">' +
-                            '<i class="delete glyphicon glyphicon-trash"></i>' +
+                            '<i class="delete glyphicon glyphicon-trash text-red"></i>' +
                         '</div>' +
                     '</div>'
                 );
@@ -65,5 +65,5 @@ $.getMultiScripts([plugins.ueditor_config.js, plugins.ueditor_all.js]).done(
             $(this).parent().parent().remove();
             $preview.append('<input type="hidden" name="del_ids[]" value="' + $(this).parent().siblings().attr('id') + '">');
         });
-    // });
-});
+    }
+);

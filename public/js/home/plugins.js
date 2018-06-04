@@ -35,7 +35,8 @@ var plugins = {
     },
     fileinput: {
         css: 'js/plugins/fileinput/css/fileinput.min.css',
-        js: 'js/plugins/fileinput/js/fileinput.min.js'
+        js: 'js/plugins/fileinput/js/fileinput.min.js',
+        language: 'js/plugins/fileinput/js/locales/zh.js'
     },
     fileinput_locale: {
         js: 'js/plugins/fileinput/js/locales/zh.js'
