@@ -472,7 +472,7 @@ class StudentAttendance extends Model {
         # 获取饼图数据
         $data = !isset($input['squad'], $input['time'], $input['rule'])
             ? $this->defcharts($classIds, $data)
-            : $data = $this->fltcharts($input, $data);
+            : $this->fltcharts($input, $data);
         abort_if(
             !$data,
             HttpStatusCode::INTERNAL_SERVER_ERROR,
