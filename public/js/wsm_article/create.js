@@ -38,17 +38,17 @@ $.getMultiScripts([plugins.ueditor_config.js, plugins.ueditor_all.js]).done(
         // 上传成功
         $uploadFiles.on("filebatchuploadsuccess", function (event, data/*, previewId, index*/) {
             // 填充数据
-            var response = data.response.data;
-            $.each(response, function (index, obj) {
+            var files = data.response;
+            $.each(files, function (index, file) {
                 $preview.append(
                     '<div class="img-item">' +
-                        '<img src="../../' + obj.path + '" id="' + obj.id + '">' +
+                        '<img src="../../' + file.path + '" id="' + file.id + '">' +
                         '<div class="del-mask">' +
                             '<i class="delete glyphicon glyphicon-trash"></i>' +
                         '</div>' +
                     '</div>'
                 );
-                $preview.append('<input type="hidden" name="media_ids[]" value="' + obj.id + '">');
+                $preview.append('<input type="hidden" name="media_ids[]" value="' + file.id + '">');
             });
             // 成功后关闭弹窗
             setTimeout(function () {
