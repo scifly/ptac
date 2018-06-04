@@ -40,7 +40,7 @@ class TestController extends Controller {
         set_time_limit(0); // 防止脚本超时，仅用于测试使用，生产环境请按实际情况设置
         header("Content-Type: text/plain; charset=utf-8"); // 输出为utf-8的文本格式，仅用于测试
         switch ($action) {
-            case 'clickToDail':
+            case 'clickToDial':
                 // 验证点击拨号(ClickToDial)接口
                 print_r($this->clickToDial());
                 break;
