@@ -1,3 +1,4 @@
+//# sourceURL=create.js
 var token = $('#csrf_token').attr('content');
 
 page.create('formWsmArticle', 'wsm_articles');
