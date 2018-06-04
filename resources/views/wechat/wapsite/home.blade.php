@@ -11,22 +11,20 @@
         <div class="switchclass-head">
             <div class="weui-cell">
                 <div class="weui-cell__bd title-name">
-                    <div>{{$wapsite->site_title}}</div>
+                    <div>{{ $wapsite->site_title }}</div>
                 </div>
             </div>
         </div>
     </div>
     <div class="swiper-container swiper-container-horizontal" style="height: 230px;">
         <div class="swiper-wrapper" style="">
-            @if (!empty($medias))
-                @foreach($medias as $k => $v)
-                    @if ($v)
-                        <div class="swiper-slide" data-swiper-slide-index="{{$k}}">
-                            <img src="../{{$v->path}}">
-                        </div>
-                    @endif
-                @endforeach
-            @endif
+            @foreach($medias as $key => $media)
+                @if ($media)
+                    <div class="swiper-slide" data-swiper-slide-index="{{ $key }}">
+                        <img src="../{{ $media->path }}" alt="">
+                    </div>
+                @endif
+            @endforeach
         </div>
         <div class="swiper-pagination swiper-pagination-bullets">
             <span class="swiper-pagination-bullet"></span>
@@ -34,7 +32,6 @@
             <span class="swiper-pagination-bullet"></span>
         </div>
     </div>
-
     <!--九宫格图标-->
     <div class="weui-grids">
         @if ($wapsite)
