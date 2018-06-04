@@ -94,7 +94,12 @@
                 </h4>
             </div>
             <div class="modal-body">
-                <input type="file" name="img[]" id="uploadFile" accept="image/jpeg,image/gif,image/png" multiple>
+                {!! Form::file('images[]', [
+                    'id' => 'uploadFiles',
+                    'accept' => 'image/*',
+                    'multiple'
+                ]) !!}
+                {{--<input type="file" name="images[]" id="uploadFile" accept="image/jpeg,image/gif,image/png" multiple>--}}
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default"
