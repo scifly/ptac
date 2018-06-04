@@ -38,7 +38,8 @@ return [
     ],
     'class' => [
         'title' => '班级管理',
-        'not_found' => '未找到该班级的相关信息'
+        'not_found' => '未找到该班级的相关信息',
+        'no_related_classes' => '您尚未绑定任何班级'
     ],
     'department' => [
         'title' => '部门管理',
@@ -96,6 +97,10 @@ return [
         'invalid_data_format' => '导入数据格式不正确',
         'import_request_submitted' => '已提交导入请求\\n需要新增的学籍数：%s\\n需要更新的学籍数：%s\\n非法学籍数: %s, 请参考导出文件',
         'empty_import_file' => '没有数据可以导入',
+    ],
+    'student_attendance' => [
+        'title' => '学生考勤',
+        'rule_'
     ],
     'user' => [
         'not_found' => '没有这个用户'

@@ -427,27 +427,24 @@ class StudentAttendance extends Model {
     function wChart() {
     
         $input = Request::all();
-        if (isset($input['check'])) {
-            return $this->wCheck();
-        }
-        if (isset($input['classId'])) {
-            return $this->wRule($input['classId']);
-        }
+        if (isset($input['check'])) { return $this->wCheck(); }
+        if (isset($input['classId'])) { return $this->wRule($input['classId']); }
         
         # 角色判断
         $user = Auth::user();
         abort_if(
-            !$user->educator,
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            '你不是教职员工'
+            !$user || $user->group->name == '学生',
+            HttpStatusCode::UNAUTHORIZED,
+            __('messages.unauthorized')
         );
+        $schoolId = $user->educator ? $user->educator->school_id : session('schoolId');
         
         # 对当前用户可见的所有班级ids
-        $classIds = $this->classIds($user->educator->school_id);
+        $classIds = $this->classIds($schoolId);
         abort_if(
             empty(array_diff($classIds, [0])),
             HttpStatusCode::INTERNAL_SERVER_ERROR,
-            '你尚未绑定任何班级'
+            __('messages.class.no_related_classes')
         );
         $classes = Squad::whereIn('id', $classIds)->get();
         $data['classNames'] = [];
@@ -462,34 +459,28 @@ class StudentAttendance extends Model {
         );
         
         # 根据年级分组规则
-        $gradeIds = $this->gradeIds($user->educator->school_id);
+        $gradeIds = $this->gradeIds($schoolId);
         $rules = StudentAttendanceSetting::whereIn('grade_id', $gradeIds)->get();
         $data['ruleNames'] = [];
-        foreach ($rules as $r) {
+        foreach ($rules as $rule) {
             $data['ruleNames'][] = [
-                'title' => $r->name, 'value' => $r->id,
+                'title' => $rule->name,
+                'value' => $rule->id,
             ];
         }
         
         # 获取饼图数据
-        if (!isset($input['squad'], $input['time'], $input['rule'])) {
-            $data = $this->defcharts($classIds, $data);
-            abort_if(
-                !$data,
-                HttpStatusCode::INTERNAL_SERVER_ERROR,
-                '请加入相应的考勤规则！'
-            );
-        } else {
-            $data = $this->fltcharts($input, $data);
-            abort_if(
-                !$data,
-                HttpStatusCode::INTERNAL_SERVER_ERROR,
-                '请加入相应的考勤规则！'
-            );
-        }
-        
+        $data = !isset($input['squad'], $input['time'], $input['rule'])
+            ? $this->defcharts($classIds, $data)
+            : $data = $this->fltcharts($input, $data);
+        abort_if(
+            !$data,
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            '请加入相应的考勤规则！'
+        );
+    
         return response()->json([
-            'data' => $data,
+            'data' => $data
         ]);
     
     }
