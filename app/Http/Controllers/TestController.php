@@ -382,7 +382,7 @@ class TestController extends Controller {
         // fixme 必填: 请参阅 https://ak-console.aliyun.com/ 取得您的AK信息
 
         // fixme 必填: 被叫显号
-        $params["CalledShowNumber"] = "4001112222";
+        $params["CalledShowNumber"] = $this->callerShowNumber;
         
         // fixme 必填: 被叫显号
         $params["CalledNumber"] = "13700000000";
