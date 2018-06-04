@@ -25,7 +25,7 @@ class TestController extends Controller {
     
     public function index() {
     
-        dd(microtime());
+        dd(round(microtime(true) * 1000));
 
         // dd($records = Student::with('user:id,realname')
         //     ->where('class_id', 1)
