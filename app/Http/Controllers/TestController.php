@@ -27,7 +27,7 @@ class TestController extends Controller {
     
         // dd(round(microtime(true) * 1000));
         // dd(strtotime(date('Y-m-d'), now()));
-        dd(strtotime('2018-06-04') * 1000);
+        // dd(strtotime('2018-06-04') * 1000);
         // dd($records = Student::with('user:id,realname')
         //     ->where('class_id', 1)
         //     ->where('enabled', 1)
@@ -348,7 +348,7 @@ class TestController extends Controller {
         $params["CallId"] = "114279786362^101089366362";
     
         // fixme 必填: Unix时间戳（毫秒），会查询这个时间点对应那一天的记录
-        $params["QueryDate"] = "1234567890123";
+        $params["QueryDate"] = "1528041600000";
     
         // fixme 必填: 语音通知为:11000000300006, 语音验证码为:11010000138001, IVR为:11000000300005, 点击拨号为:11000000300004, SIP为:11000000300009
         $params["ProdId"] = "11010000138001";
