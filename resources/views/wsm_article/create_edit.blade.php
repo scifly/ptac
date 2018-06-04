@@ -58,8 +58,8 @@
                             @endforeach
                         @endif
                     </div>
-                    <a href="#" data-toggle="modal" data-target="#modalPic">
-                        <i class="fa fa-cloud-upload"></i> 上传
+                    <a href="#" data-toggle="modal" data-target="#modalPic" style="margin-top: 5px;">
+                        <i class="fa fa-cloud-upload"></i> 上传图片
                     </a>
                 </div>
             </div>
