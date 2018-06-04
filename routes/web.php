@@ -196,7 +196,7 @@ Route::group(['prefix' => 'wap_site_modules'], function () {
     Route::delete('delete/{id}', $c . '@destroy');
 });
 Route::group(['prefix' => 'wsm_articles'], function () {
-    $c = 'WapSiteModuleController';
+    $c = 'WsmArticleController';
     Route::get('index', $c . '@index');
     Route::get('create', $c . '@create');
     Route::post('create', $c . '@create');
