@@ -36,18 +36,13 @@ function attendances(data) {
         data: data,
         url: 'at/chart',
         success: function (result) {
-            console.log(result.data);
-            if (result.statusCode === 200) {
-                onClassChange(result['data']['classNames']);
-                onRuleChange(result['data']['ruleNames']);
-                showPie(result['data']['charts'], ['打卡', '异常', '未打卡']);
-                $('.status-value').each(function (i) {
-                    $(this).html(result['data']['charts'][i]['value']);
-                });
-                $('.modal-content').html(result.data.view);
-            } else {
-                $.alert(result.data);
-            }
+            onClassChange(result['data']['classNames']);
+            onRuleChange(result['data']['ruleNames']);
+            showPie(result['data']['charts'], ['打卡', '异常', '未打卡']);
+            $('.status-value').each(function (i) {
+                $(this).html(result['data']['charts'][i]['value']);
+            });
+            $('.modal-content').html(result.data.view);
         },
         error: function (e) {
             wap.errorHandler(e);
@@ -74,12 +69,7 @@ function onClassChange(squads) {
             },
             url: 'at/chart',
             success: function (result) {
-                if (result.statusCode === 200) {
-                    $rule.select("update", {items: result.data});
-                } else {
-                    $.alert(result.data);
-                    $rule.select("update", {items: [{}]});
-                }
+                $rule.select("update", {items: result.data});
             },
             error: function (e) {
                 wap.errorHandler(e);
