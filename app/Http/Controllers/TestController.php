@@ -34,7 +34,7 @@ class TestController extends Controller {
         // $arrs = Group::whereIn('name', ['运营', '企业', '学校'])->get()->pluck('name', 'id')->toArray();
         // dd(($arrs));
         
-        $action = 'clickToDial';
+        $action = 'singleCallByTts';
         ini_set("display_errors", "on"); // 显示错误提示，仅用于测试时排查问题
         // error_reporting(E_ALL); // 显示所有错误提示，仅用于测试时排查问题
         set_time_limit(0); // 防止脚本超时，仅用于测试使用，生产环境请按实际情况设置
