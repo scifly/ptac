@@ -242,6 +242,7 @@ class ComposerServiceProvider extends ServiceProvider {
         # 微网站 - WapSite
         View::composer('wap_site.index', $ns . 'WapSiteIndexComposer');
         View::composer('wap_site.create_edit', $ns . 'WapSiteComposer');
+        View::composer('wechat.wapsite.home', $ns . 'MobileSiteIndexComposer');
     
         # 微网站栏目 - WapSiteModule
         View::composer('wap_site_module.index', $ns . 'WapSiteModuleIndexComposer');
