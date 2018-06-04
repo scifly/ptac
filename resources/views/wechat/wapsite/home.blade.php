@@ -41,7 +41,7 @@
                         <div class=" weui-grid__icon">
                             <img src="../{{ $module->media->path }}" alt="">
                         </div>
-                        <p class="weui-grid__label">{{$v->name}}</p>
+                        <p class="weui-grid__label">{{ $module->name }}</p>
                     </a>
                 @endif
             @endforeach
