@@ -25,6 +25,7 @@ class TestController extends Controller {
     
     public function index() {
     
+        dd(microtime());
 
         // dd($records = Student::with('user:id,realname')
         //     ->where('class_id', 1)
@@ -343,7 +344,7 @@ class TestController extends Controller {
         // fixme 必填: 请参阅 https://ak-console.aliyun.com/ 取得您的AK信息
     
         // fixme 必填: 从上次呼叫调用的返回值中获取的CallId
-        $params["CallId"] = "113853585007^100675005007";
+        $params["CallId"] = "114279786362^101089366362";
     
         // fixme 必填: Unix时间戳（毫秒），会查询这个时间点对应那一天的记录
         $params["QueryDate"] = "1234567890123";
