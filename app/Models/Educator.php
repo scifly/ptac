@@ -437,7 +437,7 @@ class Educator extends Model {
         $removed = self::removable($educator) ? $educator->delete() : false;
         if ($removed && $fireEvent) {
             # 删除User数据
-            $this->user->remove($userId);
+            (new User())->remove($userId);
             
             return true;
         }
