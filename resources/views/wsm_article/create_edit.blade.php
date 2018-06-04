@@ -59,7 +59,7 @@
                             @endforeach
                         @endif
                     </div>
-                    <a class="btn btn-primary" data-toggle="modal" data-target="#modalPic">上传</a>
+                    <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalPic">上传</a>
                 </div>
             </div>
             <div class="form-group">
