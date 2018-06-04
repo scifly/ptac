@@ -424,25 +424,26 @@ class Educator extends Model {
      * 删除教职员工
      *
      * @param $id
-     * @param bool $fireEvent
      * @return bool
      * @throws Exception
-     * @throws Throwable
      */
-    function remove($id = null, $fireEvent = false) {
+    function remove($id = null) {
         
         if (!isset($id)) { return $this->batch($this); }
-        $educator = self::find($id);
-        $userId = $educator->user_id;
-        $removed = self::removable($educator) ? $educator->delete() : false;
-        if ($removed && $fireEvent) {
-            # 删除User数据
-            (new User())->remove($userId);
-            
-            return true;
+        try {
+            DB::transaction(function () use ($id) {
+                $educator = self::find($id);
+                (new User())->remove($educator->user_id);
+                if (!self::removable($educator)) {
+                    throw new Exception(__('messages.del_fail'));
+                }
+                $educator->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
         
-        return $removed ? true : false;
+        return true;
         
     }
     

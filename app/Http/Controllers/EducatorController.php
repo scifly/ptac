@@ -172,9 +172,7 @@ class EducatorController extends Controller {
     public function destroy($id = null) {
         
         return $this->result(
-            $this->educator->remove(
-                $id, true
-            )
+            $this->educator->remove($id)
         );
         
     }
