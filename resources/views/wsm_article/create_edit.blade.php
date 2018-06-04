@@ -44,13 +44,12 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="preview">
-
                         @if(isset($medias))
-                            @foreach($medias as $key => $value)
-                                @if(!empty($value))
+                            @foreach ($medias as $key => $value)
+                                @if (!empty($value))
                                     <div class="img-item">
-                                        <img src="../../{{$value->path}}" id="{{$value->id}}" style="width: 100px;height: 100px">
-                                        <input type="hidden" name="media_ids[]" value="{{$value->id}}"/>
+                                        <img src="../../{{ $value->path }}" id="{{ $value->id }}" style="width: 100px;height: 100px">
+                                        <input type="hidden" name="media_ids[]" value="{{ $value->id }}"/>
                                         <div class="del-mask">
                                             <i class="delete fa fa-trash"></i>
                                         </div>
@@ -59,7 +58,9 @@
                             @endforeach
                         @endif
                     </div>
-                    <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalPic">上传</a>
+                    <a href="#" data-toggle="modal" data-target="#modalPic">
+                        <i class="fa fa-cloud-upload"></i> 上传
+                    </a>
                 </div>
             </div>
             <div class="form-group">
