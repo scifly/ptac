@@ -44,6 +44,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="preview">
+
                         @if(isset($medias))
                             @foreach($medias as $key => $value)
                                 @if(!empty($value))
@@ -89,7 +90,7 @@
                         aria-hidden="true">×
                 </button>
                 <h4 class="modal-title" id="myModalLabel">
-                    模态框（Modal）标题
+                    上传文件
                 </h4>
             </div>
             <div class="modal-body">

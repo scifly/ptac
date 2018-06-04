@@ -176,6 +176,12 @@ class WsmArticle extends Model {
         
     }
     
+    function upload() {
+    
+        $files = Request::allFiles();
+    
+    }
+    
     /**
      * 微网站文章列表
      *

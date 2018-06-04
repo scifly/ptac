@@ -195,7 +195,17 @@ Route::group(['prefix' => 'wap_site_modules'], function () {
     Route::put('update/{id}', $c . '@update');
     Route::delete('delete/{id}', $c . '@destroy');
 });
-Route::group(['prefix' => 'wsm_articles'], routes('WsmArticleController'));
+Route::group(['prefix' => 'wsm_articles'], function () {
+    $c = 'WapSiteModuleController';
+    Route::get('index', $c . '@index');
+    Route::get('create', $c . '@create');
+    Route::post('create', $c . '@create');
+    Route::post('store', $c . '@store');
+    Route::get('edit/{id}', $c . '@edit');
+    Route::post('edit/{id}', $c . '@edit');
+    Route::put('update/{id}', $c . '@update');
+    Route::delete('delete/{id}', $c . '@destroy');
+});
 
 /** 投票问卷 */
 # 发起

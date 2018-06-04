@@ -51,6 +51,10 @@ class WsmArticleController extends Controller {
      * @throws Throwable
      */
     public function create() {
+    
+        if (Request::method() == 'POST') {
+            return $this->wsma->upload();
+        }
         
         return $this->output();
         
