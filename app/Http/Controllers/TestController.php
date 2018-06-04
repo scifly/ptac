@@ -388,10 +388,10 @@ class TestController extends Controller {
         $params["CalledNumber"] = "13700000000";
         
         // fixme 必填: Tts模板Code
-        $params["TtsCode"] = "TTS_134323950";
+        $params["TtsCode"] = "TTS_129743194";
         
         // fixme 选填: Tts模板中的变量替换JSON,假如Tts模板中存在变量，则此处必填
-        $params["TtsParam"] = array("AckNum" => "123456");
+        $params["TtsParam"] = ["var1" => "123456"];
         
         // fixme 选填: 音量
         $params["Volume"] = 100;
