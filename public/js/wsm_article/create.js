@@ -11,10 +11,10 @@ $.getMultiScripts([plugins.ueditor_config.js, plugins.ueditor_all.js]).done(
         UE.getEditor('container', {
             initialFrameHeight: 300
         });
-        var $pre = $('.preview');
-        var $uploadFile = $('#uploadFile');
+        var $preview = $('.preview'),
+            $uploadFiles = $('#uploadFiles');
         // 初始化
-        $uploadFile.fileinput({
+        $uploadFiles.fileinput({
             language: 'zh',
             theme: 'explorer',
             uploadUrl: page.siteRoot() + "/wsm_articles/create",
@@ -35,11 +35,11 @@ $.getMultiScripts([plugins.ueditor_config.js, plugins.ueditor_all.js]).done(
             }
         });
         // 上传成功
-        $uploadFile.on("filebatchuploadsuccess", function (event, data/*, previewId, index*/) {
+        $uploadFiles.on("filebatchuploadsuccess", function (event, data/*, previewId, index*/) {
             // 填充数据
             var response = data.response.data;
             $.each(response, function (index, obj) {
-                $pre.append(
+                $preview.append(
                     '<div class="img-item">' +
                         '<img src="../../' + obj.path + '" id="' + obj.id + '">' +
                         '<div class="del-mask">' +
@@ -47,7 +47,7 @@ $.getMultiScripts([plugins.ueditor_config.js, plugins.ueditor_all.js]).done(
                         '</div>' +
                     '</div>'
                 );
-                $pre.append('<input type="hidden" name="media_ids[]" value="' + obj.id + '">');
+                $preview.append('<input type="hidden" name="media_ids[]" value="' + obj.id + '">');
             });
             // 成功后关闭弹窗
             setTimeout(function () {
@@ -57,12 +57,12 @@ $.getMultiScripts([plugins.ueditor_config.js, plugins.ueditor_all.js]).done(
 
         // modal关闭，内容清空
         $('#modalPic').on('hide.bs.modal', function () {
-            $uploadFile.fileinput('clear');
+            $uploadFiles.fileinput('clear');
         });
         // 点击删除按钮
         $('body').on('click', '.delete', function () {
             $(this).parent().parent().remove();
-            $pre.append('<input type="hidden" name="del_ids[]" value="' + $(this).parent().siblings().attr('id') + '">');
+            $preview.append('<input type="hidden" name="del_ids[]" value="' + $(this).parent().siblings().attr('id') + '">');
         });
     // });
 });
