@@ -207,32 +207,25 @@ class WapSite extends Model {
     function wIndex() {
     
         $user = Auth::user();
-        $schoolId = Group::find($user->group_id)->school_id;
-        if (!$schoolId) {
-            # todo 显示微网站列表
-            switch ($user->group->name) {
-                case '运营':
-                case '企业':
-                case '监护人':
-                default:
-                    break;
-            }
-            return '<h1>学校列表</h1>';
-        } else {
-            $wapSite = WapSite::whereSchoolId($schoolId)->first();
-            abort_if(
-                !$wapSite,
-                HttpStatusCode::NOT_FOUND,
-                __('messages.not_found')
-            );
-    
-            return view('wechat.wapsite.home', [
-                'wapsite' => $wapSite,
-                'medias'  => (new Media())->medias(
-                    explode(',', $wapSite->media_ids)
-                ),
-            ]);
-        }
+        # 禁止学生访问微网站
+        abort_if(
+            !$user || $user->group->name == '学生',
+            HttpStatusCode::UNAUTHORIZED,
+            __('messages.unauthorized')
+        );
+        $wapSite = WapSite::whereSchoolId(session('schoolId'))->first();
+        abort_if(
+            !$wapSite,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
+
+        return view('wechat.wapsite.home', [
+            'wapsite' => $wapSite,
+            'medias'  => (new Media())->medias(
+                explode(',', $wapSite->media_ids)
+            ),
+        ]);
         
     }
     

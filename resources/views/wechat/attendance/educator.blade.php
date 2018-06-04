@@ -83,7 +83,8 @@
                         {!! Form::text('squad', null, [
                             'id' => 'squad',
                             'class' => 'weui-input',
-                            'style' => 'text-align: center;'
+                            'style' => 'text-align: center;',
+                            'data-value' => ''
                         ]) !!}
                     </div>
                 </div>
@@ -95,7 +96,8 @@
                         {!! Form::text('rule', null, [
                             'id' => 'rule',
                             'class' => 'weui-input',
-                            'style' => 'text-align: center;'
+                            'style' => 'text-align: center;',
+                            'data-value' => ''
                         ]) !!}
                     </div>
                 </div>
@@ -107,7 +109,8 @@
                         {!! Form::text('start-date', null, [
                             'id' => 'start-date',
                             'class' => 'weui-input',
-                            'style' => 'text-align: center;'
+                            'style' => 'text-align: center;',
+                            'data-value' => ''
                         ]) !!}
                     </div>
                 </div>

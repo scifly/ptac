@@ -1,4 +1,6 @@
 var token = $('#csrf_token').attr('content'),
+    $squad = $('#squad'),
+    $rule = $('#rule'),
     $startDate = $('#start-date');
 
 $startDate.calendar({value: []});
@@ -8,9 +10,9 @@ attendances({'_token': token});
 onDateChange();
 // 获取考勤数据
 $('#choose .close-popup').on('click', function () {
-    var squad = $('#squad').attr('data-values'),
-        rule = $('#rule').attr('data-values'),
-        date = $('#start-date').val();
+    var squad = $squad.attr('data-value'),
+        rule = $rule.attr('data-value'),
+        date = $startDate.val();
 
     if (!squad || !rule || !date) {
         $.alert('请选择班级/规则/日期！');
@@ -57,9 +59,8 @@ function onClassChange(squads) {
         title: "选择班级",
         items: squads
     });
-    $class.change(function () {
-        var classId = $(this).attr('data-values');
-        var $rule = $('#rule');
+    $class.on('change', function () {
+        var classId = $(this).attr('data-value');
         $.ajax({
             type: 'POST',
             dataType: 'json',
@@ -79,14 +80,12 @@ function onClassChange(squads) {
 }
 // 规则列表
 function onRuleChange(rules) {
-    var $rule = $('#rule');
-    
     $rule.select({
         title: "选择规则",
         items: rules
     });
     $rule.on('change', function () {
-        var grade = $('#squad').attr('data-values');
+        var grade = $squad.attr('data-value');
         if (!grade) {
             $.alert('请先选择班级');
             $(this).val('');
@@ -137,8 +136,8 @@ function checkRule() {
         type: 'POST',
         data: {
             _token: token,
-            date: $('#start-date').val(),
-            rule: $('#rule').attr('data-values'),
+            date: $startDate.val(),
+            rule: $rule.attr('data-value'),
             check: true
         },
         url: 'at/chart',
