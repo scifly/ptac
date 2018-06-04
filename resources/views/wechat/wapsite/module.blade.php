@@ -23,7 +23,7 @@
 			<div class="weui-panel__bd">
 				@if($articles)
 					@foreach($articles as $article)
-						<a href="{{ url('/wapsite/article?id=' . $article->id) }}" class="weui-media-box weui-media-box_appmsg">
+						<a href="{{ url('/ws/article?id=' . $article->id) }}" class="weui-media-box weui-media-box_appmsg">
 							<div class="weui-media-box__hd">
 								<img class="weui-media-box__thumb" src="../../{{ $article->thumbnailmedia->path }}" alt="">
 							</div>
