@@ -26,7 +26,7 @@ class TestController extends Controller {
     public function index() {
     
         // dd(round(microtime(true) * 1000));
-
+        dd(date('Y-m-d'), now());
         dd(strtotime('2018-06-04'));
         // dd($records = Student::with('user:id,realname')
         //     ->where('class_id', 1)
