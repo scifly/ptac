@@ -1,0 +1,10 @@
+.img-item {
+    display: inline-block;
+    float: left;
+    margin-right:10px;
+
+}
+.img-item img{
+    height: 150px;
+    width: auto;
+}

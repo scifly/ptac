@@ -1,6 +1,6 @@
 //# sourceURL=create.js
 var token = $('#csrf_token').attr('content');
-
+page.loadCss('js/wsm_article/wsma.css');
 page.create('formWsmArticle', 'wsm_articles');
 page.loadCss(plugins.fileinput.css);
 $.getMultiScripts([plugins.fileinput.js]);
@@ -42,7 +42,7 @@ $.getMultiScripts([plugins.ueditor_config.js, plugins.ueditor_all.js]).done(
             $.each(files, function (index, file) {
                 $preview.append(
                     '<div class="img-item">' +
-                        '<img src="../../' + file.path + '" id="' + file.id + '" style="width: 100px;">' +
+                        '<img src="../../' + file.path + '" id="' + file.id + '">' +
                         '<div class="del-mask">' +
                             '<i class="delete glyphicon glyphicon-trash"></i>' +
                         '</div>' +
