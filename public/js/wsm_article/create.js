@@ -4,7 +4,6 @@ var $preview = $('.preview'),
     token = $('#csrf_token').attr('content'),
     scripts = [
         plugins.fileinput.js,
-        plugins.fileinput.language,
         plugins.ueditor_config.js,
         plugins.ueditor_all.js
     ];
@@ -16,6 +15,7 @@ $.getMultiScripts(scripts).done(function () { init(); });
 
 // 初始化
 function init() {
+    $.getMultiScripts([plugins.fileinput.language]);
     UE.delEditor('container');
     UE.getEditor('container', { initialFrameHeight: 300 });
     $uploadFiles.fileinput({
