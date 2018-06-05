@@ -72,9 +72,9 @@
 
                 page.loadCss('css/wapsite.css');
                 if (action === 'create') {
-                    page.create('formwapsiterticle', table);
+                    page.create('formWsmArticle', table);
                 } else if (action === 'edit') {
-                    page.edit('formWsmArticle', table);
+                    page.edit(table === 'wsm_articles' ? 'formWsmArticle' : 'formWapSite', table);
                 }
                 page.loadCss(plugins.fileinput.css);
                 $.getMultiScripts(scripts).done(
