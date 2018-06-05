@@ -24,10 +24,8 @@ class TestController extends Controller {
     protected $callerShowNumber = '02388373982';
     
     public function index() {
-    
-        $a = [[219 => '38291047390']];
-        reset($a);
-        dd(key($a[0]));
+
+        dd(json_encode(null));
         // dd(round(microtime(true) * 1000));
         // dd(strtotime(date('Y-m-d'), now()));
         // dd(strtotime('2018-06-04') * 1000);
