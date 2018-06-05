@@ -286,7 +286,7 @@ class Score extends Model {
      */
     function rank($examId) {
         
-        $exam = Exam::whereId($examId)->first();
+        $exam = Exam::find($examId);
         #找到考试对应的科目存到数组 ids
         $examSub = explode(',', $exam->subject_ids);
         #找到考试对应的班级存到数组 ids
