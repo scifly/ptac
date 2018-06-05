@@ -58,7 +58,7 @@
                             @endforeach
                         @endif
                     </div>
-                    <a href="#" data-toggle="modal" data-target="#modalPic" style="margin-top: 5px;">
+                    <a id="upload" href="#" data-toggle="modal" data-target="#modalPic">
                         <i class="fa fa-cloud-upload"></i> 上传图片
                     </a>
                 </div>
@@ -68,7 +68,7 @@
                 <div class="col-sm-6">
                     <div class="preview_content">
                         <script id="container" name="content" type="text/plain" >
-                            @if(isset($article))
+                            @if (isset($article))
                                 {!! $article['content'] !!}
                             @endif
                         </script>
@@ -102,9 +102,13 @@
                 ]) !!}
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default"
-                        data-dismiss="modal">关闭
-                </button>
+                {!! Form::button('关闭', [
+                    'class' => 'btn btn-default',
+                    'data-dismiss' => 'modal'
+                ]) !!}
+                {{--<button type="button" class="btn btn-default"--}}
+                        {{--data-dismiss="modal">关闭--}}
+                {{--</button>--}}
             </div>
         </div>
     </div>

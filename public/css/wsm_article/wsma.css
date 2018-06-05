@@ -8,3 +8,7 @@
     height: 150px;
     width: auto;
 }
+#upload {
+    margin-top: 6px;
+    display: block;
+}
