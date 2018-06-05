@@ -288,33 +288,33 @@ class Score extends Model {
         
         $exam = Exam::find($examId);
         #找到考试对应的科目存到数组 ids
-        $examSub = explode(',', $exam->subject_ids);
+        $subjects = explode(',', $exam->subject_ids);
         #找到考试对应的班级存到数组 ids
-        $examCla = explode(',', $exam->class_ids);
+        $classIds = explode(',', $exam->class_ids);
         #找到每个班级下面对应的学生 ids
         $claStuIds = [];
-        foreach ($examCla as $cla) {
-            $squad = Squad::whereId($cla)->first();
-            foreach ($squad->students as $student) {
-                $claStuIds[$squad->id][] = $student->id;
+        foreach ($classIds as $classId) {
+            $class = Squad::find($classId);
+            foreach ($class->students as $student) {
+                $claStuIds[$class->id][] = $student->id;
             }
         }
         #根据班级找出参与考试的所有年级
         $grades = [];
-        foreach ($examCla as $cla) {
-            $grades[] = Squad::whereId($cla)->first()->grade_id;
+        foreach ($classIds as $classId) {
+            $grades[] = Squad::find($classId)->grade_id;
         }
         #找到每个年级下面的所有学生
         $graStuIds = [];
         foreach (array_unique($grades) as $grade) {
-            $squads = Grade::whereId($grade)->first()->classes;
-            foreach ($squads as $squad) {
-                foreach ($squad->students as $student) {
+            $squads = Grade::find($grade)->classes;
+            foreach ($squads as $class) {
+                foreach ($class->students as $student) {
                     $graStuIds[$grade][] = $student->id;
                 }
             }
         }
-        foreach ($examSub as $sub) {
+        foreach ($subjects as $sub) {
             #一次处理一个科目  查出这个科目下 班级下所有学生的成绩
             foreach ($claStuIds as $claStuId) {
                 # 若该学生id没有对应的score则不会在结果数组中
@@ -365,7 +365,7 @@ class Score extends Model {
         #按学生id对本次考试成绩 分组
         $studentScore = Score::whereExamId($examId)
             ->whereEnabled(1)
-            ->whereIn('subject_id', $examSub)
+            ->whereIn('subject_id', $subjects)
             ->get()
             ->groupBy('student_id');
         /** @var Score $s */
@@ -378,7 +378,7 @@ class Score extends Model {
                 $studentSub[] = $sub->subject_id;
             }
             #没有参加的考试科目
-            $noSub = array_diff($examSub, $studentSub);
+            $noSub = array_diff($subjects, $studentSub);
             $scoreTotalData = [
                 'student_id'     => $studentId,
                 'exam_id'        => $examId,
