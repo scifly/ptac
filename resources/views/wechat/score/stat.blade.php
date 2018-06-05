@@ -10,7 +10,7 @@
         <div class="info">
             <div class="time">
                 <div class="subject-title">{{ date('Y-m', strtotime($examDate)) }}</div>
-                <div class="days">{{ date('d',strtotime($examDate)) }}日</div>
+                <div class="days">{{ date('d', strtotime($examDate)) }}日</div>
             </div>
             <div class="test">
                 <div class="subject-title">考试名</div>
@@ -60,7 +60,7 @@
     </div>
     <div style="height: 70px; width: 100%;"></div>
     <div class="footerTab">
-        <a class="btnItem exam-link" href='{{ url("sc/detail?examId=". $examId ."&targetId=". $studentId) }}'>
+        <a class="btnItem exam-link" href='{{ url($acronym . "/sc/detail?examId=". $examId ."&targetId=". $studentId) }}'>
             <i class="icon iconfont icon-document"></i>
             <p>单科</p>
         </a>

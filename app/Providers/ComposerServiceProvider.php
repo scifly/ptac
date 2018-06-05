@@ -198,6 +198,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('score.stat', $ns . 'ScoreStatComposer');
         View::composer('wechat.score.analyze', $ns . 'ScoreCenterComposer');
         View::composer('wechat.score.squad', $ns . 'ScoreCenterComposer');
+        View::composer('wechat.score.stat', $ns . 'ScoreCenterComposer');
         View::composer('wechat.score.student', $ns . 'ScoreCenterComposer');
     
         # 分数统计项 - ScoreRange
