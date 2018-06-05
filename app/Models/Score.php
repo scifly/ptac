@@ -1201,6 +1201,7 @@ class Score extends Model {
         );
         $data['total'] = [];
         $data['single'] = [];
+        Log::debug('scoreTotal: ' . json_encode($scoreTotal));
         # 总分平均分
         $data['total'] = [
             'total_score' => sizeof($scoreTotal) ? $scoreTotal->score : '--',
