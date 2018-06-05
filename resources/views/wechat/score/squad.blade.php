@@ -70,7 +70,7 @@
             <i class="icon iconfont icon-document"></i>
             <p>详情</p>
         </a>
-        <a class="btnItem" href='{{ url("wlrj/sc/analyze?examId=". $examId ."&classId=". $classId) }}'>
+        <a class="btnItem" href='{{ url($acronym . "/sc/analyze?examId=". $examId ."&classId=". $classId) }}'>
             <i class="icon iconfont icon-renzheng7"></i>
             <p>统计</p>
         </a>
@@ -82,7 +82,7 @@
         $('.tongji-item').click(function () {
             var student = $(this).attr('data-s');
             var exam = $(this).attr('data-e');
-            window.location.href = '../score/show?student=' + student + '&exam=' + exam;
+            window.location.href = '{!! $acronym !!}/sc/show?student=' + student + '&exam=' + exam;
         });
     </script>
 @endsection

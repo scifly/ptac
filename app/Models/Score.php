@@ -803,14 +803,7 @@ class Score extends Model {
             'gradeAvg'     => number_format($gradeAvg, 2),
             'nGradeScores' => $nGradeScores,
         ];
-        Log::debug(json_encode([
-            'score'     => $score,
-            'stat'      => $stat,
-            'subjects'  => $subjects,
-            'total'     => $total,
-            'examId'    => $examId,
-            'studentId' => $studentId,
-        ]));
+
         return Request::method() == 'POST'
             ? response()->json([
                 'score' => $score,
@@ -888,7 +881,8 @@ class Score extends Model {
      */
     function analyze() {
         
-        $allowedClassIds = $this->classIds(session('schoolId'));
+        $schoolId = session('schoolId');
+        $allowedClassIds = $this->classIds($schoolId);
         $examId = Request::query('examId');
         $classId = Request::query('classId');
         $exam = Exam::find($examId);

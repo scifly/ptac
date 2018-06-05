@@ -98,7 +98,7 @@
         </ul>
     </div>
     <div class="footerTab">
-        <a class="btnItem" href='{{ url("../sc/detail?examId=". $examId ."&targetId=". $classId) }}'>
+        <a class="btnItem" href='{{ url($acronym . "/sc/detail?examId=". $examId ."&targetId=". $classId) }}'>
             <i class="icon iconfont icon-document"></i>
             <p>详情</p>
         </a>
