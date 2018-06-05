@@ -31,7 +31,7 @@ class WsmArticleComposer {
         $medias = null;
         if (Request::route('id')) {
             $medias = $this->media->medias(
-                WsmArticle::find(Request::route('id'))->media_ids
+                explode(',', WsmArticle::find(Request::route('id'))->media_ids)
             );
         }
         $view->with([
