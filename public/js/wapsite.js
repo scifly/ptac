@@ -84,7 +84,7 @@
                                 if (table !== 'wap_sites') {
                                     wapsite.initEditor();
                                 }
-                                wapsite.initUploader(action);
+                                wapsite.initUploader(table, action);
                             }
                         )
                     }
