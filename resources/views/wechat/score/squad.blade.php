@@ -57,7 +57,6 @@
                                     </div>
                                 @endforeach
                             @endif
-
                         </td>
                     </tr>
                 @endforeach
@@ -87,4 +86,3 @@
         });
     </script>
 @endsection
-
