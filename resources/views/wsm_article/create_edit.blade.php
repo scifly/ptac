@@ -48,7 +48,7 @@
                             @foreach ($medias as $key => $value)
                                 @if (!empty($value))
                                     <div class="img-item">
-                                        <img src="../../{{ $value->path }}" id="{{ $value->id }}" style="width: 100px;height: 100px">
+                                        <img src="../../{{ $value->path }}" id="{{ $value->id }}">
                                         <input type="hidden" name="media_ids[]" value="{{ $value->id }}"/>
                                         <div class="del-mask">
                                             <i class="delete fa fa-trash"></i>
@@ -100,7 +100,6 @@
                     'accept' => 'image/*',
                     'multiple'
                 ]) !!}
-                {{--<input type="file" name="images[]" id="uploadFile" accept="image/jpeg,image/gif,image/png" multiple>--}}
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default"
