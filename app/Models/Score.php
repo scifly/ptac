@@ -803,7 +803,14 @@ class Score extends Model {
             'gradeAvg'     => number_format($gradeAvg, 2),
             'nGradeScores' => $nGradeScores,
         ];
-        
+        Log::debug(json_encode([
+            'score'     => $score,
+            'stat'      => $stat,
+            'subjects'  => $subjects,
+            'total'     => $total,
+            'examId'    => $examId,
+            'studentId' => $studentId,
+        ]));
         return Request::method() == 'POST'
             ? response()->json([
                 'score' => $score,
