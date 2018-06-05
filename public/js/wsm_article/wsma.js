@@ -16,7 +16,7 @@
                 $uploadFiles.fileinput({
                     language: 'zh',
                     theme: 'explorer',
-                    uploadUrl: page.siteRoot() + '/wsm_articles/' + action + id,
+                    uploadUrl: page.siteRoot() + 'wsm_articles/' + action + id,
                     uploadAsync: false,
                     maxFileCount: 5,
                     minImageWidth: 50,      // 最小宽度
@@ -30,7 +30,7 @@
                         showDrag: false
                     },
                     uploadExtraData: {
-                        '_token': page.token
+                        _token: page.token()
                     }
                 }).on("filebatchuploadsuccess", function (event, data/*, previewId, index*/) {
                     // 填充数据
