@@ -70,13 +70,13 @@
         <i class="icon iconfont icon-document"></i>
         <p>单科</p>
     </a>
-    <a class="btnItem" href='{{ url("sc/stat?examId=" . $examId . "&studentId=" . $studentId)}}'>
+    <a class="btnItem" href='{{ url("../sc/stat?examId=" . $examId . "&studentId=" . $studentId)}}'>
         <i class="icon iconfont icon-renzheng7"></i>
         <p>综合</p>
     </a>
 </div>
 @endsection
 @section('script')
-    <script src="{{URL::asset('js/plugins/echarts.common.min.js')}}"></script>
+    <script src="{{ URL::asset('js/plugins/echarts.common.min.js') }}"></script>
     <script src="{{ URL::asset('js/wechat/score/student.js') }}"></script>
 @endsection
