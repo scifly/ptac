@@ -7,16 +7,16 @@ body{
     margin: 0;
     padding:0;
     background-color: #f2f2f2;
-    font-family: "微软雅黑";
+    font-family: "微软雅黑", serif;
 }
 a{
     color: #333;
 }
 ::-webkit-scrollbar {
-    width: 0em;
+    width: 0;
 }
 ::-webkit-scrollbar:horizontal {
-    height: 0em;
+    height: 0;
 }
 .main{
     height: 100%;
@@ -58,7 +58,7 @@ a{
     background-color: #1aad19;
     width: 94%;
     color: #fff;
-    padding: 5px 3% 0px;
+    padding: 5px 3% 0;
 }
 .header .info{
     padding-bottom: 10px;
