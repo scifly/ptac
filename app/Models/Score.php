@@ -1206,10 +1206,10 @@ class Score extends Model {
             'total_score' => sizeof($scoreTotal) ? $scoreTotal->score : '--',
             'class_avg'   => number_format($classScoreTotals->average('score'), 1),
             'grade_avg'   => number_format($gradeScoreTotals->average('score'), 1),
-            'class_rank'  => $scoreTotal ? $scoreTotal->class_rank : '--',
-            'grade_rank'  => $scoreTotal ? $scoreTotal->grade_rank : '--',
-            'class_count' => $scoreTotal ? $classScoreTotals->count() : '',
-            'grade_count' => $scoreTotal ? $gradeScoreTotals->count() : '',
+            'class_rank'  => sizeof($scoreTotal) ? $scoreTotal->class_rank : '--',
+            'grade_rank'  => sizeof($scoreTotal) ? $scoreTotal->grade_rank : '--',
+            'class_count' => sizeof($scoreTotal) ? $classScoreTotals->count() : '',
+            'grade_count' => sizeof($scoreTotal) ? $gradeScoreTotals->count() : '',
         ];
         # 获取指定学生指定考试的各科成绩
         $scores = Score::whereEnabled(1)
