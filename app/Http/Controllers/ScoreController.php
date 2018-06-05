@@ -157,6 +157,7 @@ class ScoreController extends Controller {
      */
     public function rank($examId) {
         
+        $abc = 'abe';
         abort_if(
             !Score::whereExamId($examId)->first(),
             HttpStatusCode::INTERNAL_SERVER_ERROR,
