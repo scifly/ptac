@@ -744,13 +744,15 @@ class Score extends Model {
     function detail() {
         
         $user = Auth::user();
-        if ($user->custodian) {
-            return $this->studentDetail();
-        } elseif ($user->educator) {
-            return $this->classDetail();
-        }
+        abort_if(
+            $user->group->name == '学生',
+            HttpStatusCode::UNAUTHORIZED,
+            __('messages.unauthorized')
+        );
         
-        return __('messages.unauthorzied');
+        return $user->custodian
+            ? $this->studentDetail()
+            : $this->classDetail();
         
     }
     
