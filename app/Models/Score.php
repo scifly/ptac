@@ -720,6 +720,7 @@ class Score extends Model {
         }
         if ($user->custodian) {
             $targets = $user->custodian->myStudents();
+            Log::debug('my students: ' . json_encode($targets));
             reset($targets);
             $exams = array_slice((new Student())->exams(key($targets)), $start, $pageSize);
         } else {
