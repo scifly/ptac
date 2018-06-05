@@ -401,7 +401,7 @@ class Custodian extends Model {
         $students = [];
         foreach ($custodian->students as $student) {
             if ($student->squad->grade->school->corp_id == $corpId) {
-                $students[] = [$student->id => $student->user->realname];
+                $students[$student->id] = $student->user->realname;
             }
         }
         

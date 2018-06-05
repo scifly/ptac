@@ -721,7 +721,7 @@ class Score extends Model {
         if ($user->custodian) {
             $targets = $user->custodian->myStudents();
             reset($targets);
-            $exams = array_slice((new Student())->exams(key($targets[0])), $start, $pageSize);
+            $exams = array_slice((new Student())->exams(key($targets)), $start, $pageSize);
         } else {
             $targets = Squad::whereIn('id', $this->classIds($schoolId))
                 ->where('enabled', 1)->pluck('name', 'id')->toArray();
@@ -764,8 +764,8 @@ class Score extends Model {
     function studentDetail() {
         
         $total = [];
-        $examId = Request::get('examId');
-        $studentId = Request::get('targetId');
+        $examId = Request::query('examId');
+        $studentId = Request::query('targetId');
         # 获取该学生所属班级的所有学生
         $exam = Exam::find($examId);
         abort_if(!$exam, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
@@ -784,11 +784,14 @@ class Score extends Model {
             reset($subjects);
             $subjectId = key($subjects);
         }
+        Log::debug('subjects: ' . json_encode($subjects));
         /** @var Score $score */
         $score = $this->subjectScores($studentId, $subjectId, $examId);
+        Log::debug('score: ' . json_encode($score));
         $score->{'start_date'} = $score->exam->start_date;
         $score->{'exam_name'} = $score->exam->name;
         $allScores = $this->subjectScores($subjectId, $studentId);
+        Log::debug('allScores: ' . json_encode($allScores));
         foreach ($allScores as $score) {
             $total['name'][] = $score->exam->name;
             $total['score'][] = $score->score;
@@ -803,7 +806,7 @@ class Score extends Model {
             'gradeAvg'     => number_format($gradeAvg, 2),
             'nGradeScores' => $nGradeScores,
         ];
-        Log::debug('total: ' . json_encode($total));
+        
         return Request::method() == 'POST'
             ? response()->json([
                 'score' => $score,
