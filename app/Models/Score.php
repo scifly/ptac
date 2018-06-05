@@ -699,6 +699,7 @@ class Score extends Model {
     function wIndex() {
         
         $user = Auth::user();
+        $schoolId = session('schoolId');
         $pageSize = 4;
         $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
         $exam = new Exam();
@@ -722,7 +723,7 @@ class Score extends Model {
             reset($targets);
             $exams = array_slice((new Student())->exams(key($targets)), $start, $pageSize);
         } else {
-            $targets = Squad::whereIn('id', $this->classIds($user->educator->school_id))
+            $targets = Squad::whereIn('id', $this->classIds($schoolId))
                 ->where('enabled', 1)->pluck('name', 'id')->toArray();
             reset($targets);
             $exams = array_slice($exam->examsByClassId(key($targets)), $start, $pageSize);
