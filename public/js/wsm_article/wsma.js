@@ -3,7 +3,7 @@
     $.wsma = function (options) {
         var wsma = {
             options: $.extend({
-                preview: '#preview',
+                preview: '.preview',
                 uploadFiles: '#uploadFiles',
             }, options),
             config: function (action) {
