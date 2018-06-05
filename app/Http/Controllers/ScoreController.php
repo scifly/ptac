@@ -157,13 +157,6 @@ class ScoreController extends Controller {
      */
     public function rank($examId) {
         
-        $abc = 'abe';
-        abort_if(
-            !Score::whereExamId($examId)->first(),
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            '本次考试还未录入成绩！'
-        );
-        
         return $this->result(
             $this->score->rank($examId)
         );
