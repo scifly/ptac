@@ -1199,6 +1199,7 @@ class Score extends Model {
                 $class->grade->students->pluck('id')->toArray(),
             ]
         );
+        Log::debug(json_encode($scoreTotal));
         $data['total'] = [];
         $data['single'] = [];
         # 总分平均分
