@@ -8,6 +8,9 @@ var page = {
     success: 'img/confirm.png',
     failure: 'img/error.png',
     info: 'img/info.png',
+    token: function () {
+        return $('#csrf_token').attr('content');
+    },
     backToList: function (table) {
         var $activeTabPane = $('#tab_' + page.getActiveTabId());
         if ($activeTabPane.length !== 0) {

@@ -49,7 +49,7 @@
                                 @if (!empty($value))
                                     <div class="img-item">
                                         <img src="../../{{ $value->path }}" id="{{ $value->id }}">
-                                        <input type="hidden" name="media_ids[]" value="{{ $value->id }}"/>
+                                        {!! Form::hidden('media_ids[]', $value->id) !!}
                                         <div class="del-mask">
                                             <i class="delete fa fa-trash"></i>
                                         </div>
@@ -87,9 +87,11 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"
-                        aria-hidden="true">×
-                </button>
+                {!! Form::button('×', [
+                    'class' => 'close',
+                    'data-dismiss' => 'modal',
+                    'aria-hidden' => 'true'
+                ]) !!}
                 <h4 class="modal-title" id="myModalLabel">
                     上传文件
                 </h4>
@@ -106,9 +108,6 @@
                     'class' => 'btn btn-default',
                     'data-dismiss' => 'modal'
                 ]) !!}
-                {{--<button type="button" class="btn btn-default"--}}
-                        {{--data-dismiss="modal">关闭--}}
-                {{--</button>--}}
             </div>
         </div>
     </div>
