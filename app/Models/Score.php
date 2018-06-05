@@ -721,8 +721,7 @@ class Score extends Model {
         if ($user->custodian) {
             $targets = $user->custodian->myStudents();
             reset($targets);
-            Log::debug('my students: ' . key($targets));
-            $exams = array_slice((new Student())->exams(key($targets)), $start, $pageSize);
+            $exams = array_slice((new Student())->exams(key($targets[0])), $start, $pageSize);
         } else {
             $targets = Squad::whereIn('id', $this->classIds($schoolId))
                 ->where('enabled', 1)->pluck('name', 'id')->toArray();
