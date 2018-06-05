@@ -1201,14 +1201,13 @@ class Score extends Model {
         );
         $data['total'] = [];
         $data['single'] = [];
-        Log::debug('scoreTotal: ' . json_encode($scoreTotal));
         # 总分平均分
         $data['total'] = [
-            'total_score' => sizeof($scoreTotal) ? $scoreTotal->score : '--',
+            'total_score' => sizeof($scoreTotal) ? $scoreTotal[0]->score : '--',
             'class_avg'   => number_format($classScoreTotals->average('score'), 1),
             'grade_avg'   => number_format($gradeScoreTotals->average('score'), 1),
-            'class_rank'  => sizeof($scoreTotal) ? $scoreTotal->class_rank : '--',
-            'grade_rank'  => sizeof($scoreTotal) ? $scoreTotal->grade_rank : '--',
+            'class_rank'  => sizeof($scoreTotal) ? $scoreTotal[0]->class_rank : '--',
+            'grade_rank'  => sizeof($scoreTotal) ? $scoreTotal[0]->grade_rank : '--',
             'class_count' => sizeof($scoreTotal) ? $classScoreTotals->count() : '',
             'grade_count' => sizeof($scoreTotal) ? $gradeScoreTotals->count() : '',
         ];
