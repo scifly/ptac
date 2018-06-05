@@ -703,7 +703,7 @@ class Score extends Model {
         $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
         $exam = new Exam();
         abort_if(
-            !$user->custodian && !$user->educator,
+            $user->group->name == '学生',
             HttpStatusCode::UNAUTHORIZED,
             __('messages.unauthorized')
         );
