@@ -38,17 +38,18 @@ class Handler extends ExceptionHandler {
      *
      * @param  Exception $exception
      * @return void
+     * @throws Exception
      */
     public function report(Exception $exception) {
         
-        // parent::report($exception);
-        Log::error(
-            get_class($exception) .
-            '(code: ' . $exception->getCode() . '): ' .
-            $exception->getMessage() . ' at ' .
-            $exception->getFile() . ' on line ' .
-            $exception->getLine()
-        );
+        parent::report($exception);
+        // Log::error(
+        //     get_class($exception) .
+        //     '(code: ' . $exception->getCode() . '): ' .
+        //     $exception->getMessage() . ' at ' .
+        //     $exception->getFile() . ' on line ' .
+        //     $exception->getLine()
+        // );
         
     }
     
