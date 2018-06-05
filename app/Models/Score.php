@@ -881,7 +881,7 @@ class Score extends Model {
      */
     function analyze() {
         
-        $allowedClassIds = $this->classIds(Auth::user()->educator->school_id);
+        $allowedClassIds = $this->classIds(session('schoolId'));
         $examId = Request::query('examId');
         $classId = Request::query('classId');
         $exam = Exam::find($examId);
