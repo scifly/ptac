@@ -138,36 +138,33 @@ class WapSite extends Model {
     }
     
     /**
-     * 上传媒体文件
+     * 上传微网站首页轮播图
      *
-     * @return JsonResponse
+     * @return \Illuminate\Http\JsonResponse
      */
     function upload() {
-    
-        $files = Request::file('img');
-        abort_if(
-            empty($files),
-            HttpStatusCode::NOT_ACCEPTABLE,
-            '您还未选择图片！'
-        );
-        $result['data'] = [];
-        $mes = [];
-        foreach ($files as $key => $file) {
-            $this->validateFile($file, $mes);
+        
+        $files = Request::allFiles();
+        $media = new Media();
+        $uploadedFiles = [];
+        foreach ($files['images'] as $image) {
+            abort_if(
+                empty($image),
+                HttpStatusCode::NOT_ACCEPTABLE,
+                __('messages.empty_file')
+            );
+            $uploadedFile = $media->upload(
+                $image, __('messages.wap_site.title')
+            );
+            abort_if(
+                !$uploadedFile,
+                HttpStatusCode::INTERNAL_SERVER_ERROR,
+                __('messages.file_upload_failed')
+            );
+            $uploadedFiles[] = $uploadedFile;
         }
-        $result['message'] = '上传成功！';
-        $result['data'] = $mes;
-        $token = '';
-        if ($mes) {
-            $path = '';
-            foreach ($mes AS $m) {
-                $path = dirname(public_path()) . '/' . $m['path'];
-            }
-            $data = ["media" => curl_file_create($path)];
-            Wechat::uploadMedia($token, 'image', $data);
-        }
-    
-        return response()->json($result);
+        
+        return response()->json($uploadedFiles);
         
     }
     
