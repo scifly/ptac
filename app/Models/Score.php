@@ -1199,12 +1199,11 @@ class Score extends Model {
                 $class->grade->students->pluck('id')->toArray(),
             ]
         );
-        Log::debug(json_encode($scoreTotal->score));
         $data['total'] = [];
         $data['single'] = [];
         # 总分平均分
         $data['total'] = [
-            'total_score' => $scoreTotal ? $scoreTotal->score : '--',
+            'total_score' => sizeof($scoreTotal) ? $scoreTotal->score : '--',
             'class_avg'   => number_format($classScoreTotals->average('score'), 1),
             'grade_avg'   => number_format($gradeScoreTotals->average('score'), 1),
             'class_rank'  => $scoreTotal ? $scoreTotal->class_rank : '--',
