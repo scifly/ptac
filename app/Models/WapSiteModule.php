@@ -226,7 +226,10 @@ class WapSiteModule extends Model {
     function wIndex() {
     
         $id = Request::input('id');
-        $articles = WsmArticle::whereWsmId($id)->orderByDesc("created_at")->get();
+        $articles = WsmArticle::whereWsmId($id)
+            ->where('enabled', 1)
+            ->orderByDesc("created_at")
+            ->get();
         $module = $this->find($id);
     
         return view('wechat.wapsite.module', [
