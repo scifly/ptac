@@ -27,7 +27,7 @@ class TestController extends Controller {
     
         $a = [[219 => '38291047390']];
         reset($a);
-        dd(key($a));
+        dd(key($a[0]));
         // dd(round(microtime(true) * 1000));
         // dd(strtotime(date('Y-m-d'), now()));
         // dd(strtotime('2018-06-04') * 1000);
