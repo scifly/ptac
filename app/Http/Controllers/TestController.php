@@ -6,6 +6,7 @@ use App\Helpers\SignatureHelper;
 use App\Models\Department;
 use App\Models\Group;
 use App\Models\Student;
+use App\Models\User;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use ReflectionClass;
@@ -25,7 +26,8 @@ class TestController extends Controller {
     
     public function index() {
 
-        dd(json_encode(null));
+        $user = User::whereId(1)->get();
+        dd($user->realname);
         // dd(round(microtime(true) * 1000));
         // dd(strtotime(date('Y-m-d'), now()));
         // dd(strtotime('2018-06-04') * 1000);
