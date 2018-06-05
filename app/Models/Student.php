@@ -572,7 +572,7 @@ class Student extends Model {
         $student = $this->find($id);
         
         return (new Exam())->where('enabled', 1)->orderBy('start_date', 'desc')
-            ->whereRaw('FIND_IN_SET(' . $student->class_id . ', class_ids')
+            ->whereRaw('FIND_IN_SET(' . $student->class_id . ', class_ids)')
             ->get()->toArray();
         
     }
