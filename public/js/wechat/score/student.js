@@ -23,9 +23,9 @@ $subjectId.on("change", function () {
                 score = result['score'],
                 stat = result['stat'],
                 total = result['total'],
-                names = total['name'],
-                scores = total['score'],
-                avgs = total['avg'];
+                names = total['names'],
+                scores = total['scores'],
+                avgs = total['avgs'];
 
             $('.time .subject-title').html(score['start_date'].substring(0,7));
             $('.time .days').html(score['start_date'].substring(8,10) + '日');

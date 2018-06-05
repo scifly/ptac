@@ -10,9 +10,9 @@
     <div class="info">
         {!! Form::hidden('exam_id', $examId, ['id' => 'exam_id']) !!}
         {!! Form::hidden('student_id', $studentId, ['id' => 'student_id']) !!}
-        {!! Form::hidden('names', $total['name'], ['id' => 'names']) !!}
-        {!! Form::hidden('scores', $total['score'], ['id' => 'scores']) !!}
-        {!! Form::hidden('avgs', $total['avg'], ['id' => 'avgs']) !!}
+        {!! Form::hidden('names', implode(',', $total['names']), ['id' => 'names']) !!}
+        {!! Form::hidden('scores', implode(',', $total['scores']), ['id' => 'scores']) !!}
+        {!! Form::hidden('avgs', implode(',', $total['avgs']), ['id' => 'avgs']) !!}
         <div class="time">
             <div class="subtitle">
                 {{ $score ? date('Y-m', strtotime($score->exam->start_date)) : '--' }}

@@ -790,10 +790,10 @@ class Score extends Model {
         $score->{'exam_name'} = $score->exam->name;
         $allScores = $this->subjectScores($studentId, $subjectId);
         foreach ($allScores as $score) {
-            $total['name'][] = $score->exam->name;
-            $total['score'][] = $score->score;
+            $total['names'][] = $score->exam->name;
+            $total['scores'][] = $score->score;
             list($classAvg) = $this->subjectAvg($score->exam_id, $subjectId, $classStudentIds);
-            $total['avg'][] = $classAvg;
+            $total['avgs'][] = $classAvg;
         }
         list($classAvg, $nClassScores) = $this->subjectAvg($examId, $subjectId, $classStudentIds);
         list($gradeAvg, $nGradeScores) = $this->subjectAvg($examId, $subjectId, $gradeStudentIds);
