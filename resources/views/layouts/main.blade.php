@@ -33,7 +33,7 @@
 @endisset
 <!-- 微网站 -->
     @isset($ws)
-        <link rel="stylesheet" href="{{ URL::asset('css/wapSite.css') }}">
+        <link rel="stylesheet" href="{{ URL::asset('wapsite.css') }}">
 @endisset
 
 <!-- 菜单测试 -->

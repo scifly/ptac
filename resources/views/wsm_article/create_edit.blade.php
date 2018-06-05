@@ -38,33 +38,11 @@
                     ]) !!}
                 </div>
             </div>
+            @include('partials.wapsite.preview')
             <div class="form-group">
-                {!! Form::label('media_ids', '轮播图', [
-                    'class' => 'col-sm-3 control-label'
+                {!! Form::label('content', '文章内容', [
+                    'class' => 'control-label col-sm-3'
                 ]) !!}
-                <div class="col-sm-6">
-                    <div class="preview">
-                        @if(isset($medias))
-                            @foreach ($medias as $key => $value)
-                                @if (!empty($value))
-                                    <div class="img-item">
-                                        <img src="../../{{ $value->path }}" id="{{ $value->id }}">
-                                        {!! Form::hidden('media_ids[]', $value->id) !!}
-                                        <div class="del-mask">
-                                            <i class="delete fa fa-trash"></i>
-                                        </div>
-                                    </div>
-                                @endif
-                            @endforeach
-                        @endif
-                    </div>
-                    <a id="upload" href="#" data-toggle="modal" data-target="#modalPic">
-                        <i class="fa fa-cloud-upload"></i> 上传图片
-                    </a>
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('content', '文章内容', ['class' => 'control-label col-sm-3']) !!}
                 <div class="col-sm-6">
                     <div class="preview_content">
                         <script id="container" name="content" type="text/plain" >
@@ -75,40 +53,12 @@
                     </div>
                 </div>
             </div>
-                @include('partials.enabled', [
-                    'id' => 'enabled',
-                    'value' => $article['enabled'] ?? null
-                ])
+            @include('partials.enabled', [
+                'id' => 'enabled',
+                'value' => $article['enabled'] ?? null
+            ])
         </div>
     </div>
     @include('partials.form_buttons')
 </div>
-<div class="modal fade" id="modalPic">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                {!! Form::button('×', [
-                    'class' => 'close',
-                    'data-dismiss' => 'modal',
-                    'aria-hidden' => 'true'
-                ]) !!}
-                <h4 class="modal-title" id="myModalLabel">
-                    上传文件
-                </h4>
-            </div>
-            <div class="modal-body">
-                {!! Form::file('images[]', [
-                    'id' => 'uploadFiles',
-                    'accept' => 'image/*',
-                    'multiple'
-                ]) !!}
-            </div>
-            <div class="modal-footer">
-                {!! Form::button('关闭', [
-                    'class' => 'btn btn-default',
-                    'data-dismiss' => 'modal'
-                ]) !!}
-            </div>
-        </div>
-    </div>
-</div>
+@include('partials.wapsite.modal_uploader')
