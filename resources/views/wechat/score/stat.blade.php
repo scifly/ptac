@@ -3,7 +3,7 @@
     <title>成绩中心</title>
 @endsection
 @section('css')
-    <link rel="stylesheet" href="{{ asset('css/wechat/score/stat.css') }}">
+    <link rel="stylesheet" href="{{ asset('/css/wechat/score/stat.css') }}">
 @endsection
 @section('content')
     <div class="header">
