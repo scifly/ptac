@@ -98,7 +98,7 @@ Route::group(['prefix' => 'scores'], function () {
     Route::post('store', $c . '@store');
     Route::put('update/{id?}', $c . '@update');
     Route::delete('delete/{id?}', $c . '@destroy');
-    Route::get('rank/{examId}', $c . '@stat');
+    Route::get('rank/{examId}', $c . '@rank');
     Route::get('import', $c . '@import');
     Route::post('import', $c . '@import');
     Route::get('export', $c . '@export');
