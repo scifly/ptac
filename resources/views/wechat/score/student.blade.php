@@ -18,7 +18,7 @@
                 {{ $score ? date('Y-m', strtotime($score->exam->start_date)) : '--' }}
             </div>
             <div class="days">
-                {{ $score ? date('d', strtotime($score->exam->start_date) }} 日
+                {{ $score ? date('d', strtotime($score->exam->start_date)) : '' }} 日
             </div>
         </div>
         <div class="subject">
