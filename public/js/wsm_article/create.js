@@ -1,4 +1,4 @@
 //# sourceURL=create.js
-$.getMultiScripts(['js/wsm_article/wsma.js']).done(
-    function () { $.wsma().init('create'); }
+$.getMultiScripts(['js/wapsite.js']).done(
+    function () { $.wapsite().init('create', 'wsm_articles'); }
 );

@@ -60,3 +60,17 @@
     margin-bottom: 0;
     color: #555;
 }
+.img-item {
+    display: inline-block;
+    float: left;
+    margin-right:10px;
+
+}
+.img-item img{
+    height: 150px;
+    width: auto;
+}
+#upload {
+    margin-top: 6px;
+    display: block;
+}

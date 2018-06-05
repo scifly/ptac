@@ -1,4 +1,4 @@
 //# sourceURL=edit.js
-$.getMultiScripts(['js/wsm_article/wsma.js']).done(
-    function () { $.wsma().init('edit'); }
+$.getMultiScripts(['js/wapsite.js']).done(
+    function () { $.wapsite().init('edit', 'wsm_articles'); }
 );

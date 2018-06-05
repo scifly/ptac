@@ -1,22 +1,23 @@
-//# sourceURL=wsma.js
+//# sourceURL=wapsite.js
 (function ($) {
-    $.wsma = function (options) {
-        var wsma = {
+    $.wapsite = function (options) {
+        var wapsite = {
             options: $.extend({
                 preview: '.preview',
                 uploadFiles: '#uploadFiles',
             }, options),
-            config: function (action) {
-                var $preview = $(wsma.options.preview),
-                    $uploadFiles = $(wsma.options.uploadFiles),
-                    id = (action === 'edit' ? '/' + $('#id').val() : '');
-
+            initEditor: function () {
                 UE.delEditor('container');
                 UE.getEditor('container', { initialFrameHeight: 300 });
+            },
+            initUploader: function (table, action) {
+                var $preview = $(wapsite.options.preview),
+                    $uploadFiles = $(wapsite.options.uploadFiles),
+                    id = (action === 'edit' ? '/' + $('#id').val() : '');
                 $uploadFiles.fileinput({
                     language: 'zh',
                     theme: 'explorer',
-                    uploadUrl: page.siteRoot() + 'wsm_articles/' + action + id,
+                    uploadUrl: page.siteRoot() + table + '/' + action + id,
                     uploadAsync: false,
                     maxFileCount: 5,
                     minImageWidth: 50,      // 最小宽度
@@ -62,30 +63,35 @@
                     $preview.append('<input type="hidden" name="del_ids[]" value="' + $(this).parent().siblings().attr('id') + '">');
                 });
             },
-            init: function (action) {
+            init: function (action, table) {
                 var scripts = [
-                        plugins.fileinput.js,
-                        plugins.ueditor_config.js,
-                        plugins.ueditor_all.js
-                    ];
+                    plugins.fileinput.js,
+                    plugins.ueditor_config.js,
+                    plugins.ueditor_all.js
+                ];
 
-                page.loadCss('css/wsm_article/wsma.css');
+                page.loadCss('css/wapsite.css');
                 if (action === 'create') {
-                    page.create('formWsmArticle', 'wsm_articles');
+                    page.create('formwapsiterticle', table);
                 } else if (action === 'edit') {
-                    page.edit('formWsmArticle', 'wsm_articles');
+                    page.edit('formWsmArticle', table);
                 }
                 page.loadCss(plugins.fileinput.css);
                 $.getMultiScripts(scripts).done(
                     function () {
                         $.getMultiScripts([plugins.fileinput.language]).done(
-                            function () { wsma.config(action); }
+                            function () {
+                                if (table !== 'wap_sites') {
+                                    wapsite.initEditor();
+                                }
+                                wapsite.initUploader(action);
+                            }
                         )
                     }
                 );
             }
         };
 
-        return { init: wsma.init }
+        return { init: wapsite.init }
     }
 })(jQuery);
