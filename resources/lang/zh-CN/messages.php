@@ -95,7 +95,7 @@ return [
         'import_succeeded' => '已完成学籍导入',
         'invalid_file_format' => '文件格式错误',
         'invalid_data_format' => '导入数据格式不正确',
-        'import_request_submitted' => '已提交导入请求\\n需要新增的学籍数：%s\\n需要更新的学籍数：%s\\n非法学籍数: %s, 请参考导出文件',
+        'import_request_submitted' => '已提交导入请求<br />需要新增的学籍数：%s<br />需要更新的学籍数：%s<br />非法学籍数: %s, 请参考导出文件',
         'empty_import_file' => '没有数据可以导入',
     ],
     'student_attendance' => [

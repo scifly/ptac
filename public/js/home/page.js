@@ -277,7 +277,7 @@ var page = {
                 switch (requestType) {
                     case 'POST':        // create
                         // obj.reset();
-                        $('input[type="text"]').each(
+                        $('input[type="text"], textarea').each(
                             function() { $(this).val(''); }
                         );
                         break;
