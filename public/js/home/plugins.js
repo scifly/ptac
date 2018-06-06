@@ -61,9 +61,8 @@ var plugins = {
         js: 'js/plugins/datepicker/bootstrap-datepicker.js'
     },
     timepicker: {
-        css: 'js/plugins/jqueryui/css/jquery-ui.css',
-        js: 'js/plugins/jqueryui/js/jquery-ui-timepicker-addon.js',
-        jscn: 'js/plugins/jqueryui/js/datepicker-zh-CN.js'
+        css: 'js/plugins/timepicker/bootstrap-timepicker.min.css',
+        js: 'js/plugins/timepicker/bootstrap-timepicker.min.js',
     },
     moment: {
         js: 'js/plugins/moment/min/moment.min.js',

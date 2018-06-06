@@ -44,7 +44,7 @@
                     <div class="input-group">
                         @include('partials.icon_addon', ['class' => 'fa-clock-o'])
                         {!! Form::text('start', null, [
-                            'class' => 'form-control start-time',
+                            'class' => 'form-control start-time timepicker',
                             'required' => 'true',
                             'data-parsley-start' => '.end-time',
                             'placeholder' => '(不得大于等于结束时间)'
@@ -60,7 +60,7 @@
                     <div class="input-group">
                         @include('partials.icon_addon', ['class' => 'fa-clock-o'])
                         {!! Form::text('end', null, [
-                            'class' => 'form-control end-time',
+                            'class' => 'form-control end-time timepicker',
                             'required' => 'true',
                             'data-parsley-end' => '.start-time',
                             'placeholder' => '(不得小于等于开始时间)'
