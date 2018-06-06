@@ -10,7 +10,7 @@ var page = {
     info: 'img/info.png',
     dateRangeLocale: function() {
        return {
-           format: "YYYY-MM-DD",
+           format: "YYYY年MM月DD日",
            separator: " 至 ",
            applyLabel: "确定",
            cancelLabel: "取消",
