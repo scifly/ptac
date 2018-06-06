@@ -68,20 +68,24 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('msg_template', '考勤消息模板', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::text('msg_template', '尊敬的{name}家长, 你的孩子于{time}在校打卡, 打卡规则：{rule}, 状态：{status}', [
-                        'class' => 'form-control text-blue',
-                        'placeholder' => '消息模板必须为字符',
-                        'required' => 'true',
-                        'type' => 'integer',
-                        'data-parsley-length' => '[2, 255]'
-                    ]) !!}
-                </div>
-            </div>
+            {{--<div class="form-group">--}}
+                {{--{!! Form::label('msg_template', '考勤消息模板', [--}}
+                    {{--'class' => 'col-sm-3 control-label'--}}
+                {{--]) !!}--}}
+                {{--<div class="col-sm-6">--}}
+                    {{--{!! Form::text('msg_template', '尊敬的{name}家长, 你的孩子于{time}在校打卡, 打卡规则：{rule}, 状态：{status}', [--}}
+                        {{--'class' => 'form-control text-blue',--}}
+                        {{--'placeholder' => '消息模板必须为字符',--}}
+                        {{--'required' => 'true',--}}
+                        {{--'type' => 'integer',--}}
+                        {{--'data-parsley-length' => '[2, 255]'--}}
+                    {{--]) !!}--}}
+                {{--</div>--}}
+            {{--</div>--}}
+            @include('partials.remark', [
+                'field' => 'msg_template',
+                'label' => '考勤消息模板'
+            ])
             @include('partials.enabled', [
                 'label' => '是否为公用',
                 'id' => 'ispublic',
