@@ -27,16 +27,16 @@ $.getScript(
                         ],
                         firstDay: 1
                     },
-                    function (start, end) {
-                        var $start = start.format('YYYY-MM-DD'),
-                            $end = end.format('YYYY-MM-DD');
+                },
+                function (start, end) {
+                    var $start = start.format('YYYY-MM-DD'),
+                        $end = end.format('YYYY-MM-DD');
 
-                        $daterange.find('span').html($start + ' - ' + $end);
-                        $startDate.val($start);
-                        $endDate.val($end);
-                    }
-                });
-            }
-        )
-    }
-);
+                    $daterange.find('span').html($start + ' - ' + $end);
+                    $startDate.val($start);
+                    $endDate.val($end);
+                }
+            );
+        }
+    )
+});
