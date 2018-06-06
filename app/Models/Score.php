@@ -491,54 +491,60 @@ class Score extends Model {
         $corp = Corp::find(School::find($this->schoolId())->corp_id)->first();
         $app = App::whereName('成绩中心')->where('corp_id', $corp->id)->first();
         $token = Wechat::getAccessToken($corp->corpid, $app->secret);
+        abort_if(
+            $token['errcode'],
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            __('messages.internal_server_error')
+        );
         $success = [];
         $failure = [];
         $school = School::whereId($this->schoolId())->first();
         foreach ($data as $d) {
             if (isset($d->mobile)) {
                 $mobiles = explode(',', $d->mobile);
-                foreach ($mobiles as $m) {
-                    if ($m) {
-                        $user = User::whereId(Mobile::where('mobile', $m)->first()->user_id)->first();
-                        $userInfo = json_decode(Wechat::getUser($token, $user->userid));
-                        if ($userInfo->errcode == 0) {
-                            $message = [
-                                'touser'  => $user->userid,
-                                "msgtype" => "text",
-                                "agentid" => $app->agentid,
-                                'text'    => [
-                                    'content' => $d->content,
-                                ],
-                            ];
-                            $status = json_decode(Wechat::sendMessage($token, $message));
-                            if ($status->errcode == 0) {
-                                $success[] = $m;
-                            } else {
-                                $failure[] = $m;
-                            }
+                foreach ($mobiles as $mobile) {
+                    $user = User::find(Mobile::whereMobile($mobile)->first()->user_id);
+                    $userInfo = json_decode(Wechat::getUser($token['access_token'], $user->userid));
+                    if (!$userInfo->{'errcode'}) {
+                        $message = [
+                            'touser'  => $user->userid,
+                            "msgtype" => "text",
+                            "agentid" => $app->agentid,
+                            'text'    => [
+                                'content' => $d->content,
+                            ],
+                        ];
+                        $status = json_decode(Wechat::sendMessage($token['access_token'], $message));
+                        if ($status->errcode == 0) {
+                            $success[] = $mobile;
                         } else {
-                            $code = json_encode(Wechat::batchSend('LKJK004923', "654321@", $m, $d->content . $school->signature));
-                            if ($code != '0' && $code != '-1') {
-                                $success[] = $m;
-                            } else {
-                                $failure[] = $m;
-                            }
+                            $failure[] = $mobile;
                         }
-                        
+                    } else {
+                        $code = json_encode(
+                            Wechat::batchSend(
+                                'LKJK004923',
+                                "654321@",
+                                $mobile,
+                                $d->content . $school->signature
+                            )
+                        );
+                        if ($code != '0' && $code != '-1') {
+                            $success[] = $mobile;
+                        } else {
+                            $failure[] = $mobile;
+                        }
                     }
-                    
                 }
                 
             }
-            
         }
-        $result = [
-            'message' => '成功:' . count($success) . '条数据;' . '失败:' . count($failure) . '条数据。',
+        
+        return [
+            'message' => '成功:' . count($success) . '条数据; <br />失败:' . count($failure) . '条数据。',
             'success' => implode(',', $success),
             'failure' => implode(',', $failure),
         ];
-        
-        return $result;
         
     }
     
