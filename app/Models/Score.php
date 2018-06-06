@@ -1311,22 +1311,23 @@ class Score extends Model {
             $user = User::whereIn('id', array_column(json_decode($s->custodians), 'user_id'))->get();
             $realname = $s->user['realname'];
             $message = [];
+            $subScore = $s = $sName = null;
             foreach ($subjectIds as $subjectId) {
-                $s = Subject::find($subjectId);
-                $subScore = self::where('exam_id', $examId)
-                    ->where('subject_id', $subjectId)
-                    ->where('student_id', $s->id)
-                    ->first();
-                $sName = $s->name ?? '';
+                if ($subjectId != -1) {
+                    $s = Subject::find($subjectId);
+                    $subScore = self::where('exam_id', $examId)
+                        ->where('subject_id', $subjectId)
+                        ->where('student_id', $s->id)
+                        ->first();
+                    $sName = $s->name ?? '';
+                }
                 foreach ($items as $item) {
                     switch ($item) {
                         case 'score':
                             if ($subjectId == '-1') {
-                                $message[] = '总分:' . ScoreTotal::
-                                    whereExamId($examId)
+                                $message[] = '总分:' . ScoreTotal:: whereExamId($examId)
                                         ->where('student_id', $s->id)
-                                        ->first()
-                                        ->score;
+                                        ->first()->score;
                             } else {
                                 $message[] = $s->name . ':' . $subScore->score;
                             }
