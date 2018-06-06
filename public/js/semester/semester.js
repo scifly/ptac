@@ -22,12 +22,12 @@
                                 $daterange.daterangepicker(
                                     { locale: page.dateRangeLocale() },
                                     function (start, end) {
-                                        var $start = start.format('YYYY-MM-DD'),
-                                            $end = end.format('YYYY-MM-DD');
-
-                                        $daterange.find('span').html($start + ' - ' + $end);
-                                        $startDate.val($start);
-                                        $endDate.val($end);
+                                        $daterange.find('span').html(
+                                            start.format('YYYY年MM月DD日') + ' - ' +
+                                            end.format('YYYY年MM月DD日')
+                                        );
+                                        $startDate.val(start.format('YYYY-MM-DD'));
+                                        $endDate.val(end.format('YYYY-MM-DD'));
                                     }
                                 );
                             }

@@ -32,8 +32,8 @@
                                 @if (!isset($semester))
                                     <i class="fa fa-calendar"></i>&nbsp; 点击选择起止日期
                                 @else
-                                    {!! date('Y-m-d', strtotime($semester['start_date'])) !!} -
-                                    {!! date('Y-m-d', strtotime($semester['end_date'])) !!}
+                                    {!! date('Y年m月d日', strtotime($semester['start_date'])) !!} -
+                                    {!! date('Y年m月d日', strtotime($semester['end_date'])) !!}
                                 @endif
                             </span>&nbsp;
                             <i class="fa fa-caret-down"></i>
