@@ -64,7 +64,7 @@ class ScoreIndexComposer {
             'exams'          => $examList,
             'classes'        => $classList,
             'subjects'       => $subjectList,
-            'importTemplate' => 'files/scores.xlsx',
+            'importTemplate' => 'files/scores.xls',
         ]);
         
     }
