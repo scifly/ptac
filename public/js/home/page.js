@@ -276,7 +276,7 @@ var page = {
                 $('.overlay').hide();
                 switch (requestType) {
                     case 'POST':        // create
-                        obj.reset();    // reset create form
+                        // obj.reset();    // reset create form
                         break;
                     case 'DELETE':
                         $('#data-table').dataTable().fnDestroy();
