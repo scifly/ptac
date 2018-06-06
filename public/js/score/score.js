@@ -470,7 +470,7 @@
                     var examId = $('#export_exam_id').val(),
                         classId = $('#export_class_id').val();
 
-                    window.location = page.siteRoot() + 'scores/export?examId=' + examId + '?classId=' + classId;
+                    window.location = page.siteRoot() + 'scores/export?examId=' + examId + '&classId=' + classId;
                 });
             },
             /** 统计分析 */
