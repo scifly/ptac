@@ -1,13 +1,9 @@
 page.create('formStudentAttendanceSetting', 'student_attendance_settings');
 page.initParsleyRules();
 page.loadCss(plugins.timepicker.css);
-$.getMultiScripts([plugins.moment.js, plugins.daterangepicker.js]).done(
+$.getMultiScripts([plugins.timepicker.js]).done(
     function () {
-        $.getMultiScripts([plugins.timepicker.js]).done(
-            function () {
-                $('.timepicker').timepicker({ showInputs: false });
-            }
-        );
+        $('.timepicker').timepicker({ showInputs: false });
     }
 );
 // function datetime($initTime) {
