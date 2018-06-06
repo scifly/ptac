@@ -101,8 +101,8 @@ Route::group(['prefix' => 'scores'], function () {
     Route::get('rank/{examId}', $c . '@rank');
     Route::get('import', $c . '@import');
     Route::post('import', $c . '@import');
-    Route::get('export', $c . '@export');
-    Route::post('export', $c . '@export');
+    Route::get('export/{examId?}', $c . '@export');
+    Route::post('export/{examId?}', $c . '@export');
     Route::get('stat/{type?}/{value?}', $c . '@stat');
     Route::post('stat', $c . '@stat');
     Route::post('send', $c . '@send');
