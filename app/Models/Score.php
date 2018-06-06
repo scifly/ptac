@@ -52,6 +52,7 @@ use Throwable;
  * @property-read Exam $exam
  * @property-read Student $student
  * @property-read Subject $subject
+ * @property-read Squad $squad
  */
 class Score extends Model {
     
@@ -86,6 +87,13 @@ class Score extends Model {
      * @return BelongsTo
      */
     function subject() { return $this->belongsTo('App\Models\Subject'); }
+    
+    /**
+     * 返回分数记录所属的班级对象
+     *
+     * @return BelongsTo
+     */
+    function squad() { return $this->belongsTo('App\Models\Squad'); }
     
     /**
      * 返回分数记录所述的考试对象
