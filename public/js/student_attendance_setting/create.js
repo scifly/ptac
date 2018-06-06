@@ -1,7 +1,7 @@
 page.create('formStudentAttendanceSetting', 'student_attendance_settings');
 page.initParsleyRules();
 page.loadCss(plugins.timepicker.css);
-$.getMultiScripts([plugins.moment.js]).done(
+$.getMultiScripts([plugins.moment.js, plugins.daterangepicker.js]).done(
     function () {
         $.getMultiScripts([plugins.timepicker.js]).done(
             function () {
