@@ -1,13 +1,9 @@
-//# sourceURL=create.js
-page.create('formStudentAttendanceSetting', 'student_attendance_settings');
-page.initParsleyRules();
-page.loadCss(plugins.timepicker.css);
-$.getMultiScripts([plugins.timepicker.js]).done(
+$.getMultiScripts(['js/atsettings.js']).done(
     function () {
-        $('.timepicker').timepicker({
-            showInputs: false,
-            showMeridian: false,
-            minuteStep: 1
-        });
+        $.atsettings().init(
+            'create',
+            'student_attendance_settings',
+            'formStudentAttendanceSetting'
+        )
     }
 );

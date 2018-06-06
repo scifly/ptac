@@ -26,14 +26,16 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-clock-o'])
-                        {!! Form::text('start', null, [
-                            'class' => 'form-control start-time',
-                            'required' => 'true',
-                            'data-parsley-start' => '.end-time',
-                            'placeholder' => '(不得大于等于结束时间)'
-                        ]) !!}
+                    <div class="bootstrap-timepicker">
+                        <div class="input-group">
+                            @include('partials.icon_addon', ['class' => 'fa-clock-o'])
+                            {!! Form::text('start', null, [
+                                'class' => 'form-control start-time',
+                                'required' => 'true',
+                                'data-parsley-start' => '.end-time',
+                                'placeholder' => '(不得大于等于结束时间)'
+                            ]) !!}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -42,14 +44,16 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-clock-o'])
-                        {!! Form::text('end', null, [
-                            'class' => 'form-control end-time',
-                            'required' => 'true',
-                            'data-parsley-end' => '.start-time',
-                            'placeholder' => '(不得小于等于开始时间)'
-                        ]) !!}
+                    <div class="bootstrap-timepicker">
+                        <div class="input-group">
+                            @include('partials.icon_addon', ['class' => 'fa-clock-o'])
+                            {!! Form::text('end', null, [
+                                'class' => 'form-control end-time',
+                                'required' => 'true',
+                                'data-parsley-end' => '.start-time',
+                                'placeholder' => '(不得小于等于开始时间)'
+                            ]) !!}
+                        </div>
                     </div>
                 </div>
             </div>
