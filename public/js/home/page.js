@@ -8,6 +8,49 @@ var page = {
     success: 'img/confirm.png',
     failure: 'img/error.png',
     info: 'img/info.png',
+    dateRangeLocale: {
+        format: "YYYY-MM-D",
+        separator: " 至 ",
+        applyLabel: "确定",
+        cancelLabel: "取消",
+        fromLabel: "从",
+        toLabel: "到",
+        todayRangeLabel: '今天',
+        customRangeLabel: "自定义",
+        weekLabel: "W",
+        daysOfWeek: ["日", "一", "二", "三", "四", "五", "六"],
+        monthNames: [
+            "一月", "二月", "三月", "四月", "五月", "六月",
+            "七月", "八月", "九月", "十月", "十一月", "十二月"
+        ],
+        firstDay: 1
+    },
+    dateRangeRanges: {
+        '今天': [
+            moment(),
+            moment()
+        ],
+        '昨天': [
+            moment().subtract(1, 'days'),
+            moment().subtract(1, 'days')
+        ],
+        '过去 7 天': [
+            moment().subtract(6, 'days'),
+            moment()
+        ],
+        '过去 30 天': [
+            moment().subtract(29, 'days'),
+            moment()
+        ],
+        '这个月': [
+            moment().startOf('month'),
+            moment().endOf('month')
+        ],
+        '上个月': [
+            moment().subtract(1, 'month').startOf('month'),
+            moment().subtract(1, 'month').endOf('month')
+        ]
+    },
     token: function () {
         return $('#csrf_token').attr('content');
     },
@@ -657,49 +700,8 @@ var page = {
         page.loadCss(plugins.daterangepicker.css);
         $('#' + selector).daterangepicker(
             {
-                locale: {
-                    format: "YYYY-MM-D",
-                    separator: " 至 ",
-                    applyLabel: "确定",
-                    cancelLabel: "取消",
-                    fromLabel: "从",
-                    toLabel: "到",
-                    todayRangeLabel: '今天',
-                    customRangeLabel: "自定义",
-                    weekLabel: "W",
-                    daysOfWeek: ["日", "一", "二", "三", "四", "五", "六"],
-                    monthNames: [
-                        "一月", "二月", "三月", "四月", "五月", "六月",
-                        "七月", "八月", "九月", "十月", "十一月", "十二月"
-                    ],
-                    firstDay: 1
-                },
-                ranges: {
-                    '今天': [
-                        moment(),
-                        moment()
-                    ],
-                    '昨天': [
-                        moment().subtract(1, 'days'),
-                        moment().subtract(1, 'days')
-                    ],
-                    '过去 7 天': [
-                        moment().subtract(6, 'days'),
-                        moment()
-                    ],
-                    '过去 30 天': [
-                        moment().subtract(29, 'days'),
-                        moment()
-                    ],
-                    '这个月': [
-                        moment().startOf('month'),
-                        moment().endOf('month')
-                    ],
-                    '上个月': [
-                        moment().subtract(1, 'month').startOf('month'),
-                        moment().subtract(1, 'month').endOf('month')
-                    ]
-                },
+                locale: page.dateRangeLocale,
+                ranges: page.dateRangeRanges,
                 startDate: moment().subtract(29, 'days'),
                 endDate: moment()
             },

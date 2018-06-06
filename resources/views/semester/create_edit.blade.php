@@ -41,36 +41,6 @@
                     </div>
                 </div>
             </div>
-            {{--<div class="form-group">--}}
-            {{--{!! Form::label('start_date', '起始日期', [--}}
-            {{--'class' => 'col-sm-3 control-label'--}}
-            {{--]) !!}--}}
-            {{--<div class="col-sm-6">--}}
-            {{--<div class="input-group date">--}}
-            {{--@include('partials.icon_addon', ['class' => 'fa-calendar'])--}}
-            {{--{!! Form::text('start_date', null, [--}}
-            {{--'class' => 'form-control pull-right start_date',--}}
-            {{--'placeholder' => '(请选择起始日期)',--}}
-            {{--'required' => 'true',--}}
-            {{--]) !!}--}}
-            {{--</div>--}}
-            {{--</div>--}}
-            {{--</div>--}}
-            {{--<div class="form-group">--}}
-            {{--{!! Form::label('end_date', '结束日期', [--}}
-            {{--'class' => 'col-sm-3 control-label'--}}
-            {{--]) !!}--}}
-            {{--<div class="col-sm-6">--}}
-            {{--<div class="input-group date">--}}
-            {{--@include('partials.icon_addon', ['class' => 'fa-calendar'])--}}
-            {{--{!! Form::text('end_date', null, [--}}
-            {{--'class' => 'form-control pull-right end_date',--}}
-            {{--'placeholder' => '(请选择结束日期)',--}}
-            {{--'required' => 'true',--}}
-            {{--]) !!}--}}
-            {{--</div>--}}
-            {{--</div>--}}
-            {{--</div>--}}
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
