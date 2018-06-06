@@ -4,6 +4,9 @@ page.initParsleyRules();
 page.loadCss(plugins.timepicker.css);
 $.getMultiScripts([plugins.timepicker.js]).done(
     function () {
-        $('.timepicker').timepicker({ showInputs: false });
+        $('.timepicker').timepicker({
+            showInputs: false,
+            showMeridian: false,
+        });
     }
 );
