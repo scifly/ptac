@@ -276,7 +276,10 @@ var page = {
                 $('.overlay').hide();
                 switch (requestType) {
                     case 'POST':        // create
-                        // obj.reset();    // reset create form
+                        // obj.reset();
+                        $('input[type="text"]').each(
+                            function() { $(this).val(''); }
+                        );
                         break;
                     case 'DELETE':
                         $('#data-table').dataTable().fnDestroy();
