@@ -1,6 +1,6 @@
 var $daterange = $('#daterange'),
-    $startDate = $('#startDate'),
-    $endDate = $('#endDate');
+    $startDate = $('#start_date'),
+    $endDate = $('#end_date');
 
 page.create('formSemester', 'semesters');
 page.loadCss(plugins.daterangepicker.css);
