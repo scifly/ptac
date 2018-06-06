@@ -363,7 +363,7 @@
                             // 发布内容列表
                             html = '<input type="checkbox" name="content" class="minimal" value="-1"> 总分';
                             $.each(result['subjects'], function (index, subject) {
-                                html +='<input type="checkbox" ' +
+                                html += '<br /><input type="checkbox" ' +
                                     'name="content" ' +
                                     'class="minimal" ' +
                                     'value="' + subject['id'] +
