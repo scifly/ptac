@@ -29,6 +29,7 @@ class Overlaid implements Rule {
      * @return bool
      */
     public function passes($attribute, $value) {
+        
         $start = $value[0];
         $end = $value[1];
         switch ($value[2]) {
@@ -89,6 +90,7 @@ class Overlaid implements Rule {
         }
         
         return true;
+        
     }
     
     /**
