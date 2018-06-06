@@ -279,21 +279,21 @@
                 });
             },
             onPreviewClick: function () {
-                var examId = $('#send_exam_id').val(),
-                    classId = $('#send_class_id').val(),
-                    subjectIds = [],
-                    items = [];
-
-                $('#subject-list .checked').each(function(){
-                    subjectIds.push($(this).find('.minimal').val());
-                });
-                // language=JQuery-CSS
-                $('#item-list .checked').each(function(){
-                    items.push($(this).find('.minimal').val());
-                });
-                console.log(subjectIds);
-                console.log(items);
                 $('#preview').on('click', function () {
+                    var examId = $('#send_exam_id').val(),
+                        classId = $('#send_class_id').val(),
+                        subjectIds = [],
+                        items = [];
+
+                    $('#subject-list .checked').each(function(){
+                        subjectIds.push($(this).find('.minimal').val());
+                    });
+                    // language=JQuery-CSS
+                    $('#item-list .checked').each(function(){
+                        items.push($(this).find('.minimal').val());
+                    });
+                    console.log(subjectIds);
+                    console.log(items);
                     $('.overlay').show();
                     $.ajax({
                         url: page.siteRoot() + "scores/send",
