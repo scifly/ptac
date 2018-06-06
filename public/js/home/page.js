@@ -704,8 +704,8 @@ var page = {
         page.loadCss(plugins.daterangepicker.css);
         $('#' + selector).daterangepicker(
             {
-                locale: page.dateRangeLocale,
-                ranges: page.dateRangeRanges,
+                locale: page.dateRangeLocale(),
+                ranges: page.dateRangeRanges(),
                 startDate: moment().subtract(29, 'days'),
                 endDate: moment()
             },

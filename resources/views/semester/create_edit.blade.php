@@ -27,7 +27,7 @@
                     <div class="input-group">
                         {!! Form::hidden('start_date', $semester['start_date'] ?? null, ['id' => 'start_date']) !!}
                         {!! Form::hidden('end_date', $semester['end_date'] ?? null, ['id' => 'end_date']) !!}
-                        <button type="button" class="btn btn-default pull-right" id="daterange">
+                        <button type="button" class="btn btn-default pull-right btn-sm" id="daterange">
                             <span id="range">
                                 @if (!isset($semester))
                                     <i class="fa fa-calendar"></i>&nbsp; 点击选择起止日期
