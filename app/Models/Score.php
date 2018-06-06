@@ -288,40 +288,40 @@ class Score extends Model {
         
         $exam = Exam::find($examId);
         #找到考试对应的科目存到数组 ids
-        $subjects = explode(',', $exam->subject_ids);
+        $subjectIds = explode(',', $exam->subject_ids);
         #找到考试对应的班级存到数组 ids
         $classIds = explode(',', $exam->class_ids);
         #找到每个班级下面对应的学生 ids
-        $claStuIds = [];
+        $classStudentIds = [];
         foreach ($classIds as $classId) {
             $class = Squad::find($classId);
             foreach ($class->students as $student) {
-                $claStuIds[$class->id][] = $student->id;
+                $classStudentIds[$class->id][] = $student->id;
             }
         }
         #根据班级找出参与考试的所有年级
-        $grades = [];
+        $gradeIds = [];
         foreach ($classIds as $classId) {
-            $grades[] = Squad::find($classId)->grade_id;
+            $gradeIds[] = Squad::find($classId)->grade_id;
         }
         #找到每个年级下面的所有学生
-        $graStuIds = [];
-        foreach (array_unique($grades) as $grade) {
-            $squads = Grade::find($grade)->classes;
+        $gradeStudentIds = [];
+        foreach (array_unique($gradeIds) as $gradeId) {
+            $squads = Grade::find($gradeId)->classes;
             foreach ($squads as $class) {
                 foreach ($class->students as $student) {
-                    $graStuIds[$grade][] = $student->id;
+                    $gradeStudentIds[$gradeId][] = $student->id;
                 }
             }
         }
-        foreach ($subjects as $sub) {
+        foreach ($subjectIds as $subjectId) {
             #一次处理一个科目  查出这个科目下 班级下所有学生的成绩
-            foreach ($claStuIds as $claStuId) {
+            foreach ($classStudentIds as $studentIds) {
                 # 若该学生id没有对应的score则不会在结果数组中
                 $scores = Score::whereExamId($examId)
-                    ->whereSubjectId($sub)
-                    ->whereIn('student_id', $claStuId)
-                    ->whereEnabled(1)
+                    ->whereIn('student_id', $studentIds)
+                    ->where('subject_id', $subjectId)
+                    ->where('enabled', 1)
                     ->orderBy('score', 'desc')
                     ->get();
                 #比较分数的临时变量 和排名值
@@ -340,10 +340,10 @@ class Score extends Model {
                 }
             }
             #年级排名
-            foreach ($graStuIds as $graStuId) {
+            foreach ($gradeStudentIds as $gradeStudentId) {
                 $scoresAll = Score::whereExamId($examId)
-                    ->whereSubjectId($sub)
-                    ->whereIn('student_id', $graStuId)
+                    ->whereSubjectId($subjectId)
+                    ->whereIn('student_id', $gradeStudentId)
                     ->whereEnabled(1)
                     ->orderBy('score', 'desc')
                     ->get();
@@ -365,7 +365,7 @@ class Score extends Model {
         #按学生id对本次考试成绩 分组
         $studentScore = Score::whereExamId($examId)
             ->whereEnabled(1)
-            ->whereIn('subject_id', $subjects)
+            ->whereIn('subject_id', $subjectIds)
             ->get()
             ->groupBy('student_id');
         /** @var Score $s */
@@ -374,11 +374,11 @@ class Score extends Model {
             $studentSub = [];
             $studentId = $s[0]->student_id;
             $total = $s->sum('score');
-            foreach ($s as $sub) {
-                $studentSub[] = $sub->subject_id;
+            foreach ($s as $subjectId) {
+                $studentSub[] = $subjectId->subject_id;
             }
             #没有参加的考试科目
-            $noSub = array_diff($subjects, $studentSub);
+            $noSub = array_diff($subjectIds, $studentSub);
             $scoreTotalData = [
                 'student_id'     => $studentId,
                 'exam_id'        => $examId,
@@ -402,10 +402,10 @@ class Score extends Model {
         }
         #创建完成后执行排名操作
         #班级排名
-        foreach ($claStuIds as $claStuId) {
+        foreach ($classStudentIds as $studentIds) {
             $scoreTotalCla = ScoreTotal::whereEnabled(1)
                 ->whereExamId($examId)
-                ->whereIn('student_id', $claStuId)
+                ->whereIn('student_id', $studentIds)
                 ->orderBy('score', 'desc')
                 ->get();
             $toTmeScore = '';
@@ -422,10 +422,10 @@ class Score extends Model {
             }
         }
         #年级排名
-        foreach ($graStuIds as $graStuId) {
+        foreach ($gradeStudentIds as $gradeStudentId) {
             $scoreTotalGra = ScoreTotal::whereEnabled(1)
                 ->whereExamId($examId)
-                ->whereIn('student_id', $graStuId)
+                ->whereIn('student_id', $gradeStudentId)
                 ->orderBy('score', 'desc')
                 ->get();
             $toGraScore = '';

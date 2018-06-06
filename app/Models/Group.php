@@ -202,7 +202,7 @@ class Group extends Model {
             [
                 'db' => 'School.name as schoolname', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-university text-blue', '') .
+                    return sprintf(Snippet::ICON, 'fa-university text-purple', '') .
                         '<span class="text-blue">' . $d . '</span>';
                 }
             ],
