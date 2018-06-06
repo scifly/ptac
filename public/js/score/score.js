@@ -518,7 +518,7 @@
             },
             getSsList: function (result) {
                 var $studentId = $('#student_id'),
-                    $subjectId = $('subject_id'),
+                    $subjectId = $('#subject_id'),
                     $studentNext = $studentId.next(),
                     $studentPrev = $studentId.prev(),
                     $subjectNext = $subjectId.next(),
