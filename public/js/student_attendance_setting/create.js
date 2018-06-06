@@ -3,7 +3,7 @@ page.initParsleyRules();
 page.loadCss(plugins.timepicker.css);
 $.getMultiScripts([plugins.timepicker.js, 'js/plugins/slimScroll/jquery.slimscroll.min.js']).done(
     function () {
-        $('#start').timepicker({ showInputs: false });
+        $('.timepicker').timepicker({ showInputs: false });
     }
 );
 // function datetime($initTime) {
