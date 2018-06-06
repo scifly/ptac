@@ -315,6 +315,13 @@ class User extends Authenticatable {
                     'avatar_url'   => '',
                     'isleader'     => 0,
                 ]);
+                # 创建教职员工
+                Educator::create([
+                    'user_id' => $user->id,
+                    'school_id' => $this->schoolId(),
+                    'sms_quote' => 0,
+                    'enabled' => 1,
+                ]);
                 # 保存手机号码
                 $mobile = new Mobile();
                 $mobile->store($data['mobile'], $user);
