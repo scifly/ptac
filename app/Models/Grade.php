@@ -94,7 +94,7 @@ class Grade extends Model {
         return $this->hasManyThrough(
             'App\Models\Student',
             'App\Models\Squad',
-            'id',
+            'grade_id',
             'class_id');
         
     }
