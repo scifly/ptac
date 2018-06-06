@@ -26,8 +26,8 @@ class TestController extends Controller {
     
     public function index() {
 
-        $user = User::whereId(1)->get();
-        dd($user[0]->realname);
+       
+        dd(date('H:i', strtotime(now())));
         // dd(round(microtime(true) * 1000));
         // dd(strtotime(date('Y-m-d'), now()));
         // dd(strtotime('2018-06-04') * 1000);
