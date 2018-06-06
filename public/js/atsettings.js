@@ -24,4 +24,4 @@
 
         return { init: atsettings.init };
     }
-});
+})(jQuery);
