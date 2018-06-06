@@ -7,6 +7,7 @@ $.getMultiScripts([plugins.timepicker.js]).done(
         $('.timepicker').timepicker({
             showInputs: false,
             showMeridian: false,
+            minuteStep: 1
         });
     }
 );
