@@ -42,9 +42,9 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    <div class="bootstrap-timepicker">
-                        <div class="input-group">
-                            @include('partials.icon_addon', ['class' => 'fa-clock-o'])
+                    <div class="input-group">
+                        @include('partials.icon_addon', ['class' => 'fa-clock-o'])
+                        <div class="bootstrap-timepicker">
                             {!! Form::text('start', null, [
                                 'class' => 'form-control start-time timepicker',
                                 'required' => 'true',
@@ -60,9 +60,9 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    <div class="bootstrap-timepicker">
-                        <div class="input-group">
-                            @include('partials.icon_addon', ['class' => 'fa-clock-o'])
+                    <div class="input-group">
+                        @include('partials.icon_addon', ['class' => 'fa-clock-o'])
+                        <div class="bootstrap-timepicker">
                             {!! Form::text('end', null, [
                                 'class' => 'form-control end-time timepicker',
                                 'required' => 'true',
