@@ -32,21 +32,23 @@ class Overlaid implements Rule {
         
         $start = $value[0];
         $end = $value[1];
+        $schoolId = $this->schoolId();
         switch ($value[2]) {
             case 'educator':
                 if ($value[3]) {
                     $settings = EducatorAttendanceSetting::where('id', '<>', $value[3])
                         ->where('enabled', '1')
+                        ->where('school_id', $schoolId)
                         ->pluck('end', 'start')->toArray();
                 } else {
                     $settings = EducatorAttendanceSetting::pluck('end', 'start')
                         ->where('enabled', '1')
+                        ->where('school_id', $schoolId)
                         ->toArray();
                 }
                 break;
             case 'student':
                 $gradeIds = [];
-                $schoolId = $this->schoolId();
                 $grade = Grade::whereSchoolId($schoolId)->get();
                 foreach ($grade as $g) {
                     $gradeIds[] = $g->id;
@@ -63,7 +65,6 @@ class Overlaid implements Rule {
                 }
                 break;
             case 'semester':
-                $schoolId = $this->schoolId();
                 if ($value[3]) {
                     $settings = Semester::whereSchoolId($schoolId)
                         ->where('id', '<>', $value[3])
