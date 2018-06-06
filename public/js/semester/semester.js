@@ -20,7 +20,7 @@
                             page.siteRoot() + plugins.daterangepicker.js,
                             function () {
                                 $daterange.daterangepicker(
-                                    { locale: page.dateRangeLocale },
+                                    { locale: page.dateRangeLocale() },
                                     function (start, end) {
                                         var $start = start.format('YYYY-MM-DD'),
                                             $end = end.format('YYYY-MM-DD');
