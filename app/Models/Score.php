@@ -488,8 +488,8 @@ class Score extends Model {
      */
     function send($data) {
         
-        $corp = Corp::whereName('万浪软件')->first();
-        $app = App::whereName('成绩中心')->first();
+        $corp = Corp::find(School::find($this->schoolId())->corp_id)->first();
+        $app = App::whereName('成绩中心')->where('corp_id', $corp->id)->first();
         $token = Wechat::getAccessToken($corp->corpid, $app->secret);
         $success = [];
         $failure = [];
