@@ -18,12 +18,12 @@
 						'items' => $classes,
 						'icon' => 'fa fa-users'
 					])
-					<div class="form-group" id="subject-list">
+					<div class="form-group">
 						{{ Form::label('subjects', '发布内容', [
 							'class' => 'control-label col-sm-3'
 						]) }}
-						<div class="col-sm-8">
-							{{ Form::checkbox('subjects', -1, false, [
+						<div class="col-sm-8" id="subject-list">
+							{{ Form::checkbox('content', -1, false, [
 								'class' => 'minimal'
 							]) }} 总分 <br />
 							@foreach ($subjects as $key => $value)

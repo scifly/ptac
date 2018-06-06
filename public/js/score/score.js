@@ -346,19 +346,30 @@
                             examId: $examId.val()
                         },
                         success: function (result) {
-                            var html1 = '';
-                            $.each(result.classes, function (index, obj) {
-                                var data = obj;
-                                html1 += '<option value="'+ data.id + '">' + data.name +'</option>'
+                            var html = '<select class="form-control select2" id="send_class_id" name="send_class_id">',
+                                $sendClassId = $('#send_class_id'),
+                                $sciNext = $sendClassId.next(),
+                                $sciPrev = $sendClassId.prev();
+
+                            // 班级下拉列表
+                            $.each(result['classes'], function (index, squad) {
+                                html += '<option value="'+ squad['id'] + '">' + squad['name'] +'</option>'
                             });
-                            $('#squad_id').html(html1);
+                            html += '</select>';
+                            $sciNext.remove();
+                            $sendClassId.remove();
+                            $sciPrev.after(html);
                             page.initSelect2();
-                            var html2 = '<label><input  type="checkbox" class="minimal" value="-1">总分</label>';
-                            $.each(result['subjects'], function (index, obj) {
-                                var datacon = obj;
-                                html2 +='<label><input type="checkbox" class="minimal" value="' + datacon.id + '">' + datacon.name + '</label>';
+                            // 发布内容列表
+                            html = '<input type="checkbox" name="content" class="minimal" value="-1"> 总分';
+                            $.each(result['subjects'], function (index, subject) {
+                                html +='<input type="checkbox" ' +
+                                    'name="content" ' +
+                                    'class="minimal" ' +
+                                    'value="' + subject['id'] +
+                                    '"> ' + subject['name'];
                             });
-                            $('#subject-list').html(html2);
+                            $('#subject-list').html(html);
                             page.initMinimalIcheck();
                         }
                     });
