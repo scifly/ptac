@@ -464,7 +464,7 @@ class Score extends Model {
                 $items ? explode(',', $items) : []
             );
         } else {
-            $ids = Exam::whereId($examId)->first();
+            $ids = Exam::find($examId);
             $classes = Squad::whereIn('id', explode(',', $ids['class_ids']))
                 ->get()->toArray();
             $subjects = Subject::whereIn('id', explode(',', $ids['subject_ids']))

@@ -281,11 +281,11 @@
             onPreviewClick: function () {
                 var examId = $('#send_exam_id').val(),
                     classId = $('#send_class_id').val(),
-                    subjects = [],
+                    subjectIds = [],
                     items = [];
 
                 $('#subject-list .checked').each(function(){
-                    subjects.push($(this).find('.minimal').val());
+                    subjectIds.push($(this).find('.minimal').val());
                 });
                 // language=JQuery-CSS
                 $('#item-list .checked').each(function(){
@@ -301,7 +301,7 @@
                             _token: score.token(),
                             examId: examId,
                             classId: classId,
-                            subjects: subjects,
+                            subjectIds: subjectIds,
                             items: items
                         },
                         success: function (result) {
@@ -360,6 +360,7 @@
                             $sendClassId.remove();
                             $sciPrev.after(html);
                             page.initSelect2();
+
                             // 发布内容列表
                             html = '<input type="checkbox" name="content" class="minimal" value="-1"> 总分';
                             $.each(result['subjects'], function (index, subject) {
