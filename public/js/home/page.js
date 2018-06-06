@@ -27,31 +27,33 @@ var page = {
            firstDay: 1
        };
     },
-    dateRangeRanges: {
-        '今天': [
-            moment(),
-            moment()
-        ],
-        '昨天': [
-            moment().subtract(1, 'days'),
-            moment().subtract(1, 'days')
-        ],
-        '过去 7 天': [
-            moment().subtract(6, 'days'),
-            moment()
-        ],
-        '过去 30 天': [
-            moment().subtract(29, 'days'),
-            moment()
-        ],
-        '这个月': [
-            moment().startOf('month'),
-            moment().endOf('month')
-        ],
-        '上个月': [
-            moment().subtract(1, 'month').startOf('month'),
-            moment().subtract(1, 'month').endOf('month')
-        ]
+    dateRangeRanges: function () {
+        return {
+            '今天': [
+                moment(),
+                moment()
+            ],
+            '昨天': [
+                moment().subtract(1, 'days'),
+                moment().subtract(1, 'days')
+            ],
+            '过去 7 天': [
+                moment().subtract(6, 'days'),
+                moment()
+            ],
+            '过去 30 天': [
+                moment().subtract(29, 'days'),
+                moment()
+            ],
+            '这个月': [
+                moment().startOf('month'),
+                moment().endOf('month')
+            ],
+            '上个月': [
+                moment().subtract(1, 'month').startOf('month'),
+                moment().subtract(1, 'month').endOf('month')
+            ]
+        };
     },
     token: function () {
         return $('#csrf_token').attr('content');
