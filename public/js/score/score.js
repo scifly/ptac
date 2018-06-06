@@ -291,6 +291,8 @@
                 $('#item-list .checked').each(function(){
                     items.push($(this).find('.minimal').val());
                 });
+                console.log(subjectIds);
+                console.log(items);
                 $('#preview').on('click', function () {
                     $('.overlay').show();
                     $.ajax({
