@@ -457,12 +457,7 @@ class Score extends Model {
         $subjectIds = Request::input('subjectIds');
         $items = Request::input('items');
         if ($examId && $classId) {
-            $result = $this->scores(
-                $examId,
-                $classId,
-                $subjectIds ? explode(',', $subjectIds) : [],
-                $items ? explode(',', $items) : []
-            );
+            $result = $this->scores($examId, $classId, $subjectIds ?? [], $items ?? []);
         } else {
             $ids = Exam::find($examId);
             $classes = Squad::whereIn('id', explode(',', $ids['class_ids']))
