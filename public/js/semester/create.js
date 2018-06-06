@@ -3,6 +3,7 @@ var $daterange = $('#daterange'),
     $endDate = $('#endDate');
 
 page.create('formSemester', 'semesters');
+page.loadCss(plugins.daterangepicker.css);
 $.getScript(
     page.siteRoot() + plugins.daterangepicker.moment,
     function () {
