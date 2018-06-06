@@ -1,25 +1,25 @@
 <?php
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
-use App\Http\Requests\GradeRequest;
-use Carbon\Carbon;
 use Eloquent;
+use Throwable;
 use Exception;
+use Carbon\Carbon;
+use ReflectionException;
+use App\Helpers\Snippet;
+use App\Helpers\Constant;
+use App\Helpers\ModelTrait;
+use App\Helpers\HttpStatusCode;
+use Illuminate\Support\Facades\DB;
+use App\Http\Requests\GradeRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use ReflectionException;
-use Throwable;
 
 /**
  * App\Models\Grade 年级

@@ -1,14 +1,14 @@
+var $rangeId = $('#range_id'),
+    $students = $('#students'),
+    $classes = $('#classes'),
+    $grades = $('#grades');
+
 page.initForm(
     'consumptions',
     'formConsumption',
     'consumptions/stat',
     'POST'
 );
-
-var $rangeId = $('#range_id');
-var $students = $('#students');
-var $classes = $('#classes');
-var $grades = $('#grades');
 $rangeId.on('change', function () {
     console.log($rangeId.val());
     switch (parseInt($rangeId.val())) {

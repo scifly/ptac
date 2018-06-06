@@ -1,21 +1,25 @@
+var $daterange = $('#daterange'),
+    $startDate = $('#startDate'),
+    $endDate = $('#endDate');
+
 page.create('formSemester', 'semesters');
-page.loadCss(plugins.timepicker.css);
+$.getScript(
+    page.siteRoot() + plugins.daterangepicker.moment,
+    function () {
+        $.getScript(
+            page.siteRoot() + plugins.daterangepicker.js,
+            function () {
+                $daterange.daterangepicker(
+                    function (start, end) {
+                        var $start = start.format('YYYY-MM-DD'),
+                            $end = end.format('YYYY-MM-DD');
 
-function datetime($initTime) {
-    $initTime.datetimepicker({
-        dateFormat: "yy-mm-dd",
-        showSecond: true,
-        timeFormat: 'hh:mm:ss'
-    })
-}
-
-if (!($.fn.timepicker)) {
-    $.getMultiScripts([plugins.timepicker.js, plugins.timepicker.jscn])
-        .done(function () {
-            datetime($(".start_date"));
-            datetime($(".end_date"));
-        });
-} else {
-    datetime($(".start_date"));
-    datetime($(".end_date"));
-}
+                        $daterange.find('span').html($start + ' - ' + $end);
+                        $startDate.val($start);
+                        $endDate.val($end);
+                    }
+                );
+            }
+        )
+    }
+);
