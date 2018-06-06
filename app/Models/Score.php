@@ -768,7 +768,11 @@ class Score extends Model {
         $studentId = Request::query('targetId');
         # 获取该学生所属班级的所有学生
         $exam = Exam::find($examId);
-        abort_if(!$exam, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
+        abort_if(
+            !$exam,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
         # 获取该次考试该学生所在的年级id
         $gradeId = Student::find($studentId)->squad->grade_id;
         $classIds = Grade::find($gradeId)->classes->pluck('id')->toArray();

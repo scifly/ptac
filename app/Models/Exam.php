@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use ReflectionException;
 
 /**
@@ -135,11 +136,8 @@ class Exam extends Model {
     function modify(array $data, $id) {
         
         $exam = self::find($id);
-        if (!$exam) {
-            return false;
-        }
         
-        return $exam->update($data);
+        return $exam ? $exam->update($data) : false;
         
     }
     
@@ -148,17 +146,22 @@ class Exam extends Model {
      *
      * @param $id
      * @return bool|null
-     * @throws ReflectionException
      * @throws Exception
      */
     function remove($id) {
         
         $exam = $this->find($id);
-        if (!$exam) {
-            return false;
+        if (!$exam) { return false; }
+        try {
+            DB::transaction(function () use ($id, $exam) {
+                Score::whereExamId($id)->delete();
+                $exam->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
         
-        return $this->removable($exam) ? $exam->delete() : false;
+        return true;
         
     }
     
