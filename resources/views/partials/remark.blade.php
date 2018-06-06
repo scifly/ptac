@@ -8,6 +8,7 @@
             {!! Form::textarea(!isset($field) ? 'remark' : $field, null, [
                 'id' => !isset($field) ? 'remark' : $field,
                 'class' => 'form-control text-blue',
+                'placeholder' => $placeholder ?? '(备注)'
             ]) !!}
         </div>
     </div>
