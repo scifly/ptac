@@ -484,7 +484,9 @@ class Score extends Model {
      */
     function send($data) {
         
-        $corp = Corp::find(School::find($this->schoolId())->corp_id);
+        $corp = Corp::find(
+            School::find($this->schoolId())->corp_id
+        );
         $app = App::whereName('成绩中心')->where('corp_id', $corp->id)->first();
         $token = Wechat::getAccessToken($corp->corpid, $app->secret);
         abort_if(
@@ -495,9 +497,9 @@ class Score extends Model {
         $success = [];
         $failure = [];
         $school = School::find($this->schoolId());
-        foreach ($data as $d) {
-            if (isset($d->mobile)) {
-                $mobiles = explode(',', $d->mobile);
+        foreach ($data as $datum) {
+            if (isset($datum->mobile)) {
+                $mobiles = explode(',', $datum->mobile);
                 foreach ($mobiles as $mobile) {
                     $user = User::find(Mobile::whereMobile($mobile)->first()->user_id);
                     $userInfo = json_decode(Wechat::getUser($token['access_token'], $user->userid));
@@ -507,7 +509,7 @@ class Score extends Model {
                             "msgtype" => "text",
                             "agentid" => $app->agentid,
                             'text'    => [
-                                'content' => $d->content,
+                                'content' => $datum->content,
                             ],
                         ];
                         $status = json_decode(Wechat::sendMessage($token['access_token'], $message));
@@ -522,7 +524,7 @@ class Score extends Model {
                                 'LKJK004923',
                                 "654321@",
                                 $mobile,
-                                $d->content . $school->signature
+                                $datum->content . $school->signature
                             )
                         );
                         if ($code != '0' && $code != '-1') {
