@@ -170,8 +170,8 @@ class ImportEducator implements ShouldQueue {
                     }
                     # 更新班级科目绑定关系
                     $classSubjects = explode(',', str_replace(['，', '：'], [',', ':'], $row['classes_subjects']));
-                    Log::debug(json_encode($classSubjects));
                     foreach ($classSubjects as $classSubject) {
+                        if (empty($classSubject)) { continue; }
                         $paths = explode(':', $classSubject);
                         $class = Squad::whereName($paths[0])->whereIn('grade_id', $gradeIds)->first();
                         $subject = Subject::whereName($paths[1])->where('school_id', $schoolId)->first();
