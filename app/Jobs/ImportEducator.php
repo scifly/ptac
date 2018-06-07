@@ -58,11 +58,11 @@ class ImportEducator implements ShouldQueue {
         $rows = $this->data;
         try {
             DB::transaction(function () use ($rows, $response) {
-                $schoolId = $rows[0]['school_id'];
-                $school = School::find($schoolId);
+                $school = School::whereName($rows[0]['school'])->first();
                 if (!$school) {
                     throw new NotFoundHttpException(__('messages.school_not_found'));
                 }
+                $schoolId = $school->id;
                 $schoolDepartmentId = $school->department_id;
                 $schoolDepartmentIds = array_merge(
                     [$schoolDepartmentId],
