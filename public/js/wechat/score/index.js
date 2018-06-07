@@ -43,6 +43,9 @@ function examList(more) {
                 $loadMore.hide();
                 if (!more) { $examList.html('暂无数据'); }
             }
+        },
+        error: function (e) {
+            wap.errorHandler(e);
         }
     });
 }

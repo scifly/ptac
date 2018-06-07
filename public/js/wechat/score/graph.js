@@ -32,6 +32,9 @@ function getdata($active){
             showtable_class(result['class_rank'], result['exam']);
             showtable_grade(result['grade_rank'], result['exam']);
         },
+        error: function (e) {
+            wap.errorHandler(e);
+        }
     });
 }
 function showtable_class(class_data, class_test_name){

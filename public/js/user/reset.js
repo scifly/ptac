@@ -50,6 +50,9 @@ $('#reset').on('click', function (e) {
                 page.inform('重置密码','修改成功',page.success);
                 window.location = '../logout';
             }
+        },
+        error: function (e) {
+            page.errorHandler(e);
         }
     }).on('form:submit', function () {
         return false;

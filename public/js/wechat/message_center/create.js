@@ -150,7 +150,9 @@ $search.on("input propertychange change", function () {
             }
             $targetsContainer.html(html);
         },
-        error: function (e) { }
+        error: function (e) {
+            wap.errorHandler(e);
+        }
     });
 });
 // 返回部门列表
@@ -172,7 +174,7 @@ $('#back').on('click', function () {
             $targetsContainer.html(html);
         },
         error: function (e) {
-
+            wap.errorHandler(e);
         }
     });
 });
@@ -198,7 +200,7 @@ $(document).on('click', '.targets', function () {
             $targetsContainer.html(html);
         },
         error: function (e) {
-
+            wap.errorHandler(e);
         }
     });
 });
@@ -543,6 +545,9 @@ $send.on('click', function () {
             $.alert(result.message, function () {
                 window.location.href = '../mc';
             });
+        },
+        error: function (e) {
+            wap.errorHandler(e);
         }
     });
 });

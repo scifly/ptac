@@ -25,6 +25,9 @@
                         $classPrev.after(result['html']);
 
                         page.initSelect2();
+                    },
+                    error: function (e) {
+                        page.errorHandler(e);
                     }
                 });
             },
@@ -45,6 +48,9 @@
                         if (type === 'class') {
                             score.list('student', $('#class_id').val());
                         }
+                    },
+                    error: function (e) {
+                        page.errorHandler(e);
                     }
                 });
             },
@@ -375,6 +381,9 @@
                             });
                             $('#subject-list').html(html);
                             page.initMinimalIcheck();
+                        },
+                        error: function (e) {
+                            page.errorHandler(e);
                         }
                     });
                 });

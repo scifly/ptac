@@ -49,6 +49,9 @@ $subjectId.on("change", function () {
             $('.otherinfo').html(html);
 
             showtable(scores, avgs, names);
+        },
+        error: function (e) {
+            wap.errorHandler(e);
         }
     });
 });

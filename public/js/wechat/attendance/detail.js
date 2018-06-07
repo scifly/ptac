@@ -32,6 +32,9 @@ $.when($("#inline-calendar").calendar({
                 var date = sYear + '-' + (iMonth - 1) + '-' + parseInt(this.substring(8, 10));
                 $("[data-date= " + date + "]").addClass('picker-calendar-day-abnormal')
             });
+        },
+        error: function (e) {
+            page.errorHandler(e);
         }
     });
 });
@@ -83,6 +86,9 @@ $(document).on('click', '.picker-calendar-year-picker a, .picker-calendar-month-
                     '</td>' +
                 '</tr>';
             $('.kaoqin-tongji tbody').html(str);
+        },
+        error: function (e) {
+            page.errorHandler(e);
         }
     });
 });
@@ -146,6 +152,9 @@ $('.picker-calendar-day').on('click', function () {
                     .replace('%p', 'n/a');
             }
             $('.kaoqin-day-detail').html(html)
+        },
+        error: function (e) {
+            page.errorHandler(e);
         }
     });
 });

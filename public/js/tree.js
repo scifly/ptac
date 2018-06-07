@@ -370,6 +370,9 @@
                             ).done(
                                 $tree.jstree().refresh()
                             );
+                        },
+                        error: function (e) {
+                            page.errorHandler(e);
                         }
                     });
                 });
