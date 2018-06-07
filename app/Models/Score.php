@@ -1429,7 +1429,7 @@ class Score extends Model {
                 $result[] = [
                     'custodian' => $custodian->realname,
                     'name'      => $studentName,
-                    'mobile'    => Mobile::whereUserId($custodian->id)->where('is_default', 1)->first()->mobile,
+                    'mobile'    => Mobile::whereUserId($custodian->id)->where('isdefault', 1)->first()->mobile,
                     'content'   => $content,
                 ];
             }
