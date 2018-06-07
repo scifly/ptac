@@ -654,9 +654,7 @@ class Educator extends Model {
                 'departments'       => $datum['I'],
             ];
             if (Validator::make($user, $rules)->fails()) {
-                throw new ValidationException('wtf');
                 $invalidRows[] = $datum;
-                Log::debug('validating failed');
                 continue;
             }
             $school = School::whereName($user['school'])->first();
