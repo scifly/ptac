@@ -495,7 +495,6 @@ class Educator extends Model {
                 }
             }
             $rows = self::validateData($educators);
-            Log::debug(json_encode($rows));
             if (!empty($rows)) {
                 ImportEducator::dispatch($rows, Auth::id());
             }
@@ -655,11 +654,13 @@ class Educator extends Model {
             ];
             if (Validator::make($user, $rules)->fails()) {
                 $invalidRows[] = $datum;
+                Log::debug('validating failed');
                 continue;
             }
             $school = School::whereName($user['school'])->first();
             if (!$school) {
                 $invalidRows[] = $datum;
+                Log::debug('school not found!');
                 continue;
             }
             $departments = explode(',', $user['departments']);
@@ -676,6 +677,7 @@ class Educator extends Model {
                 }
             }
             if (!$isDepartmentValid) {
+                Log::debug('department invalid');
                 $invalidRows[] = $datum;
                 continue;
             }
