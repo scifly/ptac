@@ -60,23 +60,22 @@ class ImportEducator implements ShouldQueue {
         try {
             DB::transaction(function () use ($rows, $response) {
                 $school = School::whereName($rows[0]['school'])->first();
-                if (!$school) {
-                    throw new NotFoundHttpException(__('messages.school_not_found'));
-                }
+                throw_if(!$school, new NotFoundHttpException(__('messages.school_not_found')));
                 $schoolId = $school->id;
                 $schoolDepartmentId = $school->department_id;
                 $schoolDepartmentIds = array_merge(
                     [$schoolDepartmentId],
                     (new Department())->subDepartmentIds($schoolDepartmentId)
                 );
-                $groupId = Group::whereName('教职员工')->where('school_id', $schoolId)->first()->id;
+                $group = Group::whereName('教职员工')->where('school_id', $schoolId)->first();
+                throw_if(!$group, new NotFoundHttpException(__('角色不存在')));
                 foreach ($rows as $row) {
                     $mobile = Mobile::whereMobile($row['mobile'])->first();
                     if (!$mobile) {
                         # 创建用户
                         $user = User::create([
                             'username'   => uniqid('educator_'),
-                            'group_id'   => $groupId,
+                            'group_id'   => $group->id,
                             'password'   => bcrypt('12345678'),
                             'realname'   => $row['name'],
                             'gender'     => $row['gender'] == '男' ? '0' : '1',
