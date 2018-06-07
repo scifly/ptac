@@ -257,7 +257,7 @@
                             $departmentId = $('#' + contact.options.departmentId),
                             id = (table !== 'educators'
                                 ? (range === 0 ? $classId.val() : (range === 1 ? $gradeId.val() : ''))
-                                : (range ? $departmentId.val() : ''));
+                                : (range === 0 ? $departmentId.val() : ''));
                         window.location = url + (id !== '' ? '&id=' + id : '');
                     } else {
                         contact.saveRelationship(0)
