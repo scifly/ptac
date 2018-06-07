@@ -172,7 +172,7 @@ class ImportEducator implements ShouldQueue {
                     $classSubjects = explode(',', str_replace(['，', '：'], [',', ':'], $row['classes_subjects']));
                     foreach ($classSubjects as $classSubject) {
                         $paths = explode(':', $classSubject);
-                        $class = Squad::whereName($paths[0])->where('school_id', $schoolId)->first();
+                        $class = Squad::whereName($paths[0])->whereIn('grade_id', $gradeIds)->first();
                         $subject = Subject::whereName($paths[1])->where('school_id', $schoolId)->first();
                         if (!$class || !$subject) { continue; }
                         $educatorClass = EducatorClass::whereEducatorId($educator->id)
