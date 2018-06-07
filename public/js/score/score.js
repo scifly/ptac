@@ -292,8 +292,6 @@
                     $('#item-list .checked').each(function(){
                         items.push($(this).find('.minimal').val());
                     });
-                    console.log(subjectIds);
-                    console.log(items);
                     $('.overlay').show();
                     $.ajax({
                         url: page.siteRoot() + "scores/send",
@@ -309,15 +307,15 @@
                         success: function (result) {
                             var html = '';
                             $('.overlay').hide();
-                            for(var i = 0; i < result.length; i++) {
-                                var data = result[i];
+                            for (var i = 0; i < result.length; i++) {
+                                var message = result[i];
                                 html +=
                                     '<tr>'+
-                                    '<td><label><input type="checkbox" class="minimal"></label></td>'+
-                                    '<td>' + data['custodian'] + '</td>' +
-                                    '<td>' + data.name + '</td>' +
-                                    '<td class="mobile">' + data.mobile + '</td>'+
-                                    '<td class="content">' + data.content + '</td>'+
+                                        '<td><label><input type="checkbox" class="minimal"></label></td>'+
+                                        '<td>' + message['custodian'] + '</td>' +
+                                        '<td>' + message['name'] + '</td>' +
+                                        '<td class="mobile">' + message['mobile'] + '</td>'+
+                                        '<td class="content">' + message['content'] + '</td>'+
                                     '</tr>';
                             }
                             $('#send-table tbody').html(html);
