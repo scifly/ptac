@@ -463,42 +463,42 @@ class Educator extends Model {
         // 上传文件
         $filename = date('His') . uniqid() . '.' . $ext;
         $stored = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
-        if ($stored) {
-            $spreadsheet = IOFactory::load(
-                $this->uploadedFilePath($filename)
-            );
-            $educators = $spreadsheet->getActiveSheet()->toArray(
-                null, true, true, true
-            );
-            abort_if(
-                $this->checkFileFormat(self::EXPORT_TITLES, $educators[0]),
-                HttpStatusCode::NOT_ACCEPTABLE,
-                '文件格式错误'
-            );
-            unset($educators[0]);
-            $educators = array_values($educators);
-            if (count($educators) != 0) {
-                # 去除表格的空数据
-                foreach ($educators as $key => $v) {
-                    if ((array_filter($v)) == null) {
-                        unset($educators[$key]);
-                    }
-                }
-                $rows = self::validateData($educators);
-                if (!empty($rows)) {
-                    ImportEducator::dispatch($rows, Auth::id());
+        abort_if(
+            !$stored,
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            __('messages.file_upload_failed')
+        );
+        $spreadsheet = IOFactory::load(
+            $this->uploadedFilePath($filename)
+        );
+        $educators = $spreadsheet->getActiveSheet()->toArray(
+            null, true, true, true
+        );
+        abort_if(
+            $this->checkFileFormat(self::EXPORT_TITLES, $educators[0]),
+            HttpStatusCode::NOT_ACCEPTABLE,
+            '文件格式错误'
+        );
+        unset($educators[0]);
+        $educators = array_values($educators);
+        if (count($educators) != 0) {
+            # 去除表格的空数据
+            foreach ($educators as $key => $v) {
+                if ((array_filter($v)) == null) {
+                    unset($educators[$key]);
                 }
             }
-            Storage::disk('uploads')->delete($filename);
-            
-            return [
-                'statusCode' => HttpStatusCode::OK,
-                'message'    => '上传成功',
-            ];
-            
+            $rows = self::validateData($educators);
+            if (!empty($rows)) {
+                ImportEducator::dispatch($rows, Auth::id());
+            }
         }
+        Storage::disk('uploads')->delete($filename);
         
-        return abort(HttpStatusCode::INTERNAL_SERVER_ERROR, '上传失败');
+        return [
+            'statusCode' => HttpStatusCode::OK,
+            'message'    => '上传成功',
+        ];
         
     }
     
