@@ -508,9 +508,7 @@ trait ModelTrait {
      */
     function uploadedFilePath($filename): string {
         
-        return 'uploads/'
-            . date('Y') . '/' . date('m') . '/' . date('d') . '/'
-            . $filename;
+        return 'uploads/' . date('Y/m/d/') . $filename;
         
     }
     

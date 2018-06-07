@@ -23,6 +23,7 @@ return [
     'misconfigured_action' => '功能配置错误',
     'invalid_credentials' => '用户名/密码错误',
     'invalid_argument' => '参数无效',
+    'invalid_file_format' => '文件格式错误',
     'token_mismatch' => '页面已失效，请重试',
     'wechat_synced' => '已同步到企业微信',
     'operator' => [

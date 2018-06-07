@@ -462,7 +462,10 @@ class Educator extends Model {
         $realPath = $file->getRealPath();   //临时文件的绝对路径
         // 上传文件
         $filename = date('His') . uniqid() . '.' . $ext;
-        $stored = Storage::disk('uploads')->put($filename, file_get_contents($realPath));
+        $stored = Storage::disk('uploads')->put(
+            date('Y/m/d/', time()) . $filename,
+            file_get_contents($realPath)
+        );
         abort_if(
             !$stored,
             HttpStatusCode::INTERNAL_SERVER_ERROR,
@@ -477,7 +480,7 @@ class Educator extends Model {
         abort_if(
             $this->checkFileFormat(self::EXPORT_TITLES, $educators[0]),
             HttpStatusCode::NOT_ACCEPTABLE,
-            '文件格式错误'
+            __('messages.invalid_file_format')
         );
         unset($educators[0]);
         $educators = array_values($educators);
