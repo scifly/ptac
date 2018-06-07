@@ -51,7 +51,7 @@ class ImportEducator implements ShouldQueue {
         
         $response = [
             'userId' => $this->userId,
-            'title' => '创建学校',
+            'title' => '批量导入教职员工',
             'statusCode' => HttpStatusCode::OK,
             'message' => __('messages.educator.educator_imported')
         ];
