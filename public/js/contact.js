@@ -255,10 +255,10 @@
                             $gradeId = $('#' + contact.options.gradeId),
                             $classId = $('#' + contact.options.classId),
                             $departmentId = $('#' + contact.options.departmentId),
-                            id = (table !== 'educators'
+                            departmentId = (table !== 'educators'
                                 ? (range === 0 ? $classId.val() : (range === 1 ? $gradeId.val() : ''))
                                 : (range === 0 ? $departmentId.val() : ''));
-                        window.location = url + (id !== '' ? '&id=' + id : '');
+                        window.location = url + (departmentId !== '' ? '&department_id=' + departmentId : '');
                     } else {
                         contact.saveRelationship(0)
                     }
