@@ -521,10 +521,10 @@ class Educator extends Model {
         foreach ($educators as $educator) {
             if (!$educator->user) { continue; }
             $records[] = [
+                $educator->id,
                 $educator->user->realname,
                 $educator->school->name,
                 implode(', ', $educator->user->mobiles->pluck('mobile')->toArray()),
-                $educator->sms_quote,
                 $educator->created_at,
                 $educator->updated_at,
                 $educator->enabled ? '启用' : '禁用',
