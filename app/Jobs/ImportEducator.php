@@ -21,6 +21,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ImportEducator implements ShouldQueue {
@@ -192,6 +193,13 @@ class ImportEducator implements ShouldQueue {
                 }
             });
         } catch (Exception $e) {
+            Log::error(
+                get_class($e) .
+                '(code: ' . $e->getCode() . '): ' .
+                $e->getMessage() . ' at ' .
+                $e->getFile() . ' on line ' .
+                $e->getLine()
+            );
             $response['statusCode'] = $e->getCode();
             $response['message'] = $e->getMessage();
         }
