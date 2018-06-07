@@ -477,18 +477,20 @@ class Educator extends Model {
         $educators = $spreadsheet->getActiveSheet()->toArray(
             null, true, true, true
         );
-        Log::debug(json_encode($educators));
         abort_if(
-            $this->checkFileFormat(self::EXPORT_TITLES, $educators[0]),
+            $this->checkFileFormat(
+                self::EXPORT_TITLES,
+                array_values($educators[1])
+            ),
             HttpStatusCode::NOT_ACCEPTABLE,
             __('messages.invalid_file_format')
         );
-        unset($educators[0]);
+        unset($educators[1]);
         $educators = array_values($educators);
-        if (count($educators) != 0) {
+        if (count($educators)) {
             # 去除表格的空数据
-            foreach ($educators as $key => $v) {
-                if ((array_filter($v)) == null) {
+            foreach ($educators as $key => $value) {
+                if ((array_filter($value)) == null) {
                     unset($educators[$key]);
                 }
             }
@@ -626,13 +628,11 @@ class Educator extends Model {
             'name'              => 'required|string|between:2,20',
             'gender'            => ['required', Rule::in(['男', '女'])],
             'birthday'          => 'required|date',
-            // 'birthday' => ['required', 'string', 'regex:/^((19\d{2})|(20\d{2}))-([1-12])-([1-31])$/'],
             'school'            => 'required|string|between:4,20',
             'mobile'            => 'required', new Mobiles(),
-            'grades'            => 'string',
-            'classes'           => 'string',
-            'subjects'          => 'string',
-            'educators_classes' => 'string',
+            'grades'            => 'nullable|string',
+            'classes'           => 'nullable|string',
+            'classes_subjects'  => 'nullable|string',
             'departments'       => 'required|string',
         ];
         // Validator::make($data,$rules);
@@ -640,44 +640,47 @@ class Educator extends Model {
         $invalidRows = [];
         # 需要添加的数据
         $rows = [];
-        for ($i = 0; $i < count($data); $i++) {
+        foreach ($data as &$datum) {
             $user = [
-                'name'              => $data[$i][0],
-                'gender'            => $data[$i][1],
-                'birthday'          => $data[$i][2],
-                'school'            => $data[$i][3],
-                'mobile'            => $data[$i][4],
-                'grades'            => $data[$i][5],
-                'classes'           => $data[$i][6],
-                'subjects'          => $data[$i][7],
-                'educators_classes' => $data[$i][8],
-                'departments'       => $data[$i][9],
+                'name'              => $datum['A'],
+                'gender'            => $datum['B'],
+                'birthday'          => $datum['C'],
+                'school'            => $datum['D'],
+                'mobile'            => $datum['E'],
+                'grades'            => $datum['F'],
+                'classes'           => $datum['G'],
+                'classes_subjects'  => $datum['H'],
+                'departments'       => $datum['I'],
             ];
-            $status = Validator::make($user, $rules);
-            if ($status->fails()) {
-                $invalidRows[] = $data[$i];
-                unset($data[$i]);
+            if (Validator::make($user, $rules)->fails()) {
+                $invalidRows[] = $datum;
                 continue;
             }
             $school = School::whereName($user['school'])->first();
             if (!$school) {
-                $invalidRows[] = $data[$i];
-                unset($data[$i]);
+                $invalidRows[] = $datum;
                 continue;
             }
             $departments = explode(',', $user['departments']);
+            $schoolDepartmentIds = array_merge(
+                [$school->department_id],
+                (new Department())->subDepartmentIds($school->department_id)
+            );
+            $isDepartmentValid = true;
             foreach ($departments as $d) {
-                $department = Department::whereName($d)->first();
-                if (empty($department)) {
-                    $invalidRows[] = $data[$i];
-                    unset($data[$i]);
-                    continue;
+                $department = Department::whereName($d)->whereIn('id', $schoolDepartmentIds)->first();
+                if (!$department) {
+                    $isDepartmentValid = false;
+                    break;
                 }
+            }
+            if (!$isDepartmentValid) {
+                $invalidRows[] = $datum;
+                continue;
             }
             $user['departments'] = $departments;
             $user['school_id'] = $school->id;
             $rows[] = $user;
-            unset($user);
         }
         
         return $rows;

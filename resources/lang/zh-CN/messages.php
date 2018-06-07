@@ -16,6 +16,7 @@ return [
     'unauthorized' => '您无权访问该页面',
     'forbidden' => '禁止访问',
     'not_found' => '找不到需要访问的页面',
+    'school_not_found' => '没有这所学校',
     'not_acceptable' => '参数错误',
     'method_not_allowed' => '不支持该请求方法',
     'internal_server_error' => '内部服务器错误',
