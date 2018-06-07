@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use Dotenv\Exception\ValidationException;
 use Eloquent;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -653,6 +654,7 @@ class Educator extends Model {
                 'departments'       => $datum['I'],
             ];
             if (Validator::make($user, $rules)->fails()) {
+                throw new ValidationException('wtf');
                 $invalidRows[] = $datum;
                 Log::debug('validating failed');
                 continue;
