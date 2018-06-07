@@ -2,11 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ModelTrait;
-use App\Helpers\SignatureHelper;
 use App\Models\Department;
-use App\Models\Group;
-use App\Models\Student;
-use App\Models\User;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use ReflectionClass;
@@ -26,7 +22,6 @@ class TestController extends Controller {
     
     public function index() {
 
-       
         dd(date('H:i', strtotime(now())));
         // dd(round(microtime(true) * 1000));
         // dd(strtotime(date('Y-m-d'), now()));

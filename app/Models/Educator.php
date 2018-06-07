@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use Eloquent;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 use Exception;
 use Carbon\Carbon;
@@ -515,6 +516,7 @@ class Educator extends Model {
         $educatorIds = $range == 0
             ? $this->educatorIds($departmentId)
             : $this->contactIds('educator');
+        Log::debug($range . ':' . $departmentId);
         $educators = $this->whereIn('id', $educatorIds)->get();
         $records = [self::EXPORT_TITLES];
         foreach ($educators as $educator) {
