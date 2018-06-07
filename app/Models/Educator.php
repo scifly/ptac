@@ -477,6 +477,7 @@ class Educator extends Model {
         $educators = $spreadsheet->getActiveSheet()->toArray(
             null, true, true, true
         );
+        Log::debug(json_encode($educators));
         abort_if(
             $this->checkFileFormat(self::EXPORT_TITLES, $educators[0]),
             HttpStatusCode::NOT_ACCEPTABLE,
