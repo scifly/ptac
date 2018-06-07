@@ -487,6 +487,7 @@ class Educator extends Model {
         );
         unset($educators[1]);
         $educators = array_values($educators);
+        Log::debug(json_encode($educators));
         if (count($educators)) {
             # 去除表格的空数据
             foreach ($educators as $key => $value) {
