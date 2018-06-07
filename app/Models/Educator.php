@@ -517,11 +517,10 @@ class Educator extends Model {
             ? $this->educatorIds($departmentId)
             : $this->contactIds('educator');
         $educators = $this->whereIn('id', $educatorIds)->get();
-        Log::debug(json_encode($educators));
         $records = [self::EXPORT_TITLES];
         foreach ($educators as $educator) {
             if (!$educator->user) { continue; }
-            $records = [
+            $records[] = [
                 $educator->user->realname,
                 $educator->school->name,
                 implode(', ', $educator->user->mobiles->pluck('mobile')->toArray()),
