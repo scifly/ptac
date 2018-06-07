@@ -484,7 +484,7 @@ class Score extends Model {
      */
     function send($data) {
         
-        $corp = Corp::find(School::find($this->schoolId())->corp_id)->first();
+        $corp = Corp::find(School::find($this->schoolId())->corp_id);
         $app = App::whereName('成绩中心')->where('corp_id', $corp->id)->first();
         $token = Wechat::getAccessToken($corp->corpid, $app->secret);
         abort_if(
@@ -494,7 +494,7 @@ class Score extends Model {
         );
         $success = [];
         $failure = [];
-        $school = School::whereId($this->schoolId())->first();
+        $school = School::find($this->schoolId());
         foreach ($data as $d) {
             if (isset($d->mobile)) {
                 $mobiles = explode(',', $d->mobile);
@@ -982,7 +982,7 @@ class Score extends Model {
             ->get();
         foreach ($examSub as $sub) {
             #一次处理一个科目  查出这个科目下 班级下所有学生的成绩
-            $subject = Subject::whereId($sub)->first();
+            $subject = Subject::find($sub);
             # 若该学生id没有对应的score则不会在结果数组中
             $scores = Score::whereExamId($exam->id)
                 ->whereSubjectId($sub)
