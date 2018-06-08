@@ -45,6 +45,7 @@ class SyncController extends Controller {
             $sEchoStr
         );
         Log::debug('error: ' . $errCode);
+        Log::debug('sEchoStr: ' . $sEchoStr);
         if ($errCode == 0) {
             var_dump($sEchoStr);
         } else {
