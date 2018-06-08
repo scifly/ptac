@@ -1,8 +1,6 @@
 <?php
 namespace App\Helpers\Wechat;
 
-use Exception;
-
 /**
  * PKCS7Encoder class
  *
