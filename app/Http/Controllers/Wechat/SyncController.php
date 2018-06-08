@@ -33,12 +33,7 @@ class SyncController extends Controller {
         $sVerifyTimeStamp = Request::query('timestamp');
         $sVerifyNonce = Request::query('nonce');
         $sVerifyEchoStr = urldecode(Request::query('echostr'));
-        
-        Log::debug('sig: ' . $sVerifyMsgSig);
-        Log::debug('timestamp: ' . $sVerifyTimeStamp);
-        Log::debug('nonce: ' . $sVerifyNonce);
-        Log::debug('echo: ' . $sVerifyEchoStr);
-        
+
         // 需要返回的明文
         $sEchoStr = "";
         $wxcpt = new WXBizMsgCrypt($token, $encodingAesKey, $corpId);
