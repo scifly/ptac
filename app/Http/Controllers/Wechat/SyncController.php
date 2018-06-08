@@ -2,10 +2,10 @@
 namespace App\Http\Controllers\Wechat;
 
 use App\Models\Corp;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Helpers\Wechat\WXBizMsgCrypt;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Request;
 
 /**
  * 微信考勤
@@ -19,21 +19,25 @@ class SyncController extends Controller {
     
     /**
      * 接收通讯录变更事件
-     * @param Request $request
      */
-    public function sync(Request $request) {
+    public function sync() {
         
-        $paths = explode('/', $request->path());
+        $paths = explode('/', Request::path());
         $corp = Corp::whereAcronym($paths[0])->first();
         
         // 假设企业号在公众平台上设置的参数如下
         $encodingAesKey = $corp->encoding_aes_key;
         $token = $corp->token;
         $corpId = $corp->corpid;
-        $sVerifyMsgSig = $request->query('msg_signature');
-        $sVerifyTimeStamp = $request->query('timestamp');
-        $sVerifyNonce = $request->query('nonce');
-        $sVerifyEchoStr = urldecode($request->query('echostr'));
+        $sVerifyMsgSig = Request::query('msg_signature');
+        $sVerifyTimeStamp = Request::query('timestamp');
+        $sVerifyNonce = Request::query('nonce');
+        $sVerifyEchoStr = urldecode(Request::query('echostr'));
+        
+        Log::debug('sig: ' . $sVerifyMsgSig);
+        Log::debug('timestamp: ' . $sVerifyTimeStamp);
+        Log::debug('nonce: ' . $sVerifyNonce);
+        Log::debug('echo: ' . $sVerifyEchoStr);
         
         // 需要返回的明文
         $sEchoStr = "";
