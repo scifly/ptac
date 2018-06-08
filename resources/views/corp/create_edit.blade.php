@@ -89,7 +89,7 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('encoding_aes_key', '消息加密秘钥', [
+                {!! Form::label('encoding_aes_key', 'EncodingAESKey', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
@@ -105,7 +105,7 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('token', '签名生成秘钥', [
+                {!! Form::label('token', 'token', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
