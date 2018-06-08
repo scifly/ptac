@@ -179,44 +179,6 @@ class HomeController extends Controller {
         
     }
     
-    /**
-     * 接收通讯录变更事件
-     */
-    public function sync() {
-        
-        Log::debug('wtf');
-        $paths = explode('/', Request::path());
-        $corp = Corp::whereAcronym($paths[0])->first();
-        
-        // 假设企业号在公众平台上设置的参数如下
-        $encodingAesKey = $corp->encoding_aes_key;
-        $token = $corp->token;
-        $corpId = $corp->corpid;
-        $sVerifyMsgSig = Request::query('msg_signature');
-        $sVerifyTimeStamp = Request::query('timestamp');
-        $sVerifyNonce = Request::query('nonce');
-        $sVerifyEchoStr = urldecode(Request::query('echostr'));
-        Log::debug('sig: ' . $sVerifyMsgSig);
-        Log::debug('timestamp: ' . $sVerifyTimeStamp);
-        Log::debug('nonce: ' . $sVerifyNonce);
-        Log::debug('echo: ' . $sVerifyEchoStr);
-
-        // 需要返回的明文
-        $sEchoStr = "";
-        $wxcpt = new WXBizMsgCrypt($token, $encodingAesKey, $corpId);
-        $errCode = $wxcpt->VerifyURL(
-            $sVerifyMsgSig,
-            $sVerifyTimeStamp,
-            $sVerifyNonce,
-            $sVerifyEchoStr,
-            $sEchoStr
-        );
-        if ($errCode == 0) {
-            var_dump($sEchoStr);
-        } else {
-            print("ERR: " . $errCode . "\n\n");
-        }
-        
-    }
+    
     
 }
