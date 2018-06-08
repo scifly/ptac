@@ -19,7 +19,7 @@
                 </div>
             </div>
             <div class="form-group">
-                {!! Form::label('recharge', '充值条数', [
+                {!! Form::label('charge', '充值条数', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
