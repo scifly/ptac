@@ -31,10 +31,13 @@ use Throwable;
  * @property string $contact_sync_secret "通讯录同步"应用Secret
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property Carbon|null $expire_at
  * @property int $enabled
  * @property int $menu_id 对应的菜单ID
  * @property int $company_id 所属运营者公司ID
  * @property int $department_id 对应的部门ID
+ * @property string $encoding_aes_key 接收消息服务器配置项，用于加密消息体
+ * @property string $token 接收消息服务器配置项，用于生成签名
  * @method static Builder|Corp whereCorpid($value)
  * @method static Builder|Corp whereContactSyncSecret($value)
  * @method static Builder|Corp whereCreatedAt($value)
@@ -43,6 +46,9 @@ use Throwable;
  * @method static Builder|Corp whereName($value)
  * @method static Builder|Corp whereAcronym($value)
  * @method static Builder|Corp whereUpdatedAt($value)
+ * @method static Builder|Corp whereExpireAt($value)
+ * @method static Builder|Corp whereEncodingAesKey($value)
+ * @method static Builder|Corp whereToken($value)
  * @method static Builder|Corp whereCompanyId($value)
  * @method static Builder|Corp whereDepartmentId($value)
  * @method static Builder|Corp whereMenuId($value)
@@ -62,7 +68,8 @@ class Corp extends Model {
     protected $fillable = [
         'name', 'acronym', 'company_id', 'expire_at',
         'corpid', 'contact_sync_secret', 'access_token',
-        'menu_id', 'department_id', 'enabled',
+        'encoding_aes_key', 'token', 'menu_id',
+        'department_id', 'enabled',
     ];
     
     /**

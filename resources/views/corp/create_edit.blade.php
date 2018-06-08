@@ -88,6 +88,42 @@
                     </div>
                 </div>
             </div>
+            <div class="form-group">
+                {!! Form::label('encoding_aes_key', '消息加密秘钥', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    <div class="input-group" style="width: 100%;">
+                        <div class="input-group-addon" style="width: 45px;">
+                            <strong>消</strong>
+                        </div>
+                        {!! Form::text('encoding_aes_key', null, [
+                            'class' => 'form-control text-blue',
+                            'placeholder' => '(请从企业微信后台复制粘贴到此处)',
+                            'required' => 'true',
+                            'data-parsley-length' => '[43, 43]'
+                        ]) !!}
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('token', '签名生成秘钥', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    <div class="input-group" style="width: 100%;">
+                        <div class="input-group-addon" style="width: 45px;">
+                            <strong>消</strong>
+                        </div>
+                        {!! Form::text('token', null, [
+                            'class' => 'form-control text-blue',
+                            'placeholder' => '(请从企业微信后台复制粘贴到此处)',
+                            'required' => 'true',
+                            'data-parsley-length' => '[0, 255]'
+                        ]) !!}
+                    </div>
+                </div>
+            </div>
             @if (isset($corp['department_id']))
                 {!! Form::hidden('department_id', $corp['department_id']) !!}
             @endif
