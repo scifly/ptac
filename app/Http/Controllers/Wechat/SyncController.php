@@ -44,10 +44,11 @@ class SyncController extends Controller {
             $sVerifyEchoStr,
             $sEchoStr
         );
-        Log::debug('error: ' . $errCode);
-        Log::debug('sEchoStr: ' . $sEchoStr);
+        // Log::debug('error: ' . $errCode);
+        // Log::debug('sEchoStr: ' . $sEchoStr);
         if ($errCode == 0) {
-            var_dump($sEchoStr);
+            // var_dump($sEchoStr);
+            echo $sEchoStr;
         } else {
             print("ERR: " . $errCode . "\n\n");
         }
