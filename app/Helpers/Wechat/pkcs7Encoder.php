@@ -52,6 +52,7 @@ class PKCS7Encoder {
     
 }
 
+namespace App\Helpers\Wechat;
 /**
  * Prpcrypt class
  *
