@@ -25,7 +25,7 @@ class TestController extends Controller {
 
         $user = User::find(1);
         
-        dd(property_exists($user, 'id'));
+        dd(property_exists(get_class($user), 'id'));
         // dd(round(microtime(true) * 1000));
         // dd(strtotime(date('Y-m-d'), now()));
         // dd(strtotime('2018-06-04') * 1000);
