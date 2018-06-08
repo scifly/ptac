@@ -50,7 +50,7 @@ Route::group(['prefix' => 'educators'], routes('EducatorController'));
 Route::group(['prefix' => 'educators'], function () {
     $c = 'EducatorController';
     Route::get('recharge/{id}', $c . '@recharge');
-    Route::put('rechargeStore/{id}', $c . '@rechargeStore');
+    Route::put('recharge/{id}', $c . '@recharge');
     Route::post('edit/{id}', $c . '@edit');
     Route::post('create', $c . '@create');
     Route::get('export', $c . '@export');
