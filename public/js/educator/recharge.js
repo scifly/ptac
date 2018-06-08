@@ -11,7 +11,7 @@ $form.parsley().on('form:validated', function () {
             type: 'PUT',
             dataType: 'json',
             url: page.siteRoot() + 'educators/recharge/' + id,
-            data: data,
+            data: $form.serialize(),
             success: function (result) {
                 $('.overlay').hide();
                 $quote.val(result['quote']);
