@@ -50,7 +50,7 @@ use Throwable;
  * @property string|null $position 职位信息
  * @property string|null $telephone 座机号码
  * @property int|null $order 部门内的排序值，默认为0。数量必须和department一致，数值越大排序越前面
- * @property string|null $avatar_mediaid 成员头像的mediaid，通过多媒体接口上传图片获得的mediaid
+ * @property int $subscribed 是否关注
  * @property-read Custodian $custodian
  * @property-read Collection|Department[] $departments
  * @property-read Educator $educator
@@ -81,6 +81,7 @@ use Throwable;
  * @method static Builder|User whereTelephone($value)
  * @method static Builder|User whereUpdatedAt($value)
  * @method static Builder|User whereUserid($value)
+ * @method static Builder|User whereSubscribed($value)
  * @method static Builder|User whereUsername($value)
  * @mixin Eloquent
  * @property-read Collection|Client[] $clients
@@ -103,6 +104,7 @@ class User extends Authenticatable {
         'avatar_url', 'userid', 'english_name',
         'isleader', 'position', 'telephone',
         'order', 'mobile', 'enabled', 'synced',
+        'subscribed'
     ];
     
     const SELECT_HTML = '<select class="form-control select2" style="width: 100%;" id="ID" name="ID">';

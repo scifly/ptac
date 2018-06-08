@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ModelTrait;
 use App\Models\Department;
+use App\Models\User;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use ReflectionClass;
@@ -22,7 +23,9 @@ class TestController extends Controller {
     
     public function index() {
 
-        dd(date('H:i', strtotime(now())));
+        $user = User::find(1);
+        
+        dd(property_exists($user, 'haoyh'));
         // dd(round(microtime(true) * 1000));
         // dd(strtotime(date('Y-m-d'), now()));
         // dd(strtotime('2018-06-04') * 1000);

@@ -2,10 +2,13 @@
 namespace App\Http\Controllers\Wechat;
 
 use App\Events\JobResponse;
+use App\Facades\Wechat;
 use App\Helpers\HttpStatusCode;
 use App\Models\Corp;
 use App\Http\Controllers\Controller;
 use App\Helpers\Wechat\WXBizMsgCrypt;
+use App\Models\Mobile;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
@@ -40,14 +43,41 @@ class SyncController extends Controller {
         
         $content = '';
         $errcode = $wxcpt->DecryptMsg($msgSignature, $timestamp, $nonce, Request::getContent(), $content);
-        $content = simplexml_load_string($content, 'SimpleXMLElement', LIBXML_NOCDATA);
-        event(new JobResponse([
-            'userId' => 1,
-            'title' => '通讯录同步',
-            'statusCode' => HttpStatusCode::OK,
-            'message' => 'contact changed'
-        ]));
-        Log::debug(json_encode($content));
+        if ($errcode) { return false; }
+        $event = simplexml_load_string($content, 'SimpleXMLElement', LIBXML_NOCDATA);
+        $userid = $event->{'FromUserName'};
+        $user = User::whereUserid($userid)->first();
+        $member = json_decode(Wechat::getUser($token['access_token'], $userid));
+        $type = $event->{'Event'};
+        switch ($type) {
+            case 'subscribe':
+                $user->update([
+                    'avatar_url' => $member->{'avatar'},
+                    'subscribed' => 1
+                ]);
+                break;
+            case 'unsubscribe':
+                $user->update(['subscribed' => 0]);
+                break;
+            case 'change_contact':
+                $data = [
+                    'gender' => property_exists($member, 'Gender') ? ($member->{'Gender'} == 1 ? 0 : 1) : $user->gender,
+                    'email' => property_exists($member, 'Email') ? $member->{'Email'} : $user->email,
+                    'avatar_url' => property_exists($member, 'Avatar') ? $member->{'Avatar'} : $user->avatar_url,
+                    'subscribed' => property_exists($member, 'Status') ? ($member->{'Status'} == 1 ? 1 : 0) : $user->subscribed
+                ];
+                $user->update($data);
+                if (property_exists($member, 'Mobile')) {
+                    Mobile::whereUserId($user->id)->where('isdefault', 1)->first()->update([
+                        'mobile' => $member->{'Mobile'}
+                    ]);
+                }
+                break;
+            default:
+                break;
+        }
+        
+        return true;
         
     }
     
