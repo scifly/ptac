@@ -24,6 +24,7 @@ class TestController extends Controller {
     public function index() {
 
         $user = User::find(1);
+        echo $user->realname;
         
         dd(property_exists(new User(), 'realname'));
         exit;
