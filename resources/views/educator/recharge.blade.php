@@ -18,19 +18,20 @@
                     {!! $educator['sms_quote'] !!}
                 </div>
             </div>
-            {{--<div class="form-group">--}}
-                {{--{!! Form::label('recharge', '充值条数', [--}}
-                    {{--'class' => 'col-sm-3 control-label'--}}
-                {{--]) !!}--}}
-                {{--<div class="col-sm-6">--}}
-                    {{--{!! Form::text('recharge', null, [--}}
-                        {{--'class' => 'form-control text-blue',--}}
-                        {{--'placeholder' => '(请输入充值条数)',--}}
-                        {{--'required' => 'true',--}}
-                        {{--'maxlength' => '255'--}}
-                    {{--]) !!}--}}
-                {{--</div>--}}
-            {{--</div>--}}
+            <div class="form-group">
+                {!! Form::label('recharge', '充值条数', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    {!! Form::text('recharge', null, [
+                        'id' => 'recharge',
+                        'class' => 'form-control text-blue',
+                        'placeholder' => '(请输入充值条数)',
+                        'required' => 'true',
+                        'maxlength' => '255'
+                    ]) !!}
+                </div>
+            </div>
         </div>
     </div>
     @include('partials.form_buttons')
