@@ -95,7 +95,7 @@
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
                         <div class="input-group-addon" style="width: 45px;">
-                            <strong>消</strong>
+                            <strong>签</strong>
                         </div>
                         {!! Form::text('encoding_aes_key', null, [
                             'class' => 'form-control text-blue',
