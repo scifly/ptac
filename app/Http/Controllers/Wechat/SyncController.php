@@ -45,12 +45,13 @@ class SyncController extends Controller {
         $errcode = $wxcpt->DecryptMsg($msgSignature, $timestamp, $nonce, Request::getContent(), $content);
         if ($errcode) { return false; }
         $event = simplexml_load_string($content, 'SimpleXMLElement', LIBXML_NOCDATA);
+        Log::debug(property_exists($event, 'Gender'));
+        Log::debug(property_exists($event, 'Telephone'));
+        exit;
         $userid = $event->{'FromUserName'};
         $user = User::whereUserid($userid)->first();
         $member = json_decode(Wechat::getUser($token['access_token'], $userid));
-        Log::debug(property_exists($member, 'Gender'));
-        Log::debug(property_exists($member, 'Telephone'));
-        exit;
+        
         $type = $event->{'Event'};
         switch ($type) {
             case 'subscribe':
