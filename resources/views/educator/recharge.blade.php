@@ -23,13 +23,13 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('recharge', null, [
-                        'id' => 'recharge',
-                        'class' => 'form-control text-blue',
-                        'placeholder' => '(请输入充值条数)',
-                        'required' => 'true',
-                        'maxlength' => '255'
-                    ]) !!}
+                    {{--{!! Form::text('recharge', null, [--}}
+                        {{--'id' => 'recharge',--}}
+                        {{--'class' => 'form-control text-blue',--}}
+                        {{--'placeholder' => '(请输入充值条数)',--}}
+                        {{--'required' => 'true',--}}
+                        {{--'maxlength' => '255'--}}
+                    {{--]) !!}--}}
                 </div>
             </div>
         </div>
