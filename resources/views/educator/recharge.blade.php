@@ -1,6 +1,6 @@
 {!! Form::model($educator, [
     'method' => 'put',
-    'id' => 'formsEducator',
+    'id' => 'formEducator',
     'data-parsley-validate' => 'true'
 ]) !!}
 <div class="box box-default box-solid">
