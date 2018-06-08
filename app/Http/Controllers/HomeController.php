@@ -13,6 +13,7 @@ use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
@@ -193,7 +194,11 @@ class HomeController extends Controller {
         $sVerifyMsgSig = Request::query('msg_signature');
         $sVerifyTimeStamp = Request::query('timestamp');
         $sVerifyNonce = Request::query('nonce');
-        $sVerifyEchoStr = Request::query('echostr');
+        $sVerifyEchoStr = urldecode(Request::query('echostr'));
+        Log::debug('sig: ' . $sVerifyMsgSig);
+        Log::debug('timestamp: ' . $sVerifyTimeStamp);
+        Log::debug('nonce: ' . $sVerifyNonce);
+        Log::debug('echo: ' . $sVerifyEchoStr);
 
         // 需要返回的明文
         $sEchoStr = "";
