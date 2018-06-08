@@ -22,6 +22,7 @@ class SyncController extends Controller {
      */
     public function sync() {
         
+        Log::debug('4378219047389012');
         // $this->verifyUrl();
         Log::debug(json_encode(Request::all()));
         
