@@ -1,6 +1,8 @@
 <?php
 namespace App\Http\Controllers\Wechat;
 
+use App\Events\JobResponse;
+use App\Helpers\HttpStatusCode;
 use App\Models\Corp;
 use App\Http\Controllers\Controller;
 use App\Helpers\Wechat\WXBizMsgCrypt;
@@ -39,11 +41,12 @@ class SyncController extends Controller {
         $content = '';
         $errcode = $wxcpt->DecryptMsg($msgSignature, $timestamp, $nonce, Request::getContent(), $content);
         $content = simplexml_load_string($content, 'SimpleXMLElement', LIBXML_NOCDATA);
-        if (Auth::id()) {
-            Log::debug('somebody logged in ');
-        } else {
-            Log::debug('nobody logged in');
-        }
+        event(new JobResponse([
+            'userId' => 1,
+            'title' => '通讯录同步',
+            'statusCode' => HttpStatusCode::OK,
+            'message' => 'contact changed'
+        ]));
         Log::debug(json_encode($content));
         
     }
