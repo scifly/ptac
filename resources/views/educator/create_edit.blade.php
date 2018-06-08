@@ -5,7 +5,7 @@
     <div class="box-body">
         <div class="form-horizontal form-main">
             @if (isset($educator['id']))
-                {{ Form::hidden('modify', $educator['id'], ['id' => 'id']) }}
+                {{ Form::hidden('id', $educator['id'], ['id' => 'id']) }}
             @endif
             @if (isset($educator['user_id']))
                 {{ Form::hidden('user_id', $educator['user_id'], ['id' => 'user_id']) }}
@@ -35,7 +35,7 @@
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('partials.icon_addon', ['class' => 'fa-language'])
-                        {{ Form::text('user[english_name]', null, [
+                        {{ Form::text('modify', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '请填写英文名(可选)',
                             'data-parsley-type' => 'alphanum',
