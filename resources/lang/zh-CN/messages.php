@@ -49,13 +49,17 @@ return [
         'has_children' => '请先删除自部门',
     ],
     'educator' => [
-        'title' => '教职员工管理',
+        'title' => '教职员工',
         'not_found' => '没有这个教职员工',
-        'educator_imported' => '教职员工数据已导入',
+        'educator_imported' => '教职员工记录已导入',
     ],
     'grade' => [
         'title' => '年级管理',
         'not_found' => '未找到该年级的相关信息'
+    ],
+    'group' => [
+        'title' => '角色/权限',
+        'not_found' => '没有这个角色'
     ],
     'menu' => [
         'title' => '菜单管理',

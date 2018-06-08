@@ -191,7 +191,7 @@ class EducatorController extends Controller {
             abort_if(
                 empty($file),
                 HttpStatusCode::INTERNAL_SERVER_ERROR,
-                '您还没选择文件！'
+                __('messages.empty_file')
             );
             // 文件是否上传成功
             if ($file->isValid()) {

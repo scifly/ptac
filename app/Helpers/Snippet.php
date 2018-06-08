@@ -22,9 +22,9 @@ class Snippet {
     const DT_LINK_EDIT = '<a id="%s" title="编辑" href="#"><i class="fa fa-pencil" style="margin-left: 15px;"></i></a>';
     const DT_LINK_DEL = '<a id="%s" title="删除" href="#"><i class="fa fa-remove text-red" style="margin-left: 15px;"></i></a>';
     const DT_LINK_SHOW = '<a id="%s" title="详情" href="#"><i class="fa fa-bars" style="margin-left: 15px;"></i></a>';
+    const DT_LINK_RECHARGE = '<a id="%s" title="充值" href="#"><i class="fa fa-money" style="margin-left: 15px;"></i></a>';
     const DT_SPACE = '&nbsp;';
     const DT_PRIMARY = '<span class="badge badge-info">%s</span>';
-    const DT_LINK_RECHARGE = '<a id="%s" title="充值" href="#"><i class="fa fa-money"></i></a>';
     const DT_LOCK = '<i class="fa fa-lock"></i>&nbsp;已占用';
     const DT_UNLOCK = '<i class="fa fa-unlock"></i>&nbsp;空闲中';
     

@@ -52,7 +52,7 @@ class ImportEducator implements ShouldQueue {
         
         $response = [
             'userId' => $this->userId,
-            'title' => '批量导入教职员工',
+            'title' => __('messages.educator.title'),
             'statusCode' => HttpStatusCode::OK,
             'message' => __('messages.educator.educator_imported')
         ];
@@ -68,7 +68,7 @@ class ImportEducator implements ShouldQueue {
                     (new Department())->subDepartmentIds($schoolDepartmentId)
                 );
                 $group = Group::whereName('教职员工')->where('school_id', $schoolId)->first();
-                throw_if(!$group, new NotFoundHttpException(__('角色不存在')));
+                throw_if(!$group, new NotFoundHttpException(__('messages.group.not_found')));
                 foreach ($rows as $row) {
                     $mobile = Mobile::whereMobile($row['mobile'])->first();
                     if (!$mobile) {
