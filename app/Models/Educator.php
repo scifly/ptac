@@ -436,7 +436,7 @@ class Educator extends Model {
             __('messages.educator.not_found')
         );
         $updated = $educator->update([
-            'sms_quote' => $educator->sms_quote + $data['recharge']
+            'sms_quote' => $educator->sms_quote + $data['charge']
         ]);
         abort_if(
             !$updated,
