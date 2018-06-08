@@ -23,7 +23,6 @@ class SyncController extends Controller {
      */
     public function sync(Request $request) {
         
-        Log::debug('wtf');
         $paths = explode('/', $request->path());
         $corp = Corp::whereAcronym($paths[0])->first();
         
@@ -46,6 +45,7 @@ class SyncController extends Controller {
             $sVerifyEchoStr,
             $sEchoStr
         );
+        Log::debug('error: ' . $errCode);
         if ($errCode == 0) {
             var_dump($sEchoStr);
         } else {
