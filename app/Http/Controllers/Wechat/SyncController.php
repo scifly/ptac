@@ -24,7 +24,13 @@ class SyncController extends Controller {
         
         Log::debug('4378219047389012');
         // $this->verifyUrl();
-        Log::debug(json_encode(simplexml_load_string(Request::getContent())));
+        Log::debug(
+            json_encode(
+                simplexml_load_string(
+                    Request::getContent(), 'SimpleXMLElement', LIBXML_NOCDATA
+                )
+            )
+        );
         
     }
     
