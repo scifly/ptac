@@ -48,6 +48,9 @@ class SyncController extends Controller {
         $userid = $event->{'FromUserName'};
         $user = User::whereUserid($userid)->first();
         $member = json_decode(Wechat::getUser($token['access_token'], $userid));
+        Log::debug(property_exists($member, 'Gender'));
+        Log::debug(property_exists($member, 'Telephone'));
+        exit;
         $type = $event->{'Event'};
         switch ($type) {
             case 'subscribe':
