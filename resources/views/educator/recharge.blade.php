@@ -1,8 +1,8 @@
-{!! Form::model($educator, [
-    'id' => 'formEducator',
-    'method' => 'put',
-    'data-parsley-validate' => 'true'
-]) !!}
+{{--{!! Form::model($educator, [--}}
+    {{--'id' => 'formEducator',--}}
+    {{--'method' => 'put',--}}
+    {{--'data-parsley-validate' => 'true'--}}
+{{--]) !!}--}}
 <div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
@@ -35,4 +35,4 @@
     </div>
     @include('partials.form_buttons')
 </div>
-{!! Form::close() !!}
+{{--{!! Form::close() !!}--}}
