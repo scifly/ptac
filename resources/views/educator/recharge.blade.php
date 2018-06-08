@@ -1,34 +1,21 @@
-{!! Form::model($educator, ['url' => '/educators/' . $educator->id, 'method' => 'put', 'id' => 'formEducator', 'data-parsley-validate' => 'true']) !!}
+{!! Form::model($educator, [
+    'id' => 'formEducator',
+    'method' => 'put',
+    'data-parsley-validate' => 'true'
+]) !!}
 <div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($educator['id']))
-                {{ Form::hidden('id', $educator['id'], ['id' => 'id']) }}
-            @endif
-            <div class="form-group">
-                {!! Form::label('user_id', '充值用户', [
-                    'class' => 'col-sm-3 control-label',
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::select('user_id', $users, null, [
-                        'class' => 'form-control text-blue',
-                        'style' => 'width: 100%;',
-                        'disabled' => 'disabled'
-                    ]) !!}
-                </div>
-            </div>
+            {{ Form::hidden('id', $educator['id'], ['id' => 'id']) }}
             <div class="form-group">
                 {!! Form::label('sms_quote', '余额', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('sms_quote', null, [
-                        'class' => 'form-control text-blue',
-                        'disabled' => 'disabled'
-                    ]) !!}
+                    {!! $educator['sms_quote'] !!}
                 </div>
             </div>
             <div class="form-group">
@@ -44,7 +31,6 @@
                     ]) !!}
                 </div>
             </div>
-
         </div>
     </div>
     @include('partials.form_buttons')

@@ -129,7 +129,7 @@ class EducatorController extends Controller {
     }
     
     /**
-     * 教职员工充值
+     * 增加短信额度（充值）
      *
      * @param $id
      * @return bool|JsonResponse
@@ -137,27 +137,17 @@ class EducatorController extends Controller {
      */
     public function recharge($id) {
         
+        if (Request::method() == 'PUT') {
+            return $this->result(
+                $this->educator->recharge(
+                    $id, Request::all()
+                )
+            );
+        }
+        
         return $this->output([
             'educator' => $this->educator->find($id),
         ]);
-        
-    }
-    
-    /**
-     * 更新教职员工充值
-     *
-     * @param $id
-     * @return JsonResponse
-     */
-    public function rechargeStore($id) {
-        
-        $recharge = Request::get('recharge');
-        $educator = $this->educator->find($id);
-        $educator->sms_quote += $recharge;
-        
-        return $this->result(
-            $educator->save()
-        );
         
     }
     

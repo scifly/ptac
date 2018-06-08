@@ -423,6 +423,24 @@ class Educator extends Model {
     }
     
     /**
+     * 短信条数充值
+     *
+     * @param $id
+     * @param array $data
+     * @return bool
+     */
+    function recharge($id, array $data) {
+        
+        $educator = $this->find($id);
+        if (!$educator) { return false; }
+        
+        return $educator->update([
+            'sms_quote' => $educator->sms_quote + $data['recharge']
+        ]);
+        
+    }
+    
+    /**
      * 删除教职员工
      *
      * @param $id

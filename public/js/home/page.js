@@ -540,10 +540,6 @@ var page = {
         var id = $('#id').val();
         page.initForm(table, formId, table + '/update/' + id, 'PUT', options);
     },
-    recharge: function (formId, table) {
-        var id = $('#id').val();
-        page.initForm(table, formId, table + '/rechargeStore/' + id, 'PUT');
-    },
     show: function (table) {
         var id = $('#id').val();
         var url = 'edit/' + id;
