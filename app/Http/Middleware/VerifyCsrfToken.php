@@ -15,10 +15,12 @@ class VerifyCsrfToken extends BaseVerifier {
         'wlrj/ws',
         'wlrj/at',
         'wlrj/sc',
+        'wlrj/sync',
         'zhjyaqpt/mc',
         'zhjyaqpt/ws',
         'zhjyaqpt/at',
         'zhjyaqpt/sc',
+        'zhjyaqpt/sync',
     ];
 }
 
