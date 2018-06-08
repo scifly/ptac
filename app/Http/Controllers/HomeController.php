@@ -184,6 +184,7 @@ class HomeController extends Controller {
      */
     public function sync() {
         
+        Log::debug('wtf');
         $paths = explode('/', Request::path());
         $corp = Corp::whereAcronym($paths[0])->first();
         
