@@ -32,7 +32,7 @@ class SyncController extends Controller {
         $sVerifyMsgSig = Request::query('msg_signature');
         $sVerifyTimeStamp = Request::query('timestamp');
         $sVerifyNonce = Request::query('nonce');
-        $sVerifyEchoStr = urldecode(Request::query('echostr'));
+        $sVerifyEchoStr = rawurldecode(Request::query('echostr'));
 
         // 需要返回的明文
         $sEchoStr = "";
