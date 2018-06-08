@@ -22,9 +22,16 @@ class SyncController extends Controller {
      */
     public function sync() {
         
+        // $this->verifyUrl();
+        Log::debug(json_encode(Request::all()));
+        
+    }
+    
+    private function verifyUrl() {
+    
         $paths = explode('/', Request::path());
         $corp = Corp::whereAcronym($paths[0])->first();
-        
+    
         // 假设企业号在公众平台上设置的参数如下
         $encodingAesKey = $corp->encoding_aes_key;
         $token = $corp->token;
@@ -33,7 +40,7 @@ class SyncController extends Controller {
         $sVerifyTimeStamp = Request::query('timestamp');
         $sVerifyNonce = Request::query('nonce');
         $sVerifyEchoStr = rawurldecode(Request::query('echostr'));
-
+    
         // 需要返回的明文
         $sEchoStr = "";
         $wxcpt = new WXBizMsgCrypt($token, $encodingAesKey, $corpId);
