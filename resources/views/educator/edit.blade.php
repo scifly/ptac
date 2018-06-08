@@ -1,5 +1,4 @@
 {!! Form::model($educator, [
-    'url' => '/educators/' . $educator->id,
     'method' => 'put',
     'id' => 'formEducator',
     'data-parsley-validate' => 'true'
