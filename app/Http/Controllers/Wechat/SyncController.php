@@ -21,16 +21,23 @@ class SyncController extends Controller {
      * 接收通讯录变更事件
      */
     public function sync() {
+    
+        $paths = explode('/', Request::path());
+        $corp = Corp::whereAcronym($paths[0])->first();
+    
+        // 假设企业号在公众平台上设置的参数如下
+        $encodingAesKey = $corp->encoding_aes_key;
+        $token = $corp->token;
+        $corpId = $corp->corpid;
+        $wxcpt = new WXBizMsgCrypt($token, $encodingAesKey, $corpId);
         
-        Log::debug('4378219047389012');
-        // $this->verifyUrl();
-        Log::debug(
-            json_encode(
-                simplexml_load_string(
-                    Request::getContent(), 'SimpleXMLElement', LIBXML_NOCDATA
-                )
-            )
-        );
+        $msgSignature = Request::query('msg_signature');
+        $timestamp = Request::query('timestamp');
+        $nonce = Request::query('nonce');
+        
+        $content = '';
+        $errcode = $wxcpt->DecryptMsg($msgSignature, $timestamp, $nonce, Request::getContent(), $content);
+        Log::debug($content);
         
     }
     
