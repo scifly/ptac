@@ -14,7 +14,7 @@ $form.parsley().on('form:validated', function () {
             data: $form.serialize(),
             success: function (result) {
                 $('.overlay').hide();
-                $quote.val(result['quote']);
+                $quote.html(result['quote'] + ' 条');
                 page.inform(result.title, result.message, page.success);
             },
             error: function (e) {
