@@ -1,5 +1,6 @@
 <?php
 namespace App\Helpers\Wechat;
+use Illuminate\Support\Facades\Log;
 
 /**
  * 对公众平台发送给公众账号的消息加解密示例代码.
@@ -53,6 +54,8 @@ class WXBizMsgCrypt {
             return $ret;
         }
         $signature = $array[1];
+        Log::debug('sig: ' . $signature);
+        Log::debug('gis: ' . $sMsgSignature);
         if ($signature != $sMsgSignature) {
             return ErrorCode::$ValidateSignatureError;
         }
