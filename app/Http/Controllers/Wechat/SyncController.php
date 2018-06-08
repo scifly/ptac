@@ -37,7 +37,8 @@ class SyncController extends Controller {
         
         $content = '';
         $errcode = $wxcpt->DecryptMsg($msgSignature, $timestamp, $nonce, Request::getContent(), $content);
-        Log::debug($content);
+        $content = simplexml_load_string($content, 'SimpleXMLElement', LIBXML_NOCDATA);
+        Log::debug(json_encode($content));
         
     }
     
