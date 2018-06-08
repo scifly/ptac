@@ -35,7 +35,7 @@
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('partials.icon_addon', ['class' => 'fa-language'])
-                        {{ Form::text('modify', null, [
+                        {{ Form::text('user[english_name]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '请填写英文名(可选)',
                             'data-parsley-type' => 'alphanum',

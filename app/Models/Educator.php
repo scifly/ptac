@@ -425,15 +425,29 @@ class Educator extends Model {
      *
      * @param $id
      * @param array $data
-     * @return bool
+     * @return \Illuminate\Http\JsonResponse
      */
     function recharge($id, array $data) {
         
         $educator = $this->find($id);
-        if (!$educator) { return false; }
-        
-        return $educator->update([
+        abort_if(
+            !$educator,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.educator.not_found')
+        );
+        $updated = $educator->update([
             'sms_quote' => $educator->sms_quote + $data['recharge']
+        ]);
+        abort_if(
+            !$updated,
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            __('messages.fail')
+        );
+        
+        return response()->json([
+            'title' => __('messages.educator.title'),
+            'message' => __('messages.ok'),
+            'quote' => $this->find($id)->sms_quote
         ]);
         
     }

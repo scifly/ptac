@@ -15,7 +15,9 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! $educator['sms_quote'] !!}
+                    <span id="quote" style="margin-top: 6px; display: block;">
+                        {!! $educator['sms_quote'] !!} 条
+                    </span>
                 </div>
             </div>
             <div class="form-group">

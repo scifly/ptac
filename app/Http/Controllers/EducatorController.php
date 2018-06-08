@@ -138,10 +138,8 @@ class EducatorController extends Controller {
     public function recharge($id) {
         
         if (Request::method() == 'PUT') {
-            return $this->result(
-                $this->educator->recharge(
-                    $id, Request::all()
-                )
+            return $this->educator->recharge(
+                $id, Request::all()
             );
         }
         
