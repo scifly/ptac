@@ -1,10 +1,8 @@
 <?php
 namespace App\Models;
 
-use Dotenv\Exception\ValidationException;
 use Eloquent;
 use Illuminate\Support\Facades\Log;
-use Throwable;
 use Exception;
 use Carbon\Carbon;
 use App\Rules\Mobiles;
