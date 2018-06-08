@@ -94,9 +94,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
-                        <div class="input-group-addon" style="width: 45px;">
-                            <strong>签</strong>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-key'])
                         {!! Form::text('encoding_aes_key', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请从企业微信后台复制粘贴到此处)',
@@ -112,9 +110,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
-                        <div class="input-group-addon" style="width: 45px;">
-                            <strong>消</strong>
-                        </div>
+                        @include('partials.icon_addon', ['class' => 'fa-key'])
                         {!! Form::text('token', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请从企业微信后台复制粘贴到此处)',
