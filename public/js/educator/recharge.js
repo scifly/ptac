@@ -1,3 +1,4 @@
+//# sourceURL=recharge.js
 var $form = $('#formEducator'),
     id = $('#id').val(),
     $quote = $('#quote');
