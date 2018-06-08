@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Wechat;
 use App\Models\Corp;
 use App\Http\Controllers\Controller;
 use App\Helpers\Wechat\WXBizMsgCrypt;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
@@ -38,6 +39,11 @@ class SyncController extends Controller {
         $content = '';
         $errcode = $wxcpt->DecryptMsg($msgSignature, $timestamp, $nonce, Request::getContent(), $content);
         $content = simplexml_load_string($content, 'SimpleXMLElement', LIBXML_NOCDATA);
+        if (Auth::id()) {
+            Log::debug('somebody logged in ');
+        } else {
+            Log::debug('nobody logged in');
+        }
         Log::debug(json_encode($content));
         
     }
