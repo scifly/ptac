@@ -4,13 +4,7 @@ namespace App\Helpers\Wechat;
  * 对公众平台发送给公众账号的消息加解密示例代码.
  *
  * @copyright Copyright (c) 1998-2014 Tencent Inc.
- */
-include_once "sha1.php";
-include_once "xmlparse.php";
-include_once "pkcs7Encoder.php";
-include_once "errorCode.php";
-
-/**
+ *
  * 1.第三方回复加密消息给公众平台；
  * 2.第三方收到公众平台发送的消息，验证消息的安全性，并对消息进行解密。
  */
@@ -27,21 +21,25 @@ class WXBizMsgCrypt {
      * @param $Corpid string 公众平台的Corpid
      */
     public function __construct($token, $encodingAesKey, $Corpid) {
+        
         $this->m_sToken = $token;
         $this->m_sEncodingAesKey = $encodingAesKey;
         $this->m_sCorpid = $Corpid;
+        
     }
     
-    /*
-	*验证URL
-    *@param sMsgSignature: 签名串，对应URL参数的msg_signature
-    *@param sTimeStamp: 时间戳，对应URL参数的timestamp
-    *@param sNonce: 随机串，对应URL参数的nonce
-    *@param sEchoStr: 随机串，对应URL参数的echostr
-    *@param sReplyEchoStr: 解密之后的echostr，当return返回0时有效
-    *@return：成功0，失败返回对应的错误码
-	*/
+    /**
+     * 验证URL
+     *
+     * @param $sMsgSignature : 签名串，对应URL参数的msg_signature
+     * @param $sTimeStamp : 时间戳，对应URL参数的timestamp
+     * @param $sNonce : 随机串，对应URL参数的nonce
+     * @param $sEchoStr : 随机串，对应URL参数的echostr
+     * @param $sReplyEchoStr : 解密之后的echostr，当return返回0时有效
+     * @return string 成功0，失败返回对应的错误码
+     */
     public function VerifyURL($sMsgSignature, $sTimeStamp, $sNonce, $sEchoStr, &$sReplyEchoStr) {
+        
         if (strlen($this->m_sEncodingAesKey) != 43) {
             return ErrorCode::$IllegalAesKey;
         }
@@ -64,6 +62,7 @@ class WXBizMsgCrypt {
         $sReplyEchoStr = $result[1];
         
         return ErrorCode::$OK;
+        
     }
     
     /**
@@ -83,6 +82,7 @@ class WXBizMsgCrypt {
      * @return int 成功0，失败返回对应的错误码
      */
     public function EncryptMsg($sReplyMsg, $sTimeStamp, $sNonce, &$sEncryptMsg) {
+        
         $pc = new Prpcrypt($this->m_sEncodingAesKey);
         //加密
         $array = $pc->encrypt($sReplyMsg, $this->m_sCorpid);
@@ -107,6 +107,7 @@ class WXBizMsgCrypt {
         $sEncryptMsg = $xmlparse->generate($encrypt, $signature, $sTimeStamp, $sNonce);
         
         return ErrorCode::$OK;
+        
     }
     
     /**
@@ -126,6 +127,7 @@ class WXBizMsgCrypt {
      * @return int 成功0，失败返回对应的错误码
      */
     public function DecryptMsg($sMsgSignature, $sTimeStamp = null, $sNonce, $sPostData, &$sMsg) {
+        
         if (strlen($this->m_sEncodingAesKey) != 43) {
             return ErrorCode::$IllegalAesKey;
         }
