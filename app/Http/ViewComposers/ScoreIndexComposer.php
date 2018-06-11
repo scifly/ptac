@@ -26,6 +26,17 @@ class ScoreIndexComposer {
         $subjectList = Subject::whereEnabled(1)
             ->whereIn('id', explode(',', $exam ? $exam->subject_ids : ''))
             ->get()->pluck('name', 'id')->toArray();
+        $items = [
+            'score' => '分数',
+            'grade_rank' => '年排名',
+            'class_rank' => '班排名',
+            'grade_average' => '年平均',
+            'class_average' => '班平均',
+            'grade_max' => '年最高',
+            'class_max' => '班最高',
+            'grade_min' => '年最低',
+            'class_min' => '班最低'
+        ];
 
         $view->with([
             'buttons'        => [
@@ -64,6 +75,7 @@ class ScoreIndexComposer {
             'exams'          => $examList,
             'classes'        => $classList,
             'subjects'       => $subjectList,
+            'items'          => $items,
             'importTemplate' => 'files/scores.xls',
         ]);
         

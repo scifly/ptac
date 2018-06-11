@@ -33,22 +33,28 @@
 							@endforeach
 						</div>
 					</div>
-					<div class="form-group" id="item-list">
-						{{ Form::label('items', '发布项目', [
-							'class' => 'control-label col-sm-3'
-						]) }}
-						<div class="col-sm-8">
-							{{ Form::checkbox('items', 'score', false, ['class' => 'minimal']) }} 分数 <br />
-							{{ Form::checkbox('items', 'grade_rank', false, ['class' => 'minimal']) }} 年排名 <br />
-							{{ Form::checkbox('items', 'class_rank', false, ['class' => 'minimal']) }} 班排名 <br />
-							{{ Form::checkbox('items', 'grade_average', false, ['class' => 'minimal']) }} 年平均 <br />
-							{{ Form::checkbox('items', 'class_average', false, ['class' => 'minimal']) }} 班平均 <br />
-							{{ Form::checkbox('items', 'grade_max', false, ['class' => 'minimal']) }} 年最高 <br />
-							{{ Form::checkbox('items', 'class_max', false, ['class' => 'minimal']) }} 班最高 <br />
-							{{ Form::checkbox('items', 'grade_min', false, ['class' => 'minimal']) }} 年最低 <br />
-							{{ Form::checkbox('items', 'class_min', false, ['class' => 'minimal']) }} 班最低
-						</div>
-					</div>
+					@include('partials.multiple_select', [
+						'id' => 'items',
+						'label' => '发布项目',
+						'items' => $items,
+						'required' => 'true'
+					])
+					{{--<div class="form-group" id="item-list">--}}
+						{{--{{ Form::label('items', '发布项目', [--}}
+							{{--'class' => 'control-label col-sm-3'--}}
+						{{--]) }}--}}
+						{{--<div class="col-sm-8">--}}
+							{{--{{ Form::checkbox('items', 'score', false, ['class' => 'minimal']) }} 分数 <br />--}}
+							{{--{{ Form::checkbox('items', 'grade_rank', false, ['class' => 'minimal']) }} 年排名 <br />--}}
+							{{--{{ Form::checkbox('items', 'class_rank', false, ['class' => 'minimal']) }} 班排名 <br />--}}
+							{{--{{ Form::checkbox('items', 'grade_average', false, ['class' => 'minimal']) }} 年平均 <br />--}}
+							{{--{{ Form::checkbox('items', 'class_average', false, ['class' => 'minimal']) }} 班平均 <br />--}}
+							{{--{{ Form::checkbox('items', 'grade_max', false, ['class' => 'minimal']) }} 年最高 <br />--}}
+							{{--{{ Form::checkbox('items', 'class_max', false, ['class' => 'minimal']) }} 班最高 <br />--}}
+							{{--{{ Form::checkbox('items', 'grade_min', false, ['class' => 'minimal']) }} 年最低 <br />--}}
+							{{--{{ Form::checkbox('items', 'class_min', false, ['class' => 'minimal']) }} 班最低--}}
+						{{--</div>--}}
+					{{--</div>--}}
 					<div class="form-group">
 						<table id="send-table" style="width: 100%; margin-top: 20px;"
 							   class="display nowrap table table-striped table-bordered table-hover table-condensed">
