@@ -23,6 +23,8 @@ class TestController extends Controller {
     
     public function index() {
 
+        $l = 'A';
+        dd(chr(ord($l) + 1));
         $user = User::find(1);
         echo $user->realname;
         

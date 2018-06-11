@@ -1,14 +1,13 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
-use App\Http\Requests\ScoreRequest;
+use Throwable;
+use Exception;
 use App\Models\Exam;
 use App\Models\Score;
-use Exception;
 use Illuminate\Http\JsonResponse;
+use App\Http\Requests\ScoreRequest;
 use Illuminate\Support\Facades\Request;
-use Throwable;
 
 /**
  * 成绩

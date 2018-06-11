@@ -566,61 +566,66 @@ class Score extends Model {
             date('Y/m/d/', time()) . $filename,
             file_get_contents($realPath)
         );
-        if ($stored) {
-            $spreadsheet = IOFactory::load(
-                $this->uploadedFilePath($filename)
-            );
-            $scores = $spreadsheet->getActiveSheet()->toArray(
-                null, true, true, true
-            );
-            abort_if(
-                !empty(array_diff(self::IMPORT_TITLES, $scores[0])),
-                HttpStatusCode::NOT_ACCEPTABLE,
-                '文件格式错误'
-            );
-            # 这次考试对应的科目id
-            $exam = Exam::find(Request::input('examId'));
-            $subjectIds = explode(',', $exam->subject_ids);
-            $aScores = $scores;
-            #去除表头后的数据
-            array_shift($aScores);
-            $aScores = array_values($aScores);
-            if (count($aScores) != 0) {
-                # 去除表格的空数据
-                foreach ($aScores as $key => $v) {
-                    if ((array_filter($v)) == null) {
-                        unset($aScores[$key]);
-                    }
+        abort_if(
+            !$stored,
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            __('messages.file_upload_failed')
+        );
+        $spreadsheet = IOFactory::load(
+            $this->uploadedFilePath($filename)
+        );
+        $scores = $spreadsheet->getActiveSheet()->toArray(
+            null, true, true, true
+        );
+        abort_if(
+            !empty(array_diff(self::IMPORT_TITLES, $scores[0])),
+            HttpStatusCode::NOT_ACCEPTABLE,
+            __('messages.invalid_file_format')
+        );
+        $titles = $scores[0];
+        $subjectNames = [];
+        
+        # 这次考试对应的科目id
+        $exam = Exam::find(Request::input('examId'));
+        $subjectIds = explode(',', $exam->subject_ids);
+        $aScores = $scores;
+        #去除表头后的数据
+        array_shift($aScores);
+        $aScores = array_values($aScores);
+        if (count($aScores) != 0) {
+            # 去除表格的空数据
+            foreach ($aScores as $key => $value) {
+                if ((array_filter($value)) == null) {
+                    unset($aScores[$key]);
                 }
             }
-            #处理表头循环单列的数据插入分数
-            for ($i = 3; $i < count($scores[0]); $i++) {
-                $data = [];
-                $subject = Subject::whereSchoolId($this->schoolId())
-                    ->where('name', $scores[0][$i])->first();
-                #判断录入科目分数是否在这次考试中  在
-                if ($subject) {
-                    if (in_array($subject->id, $subjectIds)) {
-                        foreach ($aScores as $a) {
-                            $data[] = [
-                                'class'          => $a[0],
-                                'student_number' => $a[1],
-                                'student_name'   => $a[2],
-                                'subject_id'     => $subject->id,
-                                'score'          => $a[$i],
-                                'exam_id'        => Request::input('examId'),
-                            ];
-                        }
-                        ImportScore::dispatch(
-                            $data, Request::input('class_id'), Auth::id()
-                        );
+        }
+        # 处理表头循环单列的数据插入分数
+        for ($i = 3; $i < count($scores[0]); $i++) {
+            $data = [];
+            $subject = Subject::whereSchoolId($this->schoolId())
+                ->where('name', $scores[0][])->first();
+            #判断录入科目分数是否在这次考试中  在
+            if ($subject) {
+                if (in_array($subject->id, $subjectIds)) {
+                    foreach ($aScores as $a) {
+                        $data[] = [
+                            'class'          => $a['A'],
+                            'student_number' => $a['B'],
+                            'student_name'   => $a['C'],
+                            'subject_id'     => $subject->id,
+                            'score'          => $a[$i],
+                            'exam_id'        => Request::input('examId'),
+                        ];
                     }
+                    ImportScore::dispatch(
+                        $data, Request::input('class_id'), Auth::id()
+                    );
                 }
             }
-            return true;
         }
         
-        return false;
+        return true;
         
     }
     
