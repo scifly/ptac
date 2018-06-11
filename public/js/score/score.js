@@ -288,15 +288,10 @@
                 $('#preview').on('click', function () {
                     var examId = $('#send_exam_id').val(),
                         classId = $('#send_class_id').val(),
-                        subjectIds = [],
-                        items = [];
+                        subjectIds = [];
 
                     $('#subject-list .checked').each(function(){
                         subjectIds.push($(this).find('.minimal').val());
-                    });
-                    // language=JQuery-CSS
-                    $('#item-list .checked').each(function(){
-                        items.push($(this).find('.minimal').val());
                     });
                     $('.overlay').show();
                     $.ajax({
@@ -308,7 +303,7 @@
                             examId: examId,
                             classId: classId,
                             subjectIds: subjectIds,
-                            items: items
+                            items: $('#items').val()
                         },
                         success: function (result) {
                             var html = '';
@@ -370,7 +365,7 @@
                             $sciPrev.after(html);
                             page.initSelect2();
 
-                            // 发布内容列表
+                            // 发布科目列表
                             html = '<input type="checkbox" name="content" class="minimal" value="-1"> 总分';
                             $.each(result['subjects'], function (index, subject) {
                                 html += '<br /><input type="checkbox" ' +
