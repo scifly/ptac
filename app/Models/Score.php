@@ -578,11 +578,11 @@ class Score extends Model {
             null, true, true, true
         );
         abort_if(
-            !empty(array_diff(self::IMPORT_TITLES, array_values($scores[0]))),
+            !empty(array_diff(self::IMPORT_TITLES, array_values($scores[1]))),
             HttpStatusCode::NOT_ACCEPTABLE,
             __('messages.invalid_file_format')
         );
-        $titles = $scores[0];
+        $titles = $scores[1];
         $subjectNames = [];
         for ($i = ord('D'); $i < ord('D') + sizeof($titles); $i++) {
             $subjectNames[] = $titles[chr($i)];
