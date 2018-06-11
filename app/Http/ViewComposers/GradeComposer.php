@@ -27,7 +27,9 @@ class GradeComposer {
             ->get();
         $educatorUsers = [];
         foreach ($educators as $educator) {
-            $educatorUsers[$educator->id] = $educator->user->realname;
+            if ($educator->user) {
+                $educatorUsers[$educator->id] = $educator->user->realname;
+            }
         }
     
         $selectedEducators = [];
