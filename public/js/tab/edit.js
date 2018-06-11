@@ -3,3 +3,4 @@ var options = {
     templateSelection: page.formatState
 };
 page.edit('formTab', 'tabs', options);
+page.initSelect2();
