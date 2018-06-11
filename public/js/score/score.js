@@ -206,9 +206,9 @@
                     {className: 'text-center', targets: [1, 2, 3, 4, 5, 6, 7, 8, 10, 11]},
                     {className: 'text-right', targets: [9]}
                 ]);
-                page.initSelect2();
-                page.initMinimalIcheck();
                 page.loadCss('css/score/send.css');
+                page.initMinimalIcheck();
+                page.initSelect2();
 
                 // 成绩发送
                 score.onSendClick();
@@ -366,7 +366,7 @@
                             page.initSelect2();
 
                             // 发布科目列表
-                            html = '<input type="checkbox" name="content" class="minimal" value="-1"> 总分 ';
+                            html = '<input type="checkbox" name="content" class="minimal" value="-1"> 总分&nbsp;';
                             $.each(result['subjects'], function (index, subject) {
                                 html += '<input type="checkbox" ' +
                                     'name="content" ' +
