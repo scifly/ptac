@@ -22,8 +22,14 @@ class StudentComposer {
             ->where('enabled', 1)
             ->pluck('name', 'id')
             ->toArray();
-        reset($grades);
-        $classes = Squad::whereGradeId(key($grades))
+        
+        if (Request::route('id')) {
+            $gradeId = Student::find(Request::route('id'))->squad->grade_id;
+        } else {
+            reset($grades);
+            $gradeId = key($grades);
+        }
+        $classes = Squad::whereGradeId($gradeId)
             ->where('enabled', 1)
             ->pluck('name', 'id')
             ->toArray();
