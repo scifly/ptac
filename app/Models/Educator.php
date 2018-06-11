@@ -208,7 +208,8 @@ class Educator extends Model {
                     'english_name' => $user['english_name'],
                     'telephone'    => $user['telephone'],
                     'enabled'      => $user['enabled'],
-                    'synced'       => $user['synced']
+                    'synced'       => 0,
+                    'subscribed'   => 0
                 ]);
                 
                 # 创建教职员工(当角色选择学校管理员时，也同时创建教职员工数据20180207 by wenw)
@@ -589,15 +590,16 @@ class Educator extends Model {
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $user = Auth::user();
-                    $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
-                    $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
+                    // $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
+                    // $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
                     $rechargeLink = sprintf(Snippet::DT_LINK_RECHARGE, 'recharge_' . $id);
                     
-                    return
-                        Snippet::status($d) .
-                        ($user->can('act', self::uris()['edit']) ? $editLink : '') .
-                        ($user->can('act', self::uris()['destroy']) ? $delLink : '') .
+                    return $this->syncStatus($d, $row) .
                         ($user->can('act', self::uris()['recharge']) ? $rechargeLink : '');
+                        // Snippet::status($d) .
+                        // ($user->can('act', self::uris()['edit']) ? $editLink : '') .
+                        // ($user->can('act', self::uris()['destroy']) ? $delLink : '') .
+                        // ($user->can('act', self::uris()['recharge']) ? $rechargeLink : '');
                 },
             ],
         ];

@@ -92,16 +92,24 @@ trait ModelTrait {
      *
      * @param $d
      * @param $row
+     * @param bool $contact - 是否为联系人（学生、教职员工、监护人）
      * @return string
      */
-    function syncStatus($d, $row) {
+    function syncStatus($d, $row, $contact = true) {
         
         $user = Auth::user();
         $id = $row['id'];
         $status = Snippet::status($d);
         $status .= ($row['synced']
             ? sprintf(Snippet::ICON, 'fa-wechat text-green', '已同步')
-            : sprintf(Snippet::ICON, 'fa-wechat text-gray', '未同步'));
+            : sprintf(Snippet::ICON, 'fa-wechat text-gray', '未同步')
+        );
+        if ($contact) {
+            $status .= ($row['subscribed']
+                ? sprintf(Snippet::ICON, 'fa-registered text-green', '已关注')
+                : sprintf(Snippet::ICON, 'fa-registered text-gray', '未关注')
+            );
+        }
         $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
         $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
     

@@ -2,7 +2,6 @@
 namespace App\Models;
 
 use Eloquent;
-use Illuminate\Support\Facades\Log;
 use Throwable;
 use Exception;
 use Carbon\Carbon;
@@ -137,7 +136,7 @@ class Student extends Model {
      * @param array $data
      * @return bool|mixed
      * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     function store(array $data) {
         
@@ -158,7 +157,8 @@ class Student extends Model {
                     'enabled'      => $data['user']['enabled'],
                     'avatar_url'   => '',
                     'isleader'     => 0,
-                    'synced'       => 0
+                    'synced'       => 0,
+                    'subscribed'   => 0
                 ]);
 
                 # 创建学籍

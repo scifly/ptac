@@ -316,6 +316,7 @@ class User extends Authenticatable {
                     'synced'       => $data['synced'],
                     'avatar_url'   => '',
                     'isleader'     => 0,
+                    'subscribed'   => 0
                 ]);
                 # 创建教职员工
                 Educator::create([

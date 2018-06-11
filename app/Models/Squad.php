@@ -258,7 +258,7 @@ class Squad extends Model {
             [
                 'db'        => 'Squad.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
-                    return $this->syncStatus($d, $row);
+                    return $this->syncStatus($d, $row, false);
                 },
             ],
             ['db' => 'Department.synced as synced', 'dt' => 7]

@@ -99,7 +99,8 @@ class Custodian extends Model {
                     'enabled'      => $data['user']['enabled'],
                     'avatar_url'   => '00001.jpg',
                     'isleader'     => 0,
-                    'synced'       => 0
+                    'synced'       => 0,
+                    'subscribed'   => 0
                 ]);
 
                 # 创建监护人(Custodian) 记录

@@ -1,16 +1,12 @@
 <?php
 namespace App\Http\Controllers\Wechat;
 
-use App\Events\JobResponse;
-use App\Facades\Wechat;
-use App\Helpers\HttpStatusCode;
 use App\Models\Corp;
+use App\Models\User;
+use App\Models\Mobile;
+use App\Facades\Wechat;
 use App\Http\Controllers\Controller;
 use App\Helpers\Wechat\WXBizMsgCrypt;
-use App\Models\Mobile;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -45,9 +41,6 @@ class SyncController extends Controller {
         $errcode = $wxcpt->DecryptMsg($msgSignature, $timestamp, $nonce, Request::getContent(), $content);
         if ($errcode) { return false; }
         $event = simplexml_load_string($content, 'SimpleXMLElement', LIBXML_NOCDATA);
-        Log::debug(property_exists($event, 'Gender'));
-        Log::debug(property_exists($event, 'Telephone'));
-        exit;
         $userid = $event->{'FromUserName'};
         $user = User::whereUserid($userid)->first();
         $member = json_decode(Wechat::getUser($token['access_token'], $userid));
@@ -65,10 +58,18 @@ class SyncController extends Controller {
                 break;
             case 'change_contact':
                 $data = [
-                    'gender' => property_exists($member, 'Gender') ? ($member->{'Gender'} == 1 ? 0 : 1) : $user->gender,
-                    'email' => property_exists($member, 'Email') ? $member->{'Email'} : $user->email,
-                    'avatar_url' => property_exists($member, 'Avatar') ? $member->{'Avatar'} : $user->avatar_url,
-                    'subscribed' => property_exists($member, 'Status') ? ($member->{'Status'} == 1 ? 1 : 0) : $user->subscribed
+                    'gender' => property_exists($member, 'Gender')
+                        ? ($member->{'Gender'} == 1 ? 0 : 1)
+                        : $user->gender,
+                    'email' => property_exists($member, 'Email')
+                        ? $member->{'Email'}
+                        : $user->email,
+                    'avatar_url' => property_exists($member, 'Avatar')
+                        ? $member->{'Avatar'}
+                        : $user->avatar_url,
+                    'subscribed' => property_exists($member, 'Status')
+                        ? ($member->{'Status'} == 1 ? 1 : 0)
+                        : $user->subscribed
                 ];
                 $user->update($data);
                 if (property_exists($member, 'Mobile')) {
@@ -85,7 +86,7 @@ class SyncController extends Controller {
         
     }
     
-    private function verifyUrl() {
+    public function verifyUrl() {
     
         $paths = explode('/', Request::path());
         $corp = Corp::whereAcronym($paths[0])->first();
@@ -109,14 +110,8 @@ class SyncController extends Controller {
             $sVerifyEchoStr,
             $sEchoStr
         );
-        // Log::debug('error: ' . $errCode);
-        // Log::debug('sEchoStr: ' . $sEchoStr);
-        if ($errCode == 0) {
-            // var_dump($sEchoStr);
-            echo $sEchoStr;
-        } else {
-            print("ERR: " . $errCode . "\n\n");
-        }
+        
+        echo !$errCode ? $sEchoStr : "ERR: " . $errCode . "\n\n";
         
     }
     

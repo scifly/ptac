@@ -1,15 +1,13 @@
 <?php
 namespace App\Http\Controllers\Auth;
 
-use App\Helpers\HttpStatusCode;
-use App\Helpers\Wechat\WXBizMsgCrypt;
-use App\Http\Controllers\Controller;
-use App\Models\Corp;
-use App\Models\Mobile;
 use App\Models\User;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use App\Models\Mobile;
 use Illuminate\Http\Request;
+use App\Helpers\HttpStatusCode;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller {
     
