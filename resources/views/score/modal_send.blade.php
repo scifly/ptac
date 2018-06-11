@@ -22,14 +22,14 @@
 						{{ Form::label('subjects', '发布科目', [
 							'class' => 'control-label col-sm-3'
 						]) }}
-						<div class="col-sm-8" id="subject-list" style="margin-top: 5px;">
+						<div class="col-sm-8" id="subject-list" style="margin-top: 6px;">
 							{{ Form::checkbox('content', -1, false, [
 								'class' => 'minimal'
-							]) }} 总分
+							]) }} 总分&nbsp;
 							@foreach ($subjects as $key => $value)
 								{{ Form::checkbox('content', $key, false, [
 									'class' => 'minimal'
-								]) }} {{ $value }}
+								]) }} {{ $value }}&nbsp;
 							@endforeach
 						</div>
 					</div>
