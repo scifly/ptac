@@ -567,6 +567,7 @@ class User extends Authenticatable {
                 },
             ],
             ['db' => 'User.synced', 'dt' => 10],
+            ['db' => 'User.subscribed', 'dt' => 11],
         ];
         $joins = [
             [

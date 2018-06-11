@@ -602,6 +602,8 @@ class Educator extends Model {
                         // ($user->can('act', self::uris()['recharge']) ? $rechargeLink : '');
                 },
             ],
+            ['db' => 'User.synced', 'dt' => 5],
+            ['db' => 'User.subscribed', 'dt' => 6],
         ];
         $joins = [
             [

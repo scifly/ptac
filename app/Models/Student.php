@@ -533,7 +533,8 @@ class Student extends Model {
                     return $this->syncStatus($d, $row);
                 },
             ],
-            ['db' => 'User.synced', 'dt' => 12]
+            ['db' => 'User.synced', 'dt' => 12],
+            ['db' => 'User.subscribed', 'dt' => 13]
         ];
         $joins = [
             [

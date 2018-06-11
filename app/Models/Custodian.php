@@ -352,7 +352,8 @@ class Custodian extends Model {
                     return $this->syncStatus($d, $row);
                 },
             ],
-            ['db' => 'User.synced', 'dt' => 9]
+            ['db' => 'User.synced', 'dt' => 9],
+            ['db' => 'User.subscribed', 'dt' => 10],
         ];
         $joins = [
             [
