@@ -461,9 +461,12 @@
                 data.append('classId', classId);
                 $('#import-scores').on('click', function () {
                     $.ajax({
-                        url: "../scores/import",
                         type: 'POST',
+                        dataType: 'json',
+                        url: "../scores/import",
                         data: data,
+                        contentType: false,
+                        processData: false,
                         success: function (result) {
                             page.inform(result.title, result.message, page.success);
                         },
