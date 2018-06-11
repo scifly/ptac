@@ -25,11 +25,11 @@
 						<div class="col-sm-8" id="subject-list">
 							{{ Form::checkbox('content', -1, false, [
 								'class' => 'minimal'
-							]) }} 总分 <br />
+							]) }} 总分
 							@foreach ($subjects as $key => $value)
 								{{ Form::checkbox('content', $key, false, [
 									'class' => 'minimal'
-								]) }} {{ $value }} <br />
+								]) }} {{ $value }} 
 							@endforeach
 						</div>
 					</div>
