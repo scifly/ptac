@@ -87,6 +87,7 @@ return [
         'title' => '成绩中心',
         'zero_classes' => '您尚未绑定任何班级',
         'unauthorized_stat' => '您无权进行该成绩分析',
+        'exam_not_found' => '找不到需要导入成绩对应的考试',
         'score_imported' => '考试成绩已成功导入',
         'message_template' => '尊敬的%s家长, %s考试成绩已出: %s。',
         'message_send_result' => '成功: %s条; <br />失败: %s条'

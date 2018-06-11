@@ -591,6 +591,11 @@ class Score extends Model {
             ->where('school_id', $this->schoolId())->get();
         # 这次考试对应的科目id
         $exam = Exam::find(Request::input('examId'));
+        abort_if(
+            !$exam,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.score.exam_not_found')
+        );
         $examSubjectIds = explode(',', $exam->subject_ids);
         #去除表头后的数据
         array_shift($scores);
