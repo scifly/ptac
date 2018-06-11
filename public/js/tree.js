@@ -540,15 +540,23 @@
                     $('.tree-box .box-footer').hide();
                 });
             },
+            closeTree: function () {
+                $(document).off('click', '.close-targets').on('click', '.close-targets',
+                    function () { tree.close(); }
+                )
+            },
             cancel: function () {
-                $(document).off('click', '#revoke').on('click', '#revoke', function () {
-                    $('.box-footer').show();
-                    $('.form-main').show();
-                    $('.tree-box').hide();
-                    $('.tree-box .box-footer').hide();
-                    $('#tree').jstree('destroy');
-                    $('.todo-list').empty();
-                });
+                $(document).off('click', '#revoke').on('click', '#revoke',
+                    function () { tree.close(); }
+                );
+            },
+            close: function () {
+                $('.box-footer').show();
+                $('.form-main').show();
+                $('.tree-box').hide();
+                $('.tree-box .box-footer').hide();
+                $('#tree').jstree('destroy');
+                $('.todo-list').empty();
             },
             remove: function () {
                 $(document).on('click', '.remove-node', function () {
@@ -562,6 +570,7 @@
                 tree.unbindEvents();
                 // 部门树页面 的取消按钮
                 tree.cancel();
+                tree.closeTree();
                 // 点击教职员工编辑表单中的删除部门按钮
                 tree.purge();
                 // 点击表单中的部门修改按钮
