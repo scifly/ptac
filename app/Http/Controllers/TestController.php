@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ModelTrait;
 use App\Models\Department;
 use App\Models\User;
+use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use ReflectionClass;
@@ -24,7 +25,7 @@ class TestController extends Controller {
     public function index() {
 
         $l = 'A';
-        dd(chr(ord($l) + 1));
+        dd(Carbon::createFromTimeString('2018-08-28'));
         $user = User::find(1);
         echo $user->realname;
         
