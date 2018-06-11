@@ -469,7 +469,6 @@ class Score extends Model {
                 'classes'  => $classes->toArray(),
                 'subjects' => $subjects->toArray(),
             ];
-            
         }
         
         return response()->json($result);

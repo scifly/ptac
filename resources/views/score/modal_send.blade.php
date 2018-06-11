@@ -1,6 +1,6 @@
 <div class="modal fade" id="modal-send">
 	<div class="modal-dialog">
-		<div class="modal-content">
+		<div class="modal-content modal-lg">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 				<h4 class="modal-title">成绩发送</h4>
