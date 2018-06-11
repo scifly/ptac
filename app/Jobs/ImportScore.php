@@ -1,7 +1,6 @@
 <?php
 namespace App\Jobs;
 
-use Illuminate\Support\Facades\Log;
 use Throwable;
 use Exception;
 use Validator;
@@ -48,7 +47,7 @@ class ImportScore implements ShouldQueue {
             'userId' => $this->userId,
             'title' => __('messages.score.title'),
             'statusCode' => HttpStatusCode::OK,
-            'message' => __('messages.score.score_imported')
+            'message' => __('messages.score.import_succeeded')
         ];
         list($inserts, $updates, $illegals) = $this->validateData($this->data);
         if (empty($updates) && empty($inserts)) {

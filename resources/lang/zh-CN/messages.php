@@ -88,7 +88,9 @@ return [
         'zero_classes' => '您尚未绑定任何班级',
         'unauthorized_stat' => '您无权进行该成绩分析',
         'exam_not_found' => '找不到需要导入成绩对应的考试',
-        'score_imported' => '考试成绩已成功导入',
+        'import_started' => '文件上传成功，开始导入成绩...',
+        'import_succeeded' => '考试成绩已成功导入',
+        'import_request_submitted' => '已提交导入请求<br />需要新增的成绩数：%s<br />需要更新的成绩数：%s<br />非法成绩数: %s, 请参考导出文件',
         'message_template' => '尊敬的%s家长, %s考试成绩已出: %s。',
         'message_send_result' => '成功: %s条; <br />失败: %s条'
     ],

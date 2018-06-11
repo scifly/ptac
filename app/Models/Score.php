@@ -649,7 +649,6 @@ class Score extends Model {
         $classId = Request::query('classId');
         $examId = Request::query('examId');
         $studentIds = Student::whereClassId($classId)->get()->pluck('id')->toArray();
-        Log::debug('studentIds: ' . json_encode($studentIds));
         $scores = $this->whereExamId($examId)->whereIn('student_id', $studentIds)->get();
         $records = [self::EXPORT_TITLES];
         foreach ($scores as $score) {

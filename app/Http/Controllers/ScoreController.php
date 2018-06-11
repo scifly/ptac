@@ -194,7 +194,11 @@ class ScoreController extends Controller {
         
         return $examId
             ? $this->exam->classList($examId, 'import')
-            : $this->result($this->score->upload());
+            : $this->result(
+                $this->score->upload(),
+                __('messages.score.import_request_submitted'),
+                __('messages.file_upload_failed')
+            );
         
     }
     
