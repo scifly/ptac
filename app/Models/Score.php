@@ -582,6 +582,8 @@ class Score extends Model {
             HttpStatusCode::NOT_ACCEPTABLE,
             __('messages.invalid_file_format')
         );
+        
+        # 需要导入成绩的科目
         $titles = $scores[1];
         $subjectNames = [];
         for ($i = ord('D'); $i < ord('D') + sizeof($titles) - 3; $i++) {
@@ -589,6 +591,7 @@ class Score extends Model {
         }
         $subjects = Subject::whereIn('name', $subjectNames)
             ->where('school_id', $this->schoolId())->get();
+        
         # 这次考试对应的科目id
         $exam = Exam::find(Request::input('examId'));
         abort_if(
@@ -626,6 +629,7 @@ class Score extends Model {
                 $index = chr(ord($index) + 1);
             }
         }
+        Log::debug(json_encode($data));
         ImportScore::dispatch(
             $data, Request::input('classId'), Auth::id()
         );
