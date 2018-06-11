@@ -630,7 +630,7 @@ class Score extends Model {
             }
         }
         ImportScore::dispatch(
-            $data, Request::input('classId'), Auth::id()
+            $data, Auth::id(), Request::input('classId')
         );
         
         return true;

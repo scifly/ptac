@@ -69,7 +69,6 @@ class ImportScore implements ShouldQueue {
             }
             # todo: 生成非法数据excel文件及下载链接
         }
-        Log::debug(json_encode($response));
         event(new JobResponse($response));
     
         return true;
