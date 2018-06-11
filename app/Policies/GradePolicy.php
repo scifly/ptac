@@ -51,7 +51,10 @@ class GradePolicy {
             $departmentId = Request::input('department_id');
             $educatorIds = Request::input('educator_ids');
             $isDepartmentAllowed = in_array($departmentId, $this->gradeIds());
-            $isEducatorAllowed = empty(array_diff($educatorIds, $this->contactIds('educator')));
+            $isEducatorAllowed = empty(array_diff(
+                explode(',', $educatorIds),
+                $this->contactIds('educator')
+            ));
         }
         if (in_array($action, ['edit', 'update', 'destroy'])) {
             $isGradeAllowed = in_array($grade->id, $this->gradeIds());
