@@ -590,16 +590,10 @@ class Educator extends Model {
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $user = Auth::user();
-                    // $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
-                    // $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
                     $rechargeLink = sprintf(Snippet::DT_LINK_RECHARGE, 'recharge_' . $id);
                     
                     return $this->syncStatus($d, $row) .
                         ($user->can('act', self::uris()['recharge']) ? $rechargeLink : '');
-                        // Snippet::status($d) .
-                        // ($user->can('act', self::uris()['edit']) ? $editLink : '') .
-                        // ($user->can('act', self::uris()['destroy']) ? $delLink : '') .
-                        // ($user->can('act', self::uris()['recharge']) ? $rechargeLink : '');
                 },
             ],
             ['db' => 'User.synced', 'dt' => 5],

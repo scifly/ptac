@@ -399,19 +399,7 @@ class School extends Model {
             [
                 'db'        => 'School.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    $user = Auth::user();
-                    $id = $row['id'];
-                    $status = Snippet::status($d);
-                    $status .= ($row['synced']
-                        ? sprintf(Snippet::ICON, 'fa-wechat text-green', '已同步')
-                        : sprintf(Snippet::ICON, 'fa-wechat text-gray', '未同步'));
-                    $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
-                    $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
-    
-                    return
-                        $status .
-                        ($user->can('act', $this->uris()['edit']) ? $editLink : '') .
-                        ($user->can('act', $this->uris()['destroy']) ? $delLink : '');
+                    return $this->syncStatus($d, $row, false);
                 },
             ],
             ['db' => 'Department.synced as synced', 'dt' => 8]
