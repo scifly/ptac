@@ -350,7 +350,7 @@
                             }
                         }
                     }).on('loaded.jstree', function () {
-                        $tree.jstree('close_all');
+                        $tree.jstree('open_all');
                         tree.sort(table);
                     }).on('move_node.jstree', function (e, data) {
                         return tree.move(table, e, data);
@@ -443,7 +443,7 @@
                 }).on('loaded.jstree', function () {
                     var $tree = $('#tree');
                     // 展开所有节点
-                    $tree.jstree('open_all');
+                    $tree.jstree('close_all');
                     // 初始化 根据后台数据节点数组 选中
                     $tree.jstree().check_node(selectedDepartmentIds);
                     $($tree.jstree(true).get_json($tree, {flat: true})).each(function () {
