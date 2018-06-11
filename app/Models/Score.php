@@ -629,7 +629,6 @@ class Score extends Model {
                 $index = chr(ord($index) + 1);
             }
         }
-        Log::debug(json_encode($data));
         ImportScore::dispatch(
             $data, Request::input('classId'), Auth::id()
         );

@@ -1,6 +1,7 @@
 <?php
 namespace App\Jobs;
 
+use Illuminate\Support\Facades\Log;
 use Throwable;
 use Exception;
 use Validator;
@@ -50,6 +51,9 @@ class ImportScore implements ShouldQueue {
             'message' => __('messages.score.score_imported')
         ];
         list($inserts, $updates, $illegals) = $this->validateData($this->data);
+        Log::debug(json_encode($inserts));
+        Log::debug(json_encode($updates));
+        Log::debug(json_encode($illegals));
         if (empty($updates) && empty($inserts)) {
             # 数据格式不正确，中止任务
             $response['statusCode'] = HttpStatusCode::NOT_ACCEPTABLE;
