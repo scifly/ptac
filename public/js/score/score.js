@@ -514,7 +514,7 @@
             },
             onAnalyzeClick: function () {
                 $('#analyze').off('click').on('click', function () {
-                    var statType = $.parseInt($('.checked').find('.minimal').val()),
+                    var statType = parseInt($('.checked').find('.minimal').val()),
                         data = {
                             _token: score.token(),
                             classId: $('#class_id').val()
