@@ -321,7 +321,7 @@
                     $tree.jstree({
                         core: {
                             themes: tree.themes(table !== 'menus'),
-                            expand_selected_onload: false,
+                            expand_selected_onload: true,
                             check_callback: function (o, n, p, i, m) {
                                 return tree.checkCallback(o, n, p, i, m, this, table);
                             },
@@ -350,7 +350,7 @@
                             }
                         }
                     }).on('loaded.jstree', function () {
-                        $tree.jstree('open_all');
+                        $tree.jstree('close_all');
                         tree.sort(table);
                     }).on('move_node.jstree', function (e, data) {
                         return tree.move(table, e, data);
