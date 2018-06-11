@@ -61,8 +61,13 @@ class SchoolRequest extends FormRequest {
             $input['school_type_id'] = School::find($this->schoolId())->school_type_id;
         }
         if (!isset($input['corp_id'])) {
+            $user = Auth::user();
             $departmentId = $this->head(Auth::user());
-            $input['corp_id'] = Corp::whereDepartmentId($departmentId)->first()->id;
+            if ($user->group->name == '企业') {
+                $input['corp_id'] = Corp::whereDepartmentId($departmentId)->first()->id;
+            } else {
+                $input['corp_id'] = School::whereDepartmentId($departmentId)->first()->corp_id;
+            }
         }
         $this->replace($input);
         
