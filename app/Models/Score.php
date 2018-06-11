@@ -584,7 +584,7 @@ class Score extends Model {
         );
         $titles = $scores[1];
         $subjectNames = [];
-        for ($i = ord('D'); $i < ord('D') + sizeof($titles) - 1; $i++) {
+        for ($i = ord('D'); $i < ord('D') + sizeof($titles) - 3; $i++) {
             $subjectNames[] = $titles[chr($i)];
         }
         $subjects = Subject::whereIn('name', $subjectNames)
