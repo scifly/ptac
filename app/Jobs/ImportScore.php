@@ -105,28 +105,25 @@ class ImportScore implements ShouldQueue {
             $status = Validator::make($score, $rules);
             if ($status->fails()) {
                 $illegals[] = $datum;
-                unset($data[$i]);
                 continue;
             }
             $student = Student::whereStudentNumber($score['student_number'])->first();
             # 数据非法
             if (!$student) {
                 $illegals[] = $datum;
-                unset($data[$i]);
                 continue;
             }
-            #判断这个学生是否在这个班级
+            # 判断这个学生是否在这个班级
             if ($student->class_id != $this->classId) {
                 $illegals[] = $datum;
-                unset($data[$i]);
                 continue;
             }
-            $existScore = Score::whereEnabled(1)
+            $scoreExists = Score::whereEnabled(1)
                 ->whereExamId($score['exam_id'])
                 ->whereStudentId($student->id)
                 ->whereSubjectId($score['subject_id'])
                 ->first();
-            if ($existScore) {
+            if ($scoreExists) {
                 $updates[] = $score;
             } else {
                 $inserts[] = $score;

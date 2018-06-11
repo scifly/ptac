@@ -578,52 +578,52 @@ class Score extends Model {
             null, true, true, true
         );
         abort_if(
-            !empty(array_diff(self::IMPORT_TITLES, $scores[0])),
+            !empty(array_diff(self::IMPORT_TITLES, array_values($scores[0]))),
             HttpStatusCode::NOT_ACCEPTABLE,
             __('messages.invalid_file_format')
         );
         $titles = $scores[0];
         $subjectNames = [];
-        
+        for ($i = ord('D'); $i < ord('D') + sizeof($titles); $i++) {
+            $subjectNames[] = $titles[chr($i)];
+        }
+        $subjects = Subject::whereIn('name', $subjectNames)
+            ->where('school_id', $this->schoolId())->get();
         # 这次考试对应的科目id
         $exam = Exam::find(Request::input('examId'));
-        $subjectIds = explode(',', $exam->subject_ids);
-        $aScores = $scores;
+        $examSubjectIds = explode(',', $exam->subject_ids);
         #去除表头后的数据
-        array_shift($aScores);
-        $aScores = array_values($aScores);
-        if (count($aScores) != 0) {
-            # 去除表格的空数据
-            foreach ($aScores as $key => $value) {
-                if ((array_filter($value)) == null) {
-                    unset($aScores[$key]);
-                }
+        array_shift($scores);
+        # 去除表格的空数据
+        foreach ($scores as $key => $value) {
+            if ((array_filter($value)) == null) {
+                unset($scores[$key]);
             }
         }
-        # 处理表头循环单列的数据插入分数
-        for ($i = 3; $i < count($scores[0]); $i++) {
-            $data = [];
-            $subject = Subject::whereSchoolId($this->schoolId())
-                ->where('name', $scores[0][])->first();
-            #判断录入科目分数是否在这次考试中  在
-            if ($subject) {
-                if (in_array($subject->id, $subjectIds)) {
-                    foreach ($aScores as $a) {
-                        $data[] = [
-                            'class'          => $a['A'],
-                            'student_number' => $a['B'],
-                            'student_name'   => $a['C'],
-                            'subject_id'     => $subject->id,
-                            'score'          => $a[$i],
-                            'exam_id'        => Request::input('examId'),
-                        ];
-                    }
-                    ImportScore::dispatch(
-                        $data, Request::input('class_id'), Auth::id()
-                    );
-                }
+        $data = [];
+        # 封装需要导入的数据
+        foreach ($scores as $score) {
+            $basic = [
+                'class' => $score['A'],
+                'student_number' => $score['B'],
+                'student_name' => $score['C'],
+                'exam_id' => Request::input('examId')
+            ];
+            $index = 'D';
+            foreach ($subjects as $subject) {
+                if (!in_array($subject->id, $examSubjectIds)) { continue; }
+                $data[] = array_merge(
+                    $basic, [
+                        'subject_id' => $subject->id,
+                        'score' => $score[$index],
+                    ]
+                );
+                $index = chr(ord($index) + 1);
             }
         }
+        ImportScore::dispatch(
+            $data, Request::input('classId'), Auth::id()
+        );
         
         return true;
         
