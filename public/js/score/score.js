@@ -452,18 +452,18 @@
             },
             onImportScoresClick: function () {
                 var examId = $('#import_exam_id').val(),
-                    classId = $('#import_class_id').val();
+                    classId = $('#import_class_id').val(),
+                    data = new FormData();
 
+                data.append('file', $('#fileupload')[0].files[0]);
+                data.append('_token', score.token());
+                data.append('examId', examId);
+                data.append('classId', classId);
                 $('#import-scores').on('click', function () {
                     $.ajax({
                         url: "../scores/import",
                         type: 'POST',
-                        data: {
-                            file: $('#fileupload')[0].files[0],
-                            _token: score.token(),
-                            examId: examId,
-                            classId: classId
-                        },
+                        data: data,
                         success: function (result) {
                             page.inform(result.title, result.message, page.success);
                         },

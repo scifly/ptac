@@ -54,16 +54,22 @@ class ImportScore implements ShouldQueue {
             # 数据格式不正确，中止任务
             $response['statusCode'] = HttpStatusCode::NOT_ACCEPTABLE;
             $response['message'] = __('messages.score.invalid_data_format');
-            event(new JobResponse($response));
-            return false;
+        } else {
+            try {
+                DB::transaction(function () use ($inserts, $updates) {
+                    # 插入数据
+                    $this->insert($inserts);
+                    # 更新数据
+                    $this->update($updates);
+                });
+            } catch (Exception $e) {
+                $response['statusCode'] = $e->getCode();
+                $response['messages'] = $e->getMessage();
+            }
+            # todo: 生成非法数据excel文件及下载链接
         }
-        # 插入数据
-        $this->insert($inserts);
-        # 更新数据
-        $this->update($updates);
-        # todo: 生成非法数据excel文件及下载链接
         event(new JobResponse($response));
-        
+    
         return true;
         
     }
