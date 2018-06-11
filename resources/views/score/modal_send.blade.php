@@ -18,11 +18,11 @@
 						'items' => $classes,
 						'icon' => 'fa fa-users'
 					])
-					<div class="form-group" style="margin-top: 5px;">
+					<div class="form-group">
 						{{ Form::label('subjects', '发布科目', [
 							'class' => 'control-label col-sm-3'
 						]) }}
-						<div class="col-sm-8" id="subject-list">
+						<div class="col-sm-8" id="subject-list" style="margin-top: 5px;">
 							{{ Form::checkbox('content', -1, false, [
 								'class' => 'minimal'
 							]) }} 总分
