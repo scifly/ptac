@@ -43,7 +43,7 @@ class SubjectPolicy {
         $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
         $action = explode('/', Request::path())[1];
         if (in_array($action, ['store', 'update'])) {
-            $gradeIds = explode(',', Request::input('grade_ids'));
+            $gradeIds = Request::input('grade_ids');
             $isGradeAllowed = empty(array_diff($gradeIds, $this->gradeIds()));
         }
         if (in_array($action, ['edit', 'update', 'delete'])) {
