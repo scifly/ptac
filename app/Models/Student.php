@@ -362,7 +362,7 @@ class Student extends Model {
             abort_if(
                 !empty(array_diff(self::EXCEL_FILE_TITLE, $students[1])),
                 HttpStatusCode::NOT_ACCEPTABLE,
-                __('messages.student.invalid_file_format')
+                __('messages.invalid_file_format')
             );
             unset($students[0]);
             $students = array_values($students);

@@ -69,7 +69,7 @@ class ImportStudent implements ShouldQueue {
         if (empty($updates) && empty($inserts)) {
             # 数据格式不正确，中止任务
             $response['statusCode'] = HttpStatusCode::NOT_ACCEPTABLE;
-            $response['message'] = __('messages.student.invalid_data_format');
+            $response['message'] = __('messages.invalid_data_format');
             event(new JobResponse($response));
             return false;
         }

@@ -25,6 +25,7 @@ return [
     'invalid_credentials' => '用户名/密码错误',
     'invalid_argument' => '参数无效',
     'invalid_file_format' => '文件格式错误',
+    'invalid_data_format' => '导入数据格式不正确',
     'token_mismatch' => '页面已失效，请重试',
     'wechat_synced' => '已同步到企业微信',
     'operator' => [
@@ -86,7 +87,6 @@ return [
         'title' => '成绩中心',
         'zero_classes' => '您尚未绑定任何班级',
         'unauthorized_stat' => '您无权进行该成绩分析',
-        'invalid_data_format' => '导入的数据格式不正确',
         'score_imported' => '考试成绩已成功导入',
         'message_template' => '尊敬的%s家长, %s考试成绩已出: %s。',
         'message_send_result' => '成功: %s条; <br />失败: %s条'
@@ -100,8 +100,6 @@ return [
         'not_found' => '未找到该学生的相关信息',
         'import_started' => '文件上传成功，开始导入学籍...',
         'import_succeeded' => '已完成学籍导入',
-        'invalid_file_format' => '文件格式错误',
-        'invalid_data_format' => '导入数据格式不正确',
         'import_request_submitted' => '已提交导入请求<br />需要新增的学籍数：%s<br />需要更新的学籍数：%s<br />非法学籍数: %s, 请参考导出文件',
         'empty_import_file' => '没有数据可以导入',
     ],
