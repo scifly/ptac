@@ -51,9 +51,6 @@ class ImportScore implements ShouldQueue {
             'message' => __('messages.score.score_imported')
         ];
         list($inserts, $updates, $illegals) = $this->validateData($this->data);
-        Log::debug(empty($inserts));
-        Log::debug(empty($updates));
-        Log::debug(json_encode($illegals));
         if (empty($updates) && empty($inserts)) {
             # 数据格式不正确，中止任务
             $response['statusCode'] = HttpStatusCode::NOT_ACCEPTABLE;
@@ -72,6 +69,7 @@ class ImportScore implements ShouldQueue {
             }
             # todo: 生成非法数据excel文件及下载链接
         }
+        Log::debug(json_encode($response));
         event(new JobResponse($response));
     
         return true;
@@ -132,7 +130,6 @@ class ImportScore implements ShouldQueue {
             } else {
                 $inserts[] = $score;
             }
-            unset($score);
         }
         
         return [$inserts, $updates, $illegals];
