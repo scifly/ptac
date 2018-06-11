@@ -559,12 +559,12 @@ class Score extends Model {
             HttpStatusCode::BAD_REQUEST,
             __('messages.bad_request')
         );
-        $ext = $file->getClientOriginalExtension();     // 扩展名//xls
         $realPath = $file->getRealPath();   //临时文件的绝对路径
         // 上传文件
-        $filename = date('His') . uniqid() . '.' . $ext;
+        $filename = uniqid() . '-' . $file->getClientOriginalName();
         $stored = Storage::disk('uploads')->put(
-            $filename, file_get_contents($realPath)
+            date('Y/m/d/', time()) . $filename,
+            file_get_contents($realPath)
         );
         if ($stored) {
             $spreadsheet = IOFactory::load(
