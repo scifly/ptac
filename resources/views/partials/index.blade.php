@@ -3,9 +3,6 @@
         @include('partials.list_header')
     </div>
     <div class="box-body">
-        <div class="row">
-            <p class="help-block pull-right">Here goes the help-block, put your comment here.</p>
-        </div>
         <table id="data-table" style="width: 100%"
                class="display nowrap table table-striped table-bordered table-hover table-condensed">
             <thead>
