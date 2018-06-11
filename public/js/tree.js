@@ -321,7 +321,7 @@
                     $tree.jstree({
                         core: {
                             themes: tree.themes(table !== 'menus'),
-                            expand_selected_onload: true,
+                            expand_selected_onload: false,
                             check_callback: function (o, n, p, i, m) {
                                 return tree.checkCallback(o, n, p, i, m, this, table);
                             },
