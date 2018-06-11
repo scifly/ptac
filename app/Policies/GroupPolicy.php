@@ -51,7 +51,7 @@ class GroupPolicy {
         $action = explode('/', Request::path())[1];
         $isGroupAllowed = $isMenuAllowed = $isTabAllowed = $isActionAllowed = false;
         if (in_array($action, ['store', 'update'])) {
-            $menuIds = Request::input('menu_ids');
+            $menuIds = explode(',', Request::input('menu_ids'));
             $tabIds = Request::input('tab_ids');
             $actionIds = Request::input('action_ids');
             $schoolId = Request::input('school_id');
