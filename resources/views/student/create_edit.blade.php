@@ -144,7 +144,7 @@
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('partials.icon_addon', ['class' => 'fa fa-calendar'])
-                        {!! Form::date('birthday', $student->birthday ?? null, [
+                        {!! Form::date('birthday', $student ? date('Y-m-d', strtotime($student->birthday)) : null, [
                             'required' => 'true',
                             'class' => 'form-control text-blue',
                             'data-parsley-type' => 'date',
