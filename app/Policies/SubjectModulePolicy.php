@@ -46,7 +46,7 @@ class SubjectModulePolicy {
         if (in_array($action, ['store', 'update'])) {
             $subjectId = Request::input('subject_id');
             $allowedSubjectIds = School::find($this->schoolId())
-                ->subjectModules->pluck('id')->toArray();
+                ->subjects->pluck('id')->toArray();
             $isSubjectAllowed = in_array($subjectId, $allowedSubjectIds);
         }
         if (in_array($action, ['edit', 'update', 'delete'])) {
