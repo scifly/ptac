@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StudentRequest;
 use App\Models\Grade;
+use App\Models\Squad;
 use App\Models\Student;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -107,9 +108,10 @@ class StudentController extends Controller {
         if (Request::method() === 'POST') {
             return $this->student->classList();
         }
-    
+        $student = $this->student->find($id);
+        $student->grade_id = Squad::find($student->class_id)->grade_id;
         return $this->output([
-            'student' => $this->student->find($id),
+            'student' => $student // $this->student->find($id),
         ]);
         
     }
