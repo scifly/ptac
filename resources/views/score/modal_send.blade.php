@@ -18,7 +18,7 @@
 						'items' => $classes,
 						'icon' => 'fa fa-users'
 					])
-					<div class="form-group">
+					<div class="form-group" style="margin-top: 5px;">
 						{{ Form::label('subjects', '发布科目', [
 							'class' => 'control-label col-sm-3'
 						]) }}
@@ -29,7 +29,7 @@
 							@foreach ($subjects as $key => $value)
 								{{ Form::checkbox('content', $key, false, [
 									'class' => 'minimal'
-								]) }} {{ $value }} 
+								]) }} {{ $value }}
 							@endforeach
 						</div>
 					</div>
@@ -39,7 +39,7 @@
 						'items' => $items,
 						'required' => 'true'
 					])
-					<div class="form-group">
+					<div class="form-group" style="margin: 0 5px;">
 						<table id="send-table" style="width: 100%; margin-top: 20px;"
 							   class="display nowrap table table-striped table-bordered table-hover table-condensed">
 							<thead>
