@@ -104,7 +104,7 @@
                             type: 'POST',
                             dataType: 'json',
                             url: url,
-                            data: $form.serialize(),
+                            data: page.formData($form), // $form.serialize(),
                             success: function(result) {
                                 page.inform(result.title, result.message, page.success);
                             },
