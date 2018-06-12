@@ -79,6 +79,7 @@
                                     <div class="box-header with-border">
                                         <label for="tabs[{{ $ta['tab']['id'] }}]['enabled']" class="tabsgroup">
                                             <input name="tabs[{{ $ta['tab']['id'] }}]['enabled']"
+                                                   value="{{ $ta['tab']['id'] }}"
                                                    id="tabs[]" type="checkbox" class="minimal tabs"
                                                    @if (isset($selectedTabIds) && in_array($ta['tab']['id'], $selectedTabIds))
                                                    checked
