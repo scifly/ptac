@@ -9,6 +9,7 @@ use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use App\Helpers\PolicyTrait;
 use App\Helpers\HttpStatusCode;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -96,6 +97,9 @@ class EducatorPolicy {
             case 'recharge':
                 return $isSuperRole ? $isEducatorAllowed : ($isEducatorAllowed && $this->action($user));
             case 'update':
+                Log::debug($isGroupAllowed);
+                Log::debug($isEducatorAllowed);
+                Log::debug($isDepartmentAllowed);
                 return $isSuperRole
                     ? ($isGroupAllowed && $isEducatorAllowed && $isDepartmentAllowed)
                     : ($isGroupAllowed && $isEducatorAllowed && $isDepartmentAllowed && $this->action($user));
