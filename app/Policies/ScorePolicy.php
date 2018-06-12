@@ -91,7 +91,9 @@ class ScorePolicy {
                     $isClassAllowed = in_array($classId, $this->classIds());
                     $allowedSubjectIds = Subject::whereSchoolId($this->schoolId())
                         ->pluck('id')->toArray();
-                    $isSubjectAllowed = empty(array_diff($subjectIds, $allowedSubjectIds));
+                    $isSubjectAllowed = empty(array_diff(
+                        $subjectIds, array_merge([-1], $allowedSubjectIds)
+                    ));
                     Log::debug($isExamAllowed);
                     Log::debug($isClassAllowed);
                     Log::debug($isSubjectAllowed);
