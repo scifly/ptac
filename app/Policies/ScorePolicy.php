@@ -94,9 +94,6 @@ class ScorePolicy {
                     $isSubjectAllowed = empty(array_diff(
                         $subjectIds, array_merge([-1], $allowedSubjectIds)
                     ));
-                    Log::debug($isExamAllowed);
-                    Log::debug($isClassAllowed);
-                    Log::debug($isSubjectAllowed);
                     return $isSuperRole
                         ? ($isExamAllowed && $isClassAllowed && $isSubjectAllowed)
                         : ($isExamAllowed && $isClassAllowed && $isSubjectAllowed && $this->action($user));
