@@ -19,7 +19,8 @@ class GroupRequest extends FormRequest {
         
         return [
             'name'       => 'required|string|between:2,255|unique:groups,name,' .
-                $this->input('id') . ',id',
+                $this->input('id') . ',id,' .
+                'school_id,' . $this->input('school_id'),
             'school_id'  => 'required|integer',
             'remark'     => 'required|string|between:2,20',
             'menu_ids'   => 'required|array',
