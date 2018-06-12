@@ -4,7 +4,7 @@ namespace App\Http\ViewComposers;
 use App\Helpers\ModelTrait;
 use App\Models\Exam;
 use App\Models\ExamType;
-use App\Models\School;
+use App\Models\Squad;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
@@ -16,13 +16,11 @@ class ExamComposer {
     public function compose(View $view) {
         
         $schoolId = $this->schoolId();
-        $school = School::find($schoolId);
         $examtypes = ExamType::whereSchoolId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id');
-        $squads = $school->classes
-            ->where('enabled', 1)
-            ->pluck('name', 'id');
+        $squads = Squad::whereIn('id', $this->classIds())
+            ->where('enabled', 1)->pluck('name', 'id');
         $subjects = Subject::whereSchoolId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id');
