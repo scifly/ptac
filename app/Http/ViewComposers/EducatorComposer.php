@@ -8,6 +8,7 @@ use App\Models\DepartmentType;
 use App\Models\Educator;
 use App\Models\Group;
 use App\Models\School;
+use App\Models\Squad;
 use App\Models\Subject;
 use App\Models\Team;
 use Illuminate\Contracts\View\View;
@@ -28,14 +29,28 @@ class EducatorComposer {
     public function compose(View $view) {
         
         $schoolId = $this->schoolId();
-        $school = School::find($schoolId);
-        $squads = $school->classes->where('enabled', 1)
-            ->pluck('name', 'id')->toArray();
+    
+        $squads = School::whereIn('id', $this->classIds())
+            ->where('enabled', 1)->pluck('name', 'id')
+            ->toArray();
+        $gradeIds = [];
+        foreach ($squads as $id => $name) {
+            $gradeIds[] = Squad::find($id)->grade_id;
+        }
+        $gradeIds = array_unique($gradeIds);
+        
         $squads[0] = '(请选择)';
         ksort($squads);
         $subjects = Subject::whereSchoolId($schoolId)
-            ->where('enabled', 1)->pluck('name', 'id')
-            ->toArray();
+            ->where('enabled', 1)->get();
+        $subjectList = [];
+        foreach ($subjects as $subject) {
+            $intersect = array_intersect($gradeIds, explode(',', $subject->grade_ids));
+            if (!empty($intersect)) {
+                $subjectList[$subject->id] = $subject->name;
+            }
+        }
+    
         $teams = Team::whereSchoolId($schoolId)
             ->where('enabled', 1)->pluck('name', 'id')
             ->toArray();
@@ -43,8 +58,8 @@ class EducatorComposer {
             ->where('enabled', 1)
             ->pluck('name', 'id')->toArray();
         
-        $subjects[0] = '(请选择)';
-        ksort($subjects);
+        $subjectList[0] = '(请选择)';
+        ksort($subjectList);
         $mobiles = $selectedTeams = $selectedDepartmentIds = $selectedDepartments = [];
         if (Request::route('id')) {
             $selectedTeams = [];
@@ -61,7 +76,7 @@ class EducatorComposer {
         }
         $view->with([
             'squads'                => $squads,
-            'subjects'              => $subjects,
+            'subjects'              => $subjectList,
             'groups'                => $groups,
             'mobiles'               => $mobiles,
             'teams'                 => $teams,
