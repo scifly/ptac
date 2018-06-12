@@ -94,12 +94,25 @@
                         var $id = $('#id'),
                             url = page.siteRoot() + group.options.table +
                                 ($id.length === 0 ? '/store' : ('/update/' + $id.val())),
-                            menuIds = $menuTree.jstree().get_selected();
+                            menuIds = $menuTree.jstree().get_selected(),    // 选定的菜单id
+                            tabIds = [],    // 选定的卡片id
+                            actionIds = []; // 选定的功能id
 
                         $menuTree.find(".jstree-undetermined").each(function (i, element) {
                             menuIds.push($(element).parents().eq(1).attr('id'));
                         });
+                        $('.tabsgroup').find('.checked').find('.minimal').each(function () {
+                            tabIds.push($(this).val());
+                        });
+                        $('.actionsgroup').find('.checked').find('.minimal').each(function () {
+                            actionIds.push($(this).val());
+                        });
                         $('#menu_ids').val(menuIds.join());
+                        $('#tab_ids').val(tabIds.join());
+                        $('#action_ids').val(actionIds.join());
+                        console.log(tabIds);
+                        console.log(actionIds);
+                        return false;
                         $.ajax({
                             type: 'POST',
                             dataType: 'json',
@@ -114,16 +127,6 @@
                         });
                     }
                 }).on('form:submit', function() { return false; });
-            },
-            updateSelected: function (type) {
-                var selectedIds = [],
-                    $ids = type === 'tab' ? $('.tabsgroup') : $('.actionsgroup'),
-                    $typeIds = type === 'tab' ? $('#tab_ids') : $('#action_ids');
-
-                $ids.find('.checked').find('.minimal').each(
-                    function () { selectedIds.push($(this).val()); }
-                );
-                $typeIds.val(selectedIds.join());
             },
             ifTabChecked: function () {
                 $(document).on('ifChecked', '.tabs', function() {
@@ -141,7 +144,6 @@
                             $(this).iCheck('check');
                         });
                     }
-                    group.updateSelected('tab');
                 });
             },
             ifTabUnChecked: function () {
@@ -151,7 +153,6 @@
                         $(this).iCheck('uncheck');
                     });
                 });
-                group.updateSelected('tab');
             },
             ifActionChecked: function () {
                 $(document).on('ifChecked', '.actions', function() {
@@ -176,7 +177,6 @@
                             break;
                         default: break;
                     }
-                    group.updateSelected('action');
                 });
             },
             ifActionUnChecked: function () {
@@ -210,7 +210,6 @@
                             default: break;
                         }
                     }
-                    group.updateSelected('action');
                 });
             }
         };
