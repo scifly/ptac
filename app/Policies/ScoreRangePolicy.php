@@ -44,7 +44,7 @@ class ScoreRangePolicy {
         $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
         $action = explode('/', Request::path())[1];
         if (in_array($action, ['store', 'update'])) {
-            $subjectIds = explode(',', Request::input('subject_ids'));
+            $subjectIds = Request::input('subject_ids');
             $allowedSubjectIds = Subject::whereSchoolId($this->schoolId())
                 ->get()->pluck('id')->toArray();
             $isSubjectAllowed = empty(array_diff($subjectIds, $allowedSubjectIds));
