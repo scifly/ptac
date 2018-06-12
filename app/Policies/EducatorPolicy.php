@@ -47,7 +47,7 @@ class EducatorPolicy {
         $isGroupAllowed = $isDepartmentAllowed = $isEducatorAllowed = false;
         
         if (in_array($action, ['store', 'update'])) {
-            $groupId = Request::input('educator')['group_id'];
+            $groupId = Request::input('user')['group_id'];
             $selectedDepartmentIds = Request::input('selectedDepartments');
             switch ($user->group->name) {
                 case '企业':
@@ -75,8 +75,6 @@ class EducatorPolicy {
                 $selectedDepartmentIds, $this->departmentIds($user->id))
             );
             $isGroupAllowed = in_array($groupId, $allowedGroupIds);
-            Log::debug($groupId);
-            Log::debug(json_encode($allowedGroupIds));
         }
         
         if (in_array($action, ['show', 'edit', 'update', 'destroy', 'recharge'])) {
