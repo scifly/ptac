@@ -48,12 +48,12 @@ class ScoreRangePolicy {
             $subjectIds = Request::input('subject_ids');
             $allowedSubjectIds = Subject::whereSchoolId($this->schoolId())
                 ->pluck('id')->toArray();
-            $isSubjectAllowed = empty(array_diff($subjectIds, $allowedSubjectIds));
-            Log::debug($isSubjectAllowed);
+            $isSubjectAllowed = empty(array_diff(
+                $subjectIds, array_merge([0], $allowedSubjectIds)
+            ));
         }
         if (in_array($action, ['edit', 'update', 'delete'])) {
             $isSrAllowed = in_array($sr->school_id, $this->schoolIds());
-            Log::debug($isSrAllowed);
         }
         switch ($action) {
             case 'index':
