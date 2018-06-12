@@ -9,6 +9,7 @@ use App\Models\Score;
 use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 class ScorePolicy {
@@ -89,8 +90,11 @@ class ScorePolicy {
                     $isExamAllowed = in_array($examId, $this->examIds());
                     $isClassAllowed = in_array($classId, $this->classIds());
                     $allowedSubjectIds = Subject::whereSchoolId($this->schoolId())
-                        ->get()->pluck('id')->toArray();
+                        ->pluck('id')->toArray();
                     $isSubjectAllowed = empty(array_diff($subjectIds, $allowedSubjectIds));
+                    Log::debug($isExamAllowed);
+                    Log::debug($isClassAllowed);
+                    Log::debug($isSubjectAllowed);
                     return $isSuperRole
                         ? ($isExamAllowed && $isClassAllowed && $isSubjectAllowed)
                         : ($isExamAllowed && $isClassAllowed && $isSubjectAllowed && $this->action($user));
