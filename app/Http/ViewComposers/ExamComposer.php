@@ -17,13 +17,16 @@ class ExamComposer {
     public function compose(View $view) {
         
         $schoolId = $this->schoolId();
-        $gradeIds = $this->gradeIds();
-        Log::debug(json_encode($gradeIds));
+        $gradeIds = [];
         $examtypes = ExamType::whereSchoolId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id');
         $squads = Squad::whereIn('id', $this->classIds())
-            ->where('enabled', 1)->pluck('name', 'id');
+            ->where('enabled', 1)->get();
+        foreach ($squads as $squad) {
+            $gradeIds[] = $squad->grade_id;
+        }
+        $gradeIds = array_unique($gradeIds);
         $subjects = Subject::whereSchoolId($schoolId)->where('enabled', 1)->get();
         $subjectList = [];
         foreach ($subjects as $subject) {
@@ -41,7 +44,7 @@ class ExamComposer {
         }
         $view->with([
             'examtypes' => $examtypes,
-            'classes'   => $squads,
+            'classes'   => $squads->pluck('name', 'id'),
             'subjects'  => $subjectList,
             'selectedClasses' => $selectedClasses,
             'selectedSubjects' => $selectedSubjects,
