@@ -61,7 +61,7 @@ class WapSiteModule extends Model {
 
     function media() { return $this->belongsTo('App\Models\Media'); }
 
-    function wapsite() { return $this->belongsTo('App\Models\WapSite'); }
+    function wapsite() { return $this->belongsTo('App\Models\WapSite', 'wap_site_id'); }
     
     /**
      * 保存网站栏目
