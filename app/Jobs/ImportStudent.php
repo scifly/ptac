@@ -197,7 +197,8 @@ class ImportStudent implements ShouldQueue {
                         'userid'     => uniqid('student_'),
                         'isleader'   => 0,
                         'enabled'    => 1,
-                        'synced'     => 0
+                        'synced'     => 0,
+                        'subscribed' => 0
                     ]);
                     # 创建学生
                     $s = Student::create([

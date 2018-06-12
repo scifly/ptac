@@ -465,9 +465,9 @@ class Educator extends Model {
         if (!isset($id)) { return $this->batch($this); }
         try {
             DB::transaction(function () use ($id) {
-                $educator = self::find($id);
+                $educator = $this->find($id);
                 (new User())->remove($educator->user_id);
-                if (!self::removable($educator)) {
+                if (!$this->removable($educator)) {
                     throw new Exception(__('messages.del_fail'));
                 }
                 $educator->delete();
