@@ -97,7 +97,7 @@ class TeamController extends Controller {
     public function update(TeamRequest $request, $id) {
         
         return $this->result(
-            $this->team->update(
+            $this->team->modify(
                 $request->all(), $id
             )
         );
