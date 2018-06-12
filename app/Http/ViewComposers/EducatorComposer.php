@@ -30,7 +30,7 @@ class EducatorComposer {
         
         $schoolId = $this->schoolId();
     
-        $squads = School::whereIn('id', $this->classIds())
+        $squads = Squad::whereIn('id', $this->classIds())
             ->where('enabled', 1)->pluck('name', 'id')
             ->toArray();
         $gradeIds = [];
