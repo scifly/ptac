@@ -77,7 +77,7 @@ class EducatorPolicy {
             $isGroupAllowed = in_array($groupId, $allowedGroupIds);
         }
         
-        if (in_array($action, ['show', 'edit', 'update', 'destroy', 'recharge'])) {
+        if (in_array($action, ['show', 'edit', 'update', 'delete', 'recharge'])) {
             $isEducatorAllowed = in_array($educator->id, $this->contactIds('educator'));
         }
         
@@ -94,8 +94,7 @@ class EducatorPolicy {
             case 'show':
             case 'edit':
             case 'destroy':
-            case 'recharge':
-                Log::debug($isEducatorAllowed);
+            case 'delete':
                 return $isSuperRole ? $isEducatorAllowed : ($isEducatorAllowed && $this->action($user));
             case 'update':
                 return $isSuperRole
