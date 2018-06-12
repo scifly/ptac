@@ -117,8 +117,9 @@
             },
             ifTabChecked: function () {
                 $(document).on('ifChecked', '.tabs', function() {
-                    var $actionContainer = $(this).parentsUntil($('.box .box-default'), '.box-header').next();
-                    var checkAll = true;
+                    var $actionContainer = $(this).parentsUntil($('.box .box-default'), '.box-header').next(),
+                        checkAll = true, $tabIds = $('#tab_ids'), tab_ids = [];
+
                     $actionContainer.find('input').each(function() {
                         if ($(this).iCheck('update')[0].checked) {
                             checkAll = false;
@@ -130,6 +131,10 @@
                             $(this).iCheck('check');
                         });
                     }
+                    $('.tabsgroup').find('.checked').find('.minimal').each(
+                        function() { tab_ids.push($(this).val()); }
+                    );
+                    $tabIds.val(tab_ids.join());
                 });
             },
             ifTabUnChecked: function () {

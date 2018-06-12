@@ -80,7 +80,8 @@
                                         <label for="tabs[{{ $ta['tab']['id'] }}]['enabled']" class="tabsgroup">
                                             <input name="tabs[{{ $ta['tab']['id'] }}]['enabled']"
                                                    value="{{ $ta['tab']['id'] }}"
-                                                   id="tabs[]" type="checkbox" class="minimal tabs"
+                                                   id="tabs[]" type="checkbox"
+                                                   class="minimal tabs"
                                                    @if (isset($selectedTabIds) && in_array($ta['tab']['id'], $selectedTabIds))
                                                    checked
                                                    @endif
@@ -97,10 +98,11 @@
                                             @foreach($ta['actions'] as $action)
                                                 <li>
                                                     <p class="help-block">
-                                                        <label for="actions[{{ $action['id'] }}]['enabled']"></label>
+                                                        <label for="actions[{{ $action['id'] }}]['enabled']" class="actionsgroup"></label>
                                                         <input name="actions[{{ $action['id'] }}]['enabled']"
                                                                id="actions[{{ $action['id'] }}]['enabled']"
                                                                type="checkbox" class="minimal actions"
+                                                               value="{{ $action['id'] }}"
                                                                data-method="{{ $action['method'] }}"
                                                                @if (isset($selectedActionIds) && in_array($action['id'], $selectedActionIds))
                                                                checked
