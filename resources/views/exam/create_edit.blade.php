@@ -37,36 +37,6 @@
                 'items' => $subjects,
                 'selectedItems' => isset($selectedSubjects) ? $selectedSubjects : []
             ])
-            {{--<div class="form-group">--}}
-                {{--{!! Form::label('max_scores', '科目满分', [--}}
-                    {{--'class' => 'col-sm-3 control-label'--}}
-                {{--]) !!}--}}
-                {{--<div class="col-sm-6">--}}
-                    {{--{!! Form::text('max_scores', null, [--}}
-                        {{--'class' => 'form-control text-blue',--}}
-                        {{--'placeholder' => '(不超过10个数字)',--}}
-                        {{--'required' => 'true',--}}
-                        {{--'type' => "number",--}}
-                        {{--'data-parsley-range' => '[100,150]',--}}
-                        {{--'data-parsley-length' => '[1, 10]'--}}
-                    {{--]) !!}--}}
-                {{--</div>--}}
-            {{--</div>--}}
-            {{--<div class="form-group">--}}
-                {{--{!! Form::label('pass_scores', '科目及格分数', [--}}
-                    {{--'class' => 'col-sm-3 control-label'--}}
-                {{--]) !!}--}}
-                {{--<div class="col-sm-6">--}}
-                    {{--{!! Form::text('pass_scores', null, [--}}
-                        {{--'class' => 'form-control text-blue',--}}
-                        {{--'placeholder' => '(不超过10个数字)',--}}
-                        {{--'required' => 'true',--}}
-                        {{--'type' => "number",--}}
-                        {{--'data-parsley-range' => '[60,90]',--}}
-                        {{--'data-parsley-length' => '[1, 10]'--}}
-                    {{--]) !!}--}}
-                {{--</div>--}}
-            {{--</div>--}}
             <div class="form-group">
                 {!! Form::label('start_date', '考试开始日期', [
                     'class' => 'col-sm-3 control-label'
