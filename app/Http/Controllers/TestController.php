@@ -24,8 +24,9 @@ class TestController extends Controller {
     
     public function index() {
 
-        $l = 'A';
-        dd(implode(',', []));
+        $a1 = [1, 2, 3, 4, 5, 6, 7];
+        $a2 = [2, 4, 6, 8];
+        dd(array_intersect($a1, $a2));
         $user = User::find(1);
         echo $user->realname;
         
