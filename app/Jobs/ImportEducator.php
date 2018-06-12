@@ -84,6 +84,7 @@ class ImportEducator implements ShouldQueue {
                             'isleader'   => 0,
                             'enabled'    => 1,
                             'synced'     => 0,
+                            'subscribed' => 0
                         ]);
                         # 创建教职员工
                         $educator = Educator::create([
