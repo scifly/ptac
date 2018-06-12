@@ -115,10 +115,20 @@
                     }
                 }).on('form:submit', function() { return false; });
             },
+            updateSelected: function (type) {
+                var selectedIds = [],
+                    $ids = type === 'tab' ? $('.tabsgroup') : $('.actionsgroup'),
+                    $typeIds = type === 'tab' ? $('#tab_ids') : $('#action_ids');
+
+                $ids.find('.checked').find('.minimal').each(
+                    function () { selectedIds.push($(this).val()); }
+                );
+                $typeIds.val(selectedIds.join());
+            },
             ifTabChecked: function () {
                 $(document).on('ifChecked', '.tabs', function() {
                     var $actionContainer = $(this).parentsUntil($('.box .box-default'), '.box-header').next(),
-                        checkAll = true, $tabIds = $('#tab_ids'), tab_ids = [];
+                        checkAll = true;
 
                     $actionContainer.find('input').each(function() {
                         if ($(this).iCheck('update')[0].checked) {
@@ -131,10 +141,7 @@
                             $(this).iCheck('check');
                         });
                     }
-                    $('.tabsgroup').find('.checked').find('.minimal').each(
-                        function() { tab_ids.push($(this).val()); }
-                    );
-                    $tabIds.val(tab_ids.join());
+                    group.updateSelected('tab');
                 });
             },
             ifTabUnChecked: function () {
@@ -144,6 +151,7 @@
                         $(this).iCheck('uncheck');
                     });
                 });
+                group.updateSelected('tab');
             },
             ifActionChecked: function () {
                 $(document).on('ifChecked', '.actions', function() {
@@ -168,6 +176,7 @@
                             break;
                         default: break;
                     }
+                    group.updateSelected('action');
                 });
             },
             ifActionUnChecked: function () {
@@ -201,6 +210,7 @@
                             default: break;
                         }
                     }
+                    group.updateSelected('action');
                 });
             }
         };
