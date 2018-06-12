@@ -286,7 +286,7 @@ class Exam extends Model {
         ];
         $condition = 'ExamType.school_id = ' . $this->schoolId();
         if (!in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
-            $condition .= ' AND class_ids IN (' . $this->implode(',', $this->classIds()) . ')';
+            $condition .= ' AND class_ids IN (' . implode(',', $this->classIds()) . ')';
         }
         
         return Datatable::simple(
