@@ -105,11 +105,9 @@ class HomeController extends Controller {
         }
         # 获取卡片列表
         $tabIds = $this->mt->tabIdsByMenuId($id);
-        Log::debug('menuTabIds: ' . json_encode($tabIds));
         $isTabLegit = !empty($tabIds) ?? false;
         # 获取当前用户可以访问的卡片（控制器）id
         $allowedTabIds = $this->tab->allowedTabIds();
-        Log::debug('allowedTabIds: ' . json_encode($allowedTabIds));
         # 封装当前用户可以访问的卡片数组
         $tabArray = [];
         foreach ($tabIds as $tabId) {
@@ -130,7 +128,8 @@ class HomeController extends Controller {
                 break;
             }
         }
-        abort_if(!$isTabLegit, HttpStatusCode::NOT_FOUND);
+        abort_if(empty($tabArray), HttpStatusCode::UNAUTHORIZED, __('messages.unauthorized'));
+        abort_if(!$isTabLegit, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
         # 刷新页面时打开当前卡片, 不一定是第一个卡片
         if (session('tabId')) {
             $key = array_search(
