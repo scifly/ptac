@@ -85,7 +85,7 @@ class ScorePolicy {
                 if (Request::has('examId')) {
                     $examId = Request::input('examId');
                     $classId = Request::input('classId');
-                    $subjectIds = explode(',', Request::input('subjectIds'));
+                    $subjectIds = Request::input('subjectIds');
                     $isExamAllowed = in_array($examId, $this->examIds());
                     $isClassAllowed = in_array($classId, $this->classIds());
                     $allowedSubjectIds = Subject::whereSchoolId($this->schoolId())
