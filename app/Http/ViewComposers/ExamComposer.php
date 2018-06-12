@@ -16,15 +16,21 @@ class ExamComposer {
     public function compose(View $view) {
         
         $schoolId = $this->schoolId();
+        $gradeIds = $this->gradeIds();
         $examtypes = ExamType::whereSchoolId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id');
         $squads = Squad::whereIn('id', $this->classIds())
             ->where('enabled', 1)->pluck('name', 'id');
-        $subjects = Subject::whereSchoolId($schoolId)
-            ->where('enabled', 1)
-            ->pluck('name', 'id');
-        
+        $subjects = Subject::whereSchoolId($schoolId)->where('enabled', 1)->get();
+        $subjectList = [];
+        foreach ($subjects as $subject) {
+            $intersect = array_intersect($gradeIds, explode(',', $subject->grade_ids));
+            if (!empty($intersect)) {
+                $subjectList[$subject->id] = $subject->name;
+            }
+        }
+
         $selectedClasses = $selectedSubjects = [];
         if (Request::route('id')) {
             $exam = Exam::find(Request::route('id'));
@@ -34,7 +40,7 @@ class ExamComposer {
         $view->with([
             'examtypes' => $examtypes,
             'classes'   => $squads,
-            'subjects'  => $subjects,
+            'subjects'  => $subjectList,
             'selectedClasses' => $selectedClasses,
             'selectedSubjects' => $selectedSubjects,
             'uris'      => $this->uris(),
