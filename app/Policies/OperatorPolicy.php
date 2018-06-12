@@ -67,7 +67,11 @@ class OperatorPolicy {
                     : $groupId == $schoolGroupId;
                 if ($corpId) {
                     $departmentId = $this->head($user);
-                    $corp = Corp::whereDepartmentId($departmentId)->first();
+                    if ($user->group->name == '企业') {
+                        $corp = Corp::whereDepartmentId($departmentId)->first();
+                    } else {
+                        $corp = School::whereDepartmentId($departmentId)->first()->corp;
+                    }
                     $isCorpAllowed = $corpId == $corp->id;
                 }
                 if ($schoolId) {

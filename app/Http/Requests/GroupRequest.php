@@ -33,20 +33,6 @@ class GroupRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        // if (isset($input['tabs'])) {
-        //     $tabIds = null;
-        //     foreach ($input['tabs'] as $key => $value) {
-        //         $tabIds[] = $key;
-        //     }
-        //     $input['tab_ids'] = $tabIds;
-        // }
-        // $actionIds = [];
-        // if (isset($input['actions'])) {
-        //     foreach ($input['actions'] as $key => $value) {
-        //         $actionIds[] = $key;
-        //     }
-        //     $input['action_ids'] = $actionIds;
-        // }
         if (isset($input['menu_ids'])) {
             $input['menu_ids'] = explode(',', $input['menu_ids']);
         }
