@@ -7,6 +7,7 @@ use App\Models\ExamType;
 use App\Models\Squad;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 class ExamComposer {
@@ -17,6 +18,7 @@ class ExamComposer {
         
         $schoolId = $this->schoolId();
         $gradeIds = $this->gradeIds();
+        Log::debug(json_encode($gradeIds));
         $examtypes = ExamType::whereSchoolId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id');
