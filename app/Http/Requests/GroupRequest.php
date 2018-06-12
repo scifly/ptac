@@ -33,22 +33,28 @@ class GroupRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        if (isset($input['tabs'])) {
-            $tabIds = null;
-            foreach ($input['tabs'] as $key => $value) {
-                $tabIds[] = $key;
-            }
-            $input['tab_ids'] = $tabIds;
-        }
-        $actionIds = [];
-        if (isset($input['actions'])) {
-            foreach ($input['actions'] as $key => $value) {
-                $actionIds[] = $key;
-            }
-            $input['action_ids'] = $actionIds;
-        }
+        // if (isset($input['tabs'])) {
+        //     $tabIds = null;
+        //     foreach ($input['tabs'] as $key => $value) {
+        //         $tabIds[] = $key;
+        //     }
+        //     $input['tab_ids'] = $tabIds;
+        // }
+        // $actionIds = [];
+        // if (isset($input['actions'])) {
+        //     foreach ($input['actions'] as $key => $value) {
+        //         $actionIds[] = $key;
+        //     }
+        //     $input['action_ids'] = $actionIds;
+        // }
         if (isset($input['menu_ids'])) {
             $input['menu_ids'] = explode(',', $input['menu_ids']);
+        }
+        if (isset($input['tab_ids'])) {
+            $input['tab_ids'] = explode(',', $input['tab_ids']);
+        }
+        if (isset($input['action_ids'])) {
+            $input['action_ids'] = explode(',', $input['action_ids']);
         }
         if (!isset($input['school_id'])) {
             $input['school_id'] = $this->schoolId();
