@@ -55,7 +55,9 @@ class SquadPolicy {
         $action = explode('/', Request::path())[1];
         if (in_array($action, ['store', 'update'])) {
             $gradeId = Request::input('grade_id');
-            $educatorIds = explode(',', Request::input('educator_ids'));
+            $educatorIds = Request::input('educator_ids')
+                ? explode(',', Request::input('educator_ids'))
+                : [];
             $isGradeAllowed = in_array($gradeId, $this->gradeIds());
             $isEducatorAllowed = empty(array_diff($educatorIds, $this->contactIds('educator')));
         }
@@ -70,9 +72,6 @@ class SquadPolicy {
             case 'delete':
                 return $isSuperRole ? $isClassAllowed : ($isClassAllowed && $this->action($user));
             case 'update':
-                Log::debug($isClassAllowed);
-                Log::debug($isGradeAllowed);
-                Log::debug($isEducatorAllowed);
                 return $isSuperRole
                     ? ($isClassAllowed && $isGradeAllowed && $isEducatorAllowed)
                     : ($isClassAllowed && $isGradeAllowed && $isEducatorAllowed && $this->action($user));
