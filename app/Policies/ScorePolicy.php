@@ -46,12 +46,12 @@ class ScorePolicy {
         if (in_array($action, ['store', 'update'])) {
             $subjectId = Request::input('subject_id');
             $examId = Request::input('exam_id');
-            $score = Request::input('score');
+            $grade = Request::input('score');
             $allowedSubjectIds = Subject::whereSchoolId($this->schoolId())
                 ->get()->pluck('id')->toArray();
             $isSubjectAllowed = in_array($subjectId, $allowedSubjectIds);
             $isExamAllowed = in_array($examId, $this->examIds());
-            $isMaxScoreAllowed = $score <= Subject::find($subjectId)->max_score;
+            $isMaxScoreAllowed = $grade <= Subject::find($subjectId)->max_score;
         }
         if (in_array($action, ['edit', 'update', 'delete'])) {
             $isScoreAllowed = in_array($score->student_id, $this->contactIds('student'));
