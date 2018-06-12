@@ -54,13 +54,13 @@ class EducatorPolicy {
                     $allowedGroupIds = Group::whereEnabled(1)
                         ->whereIn('name', ['企业', '学校'])
                         ->orWhereIn('school_id', $this->schoolIds())
-                        ->get()->pluck('id')->toArray();
+                        ->pluck('id')->toArray();
                     break;
                 case '学校':
                     $allowedGroupIds = Group::whereEnabled(1)
                         ->where('name', '学校')
                         ->orWhere('school_id', $this->schoolId())
-                        ->get()->pluck('id')->toArray();
+                        ->pluck('id')->toArray();
                     break;
                 default:
                     $allowedGroupIds = array_unique(
@@ -75,6 +75,8 @@ class EducatorPolicy {
                 $selectedDepartmentIds, $this->departmentIds($user->id))
             );
             $isGroupAllowed = in_array($groupId, $allowedGroupIds);
+            Log::debug($groupId);
+            Log::debug(json_encode($allowedGroupIds));
         }
         
         if (in_array($action, ['show', 'edit', 'update', 'destroy', 'recharge'])) {
@@ -97,9 +99,6 @@ class EducatorPolicy {
             case 'recharge':
                 return $isSuperRole ? $isEducatorAllowed : ($isEducatorAllowed && $this->action($user));
             case 'update':
-                Log::debug($isGroupAllowed);
-                Log::debug($isEducatorAllowed);
-                Log::debug($isDepartmentAllowed);
                 return $isSuperRole
                     ? ($isGroupAllowed && $isEducatorAllowed && $isDepartmentAllowed)
                     : ($isGroupAllowed && $isEducatorAllowed && $isDepartmentAllowed && $this->action($user));
