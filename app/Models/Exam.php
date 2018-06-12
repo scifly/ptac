@@ -176,9 +176,10 @@ class Exam extends Model {
      */
     function examsByClassId($classId, $keyword = null) {
         
-        throw_if(
+        abort_if(
             !$classId,
-            HttpStatusCode::NOT_ACCEPTABLE
+            HttpStatusCode::NOT_ACCEPTABLE,
+            __('messages.score.zero_classes')
         );
         return $this->when(
             $keyword,
