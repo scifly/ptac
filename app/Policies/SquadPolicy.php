@@ -66,6 +66,10 @@ class SquadPolicy {
             case 'index':
             case 'create':
                 return $isSuperRole ? true : $this->action($user);
+            case 'store':
+                return $isSuperRole
+                    ? ($isGradeAllowed && $isEducatorAllowed)
+                    : ($isGradeAllowed && $isEducatorAllowed && $this->action($user));
             case 'edit':
             case 'delete':
                 return $isSuperRole ? $isClassAllowed : ($isClassAllowed && $this->action($user));
