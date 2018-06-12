@@ -105,9 +105,11 @@ class HomeController extends Controller {
         }
         # 获取卡片列表
         $tabIds = $this->mt->tabIdsByMenuId($id);
+        Log::debug('menuTabIds: ' . json_encode($tabIds));
         $isTabLegit = !empty($tabIds) ?? false;
         # 获取当前用户可以访问的卡片（控制器）id
         $allowedTabIds = $this->tab->allowedTabIds();
+        Log::debug('allowedTabIds: ' . json_encode($allowedTabIds));
         # 封装当前用户可以访问的卡片数组
         $tabArray = [];
         foreach ($tabIds as $tabId) {
@@ -128,7 +130,6 @@ class HomeController extends Controller {
                 break;
             }
         }
-        Log::debug('tabs: ' . json_encode($tabArray));
         abort_if(!$isTabLegit, HttpStatusCode::NOT_FOUND);
         # 刷新页面时打开当前卡片, 不一定是第一个卡片
         if (session('tabId')) {
@@ -145,7 +146,6 @@ class HomeController extends Controller {
         }
         # 获取并返回wrapper-content层中的html内容
         if (Request::ajax()) {
-            Log::debug('tabs: ' . json_encode($tabArray));
             $this->result['html'] = view('partials.site_content', ['tabs' => $tabArray])->render();
             $this->result['department'] = $this->menu->department($id);
             $this->result['title'] = $this->menu->find(session('menuId'))->name;
