@@ -22,18 +22,14 @@ class SquadComposer {
     
     public function compose(View $view) {
         
-        $schoolId = $this->schoolId();
-        $grades = Grade::whereSchoolId($schoolId)
+        $grades = Grade::whereIn('id', $this->gradeIds())
             ->where('enabled', 1)
             ->pluck('name', 'id');
-        $data = Educator::with('user')
-            ->where('school_id', $schoolId)
-            ->get()->toArray();
-        $educators = [];
-        if (!empty($data)) {
-            foreach ($data as $v) {
-                $educators[$v['id']] = $v['user']['realname'];
-            }
+        $educators = Educator::whereIn('id', $this->contactIds('educator'))
+            ->where('enabled', 1)->get();
+        $educatorList = [];
+        foreach ($educators as $educator) {
+            $educatorList[$educator->id] = $educator->user->realname;
         }
         $selectedEducators = null;
         if (Request::route('id')) {
@@ -46,7 +42,7 @@ class SquadComposer {
         }
         $view->with([
             'grades'            => $grades,
-            'educators'         => $educators,
+            'educators'         => $educatorList,
             'selectedEducators' => $selectedEducators,
             'uris'              => $this->uris(),
         ]);
