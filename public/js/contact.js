@@ -258,7 +258,7 @@
                             departmentId = (table !== 'educators'
                                 ? (range === 0 ? $classId.val() : (range === 1 ? $gradeId.val() : ''))
                                 : (range === 0 ? $departmentId.val() : ''));
-                        window.location = url + (departmentId !== '' ? '&department_id=' + departmentId : '');
+                        window.location = url + (departmentId !== '' ? '&id=' + departmentId : '');
                     } else {
                         contact.saveRelationship(0)
                     }
