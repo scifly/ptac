@@ -42,7 +42,7 @@ class CustodianPolicy {
         $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
         $isStudentAllowed = $isCustodianAllowed = false;
         if (in_array($action, ['store', 'update'])) {
-            $studentIds = explode(',', Request::input('student_ids'));
+            $studentIds = Request::input('student_ids');
             $isStudentAllowed = empty(array_diff($studentIds, $this->contactIds('student')));
         }
         if (in_array($action, ['show', 'edit', 'delete', 'update'])) {
