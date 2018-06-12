@@ -52,8 +52,8 @@ class GroupPolicy {
         $isGroupAllowed = $isMenuAllowed = $isTabAllowed = $isActionAllowed = false;
         if (in_array($action, ['store', 'update'])) {
             $menuIds = explode(',', Request::input('menu_ids'));
-            $tabIds = Request::input('tab_ids');
-            $actionIds = Request::input('action_ids');
+            $tabIds = explode(',', Request::input('tab_ids'));
+            $actionIds = explode(',', Request::input('action_ids'));
             $schoolId = Request::input('school_id');
             $allowedMenuIds = $this->menu->subMenuIds(School::find($schoolId)->menu_id);
             $isMenuAllowed = empty(array_diff($menuIds, $allowedMenuIds));
