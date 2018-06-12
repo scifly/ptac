@@ -59,7 +59,7 @@ class SquadPolicy {
             $isEducatorAllowed = empty(array_diff($educatorIds, $this->contactIds('educator')));
         }
         if (in_array($action, ['edit', 'update', 'delete'])) {
-            $isClassAllowed = in_array($class->grade->school_id, $this->schoolIds());
+            $isClassAllowed = in_array($class->id, $this->classIds());
         }
         switch ($action) {
             case 'index':
