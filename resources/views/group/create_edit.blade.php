@@ -98,7 +98,7 @@
                                             @foreach($ta['actions'] as $action)
                                                 <li>
                                                     <p class="help-block">
-                                                        <label for="actions[{{ $action['id'] }}]['enabled']" class="actionsgroup"></label>
+                                                        <label for="actions[{{ $action['id'] }}]['enabled']" class="actionsgroup">
                                                         <input name="actions[{{ $action['id'] }}]['enabled']"
                                                                id="actions[{{ $action['id'] }}]['enabled']"
                                                                type="checkbox" class="minimal actions"
@@ -108,6 +108,7 @@
                                                                checked
                                                                @endif
                                                         >&nbsp;<span>{{ $action['name'] }}</span>
+                                                        </label>
                                                     </p>
                                                 </li>
                                             @endforeach
