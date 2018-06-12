@@ -95,6 +95,7 @@ class EducatorPolicy {
             case 'edit':
             case 'destroy':
             case 'recharge':
+                Log::debug($isEducatorAllowed);
                 return $isSuperRole ? $isEducatorAllowed : ($isEducatorAllowed && $this->action($user));
             case 'update':
                 return $isSuperRole
