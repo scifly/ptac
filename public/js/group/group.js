@@ -110,9 +110,6 @@
                         $('#menu_ids').val(menuIds.join());
                         $('#tab_ids').val(tabIds.join());
                         $('#action_ids').val(actionIds.join());
-                        console.log(tabIds);
-                        console.log(actionIds);
-                        return false;
                         $.ajax({
                             type: 'POST',
                             dataType: 'json',
