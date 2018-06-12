@@ -128,6 +128,7 @@ class HomeController extends Controller {
                 break;
             }
         }
+        Log::debug('tabs: ' . json_encode($tabArray));
         abort_if(!$isTabLegit, HttpStatusCode::NOT_FOUND);
         # 刷新页面时打开当前卡片, 不一定是第一个卡片
         if (session('tabId')) {
