@@ -15,21 +15,32 @@
                 <div class="tab-pane active" id="tab01">
                     <div class="form-horizontal">
                         <!-- 角色ID -->
-                    @if (!empty($group['id']))
-                        {{ Form::hidden('id', $group['id'], ['id' => 'id']) }}
-                    @endif
-                    {{ Form::hidden('menu_ids', $selectedMenuIds ?? null, ['id' => 'menu_ids']) }}
-                    {{ Form::hidden('menu_ids', !empty($selectedTabs) ? implode(',', $selectedTabs) : null, ['id' => 'tab_ids']) }}
-                    <!-- 角色名称 -->
+                        @if (!empty($group['id']))
+                            {{ Form::hidden('id', $group['id'], ['id' => 'id']) }}
+                        @endif
+                        {{ Form::hidden(
+                            'menu_ids', 
+                            $selectedMenuIds ?? null, 
+                            ['id' => 'menu_ids']
+                        ) }}
+                        {{ Form::hidden(
+                            'tab_ids', 
+                            !empty($selectedTabIds) ? implode(',', $selectedTabIds) : null, 
+                            ['id' => 'tab_ids']
+                        ) }}
+                        {{ Form::hidden(
+                            'action_ids', 
+                            !empty($selectedActionIds) ? implode(',', $selectedActionIds) : null, 
+                            ['id' => 'action_ids']
+                        ) }}
+                        <!-- 角色名称 -->
                         <div class="form-group">
                             {!! Form::label('name', '名称', [
                                 'class' => 'col-sm-3 control-label'
                             ]) !!}
                             <div class="col-sm-6">
                                 <div class="input-group">
-                                    @include('partials.icon_addon', [
-                                        'class' => 'fa-meh-o'
-                                    ])
+                                    @include('partials.icon_addon', ['class' => 'fa-meh-o'])
                                     {!! Form::text('name', null, [
                                         'class' => 'form-control text-blue',
                                         'placeholder' => '(不得超过20个汉字)',
@@ -40,15 +51,15 @@
                             </div>
                         </div>
                         <!-- 角色所属学校 -->
-                    @include('partials.single_select', [
-                        'id' => 'school_id',
-                        'label' => '所属学校',
-                        'icon' => 'fa fa-university text-purple',
-                        'items' => $schools
-                    ])
-                    <!-- 角色备注 -->
-                    @include('partials.remark')
-                    <!-- 状态 -->
+                        @include('partials.single_select', [
+                            'id' => 'school_id',
+                            'label' => '所属学校',
+                            'icon' => 'fa fa-university text-purple',
+                            'items' => $schools
+                        ])
+                        <!-- 角色备注 -->
+                        @include('partials.remark')
+                        <!-- 状态 -->
                         @include('partials.enabled', [
                             'id' => 'enabled',
                             'value' => $group['enabled'] ?? null
@@ -62,17 +73,17 @@
                 <!-- 角色卡片/功能权限 -->
                 <div class="tab-pane" id="tab03">
                     <div class="row">
-                        @foreach ($tabActions as $tabAction)
+                        @foreach ($tabActions as $ta)
                             <div class="col-md-3">
                                 <div class="box box-default collapsed-box">
                                     <div class="box-header with-border">
-                                        <label for="tabs[{{ $tabAction['tab']['id'] }}]['enabled']" class="tabsgroup">
-                                            <input name="tabs[{{ $tabAction['tab']['id'] }}]['enabled']"
+                                        <label for="tabs[{{ $ta['tab']['id'] }}]['enabled']" class="tabsgroup">
+                                            <input name="tabs[{{ $ta['tab']['id'] }}]['enabled']"
                                                    id="tabs[]" type="checkbox" class="minimal tabs"
-                                                   @if(isset($selectedTabs) && in_array($tabAction['tab']['id'], $selectedTabs))
+                                                   @if (isset($selectedTabIds) && in_array($ta['tab']['id'], $selectedTabIds))
                                                    checked
-                                                    @endif
-                                            >&nbsp;<span style="margin-left: 5px;">{{ $tabAction['tab']['name'] }}</span>
+                                                   @endif
+                                            >&nbsp;<span style="margin-left: 5px;">{{ $ta['tab']['name'] }}</span>
                                         </label>
                                         <div class="box-tools pull-right">
                                             <button type="button" class="btn btn-box-tool" data-widget="collapse">
@@ -82,7 +93,7 @@
                                     </div>
                                     <div class="box-body">
                                         <ul class="nav nav-stacked">
-                                            @foreach($tabAction['actions'] as $action)
+                                            @foreach($ta['actions'] as $action)
                                                 <li>
                                                     <p class="help-block">
                                                         <label for="actions[{{ $action['id'] }}]['enabled']"></label>
@@ -90,9 +101,9 @@
                                                                id="actions[{{ $action['id'] }}]['enabled']"
                                                                type="checkbox" class="minimal actions"
                                                                data-method="{{ $action['method'] }}"
-                                                               @if(isset($selectedActions) && in_array($action['id'], $selectedActions))
+                                                               @if (isset($selectedActionIds) && in_array($action['id'], $selectedActionIds))
                                                                checked
-                                                                @endif
+                                                               @endif
                                                         >&nbsp;<span>{{ $action['name'] }}</span>
                                                     </p>
                                                 </li>

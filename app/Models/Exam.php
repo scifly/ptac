@@ -3,6 +3,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\Constant;
+use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use ReflectionException;
+use Throwable;
 
 /**
  * App\Models\Exam 考试
@@ -171,9 +172,14 @@ class Exam extends Model {
      * @param $classId
      * @param null $keyword
      * @return array
+     * @throws Throwable
      */
     function examsByClassId($classId, $keyword = null) {
         
+        throw_if(
+            !$classId,
+            HttpStatusCode::NOT_ACCEPTABLE
+        );
         return $this->when(
             $keyword,
             function (Exam $query) use ($keyword) {
