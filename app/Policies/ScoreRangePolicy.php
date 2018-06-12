@@ -9,6 +9,7 @@ use App\Models\ScoreRange;
 use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 class ScoreRangePolicy {
@@ -46,11 +47,13 @@ class ScoreRangePolicy {
         if (in_array($action, ['store', 'update'])) {
             $subjectIds = Request::input('subject_ids');
             $allowedSubjectIds = Subject::whereSchoolId($this->schoolId())
-                ->get()->pluck('id')->toArray();
+                ->pluck('id')->toArray();
             $isSubjectAllowed = empty(array_diff($subjectIds, $allowedSubjectIds));
+            Log::debug($isSubjectAllowed);
         }
         if (in_array($action, ['edit', 'update', 'delete'])) {
             $isSrAllowed = in_array($sr->school_id, $this->schoolIds());
+            Log::debug($isSrAllowed);
         }
         switch ($action) {
             case 'index':
