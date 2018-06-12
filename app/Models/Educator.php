@@ -466,10 +466,10 @@ class Educator extends Model {
         try {
             DB::transaction(function () use ($id) {
                 $educator = $this->find($id);
-                (new User())->remove($educator->user_id);
                 if (!$this->removable($educator)) {
                     throw new Exception(__('messages.del_fail'));
                 }
+                (new User())->remove($educator->user_id);
                 $educator->delete();
             });
         } catch (Exception $e) {
