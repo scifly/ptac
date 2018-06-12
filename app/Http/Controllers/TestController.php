@@ -25,7 +25,7 @@ class TestController extends Controller {
     public function index() {
 
         $l = 'A';
-        dd(Carbon::createFromDate(strtotime('2018-08-28')));
+        dd(implode(',', []));
         $user = User::find(1);
         echo $user->realname;
         

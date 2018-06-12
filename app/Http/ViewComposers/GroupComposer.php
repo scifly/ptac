@@ -9,7 +9,6 @@ use App\Models\Menu;
 use App\Models\School;
 use App\Models\Tab;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Auth;
 
 class GroupComposer {
     

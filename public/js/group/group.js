@@ -99,7 +99,6 @@
                         $menuTree.find(".jstree-undetermined").each(function (i, element) {
                             menuIds.push($(element).parents().eq(1).attr('id'));
                         });
-                        console.log($form.serialize());
                         $('#menu_ids').val(menuIds.join());
                         $.ajax({
                             type: 'POST',
