@@ -66,7 +66,7 @@ class EducatorPolicy {
                         Group::whereEnabled(1)
                             ->where('id', $user->group->id)
                             ->orWhere('name', '教职员工')
-                            ->get()->pluck('id')->toArray()
+                            ->pluck('id')->toArray()
                     );
                     break;
             }
@@ -76,7 +76,7 @@ class EducatorPolicy {
             $isGroupAllowed = in_array($groupId, $allowedGroupIds);
         }
         
-        if (in_array($action, ['show', 'edit', 'update', 'destroy', 'recharge', 'rechargeStore'])) {
+        if (in_array($action, ['show', 'edit', 'update', 'destroy', 'recharge'])) {
             $isEducatorAllowed = in_array($educator->id, $this->contactIds('educator'));
         }
         
@@ -94,7 +94,6 @@ class EducatorPolicy {
             case 'edit':
             case 'destroy':
             case 'recharge':
-            case 'rechargeStore':
                 return $isSuperRole ? $isEducatorAllowed : ($isEducatorAllowed && $this->action($user));
             case 'update':
                 return $isSuperRole
