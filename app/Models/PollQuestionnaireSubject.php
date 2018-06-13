@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\PollQuestionnaireSubject 调查问卷题目
@@ -61,24 +62,30 @@ class PollQuestionnaireSubject extends Model {
     ];
 
     /**
+     * 返回指定调查问卷题目对应的答案对象
+     *
      * @return HasOne
      */
-    function pollQuestionnaireAnswer() {
+    function pqAnswer() {
         
         return $this->hasOne('App\Models\PollQuestionnaireAnswer', 'pqs_id', 'id');
         
     }
 
     /**
+     * 返回指定调查问卷题目对应的选项
+     *
      * @return HasMany
      */
-    function pollQuestionnaireSubjectChoices() {
+    function pqsChoices() {
         
         return $this->hasMany("App\Models\PollQuestionnaireSubjectChoice", 'pqs_id', 'id');
         
     }
 
     /**
+     * 返回指定调查问卷题目对应的调查问卷对象
+     *
      * @return BelongsTo
      */
     function pollQuestionnaire() {
@@ -126,9 +133,42 @@ class PollQuestionnaireSubject extends Model {
 
         $pqs = $this->find($id);
         if (!$pqs) { return false; }
+        try {
+            DB::transaction(function () use ($pqs) {
+                (new PollQuestionnaireAnswer)->removeByPqsId($pqs->id);
+                (new PollQuestionnaireSubjectChoice)->removeByPqsId($pqs->id);
+                $pqs->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
         
-        return $this->removable($pqs) ? $pqs->delete() : false;
+        return true;
 
+    }
+    
+    /**
+     * 删除指定调查问卷包含的调查问卷题目
+     *
+     * @param $pqId
+     * @return bool
+     * @throws Exception
+     */
+    function removeByPqId($pqId) {
+        
+        $pqses = $this->where('pq_id', $pqId)->get();
+        try {
+            DB::transaction(function () use ($pqses) {
+                foreach ($pqses as $pqs) {
+                    $this->remove($pqs->id);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
     }
     
     /**

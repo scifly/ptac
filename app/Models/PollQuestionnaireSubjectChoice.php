@@ -45,7 +45,7 @@ class PollQuestionnaireSubjectChoice extends Model {
     /**
      * @return BelongsTo
      */
-    function pollQuestionnaireSubject() {
+    function pqSubject() {
         
         return $this->belongsTo('App\Models\PollQuestionnaireSubject', 'pqs_id', 'id');
         
@@ -93,6 +93,19 @@ class PollQuestionnaireSubjectChoice extends Model {
         
         return $pqsc->delete();
     
+    }
+    
+    /**
+     * 删除指定调查问卷包含的所有调查问卷题目选项
+     *
+     * @param $pqId
+     * @return bool|null
+     * @throws Exception
+     */
+    function removeByPqsId($pqId) {
+        
+        return $this->where('pqs_id', $pqId)->delete();
+        
     }
     
     /**

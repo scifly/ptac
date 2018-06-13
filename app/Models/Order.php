@@ -63,6 +63,31 @@ class Order extends Model {
      */
     function comboType() { return $this->belongsTo('App\models\ComboType'); }
 
+    function store(array $data) {
+    
+    }
+    
+    function modify($id, array $data) {
+    
+    }
+    
+    function remove($id) {
+    
+    }
+    
+    /**
+     * 删除指定用户所有的订单记录
+     *
+     * @param $userId
+     * @return bool|null
+     * @throws \Exception
+     */
+    function removeByUserId($userId) {
+        
+        return $this->where('user_id', $userId)->delete();
+        
+    }
+    
     /**
      * 订单列表
      *

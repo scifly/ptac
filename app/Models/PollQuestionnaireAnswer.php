@@ -4,8 +4,10 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\PollQuestionnaireAnswer 调查问卷答案
@@ -35,13 +37,104 @@ class PollQuestionnaireAnswer extends Model {
     protected $table = 'poll_questionnaire_answers';
 
     protected $fillable = ['user_id', 'pqs_id', 'pq_id', 'answer', 'created_at', 'updated_at'];
-
-    function user() { return $this->belongsTo('App\Models\User'); }
-
-    function pollquestionnaire() { return $this->belongsTo('App\Models\PollQuestionnaire'); }
-
-    function pollquestionnaireSubject() { return $this->belongsTo('App\Models\PollQuestionnaireSubject'); }
-
-    function pollquestionnaireChoice() { return $this->hasOne('App\Models\PollQuestionnaireSubjectChoice'); }
     
+    /**
+     * 返回指定调查问卷答案所属的用户对象
+     *
+     * @return BelongsTo
+     */
+    function user() { return $this->belongsTo('App\Models\User'); }
+    
+    /**
+     * 返回指定调查问卷答案所属的调查问卷对象
+     *
+     * @return BelongsTo
+     */
+    function pollquestionnaire() {
+        
+        return $this->belongsTo('App\Models\PollQuestionnaire', 'pq_id');
+        
+    }
+    
+    /**
+     * 返回指定调查问卷答案所属的调查问卷题目对象
+     *
+     * @return BelongsTo
+     */
+    function pqSubject() {
+        
+        return $this->belongsTo('App\Models\PollQuestionnaireSubject', 'pqs_id');
+    
+    }
+    
+    /**
+     * 保存调查问卷答案
+     *
+     * @param array $data
+     * @return bool
+     */
+    function store(array $data) {
+        
+        return $this->create($data) ? true: false;
+        
+    }
+    
+    /**
+     * 更新调查问卷答案
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    function modify(array $data, $id) {
+        
+        $pqa = $this->find($id);
+        if (!$pqa) { return false; }
+        
+        return $pqa->update($data) ?? false;
+        
+    }
+    
+    /**
+     * 删除指定的调查问卷答案
+     *
+     * @param $id
+     * @return bool|null
+     * @throws Exception
+     */
+    function remove($id) {
+        
+        $pqa = $this->find($id);
+        if (!$pqa) { return false; }
+        
+        return $pqa->delete();
+        
+    }
+    
+    /**
+     * 删除指定调查问卷包含的所有调查问卷答案
+     *
+     * @param $pqId
+     * @return bool|null
+     * @throws Exception
+     */
+    function removeByPqId($pqId) {
+        
+        return $this->where('pq_id', $pqId)->delete();
+        
+    }
+    
+    /**
+     * 删除指定调查问卷题目对应的所有调查问卷答案
+     *
+     * @param $pqsId
+     * @return bool|null
+     * @throws Exception
+     */
+    function removeByPqsId($pqsId) {
+        
+        return $this->where('pqs_id', $pqsId)->delete();
+        
+    }
+
 }

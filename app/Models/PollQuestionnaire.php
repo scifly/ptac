@@ -11,8 +11,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\PollQuestionnaire 调查问卷
@@ -66,35 +69,53 @@ class PollQuestionnaire extends Model {
      * @return BelongsTo
      */
     function user() { return $this->belongsTo('App\Models\User'); }
-
+    
     /**
-     * 返回指定调查问卷包含的调查问卷答案对象
-     * 
-     * @return HasOne
+     * 返回指定调查问卷包含的题目对象
+     *
+     * @return HasMany
      */
-    function poll_questionnaire_answer() {
-        
-        return $this->hasOne('App\Models\PollQuestionnaireAnswer', 'pq_id');
-        
-    }
-
-    /**
-     * 
-     * 
-     * @return HasOne
-     */
-    function poll_questionnaire_partcipant() {
-        
-        return $this->hasOne('App\Models\PollQuestionnaireParticipant', 'pq_id');
-        
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    function poll_questionnaire_subject() {
+    function pqSubjects() {
         
         return $this->hasMany('App\Models\PollQuestionnaireSubject', 'pq_id');
+        
+    }
+    
+    /**
+     * 返回指定调查问卷对象包含的参与者
+     *
+     * @return HasMany
+     */
+    function pqParticipants() {
+        
+        return $this->hasMany('App\Models\PollQuestionnaireParticipant', 'pq_id');
+        
+    }
+    
+    /**
+     * 返回指定调查问卷包含的调查问卷答案对象
+     *
+     * @return HasMany
+     */
+    function pqAnswers() {
+        
+        return $this->hasMany('App\Models\PollQuestionnaireAnswer', 'pq_id');
+        
+    }
+    
+    /**
+     * 返回指定调查问卷对象包含的调查问卷题目选项对象
+     *
+     * @return HasManyThrough
+     */
+    function pqChoices() {
+        
+        return $this->hasManyThrough(
+            'App\Models\PollQuestionnaireChoice',
+            'App\Models\PollQuestionnaireSubject',
+            'pq_id',
+            'pqs_id'
+        );
         
     }
     
@@ -139,9 +160,43 @@ class PollQuestionnaire extends Model {
         
         $pq = $this->find($id);
         if (!$pq) { return false; }
+        try {
+            DB::transaction(function () use ($pq, $id) {
+                (new PollQuestionnaireParticipant)->removeByPqId($id);
+                (new PollQuestionnaireAnswer)->removeByPqId($id);
+                (new PollQuestionnaireSubject)->removeByPqId($id);
+                $pq->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
 
-        return $this->removable($pq) ? $pq->delete() : false;
-
+    }
+    
+    /**
+     * 删除指定用户对应的调查问卷
+     *
+     * @param $userId
+     * @return bool
+     * @throws Exception
+     */
+    function removeByUserId($userId) {
+        
+        $pqs = $this->where('user_id', $userId)->get();
+        try {
+            DB::transaction(function () use ($pqs) {
+                foreach ($pqs as $pq) {
+                    $this->remove($pq->id);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+    
     }
     
     /**

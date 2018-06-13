@@ -654,11 +654,15 @@ class User extends Authenticatable {
         try {
             DB::transaction(function () use ($id) {
                 # 删除企业号成员
-                User::deleteWechatUser($id);
+                $this->deleteWechatUser($id);
                 # custodian删除指定user绑定的部门记录
-                DepartmentUser::whereUserId($id)->delete();
+                (new DepartmentUser)->removeByUserId($id);
                 # 删除与指定user绑定的手机记录
-                Mobile::whereUserId($id)->delete();
+                (new Mobile)->removeByUserId($id);
+                # 删除指定用户的订单记录
+                (new Order)->removeByUserId($id);
+                # 删除指定用户发起的调查问卷
+                (new PollQuestionnaire)->removeByUserId($id);
                 # 删除user
                 $this->find($id)->delete();
             });

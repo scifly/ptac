@@ -4,8 +4,10 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\PollQuestionnaireParticipant 调查问卷参与者
@@ -33,5 +35,69 @@ class PollQuestionnaireParticipant extends Model {
     function pollquestionnaire() { return $this->belongsTo('App\Models\PollQuestionnaire'); }
 
     function user() { return $this->belongsTo('App\Models\User'); }
+    
+    /**
+     * 保存调查问卷参与者
+     *
+     * @param array $data
+     * @return bool
+     */
+    function store(array $data) {
+        
+        return $this->create($data) ? true : false;
+        
+    }
+    
+    /**
+     * 更新调查问卷参与者
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    function modify(array $data, $id) {
+        
+        $pqp = $this->find($id);
+        if (!$pqp) { return false; }
+        
+        return $this->update($data);
+        
+    }
+    
+    /**
+     * 删除调查问卷参与者
+     *
+     * @param $id
+     * @return bool|null
+     * @throws Exception
+     */
+    function remove($id) {
+        
+        $pqp = $this->find($id);
+        if (!$pqp) { return false; }
+        
+        return $pqp->delete();
+        
+    }
+    
+    /**
+     * 删除指定调查问卷包含的调查问卷参与者
+     *
+     * @param $pqId
+     */
+    function removeByPqId($pqId) {
+        
+        $pqps = $this->where('pq_id', $pqId)->get();
+        try {
+            DB::transaction(function () use ($pqps) {
+                foreach ($pqps as $pqp) {
+                    $this->remove($pqp->id);
+                }
+            });
+        } catch (Exception $e) {
+        
+        }
+        
+    }
     
 }

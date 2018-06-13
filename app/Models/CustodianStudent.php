@@ -115,5 +115,31 @@ class CustodianStudent extends Model {
         }
 
     }
+    
+    /**
+     * 删除指定监护人对应的绑定记录
+     *
+     * @param $custodianId
+     * @return bool|null
+     * @throws Exception
+     */
+    function removeByCustodianId($custodianId) {
+        
+        return $this->where('custodian_id', $custodianId)->delete();
+        
+    }
+    
+    /**
+     * 删除指定学生对应的绑定记录
+     *
+     * @param $studentId
+     * @return bool|null
+     * @throws Exception
+     */
+    function removeByStudentId($studentId) {
+        
+        return $this->where('student_id', $studentId)->delete();
+        
+    }
 
 }

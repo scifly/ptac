@@ -278,11 +278,11 @@ class Custodian extends Model {
             DB::transaction(function () use ($id, $custodian) {
                 $userId = $custodian->user_id;
                 # 删除与指定监护人绑定的学生记录
-                CustodianStudent::whereCustodianId($id)->delete();
-                # 删除指定的监护人记录
-                $custodian->delete();
+                (new CustodianStudent)->removeByCustodianId($id);
                 # 删除user数据
                 $custodian->user->remove($userId);
+                # 删除指定的监护人记录
+                $custodian->delete();
             });
         } catch (Exception $e) {
             throw $e;
