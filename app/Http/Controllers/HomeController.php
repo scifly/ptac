@@ -27,7 +27,6 @@ use Throwable;
  */
 class HomeController extends Controller {
     
-    const PAGEJS = 'js/home/page.js';
     const ROOT_MENU_ID = 1;
     
     protected $tab, $mt, $menu;
@@ -81,7 +80,6 @@ class HomeController extends Controller {
             'menuId'     => $menuId,
             'content'    => view('home.home'),
             'department' => $department,
-            'js'         => self::PAGEJS,
             'user'       => Auth::user(),
         ]);
         
@@ -157,7 +155,6 @@ class HomeController extends Controller {
             'tabs'       => $tabArray,
             'menuId'     => $id,
             'department' => $this->menu->department($id),
-            'js'         => self::PAGEJS,
         ]);
         
     }

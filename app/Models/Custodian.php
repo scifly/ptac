@@ -234,7 +234,7 @@ class Custodian extends Model {
      */
     function remove($id = null) {
 
-        if (!isset($id)) {
+        if (!$id) {
             abort_if(
                 empty(array_intersect(
                     array_values(Request::input('ids')),
@@ -243,8 +243,33 @@ class Custodian extends Model {
                 HttpStatusCode::UNAUTHORIZED,
                 __('messages.unauthorized')
             );
+            if (Request::input('action') == 'delete') {
+                try {
+                    DB::transaction(function () {
+                        $ids = Request::input('ids');
+                        foreach ($ids as $id) { $this->purge($id); }
+                    });
+                } catch (Exception $e) {
+                    throw $e;
+                }
+                return true;
+            }
             return $this->batch($this);
         }
+
+        return $this->purge($id);
+        
+    }
+    
+    /**
+     * 删除监护人
+     *
+     * @param null $id
+     * @return bool
+     * @throws Exception
+     */
+    private function purge($id = null) {
+    
         $custodian = self::find($id);
         if (!isset($custodian)) { return false; }
         try {
@@ -260,7 +285,7 @@ class Custodian extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }
