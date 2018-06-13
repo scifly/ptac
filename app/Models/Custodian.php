@@ -104,7 +104,10 @@ class Custodian extends Model {
                 ]);
 
                 # 创建监护人(Custodian) 记录
-                $custodian = self::create(['user_id' => $user->id]);
+                $custodian = self::create([
+                    'user_id' => $user->id,
+                    'enabled' => $user->enabled
+                ]);
     
                 # 保存用户所处部门
                 $studentIds = $data['student_ids']; # 被监护人的学生ids
@@ -175,7 +178,10 @@ class Custodian extends Model {
                 ]);
                 
                 # 更新监护人记录
-                $custodian->update(['user_id' => $userId]);
+                $custodian->update([
+                    'user_id' => $userId,
+                    'enabled' => $custodian->user->enabled
+                ]);
     
                 # 更新用户所在部门
                 $studentIds = $data['student_ids']; # 被监护人的学生ids
