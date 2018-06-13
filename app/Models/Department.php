@@ -424,7 +424,7 @@ class Department extends Model {
                 }
             }
         }
-        Log::debug(json_encode($visibleNodes, $contacts));
+        Log::debug(json_encode(array_merge($visibleNodes, $contacts)));
         return response()->json(
             array_merge($visibleNodes, $contacts)
         );
