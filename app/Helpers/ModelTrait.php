@@ -416,6 +416,7 @@ trait ModelTrait {
             );
         }
         $departments = $user->departments;
+        Log::debug(json_encode($departments));
         foreach ($departments as $d) {
             $departmentIds[] = $d->id;
             $departmentIds = array_merge(
