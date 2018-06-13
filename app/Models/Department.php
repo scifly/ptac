@@ -515,6 +515,7 @@ class Department extends Model {
     private function tree($rootId = null) {
         
         $user = Auth::user();
+        $allowedDepartmentIds = $this->departmentIds($user->id);
         $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
         if (isset($rootId)) {
             $departments = $this->nodes($rootId);
@@ -525,7 +526,6 @@ class Department extends Model {
             $departments = $this->nodes($rootId);
         }
         $nodes = [];
-        Log::debug(json_encode($this->departmentIds($user->id)));
         for ($i = 0; $i < sizeof($departments); $i++) {
             $id = $departments[$i]['id'];
             $parentId = $i == 0 ? '#' : $departments[$i]['parent_id'];
@@ -549,7 +549,7 @@ class Department extends Model {
                 $enabled ? $color : 'text-gray',
                 $title, $name, $syncMark
             );
-            $selectable = $isSuperRole ? 1 : (in_array($id, $this->departmentIds($user->id)) ? 1 : 0);
+            $selectable = $isSuperRole ? 1 : (in_array($id, $allowedDepartmentIds) ? 1 : 0);
             $corp_id = !in_array($type, ['root', 'company']) ? $this->corpId($id) : null;
             $nodes[] = [
                 'id'         => $id,
