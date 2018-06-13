@@ -525,7 +525,7 @@ class Department extends Model {
             $departments = $this->nodes($rootId);
         }
         $nodes = [];
-        Log::debug(json_encode($this->departmentIds($user->id)));
+        Log::debug(json_encode($departments));
         for ($i = 0; $i < sizeof($departments); $i++) {
             $id = $departments[$i]['id'];
             $parentId = $i == 0 ? '#' : $departments[$i]['parent_id'];
