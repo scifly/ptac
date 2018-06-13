@@ -27,12 +27,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property int $user_id 监护人用户ID
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property boolean $enabled
  * @property-read Collection|Student[] $students
  * @property-read User $user
  * @method static Builder|Custodian whereCreatedAt($value)
  * @method static Builder|Custodian whereId($value)
  * @method static Builder|Custodian whereUpdatedAt($value)
  * @method static Builder|Custodian whereUserId($value)
+ * @method static Builder|Custodian whereEnabled($value)
  * @mixin Eloquent
  */
 class Custodian extends Model {
