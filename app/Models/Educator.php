@@ -464,11 +464,11 @@ class Educator extends Model {
     function remove($id = null) {
         
         if (!isset($id)) {
-            Log::debug(json_encode(array_values(Request::input('ids'))));
+            // Log::debug(json_encode(array_values(Request::input('ids'))));
             abort_if(
                 !empty(array_intersect(
                     array_values(Request::input('ids')),
-                    $this->contactIds('educator')
+                    array_map('strval', $this->contactIds('educator'))
                 )),
                 HttpStatusCode::UNAUTHORIZED,
                 __('messages.unauthorized')
