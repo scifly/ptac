@@ -43,7 +43,7 @@ class Custodian extends Model {
         '监护人姓名', '性别', '电子邮箱',
         '手机号码', '创建于', '更新于',
     ];
-    protected $fillable = ['user_id'];
+    protected $fillable = ['user_id', 'enabled'];
     
     /**
      * 返回对应的用户对象
