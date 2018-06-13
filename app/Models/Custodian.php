@@ -228,7 +228,17 @@ class Custodian extends Model {
      */
     function remove($id = null) {
 
-        if (!isset($id)) { return $this->batch($this); }
+        if (!isset($id)) {
+            abort_if(
+                empty(array_intersect(
+                    array_values(Request::input('ids')),
+                    array_map('strval', $this->contactIds('custodian'))
+                )),
+                HttpStatusCode::UNAUTHORIZED,
+                __('messages.unauthorized')
+            );
+            return $this->batch($this);
+        }
         $custodian = self::find($id);
         if (!isset($custodian)) { return false; }
         try {

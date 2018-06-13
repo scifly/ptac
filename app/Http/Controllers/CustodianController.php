@@ -22,7 +22,9 @@ class CustodianController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->custodian = $custodian;
-        $this->approve($custodian);
+        if (!Request::has('ids')) {
+            $this->approve($custodian);
+        }
         
     }
     

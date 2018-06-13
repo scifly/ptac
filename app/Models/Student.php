@@ -277,7 +277,17 @@ class Student extends Model {
      */
     function remove($id = null) {
         
-        if (!isset($id)) { return $this->batch($this); }
+        if (!isset($id)) {
+            abort_if(
+                empty(array_intersect(
+                    array_values(Request::input('ids')),
+                    array_map('strval', $this->contactIds('student'))
+                )),
+                HttpStatusCode::UNAUTHORIZED,
+                __('messages.unauthorized')
+            );
+            return $this->batch($this);
+        }
         $student = $this->find($id);
         if (!$student) { return false; }
         try {
