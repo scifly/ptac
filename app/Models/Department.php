@@ -3,6 +3,7 @@ namespace App\Models;
 
 use Eloquent;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 use Carbon\Carbon;
 use App\Helpers\Snippet;
@@ -423,7 +424,7 @@ class Department extends Model {
                 }
             }
         }
-        
+        Log::debug(json_encode($visibleNodes, $contacts));
         return response()->json(
             array_merge($visibleNodes, $contacts)
         );
