@@ -27,7 +27,9 @@ class EducatorController extends Controller {
         $this->educator = $educator;
         $this->department = $department;
         $this->school = $school;
-        $this->approve($educator);
+        if (!Request::has('ids')) {
+            $this->approve($educator);
+        }
         
     }
     

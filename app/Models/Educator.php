@@ -10,6 +10,7 @@ use App\Helpers\Snippet;
 use App\Helpers\ModelTrait;
 use App\Jobs\ImportEducator;
 use App\Helpers\HttpStatusCode;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -462,7 +463,14 @@ class Educator extends Model {
      */
     function remove($id = null) {
         
-        if (!isset($id)) { return $this->batch($this); }
+        if (!isset($id)) {
+            abort_if(
+                !empty(array_intersect(Request::input('ids'), $this->contactIds('educator'))),
+                HttpStatusCode::UNAUTHORIZED,
+                __('messages.unauthorized')
+            );
+            return $this->batch($this);
+        }
         try {
             DB::transaction(function () use ($id) {
                 $educator = $this->find($id);
