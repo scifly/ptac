@@ -136,5 +136,5 @@ class PollQuestionnaireAnswer extends Model {
         return $this->where('pqs_id', $pqsId)->delete();
         
     }
-
+    
 }

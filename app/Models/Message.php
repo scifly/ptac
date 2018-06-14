@@ -215,6 +215,22 @@ class Message extends Model {
     }
     
     /**
+     * 删除指定消息
+     *
+     * @param $id
+     * @return bool|null
+     * @throws Exception
+     */
+    function remove($id) {
+    
+        $message = $this->find($id);
+        if (!$message) { return false; }
+        
+        return $message->delete();
+    
+    }
+    
+    /**
      * 消息列表
      *
      * @return array

@@ -34,18 +34,6 @@ trait ModelTrait {
         $ids = Request::input('ids');
         $action = Request::input('action');
         
-        if ($action == 'delete') {
-            $records = $model->whereIn('id', $ids)->get();
-            $removable = true;
-            foreach ($records as $record) {
-                if (!$this->removable($record)) {
-                    $removable = false;
-                    break;
-                }
-            }
-            return $removable ? $model->whereIn('id', $ids)->delete() : false;
-        }
-        
         return $model->whereIn('id', $ids)->update([
             'enabled' => $action == 'enable' ? Constant::ENABLED : Constant::DISABLED
         ]);

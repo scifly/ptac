@@ -124,19 +124,6 @@ class DepartmentUser extends Model {
     }
     
     /**
-     * 删除与指定用户相关的所有绑定记录
-     *
-     * @param $userId
-     * @return bool|null
-     * @throws Exception
-     */
-    function removeByUserId($userId) {
-        
-        return $this->where('user_id', $userId)->delete();
-        
-    }
-    
-    /**
      * 删除与指定部门相关的所有绑定记录
      *
      * @param $departmentId

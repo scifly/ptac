@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\ConferenceQueue 会议队列
@@ -130,6 +131,31 @@ class ConferenceQueue extends Model {
         
         return $cq->removable($id) ? $cq->delete() : false;
 
+    }
+    
+    /**
+     * 删除指定教职员工的与会记录
+     *
+     * @param $educatorId
+     * @return bool
+     * @throws Exception
+     */
+    function removeByEducatorId($educatorId) {
+        
+        try {
+            DB::transaction(function () use ($educatorId) {
+                $cqs = $this->whereRaw($educatorId . ' IN educator_ids')->get();
+                foreach ($cqs as $cq) {
+                    $educatorIds = array_diff(explode(',', $cq->educator_ids), [$educatorId]);
+                    $cq->update(['educator_ids' => implode(',', $educatorIds)]);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
     }
     
     /**

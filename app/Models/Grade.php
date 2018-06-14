@@ -192,6 +192,31 @@ class Grade extends Model {
     }
     
     /**
+     * 更新指定教职员工的年级主任任职记录
+     *
+     * @param $educatorId
+     * @return bool
+     * @throws Exception
+     */
+    function removeByEducatorId($educatorId) {
+        
+        try {
+            DB::transaction(function () use ($educatorId) {
+                $grades = $this->whereRaw($educatorId . ' IN educator_ids')->get();
+                foreach ($grades as $grade) {
+                    $educatorIds = array_diff(explode(',', $grade->educator_ids), [$educatorId]);
+                    $grade->update(['educator_ids' => implode(',', $educatorIds)]);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
+    /**
      * 返回指定年级包含的班级列表html
      *
      * @param $id

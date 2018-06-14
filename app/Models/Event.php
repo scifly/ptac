@@ -6,10 +6,12 @@ use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\Event 事件(日程)
@@ -58,6 +60,7 @@ use Illuminate\Http\JsonResponse;
 class Event extends Model {
 
     protected $table = 'events';
+    
     protected $fillable = [
         'title', 'remark', 'location',
         'contact', 'url', 'start',
@@ -87,7 +90,85 @@ class Event extends Model {
      * @return BelongsTo
      */
     function subject() { return $this->belongsTo('App\Models\Subject'); }
-
+    
+    /**
+     * 保存事件
+     *
+     * @param array $data
+     * @return bool
+     */
+    function store(array $data) {
+        
+        return $this->create($data) ? true : false;
+        
+    }
+    
+    /**
+     * 更新事件
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    function modify(array $data, $id) {
+        
+        $event = $this->find($id);
+        if (!$event) { return false; }
+        
+        return $event->update($data);
+        
+    }
+    
+    /**
+     * 删除事件
+     *
+     * @param $id
+     * @return bool|null
+     * @throws Exception
+     */
+    function remove($id) {
+        
+        $event = $this->find($id);
+        if (!$event) { return false; }
+        
+        return $event->delete();
+        
+    }
+    
+    /**
+     * 删除/更新指定用户创建的事件
+     *
+     * @param $userId
+     * @return bool
+     * @throws Exception
+     */
+    function removeByUserId($userId) {
+    
+        try {
+            DB::transaction(function() use ($userId) {
+                $this->where('user_id', $userId)
+                    ->where('ispublic', 0)
+                    ->where('iscourse', 0)
+                    ->delete();
+                $this->where('user_id', $userId)
+                    ->where('ispublic', 1)
+                    ->orWhere('iscourse', 1)
+                    ->update(['user_id' => 0]);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+    
+    }
+    
+    
+    /**
+     * 待办事项列表
+     *
+     * @return array
+     */
     function datatable() {
 
         $columns = [

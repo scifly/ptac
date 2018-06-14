@@ -12,6 +12,7 @@ use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -170,6 +171,13 @@ class User extends Authenticatable {
     }
     
     /**
+     * 获取指定用户创建的所有日历对象
+     *
+     * @return HasMany
+     */
+    function events() { return $this->hasMany('App\Models\Event'); }
+    
+    /**
      * 获取指定用户发起的所有调查问卷对象
      *
      * @return HasMany
@@ -185,7 +193,7 @@ class User extends Authenticatable {
      *
      * @return HasMany
      */
-    function pollQuestionnaireAnswers() {
+    function pqAnswers() {
         
         return $this->hasMany('App\Models\PollQuestionnaireAnswer');
         
@@ -196,7 +204,7 @@ class User extends Authenticatable {
      *
      * @return HasMany
      */
-    function pollQuestionnairePartcipants() {
+    function pqParticipants() {
         
         return $this->hasMany('App\Models\PollQuestionnaireParticipant');
         
@@ -423,15 +431,43 @@ class User extends Authenticatable {
         if (Request::has('ids')) {
             $ids = Request::input('ids');
             foreach ($ids as $id) {
-                if (!$this->purge($id)) {
-                    return false;
-                }
+                if (!$this->purge($id)) { return false; }
             }
-            
             return true;
-        } else {
-            return $this->purge($id);
         }
+        
+        return $this->purge($id);
+    
+    }
+    
+    /**
+     * @param Model $contact
+     * @return bool
+     * @throws Throwable
+     */
+    function removeContact(Model $contact) {
+    
+        if (!Request::input('id')) {
+            $ids = Request::input('ids');
+            abort_if(
+                empty(array_intersect(
+                    array_values($ids),
+                    array_map('strval', $this->contactIds('custodian'))
+                )),
+                HttpStatusCode::UNAUTHORIZED,
+                __('messages.unauthorized')
+            );
+            try {
+                DB::transaction(function () use ($contact, $ids) {
+                    foreach ($ids as $id) { $contact->{'purge'}($id); }
+                });
+            } catch (Exception $e) {
+                throw $e;
+            }
+            return true;
+        }
+    
+        return $contact->{'purge'}(Request::input('id'));
         
     }
     
@@ -643,7 +679,7 @@ class User extends Authenticatable {
     }
     
     /**
-     * 删除指定用户
+     * 删除指定用户的所有数据
      *
      * @param $id
      * @return bool
@@ -653,17 +689,18 @@ class User extends Authenticatable {
         
         try {
             DB::transaction(function () use ($id) {
-                # 删除企业号成员
                 $this->deleteWechatUser($id);
-                # custodian删除指定user绑定的部门记录
-                (new DepartmentUser)->removeByUserId($id);
-                # 删除与指定user绑定的手机记录
-                (new Mobile)->removeByUserId($id);
-                # 删除指定用户的订单记录
-                (new Order)->removeByUserId($id);
-                # 删除指定用户发起的调查问卷
-                (new PollQuestionnaire)->removeByUserId($id);
-                # 删除user
+                DepartmentUser::whereUserId($id)->delete();
+                Mobile::whereUserId($id)->delete();
+                Order::whereUserId($id)->update(['user_id' => 0]);
+                Order::wherePayUserId($id)->update(['pay_user_id' => 0]);
+                PollQuestionnaire::whereUserId($id)->update(['user_id' => 0]);
+                PollQuestionnaireAnswer::whereUserId($id)->delete();
+                PollQuestionnaireParticipant::whereUserId($id)->delete();
+                (new Event)->removeByUserId($id);
+                Message::whereRUserId($id)->delete();
+                Message::whereSUserId($id)->update(['s_user_id' => 0]);
+                MessageReply::whereUserId($id)->delete();
                 $this->find($id)->delete();
             });
         } catch (Exception $e) {

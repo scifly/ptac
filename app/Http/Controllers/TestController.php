@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ModelTrait;
+use App\Models\Custodian;
 use App\Models\Department;
 use App\Models\User;
 use Carbon\Carbon;
@@ -24,13 +25,8 @@ class TestController extends Controller {
     
     public function index() {
 
-        $a1 = [1, 2, 3, 4, 5, 6, 7];
-        $a2 = [2, 4, 6, 8];
-        dd(array_intersect($a1, $a2));
-        $user = User::find(1);
-        echo $user->realname;
-        
-        dd(property_exists(new User(), 'realname'));
+        $contact = new Custodian();
+        dd(get_class($contact));
         exit;
         // dd(round(microtime(true) * 1000));
         // dd(strtotime(date('Y-m-d'), now()));

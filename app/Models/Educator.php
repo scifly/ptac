@@ -464,23 +464,54 @@ class Educator extends Model {
     function remove($id = null) {
         
         if (!isset($id)) {
+            $ids = Request::input('ids');
             abort_if(
                 empty(array_intersect(
-                    array_values(Request::input('ids')),
+                    array_values($ids),
                     array_map('strval', $this->contactIds('educator'))
                 )),
                 HttpStatusCode::UNAUTHORIZED,
                 __('messages.unauthorized')
             );
+            if (Request::input('action') == 'delete') {
+                try {
+                    DB::transaction(function () use ($ids) {
+                        foreach ($ids as $id) { $this->purge($id); }
+                    });
+                } catch (Exception $e) {
+                    throw $e;
+                }
+                return true;
+            }
             return $this->batch($this);
         }
+        
+        return $this->purge($id);
+        
+    }
+    
+    /**
+     * 删除指定教职员工的所有数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
+        
         try {
             DB::transaction(function () use ($id) {
                 $educator = $this->find($id);
-                if (!$this->removable($educator)) {
-                    throw new Exception(__('messages.del_fail'));
-                }
-                (new User())->remove($educator->user_id);
+                ConferenceParticipant::whereEducatorId($id)->delete();
+                (new ConferenceQueue)->removeByEducatorId($id);
+                (new EducatorAppeal)->removeByEducatorId($id);
+                EducatorAttendance::whereEducatorId($id)->delete();
+                EducatorClass::whereEducatorId($id)->delete();
+                EducatorTeam::whereEducatorId($id)->delete();
+                Event::whereEducatorId($id)->delete();
+                (new Grade)->removeByEducatorId($id);
+                (new Squad)->removeByEducatorId($id);
+                (new User)->remove($educator->user_id);
                 $educator->delete();
             });
         } catch (Exception $e) {

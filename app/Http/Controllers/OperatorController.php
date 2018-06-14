@@ -22,7 +22,9 @@ class OperatorController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->user = $user;
-        $this->approve($user);
+        if (!Request::has('ids')) {
+            $this->approve($user);
+        }
         
     }
     

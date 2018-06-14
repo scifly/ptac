@@ -99,17 +99,4 @@ class Mobile extends Model {
 
     }
     
-    /**
-     * 删除指定用户的所有手机号码记录
-     *
-     * @param $userId
-     * @return bool|null
-     * @throws Exception
-     */
-    function removeByUserId($userId) {
-        
-        return $this->where('user_id', $userId)->delete();
-        
-    }
-
 }

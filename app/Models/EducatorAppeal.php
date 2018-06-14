@@ -5,9 +5,11 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\EducatorAppeal 教职员工申诉
@@ -60,7 +62,82 @@ class EducatorAppeal extends Model {
      * @return BelongsTo
      */
     function procedureLog() { return $this->belongsTo('App\Models\ProcedureLog'); }
-
+    
+    /**
+     * 保存申诉
+     *
+     * @param array $data
+     * @return bool
+     */
+    function store(array $data) {
+        
+        return $this->create($data) ? true : false;
+        
+    }
+    
+    /**
+     * 更新申诉
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    function modify(array $data, $id) {
+        
+        $ea = $this->find($id);
+        if (!$ea) { return false; }
+    
+        return $ea->update($data);
+        
+    }
+    
+    /**
+     * 删除申诉
+     *
+     * @param $id
+     * @return bool|null
+     * @throws Exception
+     */
+    function remove($id) {
+    
+        $ea = $this->find($id);
+        if (!$ea) { return false; }
+    
+        return $ea->delete();
+        
+    }
+    
+    /**
+     * 删除指定教职员工相关的申诉记录
+     *
+     * @param $educatorId
+     * @return bool
+     * @throws Exception
+     */
+    function removeByEducatorId($educatorId) {
+        
+        try {
+            DB::transaction(function() use ($educatorId) {
+                $this->where('educator_id', $educatorId)->delete();
+                $approvers = $this->whereRaw($educatorId . ' IN approver_educator_ids')->get();
+                $relates = $this->whereRaw($educatorId . ' IN related_educator_ids')->get();
+                foreach ($approvers as $ea) {
+                    $educatorIds = array_diff(explode(',', $ea->approver_educator_ids), [$educatorId]);
+                    $ea->update(['approver_educator_ids' => implode(',', $educatorIds)]);
+                }
+                foreach ($relates as $ea) {
+                    $educatorIds = array_diff(explode(',', $ea->related_educator_ids), [$educatorId]);
+                    $ea->update(['related_educator_ids' => implode(',', $educatorIds)]);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
     /**
      * 教职员工申诉记录列表
      *

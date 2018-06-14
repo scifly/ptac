@@ -84,19 +84,25 @@ class PollQuestionnaireParticipant extends Model {
      * 删除指定调查问卷包含的调查问卷参与者
      *
      * @param $pqId
+     * @return bool|null
+     * @throws Exception
      */
     function removeByPqId($pqId) {
         
-        $pqps = $this->where('pq_id', $pqId)->get();
-        try {
-            DB::transaction(function () use ($pqps) {
-                foreach ($pqps as $pqp) {
-                    $this->remove($pqp->id);
-                }
-            });
-        } catch (Exception $e) {
+        return $this->where('pq_id', $pqId)->delete();
         
-        }
+    }
+    
+    /**
+     * 删除指定用户参与的调查问卷记录
+     *
+     * @param $userId
+     * @return bool|null
+     * @throws Exception
+     */
+    function removeByUserId($userId) {
+        
+        return $this->where('user_id', $userId)->delete();
         
     }
     

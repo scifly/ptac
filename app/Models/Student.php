@@ -273,46 +273,61 @@ class Student extends Model {
      * @param $id
      * @return bool|mixed
      * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     function remove($id = null) {
         
         if (!isset($id)) {
+            $ids = Request::input('ids');
             abort_if(
                 empty(array_intersect(
-                    array_values(Request::input('ids')),
+                    array_values($ids),
                     array_map('strval', $this->contactIds('student'))
                 )),
                 HttpStatusCode::UNAUTHORIZED,
                 __('messages.unauthorized')
             );
+            if (Request::input('action') == 'delete') {
+                try {
+                    DB::transaction(function () use ($ids) {
+                        foreach ($ids as $id) { $this->purge($id); }
+                    });
+                } catch (Exception $e) {
+                    throw $e;
+                }
+                return true;
+            }
             return $this->batch($this);
         }
-        $student = $this->find($id);
-        if (!$student) { return false; }
+        
+        return $this->purge($id);
+        
+    }
+    
+    /**
+     * 删除指定学生的所有数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
+    
         try {
-            DB::transaction(function () use ($id, $student) {
-                $userId = $student->user_id;
-                #删除关联监护人
-                $custodians = $student->custodians;
-                foreach ($custodians as $custodian) {
-                    #判断当前监护人下是否只有当前学生，是则删除监护人
-                    $cusStuents = $custodian->students;
-                    if (count($cusStuents) == 1) {
-                        $custodian->remove($custodian->id);
-                    }
-                }
-                # 删除与指定学生绑定的监护人记录
+            DB::transaction(function () use ($id) {
+                $student = $this->find($id);
+                Consumption::whereStudentId($id)->delete();
                 CustodianStudent::whereStudentId($id)->delete();
-                # 删除user数据
-                $student->user->remove($userId);
-                # 删除指定的学生记录
+                ScoreTotal::whereStudentId($id)->delete();
+                Score::whereStudentId($id)->delete();
+                StudentAttendance::whereStudentId($id)->delete();
+                (new User)->remove($student->user_id);
                 $student->delete();
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

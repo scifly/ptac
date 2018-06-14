@@ -176,30 +176,6 @@ class PollQuestionnaire extends Model {
     }
     
     /**
-     * 删除指定用户对应的调查问卷
-     *
-     * @param $userId
-     * @return bool
-     * @throws Exception
-     */
-    function removeByUserId($userId) {
-        
-        $pqs = $this->where('user_id', $userId)->get();
-        try {
-            DB::transaction(function () use ($pqs) {
-                foreach ($pqs as $pq) {
-                    $this->remove($pq->id);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-    
-    }
-    
-    /**
      * 投票问卷列表
      *
      * @return array

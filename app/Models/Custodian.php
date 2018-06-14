@@ -237,9 +237,10 @@ class Custodian extends Model {
     function remove($id = null) {
 
         if (!$id) {
+            $ids = Request::input('ids');
             abort_if(
                 empty(array_intersect(
-                    array_values(Request::input('ids')),
+                    array_values($ids),
                     array_map('strval', $this->contactIds('custodian'))
                 )),
                 HttpStatusCode::UNAUTHORIZED,
@@ -270,18 +271,13 @@ class Custodian extends Model {
      * @return bool
      * @throws Exception
      */
-    private function purge($id = null) {
+    function purge($id = null) {
     
-        $custodian = self::find($id);
-        if (!isset($custodian)) { return false; }
         try {
-            DB::transaction(function () use ($id, $custodian) {
-                $userId = $custodian->user_id;
-                # 删除与指定监护人绑定的学生记录
-                (new CustodianStudent)->removeByCustodianId($id);
-                # 删除user数据
-                $custodian->user->remove($userId);
-                # 删除指定的监护人记录
+            DB::transaction(function () use ($id) {
+                $custodian = $this->find($id);
+                CustodianStudent::whereCustodianId($id)->delete();
+                (new User)->remove($custodian->user_id);
                 $custodian->delete();
             });
         } catch (Exception $e) {
