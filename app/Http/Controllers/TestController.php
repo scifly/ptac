@@ -23,10 +23,12 @@ class TestController extends Controller {
     protected $keySecret = 'xxO5XaXx3O7kB3YR14XSdFulw1x56k';
     protected $callerShowNumber = '02388373982';
     
+    /**
+     * @throws \ReflectionException
+     */
     public function index() {
 
-        $contact = new Custodian();
-        dd(lcfirst(array_pop(explode('\\', get_class($contact)))));
+        dd((new ReflectionClass(new Custodian()))->getShortName());
         exit;
         // dd(round(microtime(true) * 1000));
         // dd(strtotime(date('Y-m-d'), now()));
