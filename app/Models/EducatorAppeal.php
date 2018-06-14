@@ -119,8 +119,8 @@ class EducatorAppeal extends Model {
         try {
             DB::transaction(function() use ($educatorId) {
                 $this->where('educator_id', $educatorId)->delete();
-                $approvers = $this->whereRaw($educatorId . ' IN approver_educator_ids')->get();
-                $relates = $this->whereRaw($educatorId . ' IN related_educator_ids')->get();
+                $approvers = $this->whereRaw($educatorId . ' IN (approver_educator_ids)')->get();
+                $relates = $this->whereRaw($educatorId . ' IN (related_educator_ids)')->get();
                 foreach ($approvers as $ea) {
                     $educatorIds = array_diff(explode(',', $ea->approver_educator_ids), [$educatorId]);
                     $ea->update(['approver_educator_ids' => implode(',', $educatorIds)]);
