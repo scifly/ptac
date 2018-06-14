@@ -431,10 +431,14 @@ class User extends Authenticatable {
      */
     function remove($id = null) {
         
-        if (Request::has('ids')) {
+        if (!$id) {
             $ids = Request::input('ids');
-            foreach ($ids as $id) {
-                if (!$this->purge($id)) { return false; }
+            try {
+                DB::transaction(function () use ($ids) {
+                    foreach ($ids as $id) { $this->purge($id); }
+                });
+            } catch (Exception $e) {
+                throw $e;
             }
             return true;
         }
