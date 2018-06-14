@@ -85,11 +85,9 @@ class AttendanceMachine extends Model {
      */
     function modify(array $data, $id = null) {
         
-        if (!$id) { return $this->batch($this); }
-        $am = $this->find($id);
-        if (!$am) { return false; }
-        
-        return $am->update($data);
+        return $id
+            ? $this->find($id)->update($data)
+            : $this->batch($this);
         
     }
     
@@ -115,22 +113,6 @@ class AttendanceMachine extends Model {
         }
         
         return $this->purge($id);
-        
-    }
-    
-    /**
-     *
-     *
-     * @param $schoolId
-     * @return bool
-     * @throws Exception
-     */
-    function removeSchoolAttendanceMachines($schoolId) {
-        
-        $ams = $this->where('school_id', $schoolId)->get();
-        foreach ($ams as $am) { $this->purge($am->id); }
-        
-        return true;
         
     }
     

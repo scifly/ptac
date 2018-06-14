@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 
 /**
  * App\Models\ConferenceRoom 会议室
@@ -67,25 +69,23 @@ class ConferenceRoom extends Model {
      */
     function store(array $data) {
 
-        $cr = self::create($data);
-        
-        return $cr ? true : false;
+        return $this->create($data) ? true : false;
 
     }
-
+    
     /**
      * 更新会议室
      *
      * @param array $data
      * @param $id
      * @return bool
+     * @throws Exception
      */
-    function modify(array $data, $id) {
+    function modify(array $data, $id = null) {
 
-        $cr = self::find($id);
-        if (!$cr) { return false; }
-        
-        return $cr->update($data) ? true : false;
+        return $id
+            ? $this->find($id)->update($data)
+            : $this->batch($this);
 
     }
     
@@ -96,13 +96,32 @@ class ConferenceRoom extends Model {
      * @return bool
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
 
-        $cr = self::find($id);
-        if (!$cr) { return false; }
+        return $this->del($this, $id);
+
+    }
+    
+    /**
+     * 删除指定会议室的所有数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
         
-        return self::removable($id) ? $cr->delete() : false;
-
+        try {
+            DB::transaction(function () use ($id) {
+                (new ConferenceQueue)->removeConferenceRoomConferenceQueues($id);
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
     }
     
     /**

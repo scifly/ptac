@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 use ReflectionException;
 
 /**
@@ -74,7 +75,7 @@ class Semester extends Model {
      */
     function store(array $data) {
         
-        return self::create($data) ? true : false;
+        return $this->create($data) ? true : false;
         
     }
     
@@ -87,10 +88,7 @@ class Semester extends Model {
      */
     function modify(array $data, $id) {
         
-        $semester = $this->find($id);
-        if (!$semester) { return false; }
-        
-        return $semester->update($data);
+        return $this->find($id)->update($data);
         
     }
     
@@ -100,15 +98,23 @@ class Semester extends Model {
      * @param $id
      * @return bool|null
      * @throws Exception
-     * @throws ReflectionException
      */
-    function remove($id) {
+    function remove($id = null) {
         
-        $semester = self::find($id);
-        if (!$semester) { return false; }
+        return $this->del($this, $id);
         
-        return $this->removable($semester) ? $semester->delete() : false;
-        
+    }
+    
+    function purge($id) {
+    
+        try {
+            DB::transaction(function () use ($id) {
+            
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+    
     }
     
     /**

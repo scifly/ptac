@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -96,7 +97,7 @@ class Major extends Model {
             DB::transaction(function () use ($request) {
                 $m = self::create($request->all());
                 $subjectIds = $request->input('subject_ids', []);
-                (new MajorSubject())->storeByMajorId($m->id, $subjectIds);
+                (new MajorSubject)->storeByMajorId($m->id, $subjectIds);
             });
         } catch (Exception $e) {
             throw $e;
@@ -115,14 +116,12 @@ class Major extends Model {
      */
     function modify(MajorRequest $request, $id) {
 
-        $major = self::find($id);
-        if (!isset($major)) { return false; }
         try {
-            DB::transaction(function () use ($request, $id, $major) {
-                $major->update($request->all());
+            DB::transaction(function () use ($request, $id) {
+                $this->find($id)->update($request->all());
                 $subjectIds = $request->input('subject_ids', []);
-                (new MajorSubject())->whereMajorId($id)->delete();
-                (new MajorSubject())->storeByMajorId($id, $subjectIds);
+                MajorSubject::whereMajorId($id)->delete();
+                (new MajorSubject)->storeByMajorId($id, $subjectIds);
             });
         } catch (Exception $e) {
             throw $e;
@@ -139,21 +138,30 @@ class Major extends Model {
      * @return bool|mixed
      * @throws Throwable
      */
-    function remove($id) {
-
-        $major = self::find($id);
-        if (!$major) { return false; }
+    function remove($id = null) {
+        
+        return $this->del($this, $id);
+        
+    }
+    
+    /**
+     * 删除指定专业的所有数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
+    
         try {
-            DB::transaction(function () use ($id, $major) {
-                # 删除指定的专业记录
-                $major->delete();
-                # 删除与指定专业绑定的科目记录
+            DB::transaction(function () use ($id) {
+                $this->find($id)->delete();
                 MajorSubject::whereMajorId($id)->delete();
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
         
     }

@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -121,9 +122,7 @@ class Exam extends Model {
      */
     function store(array $data) {
         
-        $exam = self::create($data);
-        
-        return $exam ? true : false;
+        return $this->create($data) ? true : false;
         
     }
     
@@ -133,12 +132,13 @@ class Exam extends Model {
      * @param array $data
      * @param $id
      * @return bool
+     * @throws Exception
      */
-    function modify(array $data, $id) {
+    function modify(array $data, $id = null) {
         
-        $exam = self::find($id);
-        
-        return $exam ? $exam->update($data) : false;
+        return $id
+            ? $this->find($id)->update($data)
+            : $this->batch($this);
         
     }
     
@@ -149,21 +149,49 @@ class Exam extends Model {
      * @return bool|null
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
         
-        $exam = $this->find($id);
-        if (!$exam) { return false; }
+        return $this->del($this, $id);
+        
+    }
+    
+    /**
+     * 删除隶属于指定考试类型的所有考试
+     *
+     * @param $examTypeId
+     * @return bool|null
+     * @throws Exception
+     */
+    function removeExamTypeExams($examTypeId) {
+    
+        $ids = $this->where('exam_type_id', $examTypeId);
+        Request::merge(['ids' => $ids]);
+        
+        return $this->remove();
+    
+    }
+    
+    /**
+     * 删除指定考试的所有数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
+    
         try {
-            DB::transaction(function () use ($id, $exam) {
+            DB::transaction(function () use ($id) {
                 Score::whereExamId($id)->delete();
-                $exam->delete();
+                $this->find($id)->delete();
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
-        
+    
+    
     }
     
     /**

@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 
 /**
  * App\Models\ConferenceQueue 会议队列
@@ -95,25 +96,21 @@ class ConferenceQueue extends Model {
      */
     function store(array $data) {
 
-        $cq = self::create($data);
-        
-        return $cq ? true : false;
+        return $this->create($data) ? true : false;
 
     }
-
+    
     /**
      * 更新会议
      *
      * @param array $data
      * @param $id
      * @return bool
+     * @throws Exception
      */
     function modify(array $data, $id) {
 
-        $cq = self::find($id);
-        if (!$cq) {return false;}
-        
-        return $cq->update($data) ? true : false;
+        return $this->find($id)->update($data);
 
     }
     
@@ -124,13 +121,44 @@ class ConferenceQueue extends Model {
      * @return bool
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
 
-        $cq = self::find($id);
-        if (!$cq) { return false; }
+        return $this->del($this, $id);
+
+    }
+    
+    /**
+     * 移除在指定会议室进行的会议
+     *
+     * @param $conferenceRoomId
+     * @return bool
+     * @throws Exception
+     */
+    function removeConferenceRoomConferenceQueues($conferenceRoomId) {
         
-        return $cq->removable($id) ? $cq->delete() : false;
-
+        $ids = $this->where('conference_room_id', $conferenceRoomId)->pluck('id')->toArray();
+        Request::merge(['ids' => $ids]);
+        
+        return $this->remove();
+        
+    }
+    /**
+     * 删除指定会议的所有数据
+     *
+     * @param $id
+     * @throws Exception
+     */
+    function purge($id) {
+        
+        try {
+            DB::transaction(function() use ($id) {
+                ConferenceParticipant::whereConferenceQueueId($id)->delete();
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
     }
     
     /**

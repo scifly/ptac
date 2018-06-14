@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Policies\Route;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use PhpOffice\PhpSpreadsheet\Exception;
@@ -23,7 +24,7 @@ use ReflectionException;
 trait ModelTrait {
     
     /**
-     * 批量操作（启用, 禁用）
+     * 批量启用/禁用记录
      *
      * @param Model $model
      * @return bool
@@ -37,6 +38,54 @@ trait ModelTrait {
         return $model->whereIn('id', $ids)->update([
             'enabled' => $action == 'enable' ? Constant::ENABLED : Constant::DISABLED
         ]);
+        
+    }
+    
+    /**
+     * (批量)删除记录
+     *
+     * @param Model $model
+     * @param $id
+     * @return bool
+     */
+    function del(Model $model, $id) {
+        
+        if (!$id) {
+            $ids = Request::input('ids');
+            DB::transaction(function () use ($ids, $model) {
+                foreach ($ids as $id) { $model->{'purge'}($id); }
+            });
+    
+            return true;
+        }
+    
+        return $model->{'purge'}($id);
+        
+    }
+    
+    /**
+     * 删除关联表中的所有数据
+     *
+     * @param $foreignKey
+     * @param $class
+     * @param $value
+     * @return mixed
+     */
+    function delRelated($foreignKey, $class, $value) {
+    
+        /** @var Model $model */
+        $class = '\\App\\Models\\' . $class;
+        $model = new $class;
+        $ids = $model->where($foreignKey, $value)->pluck('id')->toArray();
+        Request::merge(['ids' => $ids]);
+    
+        return $model->{'remove'}();
+        
+    }
+    
+    function test($a) {
+        
+        echo $a;
         
     }
     

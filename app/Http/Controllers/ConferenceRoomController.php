@@ -94,8 +94,9 @@ class ConferenceRoomController extends Controller {
      * @param ConferenceRoomRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Exception
      */
-    public function update(ConferenceRoomRequest $request, $id) {
+    public function update(ConferenceRoomRequest $request, $id = null) {
         
         return $this->result(
             $this->cr->modify(
@@ -112,7 +113,7 @@ class ConferenceRoomController extends Controller {
      * @return JsonResponse
      * @throws Exception
      */
-    public function destroy($id) {
+    public function destroy($id = null) {
         
         return $this->result(
             $this->cr->remove($id)

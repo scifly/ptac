@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 
 /**
  * App\Models\PollQuestionnaire 调查问卷
@@ -127,9 +128,7 @@ class PollQuestionnaire extends Model {
      */
     function store(array $data) {
         
-        $pq = $this->create($data);
-        
-        return $pq ? true : false;
+        return $this->create($data) ? true : false;
         
     }
     
@@ -142,10 +141,7 @@ class PollQuestionnaire extends Model {
      */
     function modify(array $data, $id) {
         
-        $pq = $this->find($id);
-        if (!$pq) { return false; }
-        
-        return $pq->update($data) ? true : false;
+        return $this->find($id)->update($data);
         
     }
     
@@ -156,21 +152,32 @@ class PollQuestionnaire extends Model {
      * @return bool|null
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
         
-        $pq = $this->find($id);
-        if (!$pq) { return false; }
+        return $this->del($this, $id);
+
+    }
+    
+    /**
+     * 删除指定调查问卷的所有数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
+    
         try {
-            DB::transaction(function () use ($pq, $id) {
+            DB::transaction(function () use ($id) {
                 (new PollQuestionnaireParticipant)->removeByPqId($id);
                 (new PollQuestionnaireAnswer)->removeByPqId($id);
                 (new PollQuestionnaireSubject)->removeByPqId($id);
-                $pq->delete();
+                $this->find($id)->delete();
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
 
     }

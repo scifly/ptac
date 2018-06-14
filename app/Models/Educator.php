@@ -9,6 +9,7 @@ use App\Helpers\Snippet;
 use App\Helpers\ModelTrait;
 use App\Jobs\ImportEducator;
 use App\Helpers\HttpStatusCode;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;

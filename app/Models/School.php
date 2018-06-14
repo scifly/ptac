@@ -334,20 +334,8 @@ class School extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-    
-        if (!$id) {
-            try {
-                $ids = Request::input('ids');
-                foreach ($ids as $id) {
-                    $this->purge($id);
-                }
-            } catch (Exception $e) {
-                throw $e;
-            }
-            return true;
-        }
         
-        return $this->purge($id);
+        return $this->del($this, $id);
     
     }
     
@@ -360,13 +348,31 @@ class School extends Model {
      */
     function purge($id) {
     
-        $school = $this->find($id);
         try {
-            DB::transaction(function () use ($school) {
-                
-                (new Department)->removeDepartment($school);
-                (new Menu)->removeMenu($school);
-                $school->delete();
+            DB::transaction(function () use ($id) {
+                $relations = [
+                    'AttendanceMachine',
+                    'ConferenceRoom',
+                    'ExamType',
+                    'Major',
+                    'PollQuestionnaire',
+                    'Educator'
+                ];
+                $keys = array_fill(0, sizeof($relations), 'school_id');
+                $values = array_fill(0, sizeof($relations), $id);
+    
+                ComboType::whereSchoolId($id)->delete();
+                array_map($this->{'delRelated'}, $keys, $relations, $values);
+                // $this->removeRelated(new AttendanceMachine, $id);
+                // $this->removeRelated(new ConferenceRoom, $id);
+                // $this->removeRelated(new ExamType, $id);
+                // $this->removeRelated(new Major, $id);
+                // $this->removeRelated(new PollQuestionnaire, $id);
+                //
+                // $this->removeRelated(new Educator, $id);
+                (new Department)->removeSchoolDepartments($id);
+                (new Menu)->removeSchoolMenus($id);
+                $this->find($id)->delete();
             });
         } catch (Exception $e) {
             throw $e;

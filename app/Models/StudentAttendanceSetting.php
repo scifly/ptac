@@ -78,11 +78,13 @@ class StudentAttendanceSetting extends Model {
     }
     
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * 返回指定学生考勤设置对应的所有学生考勤记录
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    function studentAttendance() {
+    function studentAttendances() {
         
-        return $this->hasOne('App\Models\StudentAttendance', 'id', 'sas_id');
+        return $this->hasMany('App\Models\StudentAttendance', 'id', 'sas_id');
         
     }
     
@@ -107,10 +109,7 @@ class StudentAttendanceSetting extends Model {
      */
     function modify(array $data, $id) {
         
-        $sas = $this->find($id);
-        if (!$sas) { return false; }
-        
-        return $sas->update($data);
+        return $this->find($id)->update($data);
         
     }
     
@@ -119,16 +118,25 @@ class StudentAttendanceSetting extends Model {
      *
      * @param $id
      * @return bool|null
-     * @throws ReflectionException
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
+
+        return $this->del($this, $id);
     
-        $sas = $this->find($id);
-        if (!$sas) { return false; }
+    }
+    
+    /**
+     * 删除指定学生考勤设置的所有数据
+     *
+     * @param $id
+     * @return bool|null
+     * @throws Exception
+     */
+    function purge($id) {
         
-        return $sas->removable($sas) ? $sas->delete() : false;
-    
+        return $this->find($id)->delete();
+        
     }
     
     /**

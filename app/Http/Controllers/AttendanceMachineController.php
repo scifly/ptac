@@ -92,8 +92,9 @@ class AttendanceMachineController extends Controller {
      * @param AttendanceMachineRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Exception
      */
-    public function update(AttendanceMachineRequest $request, $id) {
+    public function update(AttendanceMachineRequest $request, $id = null) {
         
         return $this->result(
             $this->am->modify(
@@ -110,7 +111,7 @@ class AttendanceMachineController extends Controller {
      * @return JsonResponse
      * @throws Exception
      */
-    public function destroy($id) {
+    public function destroy($id = null) {
         
         return $this->result(
             $this->am->remove($id)

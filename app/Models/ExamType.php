@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 
 /**
  * App\Models\ExamType 考试类型
@@ -62,9 +64,7 @@ class ExamType extends Model {
      */
     function store(array $data) {
         
-        $et = self::create($data);
-
-        return $et ? true : false;
+        return $this->create($data) ? true : false;
 
     }
 
@@ -77,10 +77,7 @@ class ExamType extends Model {
      */
     function modify(array $data, $id) {
         
-        $et = self::find($id);
-        if (!$et) { return false; }
-
-        return $et->update($data) ? true : false;
+        return $this->find($id)->update($data);
 
     }
     
@@ -91,13 +88,32 @@ class ExamType extends Model {
      * @return bool
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
+
+        return $this->del($this, $id);
+
+    }
+    
+    /**
+     * 删除指定考试类型的所有数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
         
-        $et = self::find($id);
-        if (!$et) { return false; }
-
-        return self::removable($et) ? $et->delete() : false;
-
+        try {
+            DB::transaction(function () use ($id) {
+                (new Exam)->removeExamTypeExams($id);
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
     }
     
     /**
