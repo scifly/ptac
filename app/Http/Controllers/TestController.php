@@ -29,7 +29,7 @@ class TestController extends Controller {
      */
     public function index() {
 
-        array_map($this->{'test'}, [1, 2, 3, 4, 5]);
+        array_map([$this, 'test'], [1, 2, 3, 4, 5]);
         exit;
         Request::merge(['ids' => [3894,38928]]);
         
