@@ -29,7 +29,7 @@ class TestController extends Controller {
      */
     public function index() {
 
-        Request::input('ids', [1, 2, 3]);
+        Request::input('ids', [3894,38928]);
         
         dd(Request::input('ids'));
         exit;
