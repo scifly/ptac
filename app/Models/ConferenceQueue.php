@@ -144,7 +144,7 @@ class ConferenceQueue extends Model {
         
         try {
             DB::transaction(function () use ($educatorId) {
-                $cqs = $this->whereRaw($educatorId . ' IN educator_ids')->get();
+                $cqs = $this->whereRaw($educatorId . ' IN (educator_ids)')->get();
                 foreach ($cqs as $cq) {
                     $educatorIds = array_diff(explode(',', $cq->educator_ids), [$educatorId]);
                     $cq->update(['educator_ids' => implode(',', $educatorIds)]);

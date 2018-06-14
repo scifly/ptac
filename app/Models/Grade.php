@@ -202,7 +202,7 @@ class Grade extends Model {
         
         try {
             DB::transaction(function () use ($educatorId) {
-                $grades = $this->whereRaw($educatorId . ' IN educator_ids')->get();
+                $grades = $this->whereRaw($educatorId . ' IN (educator_ids)')->get();
                 foreach ($grades as $grade) {
                     $educatorIds = array_diff(explode(',', $grade->educator_ids), [$educatorId]);
                     $grade->update(['educator_ids' => implode(',', $educatorIds)]);

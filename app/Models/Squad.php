@@ -175,7 +175,7 @@ class Squad extends Model {
         
         try {
             DB::transaction(function () use ($educatorId) {
-                $classes = $this->whereRaw($educatorId . ' IN educator_ids')->get();
+                $classes = $this->whereRaw($educatorId . ' IN (educator_ids)')->get();
                 foreach ($classes as $class) {
                     $educatorIds = array_diff(explode(',', $class->educator_ids), [$educatorId]);
                     $class->update(['educator_ids' => implode(',', $educatorIds)]);
