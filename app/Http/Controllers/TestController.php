@@ -29,7 +29,7 @@ class TestController extends Controller {
      */
     public function index() {
 
-        Request::input('ids', [3894,38928]);
+        Request::merge(['ids' => [3894,38928]]);
         
         dd(Request::input('ids'));
         exit;
