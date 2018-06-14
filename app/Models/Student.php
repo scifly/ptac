@@ -277,30 +277,31 @@ class Student extends Model {
      */
     function remove($id = null) {
         
-        if (!isset($id)) {
-            $ids = Request::input('ids');
-            abort_if(
-                empty(array_intersect(
-                    array_values($ids),
-                    array_map('strval', $this->contactIds('student'))
-                )),
-                HttpStatusCode::UNAUTHORIZED,
-                __('messages.unauthorized')
-            );
-            if (Request::input('action') == 'delete') {
-                try {
-                    DB::transaction(function () use ($ids) {
-                        foreach ($ids as $id) { $this->purge($id); }
-                    });
-                } catch (Exception $e) {
-                    throw $e;
-                }
-                return true;
-            }
-            return $this->batch($this);
-        }
-        
-        return $this->purge($id);
+        // if (!isset($id)) {
+        //     $ids = Request::input('ids');
+        //     abort_if(
+        //         empty(array_intersect(
+        //             array_values($ids),
+        //             array_map('strval', $this->contactIds('student'))
+        //         )),
+        //         HttpStatusCode::UNAUTHORIZED,
+        //         __('messages.unauthorized')
+        //     );
+        //     if (Request::input('action') == 'delete') {
+        //         try {
+        //             DB::transaction(function () use ($ids) {
+        //                 foreach ($ids as $id) { $this->purge($id); }
+        //             });
+        //         } catch (Exception $e) {
+        //             throw $e;
+        //         }
+        //         return true;
+        //     }
+        //     return $this->batch($this);
+        // }
+        //
+        // return $this->purge($id);
+        return (new User)->removeContact($this, $id);
         
     }
     

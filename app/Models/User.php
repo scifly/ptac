@@ -28,6 +28,8 @@ use Illuminate\Support\Facades\Request;
 use Laravel\Passport\Client;
 use Laravel\Passport\HasApiTokens;
 use Laravel\Passport\Token;
+use ReflectionClass;
+use ReflectionException;
 use Throwable;
 
 /**
@@ -441,18 +443,23 @@ class User extends Authenticatable {
     }
     
     /**
+     * 删除联系人(学生、监护人、教职员工）及所有相关数据
+     *
      * @param Model $contact
+     * @param null $id
      * @return bool
-     * @throws Throwable
+     * @throws ReflectionException
+     * @throws Exception
      */
-    function removeContact(Model $contact) {
+    function removeContact(Model $contact, $id = null) {
     
-        if (!Request::input('id')) {
+        if (!$id) {
             $ids = Request::input('ids');
+            $type = lcfirst((new ReflectionClass($contact))->getShortName());
             abort_if(
                 empty(array_intersect(
                     array_values($ids),
-                    array_map('strval', $this->contactIds('custodian'))
+                    array_map('strval', $this->contactIds($type))
                 )),
                 HttpStatusCode::UNAUTHORIZED,
                 __('messages.unauthorized')
@@ -467,7 +474,7 @@ class User extends Authenticatable {
             return true;
         }
     
-        return $contact->{'purge'}(Request::input('id'));
+        return $contact->{'purge'}($id);
         
     }
     

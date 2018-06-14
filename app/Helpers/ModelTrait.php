@@ -23,7 +23,7 @@ use ReflectionException;
 trait ModelTrait {
     
     /**
-     * 批量操作（删除, 启用, 禁用）
+     * 批量操作（启用, 禁用）
      *
      * @param Model $model
      * @return bool
@@ -31,7 +31,7 @@ trait ModelTrait {
      */
     function batch(Model $model) {
         
-        $ids = Request::input('ids');
+        $ids = array_values(Request::input('ids'));
         $action = Request::input('action');
         
         return $model->whereIn('id', $ids)->update([

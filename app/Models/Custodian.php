@@ -160,7 +160,7 @@ class Custodian extends Model {
      */
     function modify(array $data, $id = null) {
         
-        if (!isset($id)) { return $this->batch($this); }
+        if (!$id) { return $this->batch($this); }
         $custodian = $this->find($id);
         if (!$custodian) { return false; }
         try {
@@ -236,31 +236,32 @@ class Custodian extends Model {
      */
     function remove($id = null) {
 
-        if (!$id) {
-            $ids = Request::input('ids');
-            abort_if(
-                empty(array_intersect(
-                    array_values($ids),
-                    array_map('strval', $this->contactIds('custodian'))
-                )),
-                HttpStatusCode::UNAUTHORIZED,
-                __('messages.unauthorized')
-            );
-            if (Request::input('action') == 'delete') {
-                try {
-                    DB::transaction(function () {
-                        $ids = Request::input('ids');
-                        foreach ($ids as $id) { $this->purge($id); }
-                    });
-                } catch (Exception $e) {
-                    throw $e;
-                }
-                return true;
-            }
-            return $this->batch($this);
-        }
-
-        return $this->purge($id);
+        // if (!$id) {
+        //     $ids = Request::input('ids');
+        //     abort_if(
+        //         empty(array_intersect(
+        //             array_values($ids),
+        //             array_map('strval', $this->contactIds('custodian'))
+        //         )),
+        //         HttpStatusCode::UNAUTHORIZED,
+        //         __('messages.unauthorized')
+        //     );
+        //     if (Request::input('action') == 'delete') {
+        //         try {
+        //             DB::transaction(function () {
+        //                 $ids = Request::input('ids');
+        //                 foreach ($ids as $id) { $this->purge($id); }
+        //             });
+        //         } catch (Exception $e) {
+        //             throw $e;
+        //         }
+        //         return true;
+        //     }
+        //     return $this->batch($this);
+        // }
+        //
+        // return $this->purge($id);
+        return (new User)->removeContact($this, $id);
         
     }
     
