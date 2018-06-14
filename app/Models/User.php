@@ -369,57 +369,47 @@ class User extends Authenticatable {
      */
     function modify(array $data, $id = null) {
         
-        if (Request::has('ids')) {
+        if (!$id) {
             $ids = Request::input('ids');
-            $action = Request::input('action');
-            $result = $this->whereIn('id', $ids)->update([
-                'enabled' => $action == 'enable' ? Constant::ENABLED : Constant::DISABLED,
-            ]);
             foreach ($ids as $id) {
                 $this->updateWechatUser($id);
             }
             
-            return $result;
-        } else {
-            $user = $this->find($id);
-            try {
-                # 更新用户数据
-                DB::transaction(function () use ($data, $id, $user) {
-                    $user->update([
-                        'username'     => $data['username'],
-                        'group_id'     => $data['group_id'],
-                        'email'        => $data['email'],
-                        'realname'     => $data['realname'],
-                        'gender'       => $data['gender'],
-                        'english_name' => $data['english_name'],
-                        'telephone'    => $data['telephone'],
-                        'enabled'      => $data['enabled'],
-                    ]);
-                    # 更新手机号码
-                    Mobile::whereUserId($user->id)->delete();
-                    $mobile = new Mobile();
-                    $mobile->store($data['mobile'], $user);
-                    unset($mobile);
-                    # 更新部门数据
-                    DepartmentUser::whereUserId($user->id)->delete();
-                    $du = new DepartmentUser();
-                    (new DepartmentUser())->store([
-                        'department_id' => $this->departmentId($data),
-                        'user_id'       => $user->id,
-                        'enabled'       => Constant::ENABLED,
-                    ]);
-                    unset($du);
-                    # 更新企业号成员记录
-                    $this->updateWechatUser($user->id);
-                });
-            } catch (Exception $e) {
-                throw $e;
-            }
-            
-            return true;
-            
+            return $this->batch($this);
+        }
+        $user = $this->find($id);
+        try {
+            # 更新用户数据
+            DB::transaction(function () use ($data, $id, $user) {
+                $user->update([
+                    'username'     => $data['username'],
+                    'group_id'     => $data['group_id'],
+                    'email'        => $data['email'],
+                    'realname'     => $data['realname'],
+                    'gender'       => $data['gender'],
+                    'english_name' => $data['english_name'],
+                    'telephone'    => $data['telephone'],
+                    'enabled'      => $data['enabled'],
+                ]);
+                # 更新手机号码
+                Mobile::whereUserId($user->id)->delete();
+                (new Mobile)->store($data['mobile'], $user);
+                # 更新部门数据
+                DepartmentUser::whereUserId($user->id)->delete();
+                (new DepartmentUser)->store([
+                    'department_id' => $this->departmentId($data),
+                    'user_id'       => $user->id,
+                    'enabled'       => Constant::ENABLED,
+                ]);
+                # 更新企业号成员记录
+                $this->updateWechatUser($user->id);
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
         
+        return true;
+            
     }
     
     /**

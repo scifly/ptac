@@ -2,7 +2,6 @@
 namespace App\Models;
 
 use Eloquent;
-use Illuminate\Support\Facades\Log;
 use Exception;
 use Carbon\Carbon;
 use App\Rules\Mobiles;
@@ -10,7 +9,6 @@ use App\Helpers\Snippet;
 use App\Helpers\ModelTrait;
 use App\Jobs\ImportEducator;
 use App\Helpers\HttpStatusCode;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -463,30 +461,6 @@ class Educator extends Model {
      */
     function remove($id = null) {
         
-        // if (!isset($id)) {
-        //     $ids = Request::input('ids');
-        //     abort_if(
-        //         empty(array_intersect(
-        //             array_values($ids),
-        //             array_map('strval', $this->contactIds('educator'))
-        //         )),
-        //         HttpStatusCode::UNAUTHORIZED,
-        //         __('messages.unauthorized')
-        //     );
-        //     if (Request::input('action') == 'delete') {
-        //         try {
-        //             DB::transaction(function () use ($ids) {
-        //                 foreach ($ids as $id) { $this->purge($id); }
-        //             });
-        //         } catch (Exception $e) {
-        //             throw $e;
-        //         }
-        //         return true;
-        //     }
-        //     return $this->batch($this);
-        // }
-        //
-        // return $this->purge($id);
         return (new User)->removeContact($this, $id);
         
     }
@@ -731,7 +705,6 @@ class Educator extends Model {
             $school = School::whereName($user['school'])->first();
             if (!$school) {
                 $invalidRows[] = $datum;
-                Log::debug('school not found!');
                 continue;
             }
             $departments = explode(',', $user['departments']);
@@ -748,7 +721,6 @@ class Educator extends Model {
                 }
             }
             if (!$isDepartmentValid) {
-                Log::debug('department invalid');
                 $invalidRows[] = $datum;
                 continue;
             }

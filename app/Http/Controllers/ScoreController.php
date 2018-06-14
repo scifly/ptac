@@ -24,7 +24,9 @@ class ScoreController extends Controller {
         $this->middleware(['auth', 'checkrole']);
         $this->score = $score;
         $this->exam = $exam;
-        $this->approve($score);
+        if (!Request::has('ids')) {
+            $this->approve($score);
+        }
         
     }
     

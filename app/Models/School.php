@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use ReflectionException;
+use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -331,27 +331,49 @@ class School extends Model {
      *
      * @param $id
      * @return bool|null
-     * @throws ReflectionException
      * @throws Throwable
      */
-    function remove($id) {
+    function remove($id = null) {
     
-        $school = $this->find($id);
-        if ($this->removable($school)) {
+        if (!$id) {
             try {
-                DB::transaction(function () use ($school) {
-                    (new Department())->removeDepartment($school);
-                    (new Menu())->removeMenu($school);
-                    $school->delete();
-                });
+                $ids = Request::input('ids');
+                foreach ($ids as $id) {
+                    $this->purge($id);
+                }
             } catch (Exception $e) {
                 throw $e;
             }
             return true;
         }
+        
+        return $this->purge($id);
     
-        return false;
+    }
     
+    /**
+     *
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
+    
+        $school = $this->find($id);
+        try {
+            DB::transaction(function () use ($school) {
+                
+                (new Department)->removeDepartment($school);
+                (new Menu)->removeMenu($school);
+                $school->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+    
+        return true;
+        
     }
     
     /**

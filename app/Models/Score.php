@@ -102,9 +102,7 @@ class Score extends Model {
      */
     function store(array $data) {
         
-        $score = self::create($data);
-        
-        return $score ? true : false;
+        return $this->create($data) ? true : false;
         
     }
     
@@ -118,13 +116,9 @@ class Score extends Model {
      */
     function modify(array $data, $id = null) {
         
-        if (isset($id)) {
-            $score = self::find($id);
-            if (!$score) {
-                return false;
-            }
-            
-            return $score->update($data) ? true : false;
+        if ($id) {
+            $score = $this->find($id);
+            return $score ? $score->update($data) : false;
         }
         
         return $this->batch($this);
@@ -140,16 +134,12 @@ class Score extends Model {
      */
     function remove($id = null) {
         
-        if (isset($id)) {
+        if ($id) {
             $score = self::find($id);
-            if (!$score) {
-                return false;
-            }
-            
-            return $score->delete() ? true : false;
+            return $score ? $score->delete() : false;
         }
         
-        return $this->batch($this);
+        return $this->whereIn('id', array_values(Request::input('ids')))->delete();
         
     }
     
@@ -364,10 +354,9 @@ class Score extends Model {
         #总分统计
         #按学生id对本次考试成绩 分组
         $studentScore = Score::whereExamId($examId)
-            ->whereEnabled(1)
+            ->where('enabled', 1)
             ->whereIn('subject_id', $subjectIds)
-            ->get()
-            ->groupBy('student_id');
+            ->get()->groupBy('student_id');
         /** @var Score $s */
         foreach ($studentScore as $s) {
             #当前学生参加的考试科目数组

@@ -291,6 +291,19 @@ class Department extends Model {
     }
     
     /**
+     * 删除指定学校的所有部门
+     *
+     * @param $id
+     * @return bool|null
+     * @throws Exception
+     */
+    function removeSchoolDepartments($id) {
+        
+        return $this->whereIn('id', array_merge([$id], $this->subDepartmentIds($id)))->delete();
+        
+    }
+    
+    /**
      * 部门列表
      *
      * @param null $id

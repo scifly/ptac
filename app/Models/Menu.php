@@ -315,6 +315,19 @@ class Menu extends Model {
     }
     
     /**
+     * 删除指定学校的所有菜单
+     *
+     * @param $id
+     * @return bool|null
+     * @throws Exception
+     */
+    function removeSchoolMenus($id) {
+        
+        return $this->whereIn('id', array_merge([$id], $this->subMenuIds($id)))->delete();
+        
+    }
+    
+    /**
      * 菜单列表(菜单移动、排序)
      *
      * @param null $id

@@ -8,6 +8,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use Illuminate\Support\Facades\Request;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -28,7 +29,9 @@ class TestController extends Controller {
      */
     public function index() {
 
-        dd((new ReflectionClass(new Custodian()))->getShortName());
+        Request::input('ids', [1, 2, 3]);
+        
+        dd(Request::input('ids'));
         exit;
         // dd(round(microtime(true) * 1000));
         // dd(strtotime(date('Y-m-d'), now()));

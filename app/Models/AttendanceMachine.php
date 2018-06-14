@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use ReflectionException;
 
 /**
@@ -79,9 +81,11 @@ class AttendanceMachine extends Model {
      * @param array $data
      * @param $id
      * @return bool
+     * @throws Exception
      */
-    function modify(array $data, $id) {
+    function modify(array $data, $id = null) {
         
+        if (!$id) { return $this->batch($this); }
         $am = $this->find($id);
         if (!$am) { return false; }
         
@@ -94,16 +98,62 @@ class AttendanceMachine extends Model {
      *
      * @param $id
      * @return bool|null
-     * @throws ReflectionException
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
     
-        $am = $this->find($id);
-        if (!$am) { return false; }
+        if (!$id) {
+            $ids = Request::input('ids');
+            try {
+                DB::transaction(function () use ($ids) {
+                    foreach ($ids as $id) { $this->purge($id); }
+                });
+            } catch (Exception $e) {
+                throw $e;
+            }
+            return true;
+        }
+        
+        return $this->purge($id);
+        
+    }
     
-        return $this->removable($am) ? $am->delete() : false;
+    /**
+     *
+     *
+     * @param $schoolId
+     * @return bool
+     * @throws Exception
+     */
+    function removeSchoolAttendanceMachines($schoolId) {
+        
+        $ams = $this->where('school_id', $schoolId)->get();
+        foreach ($ams as $am) { $this->purge($am->id); }
+        
+        return true;
+        
+    }
     
+    /**
+     * 删除指定考勤机的所有数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
+    
+        try {
+            DB::transaction(function() use ($id) {
+                StudentAttendance::whereAttendanceMachineId($id)->delete();
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+    
+        return true;
+        
     }
     
     /**

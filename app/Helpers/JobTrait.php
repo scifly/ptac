@@ -83,7 +83,6 @@ trait JobTrait {
             'errcode' => $result->{'errcode'},
             'errmsg' => Wechat::ERRMSGS[$result->{'errcode'}]
         ];
-        Log::debug(json_encode($response));
         
         return $response;
         
