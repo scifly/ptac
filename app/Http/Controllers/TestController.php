@@ -26,7 +26,7 @@ class TestController extends Controller {
     public function index() {
 
         $contact = new Custodian();
-        dd(get_class($contact));
+        dd(lcfirst(array_pop(explode('\\', get_class($contact)))));
         exit;
         // dd(round(microtime(true) * 1000));
         // dd(strtotime(date('Y-m-d'), now()));
