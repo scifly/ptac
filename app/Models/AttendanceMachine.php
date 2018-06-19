@@ -100,19 +100,7 @@ class AttendanceMachine extends Model {
      */
     function remove($id = null) {
     
-        if (!$id) {
-            $ids = Request::input('ids');
-            try {
-                DB::transaction(function () use ($ids) {
-                    foreach ($ids as $id) { $this->purge($id); }
-                });
-            } catch (Exception $e) {
-                throw $e;
-            }
-            return true;
-        }
-        
-        return $this->purge($id);
+        return $this->del($this, $id);
         
     }
     

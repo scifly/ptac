@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ModelTrait;
 use App\Models\Custodian;
 use App\Models\Department;
+use App\Models\Message;
 use App\Models\User;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
@@ -28,7 +29,9 @@ class TestController extends Controller {
      * @throws \ReflectionException
      */
     public function index() {
-
+    
+        Message::where('id', 43829)->update(['title' => 'test']);
+        exit;
         array_map([$this, 'test'], [1, 2, 3, 4, 5]);
         exit;
         Request::merge(['ids' => [3894,38928]]);

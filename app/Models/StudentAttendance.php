@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use Eloquent;
+use Exception;
 use Throwable;
 use Carbon\Carbon;
 use App\Helpers\Snippet;
@@ -83,12 +84,12 @@ class StudentAttendance extends Model {
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    function medias() { return $this->belongsTo('App\Models\Media'); }
+    function media() { return $this->belongsTo('App\Models\Media'); }
     
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    function studentAttendancesetting() {
+    function studentAttendanceSetting() {
         
         return $this->belongsTo('App\Models\StudentAttendanceSetting', 'sas_id', 'id');
         
@@ -147,6 +148,21 @@ class StudentAttendance extends Model {
             'media_id' => $data['media_id']
         ]) ? true : false;
         
+    }
+    
+    /**
+     * 删除学生考勤记录
+     *
+     * @param null $id
+     * @return bool
+     * @throws Exception
+     */
+    function remove($id = null) {
+
+        return $id
+            ? $this->find($id)->delete()
+            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
+    
     }
     
     /**
@@ -485,6 +501,7 @@ class StudentAttendance extends Model {
     
     }
     
+    /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
      * 返回指定班级对应的年级考勤规则
      *

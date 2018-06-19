@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 
 /**
  * App\Models\EducatorAppeal 教职员工申诉
@@ -98,12 +99,11 @@ class EducatorAppeal extends Model {
      * @return bool|null
      * @throws Exception
      */
-    function remove($id) {
-    
-        $ea = $this->find($id);
-        if (!$ea) { return false; }
-    
-        return $ea->delete();
+    function remove($id = null) {
+
+        return $id
+            ? $this->find($id)->delete()
+            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
         
     }
     
@@ -114,7 +114,7 @@ class EducatorAppeal extends Model {
      * @return bool
      * @throws Exception
      */
-    function removeByEducatorId($educatorId) {
+    function removeEducator($educatorId) {
         
         try {
             DB::transaction(function() use ($educatorId) {
@@ -135,6 +135,28 @@ class EducatorAppeal extends Model {
         }
         
         return true;
+        
+    }
+    
+    /**
+     * 从教职员工申诉记录中删除教职员工考勤记录
+     *
+     * @param $eaId
+     * @throws Exception
+     */
+    function removeEducatorAttendance($eaId) {
+        
+        try {
+            DB::transaction(function () use ($eaId) {
+                $eas = $this->whereRaw($eaId . ' IN (ea_ids)')->get();
+                foreach ($eas as $ea) {
+                    $eaIds = array_diff(explode(',', $ea->ea_ids), [$eaId]);
+                    $ea->update(['ea_ids' => implode(',', $eaIds)]);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
         
     }
     

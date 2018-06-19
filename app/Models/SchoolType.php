@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\SchoolType 学校类型
@@ -50,9 +51,7 @@ class SchoolType extends Model {
      */
     function store(array $data) {
         
-        $st = self::create($data);
-        
-        return $st ? true: false;
+        return $this->create($data) ? true: false;
         
     }
     
@@ -65,27 +64,40 @@ class SchoolType extends Model {
      */
     function modify(array $data, $id) {
         
-        $st = self::find($id);
-        if (!$st) { return false; }
-        
-        return $st->update($data) ? true: false;
+        return $this->find($id)->update($data);
         
     }
     
     /**
-     * 删除学校类型
+     * （批量）删除学校类型
      *
      * @param $id
      * @return bool
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
         
-        $st = self::find($id);
-        if (!$st) { return false; }
-        $removed = self::removable($st) ? $st->delete() : false;
+        return $this->del($this, $id);
         
-        return $removed ?? false;     
+    }
+    
+    /**
+     * 删除指定学校类型的所有数据
+     *
+     * @param $id
+     * @throws Exception
+     */
+    function purge($id) {
+        
+        try {
+            DB::transaction(function () use ($id) {
+                $this->delRelated('school_type_id', 'School', $id);
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
     }
     
     /**

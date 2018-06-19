@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\App
@@ -78,6 +79,13 @@ class App extends Model {
      * @return BelongsTo
      */
     function corp() { return $this->belongsTo('App\Models\Corp'); }
+    
+    /**
+     * 返回通过指定应用发送/收到的消息
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    function messages() { return $this->hasMany('App\Models\Message'); }
     
     /**
      * 保存App
@@ -168,7 +176,16 @@ class App extends Model {
      */
     function remove($id) {
         
-        return $this->find($id)->delete();
+        try {
+            DB::transaction(function () use ($id) {
+                Message::whereAppId($id)->update(['app_id' => 0]);
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
         
     }
     

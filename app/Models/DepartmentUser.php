@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -128,11 +129,29 @@ class DepartmentUser extends Model {
      *
      * @param $departmentId
      * @return bool|null
-     * @throws Exception
+     * @throws Throwable
      */
     function removeByDepartmentId($departmentId) {
+
+        $dus = $this->where('department_id', $departmentId)->get();
+        $userIds = array_unique($dus->pluck('user_id')->toArray());
+        Request::merge(['ids' => $userIds]);
+        (new User)->modify(Request::all());
         
         return $this->where('department_id', $departmentId)->delete();
+        
+    }
+    
+    /**
+     * 删除与指定用户相关的所有绑定记录
+     *
+     * @param $userId
+     * @return bool|null
+     * @throws Exception
+     */
+    function removeByUserId($userId) {
+        
+        return $this->where('user_id', $userId)->delete();
         
     }
     

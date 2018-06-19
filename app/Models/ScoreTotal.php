@@ -2,18 +2,19 @@
 
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+use App\Helpers\Snippet;
+use App\Helpers\ModelTrait;
+use App\Helpers\HttpStatusCode;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Request;
 
 /**
  * App\Models\ScoreTotal 总分
@@ -71,11 +72,22 @@ class ScoreTotal extends Model {
     function exam() { return $this->belongsTo('App\Models\Exam'); }
     
     /**
-     * 返回总分记录所属的科目对象
+     * 返回指定总分记录包含的计入或未计入总分的考试科目
      *
-     * @return BelongsTo
+     * @param $id
+     * @return array
      */
-    function subject() { return $this->belongsTo('App\Models\Subject'); }
+    function subjects($id) {
+        
+        $st = $this->find($id);
+        abort_if(!$st, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
+        
+        return [
+            Subject::whereIn('id', explode(',', $st->subject_ids))->get(),
+            Subject::whereIn('id', explode(',', $st->na_subject_ids))->get()
+        ];
+        
+    }
     
     /**
      * 保存总成绩
@@ -85,9 +97,7 @@ class ScoreTotal extends Model {
      */
     function store(array $data) {
         
-        $st = $this->create($data);
-        
-        return $st ? true : false;
+        return $this->create($data) ? true : false;
         
     }
     
@@ -100,26 +110,50 @@ class ScoreTotal extends Model {
      */
     function modify(array $data, $id) {
         
-        $st = $this->find($id);
-        if (!$st) { return false; }
-        
-        return $st->update($data) ? true : false;
+        return $this->find($id)->update($data);
         
     }
     
     /**
-     * 删除总成绩
+     * （批量）删除总成绩
      *
      * @param $id
      * @return bool
      * @throws Exception
      */
-    function remove($id) {
-    
-        $st = $this->find($id);
-        if (!$st) { return false; }
+    function remove($id = null) {
 
-        return $st->delete() ? true : false;
+        return $id
+            ? $this->find($id)->delete()
+            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
+        
+    }
+    
+    /**
+     * 从所有总分记录中减去指定科目的考试分数
+     *
+     * @param $subjectId
+     * @param $examId
+     * @param $score
+     * @throws Exception
+     */
+    function removeSubject($subjectId, $examId, $score) {
+        
+        try {
+            $scoreTotal = $this->whereRaw($subjectId . ' IN (subject_ids)')
+                ->where('exam_id', $examId)->first();
+            if ($scoreTotal) {
+                $subject_ids = implode(
+                    ',', array_diff(explode(',', $scoreTotal->subject_ids), [$subjectId])
+                );
+                $scoreTotal->update([
+                    'subject_ids' => $subject_ids,
+                    'score' => $scoreTotal->score - $score
+                ]);
+            }
+        } catch (Exception $e) {
+            throw $e;
+        }
         
     }
     
@@ -216,38 +250,25 @@ class ScoreTotal extends Model {
                 __('messages.forbidden')
             );
         }
-        //删除之前这场考试的统计
-        try {
-            $this->whereExamId($examId)->delete();
-        } catch (Exception $e) {
-            throw $e;
-        }
-        //查询参与这场考试的所有班级和科目
-        $exam = DB::table('exams')
-            ->where('id', $examId)
-            ->select('class_ids', 'subject_ids')
-            ->first();
-        $class = DB::table('classes')
-            ->whereIn('id', explode(',', $exam->class_ids))
-            ->select('id', 'grade_id')
-            ->get();
+        // 删除之前这场考试的统计
+        $this->where('exam_id', $examId)->delete();
+        // 查询参与这场考试的所有班级和科目
+        $exam = Exam::find($examId)->get(['class_ids', 'subject_ids'])->first();
+        $classes = Squad::whereIn('id', explode(',', $exam->class_ids))->get(['id', 'grade_id']);
         //通过年级分组
         $grades = [];
-        foreach ($class as $item) {
-            $grades[$item->grade_id][] = $item->id;
+        foreach ($classes as $class) {
+            $grades[$class->grade_id][] = $class->id;
         }
         //循环每个年级
-        foreach ($grades as $class_ids_arr) {
+        foreach ($grades as $classIds) {
             $data = [];
             //查找此年级参与考试班级的所有学生
-            $students = DB::table('students')
-                ->whereIn('class_id', $class_ids_arr)
-                ->pluck('class_id', 'id');
+            $students = Student::whereIn('class_id', $classIds)->pluck('class_id', 'id');
             //循环学生
-            foreach ($students as $student => $class_id) {
+            foreach ($students as $studentId => $class_id) {
                 //计算总成绩
-                $scores = DB::table('scores')
-                    ->where(['student_id' => $student, 'exam_id' => $examId])
+                $scores = Score::where(['student_id' => $studentId, 'exam_id' => $examId])
                     ->pluck('score', 'subject_id');
                 $score = 0;
                 $subject_ids = '';
@@ -262,7 +283,7 @@ class ScoreTotal extends Model {
                 }
                 //建立写入数据库的数组数据
                 $insert = [
-                    'student_id' => $student,
+                    'student_id' => $studentId,
                     'class_id' => $class_id,
                     'exam_id' => intval($examId),
                     'score' => $score,
@@ -290,8 +311,8 @@ class ScoreTotal extends Model {
             }
             //通过班级分组
             $classes = [];
-            foreach ($grade_ranks as $item) {
-                $classes[$item['class_id']][] = $item;
+            foreach ($grade_ranks as $class) {
+                $classes[$class['class_id']][] = $class;
             }
             //循环每个班级
             foreach ($classes as $v) {

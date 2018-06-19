@@ -146,12 +146,12 @@ class WsmArticle extends Model {
      */
     function modify(WsmArticleRequest $request, $id) {
         
-        $wsma = self::find($id);
-        if (!$wsma) { return false; }
         try {
             DB::transaction(function () use ($request, $id) {
-                self::removeMedias($request);
-                return self::find($id)->update($request->except('_method', '_token', 'del_ids'));
+                $this->removeMedias($request);
+                return $this->find($id)->update(
+                    $request->except('_method', '_token', 'del_ids')
+                );
             });
         } catch (Exception $e) {
             throw $e;
@@ -168,12 +168,11 @@ class WsmArticle extends Model {
      * @return bool|null
      * @throws Exception
      */
-    function remove($id) {
-        
-        $wsma = $this->find($id);
-        if (!$wsma) { return false; }
-        
-        return $wsma->delete();
+    function remove($id = null) {
+
+        return $id
+            ? $this->find($id)->delete()
+            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
         
     }
     

@@ -104,12 +104,9 @@ class Group extends Model {
                     'enabled' => $data['enabled'],
                     'school_id' => $data['school_id'],
                 ]);
-                # 功能与角色的对应关系
-                (new ActionGroup())->storeByGroupId($group->id, $data['action_ids']);
-                # 功能与菜单的对应关系
-                (new GroupMenu())->storeByGroupId($group->id, $data['menu_ids']);
-                # 功能与卡片的对应关系
-                (new GroupTab())->storeByGroupId($group->id, $data['tab_ids']);
+                (new ActionGroup)->storeByGroupId($group->id, $data['action_ids']);
+                (new GroupMenu)->storeByGroupId($group->id, $data['menu_ids']);
+                (new GroupTab)->storeByGroupId($group->id, $data['tab_ids']);
             });
         } catch (Exception $e) {
             throw $e;
@@ -130,21 +127,16 @@ class Group extends Model {
      */
     function modify(array $data, $id) {
 
-        $group = self::find($id);
-        if (!$group) { return false; }
         try {
-            DB::transaction(function () use ($data, $group, $id) {
-                $group->update([
+            DB::transaction(function () use ($data, $id) {
+                $this->find($id)->update([
                     'name' => $data['name'],
                     'remark' => $data['remark'],
                     'enabled' => $data['enabled'],
                 ]);
-                # 功能与角色的对应关系
-                (new ActionGroup())->storeByGroupId($id, $data['action_ids']);
-                # 功能与菜单的对应关系
-                (new GroupMenu())->storeByGroupId($id, $data['menu_ids']);
-                # 功能与卡片的对应关系
-                (new GroupTab())->storeByGroupId($id, $data['tab_ids']);
+                (new ActionGroup)->storeByGroupId($id, $data['action_ids']);
+                (new GroupMenu)->storeByGroupId($id, $data['menu_ids']);
+                (new GroupTab)->storeByGroupId($id, $data['tab_ids']);
             });
         } catch (Exception $e) {
             throw $e;
@@ -161,13 +153,34 @@ class Group extends Model {
      * @return bool
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
 
-        $group = self::find($id);
-        if (!$group) { return false; }
+        return $this->del($this, $id);
+
+    }
+    
+    /**
+     * 删除指定角色的所有数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
         
-        return self::removable($group) ? $group->delete() : false;
-
+        try {
+            DB::transaction(function() use ($id) {
+                ActionGroup::whereGroupId($id)->delete();
+                GroupMenu::whereGroupId($id)->delete();
+                GroupTab::whereGroupId($id)->delete();
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
     }
     
     /**

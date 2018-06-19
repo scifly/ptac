@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\ModelTrait;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Carbon\Carbon;
+use App\Helpers\ModelTrait;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Database\Eloquent\Builder;
+use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\ProcedureStep 审批流程步骤
@@ -64,9 +66,7 @@ class ProcedureStep extends Model {
      */
     function store(array $data) {
 
-        $ps = self::create($data);
-
-        return $ps ? true : false;
+        return $this->create($data) ? true : false;
 
     }
 
@@ -77,13 +77,12 @@ class ProcedureStep extends Model {
      * @param $id
      * @return bool
      */
-    function modify(array $data, $id) {
+    function modify(array $data, $id = null) {
 
-        $p = self::find($id);
-        if (!$p) { return false; }
-
-        return $p->update($data) ? true : false;
-
+        return $id
+            ? $this->find($id)->update($data)
+            : $this->batch($this);
+        
     }
     
     /**
@@ -93,13 +92,40 @@ class ProcedureStep extends Model {
      * @return bool|null
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
 
-        $p = self::find($id);
-        if (!$p) { return false; }
-        
-        return $p->removable($p) ? $p->delete() : false;
+        return $id
+            ? $this->find($id)->delete()
+            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
 
+    }
+    
+    /**
+     * 从审批流程步骤中删除指定的用户
+     *
+     * @param $userId
+     * @throws Exception
+     */
+    function removeUser($userId) {
+    
+        try {
+            DB::transaction(function () use ($userId) {
+                $condition = $userId . ' IN (approver_user_ids) OR ' . $userId . ' IN (related_user_ids)';
+                $pses = $this->whereRaw($condition)->get();
+                foreach ($pses as $ps) {
+                    $user_ids = array_map(function ($field) use ($ps, $userId) {
+                        return implode(',', array_diff(explode(',', $ps->{$field}), [$userId]));
+                    }, ['approver_user_ids', 'related_user_ids']);
+                    $ps->update([
+                        'approver_user_ids' => $user_ids[0],
+                        'related_user_ids' => $user_ids[1]
+                    ]);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+    
     }
     
     /**
@@ -115,13 +141,13 @@ class ProcedureStep extends Model {
             [
                 'db' => 'ProcedureStep.approver_user_ids', 'dt' => 2,
                 'formatter' => function ($row) {
-                    return self::approverUsers($row['id']);
+                    return $this->approverUsers($row['id']);
                 },
             ],
             [
                 'db' => 'ProcedureStep.related_user_ids', 'dt' => 3,
                 'formatter' => function ($row) {
-                    return self::relatedUsers($row['id']);
+                    return $this->relatedUsers($row['id']);
                 },
             ],
             ['db' => 'ProcedureStep.name', 'dt' => 4],
@@ -151,35 +177,17 @@ class ProcedureStep extends Model {
     }
 
     /**
-     * 返回审批者用户列表
+     * 返回指定审批流程步骤相关的审批者用户
      *
      * @param $id
      * @return string
      */
     private function approverUsers($id) {
 
-        return self::userList($id, 'approver_user_ids');
+        return self::users($id, 'approver_user_ids');
 
     }
-
-    /**
-     * 根据流程步骤ID获取审批者/相关人用户列表
-     *
-     * @param $id integer 流程步骤ID
-     * @param $field string (用户ID)字段名称
-     * @return string
-     */
-    private function userList($id, $field) {
-
-        $ps = self::find($id);
-        $user = Auth::user();
-        $userIds = $user->userList(explode(',', $ps->{$field}));
-        $userList = collect($userIds)->flatten()->toArray();
-
-        return implode(',', $userList);
-
-    }
-
+    
     /**
      * 返回相关人用户列表
      *
@@ -188,8 +196,24 @@ class ProcedureStep extends Model {
      */
     private function relatedUsers($id) {
 
-        return $this->userList($id, 'related_user_ids');
+        return $this->users($id, 'related_user_ids');
 
     }
-
+    
+    /**
+     * 根据流程步骤ID获取审批者/相关人用户列表
+     *
+     * @param $id integer 流程步骤ID
+     * @param $field string (用户ID)字段名称
+     * @return string
+     */
+    private function users($id, $field) {
+        
+        $userIds = Auth::user()->userList(explode(',', $this->find($id)->{$field}));
+        $userList = collect($userIds)->flatten()->toArray();
+        
+        return implode(',', $userList);
+        
+    }
+    
 }

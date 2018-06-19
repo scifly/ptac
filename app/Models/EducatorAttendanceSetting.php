@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 use ReflectionException;
 
 /**
@@ -86,10 +87,7 @@ class EducatorAttendanceSetting extends Model {
      */
     function modify(array $data, $id) {
         
-        $eas = $this->find($id);
-        if (!$eas) { return false; }
-        
-        return $eas->update($data);
+        return $this->find($id)->update($data);
         
     }
     
@@ -98,18 +96,36 @@ class EducatorAttendanceSetting extends Model {
      *
      * @param $id
      * @return bool|null
-     * @throws ReflectionException
      * @throws Exception
      */
-    function remove($id) {
-    
-        $eas = $this->find($id);
-        if (!$eas) { return false; }
-    
-        return $this->removable($eas) ? $eas->delete() : false;
+    function remove($id = null) {
+
+        return $this->del($this, $id);
         
     }
-
+    
+    /**
+     * 删除指定教职员工考勤设置的所有数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
+        
+        try {
+            DB::transaction(function() use ($id) {
+                EducatorAttendance::whereEasId($id)->delete();
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
     /**
      * 教职员工考勤设置列表
      *

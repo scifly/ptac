@@ -19,7 +19,6 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -350,29 +349,21 @@ class School extends Model {
     
         try {
             DB::transaction(function () use ($id) {
-                $relations = [
-                    'AttendanceMachine',
-                    'ConferenceRoom',
-                    'ExamType',
-                    'Major',
-                    'PollQuestionnaire',
-                    'Educator'
+                $school = $this->find($id);
+                $classes = [
+                    'AttendanceMachine', 'ConferenceRoom', 'ComboType',
+                    'ExamType', 'EducatorAttendanceSetting', 'Group',
+                    'Major', 'PollQuestionnaire', 'Procedure',
+                    'Semester', 'StudentAttendanceSetting',
+                    'Subject', 'Team', 'WapSite', 'Educator'
                 ];
-                $keys = array_fill(0, sizeof($relations), 'school_id');
-                $values = array_fill(0, sizeof($relations), $id);
-    
-                ComboType::whereSchoolId($id)->delete();
-                array_map($this->{'delRelated'}, $keys, $relations, $values);
-                // $this->removeRelated(new AttendanceMachine, $id);
-                // $this->removeRelated(new ConferenceRoom, $id);
-                // $this->removeRelated(new ExamType, $id);
-                // $this->removeRelated(new Major, $id);
-                // $this->removeRelated(new PollQuestionnaire, $id);
-                //
-                // $this->removeRelated(new Educator, $id);
-                (new Department)->removeSchoolDepartments($id);
-                (new Menu)->removeSchoolMenus($id);
-                $this->find($id)->delete();
+                $keys = array_fill(0, sizeof($classes), 'school_id');
+                $values = array_fill(0, sizeof($classes), $id);
+                array_map([$this, 'delRelated'], $keys, $classes, $values);
+                
+                (new Department)->removeDepartments($school->department_id);
+                (new Menu)->removeMenus($school->menu_id);
+                $school->delete();
             });
         } catch (Exception $e) {
             throw $e;

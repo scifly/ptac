@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\Team 教职员工组
@@ -93,10 +94,7 @@ class Team extends Model {
      */
     function modify(array $data, $id) {
         
-        $team = $this->find($id);
-        if (!$team) { return false; }
-        
-        return $team->update($data);
+        return $this->find($id)->update($data);
         
     }
     
@@ -107,12 +105,31 @@ class Team extends Model {
      * @return bool|null
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
     
-        $team = $this->find($id);
-        if (!$team) { return false; }
+        return $this->del($this, $id);
+        
+    }
     
-        return $this->removable($team) ? $team->delete() : false;
+    /**
+     * 删除指定教职员工组的所有数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
+        
+        try {
+            DB::transaction(function() use ($id) {
+                EducatorTeam::whereTeamId($id)->delete();
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
         
     }
     

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
+use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use App\Models\ActionType as ActionType;
 use Carbon\Carbon;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use ReflectionClass;
 use ReflectionMethod;
@@ -52,6 +54,8 @@ use Throwable;
  */
 class Action extends Model {
 
+    use ModelTrait;
+    
     protected $fillable = [
         'name', 'method', 'remark',
         'controller', 'view', 'route',
@@ -121,6 +125,61 @@ class Action extends Model {
     }
     
     /**
+     * 删除功能
+     *
+     * @param null $id
+     * @return bool
+     * @throws Exception
+     */
+    function remove($id = null) {
+        
+        return $this->del($this, $id);
+        
+    }
+    
+    /**
+     * 删除指定功能的所有数据
+     *
+     * @param $id
+     * @throws Exception
+     */
+    function purge($id) {
+        
+        try {
+            DB::transaction(function () use ($id) {
+                ActionGroup::whereActionId($id)->delete();
+                $this->delRelated('action_id', 'Tab', $id);
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+    }
+    
+    /**
+     * 从所有功能中移除指定的功能请求类型
+     *
+     * @param $actionTypeId
+     * @throws Exception
+     */
+    function removeActionType($actionTypeId) {
+        
+        try {
+            DB::transaction(function () use ($actionTypeId) {
+                $actions = $this->where('action_type_id', $actionTypeId)->get();
+                foreach ($actions as $action) {
+                    $actionTypeIds = array_diff(explode(',', $action->action_type_ids), [$actionTypeId]);
+                    $action->update(['action_type_ids' => implode(',', $actionTypeIds)]);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+    }
+    
+    /**
      * 功能列表
      *
      * @return array
@@ -182,22 +241,6 @@ class Action extends Model {
         ];
         
         return Datatable::simple($this->getModel(), $columns);
-        
-    }
-    
-    /**
-     * 移除指定的Action记录
-     *
-     * @param $actionId
-     * @return bool|mixed
-     * @throws Exception|Throwable
-     */
-    function remove($actionId) {
-        
-        $action = self::find($actionId);
-        if (!isset($action)) { return false; }
-        
-        return $action->delete();
         
     }
     

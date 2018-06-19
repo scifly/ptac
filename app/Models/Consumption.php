@@ -6,10 +6,11 @@ use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use App\Facades\DatatableFacade as Datatable;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use PhpOffice\PhpSpreadsheet\Exception;
+use Illuminate\Support\Facades\Request;
 
 /**
  * App\Models\Consumption 消费记录
@@ -77,6 +78,21 @@ class Consumption extends Model {
     
         return $this->create($data) ? true : false;
     
+    }
+    
+    /**
+     * 删除消费记录
+     *
+     * @param null $id
+     * @return bool|null
+     * @throws Exception
+     */
+    function remove($id = null) {
+        
+        return $id
+            ? $this->find($id)->delete()
+            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
+        
     }
     
     /**

@@ -116,12 +116,9 @@ class Score extends Model {
      */
     function modify(array $data, $id = null) {
         
-        if ($id) {
-            $score = $this->find($id);
-            return $score ? $score->update($data) : false;
-        }
-        
-        return $this->batch($this);
+        return $id
+            ? $this->find($id)->update($data)
+            : $this->batch($this);
         
     }
     
@@ -134,12 +131,52 @@ class Score extends Model {
      */
     function remove($id = null) {
         
-        if ($id) {
-            $score = self::find($id);
-            return $score ? $score->delete() : false;
+        return $this->del($this, $id);
+        
+    }
+    
+    /**
+     * 删除指定分数记录的所有数据
+     *
+     * @param $id
+     * @throws Exception
+     */
+    function purge($id) {
+        
+        try {
+            DB::transaction(function () use ($id) {
+                $score = $this->find($id);
+                (new ScoreTotal)->removeSubject(
+                    $score->subject_id,
+                    $score->exam_id,
+                    $score->score
+                );
+                $score->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
         
-        return $this->whereIn('id', array_values(Request::input('ids')))->delete();
+    }
+    
+    /**
+     * 删除指定科目对应的所有考试成绩
+     * 更新对应的总分记录
+     *
+     * @param $subjectId
+     * @throws Exception
+     */
+    function removeSubject($subjectId) {
+        
+        try {
+            DB::transaction(function () use ($subjectId) {
+                $scoreIds = $this->where('subject_id', $subjectId)->pluck('id')->toArray();
+                array_map([$this, 'purge'], $scoreIds);
+                $this->where('subject_id', $subjectId)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
         
     }
     

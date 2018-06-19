@@ -3,7 +3,6 @@ namespace App\Models;
 
 use Eloquent;
 use Exception;
-use Illuminate\Support\Facades\Log;
 use Throwable;
 use Carbon\Carbon;
 use App\Helpers\Snippet;
@@ -291,13 +290,13 @@ class Department extends Model {
     }
     
     /**
-     * 删除指定学校的所有部门
+     * 删除指定学校/企业/运营者的所有部门
      *
      * @param $id
      * @return bool|null
      * @throws Exception
      */
-    function removeSchoolDepartments($id) {
+    function removeDepartments($id) {
         
         return $this->whereIn('id', array_merge([$id], $this->subDepartmentIds($id)))->delete();
         

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\Procedure 审批流程
@@ -85,9 +86,7 @@ class Procedure extends Model {
      */
     function store(array $data) {
         
-        $procedure = $this->create($data);
-
-        return $procedure ? true : false;
+        return $this->create($data) ? true : false;
 
     }
 
@@ -100,10 +99,9 @@ class Procedure extends Model {
      */
     function modify(array $data, $id) {
         
-        $procedure = $this->find($id);
-        if (!$procedure) { return false; }
-
-        return $procedure->update($data) ? true : false;
+        return $id
+            ? $this->find($id)->update($data)
+            : $this->batch($this);
 
     }
     
@@ -115,12 +113,31 @@ class Procedure extends Model {
      * @throws Exception
      */
     function remove($id) {
+
+        return $this->del($this, $id);
+
+    }
+    
+    /**
+     * 删除指定审批流程的所有先关数据
+     *
+     * @param $id
+     * @throws Exception
+     */
+    function purge($id) {
         
-        $procedure = $this->find($id);
-        if (!$procedure) { return false; }
-
-        return $this->removable($procedure) ? $procedure->delete() : false;
-
+        try {
+            DB::transaction(function () use ($id) {
+                $classes = ['ProcedureStep', 'ProcedureLog'];
+                $keys = array_fill(0, sizeof($classes), $id);
+                $values = array_fill(0, sizeof($classes), $id);
+                array_map([$this, 'purge'], $keys, $classes, $values);
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
     }
     
     /**

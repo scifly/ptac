@@ -108,7 +108,7 @@ class User extends Authenticatable {
         'avatar_url', 'userid', 'english_name',
         'isleader', 'position', 'telephone',
         'order', 'mobile', 'enabled', 'synced',
-        'subscribed'
+        'subscribed',
     ];
     
     const SELECT_HTML = '<select class="form-control select2" style="width: 100%;" id="ID" name="ID">';
@@ -327,14 +327,14 @@ class User extends Authenticatable {
                     'synced'       => $data['synced'],
                     'avatar_url'   => '',
                     'isleader'     => 0,
-                    'subscribed'   => 0
+                    'subscribed'   => 0,
                 ]);
                 # 创建教职员工
                 Educator::create([
-                    'user_id' => $user->id,
+                    'user_id'   => $user->id,
                     'school_id' => $this->schoolId(),
                     'sms_quote' => 0,
-                    'enabled' => 1,
+                    'enabled'   => 1,
                 ]);
                 # 保存手机号码
                 $mobile = new Mobile();
@@ -409,7 +409,7 @@ class User extends Authenticatable {
         }
         
         return true;
-            
+        
     }
     
     /**
@@ -425,16 +425,19 @@ class User extends Authenticatable {
             $ids = Request::input('ids');
             try {
                 DB::transaction(function () use ($ids) {
-                    foreach ($ids as $id) { $this->purge($id); }
+                    foreach ($ids as $id) {
+                        $this->purge($id);
+                    }
                 });
             } catch (Exception $e) {
                 throw $e;
             }
+            
             return true;
         }
         
         return $this->purge($id);
-    
+        
     }
     
     /**
@@ -447,7 +450,7 @@ class User extends Authenticatable {
      * @throws Exception
      */
     function removeContact(Model $contact, $id = null) {
-    
+        
         if (!$id) {
             $ids = Request::input('ids');
             $type = lcfirst((new ReflectionClass($contact))->getShortName());
@@ -461,14 +464,17 @@ class User extends Authenticatable {
             );
             try {
                 DB::transaction(function () use ($contact, $ids) {
-                    foreach ($ids as $id) { $contact->{'purge'}($id); }
+                    foreach ($ids as $id) {
+                        $contact->{'purge'}($id);
+                    }
                 });
             } catch (Exception $e) {
                 throw $e;
             }
+            
             return true;
         }
-    
+        
         return $contact->{'purge'}($id);
         
     }
@@ -640,14 +646,18 @@ class User extends Authenticatable {
                         Department::find($school->department_id)->users->pluck('id')->toArray()
                     );
                 }
-                if (empty($userIds)) { $userIds = [0]; }
+                if (empty($userIds)) {
+                    $userIds = [0];
+                }
                 $condition = sprintf($sql, implode(',', [$corpGId, $schoolGId])) .
                     ' AND User.id IN (' . implode(',', array_unique($userIds)) . ')';
                 break;
             case '学校':
                 $userIds = Department::find(School::whereMenuId($rootMenu->id)->first()->department_id)
                     ->users->pluck('id')->toArray();
-                if (empty($userIds)) { $userIds = [0]; }
+                if (empty($userIds)) {
+                    $userIds = [0];
+                }
                 $condition = sprintf($sql, implode(',', [$schoolGId])) .
                     ' AND User.id IN (' . implode(',', $userIds) . ')';
                 break;
@@ -699,12 +709,14 @@ class User extends Authenticatable {
                 PollQuestionnaire::whereUserId($id)->update(['user_id' => 0]);
                 PollQuestionnaireAnswer::whereUserId($id)->delete();
                 PollQuestionnaireParticipant::whereUserId($id)->delete();
-                (new Event)->removeByUserId($id);
+                (new ProcedureStep)->removeUser($id);
+                (new Event)->removeUser($id);
+                # 删除用户收到的所有消息
                 Message::whereRUserId($id)->delete();
+                # 更新用户发送的所有消息记录
                 Message::whereSUserId($id)->update(['s_user_id' => 0]);
                 MessageReply::whereUserId($id)->delete();
                 $this->find($id)->delete();
-                Log::debug('you reached here!');
             });
         } catch (Exception $e) {
             throw $e;
@@ -748,26 +760,26 @@ class User extends Authenticatable {
         }
         if ($action == 'delete') {
             $data = [
-                'userid' => $user->userid,
-                'corpIds' => $corpIds
+                'userid'  => $user->userid,
+                'corpIds' => $corpIds,
             ];
         } else {
             $data = [
-                'corpIds' => $corpIds,
-                'userid' => $user->userid,
-                'name' => $user->realname,
+                'corpIds'      => $corpIds,
+                'userid'       => $user->userid,
+                'name'         => $user->realname,
                 'english_name' => $user->english_name,
-                'position' => $user->group->name,
-                'mobile' => head(
+                'position'     => $user->group->name,
+                'mobile'       => head(
                     $user->mobiles
                         ->where('isdefault', 1)
                         ->pluck('mobile')->toArray()
                 ),
-                'email' => $user->email,
-                'department' => in_array($user->group->name, ['运营', '企业'])
+                'email'        => $user->email,
+                'department'   => in_array($user->group->name, ['运营', '企业'])
                     ? [1] : $user->departments->pluck('id')->toArray(),
-                'gender' => $user->gender,
-                'enable' => $user->enabled
+                'gender'       => $user->gender,
+                'enable'       => $user->enabled,
             ];
         }
         SyncMember::dispatch($data, Auth::id(), $action);

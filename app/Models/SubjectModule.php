@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Request;
 use ReflectionException;
 
 /**
@@ -70,27 +71,22 @@ class SubjectModule extends Model {
      */
     function modify(array $data, $id) {
         
-        $sm = $this->find($id);
-        if (!$sm) { return false; }
-        
-        return $sm->update($data);
+        return $this->find($id)->update($data);
         
     }
     
     /**
-     * 移除科目次分类
+     * （批量）删除科目次分类
      *
      * @param $id
      * @return bool
-     * @throws ReflectionException
      * @throws Exception
      */
-    function remove($id) {
-    
-        $sm = $this->find($id);
-        if (!$sm) { return false; }
-        
-        return $this->removable($sm) ? $sm->delete() : false;
+    function remove($id = null) {
+
+        return $id
+            ? $this->find($id)->delete()
+            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
         
     }
     

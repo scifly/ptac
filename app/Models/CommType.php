@@ -10,7 +10,7 @@ use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use ReflectionException;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\CommType 通信方式
@@ -66,10 +66,7 @@ class CommType extends Model {
      */
     function modify(array $data, $id) {
         
-        $ct = $this->find($id);
-        if (!$ct) { return false; }
-        
-        return $ct->update($data);
+        return $this->find($id)->update($data);
         
     }
     
@@ -78,15 +75,30 @@ class CommType extends Model {
      *
      * @param $id
      * @return bool|null
-     * @throws ReflectionException
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
         
-        $ct = $this->find($id);
-        if (!$ct) { return false; }
+        return $this->del($this, $id);
         
-        return $this->removable($ct) ? $ct->delete() : false;
+    }
+    
+    /**
+     * 删除指定通信类型的所有数据
+     *
+     * @param $id
+     * @throws Exception
+     */
+    function purge($id) {
+        
+        try {
+            DB::transaction(function () use ($id) {
+                Message::whereCommTypeId($id)->update(['comm_type_id' => 0]);
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
         
     }
     

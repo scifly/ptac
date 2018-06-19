@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\Snippet;
-use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
+use Carbon\Carbon;
+use App\Helpers\Snippet;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Database\Eloquent\Builder;
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
@@ -87,18 +90,18 @@ class ProcedureLog extends Model {
     ];
 
     /**
-     * 返回审批流程发起者对应的用户对象
+     * 返回审批流程日志发起者对应的用户对象
      *
      * @return BelongsTo
      */
-    function initiatorUser() { return $this->belongsTo('App\Models\User', 'initiator_user_id'); }
+    function initiator() { return $this->belongsTo('App\Models\User', 'initiator_user_id'); }
 
     /**
-     * 返回审批流程操作者对应的用户对象
+     * 返回审批流程日志审批者对应的用户对象
      *
      * @return BelongsTo
      */
-    function operatorUser() { return $this->belongsTo('App\Models\User', 'operator_user_id'); }
+    function operator() { return $this->belongsTo('App\Models\User', 'operator_user_id'); }
 
     /**
      * 返回指定流程日志所属的流程对象
@@ -117,37 +120,78 @@ class ProcedureLog extends Model {
         return $this->belongsTo('App\Models\ProcedureStep', 'procedure_step_id');
         
     }
-
-    /**
-     * 拆分initiator_media_ids、operator_media_ids,
-     * @param $media_ids
-     * @return array 处理后字典 key=>media.id,value => media
-     */
-    function operate_ids($media_ids) {
-
-        $ids = explode(',', $media_ids);
-        $medias = [];
-        foreach ($ids as $mid) {
-            $media = Media::find($mid);
-            $medias[$mid] = $media;
-        }
-        return $medias;
-    }
     
     /**
-     * 保存审批结果
+     * 返回指定审批流程日志对应的所有发起者/审批者创建的媒体对象
+     *
+     * @param $id
+     * @return array
+     */
+    function medias($id) {
+        
+        $pl = $this->find($id);
+        return [
+            Media::whereIn('id', explode(',', $pl->initiator_media_ids))->get(),
+            Media::whereIn('id', explode(',', $pl->operator_media_ids))->get()
+        ];
+        
+    }
+
+    /**
+     * 保存审批流程日志
      * 
      * @param array $data
      * @return bool
      */
     function store(array $data) {
 
-        return true;
+        return $this->create($data) ? true : false;
         
     }
     
     /**
-     * 审批流程列表
+     * 更新审批流程日志
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    function modify(array $data, $id) {
+        
+        return $this->find($id)->update($data);
+        
+    }
+    
+    /**
+     * 删除审批流程日志
+     * 
+     * @param null $id
+     * @return bool|null
+     * @throws \Exception
+     */
+    function remove($id = null) {
+    
+        return $id
+            ? $this->find($id)->delete()
+            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
+    
+    }
+    
+    function removeUser($userId) {
+        
+        try {
+            DB::transaction(function () use ($userId) {
+                $this->where('initiator_user_id', $userId)->delete();
+                $this->where('operator_user_id', $userId)->update()
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+    }
+    
+    /**
+     * 审批流程日志列表
      *
      * @param $where
      * @return array

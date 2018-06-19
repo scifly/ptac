@@ -113,7 +113,7 @@ class ConferenceRoom extends Model {
         
         try {
             DB::transaction(function () use ($id) {
-                (new ConferenceQueue)->removeConferenceRoomConferenceQueues($id);
+                $this->delRelated('conference_room_id', 'ConferenceQueue', $id);
                 $this->find($id)->delete();
             });
         } catch (Exception $e) {

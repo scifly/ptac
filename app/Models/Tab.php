@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\Constant;
+use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
@@ -51,6 +52,8 @@ use Throwable;
  */
 class Tab extends Model {
 
+    use ModelTrait;
+    
     protected $fillable = [
         'name', 'remark', 'icon_id','group_id',
         'action_id', 'enabled', 'controller',
@@ -148,11 +151,8 @@ class Tab extends Model {
         
         try {
             DB::transaction(function () use ($data) {
-                $t = self::create($data);
-                $menuTab = new MenuTab();
-                $menuIds = $data['menu_ids'];
-                $menuTab->storeByTabId($t->id, $menuIds);
-                unset($menuTab);
+                $tab = $this->create($data);
+                (new MenuTab)->storeByTabId($tab->id, $data['menu_ids']);
             });
         } catch (Exception $e) {
             throw $e;
@@ -169,23 +169,32 @@ class Tab extends Model {
      * @return bool|mixed
      * @throws Throwable
      */
-    function remove($id) {
+    function remove($id = null) {
 
-        $tab = self::find($id);
-        if (!isset($tab)) { return false; }
+        return $this->del($this, $id);
+
+    }
+    
+    /**
+     * 删除指定卡片的所有数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
+    
         try {
-            DB::transaction(function () use ($id, $tab) {
-                # 删除指定的卡片记录
-                $tab->delete();
-                # 删除与指定卡片绑定的菜单记录
+            DB::transaction(function () use ($id) {
                 MenuTab::whereTabId($id)->delete();
+                $this->find($id)->delete();
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
-
+    
     }
     
     /**

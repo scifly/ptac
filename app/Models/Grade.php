@@ -192,13 +192,13 @@ class Grade extends Model {
     }
     
     /**
-     * 更新指定教职员工的年级主任任职记录
+     * 删除指定教职员工的年级主任任职记录
      *
      * @param $educatorId
      * @return bool
      * @throws Exception
      */
-    function removeByEducatorId($educatorId) {
+    function removeEducator($educatorId) {
         
         try {
             DB::transaction(function () use ($educatorId) {

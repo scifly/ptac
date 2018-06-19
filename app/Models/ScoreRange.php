@@ -78,10 +78,7 @@ class ScoreRange extends Model {
      */
     function modify(array $data, $id) {
         
-        $sr = self::find($id);
-        if (!$sr) { return false; }
-
-        return $sr->update($data) ? true : false;
+        return $this->find($id)->update($data);
 
     }
     
@@ -93,12 +90,35 @@ class ScoreRange extends Model {
      * @throws Exception
      */
     function remove($id) {
+
+        return $id
+            ? $this->find($id)->delete()
+            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
+
+    }
+    
+    /**
+     * 从分数统计范围中删除指定科目
+     *
+     * @param $subjectId
+     * @throws Exception
+     */
+    function removeSubject($subjectId) {
         
-        $sr = self::find($id);
-        if (!$sr) { return false; }
-
-        return self::removable($sr) ? $sr->delete() : false;
-
+        try {
+            DB::transaction(function () use ($subjectId) {
+                $srs = $this->whereRaw($subjectId . ' IN (subject_ids)')->get();
+                foreach ($srs as $sr) {
+                    $subject_ids = implode(
+                        ',', array_diff(explode(',', $sr->subject_ids), [$subjectId])
+                    );
+                    $sr->update(['subject_ids' => $subject_ids]);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
     }
     
     /**

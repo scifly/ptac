@@ -8,6 +8,7 @@ use App\Helpers\Snippet;
 use Carbon\Carbon;
 use App\Facades\DatatableFacade as Datatable;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -108,6 +109,37 @@ class EducatorAttendance extends Model {
             'eas_id' => $easId,
             'status' => $status
         ]) ? true : false;
+        
+    }
+    
+    /**
+     * 删除教职员工考勤记录
+     *
+     * @param null $id
+     * @return bool
+     */
+    function remove($id = null) {
+        
+        return $this->del($this, $id);
+        
+    }
+    
+    /**
+     * 删除指定教职员工考勤记录的所有相关数据
+     *
+     * @param $id
+     * @throws Exception
+     */
+    function purge($id) {
+        
+        try {
+            DB::transaction(function () use ($id) {
+                (new EducatorAppeal)->removeEducatorAttendance($id);
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
         
     }
     

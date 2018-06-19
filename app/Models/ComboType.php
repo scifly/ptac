@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 use ReflectionException;
 
 /**
@@ -76,10 +77,7 @@ class ComboType extends Model {
      */
     function modify(array $data, $id) {
         
-        $ct = $this->find($id);
-        if (!$ct) { return false; }
-        
-        return $ct->update($data);
+        return $this->find($id)->update($data);
         
     }
     
@@ -88,18 +86,32 @@ class ComboType extends Model {
      *
      * @param $id
      * @return bool|null
-     * @throws ReflectionException
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
         
-        $ct = $this->find($id);
-        if (!$ct) { return false; }
-        
-        return $this->removable($ct) ? $ct->delete() : false;
+        return $this->del($this, $id);
         
     }
     
+    /**
+     * 删除指定套餐类型的所有数据
+     *
+     * @param $id
+     * @throws Exception
+     */
+    function purge($id) {
+        
+        try {
+            DB::transaction(function () use ($id) {
+                Order::whereComboTypeId($id)->update(['combo_type_id' => 0]);
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+    }
     
     /**
      * 套餐类型列表

@@ -26,6 +26,7 @@ use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Throwable;
 
 /**
  * App\Models\Educator 教职员工
@@ -305,11 +306,16 @@ class Educator extends Model {
      * @param $id
      * @return bool|mixed
      * @throws Exception
+     * @throws Throwable
      */
     function modify(EducatorRequest $request, $id = null) {
         
-        if (!isset($id)) {
-            return $this->batch($this);
+        if (!$id) {
+            $this->batch($this);
+            $ids = Request::input('ids');
+            $userIds = $this->whereIn('id', array_values($ids))->pluck('user_id')->toArray();
+            Request::replace(['ids' => $userIds]);
+            return (new User)->modify(Request::all());
         }
         $educator = $this->find($id);
         if (!$educator) { return false; }
@@ -479,14 +485,14 @@ class Educator extends Model {
             DB::transaction(function () use ($id) {
                 $educator = $this->find($id);
                 ConferenceParticipant::whereEducatorId($id)->delete();
-                (new ConferenceQueue)->removeByEducatorId($id);
-                (new EducatorAppeal)->removeByEducatorId($id);
+                (new ConferenceQueue)->removeEducator($id);
+                (new EducatorAppeal)->removeEducator($id);
                 EducatorAttendance::whereEducatorId($id)->delete();
                 EducatorClass::whereEducatorId($id)->delete();
                 EducatorTeam::whereEducatorId($id)->delete();
                 Event::whereEducatorId($id)->delete();
-                (new Grade)->removeByEducatorId($id);
-                (new Squad)->removeByEducatorId($id);
+                (new Grade)->removeEducator($id);
+                (new Squad)->removeEducator($id);
                 (new User)->remove($educator->user_id);
                 $educator->delete();
             });

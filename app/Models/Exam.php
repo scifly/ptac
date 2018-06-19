@@ -156,23 +156,29 @@ class Exam extends Model {
     }
     
     /**
-     * 删除隶属于指定考试类型的所有考试
+     * 从所有考试中删除指定的科目
      *
-     * @param $examTypeId
-     * @return bool|null
+     * @param $subjectId
      * @throws Exception
      */
-    function removeExamTypeExams($examTypeId) {
-    
-        $ids = $this->where('exam_type_id', $examTypeId);
-        Request::merge(['ids' => $ids]);
+    function removeSubject($subjectId) {
         
-        return $this->remove();
-    
+        try {
+            DB::transaction(function () use ($subjectId) {
+                $exams = $this->whereRaw($subjectId . ' IN (subject_ids)')->get();
+                foreach ($exams as $exam) {
+                    $subjectIds = array_diff(explode(',', $exam->subject_ids), [$subjectId]);
+                    $exam->update(['subject_ids' => implode(',', $subjectIds)]);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
     }
     
     /**
-     * 删除指定考试的所有数据
+     * 删除指定考试的所有相关数据
      *
      * @param $id
      * @return bool

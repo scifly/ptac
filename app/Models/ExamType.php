@@ -2,18 +2,17 @@
 
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\ModelTrait;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use Carbon\Carbon;
+use App\Helpers\ModelTrait;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\ExamType 考试类型
@@ -105,7 +104,7 @@ class ExamType extends Model {
         
         try {
             DB::transaction(function () use ($id) {
-                (new Exam)->removeExamTypeExams($id);
+                $this->delRelated('exam_type_id', 'Exam', $id);
                 $this->find($id)->delete();
             });
         } catch (Exception $e) {

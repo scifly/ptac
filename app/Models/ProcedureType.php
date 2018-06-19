@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\ProcedureType 审批流程类型
@@ -53,9 +54,7 @@ class ProcedureType extends Model {
      */
     function store(array $data) {
         
-        $pt = self::create($data);
-        
-        return $pt ? true : false;
+        return $this->create($data) ? true : false;
         
     }
     
@@ -68,10 +67,7 @@ class ProcedureType extends Model {
      */
     function modify(array $data, $id) {
         
-        $pt = self::find($id);
-        if (!$pt) { return false; }
-        
-        return $pt->update($data) ? true : false;
+        return $this->find($id)->update($data);
         
     }
     
@@ -83,11 +79,27 @@ class ProcedureType extends Model {
      * @throws Exception
      */
     function remove($id) {
+
+        return $this->del($this, $id);
         
-        $pt = self::find($id);
-        if (!$pt) { return false; }
+    }
+    
+    /**
+     * 删除指定审批流程类型的所有相关数据
+     *
+     * @param $id
+     * @throws Exception
+     */
+    function purge($id) {
         
-        return $pt->delete() ? true : false;
+        try {
+            DB::transaction(function () use ($id) {
+                $this->delRelated('procedure_type_id', 'Procedure', $id);
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
         
     }
     

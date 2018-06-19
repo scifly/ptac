@@ -197,6 +197,40 @@ class WapSite extends Model {
     }
     
     /**
+     * 删除微网站
+     *
+     * @param null $id
+     * @return bool
+     */
+    function remove($id = null) {
+    
+        return $this->del($this, $id);
+    
+    }
+    
+    /**
+     * 删除指定微网站的所有数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
+        
+        try {
+            DB::transaction(function () use ($id) {
+                $this->delRelated('wap_site_id', 'WapSiteModule', $id);
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
+    /**
      * 返回微官网首页
      *
      * @return Factory|View|string

@@ -120,12 +120,10 @@ class WapSiteModule extends Model {
      */
     function modify(WapSiteModuleRequest $request, $id) {
         
-        $wapSite = self::find($id);
-        if (!$wapSite) { return false; }
         try {
             DB::transaction(function () use ($request, $id) {
-                self::removeMedias($request);
-                return self::find($id)->update(
+                $this->removeMedias($request);
+                return $this->find($id)->update(
                     $request->except('_method', '_token', 'del_id')
                 );
             });
@@ -142,15 +140,33 @@ class WapSiteModule extends Model {
      *
      * @param $id
      * @return bool|null
-     * @throws ReflectionException
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
         
-        $wsm = $this->find($id);
-        if (!$wsm) { return false; }
+        return $this->del($this, $id);
         
-        return $this->removable($wsm) ? $wsm->delete() : false;
+    }
+    
+    /**
+     * 删除指定微网站栏目的所有数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
+        
+        try {
+            DB::transaction(function () use ($id) {
+                WsmArticle::whereWsmId($id)->delete();
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
         
     }
     

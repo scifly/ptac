@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 use ReflectionClass;
 
 /**
@@ -53,7 +54,7 @@ class DepartmentType extends Model {
      */
     function store(array $data) {
 
-        return self::create($data) ? true : false;
+        return $this->create($data) ? true : false;
 
     }
 
@@ -66,7 +67,7 @@ class DepartmentType extends Model {
      */
     function modify(array $data, $id) {
 
-        return self::find($id)->update($data);
+        return $this->find($id)->update($data);
 
     }
     
@@ -77,14 +78,32 @@ class DepartmentType extends Model {
      * @return bool|null
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
 
-        $dt = self::find($id);
-        if (!$dt) { return false; }
-        $removed = self::removable($dt) ? $dt->delete() : false;
+        return $this->del($this, $id);
 
-        return $removed ? true : false;
-
+    }
+    
+    /**
+     * 删除指定部门类型的所有数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
+        
+        try {
+            DB::transaction(function () use ($id) {
+                $this->delRelated('department_type_id', 'Department', $id);
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
     }
     
     /**

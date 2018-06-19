@@ -14,7 +14,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 
 /**
  * App\Models\ConferenceQueue 会议队列
@@ -128,21 +127,6 @@ class ConferenceQueue extends Model {
     }
     
     /**
-     * 移除在指定会议室进行的会议
-     *
-     * @param $conferenceRoomId
-     * @return bool
-     * @throws Exception
-     */
-    function removeConferenceRoomConferenceQueues($conferenceRoomId) {
-        
-        $ids = $this->where('conference_room_id', $conferenceRoomId)->pluck('id')->toArray();
-        Request::merge(['ids' => $ids]);
-        
-        return $this->remove();
-        
-    }
-    /**
      * 删除指定会议的所有数据
      *
      * @param $id
@@ -168,7 +152,7 @@ class ConferenceQueue extends Model {
      * @return bool
      * @throws Exception
      */
-    function removeByEducatorId($educatorId) {
+    function removeEducator($educatorId) {
         
         try {
             DB::transaction(function () use ($educatorId) {

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,8 +15,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $statistic_time 统计时间
  * @property int $balance 可用条数
  * @property int $deposit_count 充值条数
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled 类型：0-统计,1-充值
  * @method static Builder|SmsEducator whereBalance($value)
  * @method static Builder|SmsEducator whereCreatedAt($value)
@@ -31,5 +32,12 @@ use Illuminate\Database\Eloquent\Model;
 class SmsEducator extends Model {
 
     protected $table = 'sms_educators';
+    
+    protected $fillable = [
+        'educator_id', 'user_id', 'statistic_time',
+        'balance', 'deposit_count', 'enabled'
+    ];
 
+    
+    
 }

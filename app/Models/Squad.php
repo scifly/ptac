@@ -3,22 +3,21 @@ namespace App\Models;
 
 use Eloquent;
 use Exception;
-use Illuminate\Support\Facades\Auth;
 use Throwable;
 use Carbon\Carbon;
-use ReflectionException;
 use App\Helpers\Snippet;
 use App\Helpers\ModelTrait;
 use App\Helpers\HttpStatusCode;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\SquadRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * App\Models\Squad 班级
@@ -85,6 +84,22 @@ class Squad extends Model {
     function educators() { return $this->belongsToMany('App\Models\Educator', 'educators_classes'); }
     
     /**
+     * 获取指定班级对应的所有科目对象
+     *
+     * @return BelongsToMany
+     */
+    function subjects() {
+        
+        return $this->belongsToMany(
+            'App\Models\Subject',
+            'educators_classes',
+            'class_id',
+            'subject_id'
+        );
+        
+    }
+    
+    /**
      * 保存班级
      *
      * @param SquadRequest $request
@@ -98,7 +113,7 @@ class Squad extends Model {
             DB::transaction(function () use ($request, &$class) {
                 # 创建班级、对应的部门
                 $class = $this->create($request->all());
-                $department = (new Department())->storeDepartment($class, 'grade');
+                $department = (new Department)->storeDepartment($class, 'grade');
                 # 更新“班级”的部门id
                 $class->update([
                     'department_id' => $department->id
@@ -127,7 +142,7 @@ class Squad extends Model {
             DB::transaction(function () use ($request, $id, &$class) {
                 $class = $this->find($id);
                 $class->update($request->all());
-                (new Department())->modifyDepartment($this->find($id));
+                (new Department)->modifyDepartment($this->find($id));
             });
         } catch (Exception $e) {
             throw $e;
@@ -142,25 +157,35 @@ class Squad extends Model {
      *
      * @param $id
      * @return bool
-     * @throws ReflectionException
      * @throws Throwable
      */
     function remove($id) {
         
-        $class = self::find($id);
-        if ($this->removable($class)) {
-            try {
-                DB::transaction(function () use ($class) {
-                    (new Department())->removeDepartment($class);
-                    $class->delete();
-                });
-            } catch (Exception $e) {
-                throw $e;
-            }
-            return true;
-        }
+        return $this->del($this, $id);
         
-        return false;
+    }
+    
+    /**
+     * 删除指定班级的所有相关数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
+    
+        try {
+            DB::transaction(function () use ($id) {
+                $class = $this->find($id);
+                $this->delRelated('class_id', 'Student', $id);
+                (new Department())->removeDepartment($class); # todo:
+                $class->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+    
+        return true;
         
     }
     
@@ -171,7 +196,7 @@ class Squad extends Model {
      * @return bool
      * @throws Exception
      */
-    function removeByEducatorId($educatorId) {
+    function removeEducator($educatorId) {
         
         try {
             DB::transaction(function () use ($educatorId) {

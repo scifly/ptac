@@ -94,6 +94,13 @@ class Corp extends Model {
     function company() { return $this->belongsTo('App\Models\Company'); }
     
     /**
+     * 获取指定企业包含的所有应用
+     *
+     * @return HasMany
+     */
+    function apps() { return $this->hasMany('App\Models\App'); }
+    
+    /**
      * 获取下属学校对象
      *
      * @return HasMany
@@ -187,26 +194,39 @@ class Corp extends Model {
      *
      * @param $id
      * @return bool
-     * @throws ReflectionException
      * @throws Throwable
      */
-    function remove($id) {
+    function remove($id = null) {
         
-        $corp = $this->find($id);
-        if ($this->removable($corp)) {
-            try {
-                DB::transaction(function () use ($corp) {
-                    $corp->department->delete();
-                    $corp->menu->delete();
-                    $corp->delete();
-                });
-            } catch (Exception $e) {
-                throw $e;
-            }
-            return true;
+        return $this->del($this, $id);
+        
+    }
+    
+    /**
+     * 删除指定企业的所有数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
+    
+        try {
+            DB::transaction(function () use ($id) {
+                $corp = $this->find($id);
+                $classes = ['App', 'School'];
+                $keys = array_fill(0, sizeof($classes), 'corp_id');
+                $values = array_fill(0, sizeof($classes), $id);
+                array_map([$this, 'delRelated'], $keys, $classes, $values);
+                (new Department)->removeDepartments($corp->department_id);
+                (new Menu)->removeMenus($corp->menu_id);
+                $corp->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
+        return true;
         
-        return false;
         
     }
     

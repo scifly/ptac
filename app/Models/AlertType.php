@@ -9,7 +9,7 @@ use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use ReflectionException;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\AlertType 警告类型
@@ -55,10 +55,7 @@ class AlertType extends Model {
      */
     function modify(array $data, $id) {
         
-        $at = $this->find($id);
-        if (!$at) { return false; }
-        
-        return $at->update($data);
+        return $this->find($id)->update($data);
         
     }
     
@@ -67,15 +64,33 @@ class AlertType extends Model {
      *
      * @param $id
      * @return bool|null
-     * @throws ReflectionException
      * @throws Exception
      */
     function remove($id) {
         
-        $at = $this->find($id);
-        if (!$at) { return false; }
+        return $this->del($this, $id);
         
-        return $this->removable($at) ? $at->delete() : false;
+    }
+    
+    /**
+     * 删除指定警告类型的所有数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
+        
+        try {
+            DB::transaction(function () use ($id) {
+                # todo:
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
         
     }
     

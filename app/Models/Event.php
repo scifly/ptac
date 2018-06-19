@@ -142,14 +142,16 @@ class Event extends Model {
      * @return bool
      * @throws Exception
      */
-    function removeByUserId($userId) {
+    function removeUser($userId) {
     
         try {
             DB::transaction(function() use ($userId) {
+                # 删除用户创建的非课程&非公共事件
                 $this->where('user_id', $userId)
                     ->where('ispublic', 0)
                     ->where('iscourse', 0)
                     ->delete();
+                # 更新用户创建的课程&公共事件
                 $this->where('user_id', $userId)
                     ->where('ispublic', 1)
                     ->orWhere('iscourse', 1)

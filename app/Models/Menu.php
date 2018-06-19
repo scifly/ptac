@@ -315,13 +315,13 @@ class Menu extends Model {
     }
     
     /**
-     * 删除指定学校的所有菜单
+     * 删除指定学校/企业/运营者的所有菜单
      *
      * @param $id
      * @return bool|null
      * @throws Exception
      */
-    function removeSchoolMenus($id) {
+    function removeMenus($id) {
         
         return $this->whereIn('id', array_merge([$id], $this->subMenuIds($id)))->delete();
         

@@ -8,10 +8,12 @@ use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 
 /**
  * App\Models\ConferenceParticipant 与会者
@@ -67,6 +69,34 @@ class ConferenceParticipant extends Model {
     function store(array $data) {
         
         return $this->create($data) ? true : false;
+        
+    }
+    
+    /**
+     * 更新与会者记录
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    function modify(array $data, $id) {
+        
+        return $this->find($id)->update($data);
+        
+    }
+    
+    /**
+     * 删除与会者记录
+     *
+     * @param null $id
+     * @return bool
+     * @throws Exception
+     */
+    function remove($id = null) {
+        
+        return $id
+            ? $this->find($id)->delete()
+            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
         
     }
     

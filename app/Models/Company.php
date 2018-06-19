@@ -148,28 +148,38 @@ class Company extends Model {
      *
      * @param $id
      * @return bool
-     * @throws ReflectionException
      * @throws Exception
      * @throws Throwable
      */
-    function remove($id) {
+    function remove($id = null) {
+    
+        return $this->del($this, $id);
         
-        $company = $this->find($id);
-        if ($this->removable($company)) {
-            try {
-                DB::transaction(function () use ($id, $company) {
-                    $company->department->delete();
-                    $company->menu->delete();
-                    $company->delete();
-                });
-            } catch (Exception $e) {
-                throw $e;
-            }
-            return true;
+    }
+    
+    /**
+     * 删除指定运营者的所有数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
+    
+        try {
+            DB::transaction(function () use ($id) {
+                $company = $this->find($id);
+                $this->delRelated('company_id', 'Corp', $id);
+                (new Department)->removeDepartments($id);
+                (new Menu)->removeMenus($id);
+                $company->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
         
-        return false;
-        
+        return true;
+    
     }
 
     /**

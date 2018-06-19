@@ -209,11 +209,12 @@ class Student extends Model {
      */
     function modify(array $data, $id = null) {
         
-        if (!isset($id)) { return $this->batch($this); }
-        $student = $this->find($id);
-        if (!$student) { return false; }
+        if (!$id) {
+            return $this->batch($this);
+        }
         try {
-            DB::transaction(function () use ($data, $id, $student) {
+            DB::transaction(function () use ($data, $id) {
+                $student = $this->find($id);
                 $user = User::find($data['user_id']);
                 
                 # 更新用户

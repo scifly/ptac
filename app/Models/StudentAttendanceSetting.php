@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use ReflectionException;
 
 /**
@@ -135,7 +136,16 @@ class StudentAttendanceSetting extends Model {
      */
     function purge($id) {
         
-        return $this->find($id)->delete();
+        try {
+            DB::transaction(function () use ($id) {
+                StudentAttendance::whereSasId($id)->delete();
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
         
     }
     

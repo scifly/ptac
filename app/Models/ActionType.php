@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\ActionType 功能HTTP请求类型
@@ -69,10 +70,7 @@ class ActionType extends Model {
      */
     function modify(array $data, $id) {
         
-        $at = $this->find($id);
-        if (!$at) { return false; }
-        
-        return $at->update($data) ? true : false;
+        return $this->find($id)->update($data);
         
     }
     
@@ -83,12 +81,31 @@ class ActionType extends Model {
      * @return bool|null
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
         
-        $at = $this->find($id);
-        if (!$at) { return false; }
+        return $this->del($this, $id);
         
-        return self::removable($at) ? $at->delete() : false;
+    }
+    
+    /**
+     * 删除指定HTTP请求类型的所有数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
+        
+        try {
+            DB::transaction(function() use ($id) {
+                (new Action)->removeActionType($id);
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
         
     }
     

@@ -28,7 +28,6 @@ trait ModelTrait {
      *
      * @param Model $model
      * @return bool
-     * @throws \Exception
      */
     function batch(Model $model) {
         
@@ -66,26 +65,20 @@ trait ModelTrait {
     /**
      * 删除关联表中的所有数据
      *
-     * @param $foreignKey
+     * @param $key
      * @param $class
      * @param $value
      * @return mixed
      */
-    function delRelated($foreignKey, $class, $value) {
+    function delRelated($key, $class, $value) {
     
         /** @var Model $model */
         $class = '\\App\\Models\\' . $class;
         $model = new $class;
-        $ids = $model->where($foreignKey, $value)->pluck('id')->toArray();
+        $ids = $model->where($key, $value)->pluck('id')->toArray();
         Request::merge(['ids' => $ids]);
     
         return $model->{'remove'}();
-        
-    }
-    
-    function test($a) {
-        
-        echo $a;
         
     }
     
@@ -110,7 +103,6 @@ trait ModelTrait {
                 }
             }
         }
-        Log::debug(json_encode($relations));
         foreach ($relations as $relation) {
             if ($model->{$relation}) {
                 if (get_class($model->{$relation}) == 'Illuminate\Database\Eloquent\Collection') {

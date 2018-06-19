@@ -105,15 +105,25 @@ class Semester extends Model {
         
     }
     
+    /**
+     * 删除指定学期的所有数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
     function purge($id) {
     
         try {
             DB::transaction(function () use ($id) {
-            
+                $this->delRelated('semester_id', 'StudentAttendanceSetting', $id);
+                $this->find($id)->delete();
             });
         } catch (Exception $e) {
             throw $e;
         }
+        
+        return true;
     
     }
     

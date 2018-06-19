@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * App\Models\Subject 科目
@@ -45,6 +46,9 @@ use Illuminate\Support\Facades\DB;
  * @property-read Collection|SubjectModule[] $subjectModules
  * @property-read EducatorClass $educatorClass
  * @property-read Collection|Major[] $majors
+ * @property-read Collection|Event[] $events
+ * @property-read Collection|Squad[] $classes
+ * @property-read Collection|Educator[] $educators
  */
 class Subject extends Model {
     
@@ -88,6 +92,45 @@ class Subject extends Model {
     }
     
     /**
+     * 获取指定科目包含的所有事件对象
+     *
+     * @return HasMany
+     */
+    function events() { return $this->hasMany('App\Models\Event'); }
+    
+    /**
+     * 获取指定科目对应的所有班级对象
+     *
+     * @return BelongsToMany
+     */
+    function classes() {
+        
+        return $this->belongsToMany(
+            'App\Models\Squad',
+            'educators_classes',
+            'subject_id',
+            'class_id'
+        );
+        
+    }
+    
+    /**
+     * 获取指定科目对应的所有教职员工对象
+     *
+     * @return BelongsToMany
+     */
+    function educators() {
+        
+        return $this->belongsToMany(
+            'App\Models\Educator',
+            'educators_classes',
+            'subject_id',
+            'educator_id'
+        );
+        
+    }
+    
+    /**
      * 保存新的科目记录
      *
      * @param SubjectRequest $request
@@ -109,11 +152,9 @@ class Subject extends Model {
                     'enabled'    => $request->input('enabled'),
                 ]);
                 if (!empty($request->input('major_ids'))) {
-                    $ms = new MajorSubject();
-                    $ms->storeBySubjectId(
+                    (new MajorSubject)->storeBySubjectId(
                         $subject->id, $request->input('major_ids')
                     );
-                    unset($ms);
                 }
                 
             });
@@ -132,16 +173,13 @@ class Subject extends Model {
      * @param $id
      * @return bool|mixed
      * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     function modify(SubjectRequest $request, $id) {
         
-        $subject = self::find($id);
-        if (!isset($subject)) {
-            return false;
-        }
         try {
-            DB::transaction(function () use ($request, $id, $subject) {
+            DB::transaction(function () use ($request, $id) {
+                $subject = $this->find($id);
                 $subject->update([
                     'name'       => $request->input('name'),
                     'school_id'  => $request->input('school_id'),
@@ -153,11 +191,9 @@ class Subject extends Model {
                 ]);
                 MajorSubject::whereSubjectId($id)->delete();
                 if (!empty($request->input('major_ids'))) {
-                    $ms = new MajorSubject();
-                    $ms->storeBySubjectId(
+                    (new MajorSubject)->storeBySubjectId(
                         $id, $request->input('major_ids')
                     );
-                    unset($ms);
                 }
             });
             
@@ -177,26 +213,38 @@ class Subject extends Model {
      * @throws Exception
      * @throws \Throwable
      */
-    function remove($id) {
+    function remove($id = null) {
         
-        $subject = self::find($id);
-        if (!isset($subject)) {
-            return false;
-        }
+        return $this->del($this, $id);
+        
+    }
+    
+    /**
+     * 删除指定科目的所有记录
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
+    
         try {
-            DB::transaction(function () use ($id, $subject) {
-                # 删除指定的科目记录
-                $subject->delete();
-                # 删除与科目绑定的专业记录
+            DB::transaction(function () use ($id) {
+                EducatorClass::whereSubjectId($id)->delete();
+                Event::whereSubjectId($id)->delete();
+                (new Exam)->removeSubject($id);
+                SubjectModule::whereSubjectId($id)->delete();
                 MajorSubject::whereSubjectId($id)->delete();
+                (new ScoreRange)->removeSubject($id);
+                (new Score)->removeSubject($id);
+                $this->find($id)->delete();
             });
-            
         } catch (Exception $e) {
             throw $e;
         }
         
         return true;
-        
+    
     }
     
     /**
