@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-use App\Helpers\ModelTrait;
-use App\Facades\DatatableFacade as Datatable;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
+use Carbon\Carbon;
+use App\Helpers\ModelTrait;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -52,9 +53,7 @@ class MediaType extends Model {
      */
     function store(array $data) {
 
-        $mediaType = $this->create($data);
-
-        return $mediaType ? true : false;
+        return $this->create($data) ? true : false;
 
     }
 
@@ -67,12 +66,7 @@ class MediaType extends Model {
      */
     function modify(array $data, $id) {
 
-        $mediaType = $this->find($id);
-        if (!$mediaType) {
-            return false;
-        }
-
-        return $mediaType->update($data) ? true : false;
+        return $this->find($id)->update($data);
 
     }
     
@@ -85,11 +79,27 @@ class MediaType extends Model {
      */
     function remove($id) {
 
-        $mediaType = $this->find($id);
-        if (!$mediaType) { return false; }
+        return $this->del($this, $id);
 
-        return $mediaType->removable($mediaType) ? $mediaType->delete() : false;
-
+    }
+    
+    /**
+     * 删除指定媒体类型的所有相关数据
+     *
+     * @param $id
+     * @throws Exception
+     */
+    function purge($id) {
+        
+        try {
+            DB::transaction(function () use ($id) {
+                Media::whereMediaTypeId($id)->update(['media_type_id' => 0]);
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
     }
     
     /**

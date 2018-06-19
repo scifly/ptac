@@ -1,11 +1,13 @@
 <?php
 namespace App\Models;
 
-use App\Helpers\ModelTrait;
-use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
+use Carbon\Carbon;
+use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Request;
 
 /**
  * App\Models\MessageReply
@@ -46,10 +48,23 @@ class MessageReply extends Model {
      */
     function store($data) {
 
-        $messageReply = self::create($data);
-        
-        return $messageReply ? true : false;
+        return $this->create($data) ? true : false;
 
+    }
+    
+    /**
+     * （批量）删除消息回复
+     *
+     * @param null $id
+     * @return bool
+     * @throws Exception
+     */
+    function remove($id = null) {
+    
+        return $id
+            ? $this->find($id)->delete()
+            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
+    
     }
     
 }

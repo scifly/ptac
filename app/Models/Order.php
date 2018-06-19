@@ -6,9 +6,11 @@ use App\Facades\DatatableFacade as Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\Order 订单
@@ -73,6 +75,25 @@ class Order extends Model {
     
     function remove($id) {
     
+    }
+    
+    /**
+     * 从订单记录中删除指定用户数据
+     *
+     * @param $userId
+     * @throws Exception
+     */
+    function removeUser($userId) {
+        
+        try {
+            DB::transaction(function () use ($userId) {
+                Order::whereUserId($userId)->update(['user_id' => 0]);
+                Order::wherePayUserId($userId)->update(['pay_user_id' => 0]);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
     }
     
     /**

@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use Carbon\Carbon;
+use App\Helpers\ModelTrait;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\MessageSendingLog
@@ -31,6 +32,8 @@ use Illuminate\Support\Facades\DB;
  */
 class MessageSendingLog extends Model {
 
+    use ModelTrait;
+    
     protected $fillable = [
         'read_count',
         'received_count',
@@ -68,6 +71,40 @@ class MessageSendingLog extends Model {
         }
         
         return true;
+        
+    }
+    
+    /**
+     * 删除消息批次
+     *
+     * @param null $id
+     * @return bool
+     */
+    function remove($id = null) {
+        
+        return $this->del($this, $id);
+        
+    }
+    
+    /**
+     * 删除指定消息批次相关的所有数据
+     *
+     * @param $id
+     * @throws Exception
+     */
+    function purge($id) {
+        
+        try {
+            DB::transaction(function () use ($id) {
+                $classes = ['Message', 'MessageReply'];
+                $keys = array_fill(0, sizeof($classes), 'msl_id');
+                $values = array_fill(0, sizeof($classes), $id);
+                array_map([$this, 'delRelated'], $keys, $classes, $values);
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
         
     }
 

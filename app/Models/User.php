@@ -704,17 +704,14 @@ class User extends Authenticatable {
                 $this->deleteWechatUser($id);
                 DepartmentUser::whereUserId($id)->delete();
                 Mobile::whereUserId($id)->delete();
-                Order::whereUserId($id)->update(['user_id' => 0]);
-                Order::wherePayUserId($id)->update(['pay_user_id' => 0]);
+                (new Order)->removeUser($id);
                 PollQuestionnaire::whereUserId($id)->update(['user_id' => 0]);
                 PollQuestionnaireAnswer::whereUserId($id)->delete();
                 PollQuestionnaireParticipant::whereUserId($id)->delete();
                 (new ProcedureStep)->removeUser($id);
+                (new ProcedureLog)->removeUser($id);
                 (new Event)->removeUser($id);
-                # 删除用户收到的所有消息
-                Message::whereRUserId($id)->delete();
-                # 更新用户发送的所有消息记录
-                Message::whereSUserId($id)->update(['s_user_id' => 0]);
+                (new Message)->removeUser($id);
                 MessageReply::whereUserId($id)->delete();
                 $this->find($id)->delete();
             });

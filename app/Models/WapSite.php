@@ -209,6 +209,30 @@ class WapSite extends Model {
     }
     
     /**
+     * 从微网站中删除指定的媒体数据
+     *
+     * @param $mediaId
+     * @throws Exception
+     */
+    function removeMedia($mediaId) {
+        
+        try {
+            DB::transaction(function () use ($mediaId) {
+                $wapSites = $this->whereRaw($mediaId . ' IN (media_ids)')->get();
+                foreach ($wapSites as $wapSite) {
+                    $media_ids = implode(
+                        ',', array_diff(explode(',', $wapSite->media_ids), [$mediaId])
+                    );
+                    $wapSite->update(['media_ids' => $media_ids]);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+    }
+    
+    /**
      * 删除指定微网站的所有数据
      *
      * @param $id

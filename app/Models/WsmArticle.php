@@ -177,6 +177,31 @@ class WsmArticle extends Model {
     }
     
     /**
+     * 从微网站栏目文章中删除指定的媒体数据
+     *
+     * @param $mediaId
+     * @throws Exception
+     */
+    function removeMedia($mediaId) {
+        
+        try {
+            DB::transaction(function () use ($mediaId) {
+                WsmArticle::whereThumbnailMediaId($mediaId)->update(['thumb_media_id' => 0]);
+                $articles = $this->whereRaw($mediaId . ' IN (media_ids)')->get();
+                foreach ($articles as $article) {
+                    $media_ids = implode(
+                        ',', array_diff(explode(',', $article->media_ids), [$mediaId])
+                    );
+                    $article->update(['media_ids' => $media_ids]);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+    }
+    
+    /**
      * 上传微网站文章轮播图
      *
      * @return \Illuminate\Http\JsonResponse

@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -104,9 +105,7 @@ class Media extends Model {
      */
     function store(array $data) {
 
-        $media = self::create($data);
-
-        return $media ? true : false;
+        return $this->create($data) ? true : false;
 
     }
 
@@ -117,12 +116,11 @@ class Media extends Model {
      * @param $id
      * @return bool
      */
-    function modify(array $data, $id) {
+    function modify(array $data, $id = null) {
 
-        $media = self::find($id);
-        if (!$media) { return false; }
-
-        return $media->update($data) ? true : false;
+        return $id
+            ? $this->find($id)->update($data)
+            : $this->batch($this);
 
     }
     
@@ -135,11 +133,28 @@ class Media extends Model {
      */
     function remove($id) {
 
-        $media = self::find($id);
-        if (!$media) { return false; }
-        
-        return $media->removable($media) ? $media->delete() : false;
+        return $this->del($this, $id);
 
+    }
+    
+    /**
+     * 删除指定媒体的所有相关数据
+     *
+     * @param $id
+     * @throws Exception
+     */
+    function purge($id) {
+        
+        try {
+            DB::transaction(function () use ($id) {
+                (new WapSite)->removeMedia($id);
+                (new WsmArticle)->removeMedia($id);
+                WapSiteModule::whereMediaId($id)->update(['media_id' => 0]);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
     }
     
     /**

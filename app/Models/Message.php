@@ -215,19 +215,37 @@ class Message extends Model {
     }
     
     /**
-     * 删除指定消息
+     * （批量）删除消息
      *
      * @param $id
      * @return bool|null
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
     
-        $message = $this->find($id);
-        if (!$message) { return false; }
+        return $id
+            ? $this->find($id)->delete()
+            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
+    
+    }
+    
+    /**
+     * 从消息中删除指定用户
+     *
+     * @param $userId
+     * @throws Exception
+     */
+    function removeUser($userId) {
         
-        return $message->delete();
-    
+        try {
+            DB::transaction(function () use ($userId) {
+                Message::whereRUserId($userId)->delete();
+                Message::whereSUserId($userId)->update(['s_user_id' => 0]);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
     }
     
     /**

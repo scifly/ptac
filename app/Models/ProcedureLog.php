@@ -3,12 +3,12 @@
 namespace App\Models;
 
 use Eloquent;
+use Exception;
 use Carbon\Carbon;
 use App\Helpers\Snippet;
-use Exception;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -129,11 +129,11 @@ class ProcedureLog extends Model {
      */
     function medias($id) {
         
-        $pl = $this->find($id);
-        return [
-            Media::whereIn('id', explode(',', $pl->initiator_media_ids))->get(),
-            Media::whereIn('id', explode(',', $pl->operator_media_ids))->get()
-        ];
+        return array_map(
+            function ($field) use ($id) {
+                return Media::whereIn('id', $this->find($id)->{$field})->get();
+            }, ['initiator_media_ids', 'operator_media_ids']
+        );
         
     }
 
@@ -177,12 +177,18 @@ class ProcedureLog extends Model {
     
     }
     
+    /**
+     * 从审批流程日志中删除用户数据
+     *
+     * @param $userId
+     * @throws Exception
+     */
     function removeUser($userId) {
         
         try {
             DB::transaction(function () use ($userId) {
                 $this->where('initiator_user_id', $userId)->delete();
-                $this->where('operator_user_id', $userId)->update()
+                $this->where('operator_user_id', $userId)->update(['operator_user_id' => 0]);
             });
         } catch (Exception $e) {
             throw $e;

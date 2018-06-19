@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\MessageType 消息类型
@@ -53,9 +54,7 @@ class MessageType extends Model {
      */
     function store(array $data) {
 
-        $mt = self::create($data);
-
-        return $mt ? true : false;
+        return $this->create($data) ? true : false;
 
     }
 
@@ -68,10 +67,7 @@ class MessageType extends Model {
      */
     function modify(array $data, $id) {
 
-        $mt = self::find($id);
-        if (!$mt) { return false; }
-
-        return $mt->update($data) ? true : false;
+        return $this->find($id)->update($data);
 
     }
     
@@ -82,13 +78,29 @@ class MessageType extends Model {
      * @return bool|null
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
 
-        $mt = self::find($id);
-        if (!$mt) { return false; }
+        return $this->del($this, $id);
+
+    }
+    
+    /**
+     * 删除指定消息类型的所有相关数据
+     *
+     * @param $id
+     * @throws Exception
+     */
+    function purge($id) {
         
-        return $mt->removable($mt) ? $mt->delete() : false;
-
+        try {
+            DB::transaction(function () use ($id) {
+                Message::whereMessageTypeId($id)->update(['message_type_id' => 0]);
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
     }
     
     /**
