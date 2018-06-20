@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
-use App\Helpers\ModelTrait;
-use Carbon\Carbon;
-use App\Facades\DatatableFacade as Datatable;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
+use Carbon\Carbon;
+use App\Helpers\ModelTrait;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use ReflectionException;
 
 /**
  * App\Models\AttachmentType 附件类型
@@ -66,10 +66,7 @@ class AttachmentType extends Model {
      */
     function modify(array $data, $id) {
         
-        $at = $this->find($id);
-        if (!$at) { return false; }
-        
-        return $at->update($data) ? true : false;
+        return $this->find($id)->update($data);
         
     }
     
@@ -78,15 +75,32 @@ class AttachmentType extends Model {
      *
      * @param $id
      * @return bool|null
-     * @throws ReflectionException
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
         
-        $at = $this->find($id);
-        if (!$at) { return false; }
+        return $this->del($this, $id);
         
-        return $this->removable($at) ? $at->delete() : false;
+    }
+    
+    /**
+     * 删除指定附件类型的所有相关数据
+     *
+     * @param $id
+     * @throws Exception
+     */
+    function purge($id) {
+        
+        try {
+            DB::transaction(function () use ($id) {
+                Attachment::whereAttachmentTypeId($id)->update([
+                    'attachment_type_id' => 0
+                ]);
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
         
     }
     
@@ -116,6 +130,5 @@ class AttachmentType extends Model {
         );
         
     }
-    
 
 }

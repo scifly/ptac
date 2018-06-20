@@ -1,19 +1,18 @@
 <?php
-
 namespace App\Models;
 
-use App\Helpers\Constant;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\DB;
 use Throwable;
+use Carbon\Carbon;
+use App\Helpers\Constant;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * App\Models\CustodianStudent
+ * App\Models\CustodianStudent 监护人 & 学生关系
  *
  * @property int $id
  * @property int $custodian_id 监护人ID
@@ -36,9 +35,9 @@ use Throwable;
  * @mixin Eloquent
  */
 class CustodianStudent extends Model {
-
+    
     protected $table = 'custodians_students';
-
+    
     protected $fillable = [
         'custodian_id', 'student_id', 'relationship',
         'expiration', 'enabled',
@@ -46,14 +45,14 @@ class CustodianStudent extends Model {
     
     /**
      * 返回所属的监护人对象
-     * 
+     *
      * @return BelongsTo
      */
     function custodian() { return $this->belongsTo('App\Models\Custodian'); }
     
     /**
      * 返回所属的学生对象
-     * 
+     *
      * @return BelongsTo
      */
     function student() { return $this->belongsTo('App\Models\Student'); }
@@ -66,26 +65,26 @@ class CustodianStudent extends Model {
      * @throws Throwable
      */
     function storeByCustodianId($custodianId, array $studentIds) {
-
+        
         try {
             DB::transaction(function () use ($custodianId, $studentIds) {
-                $values = [];
+                $records = [];
                 foreach ($studentIds as $studentId => $relationship) {
-                    $values[] = [
+                    $records[] = [
                         'custodian_id' => $custodianId,
-                        'student_id' => $studentId,
-                        'enabled' => Constant::ENABLED,
+                        'student_id'   => $studentId,
+                        'enabled'      => Constant::ENABLED,
                         'relationship' => $relationship,
-                        'created_at' => now()->toDateTimeString(),
-                        'updated_at' => now()->toDateTimeString(),
+                        'created_at'   => now()->toDateTimeString(),
+                        'updated_at'   => now()->toDateTimeString(),
                     ];
                 }
-                $this->insert($values);
+                $this->insert($records);
             });
         } catch (Exception $e) {
             throw $e;
         }
-
+        
     }
     
     /**
@@ -96,37 +95,24 @@ class CustodianStudent extends Model {
      * @throws Throwable
      */
     function storeByStudentId($studentId, array $custodianIds) {
-
+        
         try {
             DB::transaction(function () use ($studentId, $custodianIds) {
-                $values = [];
+                $records = [];
                 foreach ($custodianIds as $custodianId => $relationship) {
-                    $values = [
-                        'student_id' => $studentId,
+                    $records = [
+                        'student_id'   => $studentId,
                         'custodian_id' => $custodianId,
                         'relationship' => $relationship,
-                        'enabled' => Constant::ENABLED,
+                        'enabled'      => Constant::ENABLED,
                     ];
                 }
-                $this->insert($values);
+                $this->insert($records);
             });
         } catch (Exception $e) {
             throw $e;
         }
-
+        
     }
     
-    /**
-     * 删除指定学生对应的绑定记录
-     *
-     * @param $studentId
-     * @return bool|null
-     * @throws Exception
-     */
-    function removeByStudentId($studentId) {
-        
-        return $this->where('student_id', $studentId)->delete();
-        
-    }
-
 }

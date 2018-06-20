@@ -3,6 +3,8 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use App\Models\Exam;
+use App\Models\Squad;
+use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
@@ -13,9 +15,11 @@ class ExamShowComposer {
     public function compose(View $view) {
         
         $exam = Exam::find(Request::route('id'));
+        $classIds = explode(',', $exam->class_ids);
+        $subjectIds = explode(',', $exam->subject_ids);
         $view->with([
-            'classes'  => $exam->selectedClasses($exam->class_ids),
-            'subjects' => $exam->selectedSubjects($exam->subject_ids),
+            'classes'  => Squad::whereIn('id', $classIds)->pluck('name', 'id')->toArray(),
+            'subjects' => Subject::whereIn('id', $subjectIds)->pluck('name', 'id')->toArray(),
             'uris'     => $this->uris(),
         ]);
         

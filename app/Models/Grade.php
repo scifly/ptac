@@ -5,7 +5,6 @@ use Eloquent;
 use Throwable;
 use Exception;
 use Carbon\Carbon;
-use ReflectionException;
 use App\Helpers\Snippet;
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
@@ -123,13 +122,11 @@ class Grade extends Model {
         $grade = null;
         try {
             DB::transaction(function () use ($request, &$grade) {
-                # 创建年级、对应的部门
+                # 创建年级及对应的部门
                 $grade = $this->create($request->all());
-                $department = (new Department())->storeDepartment($grade, 'school');
-                # 更新“年级”的部门id
-                $grade->update([
-                    'department_id' => $department->id,
-                ]);
+                $department = (new Department)->storeDepartment($grade, 'school');
+                # 更新年级的部门id
+                $grade->update(['department_id' => $department->id]);
             });
         } catch (Exception $e) {
             throw $e;
@@ -154,7 +151,7 @@ class Grade extends Model {
             DB::transaction(function () use ($request, $id, &$grade) {
                 $grade = $this->find($id);
                 $grade->update($request->all());
-                (new Department())->modifyDepartment($this->find($id));
+                (new Department)->modifyDepartment($this->find($id));
             });
         } catch (Exception $e) {
             throw $e;
@@ -169,25 +166,21 @@ class Grade extends Model {
      *
      * @param $id
      * @return bool
-     * @throws ReflectionException
      * @throws Throwable
      */
     function remove($id) {
         
-        $grade = self::find($id);
-        if ($this->removable($grade)) {
-            try {
-                DB::transaction(function () use ($grade) {
-                    (new Department())->removeDepartment($grade);
-                    $grade->delete();
-                });
-            } catch (Exception $e) {
-                throw $e;
-            }
-            return true;
+        try {
+            DB::transaction(function () use ($id) {
+                $grade = $this->find($id);
+                (new Department)->remove($grade->department_id);
+                $this->delRelated('grade_id', 'Squad', $id);
+                $grade->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
-        
-        return false;
+        return true;
         
     }
     

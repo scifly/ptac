@@ -28,9 +28,8 @@ use Illuminate\Support\Facades\Request;
  * @method static Builder|MessageReply whereUserId($value)
  */
 class MessageReply extends Model {
-
+    
     // todo: needs to be optimized
-
     use ModelTrait;
     
     protected $fillable = ['msl_id', 'user_id', 'content'];
@@ -47,9 +46,9 @@ class MessageReply extends Model {
      * @return bool
      */
     function store($data) {
-
+        
         return $this->create($data) ? true : false;
-
+        
     }
     
     /**
@@ -60,11 +59,11 @@ class MessageReply extends Model {
      * @throws Exception
      */
     function remove($id = null) {
-    
+        
         return $id
             ? $this->find($id)->delete()
             : $this->whereIn('id', array_values(Request::input('ids')))->delete();
-    
+        
     }
     
 }

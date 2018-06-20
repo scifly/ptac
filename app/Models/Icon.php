@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\Icon 图标
@@ -69,7 +70,7 @@ class Icon extends Model {
      */
     function icons() {
 
-        $data = $this->whereEnabled(1)->get();
+        $data = self::whereEnabled(1)->get();
         $icons = [];
         foreach ($data as $datum) {
             $icons[$datum->iconType->name][$datum->id] = $datum->name;
@@ -87,9 +88,7 @@ class Icon extends Model {
      */
     function store(array $data) {
 
-        $icon = $this->create($data);
-
-        return $icon ? true : false;
+        return $this->create($data) ? true : false;
 
     }
 
@@ -100,14 +99,11 @@ class Icon extends Model {
      * @param $id
      * @return bool
      */
-    function modify(array $data, $id) {
+    function modify(array $data, $id = null) {
 
-        $icon = $this->find($id);
-        if (!$icon) {
-            return false;
-        }
-
-        return $icon->update($data) ? true : false;
+        return $id
+            ? $this->find($id)->update($data)
+            : $this->batch($this);
 
     }
     
@@ -120,11 +116,27 @@ class Icon extends Model {
      */
     function remove($id) {
 
-        $icon = $this->find($id);
-        if (!$icon) { return false; }
-        
-        return $icon->removable($icon) ? $icon->delete() : false;
+        return $this->del($this, $id);
 
+    }
+    
+    /**
+     * 删除指定图标的所有相关数据
+     *
+     * @param $id
+     * @throws Exception
+     */
+    function purge($id) {
+        
+        try {
+            DB::transaction(function () use ($id) {
+                Tab::whereIconId($id)->update(['icon_id' => null]);
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
     }
     
     /**

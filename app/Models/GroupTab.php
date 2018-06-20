@@ -47,9 +47,9 @@ class GroupTab extends Model {
         try {
             DB::transaction(function () use ($groupId, $ids) {
                 self::whereGroupId($groupId)->delete();
-                $values = [];
+                $records = [];
                 foreach ($ids as $id) {
-                    $values[] = [
+                    $records[] = [
                         'group_id' => $groupId,
                         'tab_id' => $id,
                         'created_at' => now()->toDateTimeString(),
@@ -57,7 +57,7 @@ class GroupTab extends Model {
                         'enabled' => Constant::ENABLED,
                     ];
                 }
-                $this->insert($values);
+                $this->insert($records);
             });
         } catch (Exception $e) {
             throw $e;

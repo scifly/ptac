@@ -1,21 +1,20 @@
 <?php
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use Throwable;
+use Carbon\Carbon;
+use App\Helpers\Constant;
+use App\Helpers\ModelTrait;
+use App\Helpers\HttpStatusCode;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
-use Throwable;
 
 /**
  * App\Models\Exam 考试
@@ -75,44 +74,7 @@ class Exam extends Model {
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    function score() { return $this->hasMany('App\Models\Score'); }
-    
-    /**
-     * 获取参与指定考试的所有班级列表
-     *
-     * @param $classIds
-     * @return array
-     */
-    function selectedClasses($classIds) {
-        
-        $classIds = explode(",", $classIds);
-        $selectedClasses = [];
-        foreach ($classIds as $classId) {
-            $class = Squad::find($classId);
-            $selectedClasses[$classId] = $class['name'];
-        }
-        
-        return $selectedClasses;
-        
-    }
-    
-    /**
-     * 获取指定考试包含的所有科目列表
-     *
-     * @param $subjectIds
-     * @return array
-     */
-    function selectedSubjects($subjectIds = null) {
-        
-        $subjectIds = explode(",", $subjectIds);
-        $selectedSubjects = [];
-        foreach ($subjectIds as $subjectId) {
-            $selectedSubjects[$subjectId] = Subject::find($subjectId)->name;
-        }
-        
-        return $selectedSubjects;
-        
-    }
+    function scores() { return $this->hasMany('App\Models\Score'); }
     
     /**
      * 保存考试
@@ -185,7 +147,7 @@ class Exam extends Model {
      * @throws Exception
      */
     function purge($id) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 Score::whereExamId($id)->delete();
@@ -194,10 +156,9 @@ class Exam extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
-    
-    
+        
     }
     
     /**
@@ -215,6 +176,7 @@ class Exam extends Model {
             HttpStatusCode::NOT_ACCEPTABLE,
             __('messages.score.zero_classes')
         );
+        
         return $this->when(
             $keyword,
             function (Exam $query) use ($keyword) {

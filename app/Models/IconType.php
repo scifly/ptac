@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\IconType 图标类型
@@ -50,9 +51,7 @@ class IconType extends Model {
      */
     function store(array $data) {
 
-        $iconType = self::create($data);
-
-        return $iconType ? true : false;
+        return $this->create($data) ? true : false;
 
     }
 
@@ -65,10 +64,7 @@ class IconType extends Model {
      */
     function modify(array $data, $id) {
 
-        $iconType = self::find($id);
-        if (!$iconType) { return false; }
-
-        return $iconType->update($data) ? true : false;
+        return $this->find($id)->update($data);
 
     }
     
@@ -79,13 +75,29 @@ class IconType extends Model {
      * @return bool|null
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
+    
+        return $this->del($this, $id);
 
-        $iconType = self::find($id);
-        if (!$iconType) { return false; }
-
-        return $iconType->removable($iconType) ? $iconType->delete() : false;
-
+    }
+    
+    /**
+     * 删除指定图标类型的所有相关数据
+     *
+     * @param $id
+     * @throws Exception
+     */
+    function purge($id) {
+        
+        try {
+            DB::transaction(function () use ($id) {
+                $this->delRelated('icon_type_id', 'Icon', $id);
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
     }
     
     /**

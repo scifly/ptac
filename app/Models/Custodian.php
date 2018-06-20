@@ -45,6 +45,7 @@ class Custodian extends Model {
         '监护人姓名', '性别', '电子邮箱',
         '手机号码', '创建于', '更新于',
     ];
+    
     protected $fillable = ['user_id', 'enabled'];
     
     /**
@@ -111,7 +112,7 @@ class Custodian extends Model {
                     'enabled' => $user->enabled
                 ]);
     
-                # 保存用户所处部门
+                # 保存监护人用户&部门绑定关系
                 $studentIds = $data['student_ids']; # 被监护人的学生ids
                 $relationships = $data['relationships']; # 监护关系
                 $rses = [];
@@ -129,14 +130,10 @@ class Custodian extends Model {
                 unset($du);
     
                 # 保存监护关系
-                $cs = new CustodianStudent();
-                $cs->storeByCustodianId($custodian->id, $rses);
-                unset($cs);
+                (new CustodianStudent)->storeByCustodianId($custodian->id, $rses);
                 
                 # 保存用户手机号码
-                $mobile = new Mobile();
-                $mobile->store($data['mobile'], $user);
-                unset($mobile);
+                (new Mobile)->store($data['mobile'], $user);
     
                 # 创建企业号成员
                 $user->createWechatUser($user->id);
@@ -205,15 +202,11 @@ class Custodian extends Model {
     
                 # 更新监护人学生关系表(CustodianStudent)中的数据
                 CustodianStudent::whereCustodianId($id)->delete();
-                $cs = new CustodianStudent();
-                $cs->storeByCustodianId($id, $rses);
-                unset($cs);
+                (new CustodianStudent)->storeByCustodianId($id, $rses);
     
                 # 更新用户的手机号码(Mobile)记录
                 Mobile::whereUserId($userId)->delete();
-                $mobile = new Mobile();
-                $mobile->store($data['mobile'], $custodian->user);
-                unset($mobile);
+                (new Mobile)->store($data['mobile'], $custodian->user);
     
                 # 更新企业号会员数据
                 $custodian->user->UpdateWechatUser($userId);

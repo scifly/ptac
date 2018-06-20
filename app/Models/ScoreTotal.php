@@ -8,7 +8,6 @@ use Carbon\Carbon;
 use App\Helpers\Snippet;
 use App\Helpers\ModelTrait;
 use App\Helpers\HttpStatusCode;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;

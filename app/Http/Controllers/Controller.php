@@ -197,13 +197,4 @@ class Controller extends BaseController {
         
     }
     
-    public function getUserInfo() {
-        
-        $code = Request::query('code');
-        $url = 'http://weixin.028lk.com/wap_sites/webindex?code=' . $code;
-        
-        return $code ? redirect($url) : 'no code !';
-        
-    }
-    
 }

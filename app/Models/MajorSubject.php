@@ -44,16 +44,16 @@ class MajorSubject extends Model {
 
         try {
             DB::transaction(function () use ($majorId, $subjectIds) {
-                $values = [];
+                $records = [];
                 foreach ($subjectIds as $subjectId) {
-                    $values[] = [
+                    $records[] = [
                         'major_id' => $majorId,
                         'subject_id' => $subjectId,
                         'created_at' => now()->toDateTimeString(),
                         'updated_at' => now()->toDateTimeString(),
                     ];
                 }
-                $this->insert($values);
+                $this->insert($records);
             });
         } catch (Exception $e) {
             throw $e;
@@ -72,16 +72,16 @@ class MajorSubject extends Model {
 
         try {
             DB::transaction(function () use ($subjectId, $majorIds) {
-                $values = [];
+                $records = [];
                 foreach ($majorIds as $majorId) {
-                    $values[] = [
+                    $records[] = [
                         'major_id' => $majorId,
                         'subject_id' => $subjectId,
                         'created_at' => now()->toDateTimeString(),
                         'updated_at' => now()->toDateTimeString(),
                     ];
                 }
-                $this->insert($values);
+                $this->insert($records);
             });
         } catch (Exception $e) {
             throw $e;

@@ -1,21 +1,21 @@
 <?php
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
-use App\Http\Requests\SubjectRequest;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use Throwable;
+use Carbon\Carbon;
+use App\Helpers\Snippet;
+use App\Helpers\ModelTrait;
+use Illuminate\Support\Facades\DB;
+use App\Http\Requests\SubjectRequest;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\DB;
-use Throwable;
 
 /**
  * App\Models\Subject 科目
@@ -131,6 +131,13 @@ class Subject extends Model {
     }
     
     /**
+     * 获取指定科目对应的所有分数对象
+     *
+     * @return HasMany
+     */
+    function scores() { return $this->hasMany('App\Models\Score'); }
+    
+    /**
      * 保存新的科目记录
      *
      * @param SubjectRequest $request
@@ -156,7 +163,6 @@ class Subject extends Model {
                         $subject->id, $request->input('major_ids')
                     );
                 }
-                
             });
         } catch (Exception $e) {
             throw $e;

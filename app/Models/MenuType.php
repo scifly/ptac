@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 use ReflectionClass;
 use ReflectionException;
 
@@ -54,9 +55,7 @@ class MenuType extends Model {
      */
     function store(array $data) {
         
-        $menuType = $this->create($data);
-
-        return $menuType ? true : false;
+        return $this->create($data) ? true : false;
 
     }
 
@@ -69,27 +68,40 @@ class MenuType extends Model {
      */
     function modify(array $data, $id) {
         
-        $menuType = $this->find($id);
-        if (!$menuType) { return false; }
-
-        return $menuType->update($data) ? true : false;
+        return $this->find($id)->update($data);
 
     }
     
     /**
-     * 删除删除菜单类型
+     * （批量）删除菜单类型
      *
      * @param $id
      * @return bool|null
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
         
-        $menuType = $this->find($id);
-        if (!$menuType) { return false; }
+        return $this->del($this, $id);
 
-        return $menuType->removable($menuType) ? $menuType->delete() : false;
-
+    }
+    
+    /**
+     * 删除指定菜单类型的所有相关数据
+     *
+     * @param $id
+     * @throws Exception
+     */
+    function purge($id) {
+    
+        try {
+            DB::transaction(function () use ($id) {
+                $this->delRelated('menu_type_id', 'Menu', $id);
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+    
     }
     
     /**

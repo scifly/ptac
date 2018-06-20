@@ -1,19 +1,18 @@
 <?php
-
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use Carbon\Carbon;
+use ReflectionClass;
+use App\Helpers\Constant;
+use App\Helpers\ModelTrait;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\DB;
-use ReflectionClass;
 
 /**
  * App\Models\DepartmentType 部门类型
@@ -34,11 +33,11 @@ use ReflectionClass;
  * @mixin Eloquent
  */
 class DepartmentType extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $fillable = ['name', 'remark', 'enabled'];
-
+    
     /**
      * 获取指定部门类型包含的所有部门对象
      *
@@ -53,11 +52,11 @@ class DepartmentType extends Model {
      * @return bool
      */
     function store(array $data) {
-
+        
         return $this->create($data) ? true : false;
-
+        
     }
-
+    
     /**
      * 更新部门类型
      *
@@ -66,9 +65,9 @@ class DepartmentType extends Model {
      * @return bool
      */
     function modify(array $data, $id) {
-
+        
         return $this->find($id)->update($data);
-
+        
     }
     
     /**
@@ -79,9 +78,9 @@ class DepartmentType extends Model {
      * @throws Exception
      */
     function remove($id = null) {
-
+        
         return $this->del($this, $id);
-
+        
     }
     
     /**
@@ -114,15 +113,16 @@ class DepartmentType extends Model {
      * @throws \ReflectionException
      */
     function dtId(Model $model) {
-    
+        
         $dtType = array_search(
             lcfirst((new ReflectionClass(get_class($model)))->getShortName()),
             Constant::DEPARTMENT_TYPES
         );
         $dtType = $dtType ? $dtType : '班级';
+        
         return [
             $dtType,
-            $this->where('name', $dtType)->first()->id
+            $this->where('name', $dtType)->first()->id,
         ];
         
     }
@@ -133,7 +133,7 @@ class DepartmentType extends Model {
      * @return array
      */
     function datatable() {
-
+        
         $columns = [
             ['db' => 'DepartmentType.id', 'dt' => 0],
             ['db' => 'DepartmentType.name', 'dt' => 1],
@@ -141,17 +141,17 @@ class DepartmentType extends Model {
             ['db' => 'DepartmentType.created_at', 'dt' => 3],
             ['db' => 'DepartmentType.updated_at', 'dt' => 4],
             [
-                'db' => 'DepartmentType.enabled', 'dt' => 5,
+                'db'        => 'DepartmentType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
-
+        
         return Datatable::simple(
             $this->getModel(), $columns
         );
-
+        
     }
-
+    
 }

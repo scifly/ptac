@@ -48,9 +48,9 @@ class MenuTab extends Model {
         
         try {
             DB::transaction(function () use ($menuId, $tabIds) {
-                $values = [];
+                $records = [];
                 foreach ($tabIds as $tabId) {
-                    $values[] = [
+                    $records[] = [
                         'menu_id' => $menuId,
                         'tab_id' => $tabId,
                         'created_at' => now()->toDateTimeString(),
@@ -58,7 +58,7 @@ class MenuTab extends Model {
                         'enabled' => Constant::ENABLED,
                     ];
                 }
-                $this->insert($values);
+                $this->insert($records);
             });
         } catch (Exception $e) {
             throw $e;
@@ -80,9 +80,9 @@ class MenuTab extends Model {
         
         try {
             DB::transaction(function () use ($tabId, $menuIds) {
-                $values = [];
+                $records = [];
                 foreach ($menuIds as $menuId) {
-                    $values[] = [
+                    $records[] = [
                         'menu_id' => $menuId,
                         'tab_id' => $tabId,
                         'created_at' => now()->toDateTimeString(),
@@ -90,7 +90,7 @@ class MenuTab extends Model {
                         'enabled' => Constant::ENABLED,
                     ];
                 }
-                $this->insert($values);
+                $this->insert($records);
             });
         } catch (Exception $e) {
             throw $e;

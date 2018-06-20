@@ -85,10 +85,7 @@ class EducatorAppeal extends Model {
      */
     function modify(array $data, $id) {
         
-        $ea = $this->find($id);
-        if (!$ea) { return false; }
-    
-        return $ea->update($data);
+        return $this->find($id)->update($data);
         
     }
     

@@ -1,13 +1,14 @@
 <?php
-
 namespace App\Models;
 
-use App\Http\Requests\CompanyRequest;
 use Eloquent;
 use Exception;
+use Throwable;
 use Carbon\Carbon;
 use App\Helpers\Snippet;
 use App\Helpers\ModelTrait;
+use Illuminate\Support\Facades\DB;
+use App\Http\Requests\CompanyRequest;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -15,9 +16,6 @@ use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Support\Facades\DB;
-use ReflectionException;
-use Throwable;
 
 /**
  * App\Models\Company 运营者公司
@@ -47,44 +45,44 @@ use Throwable;
  * @property-read Menu $menu
  */
 class Company extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $fillable = [
         'name', 'remark', 'department_id',
         'menu_id', 'enabled',
     ];
-
+    
     /**
      * 返回对应的部门对象
      *
      * @return BelongsTo
      */
     function department() { return $this->belongsTo('App\Models\Department'); }
-
+    
     /**
      * 返回对应的菜单对象
      *
      * @return BelongsTo
      */
     function menu() { return $this->belongsTo('App\Models\Menu'); }
-
+    
     /**
      * 获取指定运营者公司下属的企业对象
      *
      * @return HasMany
      */
     function corps() { return $this->hasMany('App\Models\Corp'); }
-
+    
     /**
      * 通过Corp中间对象获取所有的学校对象
      *
      * @return HasManyThrough
      */
     function schools() {
-
+        
         return $this->hasManyThrough('App\Models\School', 'App\Models\Corp');
-
+        
     }
     
     /**
@@ -95,18 +93,18 @@ class Company extends Model {
      * @throws Exception
      */
     function store(CompanyRequest $request) {
-    
+        
         $company = null;
         try {
             DB::transaction(function () use ($request, &$company) {
                 # 创建运营者、对应部门及菜单
                 $company = $this->create($request->all());
-                $department = (new Department())->storeDepartment($company);
-                $menu = (new Menu())->storeMenu($company);
+                $department = (new Department)->storeDepartment($company);
+                $menu = (new Menu)->storeMenu($company);
                 # 更新“运营者”的部门id和菜单id
                 $company->update([
                     'department_id' => $department->id,
-                    'menu_id' => $menu->id
+                    'menu_id'       => $menu->id,
                 ]);
             });
         } catch (Exception $e) {
@@ -114,7 +112,7 @@ class Company extends Model {
         }
         
         return $company;
-    
+        
     }
     
     /**
@@ -126,19 +124,19 @@ class Company extends Model {
      * @throws Exception
      */
     function modify(CompanyRequest $request, $id) {
-
+        
         $company = null;
         try {
             DB::transaction(function () use ($request, $id, &$company) {
                 $company = $this->find($id);
                 $company->update($request->all());
-                (new Department())->modifyDepartment($company);
-                (new Menu())->modifyMenu($company);
+                (new Department)->modifyDepartment($company);
+                (new Menu)->modifyMenu($company);
             });
         } catch (Exception $e) {
             throw $e;
         }
-
+        
         return $company ? $this->find($id) : null;
         
     }
@@ -152,7 +150,7 @@ class Company extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-    
+        
         return $this->del($this, $id);
         
     }
@@ -165,13 +163,13 @@ class Company extends Model {
      * @throws Exception
      */
     function purge($id) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $company = $this->find($id);
                 $this->delRelated('company_id', 'Corp', $id);
-                (new Department)->removeDepartments($id);
-                (new Menu)->removeMenus($id);
+                (new Department)->remove($company->department_id);
+                (new Menu)->remove($company->menu_id);
                 $company->delete();
             });
         } catch (Exception $e) {
@@ -179,38 +177,38 @@ class Company extends Model {
         }
         
         return true;
-    
+        
     }
-
+    
     /**
      * 运营者列表
      *
      * @return array
      */
     function datatable() {
-
+        
         $columns = [
             ['db' => 'Company.id', 'dt' => 0],
             [
-                'db' => 'Company.name', 'dt' => 1,
+                'db'        => 'Company.name', 'dt' => 1,
                 'formatter' => function ($d) {
                     return sprintf(Snippet::ICON, 'fa-building text-blue', '') .
                         '<span class="text-blue">' . $d . '</span>';
-                }
+                },
             ],
             ['db' => 'Company.remark', 'dt' => 2],
             ['db' => 'Company.created_at', 'dt' => 3],
             ['db' => 'Company.updated_at', 'dt' => 4],
             [
-                'db' => 'Company.enabled', 'dt' => 5,
+                'db'        => 'Company.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
-                }
+                },
             ],
         ];
-
+        
         return Datatable::simple($this->getModel(), $columns);
-
+        
     }
-
+    
 }

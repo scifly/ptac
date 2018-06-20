@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Request;
 
 /**
  * App\Models\PollQuestionnaireAnswer 调查问卷答案
@@ -88,10 +89,7 @@ class PollQuestionnaireAnswer extends Model {
      */
     function modify(array $data, $id) {
         
-        $pqa = $this->find($id);
-        if (!$pqa) { return false; }
-        
-        return $pqa->update($data) ?? false;
+        return $this->find($id)->update($data);
         
     }
     
@@ -102,38 +100,11 @@ class PollQuestionnaireAnswer extends Model {
      * @return bool|null
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
         
-        $pqa = $this->find($id);
-        if (!$pqa) { return false; }
-        
-        return $pqa->delete();
-        
-    }
-    
-    /**
-     * 删除指定调查问卷包含的所有调查问卷答案
-     *
-     * @param $pqId
-     * @return bool|null
-     * @throws Exception
-     */
-    function removeByPqId($pqId) {
-        
-        return $this->where('pq_id', $pqId)->delete();
-        
-    }
-    
-    /**
-     * 删除指定调查问卷题目对应的所有调查问卷答案
-     *
-     * @param $pqsId
-     * @return bool|null
-     * @throws Exception
-     */
-    function removeByPqsId($pqsId) {
-        
-        return $this->where('pqs_id', $pqsId)->delete();
+        return $id
+            ? $this->find($id)->delete()
+            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
         
     }
     

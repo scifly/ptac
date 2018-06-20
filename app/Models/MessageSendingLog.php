@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Eloquent;
@@ -31,7 +30,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @mixin Eloquent
  */
 class MessageSendingLog extends Model {
-
+    
     use ModelTrait;
     
     protected $fillable = [
@@ -60,10 +59,11 @@ class MessageSendingLog extends Model {
         try {
             DB::transaction(function () use ($recipientCount) {
                 $log = self::create([
-                    'read_count' => 0,
-                    'received_count' => 0,
+                    'read_count'      => 0,
+                    'received_count'  => 0,
                     'recipient_count' => $recipientCount,
                 ]);
+                
                 return $log->id;
             });
         } catch (Exception $e) {
@@ -107,5 +107,5 @@ class MessageSendingLog extends Model {
         }
         
     }
-
+    
 }

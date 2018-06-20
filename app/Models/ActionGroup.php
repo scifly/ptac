@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Helpers\Constant;
@@ -29,11 +28,11 @@ use Illuminate\Support\Facades\DB;
  * @mixin Eloquent
  */
 class ActionGroup extends Model {
-
+    
     use ModelTrait;
     
     protected $table = 'actions_groups';
-
+    
     protected $fillable = ['action_id', 'group_id', 'enabled'];
     
     /**
@@ -45,28 +44,28 @@ class ActionGroup extends Model {
      * @throws \Throwable
      */
     function storeByGroupId($groupId, array $ids = []) {
-
+        
         try {
             DB::transaction(function () use ($groupId, $ids) {
                 # step 1: 删除group_id等于$groupId的所有记录
                 self::whereGroupId($groupId)->delete();
                 # step 2: 创建ids对应的所有记录
-                $values = [];
+                $records = [];
                 foreach ($ids as $id) {
-                    $values[] = [
-                        'group_id' => $groupId,
-                        'action_id' => $id,
+                    $records[] = [
+                        'group_id'   => $groupId,
+                        'action_id'  => $id,
                         'created_at' => now()->toDateTimeString(),
                         'updated_at' => now()->toDateTimeString(),
-                        'enabled' => Constant::ENABLED,
+                        'enabled'    => Constant::ENABLED,
                     ];
                 }
-                self::insert($values);
+                self::insert($records);
             });
         } catch (Exception $e) {
             throw $e;
         }
-
+        
     }
-
+    
 }

@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Request;
 
 /**
  * App\Models\PollQuestionnaireParticipant 调查问卷参与者
@@ -57,39 +57,22 @@ class PollQuestionnaireParticipant extends Model {
      */
     function modify(array $data, $id) {
         
-        $pqp = $this->find($id);
-        if (!$pqp) { return false; }
-        
-        return $this->update($data);
+        return $this->find($id)->update($data);
         
     }
     
     /**
-     * 删除调查问卷参与者
+     * （批量）删除调查问卷参与者
      *
      * @param $id
      * @return bool|null
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
         
-        $pqp = $this->find($id);
-        if (!$pqp) { return false; }
-        
-        return $pqp->delete();
-        
-    }
-    
-    /**
-     * 删除指定调查问卷包含的调查问卷参与者
-     *
-     * @param $pqId
-     * @return bool|null
-     * @throws Exception
-     */
-    function removeByPqId($pqId) {
-        
-        return $this->where('pq_id', $pqId)->delete();
+        return $id
+            ? $this->find($id)->delete()
+            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
         
     }
     

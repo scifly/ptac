@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Helpers\ModelTrait;
@@ -30,7 +29,7 @@ use Illuminate\Support\Facades\DB;
  * @mixin Eloquent
  */
 class ActionType extends Model {
-
+    
     use ModelTrait;
     
     protected $table = 'action_types';
@@ -97,7 +96,7 @@ class ActionType extends Model {
     function purge($id) {
         
         try {
-            DB::transaction(function() use ($id) {
+            DB::transaction(function () use ($id) {
                 (new Action)->removeActionType($id);
                 $this->find($id)->delete();
             });
@@ -123,11 +122,11 @@ class ActionType extends Model {
             ['db' => 'ActionType.created_at', 'dt' => 3],
             ['db' => 'ActionType.updated_at', 'dt' => 4],
             [
-                'db' => 'ActionType.enabled', 'dt' => 5,
+                'db'        => 'ActionType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
-                }
-            ]
+                },
+            ],
         ];
         
         return Datatable::simple(

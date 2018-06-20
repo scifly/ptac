@@ -24,7 +24,6 @@ use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Laravel\Passport\Client;
 use Laravel\Passport\HasApiTokens;
@@ -337,17 +336,13 @@ class User extends Authenticatable {
                     'enabled'   => 1,
                 ]);
                 # 保存手机号码
-                $mobile = new Mobile();
-                $mobile->store($data['mobile'], $user);
-                unset($mobile);
-                # 保存用户所属部门数据
-                $du = new DepartmentUser();
-                $du->store([
+                (new Mobile)->store($data['mobile'], $user);
+                # 保存用户&部门隶属关系
+                (new DepartmentUser)->store([
                     'department_id' => $this->departmentId($data),
                     'user_id'       => $user->id,
                     'enabled'       => $data['enabled'],
                 ]);
-                unset($du);
                 # 创建企业号成员
                 $this->createWechatUser($user->id);
             });
@@ -425,9 +420,7 @@ class User extends Authenticatable {
             $ids = Request::input('ids');
             try {
                 DB::transaction(function () use ($ids) {
-                    foreach ($ids as $id) {
-                        $this->purge($id);
-                    }
+                    array_map(function ($id) { $this->purge($id); }, $ids);
                 });
             } catch (Exception $e) {
                 throw $e;
@@ -730,7 +723,7 @@ class User extends Authenticatable {
      * @param $action
      * @return bool
      */
-    private function sync($id, $action) {
+    function sync($id, $action) {
         
         $user = $this->find($id);
         switch ($user->group->name) {

@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
-use App\Helpers\ModelTrait;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
+use Carbon\Carbon;
+use App\Helpers\ModelTrait;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
@@ -32,8 +34,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class Mobile extends Model {
 
-    // todo: needs to be optimized
-
     use ModelTrait;
 
     protected $fillable = ['mobile', 'user_id', 'isdefault', 'enabled'];
@@ -50,20 +50,30 @@ class Mobile extends Model {
      *
      * @param array $mobiles
      * @param User $user
-     * @return void
+     * @return bool
      * @throws Exception
      */
     function store(array $mobiles, User $user) {
     
-        self::whereUserId($user->id)->delete();
-        foreach ($mobiles as $mobile) {
-            Mobile::create([
-                'user_id' => $user->id,
-                'mobile' => $mobile['mobile'],
-                'isdefault' => $mobile['isdefault'],
-                'enabled' => $mobile['enabled']
-            ]);
+        try {
+            DB::transaction(function () use ($mobiles, $user) {
+                self::whereUserId($user->id)->delete();
+                $records = [];
+                foreach ($mobiles as $mobile) {
+                    $records[] = [
+                        'user_id' => $user->id,
+                        'mobile' => $mobile['mobile'],
+                        'isdefault' => $mobile['isdefault'],
+                        'enabled' => $mobile['enabled']
+                    ];
+                }
+                $this->insert($records);
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
+        
+        return true;
 
     }
 
@@ -74,12 +84,11 @@ class Mobile extends Model {
      * @param $id
      * @return bool
      */
-    function modify(array $data, $id) {
+    function modify(array $data, $id = null) {
         
-        $mobile = $this->find($id);
-        if (!$mobile) { return false; }
-
-        return $mobile->update($data) ? true : false;
+        return $id
+            ? $this->find($id)->update($data)
+            : $this->batch($this);
 
     }
     
@@ -90,12 +99,11 @@ class Mobile extends Model {
      * @return bool|null
      * @throws Exception
      */
-    function remove($id) {
-        
-        $mobile = $this->find($id);
-        if (!$mobile) { return false; }
+    function remove($id = null) {
 
-        return $mobile->removable($mobile) ? $mobile->delete() : false;
+        return $id
+            ? $this->find($id)->delete()
+            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
 
     }
     

@@ -48,11 +48,11 @@ class Consumption extends Model {
         'student_id', 'location', 'machineid',
         'ctype', 'amount', 'ctime', 'merchant',
     ];
-
+    
     const STAT_RANGE = [
         'student' => 1,
-        'class' => 2,
-        'grade' => 3,
+        'class'   => 2,
+        'grade'   => 3,
     ];
     
     const EXPORT_TITLES = ['#', '姓名', '性别', '所属班级', '消费类型', '消费金额', '消费时间', '商品'];
@@ -75,9 +75,9 @@ class Consumption extends Model {
      * @return bool
      */
     function store(array $data) {
-    
+        
         return $this->create($data) ? true : false;
-    
+        
     }
     
     /**
@@ -103,7 +103,7 @@ class Consumption extends Model {
      * @return array
      */
     function stat(array $conditions, $detail = null) {
-    
+        
         list($range, $rangeId) = $this->parseConditions($conditions);
         $values = ['amount', 'ctype'];
         $studentIds = $this->getStudentIds($conditions, $rangeId);
@@ -122,7 +122,7 @@ class Consumption extends Model {
             
             return [
                 '&yen; ' . number_format($consumption, 2),
-                '&yen; ' . number_format($charge, 2)
+                '&yen; ' . number_format($charge, 2),
             ];
         }
         $details = [];
@@ -132,18 +132,18 @@ class Consumption extends Model {
             ->get()->toArray();
         foreach ($consumptions as $c) {
             $details[] = [
-                'id' => $c->id,
-                'name' => $c->student->user->realname,
-                'amount' => '&yen; ' . number_format($c->amount, 2),
-                'type' => $c->ctype ? '充值' : '消费',
+                'id'        => $c->id,
+                'name'      => $c->student->user->realname,
+                'amount'    => '&yen; ' . number_format($c->amount, 2),
+                'type'      => $c->ctype ? '充值' : '消费',
                 'machineid' => $c->machineid,
-                'datetime' => $c->ctime,
-                'location' => $c->location
+                'datetime'  => $c->ctime,
+                'location'  => $c->location,
             ];
         }
         
         return $details;
-    
+        
     }
     
     /**
@@ -154,7 +154,7 @@ class Consumption extends Model {
      * @throws Exception
      */
     function export($detail = null, array $conditions = []) {
-    
+        
         if (!isset($detail)) {
             $consumptions = $this->whereIn(
                 'student_id',
@@ -168,7 +168,6 @@ class Consumption extends Model {
                 ->where('ctype', $detail)
                 ->get()->toArray();
         }
-    
         $records[] = self::EXPORT_TITLES;
         /** @var Consumption $c */
         foreach ($consumptions as $c) {
@@ -180,7 +179,7 @@ class Consumption extends Model {
                 $c->ctype ? '充值' : '消费',
                 '&yen; ' . $c->amount,
                 $c->ctime,
-                $c->merchant
+                $c->merchant,
             ];
         }
         
@@ -194,14 +193,14 @@ class Consumption extends Model {
      * @return array
      */
     function datatable() {
-    
+        
         $columns = [
             ['db' => 'Consumption.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
             ['db' => 'Consumption.location', 'dt' => 2],
             ['db' => 'Consumption.machineid', 'dt' => 3],
             [
-                'db' => 'Consumption.ctype', 'dt' => 4,
+                'db'        => 'Consumption.ctype', 'dt' => 4,
                 'formatter' => function ($d) {
                     return $d == 0
                         ? sprintf(Snippet::BADGE_GREEN, '充值')
@@ -209,9 +208,10 @@ class Consumption extends Model {
                 },
             ],
             [
-                'db' => 'Consumption.amount', 'dt' => 5,
+                'db'        => 'Consumption.amount', 'dt' => 5,
                 'formatter' => function ($d) {
                     setlocale(LC_MONETARY, 'zh_CN.UTF-8');
+                    
                     return money_format('%.2n', $d);
                 },
             ],
@@ -219,17 +219,17 @@ class Consumption extends Model {
         ];
         $joins = [
             [
-                'table' => 'students',
-                'alias' => 'Student',
-                'type' => 'INNER',
+                'table'      => 'students',
+                'alias'      => 'Student',
+                'type'       => 'INNER',
                 'conditions' => [
                     'Student.id = Consumption.student_id',
                 ],
             ],
             [
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'INNER',
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
                 'conditions' => [
                     'User.id = Student.user_id',
                 ],

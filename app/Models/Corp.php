@@ -2,24 +2,23 @@
 
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
-use App\Http\Requests\CorpRequest;
-use Carbon\Carbon;
 use Eloquent;
+use Throwable;
 use Exception;
+use Carbon\Carbon;
+use App\Helpers\Snippet;
+use App\Helpers\ModelTrait;
+use App\Http\Requests\CorpRequest;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
-use ReflectionException;
-use Throwable;
 
 /**
  * App\Models\Corp 企业
@@ -143,10 +142,10 @@ class Corp extends Model {
             DB::transaction(function () use ($request, &$corp) {
                 # 创建企业微信、对应部门及菜单
                 $corp = $this->create($request->all());
-                $department = (new Department())->storeDepartment(
+                $department = (new Department)->storeDepartment(
                     $corp, 'company'
                 );
-                $menu = (new Menu())->storeMenu(
+                $menu = (new Menu)->storeMenu(
                     $corp, 'company'
                 );
                 # 更新“企业微信”的部门id和菜单id
@@ -218,8 +217,8 @@ class Corp extends Model {
                 $keys = array_fill(0, sizeof($classes), 'corp_id');
                 $values = array_fill(0, sizeof($classes), $id);
                 array_map([$this, 'delRelated'], $keys, $classes, $values);
-                (new Department)->removeDepartments($corp->department_id);
-                (new Menu)->removeMenus($corp->menu_id);
+                (new Department)->remove($corp->department_id);
+                (new Menu)->remove($corp->menu_id);
                 $corp->delete();
             });
         } catch (Exception $e) {
@@ -242,10 +241,10 @@ class Corp extends Model {
         switch ($user->group->name) {
             case '运营':
             case '企业':
-                $corpMenuId = $this->menu->menuId(session('menuId'), '企业');
-                return $corpMenuId ? $this->whereMenuId($corpMenuId)->first()->id : null;
+                $corpMenuId = (new Menu)->menuId(session('menuId'), '企业');
+                return $corpMenuId ? $this->where('menu_id', $corpMenuId)->first()->id : null;
             case '学校':
-                $schoolMenuId = $this->menu->menuId(session('menuId'));
+                $schoolMenuId = (new Menu)->menuId(session('menuId'));
                 return School::whereMenuId($schoolMenuId)->first()->corp_id;
             default:
                 return School::find($user->educator->school_id)->corp_id;

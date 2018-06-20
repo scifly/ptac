@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -95,13 +94,14 @@ class Major extends Model {
 
         try {
             DB::transaction(function () use ($request) {
-                $m = self::create($request->all());
+                $major = $this->create($request->all());
                 $subjectIds = $request->input('subject_ids', []);
-                (new MajorSubject)->storeByMajorId($m->id, $subjectIds);
+                (new MajorSubject)->storeByMajorId($major->id, $subjectIds);
             });
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
 
     }
@@ -155,8 +155,8 @@ class Major extends Model {
     
         try {
             DB::transaction(function () use ($id) {
-                $this->find($id)->delete();
                 MajorSubject::whereMajorId($id)->delete();
+                $this->find($id)->delete();
             });
         } catch (Exception $e) {
             throw $e;

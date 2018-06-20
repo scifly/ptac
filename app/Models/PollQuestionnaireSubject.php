@@ -131,13 +131,11 @@ class PollQuestionnaireSubject extends Model {
      */
     function remove($id) {
 
-        $pqs = $this->find($id);
-        if (!$pqs) { return false; }
         try {
-            DB::transaction(function () use ($pqs) {
-                (new PollQuestionnaireAnswer)->removeByPqsId($pqs->id);
-                (new PollQuestionnaireSubjectChoice)->removeByPqsId($pqs->id);
-                $pqs->delete();
+            DB::transaction(function () use ($id) {
+                PollQuestionnaireAnswer::wherePqsId($id);
+                PollQuestionnaireSubjectChoice::wherePqsId($id);
+                $this->find($id)->delete();
             });
         } catch (Exception $e) {
             throw $e;
@@ -145,30 +143,6 @@ class PollQuestionnaireSubject extends Model {
         
         return true;
 
-    }
-    
-    /**
-     * 删除指定调查问卷包含的调查问卷题目
-     *
-     * @param $pqId
-     * @return bool
-     * @throws Exception
-     */
-    function removeByPqId($pqId) {
-        
-        $pqses = $this->where('pq_id', $pqId)->get();
-        try {
-            DB::transaction(function () use ($pqses) {
-                foreach ($pqses as $pqs) {
-                    $this->remove($pqs->id);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
     }
     
     /**

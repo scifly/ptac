@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 
 /**
  * App\Models\PollQuestionnaireSubjectChoice 调查问卷题目选项
@@ -72,10 +73,7 @@ class PollQuestionnaireSubjectChoice extends Model {
      */
     function modify(array $data, $id) {
     
-        $pqsc = $this->find($id);
-        if (!$pqsc) { return false; }
-        
-        return $pqsc->update($data);
+        return $this->find($id)->update($data);
     
     }
     
@@ -86,26 +84,12 @@ class PollQuestionnaireSubjectChoice extends Model {
      * @return bool|null
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
+
+        return $id
+            ? $this->find($id)->delete()
+            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
     
-        $pqsc = $this->find($id);
-        if (!$pqsc) { return false; }
-        
-        return $pqsc->delete();
-    
-    }
-    
-    /**
-     * 删除指定调查问卷包含的所有调查问卷题目选项
-     *
-     * @param $pqId
-     * @return bool|null
-     * @throws Exception
-     */
-    function removeByPqsId($pqId) {
-        
-        return $this->where('pqs_id', $pqId)->delete();
-        
     }
     
     /**

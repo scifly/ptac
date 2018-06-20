@@ -93,7 +93,9 @@ class CommType extends Model {
         
         try {
             DB::transaction(function () use ($id) {
-                Message::whereCommTypeId($id)->update(['comm_type_id' => 0]);
+                Message::whereCommTypeId($id)->update([
+                    'comm_type_id' => 0
+                ]);
                 $this->find($id)->delete();
             });
         } catch (Exception $e) {

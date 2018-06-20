@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Eloquent;
@@ -36,25 +35,25 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @mixin Eloquent
  */
 class ExamType extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $fillable = ['name', 'remark', 'school_id', 'enabled'];
-
+    
     /**
      * 返回所属的学校对象
      *
      * @return BelongsTo
      */
     function school() { return $this->belongsTo('App\Models\School'); }
-
+    
     /**
      * 获取指定考试类型包含的所有考试对象
      *
      * @return HasMany
      */
     function exams() { return $this->hasMany('App\Models\Exam'); }
-
+    
     /**
      * 保存考试类型
      *
@@ -64,9 +63,9 @@ class ExamType extends Model {
     function store(array $data) {
         
         return $this->create($data) ? true : false;
-
+        
     }
-
+    
     /**
      * 更新考试类型
      *
@@ -77,7 +76,7 @@ class ExamType extends Model {
     function modify(array $data, $id) {
         
         return $this->find($id)->update($data);
-
+        
     }
     
     /**
@@ -88,9 +87,9 @@ class ExamType extends Model {
      * @throws Exception
      */
     function remove($id = null) {
-
+        
         return $this->del($this, $id);
-
+        
     }
     
     /**
@@ -129,7 +128,7 @@ class ExamType extends Model {
             ['db' => 'ExamType.created_at', 'dt' => 3],
             ['db' => 'ExamType.updated_at', 'dt' => 4],
             [
-                'db' => 'ExamType.enabled', 'dt' => 5,
+                'db'        => 'ExamType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
@@ -137,9 +136,9 @@ class ExamType extends Model {
         ];
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
                     'School.id = ExamType.school_id',
                 ],
@@ -152,5 +151,5 @@ class ExamType extends Model {
         );
         
     }
-
+    
 }

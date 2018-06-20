@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\ModelTrait;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Carbon\Carbon;
+use App\Helpers\ModelTrait;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Database\Eloquent\Builder;
+use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\Order 订单
@@ -64,17 +65,45 @@ class Order extends Model {
      * @return BelongsTo
      */
     function comboType() { return $this->belongsTo('App\models\ComboType'); }
-
+    
+    /**
+     * 保存订单
+     *
+     * @param array $data
+     * @return bool
+     */
     function store(array $data) {
     
+        return $this->create($data) ? true : false;
+        
     }
     
-    function modify($id, array $data) {
+    /**
+     * 更新订单
+     *
+     * @param $id
+     * @param array $data
+     * @return bool
+     */
+    function modify(array $data, $id) {
     
+        return $this->find($id)->update($data);
+        
     }
     
+    /**
+     * （批量）删除订单
+     *
+     * @param $id
+     * @return bool|null
+     * @throws Exception
+     */
     function remove($id) {
-    
+
+        return $id
+            ? $this->find($id)->delete()
+            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
+        
     }
     
     /**

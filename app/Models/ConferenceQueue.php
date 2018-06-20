@@ -2,18 +2,18 @@
 
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
+use Exception;
+use Carbon\Carbon;
 use App\Helpers\Snippet;
 use App\Helpers\ModelTrait;
-use Carbon\Carbon;
-use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\ConferenceQueue 会议队列
@@ -62,8 +62,8 @@ class ConferenceQueue extends Model {
     protected $fillable = [
         'name', 'remark', 'start', 'end',
         'user_id', 'educator_ids', 'attended_educator_ids',
-        'conference_room_id', 'attendance_qrcode_url', 'event_id',
-        'status'
+        'conference_room_id', 'attendance_qrcode_url',
+        'event_id', 'status'
     ];
 
     /**

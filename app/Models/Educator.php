@@ -3,18 +3,19 @@ namespace App\Models;
 
 use Eloquent;
 use Exception;
+use Throwable;
 use Carbon\Carbon;
 use App\Rules\Mobiles;
 use App\Helpers\Snippet;
 use App\Helpers\ModelTrait;
 use App\Jobs\ImportEducator;
 use App\Helpers\HttpStatusCode;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\EducatorRequest;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Model;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -26,7 +27,6 @@ use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Throwable;
 
 /**
  * App\Models\Educator 教职员工

@@ -2,29 +2,27 @@
 
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
-use App\Facades\Wechat;
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Http\Requests\WapSiteRequest;
-use Carbon\Carbon;
 use Eloquent;
+use Throwable;
 use Exception;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Carbon\Carbon;
+use Illuminate\View\View;
+use App\Helpers\Constant;
+use App\Helpers\ModelTrait;
+use App\Helpers\HttpStatusCode;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\WapSiteRequest;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\View\View;
-use Throwable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\WapSite 微网站
@@ -116,7 +114,11 @@ class WapSite extends Model {
      */
     function index() {
     
-        $ws = self::whereSchoolId($this->schoolId())->where('enabled', Constant::ENABLED)->first();
+        $conditions = [
+            'school_id' => $this->schoolId(),
+            'enabled' => Constant::ENABLED
+        ];
+        $ws = $this->where($conditions)->first();
         if (!$ws) {
             $schoolId = $this->schoolId();
             $ws = $this->create([
@@ -140,7 +142,7 @@ class WapSite extends Model {
     /**
      * 上传微网站首页轮播图
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     function upload() {
         
@@ -297,55 +299,9 @@ class WapSite extends Model {
             foreach ($medias as $media) {
                 Storage::disk('uploads')->delete($media->path);
             }
-            try {
-                Media::whereIn('id', $mediaIds)->delete();
-            } catch (Exception $e) {
-                throw $e;
-            }
+            Media::whereIn('id', $mediaIds)->delete();
         }
         
-    }
-    
-    /**
-     * 验证上传文件
-     *
-     * @param UploadedFile $file
-     * @param array $filePaths
-     */
-    private function validateFile(UploadedFile $file, array &$filePaths) {
-    
-        if ($file->isValid()) {
-            // 获取文件相关信息
-            # 文件原名
-            $file->getClientOriginalName();
-            # 扩展名
-            $ext = $file->getClientOriginalExtension();
-            # 临时文件的绝对路径
-            $realPath = $file->getRealPath();
-            # image/jpeg/
-            $file->getClientMimeType();
-            // 上传图片
-            $filename = uniqid() . '.' . $ext;
-            // 使用新建的uploads本地存储空间（目录）
-            if (Storage::disk('uploads')->put($filename, file_get_contents($realPath))) {
-                // $filePath = 'storage/app/uploads/' . date('Y') . '/' . date('m') . '/' . date('d') . '/' . $filename;
-                $filePath = 'uploads/' .
-                    date('Y') . '/' .
-                    date('m') . '/' .
-                    date('d') . '/' .
-                    $filename;
-                $mediaId = Media::insertGetId([
-                    'path'          => $filePath,
-                    'remark'        => '微网站轮播图',
-                    'media_type_id' => '1',
-                    'enabled'       => '1',
-                ]);
-                $filePaths[] = [
-                    'id'   => $mediaId,
-                    'path' => $filePath,
-                ];
-            }
-        }
     }
     
 }

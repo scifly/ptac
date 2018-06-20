@@ -113,14 +113,7 @@ class Action extends Model {
      */
     function modify(array $data, $id) {
         
-        $action = $this->find($id);
-        abort_if(
-            !$action,
-            HttpStatusCode::NOT_FOUND,
-            __('messages.not_found')
-        );
-        
-        return $action->update($data);
+        return $this->find($id)->update($data);
         
     }
     
@@ -138,7 +131,7 @@ class Action extends Model {
     }
     
     /**
-     * 删除指定功能的所有数据
+     * 删除指定功能的所有相关数据
      *
      * @param $id
      * @throws Exception

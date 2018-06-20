@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
+use Carbon\Carbon;
+use App\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
@@ -28,6 +29,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class Attachment extends Model {
 
+    use ModelTrait;
+    
     protected $fillable = ['accachment_type_id', 'url', 'enabled'];
 
     /**
@@ -36,5 +39,45 @@ class Attachment extends Model {
      * @return BelongsTo
      */
     function attachmentType() { return $this->belongsTo('App\Models\AttachmentType'); }
+    
+    /**
+     * 保存附件
+     *
+     * @param array $data
+     * @return bool
+     */
+    function store(array $data) {
+        
+        return $this->create($data) ? true : false;
+        
+    }
+    
+    /**
+     * 更新附件
+     *
+     * @param array $data
+     * @param null $id
+     * @return bool
+     */
+    function modify(array $data, $id = null) {
+        
+        return $id
+            ? $this->find($id)->update($data)
+            : $this->batch($this);
+        
+    }
+    
+    /**
+     * （批量）删除附件
+     *
+     * @param null $id
+     * @return bool
+     */
+    function remove($id = null) {
+        
+        return $this->del($this, $id);
+        
+    }
+    
 
 }

@@ -309,8 +309,8 @@ class School extends Model {
                 );
                 if (!$corpChanged) {
                     $school->update($request->all());
-                    (new Department())->modifyDepartment($school, 'corp');
-                    (new Menu())->modifyMenu($school, 'corp');
+                    (new Department)->modifyDepartment($school, 'corp');
+                    (new Menu)->modifyMenu($school, 'corp');
                 } else {
                     $school = $this->create($request->except('id'));
                     $this->remove($id);
@@ -360,9 +360,8 @@ class School extends Model {
                 $keys = array_fill(0, sizeof($classes), 'school_id');
                 $values = array_fill(0, sizeof($classes), $id);
                 array_map([$this, 'delRelated'], $keys, $classes, $values);
-                
-                (new Department)->removeDepartments($school->department_id);
-                (new Menu)->removeMenus($school->menu_id);
+                (new Department)->remove($school->department_id);
+                (new Menu)->remove($school->menu_id);
                 $school->delete();
             });
         } catch (Exception $e) {

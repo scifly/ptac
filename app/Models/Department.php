@@ -165,7 +165,7 @@ class Department extends Model {
         $department = null;
         try {
             DB::transaction(function () use ($model, $belongsTo, &$department) {
-                list($dtType, $dtId) = (new DepartmentType())->dtId($model);
+                list($dtType, $dtId) = (new DepartmentType)->dtId($model);
                 $department = $this->store([
                     'parent_id'          => $belongsTo
                         ? $model->{$belongsTo}->department_id
@@ -218,7 +218,7 @@ class Department extends Model {
         
         try {
             DB::transaction(function () use ($model, $beLongsTo) {
-                list($dtType, $dtId) = (new DepartmentType())->dtId($model);
+                list($dtType, $dtId) = (new DepartmentType)->dtId($model);
                 $data = [
                     'name'               => $model->{'name'},
                     'remark'             => $model->{'remark'},
@@ -254,51 +254,44 @@ class Department extends Model {
     function remove($id) {
         
         $department = $this->find($id);
-        if (!count($department->children)) {
-            try {
-                DB::transaction(function () use ($id, $department) {
-                    if ($this->needSync($department)) {
-                        $this->sync($id, 'delete');
+        try {
+            DB::transaction(function () use ($id, $department) {
+                $du = new DepartmentUser;
+                $user = Auth::user();
+                $ids = array_merge([$id], $this->subDepartmentIds($id));
+                $userIds = array_unique(
+                    $du->whereIn('department_id', $ids)->pluck('user_id')->toArray()
+                );
+                # 删除用户&部门绑定关系
+                (new DepartmentUser)->whereIn('department_id', $ids)->delete();
+                # 更新被删除部门所包含用户对应的企业微信会员信息
+                array_map(
+                    function ($userId) use ($user) {
+                        $action = User::find($userId)->departments->count() ? 'update' : 'delete';
+                        $user->sync($userId, $action);
+                    }, $userIds
+                );
+                # 删除指定部门及其子部门
+                $this->whereIn('id', $ids)->delete();
+                # 删除指定企业微信部门及其子部门
+                $syncIds = [];
+                foreach ($ids as $id) {
+                    if ($this->needSync($this->find($id))) {
+                        $level = 0;
+                        $syncIds[$id] = $this->level($id, $level);
                     }
-                    DepartmentUser::whereDepartmentId($id)->delete();
-                    $department->delete();
-                });
-            } catch (Exception $e) {
-                throw $e;
-            }
-            
-            return true;
+                }
+                arsort($syncIds);
+                array_map(
+                    function ($id) { $this->sync($id, 'delete'); },
+                    array_keys($syncIds)
+                );
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
         
-        return false;
-        
-    }
-    
-    /**
-     * 删除（运营/企业/学校）对应的部门
-     *
-     * @param Model $model
-     * @return bool|null
-     * @throws Throwable
-     */
-    function removeDepartment(Model $model) {
-        
-        return $this->remove(
-            $model->{'department_id'}
-        );
-        
-    }
-    
-    /**
-     * 删除指定学校/企业/运营者的所有部门
-     *
-     * @param $id
-     * @return bool|null
-     * @throws Exception
-     */
-    function removeDepartments($id) {
-        
-        return $this->whereIn('id', array_merge([$id], $this->subDepartmentIds($id)))->delete();
+        return true;
         
     }
     
@@ -651,14 +644,12 @@ class Department extends Model {
      */
     private function level($id, &$level) {
         
-        $department = self::find($id);
-        if (!$department) {
-            return null;
-        }
+        $department = $this->find($id);
+        if (!$department) { return null; }
         $parent = $department->parent;
         if ($parent) {
             $level += 1;
-            self::level($parent->id, $level);
+            $this->level($parent->id, $level);
         }
         
         return $level;

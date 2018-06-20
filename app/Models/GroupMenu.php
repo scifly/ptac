@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Helpers\Constant;
@@ -29,18 +28,18 @@ use Illuminate\Support\Facades\DB;
  * @property-read \App\Models\Menu $menu
  */
 class GroupMenu extends Model {
-
+    
     protected $table = 'groups_menus';
-
+    
     protected $fillable = ['group_id', 'menu_id', 'enabled'];
-
+    
     /**
      * 返回指定记录所属的菜单对象
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     function menu() { return $this->belongsTo('App\Models\Menu'); }
-
+    
     /**
      * 根据角色id保存所有菜单id
      *
@@ -55,22 +54,24 @@ class GroupMenu extends Model {
         try {
             DB::transaction(function () use ($groupId, $ids) {
                 self::whereGroupId($groupId)->delete();
+                $records = [];
                 foreach ($ids as $id) {
-                    self::create([
-                        'group_id' => $groupId,
-                        'menu_id' => $id,
+                    $records[] = [
+                        'group_id'   => $groupId,
+                        'menu_id'    => $id,
                         'created_at' => now()->toDateTimeString(),
                         'updated_at' => now()->toDateTimeString(),
-                        'enabled' => Constant::ENABLED,
-                    ]);
+                        'enabled'    => Constant::ENABLED,
+                    ];
                 }
+                $this->insert($records);
             });
         } catch (Exception $e) {
             throw $e;
         }
         
         return true;
-
+        
     }
-
+    
 }

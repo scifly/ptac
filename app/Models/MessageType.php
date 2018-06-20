@@ -1,17 +1,16 @@
 <?php
-
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\ModelTrait;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use Carbon\Carbon;
+use App\Helpers\ModelTrait;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\MessageType 消息类型
@@ -32,20 +31,20 @@ use Illuminate\Support\Facades\DB;
  * @mixin Eloquent
  */
 class MessageType extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $table = 'message_types';
-
+    
     protected $fillable = ['name', 'remark', 'enabled'];
-
+    
     /**
      * 获取指定消息类型包含的所有消息对象
      *
      * @return HasMany
      */
     function messages() { return $this->hasMany('App\Models\Message'); }
-
+    
     /**
      * 保存消息类型
      *
@@ -53,11 +52,11 @@ class MessageType extends Model {
      * @return bool
      */
     function store(array $data) {
-
+        
         return $this->create($data) ? true : false;
-
+        
     }
-
+    
     /**
      * 更新消息类型
      *
@@ -66,9 +65,9 @@ class MessageType extends Model {
      * @return bool
      */
     function modify(array $data, $id) {
-
+        
         return $this->find($id)->update($data);
-
+        
     }
     
     /**
@@ -79,9 +78,9 @@ class MessageType extends Model {
      * @throws Exception
      */
     function remove($id = null) {
-
+        
         return $this->del($this, $id);
-
+        
     }
     
     /**
@@ -109,7 +108,7 @@ class MessageType extends Model {
      * @return array
      */
     function datatable() {
-
+        
         $columns = [
             ['db' => 'MessageType.id', 'dt' => 0],
             ['db' => 'MessageType.name', 'dt' => 1],
@@ -117,17 +116,17 @@ class MessageType extends Model {
             ['db' => 'MessageType.created_at', 'dt' => 3],
             ['db' => 'MessageType.updated_at', 'dt' => 4],
             [
-                'db' => 'MessageType.enabled', 'dt' => 5,
+                'db'        => 'MessageType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
-
+        
         return Datatable::simple(
             $this->getModel(), $columns
         );
-
+        
     }
-
+    
 }

@@ -2,21 +2,19 @@
 
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
+use Exception;
+use Carbon\Carbon;
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
-use Carbon\Carbon;
-use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 
 /**
  * App\Models\PollQuestionnaire 调查问卷
@@ -169,9 +167,9 @@ class PollQuestionnaire extends Model {
     
         try {
             DB::transaction(function () use ($id) {
-                (new PollQuestionnaireParticipant)->removeByPqId($id);
-                (new PollQuestionnaireAnswer)->removeByPqId($id);
-                (new PollQuestionnaireSubject)->removeByPqId($id);
+                PollQuestionnaireParticipant::wherePqId($id)->delete();
+                PollQuestionnaireAnswer::wherePqId($id)->delete();
+                $this->delRelated('pq_id', 'PollQuestionnaireSubject', $id);
                 $this->find($id)->delete();
             });
         } catch (Exception $e) {

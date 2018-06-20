@@ -7,7 +7,6 @@ use App\Models\ExamType;
 use App\Models\Squad;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 class ExamComposer {
@@ -35,20 +34,19 @@ class ExamComposer {
                 $subjectList[$subject->id] = $subject->name;
             }
         }
-
         $selectedClasses = $selectedSubjects = [];
         if (Request::route('id')) {
             $exam = Exam::find(Request::route('id'));
-            $selectedClasses = $exam->selectedClasses($exam->class_ids);
-            $selectedSubjects = $exam->selectedSubjects($exam->subject_ids);
+            $selectedClasses = Squad::whereRaw('id IN (' . $exam->class_ids . ')')->pluck('name', 'id');
+            $selectedSubjects = Subject::whereRaw('id IN (' . $exam->subject_ids . ')')->pluck('name', 'id');
         }
         $view->with([
-            'examtypes' => $examtypes,
-            'classes'   => $squads->pluck('name', 'id'),
-            'subjects'  => $subjectList,
-            'selectedClasses' => $selectedClasses,
-            'selectedSubjects' => $selectedSubjects,
-            'uris'      => $this->uris(),
+            'examtypes'        => $examtypes,
+            'classes'          => $squads->pluck('name', 'id'),
+            'subjects'         => $subjectList,
+            'selectedClasses'  => $selectedClasses->toArray(),
+            'selectedSubjects' => $selectedSubjects->toArray(),
+            'uris'             => $this->uris(),
         ]);
         
     }

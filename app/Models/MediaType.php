@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Eloquent;
@@ -31,20 +30,20 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read Media[] $medias
  */
 class MediaType extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $table = 'media_types';
-
+    
     protected $fillable = ['name', 'remark', 'enabled'];
-
+    
     /**
      * 获取指定媒体类型包含的所有媒体对象
      *
      * @return HasMany
      */
     function medias() { return $this->hasMany('App\Models\Media'); }
-
+    
     /**
      * 保存媒体类型
      *
@@ -52,11 +51,11 @@ class MediaType extends Model {
      * @return bool
      */
     function store(array $data) {
-
+        
         return $this->create($data) ? true : false;
-
+        
     }
-
+    
     /**
      * 更新媒体类型
      *
@@ -65,9 +64,9 @@ class MediaType extends Model {
      * @return bool
      */
     function modify(array $data, $id) {
-
+        
         return $this->find($id)->update($data);
-
+        
     }
     
     /**
@@ -78,9 +77,9 @@ class MediaType extends Model {
      * @throws Exception
      */
     function remove($id) {
-
+        
         return $this->del($this, $id);
-
+        
     }
     
     /**
@@ -116,11 +115,11 @@ class MediaType extends Model {
             ['db' => 'MediaType.created_at', 'dt' => 3],
             ['db' => 'MediaType.updated_at', 'dt' => 4],
             [
-                'db' => 'MediaType.enabled', 'dt' => 5,
+                'db'        => 'MediaType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
-                }
-            ]
+                },
+            ],
         ];
         
         return Datatable::simple(
@@ -128,5 +127,5 @@ class MediaType extends Model {
         );
         
     }
-
+    
 }

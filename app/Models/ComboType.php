@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
-use ReflectionException;
 
 /**
  * App\Models\ComboType 套餐类型
@@ -104,7 +103,9 @@ class ComboType extends Model {
         
         try {
             DB::transaction(function () use ($id) {
-                Order::whereComboTypeId($id)->update(['combo_type_id' => 0]);
+                Order::whereComboTypeId($id)->update([
+                    'combo_type_id' => 0
+                ]);
                 $this->find($id)->delete();
             });
         } catch (Exception $e) {

@@ -1,21 +1,19 @@
 <?php
-
 namespace App\Models;
 
+use Eloquent;
+use Throwable;
+use Exception;
+use Carbon\Carbon;
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
-use Carbon\Carbon;
-use Eloquent;
-use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
-use Throwable;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
- * App\Models\DepartmentUser
+ * App\Models\DepartmentUser 部门 & 用户绑定关系
  *
  * @property int $id
  * @property int $department_id 部门ID
@@ -32,11 +30,11 @@ use Throwable;
  * @mixin Eloquent
  */
 class DepartmentUser extends Model {
-
+    
     use ModelTrait;
     
     protected $table = 'departments_users';
-
+    
     protected $fillable = ['department_id', 'user_id', 'enabled'];
     
     /**
@@ -52,15 +50,15 @@ class DepartmentUser extends Model {
         
         try {
             DB::transaction(function () use ($userId, $departmentIds) {
-                $values = [];
+                $records = [];
                 foreach ($departmentIds as $departmentId) {
-                    $values[] = [
-                        'user_id' => $userId,
+                    $records[] = [
+                        'user_id'       => $userId,
                         'department_id' => $departmentId,
-                        'enabled' => Constant::ENABLED,
+                        'enabled'       => Constant::ENABLED,
                     ];
                 }
-                $this->insert($values);
+                $this->insert($records);
             });
         } catch (Exception $e) {
             throw $e;
@@ -83,24 +81,24 @@ class DepartmentUser extends Model {
         
         try {
             DB::transaction(function () use ($departmentId, $userIds) {
-                $values = [];
+                $records = [];
                 $userids = [];
                 foreach ($userIds as $userId) {
                     $du = $this::whereDepartmentId($departmentId)
                         ->where('user_id', $userId)->first();
                     if (!$du) {
-                        $values[] = [
-                            'user_id' => $userId,
+                        $records[] = [
+                            'user_id'       => $userId,
                             'department_id' => $departmentId,
-                            'created_at' => now()->toDateTimeString(),
-                            'updated_at' => now()->toDateTimeString(),
-                            'enabled' => Constant::ENABLED,
+                            'created_at'    => now()->toDateTimeString(),
+                            'updated_at'    => now()->toDateTimeString(),
+                            'enabled'       => Constant::ENABLED,
                         ];
                         $userids[] = $userId;
                     }
                 }
-                if (!empty($values)) {
-                    $this->insert($values);
+                if (!empty($records)) {
+                    $this->insert($records);
                     Auth::user()->batchUpdateWechatUsers($userids);
                 }
             });
@@ -109,7 +107,7 @@ class DepartmentUser extends Model {
         }
         
         return true;
-
+        
     }
     
     /**
@@ -121,37 +119,6 @@ class DepartmentUser extends Model {
     function store(array $data): bool {
         
         return $this->create($data) ? true : false;
-        
-    }
-    
-    /**
-     * 删除与指定部门相关的所有绑定记录
-     *
-     * @param $departmentId
-     * @return bool|null
-     * @throws Throwable
-     */
-    function removeByDepartmentId($departmentId) {
-
-        $dus = $this->where('department_id', $departmentId)->get();
-        $userIds = array_unique($dus->pluck('user_id')->toArray());
-        Request::merge(['ids' => $userIds]);
-        (new User)->modify(Request::all());
-        
-        return $this->where('department_id', $departmentId)->delete();
-        
-    }
-    
-    /**
-     * 删除与指定用户相关的所有绑定记录
-     *
-     * @param $userId
-     * @return bool|null
-     * @throws Exception
-     */
-    function removeByUserId($userId) {
-        
-        return $this->where('user_id', $userId)->delete();
         
     }
     

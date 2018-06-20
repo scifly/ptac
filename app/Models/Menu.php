@@ -177,7 +177,7 @@ class Menu extends Model {
                 $data['position'] = $this->all()->max('position') + 1;
                 $menu = $this->create($data);
                 $tabIds = $request->input('tab_ids', []);
-                (new MenuTab())->storeByMenuId($menu->id, $tabIds);
+                (new MenuTab)->storeByMenuId($menu->id, $tabIds);
             });
         } catch (Exception $e) {
             throw $e;
@@ -197,7 +197,7 @@ class Menu extends Model {
      */
     function storeMenu(Model $model, $beLongsTo = null) {
     
-        list($iconId, $mtId) = (new MenuType())->mtIds($model);
+        list($iconId, $mtId) = (new MenuType)->mtIds($model);
 
         return $this->create([
             'parent_id' => $beLongsTo
@@ -273,7 +273,7 @@ class Menu extends Model {
     }
     
     /**
-     * 删除Menu记录
+     * 删除指定菜单及其所有子菜单
      *
      * @param $id
      * @return bool|mixed
@@ -281,49 +281,18 @@ class Menu extends Model {
      */
     function remove($id) {
         
-        $menu = $this->find($id);
-
-        if (!count($menu->children)) {
-            try {
-                DB::transaction(function () use ($id, $menu) {
-                    GroupMenu::whereMenuId($id)->delete();
-                    $menu->delete();
-                });
-            } catch (Exception $e) {
-                throw $e;
-            }
-            return true;
+        try {
+            DB::transaction(function () use ($id) {
+                $ids = array_merge([$id], $this->subMenuIds($id));
+                GroupMenu::whereIn('menu_id', $ids)->delete();
+                MenuTab::whereIn('menu_id', $ids)->delete();
+                $this->whereIn('id', $ids)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
         
-        return false;
-        
-    }
-    
-    /**
-     * 移除(运营/企业/学校)对应的菜单
-     *
-     * @param Model $model
-     * @return bool|mixed
-     * @throws Throwable
-     */
-    function removeMenu(Model $model) {
-        
-        return $this->remove(
-            $this->find($model->{'menu_id'})->id
-        );
-        
-    }
-    
-    /**
-     * 删除指定学校/企业/运营者的所有菜单
-     *
-     * @param $id
-     * @return bool|null
-     * @throws Exception
-     */
-    function removeMenus($id) {
-        
-        return $this->whereIn('id', array_merge([$id], $this->subMenuIds($id)))->delete();
+        return true;
         
     }
     

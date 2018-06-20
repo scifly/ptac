@@ -63,7 +63,7 @@ use Illuminate\Support\Facades\DB;
  * @property-read Corp $corp
  */
 class App extends Model {
-
+    
     protected $fillable = [
         'corp_id', 'name', 'description', 'agentid',
         'token', 'secret', 'report_location_flag',
@@ -75,7 +75,7 @@ class App extends Model {
     
     /**
      * 返回应用所属的企业对象
-     * 
+     *
      * @return BelongsTo
      */
     function corp() { return $this->belongsTo('App\Models\Corp'); }
@@ -95,14 +95,13 @@ class App extends Model {
      * @throws Exception
      */
     function sync(AppRequest $request) {
-
+        
         $agentid = $request->input('agentid');
         $secret = $request->input('secret');
         $corpId = $request->input('corp_id');
         $app = $this->where('agentid', $agentid)
             ->where('secret', $secret)->first();
         $action = !$app ? 'create' : 'update';
-        
         # 获取应用
         $corpid = Corp::find($app ? $app->corp_id : $corpId)->corpid;
         $token = Wechat::getAccessToken($corpid, $app ? $app->secret : $secret);
@@ -120,21 +119,21 @@ class App extends Model {
         );
         # 更新/创建本地应用记录
         $data = [
-            'name' => $result->{'name'},
-            'menu' => '0',
-            'allow_tags' => '0',
-            'corp_id' => $corpId,
-            'agentid' => $agentid,
-            'secret' => $secret,
-            'description' => $result->{'description'},
+            'name'                 => $result->{'name'},
+            'menu'                 => '0',
+            'allow_tags'           => '0',
+            'corp_id'              => $corpId,
+            'agentid'              => $agentid,
+            'secret'               => $secret,
+            'description'          => $result->{'description'},
             'report_location_flag' => $result->{'report_location_flag'},
-            'square_logo_url' => $result->{'square_logo_url'},
-            'redirect_domain' => $result->{'redirect_domain'},
-            'isreportenter' => $result->{'isreportenter'},
-            'home_url' => $result->{'home_url'},
-            'allow_userinfos' => json_encode($result->{'allow_userinfos'}),
-            'allow_partys' => json_encode($result->{'allow_partys'}),
-            'enabled' => !$result->{'close'}
+            'square_logo_url'      => $result->{'square_logo_url'},
+            'redirect_domain'      => $result->{'redirect_domain'},
+            'isreportenter'        => $result->{'isreportenter'},
+            'home_url'             => $result->{'home_url'},
+            'allow_userinfos'      => json_encode($result->{'allow_userinfos'}),
+            'allow_partys'         => json_encode($result->{'allow_partys'}),
+            'enabled'              => !$result->{'close'},
         ];
         $app = $app
             ? $this->modify($data, $app->id)->toArray()
@@ -142,10 +141,10 @@ class App extends Model {
         $this->formatDateTime($app);
         
         return response()->json([
-            'app' => $app,
+            'app'    => $app,
             'action' => $action,
         ]);
-
+        
     }
     
     /**
@@ -156,15 +155,15 @@ class App extends Model {
      * @return bool|Collection|Model|null|static|static[]
      */
     function modify(array $data, $id) {
-
+        
         $app = $this->find($id);
         $updated = $app->update($data);
         if ($updated) {
             SyncApp::dispatch($this->find($id), Auth::id());
         }
-
+        
         return $updated ? $this->find($id) : false;
-
+        
     }
     
     /**
@@ -196,12 +195,12 @@ class App extends Model {
      * @return JsonResponse
      */
     function index(AppRequest $request) {
-
+        
         $corpId = $request->query('corpId');
         $apps = App::whereCorpId($corpId)->get()->toArray();
         if (empty($apps)) {
             return response()->json([
-                'apps' => '<tr id="na"><td colspan="8" style="text-align: center;">( n/a )</td></tr>'
+                'apps' => '<tr id="na"><td colspan="8" style="text-align: center;">( n/a )</td></tr>',
             ]);
         }
         $tr =
@@ -241,7 +240,7 @@ class App extends Model {
         }
         
         return response()->json([
-            'apps' => $html
+            'apps' => $html,
         ]);
         
     }

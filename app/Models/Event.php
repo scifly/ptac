@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -58,7 +57,7 @@ use Illuminate\Support\Facades\DB;
  * @mixin Eloquent
  */
 class Event extends Model {
-
+    
     protected $table = 'events';
     
     protected $fillable = [
@@ -69,21 +68,21 @@ class Event extends Model {
         'alert_mins', 'user_id', 'created_at',
         'updated_at', 'enabled',
     ];
-
+    
     /**
      * 返回事件创建者的用户对象
      *
      * @return BelongsTo
      */
     function user() { return $this->belongsTo('App\Models\User'); }
-
+    
     /**
      * 返回课程表事件对应的教职员工对象
      *
      * @return BelongsTo
      */
     function educator() { return $this->belongsTo('App\Models\Educator'); }
-
+    
     /**
      * 返回课程表事件对应的科目对象
      *
@@ -112,10 +111,7 @@ class Event extends Model {
      */
     function modify(array $data, $id) {
         
-        $event = $this->find($id);
-        if (!$event) { return false; }
-        
-        return $event->update($data);
+        return $this->find($id)->update($data);
         
     }
     
@@ -128,10 +124,7 @@ class Event extends Model {
      */
     function remove($id) {
         
-        $event = $this->find($id);
-        if (!$event) { return false; }
-        
-        return $event->delete();
+        return $this->find($id)->delete();
         
     }
     
@@ -143,17 +136,17 @@ class Event extends Model {
      * @throws Exception
      */
     function removeUser($userId) {
-    
+        
         try {
-            DB::transaction(function() use ($userId) {
+            DB::transaction(function () use ($userId) {
                 # 删除用户创建的非课程&非公共事件
-                $this->where('user_id', $userId)
-                    ->where('ispublic', 0)
-                    ->where('iscourse', 0)
-                    ->delete();
+                $this->where([
+                    'user_id'  => $userId,
+                    'ispublic' => 0,
+                    'iscourse' => 0,
+                ])->delete();
                 # 更新用户创建的课程&公共事件
-                $this->where('user_id', $userId)
-                    ->where('ispublic', 1)
+                $this->where(['user_id' => $userId, 'ispublic' => 1])
                     ->orWhere('iscourse', 1)
                     ->update(['user_id' => 0]);
             });
@@ -162,9 +155,8 @@ class Event extends Model {
         }
         
         return true;
-    
+        
     }
-    
     
     /**
      * 待办事项列表
@@ -172,7 +164,7 @@ class Event extends Model {
      * @return array
      */
     function datatable() {
-
+        
         $columns = [
             ['db' => 'Event.id', 'dt' => 0],
             ['db' => 'Event.title', 'dt' => 1],
@@ -181,55 +173,55 @@ class Event extends Model {
             ['db' => 'Event.start', 'dt' => 4],
             ['db' => 'Event.end', 'dt' => 5],
             [
-                'db' => 'Event.ispublic', 'dt' => 6,
-                'formatter' => function ( $d) {
+                'db'        => 'Event.ispublic', 'dt' => 6,
+                'formatter' => function ($d) {
                     if (!empty($d)) {
-                       return  $d
-                           ? sprintf(Snippet::BADGE_GREEN, '是')
-                           : sprintf(Snippet::BADGE_RED, '否');
+                        return $d
+                            ? sprintf(Snippet::BADGE_GREEN, '是')
+                            : sprintf(Snippet::BADGE_RED, '否');
                     }
+                    
                     return Snippet::BADGE_GRAY;
                 },
             ],
             ['db' => 'Subject.name', 'dt' => 7],
             [
-                'db' => 'Event.alertable', 'dt' => 8,
-                'formatter' => function ($d){
-                    return  $d
+                'db'        => 'Event.alertable', 'dt' => 8,
+                'formatter' => function ($d) {
+                    return $d
                         ? sprintf(Snippet::BADGE_GREEN, '是')
                         : sprintf(Snippet::BADGE_RED, '否');
-                }
+                },
             ],
             ['db' => 'User.realname', 'dt' => 9],
             ['db' => 'Event.updated_at', 'dt' => 10],
         ];
         $joins = [
             [
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'INNER',
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
                 'conditions' => [
                     'User.id = Event.user_id',
                 ],
             ],
             [
-                'table' => 'subjects',
-                'alias' => 'Subject',
-                'type' => 'INNER',
+                'table'      => 'subjects',
+                'alias'      => 'Subject',
+                'type'       => 'INNER',
                 'conditions' => [
                     'Subject.id = Event.subject_id',
                 ],
             ],
-
         ];
         $condition = 'Event.enabled = 1';
-
+        
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition
         );
-
+        
     }
-
+    
     /**
      * 显示日历事件
      * @param $userId
@@ -241,7 +233,7 @@ class Event extends Model {
         $educator = Educator::whereUserId($userId)->first();
         //全部公共事件
         $pubEvents = self::whereIspublic(1)->get()->toArray();
-        if(!empty($educator)) {
+        if (!empty($educator)) {
             //先选出公开事件中 非课程的事件
             $pubNoCourseEvents = $this
                 ->where('ispublic', 1)
@@ -266,7 +258,7 @@ class Event extends Model {
         if ($this->getRole($userId)) {
             return response()->json(array_merge($pubEvents, $perEvents));
         }
-
+        
         //如果是用户
         return response()->json(array_merge($pubNoCourseEvents, $perEvents, $pubCourEvents));
     }
@@ -278,13 +270,13 @@ class Event extends Model {
      */
     function getRole($user) {
         $role = $user->group->name;
-        if ($role == '运营' || $role == '企业' || $role == '学校'){
+        if ($role == '运营' || $role == '企业' || $role == '学校') {
             return true;
         } else {
             return false;
         }
     }
-
+    
     /**
      * 根据角色验证时间冲突
      *
@@ -304,10 +296,10 @@ class Event extends Model {
                 return $this->isRepeatTimeAdmin($educator_id, $start, $end, $id);
             }
         }
-
+        
         return false;
     }
-
+    
     /**
      * 验证用户添加事件是否有重复
      * @param $userId
@@ -370,11 +362,11 @@ class Event extends Model {
                 ->where('start', '<', $end)
                 ->first();
         }
-
+        
         return !empty($event);
         
     }
-
+    
     /**
      * 验证管理员添加事件是否有重复
      * 未判断管理员个人事件重复
@@ -418,11 +410,11 @@ class Event extends Model {
                 ->where('start', '<', $start)
                 ->first();
         }
-
+        
         return !empty($event);
         
     }
-
+    
     /**
      * 计算拖动后的时间差
      * @param $day
@@ -435,9 +427,9 @@ class Event extends Model {
         $days = $day * 24 * 60 * 60;
         $hours = $hour * 60 * 60;
         $minutes = $minute * 60;
-
+        
         return $diffTime = $days + $hours + $minutes;
         
     }
-
+    
 }

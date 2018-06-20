@@ -1,14 +1,11 @@
 <?php
-
 namespace App\Models;
 
-use App\Http\Requests\EducatorRequest;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Request;
-use Throwable;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\EducatorClass 教职员工与班级关系
@@ -34,9 +31,9 @@ use Throwable;
  * @property-read Educator $classes
  */
 class EducatorClass extends Model {
-
+    
     protected $table = 'educators_classes';
-
+    
     protected $fillable = ['educator_id', 'class_id', 'subject_id', 'enabled'];
     
     /**
@@ -45,7 +42,7 @@ class EducatorClass extends Model {
      * @return BelongsTo
      */
     function classes() { return $this->belongsTo('App\Models\Educator'); }
-  
+    
     function squad() { return $this->belongsTo('App\Models\squad', 'class_id', 'id'); }
     
     function subject() { return $this->belongsTo('App\Models\subject'); }
@@ -62,6 +59,13 @@ class EducatorClass extends Model {
         
     }
     
+    /**
+     * 更新教职员工班级绑定关系
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
     function modify(array $data, $id) {
         
         return $this->find($id)->update($data);
@@ -81,26 +85,6 @@ class EducatorClass extends Model {
             ? $this->find($id)->delete()
             : $this->whereIn('id', array_values(Request::input('ids')))->delete();
         
-    }
-    
-    /**
-     * 删除指定班级的教职员工班级绑定关系
-     *
-     * @param $classId
-     * @return bool|null
-     * @throws Exception
-     * @throws Throwable
-     */
-    function removeByClassId($classId) {
-    
-        $ecs = $this->where('class_id', $classId)->get();
-        $educatorIds = array_unique($ecs->pluck('educator_id')->toArray());
-        $request = new EducatorRequest();
-        $request->merge(['ids' => $educatorIds]);
-        (new Educator)->modify($request);
-    
-        return $this->where('class_id', $classId)->delete();
-    
     }
     
 }
