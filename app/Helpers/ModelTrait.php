@@ -13,7 +13,6 @@ use App\Policies\Route;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -432,7 +431,14 @@ trait ModelTrait {
         $departmentIds = [];
         $user = User::find($userId);
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {
-            $department = School::find($schoolId ?? $this->schoolId())->department;
+            if ($user->group->name == '运营') {
+                $department = Department::find(1);
+            } else {
+                $schoolId = $schoolId ?? $this->schoolId();
+                $department = $schoolId
+                    ? School::find($schoolId ?? $this->schoolId())->department
+                    : Department::find($this->head($user));
+            }
             $departmentIds[] = $department->id;
             
             return array_unique(
@@ -443,7 +449,6 @@ trait ModelTrait {
             );
         }
         $departments = $user->departments;
-        Log::debug(json_encode($departments));
         foreach ($departments as $d) {
             $departmentIds[] = $d->id;
             $departmentIds = array_merge(
