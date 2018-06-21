@@ -349,6 +349,7 @@ class School extends Model {
         
         try {
             DB::transaction(function () use ($id) {
+                session(['schoolId' => $id]);
                 $school = $this->find($id);
                 $classes = [
                     'AttendanceMachine', 'ConferenceRoom', 'ComboType',

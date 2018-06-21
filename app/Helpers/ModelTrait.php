@@ -178,9 +178,7 @@ trait ModelTrait {
      */
     function schoolId() {
         
-        $menu = new Menu();
-        $schoolMenuId = $menu->menuId(session('menuId'));
-        unset($menu);
+        $schoolMenuId = (new Menu)->menuId(session('menuId'));
     
         return $schoolMenuId ? School::whereMenuId($schoolMenuId)->first()->id : null;
         
@@ -333,7 +331,7 @@ trait ModelTrait {
     function contactIds($type, User $user = null, $schoolId = null) {
         
         $user = $user ?? Auth::user();
-        $schoolId = $schoolId ?? $this->schoolId();
+        $schoolId = $schoolId ?? ($this->schoolId() ?? session('schoolId'));
         $role = $user->group->name;
         $method = $type . 'Ids';
         if (method_exists($this, $method)) {
