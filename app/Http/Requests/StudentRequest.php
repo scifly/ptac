@@ -49,27 +49,29 @@ class StudentRequest extends FormRequest {
     
     protected function prepareForValidation() {
         
-        $input = $this->all();
-        if (isset($input['mobile'])) {
-            $index = $input['mobile']['isdefault'];
-            unset($input['mobile']['isdefault']);
-            foreach ($input['mobile'] as $i => $m) {
-                if ($i == $index) {
-                    $input['mobile'][$i]['isdefault'] = 1;
-                } else {
-                    $input['mobile'][$i]['isdefault'] = 0;
-                }
-                if (!isset($m['enabled'])) {
-                    $input['mobile'][$i]['enabled'] = 0;
-                } else {
-                    $input['mobile'][$i]['enabled'] = 1;
+        if (!Request::has('ids')) {
+            $input = $this->all();
+            if (isset($input['mobile'])) {
+                $index = $input['mobile']['isdefault'];
+                unset($input['mobile']['isdefault']);
+                foreach ($input['mobile'] as $i => $m) {
+                    if ($i == $index) {
+                        $input['mobile'][$i]['isdefault'] = 1;
+                    } else {
+                        $input['mobile'][$i]['isdefault'] = 0;
+                    }
+                    if (!isset($m['enabled'])) {
+                        $input['mobile'][$i]['enabled'] = 0;
+                    } else {
+                        $input['mobile'][$i]['enabled'] = 1;
+                    }
                 }
             }
+            if (!isset($input['remark'])) {
+                $input['remark'] = 'student';
+            }
+            $this->replace($input);
         }
-        if (!isset($input['remark'])) {
-            $input['remark'] = 'student';
-        }
-        $this->replace($input);
         
     }
     

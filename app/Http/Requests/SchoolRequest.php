@@ -52,36 +52,38 @@ class SchoolRequest extends FormRequest {
     
     protected function prepareForValidation() {
         
-        $input = $this->all();
-        # 保存 - store
-        if (Request::method() == 'POST') {
-            if (!isset($input['department_id'])) {
-                $input['department_id'] = 0;
-            }
-            if (!isset($input['menu_id'])) {
-                $input['menu_id'] = 0;
-            }
-        # 更新 - update
-        } else {
-            if (Request::has('id')) {
-                $school = School::find(Request::input('id'));
-                $input['department_id'] = $school->department_id;
-                $input['menu_id'] = $school->menu_id;
-            }
-        }
-        if (!isset($input['school_type_id'])) {
-            $input['school_type_id'] = School::find($this->schoolId())->school_type_id;
-        }
-        if (!isset($input['corp_id'])) {
-            $user = Auth::user();
-            $departmentId = $this->head(Auth::user());
-            if ($user->group->name == '企业') {
-                $input['corp_id'] = Corp::whereDepartmentId($departmentId)->first()->id;
+        if (!Request::has('ids')) {
+            $input = $this->all();
+            # 保存 - store
+            if (Request::method() == 'POST') {
+                if (!isset($input['department_id'])) {
+                    $input['department_id'] = 0;
+                }
+                if (!isset($input['menu_id'])) {
+                    $input['menu_id'] = 0;
+                }
+                # 更新 - update
             } else {
-                $input['corp_id'] = School::whereDepartmentId($departmentId)->first()->corp_id;
+                if (Request::has('id')) {
+                    $school = School::find(Request::input('id'));
+                    $input['department_id'] = $school->department_id;
+                    $input['menu_id'] = $school->menu_id;
+                }
             }
+            if (!isset($input['school_type_id'])) {
+                $input['school_type_id'] = School::find($this->schoolId())->school_type_id;
+            }
+            if (!isset($input['corp_id'])) {
+                $user = Auth::user();
+                $departmentId = $this->head(Auth::user());
+                if ($user->group->name == '企业') {
+                    $input['corp_id'] = Corp::whereDepartmentId($departmentId)->first()->id;
+                } else {
+                    $input['corp_id'] = School::whereDepartmentId($departmentId)->first()->corp_id;
+                }
+            }
+            $this->replace($input);
         }
-        $this->replace($input);
         
     }
     
