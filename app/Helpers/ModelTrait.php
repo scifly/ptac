@@ -431,14 +431,10 @@ trait ModelTrait {
         $departmentIds = [];
         $user = User::find($userId);
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {
-            if ($user->group->name == '运营') {
-                $department = Department::find(1);
-            } else {
-                $schoolId = $schoolId ?? $this->schoolId();
-                $department = $schoolId
-                    ? School::find($schoolId)->department
-                    : Department::find($this->head($user));
-            }
+            $schoolId = $schoolId ?? $this->schoolId();
+            $department = $schoolId
+                ? School::find($schoolId)->department
+                : Department::find($user->group->name == '运营' ? 1 : $this->head($user));
             $departmentIds[] = $department->id;
             
             return array_unique(
