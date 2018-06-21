@@ -84,6 +84,7 @@ class SchoolType extends Model {
      * 删除指定学校类型的所有数据
      *
      * @param $id
+     * @return bool
      * @throws Exception
      */
     function purge($id) {
@@ -96,6 +97,8 @@ class SchoolType extends Model {
         } catch (Exception $e) {
             throw $e;
         }
+        
+        return true;
         
     }
     
