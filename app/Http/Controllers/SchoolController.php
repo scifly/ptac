@@ -125,7 +125,7 @@ class SchoolController extends Controller {
      * @throws Exception
      * @throws Throwable
      */
-    public function destroy($id) {
+    public function destroy($id = null) {
         
         return $this->result(
             $this->school->remove($id)
