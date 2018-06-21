@@ -188,7 +188,10 @@ class Grade extends Model {
                 $grade = $this->find($id);
                 (new Department)->remove($grade->department_id);
                 (new Subject)->removeGrade($id);
-                $this->delRelated('grade_id', 'Squad', $id);
+                $classes = ['StudentAttendanceSetting', 'Squad'];
+                $keys = array_fill(0, sizeof($classes), 'grade_id');
+                $values = array_fill(0, sizeof($classes), $id);
+                array_map([$this, 'delRelated'], $keys, $classes, $values);
                 $grade->delete();
             });
         } catch (Exception $e) {

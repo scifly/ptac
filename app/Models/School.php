@@ -354,8 +354,8 @@ class School extends Model {
                     'AttendanceMachine', 'ConferenceRoom', 'ComboType',
                     'ExamType', 'EducatorAttendanceSetting', 'Grade',
                     'Group', 'Major', 'PollQuestionnaire',
-                    'Procedure', 'Semester', 'StudentAttendanceSetting',
-                    'Subject', 'Team', 'WapSite', 'Educator',
+                    'Procedure', 'Semester', 'Subject',
+                    'Team', 'WapSite', 'Educator',
                 ];
                 $keys = array_fill(0, sizeof($classes), 'school_id');
                 $values = array_fill(0, sizeof($classes), $id);
