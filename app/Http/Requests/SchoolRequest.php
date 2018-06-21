@@ -1,12 +1,14 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use App\Models\Corp;
 use App\Models\School;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Validation\Rule;
 
 class SchoolRequest extends FormRequest {
     
@@ -25,7 +27,15 @@ class SchoolRequest extends FormRequest {
      * @return array
      */
     public function rules() {
-        
+    
+        if (Request::has('ids')) {
+            return [
+                'ids' => 'required|array',
+                'action' => [
+                    'required', Rule::in(Constant::BATCH_OPERATIONS)
+                ]
+            ];
+        }
         return [
             'name'           => 'required|string|between:6,255|unique:schools,name,' .
                 $this->input('id') . ',id',
@@ -53,9 +63,11 @@ class SchoolRequest extends FormRequest {
             }
         # 更新 - update
         } else {
-            $school = School::find(Request::input('id'));
-            $input['department_id'] = $school->department_id;
-            $input['menu_id'] = $school->menu_id;
+            if (Request::has('id')) {
+                $school = School::find(Request::input('id'));
+                $input['department_id'] = $school->department_id;
+                $input['menu_id'] = $school->menu_id;
+            }
         }
         if (!isset($input['school_type_id'])) {
             $input['school_type_id'] = School::find($this->schoolId())->school_type_id;

@@ -29,7 +29,7 @@ class EducatorRequest extends FormRequest {
                 ]
             ];
         }
-        $rules = [
+        return [
             'educator.school_id'          => 'required|integer',
             'user.group_id'               => 'required|integer',
             'user.realname'               => 'required|string',
@@ -42,8 +42,6 @@ class EducatorRequest extends FormRequest {
             'mobile.*'                    => ['required', new Mobiles()],
             'selectedDepartments'         => 'required|array',
         ];
-        
-        return $rules;
         
     }
     
