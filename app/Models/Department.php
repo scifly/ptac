@@ -520,7 +520,6 @@ class Department extends Model {
     private function tree($rootId = null) {
         
         $user = Auth::user();
-        $allowedDepartmentIds = $this->departmentIds($user->id);
         $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
         if (isset($rootId)) {
             $departments = $this->nodes($rootId);
@@ -530,6 +529,7 @@ class Department extends Model {
                 : $this->topDeptId();
             $departments = $this->nodes($rootId);
         }
+        $allowedDepartmentIds = $this->departmentIds($user->id);
         $nodes = [];
         for ($i = 0; $i < sizeof($departments); $i++) {
             $id = $departments[$i]['id'];

@@ -76,7 +76,7 @@ class SyncDepartment implements ShouldQueue {
         if ($result->{'errcode'} == 60003 && $action == 'updateDept') {
             $result = json_decode(Wechat::createDept($token['access_token'], $this->data));
         }
-        if ($result->{'errcode'} == 0 && $this->action != 'deleteDept') {
+        if ($result->{'errcode'} == 0 && $action != 'deleteDept') {
             Department::find($this->data['id'])->update(['synced' => 1]);
         }
         if ($result->{'errcode'}) {
