@@ -271,8 +271,6 @@ class Department extends Model {
                         $user->sync($userId, $action);
                     }, $userIds
                 );
-                # 删除指定部门及其子部门
-                $this->whereIn('id', $ids)->delete();
                 # 删除指定企业微信部门及其子部门
                 $syncIds = [];
                 foreach ($ids as $id) {
@@ -286,6 +284,8 @@ class Department extends Model {
                     function ($id) { $this->sync($id, 'delete'); },
                     array_keys($syncIds)
                 );
+                # 删除指定部门及其子部门
+                $this->whereIn('id', $ids)->delete();
             });
         } catch (Exception $e) {
             throw $e;
