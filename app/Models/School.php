@@ -339,7 +339,7 @@ class School extends Model {
     }
     
     /**
-     *
+     * 删除指定学校的所有相关数据
      *
      * @param $id
      * @return bool
