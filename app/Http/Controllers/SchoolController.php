@@ -109,7 +109,7 @@ class SchoolController extends Controller {
      * @return JsonResponse
      * @throws Exception
      */
-    public function update(SchoolRequest $request, $id) {
+    public function update(SchoolRequest $request, $id = null) {
         
         return $this->result(
             $this->school->modify($request, $id)

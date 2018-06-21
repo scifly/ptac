@@ -295,8 +295,11 @@ class School extends Model {
      * @return mixed|bool|null
      * @throws Exception
      */
-    function modify(SchoolRequest $request, $id) {
+    function modify(SchoolRequest $request, $id = null) {
         
+        if (!$id) {
+            return $this->batch($this);
+        }
         $school = null;
         try {
             DB::transaction(function () use ($request, &$id, &$school) {
