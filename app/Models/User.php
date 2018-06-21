@@ -448,7 +448,7 @@ class User extends Authenticatable {
             $ids = Request::input('ids');
             $type = lcfirst((new ReflectionClass($contact))->getShortName());
             abort_if(
-                empty(array_intersect(
+                !empty($ids) && empty(array_intersect(
                     array_values($ids),
                     array_map('strval', $this->contactIds($type))
                 )),
