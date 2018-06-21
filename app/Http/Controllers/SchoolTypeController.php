@@ -92,7 +92,7 @@ class SchoolTypeController extends Controller {
      * @param $id
      * @return JsonResponse
      */
-    public function update(SchoolTypeRequest $request, $id) {
+    public function update(SchoolTypeRequest $request, $id = null) {
         
         return $this->result(
             $this->st->modify(
@@ -109,7 +109,7 @@ class SchoolTypeController extends Controller {
      * @return JsonResponse
      * @throws Exception
      */
-    public function destroy($id) {
+    public function destroy($id = null) {
         
         return $this->result(
             $this->st->remove($id)
