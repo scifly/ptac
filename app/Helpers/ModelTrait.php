@@ -1,24 +1,24 @@
 <?php
 namespace App\Helpers;
 
-use App\Models\Action;
 use App\Models\Corp;
+use App\Models\Menu;
+use App\Models\User;
+use ReflectionClass;
+use App\Models\Squad;
+use App\Models\Action;
+use App\Models\School;
+use App\Policies\Route;
+use ReflectionException;
 use App\Models\Department;
 use App\Models\DepartmentUser;
-use App\Models\Menu;
-use App\Models\School;
-use App\Models\Squad;
-use App\Models\User;
-use App\Policies\Route;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Request;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use ReflectionClass;
-use ReflectionException;
 
 trait ModelTrait {
     
@@ -436,7 +436,7 @@ trait ModelTrait {
             } else {
                 $schoolId = $schoolId ?? $this->schoolId();
                 $department = $schoolId
-                    ? School::find($schoolId ?? $this->schoolId())->department
+                    ? School::find($schoolId)->department
                     : Department::find($this->head($user));
             }
             $departmentIds[] = $department->id;
