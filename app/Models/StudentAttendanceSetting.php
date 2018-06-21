@@ -2,18 +2,18 @@
 
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+use App\Helpers\Snippet;
+use App\Helpers\Constant;
+use App\Helpers\ModelTrait;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\StudentAttendanceSetting 学生考勤设置

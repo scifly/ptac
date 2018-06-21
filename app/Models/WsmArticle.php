@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Eloquent;
@@ -48,11 +47,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read Media $thumbnailmedia
  */
 class WsmArticle extends Model {
-
+    
     use ModelTrait;
     
     protected $table = 'wsm_articles';
-
+    
     protected $fillable = [
         'id', 'wsm_id', 'name',
         'summary', 'thumbnail_media_id', 'content',
@@ -75,15 +74,15 @@ class WsmArticle extends Model {
      * @return BelongsTo
      */
     function wapSiteModule() {
-
+        
         return $this->belongsTo('App\Models\WapSiteModule', 'wsm_id', 'id');
-
+        
     }
-
+    
     function thumbnailmedia() {
-
+        
         return $this->belongsTo('App\Models\Media', 'thumbnail_media_id', 'id');
-
+        
     }
     
     /**
@@ -95,11 +94,12 @@ class WsmArticle extends Model {
      * @throws Throwable
      */
     function store(WsmArticleRequest $request) {
-
+        
         try {
             //删除原有的图片
             DB::transaction(function () use ($request) {
                 self::removeMedias($request);
+                
                 return self::create($request->all());
             });
         } catch (Exception $e) {
@@ -107,7 +107,7 @@ class WsmArticle extends Model {
         }
         
         return true;
-
+        
     }
     
     /**
@@ -118,7 +118,7 @@ class WsmArticle extends Model {
      */
     private function removeMedias(WsmArticleRequest $request) {
         
-        //删除原有的图片
+        // 删除原有的图片
         $mediaIds = $request->input('del_ids');
         if ($mediaIds) {
             $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
@@ -149,6 +149,7 @@ class WsmArticle extends Model {
         try {
             DB::transaction(function () use ($request, $id) {
                 $this->removeMedias($request);
+                
                 return $this->find($id)->update(
                     $request->except('_method', '_token', 'del_ids')
                 );
@@ -169,7 +170,7 @@ class WsmArticle extends Model {
      * @throws Exception
      */
     function remove($id = null) {
-
+        
         return $id
             ? $this->find($id)->delete()
             : $this->whereIn('id', array_values(Request::input('ids')))->delete();
@@ -207,7 +208,7 @@ class WsmArticle extends Model {
      * @return \Illuminate\Http\JsonResponse
      */
     function upload() {
-    
+        
         $files = Request::allFiles();
         $media = new Media();
         $uploadedFiles = [];
@@ -229,7 +230,7 @@ class WsmArticle extends Model {
         }
         
         return response()->json($uploadedFiles);
-    
+        
     }
     
     /**
@@ -238,7 +239,7 @@ class WsmArticle extends Model {
      * @return array
      */
     function datatable() {
-
+        
         $columns = [
             ['db' => 'WsmArticle.id', 'dt' => 0],
             ['db' => 'Wsm.name as wsmname', 'dt' => 1],
@@ -247,7 +248,7 @@ class WsmArticle extends Model {
             ['db' => 'WsmArticle.created_at', 'dt' => 4],
             ['db' => 'WsmArticle.updated_at', 'dt' => 5],
             [
-                'db' => 'WsmArticle.enabled', 'dt' => 6,
+                'db'        => 'WsmArticle.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
@@ -255,17 +256,17 @@ class WsmArticle extends Model {
         ];
         $joins = [
             [
-                'table' => 'wap_site_modules',
-                'alias' => 'Wsm',
-                'type' => 'INNER',
+                'table'      => 'wap_site_modules',
+                'alias'      => 'Wsm',
+                'type'       => 'INNER',
                 'conditions' => [
                     'Wsm.id = WsmArticle.wsm_id',
                 ],
             ],
             [
-                'table' => 'wap_sites',
-                'alias' => 'WapSite',
-                'type' => 'INNER',
+                'table'      => 'wap_sites',
+                'alias'      => 'WapSite',
+                'type'       => 'INNER',
                 'conditions' => [
                     'WapSite.id = Wsm.wap_site_id',
                 ],
@@ -285,10 +286,10 @@ class WsmArticle extends Model {
      * @return Factory|View
      */
     function wIndex() {
-    
+        
         $id = Request::input('id');
         $article = $this->find($id);
-    
+        
         return view('wechat.wapsite.article', [
             'article' => $article,
             'medias'  => $this->media->medias(

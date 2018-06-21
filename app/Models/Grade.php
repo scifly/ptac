@@ -162,18 +162,32 @@ class Grade extends Model {
     }
     
     /**
-     * 删除年级
+     * （批量）删除年级
      *
      * @param $id
      * @return bool
      * @throws Throwable
      */
-    function remove($id) {
+    function remove($id = null) {
         
+        return $this->del($this, $id);
+        
+    }
+    
+    /**
+     * 删除指定年级的所有相关数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
+    
         try {
             DB::transaction(function () use ($id) {
                 $grade = $this->find($id);
                 (new Department)->remove($grade->department_id);
+                (new Subject)->removeGrade($id);
                 $this->delRelated('grade_id', 'Squad', $id);
                 $grade->delete();
             });

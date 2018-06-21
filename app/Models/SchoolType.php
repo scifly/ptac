@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -35,7 +34,7 @@ class SchoolType extends Model {
     use ModelTrait;
     
     protected $fillable = ['name', 'remark', 'enabled'];
-
+    
     /**
      * 获取指定学校类型下属的所有学校对象
      *
@@ -51,7 +50,7 @@ class SchoolType extends Model {
      */
     function store(array $data) {
         
-        return $this->create($data) ? true: false;
+        return $this->create($data) ? true : false;
         
     }
     
@@ -106,7 +105,7 @@ class SchoolType extends Model {
      * @return array
      */
     function datatable() {
-
+        
         $columns = [
             ['db' => 'SchoolType.id', 'dt' => 0],
             ['db' => 'SchoolType.name', 'dt' => 1],
@@ -114,15 +113,15 @@ class SchoolType extends Model {
             ['db' => 'SchoolType.created_at', 'dt' => 3],
             ['db' => 'SchoolType.updated_at', 'dt' => 4],
             [
-                'db' => 'SchoolType.enabled', 'dt' => 5,
+                'db'        => 'SchoolType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
-
+        
         return Datatable::simple($this->getModel(), $columns);
-
+        
     }
-
+    
 }

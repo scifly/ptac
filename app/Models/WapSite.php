@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Eloquent;
@@ -68,14 +67,14 @@ class WapSite extends Model {
      * @return BelongsTo
      */
     function school() { return $this->belongsTo('App\Models\School'); }
-
+    
     /**
      * 微网站列表
      *
      * @return array
      */
     function datatable() {
-
+        
         $columns = [
             ['db' => 'WapSite.id', 'dt' => 0],
             ['db' => 'School.name', 'dt' => 1],
@@ -83,7 +82,7 @@ class WapSite extends Model {
             ['db' => 'WapSite.created_at', 'dt' => 3],
             ['db' => 'WapSite.updated_at', 'dt' => 4],
             [
-                'db' => 'WapSite.enabled', 'dt' => 5,
+                'db'        => 'WapSite.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row);
                 },
@@ -91,16 +90,16 @@ class WapSite extends Model {
         ];
         $joins = [
             [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
                 'conditions' => [
                     'School.id = WapSite.school_id',
                 ],
             ],
         ];
         $condition = 'WapSite.school_id = ' . $this->schoolId();
-    
+        
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition
         );
@@ -113,19 +112,19 @@ class WapSite extends Model {
      * @return array
      */
     function index() {
-    
+        
         $conditions = [
             'school_id' => $this->schoolId(),
-            'enabled' => Constant::ENABLED
+            'enabled'   => Constant::ENABLED,
         ];
         $ws = $this->where($conditions)->first();
         if (!$ws) {
             $schoolId = $this->schoolId();
             $ws = $this->create([
-                'school_id' => $schoolId,
+                'school_id'  => $schoolId,
                 'site_title' => School::find($schoolId)->name,
-                'media_ids' => '',
-                'enabled' => Constant::DISABLED
+                'media_ids'  => '',
+                'enabled'    => Constant::DISABLED,
             ]);
         }
         
@@ -136,7 +135,7 @@ class WapSite extends Model {
             ),
             'show'   => true,
         ];
-    
+        
     }
     
     /**
@@ -182,10 +181,13 @@ class WapSite extends Model {
     function modify(WapSiteRequest $request, $id) {
         
         $wapSite = self::find($id);
-        if (!$wapSite) { return false; }
+        if (!$wapSite) {
+            return false;
+        }
         try {
             DB::transaction(function () use ($request, $id) {
                 self::removeMedias($request);
+                
                 return self::find($id)->update(
                     $request->except('_method', '_token', 'del_ids')
                 );
@@ -205,9 +207,9 @@ class WapSite extends Model {
      * @return bool
      */
     function remove($id = null) {
-    
+        
         return $this->del($this, $id);
-    
+        
     }
     
     /**
@@ -262,7 +264,7 @@ class WapSite extends Model {
      * @return Factory|View|string
      */
     function wIndex() {
-    
+        
         $user = Auth::user();
         # 禁止学生访问微网站
         abort_if(
@@ -276,7 +278,7 @@ class WapSite extends Model {
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-
+        
         return view('wechat.wapsite.home', [
             'wapsite' => $wapSite,
             'medias'  => (new Media())->medias(

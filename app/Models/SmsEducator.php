@@ -37,7 +37,5 @@ class SmsEducator extends Model {
         'educator_id', 'user_id', 'statistic_time',
         'balance', 'deposit_count', 'enabled'
     ];
-
-    
     
 }

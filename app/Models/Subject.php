@@ -226,6 +226,30 @@ class Subject extends Model {
     }
     
     /**
+     * 从科目中移除已删除的年级
+     *
+     * @param $gradeId
+     * @throws Exception
+     */
+    function removeGrade($gradeId) {
+        
+        try {
+            DB::transaction(function () use ($gradeId) {
+                $subjects = $this->whereRaw($gradeId . ' IN (grade_ids)')->get();
+                foreach ($subjects as $subject) {
+                    $grade_ids = implode(
+                        ',', array_diff(explode(',', $subject->grade_ids), [$gradeId])
+                    );
+                    $subject->update(['grade_ids' => $grade_ids]);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+    }
+    
+    /**
      * 删除指定科目的所有记录
      *
      * @param $id
@@ -233,7 +257,7 @@ class Subject extends Model {
      * @throws Exception
      */
     function purge($id) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 EducatorClass::whereSubjectId($id)->delete();
@@ -250,7 +274,7 @@ class Subject extends Model {
         }
         
         return true;
-    
+        
     }
     
     /**
@@ -274,7 +298,7 @@ class Subject extends Model {
                     return $d
                         ? sprintf(Snippet::BADGE_GREEN, '是')
                         : sprintf(Snippet::BADGE_GREEN, '否');
-    
+                    
                 },
             ],
             ['db' => 'Subject.max_score', 'dt' => 3],
@@ -287,6 +311,7 @@ class Subject extends Model {
                     $id = $row['id'];
                     $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
                     $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
+                    
                     return Snippet::status($d) . $editLink . $delLink;
                 },
             ],

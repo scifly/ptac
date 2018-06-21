@@ -1,18 +1,17 @@
 <?php
-
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
-use App\Helpers\ModelTrait;
-use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use Carbon\Carbon;
+use App\Helpers\ModelTrait;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
+use App\Facades\DatatableFacade as Datatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\Team 教职员工组
@@ -38,23 +37,23 @@ use Illuminate\Support\Facades\DB;
 class Team extends Model {
     
     use ModelTrait;
-
+    
     protected $fillable = ['name', 'school_id', 'remark', 'enabled'];
-
+    
     /**
      * 返回指定教职员工组所属的学校对象
      *
      * @return BelongsTo
      */
     function school() { return $this->belongsTo('App\Models\School'); }
-
+    
     /**
      * 获取指定教职员工组包含的所有教职员工对象
      *
      * @return BelongsToMany
      */
     function educators() { return $this->belongsToMany('App\Models\Educator', 'educators_teams'); }
-
+    
     /**
      * 获取教职员工组列表
      *
@@ -68,9 +67,9 @@ class Team extends Model {
             $team = self::find($id);
             $teams[$team->id] = $team['name'];
         }
-
+        
         return $teams;
-
+        
     }
     
     /**
@@ -106,7 +105,7 @@ class Team extends Model {
      * @throws Exception
      */
     function remove($id = null) {
-    
+        
         return $this->del($this, $id);
         
     }
@@ -121,7 +120,7 @@ class Team extends Model {
     function purge($id) {
         
         try {
-            DB::transaction(function() use ($id) {
+            DB::transaction(function () use ($id) {
                 EducatorTeam::whereTeamId($id)->delete();
                 $this->find($id)->delete();
             });
@@ -147,7 +146,7 @@ class Team extends Model {
             ['db' => 'Team.created_at', 'dt' => 3],
             ['db' => 'Team.updated_at', 'dt' => 4],
             [
-                'db' => 'Team.enabled', 'dt' => 5,
+                'db'        => 'Team.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
@@ -158,7 +157,7 @@ class Team extends Model {
         return Datatable::simple(
             $this->getModel(), $columns, null, $condition
         );
-
+        
     }
-
+    
 }

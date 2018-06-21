@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -39,24 +38,24 @@ use Illuminate\Support\Facades\Request;
  * @property-read School $school
  */
 class ScoreRange extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $table = 'score_ranges';
-
+    
     protected $fillable = [
         'name', 'subject_ids', 'school_id',
         'start_score', 'end_score', 'created_at',
         'updated_at', 'enabled',
     ];
-
+    
     /**
      * 获取指定成绩统计项所属的学校对象
      *
      * @return BelongsTo
      */
     function school() { return $this->belongsTo('App\Models\School'); }
-
+    
     /**
      * 保存成绩统计项
      *
@@ -66,9 +65,9 @@ class ScoreRange extends Model {
     function store(array $data) {
         
         return $this->create($data) ? true : false;
-
+        
     }
-
+    
     /**
      * 更新成绩统计项
      *
@@ -79,7 +78,7 @@ class ScoreRange extends Model {
     function modify(array $data, $id) {
         
         return $this->find($id)->update($data);
-
+        
     }
     
     /**
@@ -90,11 +89,11 @@ class ScoreRange extends Model {
      * @throws Exception
      */
     function remove($id) {
-
+        
         return $id
             ? $this->find($id)->delete()
             : $this->whereIn('id', array_values(Request::input('ids')))->delete();
-
+        
     }
     
     /**
@@ -136,7 +135,7 @@ class ScoreRange extends Model {
             ['db' => 'ScoreRange.created_at', 'dt' => 4],
             ['db' => 'ScoreRange.updated_at', 'dt' => 5],
             [
-                'db' => 'ScoreRange.enabled', 'dt' => 6,
+                'db'        => 'ScoreRange.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
@@ -147,7 +146,7 @@ class ScoreRange extends Model {
         return Datatable::simple(
             $this->getModel(), $columns, null, $condition
         );
-
+        
     }
     
     /**
@@ -204,11 +203,11 @@ class ScoreRange extends Model {
             if (count($item) != 0) {
                 $v->precentage = round($v->number / count($item) * 100, 2);
             }
-
+            
         }
-
+        
         return response()->json($score_range);
         
     }
-
+    
 }

@@ -76,17 +76,4 @@ class PollQuestionnaireParticipant extends Model {
         
     }
     
-    /**
-     * 删除指定用户参与的调查问卷记录
-     *
-     * @param $userId
-     * @return bool|null
-     * @throws Exception
-     */
-    function removeByUserId($userId) {
-        
-        return $this->where('user_id', $userId)->delete();
-        
-    }
-    
 }

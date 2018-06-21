@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Eloquent;
@@ -39,25 +38,24 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read Procedure $procedure
  */
 class ProcedureStep extends Model {
-
+    
     // todo: needs to be refactored
-
     use ModelTrait;
-
+    
     protected $table = 'procedure_steps';
-
+    
     protected $fillable = [
         'procedure_id', 'name', 'approver_user_ids',
         'related_user_ids', 'remark', 'enabled',
     ];
-
+    
     /**
      * 返回指定审批流程步骤所属的审批流程对象
      *
      * @return BelongsTo
      */
     function procedure() { return $this->belongsTo('App\Models\Procedure'); }
-
+    
     /**
      * 保存审批流程步骤
      *
@@ -65,11 +63,11 @@ class ProcedureStep extends Model {
      * @return bool
      */
     function store(array $data) {
-
+        
         return $this->create($data) ? true : false;
-
+        
     }
-
+    
     /**
      * 更新审批流程步骤
      *
@@ -78,7 +76,7 @@ class ProcedureStep extends Model {
      * @return bool
      */
     function modify(array $data, $id = null) {
-
+        
         return $id
             ? $this->find($id)->update($data)
             : $this->batch($this);
@@ -93,11 +91,11 @@ class ProcedureStep extends Model {
      * @throws Exception
      */
     function remove($id = null) {
-
+        
         return $id
             ? $this->find($id)->delete()
             : $this->whereIn('id', array_values(Request::input('ids')))->delete();
-
+        
     }
     
     /**
@@ -107,7 +105,7 @@ class ProcedureStep extends Model {
      * @throws Exception
      */
     function removeUser($userId) {
-    
+        
         try {
             DB::transaction(function () use ($userId) {
                 $condition = $userId . ' IN (approver_user_ids) OR ' . $userId . ' IN (related_user_ids)';
@@ -118,14 +116,14 @@ class ProcedureStep extends Model {
                     }, ['approver_user_ids', 'related_user_ids']);
                     $ps->update([
                         'approver_user_ids' => $user_ids[0],
-                        'related_user_ids' => $user_ids[1]
+                        'related_user_ids'  => $user_ids[1],
                     ]);
                 }
             });
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
     }
     
     /**
@@ -134,18 +132,18 @@ class ProcedureStep extends Model {
      * @return array
      */
     function datatable() {
-
+        
         $columns = [
             ['db' => 'ProcedureStep.id', 'dt' => 0],
             ['db' => 'Procedures.name as procedurename', 'dt' => 1],
             [
-                'db' => 'ProcedureStep.approver_user_ids', 'dt' => 2,
+                'db'        => 'ProcedureStep.approver_user_ids', 'dt' => 2,
                 'formatter' => function ($row) {
                     return $this->approverUsers($row['id']);
                 },
             ],
             [
-                'db' => 'ProcedureStep.related_user_ids', 'dt' => 3,
+                'db'        => 'ProcedureStep.related_user_ids', 'dt' => 3,
                 'formatter' => function ($row) {
                     return $this->relatedUsers($row['id']);
                 },
@@ -155,7 +153,7 @@ class ProcedureStep extends Model {
             ['db' => 'ProcedureStep.created_at', 'dt' => 6],
             ['db' => 'ProcedureStep.updated_at', 'dt' => 7],
             [
-                'db' => 'ProcedureStep.enabled', 'dt' => 8,
+                'db'        => 'ProcedureStep.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row);
                 },
@@ -163,19 +161,19 @@ class ProcedureStep extends Model {
         ];
         $joins = [
             [
-                'table' => 'procedures',
-                'alias' => 'Procedures',
-                'type' => 'INNER',
+                'table'      => 'procedures',
+                'alias'      => 'Procedures',
+                'type'       => 'INNER',
                 'conditions' => [
                     'Procedures.id = ProcedureStep.procedure_id',
                 ],
             ],
         ];
-
+        
         return Datatable::simple($this->getModel(), $columns, $joins);
         
     }
-
+    
     /**
      * 返回指定审批流程步骤相关的审批者用户
      *
@@ -183,9 +181,9 @@ class ProcedureStep extends Model {
      * @return string
      */
     private function approverUsers($id) {
-
+        
         return self::users($id, 'approver_user_ids');
-
+        
     }
     
     /**
@@ -195,9 +193,9 @@ class ProcedureStep extends Model {
      * @return string
      */
     private function relatedUsers($id) {
-
+        
         return $this->users($id, 'related_user_ids');
-
+        
     }
     
     /**

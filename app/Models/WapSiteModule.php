@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Throwable;
@@ -41,11 +40,11 @@ use App\Facades\DatatableFacade as Datatable;
  * @mixin \Eloquent
  */
 class WapSiteModule extends Model {
-
+    
     use ModelTrait;
     
     protected $table = 'wap_site_modules';
-
+    
     protected $fillable = [
         'id', 'wap_site_id', 'name',
         'media_id', 'enabled',
@@ -56,9 +55,9 @@ class WapSiteModule extends Model {
         return $this->hasMany('App\Models\WsmArticle', 'wsm_id', 'id');
         
     }
-
+    
     function media() { return $this->belongsTo('App\Models\Media'); }
-
+    
     function wapsite() { return $this->belongsTo('App\Models\WapSite', 'wap_site_id'); }
     
     /**
@@ -82,7 +81,7 @@ class WapSiteModule extends Model {
         }
         
         return true;
-
+        
     }
     
     /**
@@ -121,6 +120,7 @@ class WapSiteModule extends Model {
         try {
             DB::transaction(function () use ($request, $id) {
                 $this->removeMedias($request);
+                
                 return $this->find($id)->update(
                     $request->except('_method', '_token', 'del_id')
                 );
@@ -200,7 +200,7 @@ class WapSiteModule extends Model {
      * @return array
      */
     function datatable() {
-
+        
         $columns = [
             ['db' => 'WapSiteModule.id', 'dt' => 0],
             ['db' => 'WapSiteModule.name', 'dt' => 1],
@@ -208,7 +208,7 @@ class WapSiteModule extends Model {
             ['db' => 'WapSiteModule.created_at', 'dt' => 3],
             ['db' => 'WapSiteModule.updated_at', 'dt' => 4],
             [
-                'db' => 'WapSiteModule.enabled', 'dt' => 5,
+                'db'        => 'WapSiteModule.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
@@ -216,9 +216,9 @@ class WapSiteModule extends Model {
         ];
         $joins = [
             [
-                'table' => 'wap_sites',
-                'alias' => 'WapSite',
-                'type' => 'INNER',
+                'table'      => 'wap_sites',
+                'alias'      => 'WapSite',
+                'type'       => 'INNER',
                 'conditions' => [
                     'WapSite.id = WapSiteModule.wap_site_id',
                 ],
@@ -238,14 +238,14 @@ class WapSiteModule extends Model {
      * @return Factory|View
      */
     function wIndex() {
-    
+        
         $id = Request::input('id');
         $articles = WsmArticle::whereWsmId($id)
             ->where('enabled', 1)
             ->orderByDesc("created_at")
             ->get();
         $module = $this->find($id);
-    
+        
         return view('wechat.wapsite.module', [
             'articles' => $articles,
             'module'   => $module,

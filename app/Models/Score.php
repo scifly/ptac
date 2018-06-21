@@ -608,7 +608,6 @@ class Score extends Model {
             HttpStatusCode::NOT_ACCEPTABLE,
             __('messages.invalid_file_format')
         );
-        
         # 需要导入成绩的科目
         $titles = $scores[1];
         $subjectNames = [];
@@ -617,7 +616,6 @@ class Score extends Model {
         }
         $subjects = Subject::whereIn('name', $subjectNames)
             ->where('school_id', $this->schoolId())->get();
-        
         # 这次考试对应的科目id
         $exam = Exam::find(Request::input('examId'));
         abort_if(
@@ -638,18 +636,20 @@ class Score extends Model {
         # 封装需要导入的数据
         foreach ($scores as $score) {
             $basic = [
-                'class' => $score['A'],
+                'class'          => $score['A'],
                 'student_number' => $score['B'],
-                'student_name' => $score['C'],
-                'exam_id' => Request::input('examId')
+                'student_name'   => $score['C'],
+                'exam_id'        => Request::input('examId'),
             ];
             $index = 'D';
             foreach ($subjects as $subject) {
-                if (!in_array($subject->id, $examSubjectIds)) { continue; }
+                if (!in_array($subject->id, $examSubjectIds)) {
+                    continue;
+                }
                 $data[] = array_merge(
                     $basic, [
                         'subject_id' => $subject->id,
-                        'score' => $score[$index],
+                        'score'      => $score[$index],
                     ]
                 );
                 $index = chr(ord($index) + 1);
@@ -708,7 +708,7 @@ class Score extends Model {
         return response()->json([
             'html' => Request::has('examId')
                 ? view('score.class_stat', $this->classStat(false))->render()
-                : view('score.student_stat', $this->studentStat())->render()
+                : view('score.student_stat', $this->studentStat())->render(),
         ]);
         
     }
@@ -724,8 +724,8 @@ class Score extends Model {
         
         return response()->json(
             $type == 'class'
-            ? (new Exam())->classList($value)
-            : (new Squad())->studentList($value)
+                ? (new Exam())->classList($value)
+                : (new Squad())->studentList($value)
         );
         
     }
@@ -848,7 +848,7 @@ class Score extends Model {
             'gradeAvg'     => number_format($gradeAvg, 2),
             'nGradeScores' => $nGradeScores,
         ];
-
+        
         return Request::method() == 'POST'
             ? response()->json([
                 'score' => $score,
@@ -1197,10 +1197,10 @@ class Score extends Model {
             $scoreTotal = ScoreTotal::whereStudentId($studentId)
                 ->where('exam_id', $exam->id)->first();
             $examScores[] = [
-                'examId'     => $exam->id,
-                'examName'   => $exam->name,
-                'examTime'   => $exam->start_date,
-                'scores'     => $scores,
+                'examId'    => $exam->id,
+                'examName'  => $exam->name,
+                'examTime'  => $exam->start_date,
+                'scores'    => $scores,
                 'examTotal' => [
                     'score'      => $scoreTotal ? $scoreTotal->score : '——',
                     'class_rank' => $scoreTotal ? $scoreTotal->class_rank : '——',

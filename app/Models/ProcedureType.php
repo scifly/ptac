@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -32,13 +31,13 @@ use Illuminate\Support\Facades\DB;
  * @property-read Collection|Procedure[] $procedures
  */
 class ProcedureType extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $table = 'procedure_types';
-
+    
     protected $fillable = ['name', 'remark', 'enabled'];
-
+    
     /**
      * 返回指定审批流程类型包含的所有审批流程对象
      *
@@ -79,7 +78,7 @@ class ProcedureType extends Model {
      * @throws Exception
      */
     function remove($id) {
-
+        
         return $this->del($this, $id);
         
     }
@@ -117,17 +116,17 @@ class ProcedureType extends Model {
             ['db' => 'ProcedureType.created_at', 'dt' => 3],
             ['db' => 'ProcedureType.updated_at', 'dt' => 4],
             [
-                'db' => 'ProcedureType.enabled', 'dt' => 5,
+                'db'        => 'ProcedureType.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
-
+        
         return Datatable::simple(
             $this->getModel(), $columns
         );
-
+        
     }
     
 }

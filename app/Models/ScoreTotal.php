@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Eloquent;
@@ -48,7 +47,7 @@ use Illuminate\Support\Facades\Request;
 class ScoreTotal extends Model {
     
     use ModelTrait;
-
+    
     protected $table = 'score_totals';
     protected $fillable = [
         'student_id', 'exam_id', 'score',
@@ -81,10 +80,12 @@ class ScoreTotal extends Model {
         $st = $this->find($id);
         abort_if(!$st, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
         
-        return [
-            Subject::whereIn('id', explode(',', $st->subject_ids))->get(),
-            Subject::whereIn('id', explode(',', $st->na_subject_ids))->get()
-        ];
+        return array_map(
+            function ($field) use ($st) {
+                return Subject::whereIn('id', explode(',', $st->{$field}))->get();
+            },
+            ['subject_ids', 'na_subject_ids']
+        );
         
     }
     
@@ -121,7 +122,7 @@ class ScoreTotal extends Model {
      * @throws Exception
      */
     function remove($id = null) {
-
+        
         return $id
             ? $this->find($id)->delete()
             : $this->whereIn('id', array_values(Request::input('ids')))->delete();
@@ -147,7 +148,7 @@ class ScoreTotal extends Model {
                 );
                 $scoreTotal->update([
                     'subject_ids' => $subject_ids,
-                    'score' => $scoreTotal->score - $score
+                    'score'       => $scoreTotal->score - $score,
                 ]);
             }
         } catch (Exception $e) {
@@ -174,35 +175,36 @@ class ScoreTotal extends Model {
             ['db' => 'ScoreTotal.created_at', 'dt' => 7],
             ['db' => 'ScoreTotal.updated_at', 'dt' => 8],
             [
-                'db' => 'ScoreTotal.enabled', 'dt' => 9,
+                'db'        => 'ScoreTotal.enabled', 'dt' => 9,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
+                    
                     return Snippet::status($d) . $delLink;
                 },
             ],
         ];
         $joins = [
             [
-                'table' => 'students',
-                'alias' => 'Student',
-                'type' => 'INNER',
+                'table'      => 'students',
+                'alias'      => 'Student',
+                'type'       => 'INNER',
                 'conditions' => [
                     'Student.id = ScoreTotal.student_id',
                 ],
             ],
             [
-                'table' => 'exams',
-                'alias' => 'Exam',
-                'type' => 'INNER',
+                'table'      => 'exams',
+                'alias'      => 'Exam',
+                'type'       => 'INNER',
                 'conditions' => [
                     'Exam.id = ScoreTotal.exam_id',
                 ],
             ],
             [
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'INNER',
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
                 'conditions' => [
                     'User.id = Student.user_id',
                 ],
@@ -211,11 +213,11 @@ class ScoreTotal extends Model {
         $condition = 'Student.id IN (' . implode(',', $this->contactIds('student')) . ')';
         
         return Datatable::simple(
-            $this->getModel(), $columns, $joins ,$condition
+            $this->getModel(), $columns, $joins, $condition
         );
         
     }
-
+    
     /**
      * 统计
      *
@@ -224,7 +226,7 @@ class ScoreTotal extends Model {
      * @throws Exception
      */
     function stat($examId) {
-    
+        
         abort_if(
             !Exam::find($examId),
             HttpStatusCode::NOT_FOUND,
@@ -232,7 +234,6 @@ class ScoreTotal extends Model {
         );
         $exam = Exam::find($examId);
         $role = Auth::user()->group->name;
-        
         if ($role != '运营') {
             # 对当前用户可见的学生Id
             $allowedStudentIds = $this->contactIds('student');
@@ -282,11 +283,11 @@ class ScoreTotal extends Model {
                 }
                 //建立写入数据库的数组数据
                 $insert = [
-                    'student_id' => $studentId,
-                    'class_id' => $class_id,
-                    'exam_id' => intval($examId),
-                    'score' => $score,
-                    'subject_ids' => empty($subject_ids) ? '' : substr($subject_ids, 1),
+                    'student_id'     => $studentId,
+                    'class_id'       => $class_id,
+                    'exam_id'        => intval($examId),
+                    'score'          => $score,
+                    'subject_ids'    => empty($subject_ids) ? '' : substr($subject_ids, 1),
                     'na_subject_ids' => empty($na_subject_ids) ? '' : substr($na_subject_ids, 1),
                 ];
                 $data [] = $insert;
@@ -330,7 +331,7 @@ class ScoreTotal extends Model {
                 $this->insert($inserts);
             }
         }
-
+        
         return true;
         
     }

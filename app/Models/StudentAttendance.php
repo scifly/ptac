@@ -66,7 +66,7 @@ class StudentAttendance extends Model {
         'updated_at',
     ];
     const EXPORT_TITLES = [
-        '姓名', '监护人', '手机号码', '打卡时间', '进/出'
+        '姓名', '监护人', '手机号码', '打卡时间', '进/出',
     ];
     const WEEK_DAYS = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
     const VIEW_NS = 'wechat.attendance.';
@@ -132,20 +132,21 @@ class StudentAttendance extends Model {
         foreach ($sases as $sas) {
             $sasId = $sas->id;
             if ($punchTime <= $sas->end && $punchTime >= $sas->start) {
-                $status = 1; break;
+                $status = 1;
+                break;
             }
         }
         
         return $this->create([
-            'student_id' => $student->id,
-            'sas_id' => $sasId,
-            'punch_time' => $dateTime,
-            'inorout' => $data['inorout'],
+            'student_id'            => $student->id,
+            'sas_id'                => $sasId,
+            'punch_time'            => $dateTime,
+            'inorout'               => $data['inorout'],
             'attendance_machine_id' => $machine->id,
-            'status' => $status,
-            'longitude' => $data['longitude'],
-            'latitude' => $data['latitude'],
-            'media_id' => $data['media_id']
+            'status'                => $status,
+            'longitude'             => $data['longitude'],
+            'latitude'              => $data['latitude'],
+            'media_id'              => $data['media_id'],
         ]) ? true : false;
         
     }
@@ -158,11 +159,11 @@ class StudentAttendance extends Model {
      * @throws Exception
      */
     function remove($id = null) {
-
+        
         return $id
             ? $this->find($id)->delete()
             : $this->whereIn('id', array_values(Request::input('ids')))->delete();
-    
+        
     }
     
     /**
@@ -171,20 +172,22 @@ class StudentAttendance extends Model {
      * @return array
      */
     function stat() {
-    
+        
         Request::validate([
             'start_date' => 'required|date',
-            'end_date' => 'required|date|greater_than_or_equal_to:start_date'
+            'end_date'   => 'required|date|greater_than_or_equal_to:start_date',
         ]);
         $classId = Request::input('class_id') ?? head($this->classIds());
         $startDate = Request::input('start_date') ?? date('Y-m-d', strtotime('-7 day'));
         $endDate = Request::input('end_date') ?? date('Y-m-d');
         $days = Carbon::createFromTimestamp(strtotime($startDate))->diffInDays(
-            Carbon::createFromTimestamp(strtotime($endDate))
-        ) + 1;
+                Carbon::createFromTimestamp(strtotime($endDate))
+            ) + 1;
         # 指定班级所有学生的id
         $studentIds = Student::whereClassId($classId)->get()->pluck('id')->toArray();
-        if (empty($studentIds)) { return []; }
+        if (empty($studentIds)) {
+            return [];
+        }
         $attendances = $this->latestAttendances(
             implode(',', $studentIds),
             $startDate,
@@ -217,11 +220,11 @@ class StudentAttendance extends Model {
             $normal = $normals[$date] ?? 0;
             $abnormal = $abnormals[$date] ?? 0;
             $results[$i] = [
-                'date' => $date,
-                'all' => $all,
-                'normal' => $normal,
+                'date'     => $date,
+                'all'      => $all,
+                'normal'   => $normal,
                 'abnormal' => $abnormal,
-                'missed' => $all - $normal - $abnormal
+                'missed'   => $all - $normal - $abnormal,
             ];
         }
         
@@ -319,8 +322,8 @@ class StudentAttendance extends Model {
                 'alias'      => 'StudentAttendanceSetting',
                 'type'       => 'INNER',
                 'conditions' => [
-                    'StudentAttendanceSetting.id = StudentAttendance.sas_id'
-                ]
+                    'StudentAttendanceSetting.id = StudentAttendance.sas_id',
+                ],
             ],
             [
                 'table'      => 'users',
@@ -331,7 +334,6 @@ class StudentAttendance extends Model {
                 ],
             ],
         ];
-        
         $condition = 'StudentAttendance.student_id IN(' .
             implode(',', $this->contactIds('student')) . ')';
         
@@ -347,7 +349,7 @@ class StudentAttendance extends Model {
      * @return Factory|View
      */
     function wIndex() {
-    
+        
         $user = Auth::user();
         # 禁止学生学生访问考勤记录
         abort_if(
@@ -382,16 +384,16 @@ class StudentAttendance extends Model {
      * @return JsonResponse|View
      */
     function wDetail($studentId = null) {
-    
+        
         $user = Auth::user();
         if (Request::method() == 'POST') {
             $studentId = Request::input('id');
             $type = Request::input('type');
             $date = Request::input('date');
             Request::validate([
-                'id' => 'required|integer',
+                'id'   => 'required|integer',
                 'type' => ['required', 'string', Rule::in(['month', 'day']),],
-                'date' => 'required|date'
+                'date' => 'required|date',
             ]);
             abort_if(
                 !in_array($studentId, $this->contactIds('student', $user, $user->educator->school_id)),
@@ -403,27 +405,26 @@ class StudentAttendance extends Model {
                     'data' => $this->wStat(
                         Request::get('id'),
                         $date, date('Y-m-t', strtotime($date))
-                    )
+                    ),
                 ];
             } else {
                 list($ins, $outs) = $this->attendances($studentId, $date);
                 $response = [
                     'date' => $date,
                     'ins'  => $ins,
-                    'outs' => $outs
+                    'outs' => $outs,
                 ];
             }
-        
+            
             return response()->json($response);
         }
         $today = date('Y-m-d', time());
         list($ins, $outs) = $this->attendances($studentId, $today);
         $data = $this->wStat($studentId);
-    
         if (Request::ajax() && Request::method() == 'GET') {
             return response()->json(['days' => $data]);
         }
-    
+        
         return view(self::VIEW_NS . 'detail', [
             'id'   => $studentId,
             'data' => $data,
@@ -441,11 +442,14 @@ class StudentAttendance extends Model {
      * @throws Throwable
      */
     function wChart() {
-    
-        $input = Request::all();
-        if (isset($input['check'])) { return $this->wCheck(); }
-        if (isset($input['classId'])) { return $this->wRule($input['classId']); }
         
+        $input = Request::all();
+        if (isset($input['check'])) {
+            return $this->wCheck();
+        }
+        if (isset($input['classId'])) {
+            return $this->wRule($input['classId']);
+        }
         # 角色判断
         $user = Auth::user();
         abort_if(
@@ -454,7 +458,6 @@ class StudentAttendance extends Model {
             __('messages.unauthorized')
         );
         $schoolId = $user->educator ? $user->educator->school_id : session('schoolId');
-        
         # 对当前用户可见的所有班级ids
         $classIds = $this->classIds($schoolId);
         abort_if(
@@ -473,7 +476,6 @@ class StudentAttendance extends Model {
         $data['classNames'] = array_unique(
             $data['classNames'], SORT_REGULAR
         );
-        
         # 根据年级分组规则
         $gradeIds = $this->gradeIds($schoolId);
         $rules = StudentAttendanceSetting::whereIn('grade_id', $gradeIds)->get();
@@ -484,7 +486,6 @@ class StudentAttendance extends Model {
                 'value' => $rule->id,
             ];
         }
-        
         # 获取饼图数据
         $data = !isset($input['squad'], $input['time'], $input['rule'])
             ? $this->defcharts($classIds, $data)
@@ -494,11 +495,11 @@ class StudentAttendance extends Model {
             HttpStatusCode::INTERNAL_SERVER_ERROR,
             '请加入相应的考勤规则！'
         );
-    
+        
         return response()->json([
-            'data' => $data
+            'data' => $data,
         ]);
-    
+        
     }
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
@@ -509,7 +510,7 @@ class StudentAttendance extends Model {
      * @return JsonResponse
      */
     private function wRule($classId) {
-    
+        
         # 当前年级所有考勤规则，不分学期
         $gradeId = Squad::find($classId)->grade_id;
         $rules = StudentAttendanceSetting::whereGradeId($gradeId)->get();
@@ -525,7 +526,7 @@ class StudentAttendance extends Model {
             HttpStatusCode::INTERNAL_SERVER_ERROR,
             '该年级未设置考勤规则！'
         );
-    
+        
         return response()->json([
             'data' => $data,
         ]);
@@ -534,29 +535,28 @@ class StudentAttendance extends Model {
     
     /**
      * 验证考勤规则
-     * 
+     *
      * @return JsonResponse
      */
     private function wCheck() {
-    
+        
         $input = Request::all();
         $result = [
-            'statusCode' => HttpStatusCode::OK, 
-            'message' => ''
+            'statusCode' => HttpStatusCode::OK,
+            'message'    => '',
         ];
         if (isset($input['date'], $input['rule'])) {
             # 获取规则的星期
             $ruleDay = StudentAttendanceSetting::find($input['rule'])->day;
             $weekDay = self::WEEK_DAYS[date("w", strtotime($input['date']))];
-        
             if ($ruleDay != $weekDay) {
                 $result['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
                 $result['message'] = '请选择和规则对应的星期！';
             }
         }
-    
+        
         return response()->json($result);
-
+        
     }
     
     /**
@@ -688,7 +688,7 @@ class StudentAttendance extends Model {
                     break;
             }
         }
-
+        
         return $results;
         
     }
@@ -707,10 +707,9 @@ class StudentAttendance extends Model {
                 implode(',', $detail['custodian']),
                 implode(',', $detail['mobile']),
                 $detail['punch_time'],
-                $detail['inorout'] ? '进' : '出'
+                $detail['inorout'] ? '进' : '出',
             ];
         }
-        
         session(['sa_details' => $rows]);
         
     }
@@ -724,7 +723,7 @@ class StudentAttendance extends Model {
      * @return array
      */
     private function wStat($studentId, $start = null, $end = null) {
-    
+        
         # 当月第一天
         $start = $start ?? date('Y-m-01 00:00:00', strtotime(date('Y-m-d')));
         # 当月最后一天
@@ -758,8 +757,8 @@ class StudentAttendance extends Model {
         return [
             'aDays' => $aDays,
             'nDays' => $nDays,
-            'aSum' => count($aDays),
-            'nSum' => count($nDays)
+            'aSum'  => count($aDays),
+            'nSum'  => count($nDays),
         ];
         
     }

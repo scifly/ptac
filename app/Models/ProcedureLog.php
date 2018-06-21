@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Eloquent;
@@ -49,32 +48,31 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @mixin Eloquent
  */
 class ProcedureLog extends Model {
-
-    // todo: needs to be refactored
     
+    // todo: needs to be refactored
     const DT_PEND = '<span class="badge bg-orange">%s</span>';
-
+    
     protected $table = 'procedure_logs';
-
+    
     const JOINS = [
         [
-            'table' => 'procedures',
-            'alias' => 'Procedures',
-            'type' => 'INNER',
+            'table'      => 'procedures',
+            'alias'      => 'Procedures',
+            'type'       => 'INNER',
             'conditions' => [
                 'Procedures.id = ProcedureLog.procedure_id',
             ],
         ],
         [
-            'table' => 'procedure_steps',
-            'alias' => 'ProcedureStep',
-            'type' => 'INNER',
+            'table'      => 'procedure_steps',
+            'alias'      => 'ProcedureStep',
+            'type'       => 'INNER',
             'conditions' => [
                 'ProcedureStep.id = ProcedureLog.procedure_step_id',
             ],
         ],
     ];
-
+    
     protected $fillable = [
         'initiator_user_id',
         'procedure_id',
@@ -88,28 +86,28 @@ class ProcedureLog extends Model {
         'created_at',
         'updated_at',
     ];
-
+    
     /**
      * 返回审批流程日志发起者对应的用户对象
      *
      * @return BelongsTo
      */
     function initiator() { return $this->belongsTo('App\Models\User', 'initiator_user_id'); }
-
+    
     /**
      * 返回审批流程日志审批者对应的用户对象
      *
      * @return BelongsTo
      */
     function operator() { return $this->belongsTo('App\Models\User', 'operator_user_id'); }
-
+    
     /**
      * 返回指定流程日志所属的流程对象
      *
      * @return BelongsTo
      */
     function procedure() { return $this->belongsTo('App\Models\Procedure'); }
-
+    
     /**
      * 返回指定流程日志所属的流程步骤对象
      *
@@ -136,15 +134,15 @@ class ProcedureLog extends Model {
         );
         
     }
-
+    
     /**
      * 保存审批流程日志
-     * 
+     *
      * @param array $data
      * @return bool
      */
     function store(array $data) {
-
+        
         return $this->create($data) ? true : false;
         
     }
@@ -164,17 +162,17 @@ class ProcedureLog extends Model {
     
     /**
      * 删除审批流程日志
-     * 
+     *
      * @param null $id
      * @return bool|null
      * @throws \Exception
      */
     function remove($id = null) {
-    
+        
         return $id
             ? $this->find($id)->delete()
             : $this->whereIn('id', array_values(Request::input('ids')))->delete();
-    
+        
     }
     
     /**
@@ -203,11 +201,11 @@ class ProcedureLog extends Model {
      * @return array
      */
     function datatable($where) {
-
+        
         $columns = [
             ['db' => 'ProcedureLog.first_log_id', 'dt' => 0],
             [
-                'db' => 'ProcedureLog.initiator_user_id', 'dt' => 1,
+                'db'        => 'ProcedureLog.initiator_user_id', 'dt' => 1,
                 'formatter' => function ($d) {
                     return User::find($d)->realname;
                 },
@@ -217,7 +215,7 @@ class ProcedureLog extends Model {
             ['db' => 'ProcedureLog.initiator_msg', 'dt' => 4],
             ['db' => 'ProcedureLog.updated_at', 'dt' => 5],
             [
-                'db' => 'ProcedureLog.step_status', 'dt' => 6,
+                'db'        => 'ProcedureLog.step_status', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     switch ($d) {
                         case 0:
@@ -235,12 +233,13 @@ class ProcedureLog extends Model {
                     }
                     $id = $row['first_log_id'];
                     $showLink = sprintf(Snippet::DT_LINK_SHOW, $id);
+                    
                     return $status . $showLink;
                 },
             ],
         ];
-
+        
         return Datatable::simple($this->getModel(), $columns, self::JOINS, $where);
     }
-
+    
 }

@@ -80,7 +80,7 @@ use Throwable;
 class School extends Model {
     
     use ModelTrait;
-
+    
     protected $fillable = [
         'name', 'address', 'school_type_id', 'menu_id', 'signature',
         'corp_id', 'department_id', 'enabled',
@@ -274,7 +274,7 @@ class School extends Model {
                 # 更新学校的部门id和菜单id
                 $school->update([
                     'department_id' => $department->id,
-                    'menu_id' => $menu->id
+                    'menu_id'       => $menu->id,
                 ]);
                 # 创建学校后台管理菜单、菜单卡片绑定关系和微网站
                 CreateSchoolMenu::dispatch($school, Auth::id());
@@ -320,7 +320,7 @@ class School extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-
+        
         return $school ? $this->find($id) : null;
         
     }
@@ -335,7 +335,7 @@ class School extends Model {
     function remove($id = null) {
         
         return $this->del($this, $id);
-    
+        
     }
     
     /**
@@ -346,16 +346,16 @@ class School extends Model {
      * @throws Exception
      */
     function purge($id) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $school = $this->find($id);
                 $classes = [
                     'AttendanceMachine', 'ConferenceRoom', 'ComboType',
-                    'ExamType', 'EducatorAttendanceSetting', 'Group',
-                    'Major', 'PollQuestionnaire', 'Procedure',
-                    'Semester', 'StudentAttendanceSetting',
-                    'Subject', 'Team', 'WapSite', 'Educator'
+                    'ExamType', 'EducatorAttendanceSetting', 'Grade',
+                    'Group', 'Major', 'PollQuestionnaire',
+                    'Procedure', 'Semester', 'StudentAttendanceSetting',
+                    'Subject', 'Team', 'WapSite', 'Educator',
                 ];
                 $keys = array_fill(0, sizeof($classes), 'school_id');
                 $values = array_fill(0, sizeof($classes), $id);
@@ -367,7 +367,7 @@ class School extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }
@@ -378,13 +378,13 @@ class School extends Model {
      * @return array
      */
     function gradeList() {
-
+        
         $grades = Grade::whereIn('id', $this->gradeIds())->pluck('name', 'id')->toArray();
         reset($grades);
         
         return [
             $this->singleSelectList($grades, 'grade_id'),
-            key($grades)
+            key($grades),
         ];
         
     }
@@ -420,7 +420,7 @@ class School extends Model {
                     return $this->syncStatus($d, $row, false);
                 },
             ],
-            ['db' => 'Department.synced as synced', 'dt' => 8]
+            ['db' => 'Department.synced as synced', 'dt' => 8],
         ];
         $joins = [
             [
@@ -440,13 +440,13 @@ class School extends Model {
                 ],
             ],
             [
-                'table' => 'departments',
-                'alias' => 'Department',
-                'type' => 'INNER',
+                'table'      => 'departments',
+                'alias'      => 'Department',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'Department.id = School.department_id'
-                ]
-            ]
+                    'Department.id = School.department_id',
+                ],
+            ],
         ];
         # 仅在企业级显示学校列表
         $rootMenuId = (new Menu())->rootMenuId(true);

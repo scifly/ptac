@@ -115,10 +115,7 @@ class PollQuestionnaireSubject extends Model {
      */
     function modify(array $data, $id) {
         
-        $pqs = $this->find($id);
-        if (!$pqs) { return false; }
-        
-        return $pqs->update($data);
+        return $this->find($id)->update($data);
         
     }
     
@@ -129,20 +126,33 @@ class PollQuestionnaireSubject extends Model {
      * @return bool|null
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
 
+        return $this->del($this, $id);
+
+    }
+    
+    /**
+     * 删除指定调查问卷题目的所有相关数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Exception
+     */
+    function purge($id) {
+    
         try {
             DB::transaction(function () use ($id) {
-                PollQuestionnaireAnswer::wherePqsId($id);
-                PollQuestionnaireSubjectChoice::wherePqsId($id);
+                PollQuestionnaireAnswer::wherePqsId($id)->delete();
+                PollQuestionnaireSubjectChoice::wherePqsId($id)->delete();
                 $this->find($id)->delete();
             });
         } catch (Exception $e) {
             throw $e;
         }
-        
+    
         return true;
-
+    
     }
     
     /**

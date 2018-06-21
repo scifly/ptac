@@ -178,7 +178,7 @@ class Squad extends Model {
             DB::transaction(function () use ($id) {
                 $class = $this->find($id);
                 $this->delRelated('class_id', 'Student', $id);
-                (new Department())->remove($class->department_id);
+                (new Department)->remove($class->department_id);
                 $class->delete();
             });
         } catch (Exception $e) {

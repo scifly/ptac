@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -42,7 +41,7 @@ use Illuminate\Support\Facades\DB;
 class Semester extends Model {
     
     use ModelTrait;
-
+    
     protected $fillable = [
         'school_id', 'name', 'remark',
         'start_date', 'end_date', 'enabled',
@@ -50,19 +49,19 @@ class Semester extends Model {
     
     /**
      * 返回学期记录所属的学校对象
-     * 
+     *
      * @return BelongsTo
      */
     function school() { return $this->belongsTo('App\Models\School'); }
     
     /**
      * 返回学期记录包含的所有学生考勤设置对象
-     * 
+     *
      * @return HasMany
      */
-    function studentAttendanceSettings() { 
+    function studentAttendanceSettings() {
         
-        return $this->hasMany('App\Models\StudentAttendanceSetting'); 
+        return $this->hasMany('App\Models\StudentAttendanceSetting');
         
     }
     
@@ -112,7 +111,7 @@ class Semester extends Model {
      * @throws Exception
      */
     function purge($id) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $this->delRelated('semester_id', 'StudentAttendanceSetting', $id);
@@ -123,7 +122,7 @@ class Semester extends Model {
         }
         
         return true;
-    
+        
     }
     
     /**
@@ -141,18 +140,18 @@ class Semester extends Model {
             ['db' => 'Semester.created_at', 'dt' => 4],
             ['db' => 'Semester.updated_at', 'dt' => 5],
             [
-                'db' => 'Semester.enabled', 'dt' => 6,
+                'db'        => 'Semester.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
         $condition = 'Semester.school_id = ' . $this->schoolId();
-    
+        
         return Datatable::simple(
             $this->getModel(), $columns, null, $condition
         );
-
+        
     }
-
+    
 }

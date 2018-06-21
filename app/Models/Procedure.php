@@ -97,7 +97,7 @@ class Procedure extends Model {
      * @param $id
      * @return bool
      */
-    function modify(array $data, $id) {
+    function modify(array $data, $id = null) {
         
         return $id
             ? $this->find($id)->update($data)
@@ -112,7 +112,7 @@ class Procedure extends Model {
      * @return bool|null
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
 
         return $this->del($this, $id);
 
@@ -131,7 +131,7 @@ class Procedure extends Model {
                 $classes = ['ProcedureStep', 'ProcedureLog'];
                 $keys = array_fill(0, sizeof($classes), $id);
                 $values = array_fill(0, sizeof($classes), $id);
-                array_map([$this, 'purge'], $keys, $classes, $values);
+                array_map([$this, 'delRelated'], $keys, $classes, $values);
                 $this->find($id)->delete();
             });
         } catch (Exception $e) {

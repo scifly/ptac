@@ -76,7 +76,7 @@ class Student extends Model {
     const EXPORT_RANGES = [
         'class' => 0,
         'grade' => 1,
-        'all'   => 2
+        'all'   => 2,
     ];
     protected $fillable = [
         'user_id', 'class_id', 'student_number',
@@ -158,9 +158,8 @@ class Student extends Model {
                     'avatar_url'   => '',
                     'isleader'     => 0,
                     'synced'       => 0,
-                    'subscribed'   => 0
+                    'subscribed'   => 0,
                 ]);
-
                 # 创建学籍
                 $student = $this->create([
                     'user_id'        => $user->id,
@@ -172,21 +171,18 @@ class Student extends Model {
                     'remark'         => $data['remark'],
                     'enabled'        => $user->enabled,
                 ]);
-
                 # 保存手机号码
                 $mobile = new Mobile();
                 $mobile->store($data['mobile'], $user);
                 unset($mobile);
-
                 # 保存用户所处部门
                 $du = new DepartmentUser();
                 $du->store([
                     'department_id' => $student->squad->department_id,
-                    'user_id' => $student->user_id,
-                    'enabled' => Constant::ENABLED
+                    'user_id'       => $student->user_id,
+                    'enabled'       => Constant::ENABLED,
                 ]);
                 unset($du);
-
                 # 创建企业号成员
                 $user->createWechatUser($user->id);
             });
@@ -216,7 +212,6 @@ class Student extends Model {
             DB::transaction(function () use ($data, $id) {
                 $student = $this->find($id);
                 $user = User::find($data['user_id']);
-                
                 # 更新用户
                 $user->update([
                     'group_id'     => Group::whereName('学生')->first()->id,
@@ -228,7 +223,6 @@ class Student extends Model {
                     'telephone'    => $data['user']['telephone'],
                     'enabled'      => $data['user']['enabled'],
                 ]);
-                
                 # 更新学籍
                 $student->update([
                     'user_id'        => $data['user_id'],
@@ -240,23 +234,20 @@ class Student extends Model {
                     'remark'         => $data['remark'],
                     'enabled'        => $data['user']['enabled'],
                 ]);
-                
                 # 更新手机号码
                 Mobile::whereUserId($user->id)->delete();
                 $mobile = new Mobile();
                 $mobile->store($data['mobile'], $student->user);
                 unset($mobile);
-                
                 # 更新用户所在部门
                 DepartmentUser::whereUserId($user->id)->delete();
                 $du = new DepartmentUser();
                 $du->store([
                     'department_id' => $student->squad->department_id,
-                    'user_id' => $student->user_id,
-                    'enabled' => Constant::ENABLED
+                    'user_id'       => $student->user_id,
+                    'enabled'       => Constant::ENABLED,
                 ]);
                 unset($du);
-                
                 # 更新企业号成员
                 $user->UpdateWechatUser($user->id);
             });
@@ -290,7 +281,7 @@ class Student extends Model {
      * @throws Exception
      */
     function purge($id) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $student = $this->find($id);
@@ -305,7 +296,7 @@ class Student extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }
@@ -317,7 +308,7 @@ class Student extends Model {
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
     function import() {
-    
+        
         if (Request::isMethod('post')) {
             $file = Request::file('file');
             abort_if(
@@ -330,7 +321,7 @@ class Student extends Model {
                 return $this->upload($file);
             }
         }
-    
+        
         return abort(
             HttpStatusCode::INTERNAL_SERVER_ERROR,
             __('messages.file_upload_failed')
@@ -391,10 +382,9 @@ class Student extends Model {
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     function export() {
-    
+        
         $range = Request::query('range');
         $id = Request::query('id');
-
         abort_if(
             !in_array($range, array_values(self::EXPORT_RANGES)),
             HttpstatusCode::NOT_ACCEPTABLE,
@@ -416,7 +406,9 @@ class Student extends Model {
         }
         $records = [self::EXPORT_TITLES];
         foreach ($students as $student) {
-            if (!$student->user) { continue; }
+            if (!$student->user) {
+                continue;
+            }
             $records[] = [
                 $student->user->realname,
                 $student->user->gender ? '男' : '女',
@@ -442,16 +434,15 @@ class Student extends Model {
      * @return JsonResponse
      */
     function classList() {
-    
+        
         list($classes) = (new Grade())->classList(
             Request::input('id')
         );
         $result['html']['classes'] = $classes;
-    
+        
         return response()->json($result);
         
     }
-    
     
     /**
      * 返回年级和班级列表
@@ -537,7 +528,7 @@ class Student extends Model {
                 },
             ],
             ['db' => 'User.synced', 'dt' => 12],
-            ['db' => 'User.subscribed', 'dt' => 13]
+            ['db' => 'User.subscribed', 'dt' => 13],
         ];
         $joins = [
             [

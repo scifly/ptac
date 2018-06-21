@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Facades\DatatableFacade as Datatable;
@@ -51,28 +50,28 @@ use Throwable;
  * @method static Builder|Tab whereNewColumn($value)
  */
 class Tab extends Model {
-
+    
     use ModelTrait;
     
     protected $fillable = [
-        'name', 'remark', 'icon_id','group_id',
+        'name', 'remark', 'icon_id', 'group_id',
         'action_id', 'enabled', 'controller',
     ];
-
+    
     /**
      * 返回指定卡片所属的菜单对象
      *
      * @return BelongsToMany
      */
     function menus() { return $this->belongsToMany('App\Models\Menu', 'menus_tabs'); }
-
+    
     /**
      * 返回指定卡片所属的图标对象
      *
      * @return BelongsTo
      */
     function icon() { return $this->belongsTo('App\Models\Icon'); }
-
+    
     /**
      * 返回指定卡片默认的Action对象
      *
@@ -88,7 +87,7 @@ class Tab extends Model {
      * @throws Throwable
      */
     function scan() {
-
+        
         $action = new Action();
         $controllers = self::controllerPaths($action->siteRoot() . Constant::CONTROLLER_DIR);
         $action->controllerNamespaces($controllers);
@@ -117,11 +116,11 @@ class Tab extends Model {
             $ctlrName = $paths[sizeof($paths) - 1];
             if (in_array($ctlrName, Constant::EXCLUDED_CONTROLLERS)) continue;
             $record = [
-                'name' => self::controllerComments($obj),
+                'name'       => self::controllerComments($obj),
                 'controller' => $ctlrName,
-                'remark' => $controller,
-                'action_id' => self::indexActionId($ctlrName),
-                'enabled' => Constant::ENABLED,
+                'remark'     => $controller,
+                'action_id'  => self::indexActionId($ctlrName),
+                'enabled'    => Constant::ENABLED,
             ];
             $tab = self::whereController($record['controller'])->first();
             if ($tab) {
@@ -137,7 +136,7 @@ class Tab extends Model {
         unset($action);
         
         return true;
-
+        
     }
     
     /**
@@ -170,9 +169,9 @@ class Tab extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-
+        
         return $this->del($this, $id);
-
+        
     }
     
     /**
@@ -183,7 +182,7 @@ class Tab extends Model {
      * @throws Exception
      */
     function purge($id) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 MenuTab::whereTabId($id)->delete();
@@ -192,9 +191,9 @@ class Tab extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
-    
+        
     }
     
     /**
@@ -203,25 +202,28 @@ class Tab extends Model {
      * @return array
      */
     function datatable() {
-
+        
         $columns = [
             ['db' => 'Tab.id', 'dt' => 0],
             [
-                'db' => 'Tab.name', 'dt' => 1,
+                'db'        => 'Tab.name', 'dt' => 1,
                 'formatter' => function ($d, $row) {
                     $iconId = self::find($row['id'])->icon_id;
                     if ($iconId) {
                         return sprintf(Snippet::ICON, Icon::find($iconId)->name, '') . $d;
                     }
+                    
                     return sprintf(Snippet::ICON, 'fa-calendar-check-o text-gray', '') . $d;
-                }
+                },
             ],
             ['db' => 'Tab.controller', 'dt' => 2],
             [
-                'db' => 'Tab.group_id', 'dt' => 3,
-                'formatter' => function($d) {
+                'db'        => 'Tab.group_id', 'dt' => 3,
+                'formatter' => function ($d) {
                     $badge = Snippet::BADGE_BLACK;
-                    if ($d == 0) { return sprintf($badge, '所有'); }
+                    if ($d == 0) {
+                        return sprintf($badge, '所有');
+                    }
                     $group = Group::find($d)->name;
                     switch ($group) {
                         case '运营':
@@ -237,31 +239,33 @@ class Tab extends Model {
                             break;
                         
                     }
+                    
                     return sprintf($badge, $group);
-                }
+                },
             ],
             [
-                'db' => 'Action.name as actionname', 'dt' => 4,
+                'db'        => 'Action.name as actionname', 'dt' => 4,
                 'formatter' => function ($d) {
                     return sprintf(Snippet::ICON, 'fa-gears', '') . $d;
-                }
+                },
             ],
             ['db' => 'Tab.created_at', 'dt' => 5],
             ['db' => 'Tab.updated_at', 'dt' => 6],
             [
-                'db' => 'Tab.enabled', 'dt' => 7,
+                'db'        => 'Tab.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
+                    
                     return Snippet::status($d) . $editLink;
                 },
             ],
         ];
         $joins = [
             [
-                'table' => 'actions',
-                'alias' => 'Action',
-                'type' => 'LEFT',
+                'table'      => 'actions',
+                'alias'      => 'Action',
+                'type'       => 'LEFT',
                 'conditions' => [
                     'Action.id = Tab.action_id',
                 ],
@@ -271,7 +275,7 @@ class Tab extends Model {
         return Datatable::simple(
             $this->getModel(), $columns, $joins
         );
-
+        
     }
     
     /**
@@ -284,10 +288,12 @@ class Tab extends Model {
      * @throws Throwable
      */
     function modify(array $data, $id = null) {
-
+        
         if (isset($id)) {
             $tab = self::find($id);
-            if (!isset($tab)) { return false; }
+            if (!isset($tab)) {
+                return false;
+            }
             try {
                 DB::transaction(function () use ($data, $id, $tab) {
                     $tab->update($data);
@@ -302,13 +308,14 @@ class Tab extends Model {
         } else {
             $ids = Request::input('ids');
             $action = Request::input('action');
+            
             return $this->whereIn('id', $ids)->update([
-                'enabled' => $action == 'enable' ? Constant::ENABLED : Constant::DISABLED
+                'enabled' => $action == 'enable' ? Constant::ENABLED : Constant::DISABLED,
             ]);
         }
         
         return true;
-
+        
     }
     
     /**
@@ -317,7 +324,7 @@ class Tab extends Model {
      * @return array
      */
     function allowedTabIds() {
-    
+        
         $user = Auth::user();
         $role = $user->group->name;
         switch ($role) {
@@ -420,5 +427,5 @@ class Tab extends Model {
         return $allData;
         
     }
-
+    
 }
