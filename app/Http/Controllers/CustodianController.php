@@ -38,14 +38,11 @@ class CustodianController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
+        return Request::get('draw')
+            ? response()->json(
                 $this->custodian->datatable()
-            );
-        }
-        
-        return $this->output();
-        
+            )
+            : $this->output();
     }
     
     /**
@@ -56,11 +53,9 @@ class CustodianController extends Controller {
      */
     public function create() {
         
-        if (Request::method() === 'POST') {
-            return $this->custodian->studentList();
-        }
-        
-        return $this->output();
+        return Request::method() === 'POST'
+            ? $this->custodian->csList()
+            : $this->output();
         
     }
     
@@ -106,13 +101,11 @@ class CustodianController extends Controller {
      */
     public function edit($id) {
         
-        if (Request::method() === 'POST') {
-            return $this->custodian->studentList();
-        }
-        
-        return $this->output([
-            'custodian' => $this->custodian->find($id),
-        ]);
+        return Request::method() === 'POST'
+            ? $this->custodian->csList()
+            : $this->output([
+                'custodian' => $this->custodian->find($id)
+            ]);
         
     }
     
@@ -153,18 +146,15 @@ class CustodianController extends Controller {
     /**
      * 导出监护人
      *
-     * @return array
+     * @return array|JsonResponse
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function export() {
     
-        $range = Request::query('range');
-        $departmentId = $range
-            ? Grade::find(Request::query('id'))->department_id
-            : Squad::find(Request::query('id'))->department_id;
-        
-        return $this->custodian->export($departmentId);
+        return Request::method() == 'POST'
+            ? $this->custodian->csList()
+            : $this->custodian->export();
         
     }
     

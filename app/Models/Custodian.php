@@ -254,12 +254,16 @@ class Custodian extends Model {
     /**
      * 导出（仅对当前用户可见的）监护人记录
      *
-     * @param null $departmentId
      * @return array
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    function export($departmentId = null) {
+    function export() {
+    
+        $range = Request::query('range');
+        $departmentId = $range
+            ? Grade::find(Request::query('id'))->department_id
+            : Squad::find(Request::query('id'))->department_id;
         
         $custodianIds = $departmentId
             ? $this->custodianIds($departmentId)
@@ -287,7 +291,7 @@ class Custodian extends Model {
      *
      * @return JsonResponse
      */
-    function studentList() {
+    function csList() {
         
         abort_if(
             !Request::input('field') ||
@@ -299,13 +303,13 @@ class Custodian extends Model {
         $id = Request::input('id');
         $result = [];
         if (Request::input('field') == 'grade') {
-            list($classes, $classId) = (new Grade())->classList($id);
+            list($classes, $classId) = (new Grade)->classList($id);
             $result['html'] = [
                 'classes'  => $classes,
-                'students' => (new Squad())->studentList($classId),
+                'students' => (new Squad)->studentList($classId),
             ];
         } else {
-            $result['html']['students'] = (new Squad())->studentList($id);
+            $result['html']['students'] = (new Squad)->studentList($id);
         }
         
         return response()->json($result);
