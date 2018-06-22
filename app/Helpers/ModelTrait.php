@@ -4,6 +4,7 @@ namespace App\Helpers;
 use App\Models\Corp;
 use App\Models\Menu;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 use ReflectionClass;
 use App\Models\Squad;
 use App\Models\Action;
@@ -371,6 +372,7 @@ trait ModelTrait {
                 $department->subDepartmentIds($departmentId), $departmentIds
             )
         );
+        Log::debug($departmentId . ' : ' . json_encode($departmentIds));
         $userIds = [];
         foreach ($departmentIds as $id) {
             $userIds = array_merge(
