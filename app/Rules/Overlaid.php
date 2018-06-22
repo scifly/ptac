@@ -7,6 +7,7 @@ use App\Models\Grade;
 use App\Models\Semester;
 use App\Models\StudentAttendanceSetting;
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Facades\Log;
 
 class Overlaid implements Rule {
     
@@ -76,6 +77,7 @@ class Overlaid implements Rule {
                         ->orWhere('start_date', '!=', $end)
                         ->where('enabled', 1)
                         ->pluck('end_date', 'start_date')->toArray();
+                    Log::debug(json_encode($settings));
                 }
                 break;
             default :
