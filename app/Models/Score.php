@@ -741,19 +741,19 @@ class Score extends Model {
      */
     function template($examId = null, $classId = null) {
         
-        $rows = [];
-        $exam = Exam::find($examId);
-        $subjects = Subject::whereIn('id', explode(',', $exam->subject_ids))->pluck('name')->toArray();
-        $rows[] = array_merge(['班级', '学号', '姓名'], $subjects);
-        $class = Squad::find($classId);
-        $students = $class->students;
-        foreach ($students as $student) {
-            $rows[] = [
-                $class->name,
-                $student->student_number,
-                $student->user->realname
-            ];
-        }
+        // $rows = [];
+        // $exam = Exam::find($examId);
+        // $subjects = Subject::whereIn('id', explode(',', $exam->subject_ids))->pluck('name')->toArray();
+        // $rows[] = array_merge(['班级', '学号', '姓名'], $subjects);
+        // $class = Squad::find($classId);
+        // $students = $class->students;
+        // foreach ($students as $student) {
+        //     $rows[] = [
+        //         $class->name,
+        //         $student->student_number,
+        //         $student->user->realname
+        //     ];
+        // }
         $rows = [
             [1, 2, 3, 4, 5, 6, 7, 8],
             [1, 2, 3, 4, 5],
