@@ -2,7 +2,6 @@
 namespace App\Jobs;
 
 use Exception;
-use Illuminate\Support\Facades\Log;
 use Validator;
 use App\Models\User;
 use App\Models\Grade;
@@ -234,7 +233,10 @@ class ImportStudent implements ShouldQueue {
                                         'subscribed' => 0
                                     ]);
                                     # 创建监护人
-                                    $c = Custodian::create(['user_id' => $user['id']]);
+                                    $c = Custodian::create([
+                                        'user_id' => $user['id'],
+                                        'enabled' => 1
+                                    ]);
                                     # 创建 监护关系
                                     CustodianStudent::create([
                                         'custodian_id' => $c['id'],
@@ -324,6 +326,12 @@ class ImportStudent implements ShouldQueue {
                 }
             });
         } catch (Exception $e) {
+            event(new JobResponse([
+                'userId' => $this->userId,
+                'title' => '导入学籍',
+                'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
+                'message' => $e->getMessage()
+            ]));
             throw $e;
         }
         
@@ -468,6 +476,12 @@ class ImportStudent implements ShouldQueue {
                 }
             });
         } catch (Exception $e) {
+            event(new JobResponse([
+                'userId' => $this->userId,
+                'title' => '导入学籍',
+                'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
+                'message' => $e->getMessage()
+            ]));
             throw $e;
         }
     
