@@ -34,7 +34,7 @@ class ExamComposer {
                 $subjectList[$subject->id] = $subject->name;
             }
         }
-        $selectedClasses = $selectedSubjects = [];
+        $selectedClasses = $selectedSubjects = null;
         if (Request::route('id')) {
             $exam = Exam::find(Request::route('id'));
             $selectedClasses = Squad::whereRaw('id IN (' . $exam->class_ids . ')')->pluck('name', 'id');
@@ -44,8 +44,8 @@ class ExamComposer {
             'examtypes'        => $examtypes,
             'classes'          => $squads->pluck('name', 'id'),
             'subjects'         => $subjectList,
-            'selectedClasses'  => $selectedClasses->toArray(),
-            'selectedSubjects' => $selectedSubjects->toArray(),
+            'selectedClasses'  => $selectedClasses ? $selectedClasses->toArray() : [],
+            'selectedSubjects' => $selectedSubjects ? $selectedSubjects->toArray() : [],
             'uris'             => $this->uris(),
         ]);
         
