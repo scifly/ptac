@@ -538,7 +538,7 @@ trait ModelTrait {
         header('Pragma: public'); // HTTP/1.0
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
         
-        return $writer->save($download ? 'php://output' : 'files/' . $fileName . '.xlsx');
+        return $writer->save($download ? 'php://output' : $fileName . '.xlsx');
         
     }
     
