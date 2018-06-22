@@ -730,6 +730,41 @@ class Score extends Model {
         
     }
     
+    /**
+     * 生成指定班级和考试的成绩导入模板
+     *
+     * @param $examId
+     * @param $classId
+     * @return bool
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     */
+    function template($examId = null, $classId = null) {
+        
+        $rows = [];
+        $exam = Exam::find($examId);
+        $subjects = Subject::whereIn('id', explode(',', $exam->subject_ids))->pluck('name')->toArray();
+        $rows[] = array_merge(['班级', '学号', '姓名'], $subjects);
+        $class = Squad::find($classId);
+        $students = $class->students;
+        foreach ($students as $student) {
+            $rows[] = [
+                $class->name,
+                $student->student_number,
+                $student->user->realname
+            ];
+        }
+        $rows = [
+            [1, 2, 3, 4, 5, 6, 7, 8],
+            [1, 2, 3, 4, 5],
+            [1, 2, 3, 4, 5],
+            [1, 2, 3, 4, 5],
+        ];
+        
+        return $this->excel($rows, 'scores', '成绩导入', false);
+        
+    }
+    
     /** 微信端 ------------------------------------------------------------------------------------------------------- */
     /**
      * 返回微信端成绩中心首页

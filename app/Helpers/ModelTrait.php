@@ -5,6 +5,7 @@ use App\Models\Corp;
 use App\Models\Menu;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use ReflectionClass;
 use App\Models\Squad;
 use App\Models\Action;
@@ -506,10 +507,12 @@ trait ModelTrait {
      * @param array $records
      * @param string $fileName
      * @param string $sheetTitle
+     * @param bool $download
+     * @return bool
      * @throws Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    function excel(array $records, $fileName = 'export', $sheetTitle = '导出数据') {
+    function excel(array $records, $fileName = 'export', $sheetTitle = '导出数据', $download = true) {
         
         $user = Auth::user();
         $spreadsheet = new Spreadsheet();
@@ -519,7 +522,7 @@ trait ModelTrait {
             ->setSubject('家校通导出文件')
             ->setDescription('-')
             ->setKeywords('导出')
-            ->setCategory('export');
+            ->setCategory($fileName);
         $spreadsheet->setActiveSheetIndex(0)->setTitle($sheetTitle);
         $spreadsheet->getActiveSheet()->fromArray($records, null, 'A1');
         // Redirect output to a client’s web browser (Xlsx)
@@ -535,7 +538,7 @@ trait ModelTrait {
         header('Pragma: public'); // HTTP/1.0
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
         
-        return $writer->save('php://output');
+        return $writer->save($download ? 'php://output' : 'files/' . $fileName . '.xlsx');
         
     }
     
