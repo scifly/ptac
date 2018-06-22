@@ -3,6 +3,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CustodianRequest;
 use App\Models\Custodian;
+use App\Models\Grade;
+use App\Models\Squad;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -158,7 +160,9 @@ class CustodianController extends Controller {
     public function export() {
     
         $range = Request::query('range');
-        $departmentId = Request::query('id');
+        $departmentId = $range
+            ? Grade::find(Request::query('id'))->department_id
+            : Squad::find(Request::query('id'))->department_id;
         
         return $this->custodian->export(
             $range, $departmentId
