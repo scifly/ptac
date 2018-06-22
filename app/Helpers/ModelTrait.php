@@ -541,7 +541,7 @@ trait ModelTrait {
             return $writer->save('php://output');
         }
         
-        return $writer->save('uploads/' . date('Y/m/d/' . $fileName . '.xlsx'));
+        return $writer->save('uploads/' . date('Y/m/d/') . $fileName . '.xlsx');
         
     }
     
