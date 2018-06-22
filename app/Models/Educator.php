@@ -575,10 +575,9 @@ class Educator extends Model {
      */
     function export($range, $departmentId = null) {
         
-        $educatorIds = $range == 0
+        $educatorIds = $range
             ? $this->educatorIds($departmentId)
             : $this->contactIds('educator');
-        
         $educators = $this->whereIn('id', $educatorIds)
             ->where('school_id', $this->schoolId())->get();
         $records = [self::EXPORT_TITLES];

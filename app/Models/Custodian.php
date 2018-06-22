@@ -254,20 +254,21 @@ class Custodian extends Model {
     /**
      * 导出（仅对当前用户可见的）监护人记录
      *
+     * @param $range
+     * @param null $departmentId
      * @return array
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    function export() {
+    function export($range, $departmentId = null) {
         
-        $custodians = self::whereIn(
-            'id', $this->contactIds('custodian')
-        )->get();
+        $custodianIds = $range
+            ? $this->custodianIds($departmentId)
+            : $this->contactIds('custodian');
+        $custodians = $this->whereIn('id', $custodianIds)->get();
         $records = [self::EXCEL_EXPORT_TITLE];
         foreach ($custodians as $custodian) {
-            if (!$custodian->user) {
-                continue;
-            }
+            if (!$custodian->user) { continue; }
             $records[] = [
                 $custodian->user->realname,
                 $custodian->user->gender == Constant::ENABLED ? '男' : '女',

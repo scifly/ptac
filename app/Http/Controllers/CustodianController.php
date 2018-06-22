@@ -156,8 +156,13 @@ class CustodianController extends Controller {
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function export() {
+    
+        $range = Request::query('range');
+        $departmentId = Request::query('id');
         
-        return $this->custodian->export();
+        return $this->custodian->export(
+            $range, $departmentId
+        );
         
     }
     
