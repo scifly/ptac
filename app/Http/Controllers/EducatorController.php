@@ -205,7 +205,7 @@ class EducatorController extends Controller {
     public function export() {
         
         $range = Request::query('range');
-        $departmentId = Request::query('department_id');
+        $departmentId = Request::query('id');
         
         return $this->educator->export(
             $range, $departmentId

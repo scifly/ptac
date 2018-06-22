@@ -372,7 +372,6 @@ trait ModelTrait {
                 $department->subDepartmentIds($departmentId), $departmentIds
             )
         );
-        Log::debug($departmentId . ' : ' . json_encode($departmentIds));
         $userIds = [];
         foreach ($departmentIds as $id) {
             $userIds = array_merge(
