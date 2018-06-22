@@ -518,10 +518,10 @@ trait ModelTrait {
         $spreadsheet = new Spreadsheet();
         $spreadsheet->getProperties()->setCreator($user->realname)
             ->setLastModifiedBy($user->realname)
-            ->setTitle('家校通')
-            ->setSubject('家校通导出文件')
+            ->setTitle('智校+')
+            ->setSubject('智校+')
             ->setDescription('-')
-            ->setKeywords('导出')
+            ->setKeywords('导入导出')
             ->setCategory($fileName);
         $spreadsheet->setActiveSheetIndex(0)->setTitle($sheetTitle);
         $spreadsheet->getActiveSheet()->fromArray($records, null, 'A1');
@@ -541,7 +541,7 @@ trait ModelTrait {
             return $writer->save('php://output');
         }
         
-        return $writer->save('files/' . $fileName . '.xlsx');
+        return $writer->save('uploads/' . date('Y/m/d/' . $fileName . '.xlsx'));
         
     }
     
