@@ -148,7 +148,7 @@
                                 $studentPrev.after(result['html']['students']['original']['html']);
                             }
                             if ($('.checked').find('input').val() === "1") {
-                                $classId.prop('disabled', true);
+                                $('#' + contact.options.classId).prop('disabled', true);
                             }
                             page.initSelect2();
                         },
