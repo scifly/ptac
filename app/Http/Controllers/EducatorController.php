@@ -41,13 +41,11 @@ class EducatorController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
+        return Request::get('draw')
+            ? response()->json(
                 $this->educator->datatable()
-            );
-        }
-        
-        return $this->output();
+            )
+            : $this->output();
         
     }
     
@@ -139,15 +137,9 @@ class EducatorController extends Controller {
      */
     public function recharge($id) {
         
-        if (Request::method() == 'PUT') {
-            return $this->educator->recharge(
-                $id, Request::all()
-            );
-        }
-        
-        return $this->output([
-            'educator' => $this->educator->find($id),
-        ]);
+        return Request::method() == 'PUT'
+            ? $this->educator->recharge($id, Request::all())
+            : $this->output(['educator' => $this->educator->find($id)]);
         
     }
     
@@ -204,12 +196,7 @@ class EducatorController extends Controller {
      */
     public function export() {
         
-        $range = Request::query('range');
-        $departmentId = Request::query('id');
-        
-        return $this->educator->export(
-            $range, $departmentId
-        );
+        return $this->educator->export();
         
     }
     

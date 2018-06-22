@@ -567,13 +567,14 @@ class Educator extends Model {
     /**
      * 批量导出
      *
-     * @param integer $range , 0 - 指定部门(含所有子部门), 1 - 所有
-     * @param null $departmentId
      * @return mixed
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    function export($range, $departmentId = null) {
+    function export() {
+    
+        $range = Request::query('range');
+        $departmentId = Request::query('id');
         
         $educatorIds = $range
             ? $this->educatorIds($departmentId)
