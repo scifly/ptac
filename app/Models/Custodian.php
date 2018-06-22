@@ -103,15 +103,13 @@ class Custodian extends Model {
                     'avatar_url'   => '00001.jpg',
                     'isleader'     => 0,
                     'synced'       => 0,
-                    'subscribed'   => 0
+                    'subscribed'   => 0,
                 ]);
-
                 # 创建监护人(Custodian) 记录
                 $custodian = self::create([
                     'user_id' => $user->id,
-                    'enabled' => $user->enabled
+                    'enabled' => $user->enabled,
                 ]);
-    
                 # 保存监护人用户&部门绑定关系
                 $studentIds = $data['student_ids']; # 被监护人的学生ids
                 $relationships = $data['relationships']; # 监护关系
@@ -122,19 +120,16 @@ class Custodian extends Model {
                     abort_if(!$student, HttpStatusCode::NOT_FOUND, '找不到学生id: ' . $sId . '对应的记录');
                     $du->store([
                         'department_id' => $student->squad->department_id,
-                        'user_id' => $user->id,
-                        'enabled' => Constant::ENABLED
+                        'user_id'       => $user->id,
+                        'enabled'       => Constant::ENABLED,
                     ]);
                     $rses[$sId] = $relationships[$key];
                 }
                 unset($du);
-    
                 # 保存监护关系
                 (new CustodianStudent)->storeByCustodianId($custodian->id, $rses);
-                
                 # 保存用户手机号码
                 (new Mobile)->store($data['mobile'], $user);
-    
                 # 创建企业号成员
                 $user->createWechatUser($user->id);
             });
@@ -157,9 +152,13 @@ class Custodian extends Model {
      */
     function modify(array $data, $id = null) {
         
-        if (!$id) { return $this->batch($this); }
+        if (!$id) {
+            return $this->batch($this);
+        }
         $custodian = $this->find($id);
-        if (!$custodian) { return false; }
+        if (!$custodian) {
+            return false;
+        }
         try {
             DB::transaction(function () use ($data, $id, $custodian) {
                 
@@ -175,13 +174,11 @@ class Custodian extends Model {
                     'enabled'      => $data['user']['enabled'],
                     'isleader'     => 0,
                 ]);
-                
                 # 更新监护人记录
                 $custodian->update([
                     'user_id' => $userId,
-                    'enabled' => $custodian->user->enabled
+                    'enabled' => $custodian->user->enabled,
                 ]);
-    
                 # 更新用户所在部门
                 $studentIds = $data['student_ids']; # 被监护人的学生ids
                 $relationships = $data['relationships']; # 监护关系
@@ -193,21 +190,18 @@ class Custodian extends Model {
                     abort_if(!$student, HttpStatusCode::NOT_FOUND, '找不到学生id: ' . $sId . '对应的记录');
                     $du->store([
                         'department_id' => $student->squad->department_id,
-                        'user_id' => $custodian->user_id,
-                        'enabled' => Constant::ENABLED
+                        'user_id'       => $custodian->user_id,
+                        'enabled'       => Constant::ENABLED,
                     ]);
                     $rses[$sId] = $relationships[$key];
                 }
                 unset($du);
-    
                 # 更新监护人学生关系表(CustodianStudent)中的数据
                 CustodianStudent::whereCustodianId($id)->delete();
                 (new CustodianStudent)->storeByCustodianId($id, $rses);
-    
                 # 更新用户的手机号码(Mobile)记录
                 Mobile::whereUserId($userId)->delete();
                 (new Mobile)->store($data['mobile'], $custodian->user);
-    
                 # 更新企业号会员数据
                 $custodian->user->UpdateWechatUser($userId);
             });
@@ -228,7 +222,7 @@ class Custodian extends Model {
      * @throws Throwable
      */
     function remove($id = null) {
-
+        
         return (new User)->removeContact($this, $id);
         
     }
@@ -241,7 +235,7 @@ class Custodian extends Model {
      * @throws Exception
      */
     function purge($id = null) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $custodian = $this->find($id);
@@ -252,7 +246,7 @@ class Custodian extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }
@@ -294,7 +288,7 @@ class Custodian extends Model {
      * @return JsonResponse
      */
     function studentList() {
-    
+        
         abort_if(
             !Request::input('field') ||
             !Request::input('id') ||
@@ -313,7 +307,7 @@ class Custodian extends Model {
         } else {
             $result['html']['students'] = (new Squad())->studentList($id);
         }
-    
+        
         return response()->json($result);
         
     }
@@ -405,7 +399,7 @@ class Custodian extends Model {
      * @return array
      */
     function myStudents($userId = null, $corpId = null) {
-
+        
         $custodian = isset($userId) ? User::find($userId)->custodian : Auth::user()->custodian;
         $corpId = $corpId ?? session('corpId');
         $students = [];

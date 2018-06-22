@@ -135,8 +135,11 @@ class Squad extends Model {
      * @return bool
      * @throws Exception
      */
-    function modify(SquadRequest $request, $id) {
+    function modify(SquadRequest $request, $id = null) {
        
+        if (!$id) {
+            return $this->batch($this);
+        }
         $class = null;
         try {
             DB::transaction(function () use ($request, $id, &$class) {
@@ -159,7 +162,7 @@ class Squad extends Model {
      * @return bool
      * @throws Throwable
      */
-    function remove($id) {
+    function remove($id = null) {
         
         return $this->del($this, $id);
         
