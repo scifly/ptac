@@ -254,15 +254,14 @@ class Custodian extends Model {
     /**
      * 导出（仅对当前用户可见的）监护人记录
      *
-     * @param $range
      * @param null $departmentId
      * @return array
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    function export($range, $departmentId = null) {
+    function export($departmentId = null) {
         
-        $custodianIds = $range
+        $custodianIds = $departmentId
             ? $this->custodianIds($departmentId)
             : $this->contactIds('custodian');
         $custodians = $this->whereIn('id', $custodianIds)->get();

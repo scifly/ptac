@@ -164,9 +164,7 @@ class CustodianController extends Controller {
             ? Grade::find(Request::query('id'))->department_id
             : Squad::find(Request::query('id'))->department_id;
         
-        return $this->custodian->export(
-            $range, $departmentId
-        );
+        return $this->custodian->export($departmentId);
         
     }
     
