@@ -761,7 +761,7 @@ class Score extends Model {
             [1, 2, 3, 4, 5],
         ];
         
-        return $this->excel($rows, 'scores', '成绩导入', false);
+        return $this->excel($rows, 'scores', '成绩导入', true);
         
     }
     
