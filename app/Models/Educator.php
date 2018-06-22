@@ -578,7 +578,8 @@ class Educator extends Model {
         $educatorIds = $range == 0
             ? $this->educatorIds($departmentId)
             : $this->contactIds('educator');
-        $educators = $this->whereIn('id', $educatorIds)->get();
+        $educators = $this->whereIn('id', $educatorIds)
+            ->where('school_id', $this->schoolId())->get();
         $records = [self::EXPORT_TITLES];
         foreach ($educators as $educator) {
             if (!$educator->user) { continue; }
