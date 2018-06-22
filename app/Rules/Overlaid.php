@@ -8,6 +8,7 @@ use App\Models\Semester;
 use App\Models\StudentAttendanceSetting;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Request;
 
 class Overlaid implements Rule {
     
@@ -58,10 +59,12 @@ class Overlaid implements Rule {
                     $settings = StudentAttendanceSetting::where('id', '<>', $value[3])
                         ->whereIn('grade_id', $gradeIds)
                         ->where('day', $value[4])
+                        ->where('semester_id', Request::input('semester_id'))
                         ->pluck('end', 'start')->toArray();
                 } else {
                     $settings = StudentAttendanceSetting::whereIn('grade_id', $gradeIds)
                         ->where('day', $value[4])
+                        ->where('semester_id', Request::input('semester_id'))
                         ->pluck('end', 'start')->toArray();
                 }
                 break;
