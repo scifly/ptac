@@ -76,7 +76,7 @@ class ScoreIndexComposer {
             'classes'        => $classList,
             'subjects'       => $subjectList,
             'items'          => $items,
-            'importTemplate' => 'files/scores.xls',
+            'importTemplate' => 'uploads/' . date('Y/m/d/') . 'scores.xlsx',
         ]);
         
     }

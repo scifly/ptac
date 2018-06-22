@@ -32,6 +32,13 @@ class TestController extends Controller {
      */
     public function index() {
     
+        $a = [
+            0 => 'a',
+            1 => 'b'
+        ];
+        
+        dd(key($a));
+        
         (new Score)->template();
         exit;
         // dd(round(microtime(true) * 1000));
