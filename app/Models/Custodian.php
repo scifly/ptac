@@ -261,10 +261,17 @@ class Custodian extends Model {
     function export() {
     
         $range = Request::query('range');
-        $departmentId = $range
-            ? Grade::find(Request::query('id'))->department_id
-            : Squad::find(Request::query('id'))->department_id;
-        
+        $departmentId = null;
+        switch ($range) {
+            case 0:
+                $departmentId = Squad::find(Request::query('id'))->department_id;
+                break;
+            case 1:
+                $departmentId = Grade::find(Request::query('id'))->department_id;
+                break;
+            default:
+                break;
+        }
         $custodianIds = $departmentId
             ? $this->custodianIds($departmentId)
             : $this->contactIds('custodian');
