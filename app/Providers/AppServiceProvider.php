@@ -1,8 +1,12 @@
 <?php
 namespace App\Providers;
 
+use App\Models\Action;
+use App\Policies\Route;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider {
@@ -14,6 +18,8 @@ class AppServiceProvider extends ServiceProvider {
      */
     public function boot() {
 
+        View::share('uris', $this->uris());
+        
         /** greater_than */
         Validator::extend('greater_than', function(
             /** @noinspection PhpUnusedParameterInspection */
@@ -62,4 +68,27 @@ class AppServiceProvider extends ServiceProvider {
     public function register() {
         //
     }
+    
+    /**
+     *
+     *
+     * @return array|null
+     */
+    private function uris() {
+    
+        if (!Request::route()) { return null; }
+        $controller = class_basename(Request::route()->controller);
+        $routes = Action::whereController($controller)
+            ->where('route', '<>', null)
+            ->pluck('route', 'method')
+            ->toArray();
+        $uris = [];
+        foreach ($routes as $key => $value) {
+            $uris[$key] = new Route($value);
+        }
+    
+        return $uris;
+    
+    }
+    
 }

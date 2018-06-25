@@ -18,8 +18,6 @@ class ComposerServiceProvider extends ServiceProvider {
     
         $ns = 'App\Http\ViewComposers\\';
         
-        View::share('uris', $this->uris());
-        
         # 功能 - Action
         View::composer('action.index', $ns . 'ActionIndexComposer');
         View::composer('action.create_edit', $ns . 'ActionComposer');
