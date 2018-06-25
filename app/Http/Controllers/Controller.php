@@ -39,17 +39,7 @@ class Controller extends BaseController {
         # 获取功能对象
         $method = Request::route()->getActionMethod();
         $controller = class_basename(Request::route()->controller);
-    
-        $routes = Action::whereController($controller)
-            ->where('route', '<>', null)
-            ->pluck('route', 'method')
-            ->toArray();
-        $uris = [];
-        foreach ($routes as $key => $value) {
-            $uris[$key] = new Route($value);
-        }
-        View::share('uris', $uris);
-        
+        $params['uris'] = $this->uris($controller);
         $action = Action::whereMethod($method)->where('controller', $controller)->first();
         abort_if(
             !$action,
@@ -207,6 +197,25 @@ class Controller extends BaseController {
     
             return $next($request);
         });
+        
+    }
+    
+    /**
+     * 返回指定控制器对应的所有路由
+     *
+     * @param $controller
+     */
+    private function uris($controller) {
+    
+        $routes = Action::whereController($controller)
+            ->where('route', '<>', null)
+            ->pluck('route', 'method')
+            ->toArray();
+        $uris = [];
+        foreach ($routes as $key => $value) {
+            $uris[$key] = new Route($value);
+        }
+        View::share('uris', $uris);
         
     }
     
