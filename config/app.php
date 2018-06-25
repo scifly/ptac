@@ -154,6 +154,7 @@ return [
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         App\Providers\WechatServiceProvider::class,
         App\Providers\DatatableServiceProvider::class,
+        App\Providers\GeneralClassServiceProvider::class,
         App\Providers\ComposerServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Laravel\Passport\PassportServiceProvider::class
@@ -204,7 +205,7 @@ return [
         'View'         => Illuminate\Support\Facades\View::class,
         'Wechat'       => App\Facades\Wechat::class,
         'Datatable'    => App\Facades\DatatableFacade::class,
-        // 'Test'         => App\Models\MenuType::class,
+        'GeneralClass' => App\Facades\GeneralClass::class,
         'Form'         => Collective\Html\FormFacade::class,
         'Html'         => Collective\Html\HtmlFacade::class,
         'Excel'        => Maatwebsite\Excel\Facades\Excel::class,

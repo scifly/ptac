@@ -1,6 +1,7 @@
 <?php
 include_once 'common.php';
 
+use App\Facades\GeneralClass;
 use App\Models\Corp;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +20,11 @@ use Illuminate\Support\Facades\Route;
 # });
 Route::get('/messages/send', 'MessageController@send');
 Route::auth();
+
+Route::get('wtf', function(){
+    $img='<img src="'. GeneralClass::getGravatarURL('ajay.agrahari09@gmail.com').'">';
+    echo $img;
+});
 
 # 关闭注册功能
 Route::any('register', function () { return redirect('login'); });
