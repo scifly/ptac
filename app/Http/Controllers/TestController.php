@@ -29,7 +29,7 @@ class TestController extends Controller {
     public function index() {
     
         
-        dd(App::whereCorpId(1)->get()->toArray());
+        dd(App::whereCorpId(1)->toArray());
         $a = [
             0 => 'a',
             1 => 'b'
