@@ -31,7 +31,7 @@ class TestController extends Controller {
     public function index() {
     
         
-        dd(School::whereEnabled(1)->pluck('name', 'id'));
+        dd(App::whereEnabled(1)->toArray());
         $a = [
             0 => 'a',
             1 => 'b'
