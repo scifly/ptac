@@ -158,7 +158,7 @@ trait ModelTrait {
      */
     static function uris() {
         
-        if (!Request::route()) { return null; }
+        // if (!Request::route()) { return null; }
         $controller = class_basename(Request::route()->controller);
         $routes = Action::whereController($controller)
             ->where('route', '<>', null)
