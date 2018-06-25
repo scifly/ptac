@@ -6,6 +6,7 @@ use App\Facades\Wechat;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use App\Jobs\ImportScore;
 use Carbon\Carbon;
 use Eloquent;
@@ -222,20 +223,32 @@ class Score extends Model {
         $columns = [
             ['db' => 'Score.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
-            ['db' => 'Grade.name as gradename', 'dt' => 2],
-            ['db' => 'Squad.name', 'dt' => 3],
+            [
+                'db'        => 'Grade.name as gradename', 'dt' => 2,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-object-group', '') . $d;
+                },
+            ],
+            [
+                'db'        => 'Squad.name', 'dt' => 3,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-users', '') . $d;
+                },
+            ],
             ['db' => 'Student.student_number', 'dt' => 4],
             ['db' => 'Subject.name as subjectname', 'dt' => 5],
             ['db' => 'Exam.name as examname', 'dt' => 6],
-            ['db'        => 'Score.class_rank', 'dt' => 7,
-             'formatter' => function ($d) {
-                 return $d === 0 ? "未统计" : $d;
-             },
+            [
+                'db'        => 'Score.class_rank', 'dt' => 7,
+                'formatter' => function ($d) {
+                    return $d === 0 ? "未统计" : $d;
+                },
             ],
-            ['db'        => 'Score.grade_rank', 'dt' => 8,
-             'formatter' => function ($d) {
-                 return $d === 0 ? "未统计" : $d;
-             },
+            [
+                'db'        => 'Score.grade_rank', 'dt' => 8,
+                'formatter' => function ($d) {
+                    return $d === 0 ? "未统计" : $d;
+                },
             ],
             ['db' => 'Score.score', 'dt' => 9],
             ['db' => 'Score.created_at', 'dt' => 10],
@@ -755,7 +768,7 @@ class Score extends Model {
             $rows[] = [
                 $class->name,
                 $student->student_number,
-                $student->user->realname
+                $student->user->realname,
             ];
         }
         
