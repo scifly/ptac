@@ -81,7 +81,7 @@ class ScoreIndexComposer {
                 '班级排名', '年级排名', '成绩', '创建于', '更新于', '状态 . 操作',
             ],
             'batch'          => true,
-            'uris'           => $this->uris(),
+            // 'uris'           => $this->uris(),
             'exams'          => $examList,
             'classes'        => $classList,
             'subjects'       => $subjectList,
