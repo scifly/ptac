@@ -92,7 +92,8 @@ return [
         'import_succeeded' => '考试成绩已成功导入',
         'import_request_submitted' => '已提交导入请求<br />需要新增的成绩数：%s<br />需要更新的成绩数：%s<br />非法成绩数: %s, 请参考导出文件',
         'message_template' => '尊敬的%s家长, %s考试成绩已出: %s。',
-        'message_send_result' => '成功: %s条; <br />失败: %s条'
+        'message_send_result' => '成功: %s条; <br />失败: %s条',
+        'total_score_unavailable' => '请先统计总分'
     ],
     'semester' => [
         'title' => '学期设置',

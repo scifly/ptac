@@ -1438,6 +1438,11 @@ class Score extends Model {
                     }
                 } else {
                     $total = ScoreTotal:: whereExamId($examId)->where('student_id', $student->id)->first();
+                    abort_if(
+                        !$total,
+                        HttpStatusCode::INTERNAL_SERVER_ERROR,
+                        __('messages.score.total_score_unavailable')
+                    );
                     foreach ($items as $item) {
                         switch ($item) {
                             case 'score':
