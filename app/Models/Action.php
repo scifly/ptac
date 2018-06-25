@@ -316,7 +316,7 @@ class Action extends Model {
                     ['method', $action['method']],
                 ])->first();
                 if ($a) {
-                    $a->name = $action['name'];
+                    $a->name = trim($action['name']);
                     $a->route = $action['route'];
                     $a->view = $action['view'];
                     $a->js = $action['js'];
@@ -324,7 +324,7 @@ class Action extends Model {
                     $a->save();
                 } else {
                     $this->create([
-                        'name' => $action['name'],
+                        'name' => trim($action['name']),
                         'method' => $action['method'],
                         'remark' => $action['remark'],
                         'controller' => $action['controller'],
