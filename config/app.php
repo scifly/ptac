@@ -153,7 +153,6 @@ return [
         App\Providers\RouteServiceProvider::class,
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         App\Providers\WechatServiceProvider::class,
-        App\Providers\MyClassServiceProvider::class,
         App\Providers\DatatableServiceProvider::class,
         App\Providers\ComposerServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
