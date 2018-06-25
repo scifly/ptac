@@ -1,10 +1,13 @@
 <?php
 namespace App\Providers;
 
+use App\Helpers\ModelTrait;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class ComposerServiceProvider extends ServiceProvider {
+    
+    use ModelTrait;
     
     /**
      * Bootstrap the application services.
@@ -14,6 +17,8 @@ class ComposerServiceProvider extends ServiceProvider {
     public function boot() {
     
         $ns = 'App\Http\ViewComposers\\';
+        
+        View::share('uris', $this->uris());
         
         # 功能 - Action
         View::composer('action.index', $ns . 'ActionIndexComposer');
