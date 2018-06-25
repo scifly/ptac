@@ -1,20 +1,17 @@
 <?php
-namespace App\Facades;
+namespace App\Helpers;
 
 use DateTime;
 use Carbon\Carbon;
-use App\Helpers\Snippet;
-use App\Helpers\ModelTrait;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Request;
 
-class DatatableFacade extends Facade {
-
+class Datatable {
+    
     use ModelTrait;
-
+    
     /**
      * Perform the SQL queries needed for an server-side processing requested,
      * utilising the menu functions of this class, limit(), order() and
@@ -31,7 +28,7 @@ class DatatableFacade extends Facade {
      * @internal param string $table SQL table to query
      * @internal param string $primaryKey Primary key of the table
      */
-    static function simple(Model $model, array $columns, array $joins = null, $condition = null) {
+    function simple(Model $model, array $columns, array $joins = null, $condition = null) {
         
         $modelName = class_basename($model);
         $tableName = $model->getTable();
@@ -62,16 +59,16 @@ class DatatableFacade extends Facade {
             }
         }
         // Build the SQL query string from the request
-        $limit = self::limit();
-        $order = self::order($columns);
-        $where = self::filter($columns);
+        $limit = $this->limit();
+        $order = $this->order($columns);
+        $where = $this->filter($columns);
         if (isset($condition)) {
             $where = empty($where)
                 ? ' WHERE ' . $condition
                 : $where . ' AND ' . $condition;
         }
         // Main query to actually get the data
-        $fields = implode(", ", self::pluck($columns, 'db'));
+        $fields = implode(", ", $this->pluck($columns, 'db'));
         $query = "SELECT SQL_CALC_FOUND_ROWS " . $fields . " FROM " . $from . $where . $order . $limit;
         $data = DB::select($query);
         $query = "SELECT " . $useTable . ".id FROM " . $from . $where;
@@ -92,7 +89,7 @@ class DatatableFacade extends Facade {
             "ids"             => $rowIds,
             "recordsTotal"    => intval($recordsTotal),
             "recordsFiltered" => intval($recordsFiltered),
-            "data"            => self::data_output($columns, $data),
+            "data"            => $this->data_output($columns, $data),
         ];
         
     }
@@ -121,18 +118,18 @@ class DatatableFacade extends Facade {
      * @internal param string $table SQL table to query
      * @internal param string $primaryKey Primary key of the table
      */
-    static function complex(Model $model, $columns, $whereResult = null, $whereAll = null) {
+    function complex(Model $model, $columns, $whereResult = null, $whereAll = null) {
         
         # $localWhereResult = [];
         # $localWhereAll = [];
         $whereAllSql = '';
         $table = $model->getTable();
         // Build the SQL query string from the request
-        $limit = self::limit();
-        $order = self::order($columns);
-        $where = self::filter($columns);
-        $whereResult = self::_flatten($whereResult);
-        $whereAll = self::_flatten($whereAll);
+        $limit = $this->limit();
+        $order = $this->order($columns);
+        $where = $this->filter($columns);
+        $whereResult = $this->_flatten($whereResult);
+        $whereAll = $this->_flatten($whereAll);
         if ($whereResult) {
             $where = $where ?
                 $where . ' AND ' . $whereResult :
@@ -147,7 +144,7 @@ class DatatableFacade extends Facade {
         // Main query to actually get the data
         $data = DB::select(
             "SELECT SQL_CALC_FOUND_ROWS `" .
-            implode("`, `", self::pluck($columns, 'db')) .
+            implode("`, `", $this->pluck($columns, 'db')) .
             "` FROM " . $table . $where . $order . $limit
         );
         // Data set length after filtering
@@ -162,10 +159,10 @@ class DatatableFacade extends Facade {
             "draw"            => intval(Request::get('draw')),
             "recordsTotal"    => intval($recordsTotal),
             "recordsFiltered" => intval($recordsFiltered),
-            "data"            => self::data_output($columns, $data),
+            "data"            => $this->data_output($columns, $data),
         ];
     }
-
+    
     /**
      * Display data entry operations
      *
@@ -176,8 +173,8 @@ class DatatableFacade extends Facade {
      * @param bool|true $del - if set to false, do not show delete link
      * @return string
      */
-    static function dtOps($active, $row, $show = true, $edit = true, $del = true) {
-
+    function dtOps($active, $row, $show = true, $edit = true, $del = true) {
+        
         $user = Auth::user();
         $id = $row['id'];
         $showLink = sprintf(Snippet::DT_LINK_SHOW, 'show_' . $id);
@@ -186,9 +183,9 @@ class DatatableFacade extends Facade {
         
         return
             Snippet::status($active) .
-            ($show ? ($user->can('act', self::uris()['show']) ? $showLink : '') : '') .
-            ($edit ? ($user->can('act', self::uris()['edit']) ? $editLink : '') : '') .
-            ($del ? ($user->can('act', self::uris()['destroy']) ? $delLink : '') : '');
+            ($show ? ($user->can('act', $this->uris()['show']) ? $showLink : '') : '') .
+            ($edit ? ($user->can('act', $this->uris()['edit']) ? $editLink : '') : '') .
+            ($del ? ($user->can('act', $this->uris()['destroy']) ? $delLink : '') : '');
         
     }
     
@@ -199,7 +196,7 @@ class DatatableFacade extends Facade {
      * @param  array $data Data from the SQL get
      * @return array Formatted data in a row based format
      */
-    static function data_output(array $columns, array $data) {
+    function data_output(array $columns, array $data) {
         
         $out = [];
         $length = count($data);
@@ -208,7 +205,7 @@ class DatatableFacade extends Facade {
             $_data = (array)$data[$i];
             $j = 0;
             foreach ($_data as $name => $value) {
-                if (isset($value) && self::validateDate($value) && $name != 'birthday' && $name != 'punch_time') {
+                if (isset($value) && $this->validateDate($value) && $name != 'birthday' && $name != 'punch_time') {
                     Carbon::setLocale('zh');
                     $dt = Carbon::createFromFormat('Y-m-d H:i:s', $value);
                     $value = $dt->diffForhumans();
@@ -235,7 +232,7 @@ class DatatableFacade extends Facade {
      * @param  string $join Glue for the concatenation
      * @return string Joined string
      */
-    static function _flatten($a, $join = ' AND ') {
+    function _flatten($a, $join = ' AND ') {
         
         if (!$a) {
             return '';
@@ -247,7 +244,14 @@ class DatatableFacade extends Facade {
         
     }
     
-    private static function validateDate($date, $format = 'Y-m-d H:i:s') {
+    /**
+     * Convert datetime to human friendly format
+     *
+     * @param $date
+     * @param string $format
+     * @return bool
+     */
+    private function validateDate($date, $format = 'Y-m-d H:i:s') {
         
         $d = DateTime::createFromFormat($format, $date);
         return $d && $d->format($format) == $date;
@@ -262,7 +266,7 @@ class DatatableFacade extends Facade {
      * @internal param Request $request Data sent to server by DataTables
      * @internal param array $columns Column information array
      */
-    private static function limit() {
+    private function limit() {
         
         $limit = '';
         $start = Request::get('start');
@@ -284,13 +288,13 @@ class DatatableFacade extends Facade {
      * @return string SQL order by clause
      * @internal param Request $request Data sent to server by DataTables
      */
-    private static function order(array $columns) {
+    private function order(array $columns) {
         
         $orderBy = '';
         $order = Request::get('order');
         if (isset($order) && count($order)) {
             $orderBy = [];
-            $dtColumns = self::pluck($columns, 'dt');
+            $dtColumns = $this->pluck($columns, 'dt');
             for ($i = 0, $ien = count($order); $i < $ien; $i++) {
                 // Convert the column index into the column data property
                 $columnIdx = intval($order[$i]['column']);
@@ -322,7 +326,7 @@ class DatatableFacade extends Facade {
      * @param string $prop Property to read
      * @return array        Array of property values
      */
-    private static function pluck(array $a, $prop) {
+    private function pluck(array $a, $prop) {
         
         $out = [];
         for ($i = 0, $len = count($a); $i < $len; $i++) {
@@ -348,11 +352,11 @@ class DatatableFacade extends Facade {
      * @internal param array $bindings Array of values for PDO bindings, used in the
      *    sql_exec() function
      */
-    private static function filter(array $columns) {
+    private function filter(array $columns) {
         
         $globalSearch = [];
         $columnSearch = [];
-        $dtColumns = self::pluck($columns, 'dt');
+        $dtColumns = $this->pluck($columns, 'dt');
         $requestSearch = Request::get('search');
         $requestColumns = Request::get('columns');
         if (isset($requestSearch) && $requestSearch['value'] != '') {
@@ -364,7 +368,7 @@ class DatatableFacade extends Facade {
                     $columnIdx = array_search($requestColumn['data'], $dtColumns);
                     $column = $columns[$columnIdx];
                     if ($requestColumn['searchable'] == 'true') {
-                        # $binding = self::bind($bindings, '%' . $str . '%', PDO::PARAM_STR);
+                        # $binding = $this->bind($bindings, '%' . $str . '%', PDO::PARAM_STR);
                         $pos = stripos($column['db'], ' as ');
                         if ($pos) {
                             $column['db'] = substr($column['db'], 0, $pos);
@@ -381,7 +385,7 @@ class DatatableFacade extends Facade {
             $column = $columns[$columnIdx];
             $str = $requestColumn['search']['value'];
             if ($requestColumn['searchable'] == 'true' && $str != '') {
-                # $binding = self::bind($bindings, '%' . $str . '%', PDO::PARAM_STR);
+                # $binding = $this->bind($bindings, '%' . $str . '%', PDO::PARAM_STR);
                 $columnSearch[] = $column['db'] . " LIKE BINARY '%" . $str . "%'";
             }
         }
@@ -406,7 +410,5 @@ class DatatableFacade extends Facade {
         return $where;
         
     }
-    
-    protected static function getFacadeAccessor() { return 'Datatable'; }
     
 }

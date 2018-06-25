@@ -1,7 +1,8 @@
 <?php
 namespace App\Providers;
 
-use App\Facades\DatatableFacade as Datatable;
+// use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
 
 class DatatableServiceProvider extends ServiceProvider {
@@ -23,8 +24,11 @@ class DatatableServiceProvider extends ServiceProvider {
      */
     public function register() {
         
-        $this->app->singleton('DatatableFacade', function () {
-            return new Datatable;
+        // $this->app->singleton('DatatableFacade', function () {
+        //     return new Datatable;
+        // });
+        App::bind('datatable', function () {
+            return new \App\Helpers\Datatable;
         });
         
     }
