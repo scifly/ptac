@@ -24,7 +24,7 @@ class ActionComposer {
         $view->with([
             'actionTypes'         => ActionType::pluck('name', 'id'),
             'selectedActionTypes' => $selectedActionTypes ?? null,
-            'uris'                => $this->uris(),
+            // 'uris'                => $this->uris(),
         ]);
         
     }
