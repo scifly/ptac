@@ -31,7 +31,7 @@ class TestController extends Controller {
     
         
         dd(Educator::whereSchoolId(1)
-            ->with('user')->pluck('user.realname', 'id')
+            ->with('user')->get()->pluck('user.realname', 'id')
             ->toArray());
         $a = [
             0 => 'a',
