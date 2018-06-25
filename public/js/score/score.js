@@ -10,14 +10,20 @@
                 return $('#csrf_token').attr('content');
             },
             classList: function (action) {
+                var url = '../scores/' + action + '/' + $('#' + action + '_exam_id').val(),
+                    data = { _token: score.token() },
+                    $classId = $('#' + action + '_class_id');
+
+                if (action === 'import') {
+                    $.extend(data, {classId: $classId.val()});
+                }
                 $.ajax({
                     type: 'POST',
                     dataType: 'json',
-                    data: { _token: score.token() },
-                    url: '../scores/' + action + '/' + $('#' + action + '_exam_id').val(),
+                    data: data,
+                    url: url,
                     success: function (result) {
-                        var $classId = $('#' + action + '_class_id'),
-                            $classNext = $classId.next(),
+                        var $classNext = $classId.next(),
                             $classPrev = $classId.prev();
 
                         $classNext.remove();
@@ -223,6 +229,7 @@
                 // 批量导入
                 score.onImportClick();
                 score.onImportExamIdChange();
+                score.onImportClassIdChange();
                 score.onImportScoresClick();
                 // 批量导出
                 score.onExportClick();
@@ -449,6 +456,21 @@
                 $('#import_exam_id').on('change', function () {
                     score.classList('import');
                 });
+            },
+            onImportClassIdChange: function () {
+                $('#import_class_id').on('change', function () {
+                    $.ajax({
+                        type: 'GET',
+                        url: '../scores/import/' + $('#import_exam_id').val(),
+                        data: {
+                            _token: score.token(),
+                            classId: $('#import_class_id').val()
+                        },
+                        error: function (e) {
+                            page.errorHandler(e);
+                        }
+                    });
+                })
             },
             onImportScoresClick: function () {
                 $('#import-scores').on('click', function () {

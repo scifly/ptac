@@ -92,7 +92,7 @@ class ScoreController extends Controller {
         if ($examId) {
             return $this->score->ssList($examId);
         }
-
+        
         return $this->output([
             'score' => Score::find($id),
         ]);
@@ -142,6 +142,7 @@ class ScoreController extends Controller {
         if (Request::has('examId')) {
             return $this->score->preview();
         }
+        
         return response()->json(
             $this->score->send(
                 json_decode(Request::input('data'))
@@ -163,6 +164,7 @@ class ScoreController extends Controller {
         );
         
     }
+    
     /**
      * 统计分析
      *
@@ -191,16 +193,24 @@ class ScoreController extends Controller {
      * @return JsonResponse
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function import($examId = null) {
+    
+        if ($examId) {
+            if (Request::method() == 'POST') {
+                $this->score->template($examId, Request::input('classId'));
+                return $this->exam->classList($examId, 'import');
+            }
+            $this->score->template($examId, Request::input('classId'));
+            return response()->json();
+        }
         
-        return $examId
-            ? $this->exam->classList($examId, 'import')
-            : $this->result(
-                $this->score->upload(),
-                __('messages.score.import_request_submitted'),
-                __('messages.file_upload_failed')
-            );
+        return $this->result(
+            $this->score->upload(),
+            __('messages.score.import_request_submitted'),
+            __('messages.file_upload_failed')
+        );
         
     }
     

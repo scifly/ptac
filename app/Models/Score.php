@@ -739,14 +739,18 @@ class Score extends Model {
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    function template($examId, $classId) {
+    function template($examId, $classId = null) {
         
         $rows = [];
         $exam = Exam::find($examId);
         $subjects = Subject::whereIn('id', explode(',', $exam->subject_ids))->pluck('name')->toArray();
         $rows[] = array_merge(['班级', '学号', '姓名'], $subjects);
+        if (!$classId) {
+            $classIds = array_intersect(explode(',', $exam ? $exam->class_ids : ''), $this->classIds());
+            $classId = !empty($classIds) ? $classIds[0] : null;
+        }
         $class = Squad::find($classId);
-        $students = $class->students;
+        $students = $class ? $class->students : collect([]);
         foreach ($students as $student) {
             $rows[] = [
                 $class->name,

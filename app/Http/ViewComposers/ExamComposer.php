@@ -1,11 +1,11 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ModelTrait;
 use App\Models\Exam;
-use App\Models\ExamType;
 use App\Models\Squad;
 use App\Models\Subject;
+use App\Models\ExamType;
+use App\Helpers\ModelTrait;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 

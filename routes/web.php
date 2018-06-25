@@ -100,8 +100,8 @@ Route::group(['prefix' => 'scores'], function () {
     Route::put('update/{id?}', $c . '@update');
     Route::delete('delete/{id?}', $c . '@destroy');
     Route::get('rank/{examId}', $c . '@rank');
-    Route::get('import{examId?}', $c . '@import');
-    Route::post('import/{examId?}', $c . '@import');
+    Route::get('import/{examId?}/{classId?}', $c . '@import');
+    Route::post('import/{examId?}/{classId?}', $c . '@import');
     Route::get('export/{examId?}', $c . '@export');
     Route::post('export/{examId?}', $c . '@export');
     Route::get('stat/{type?}/{value?}', $c . '@stat');

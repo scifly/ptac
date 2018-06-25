@@ -3,6 +3,7 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use App\Models\Exam;
+use App\Models\Score;
 use App\Models\Squad;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;
@@ -11,6 +12,11 @@ class ScoreIndexComposer {
     
     use ModelTrait;
     
+    /**
+     * @param View $view
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     */
     public function compose(View $view) {
         
         $examList = Exam::whereEnabled(1)
@@ -23,6 +29,8 @@ class ScoreIndexComposer {
         $classList = Squad::whereEnabled(1)
             ->whereIn('id', array_intersect(explode(',', $exam ? $exam->class_ids : ''), $this->classIds()))
             ->get()->pluck('name', 'id')->toArray();
+        # 生成指定考试和班级的成绩导入模板
+        (new Score)->template($exam->id, key($classList));
         $subjectList = Subject::whereEnabled(1)
             ->whereIn('id', explode(',', $exam ? $exam->subject_ids : ''))
             ->get()->pluck('name', 'id')->toArray();
