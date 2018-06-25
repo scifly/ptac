@@ -1,14 +1,14 @@
 <?php
 namespace App\Facades;
 
+use DateTime;
+use Carbon\Carbon;
 use App\Helpers\Snippet;
 use App\Helpers\ModelTrait;
-use Carbon\Carbon;
-use DateTime;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Facade;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Request;
 
 class DatatableFacade extends Facade {
@@ -94,6 +94,163 @@ class DatatableFacade extends Facade {
             "recordsFiltered" => intval($recordsFiltered),
             "data"            => self::data_output($columns, $data),
         ];
+        
+    }
+    
+    /**
+     * The difference between this method and the `simple` one, is that you can
+     * apply additional `where` conditions to the SQL queries. These can be in
+     * one of two forms:
+     *
+     * * 'Result condition' - This is applied to the result set, but not the
+     *   overall paging information query - i.e. it will not effect the number
+     *   of records that a user sees they can have access to. This should be
+     *   used when you want apply a filtering condition that the user has sent.
+     * * 'All condition' - This is applied to all queries that are made and
+     *   reduces the number of records that the user can access. This should be
+     *   used in conditions where you don't want the user to ever have access to
+     *   particular records (for example, restricting by a login id).
+     *
+     * @param Model $model
+     * @param  array $columns Column information array
+     * @param  string $whereResult WHERE condition to apply to the result set
+     * @param  string $whereAll WHERE condition to apply to all queries
+     * @return array Server-side processing response array
+     * @internal param Request $request Data sent to server by DataTables
+     * @internal param array|PDO $conn PDO connection resource or connection parameters array
+     * @internal param string $table SQL table to query
+     * @internal param string $primaryKey Primary key of the table
+     */
+    static function complex(Model $model, $columns, $whereResult = null, $whereAll = null) {
+        
+        # $localWhereResult = [];
+        # $localWhereAll = [];
+        $whereAllSql = '';
+        $table = $model->getTable();
+        // Build the SQL query string from the request
+        $limit = self::limit();
+        $order = self::order($columns);
+        $where = self::filter($columns);
+        $whereResult = self::_flatten($whereResult);
+        $whereAll = self::_flatten($whereAll);
+        if ($whereResult) {
+            $where = $where ?
+                $where . ' AND ' . $whereResult :
+                'WHERE ' . $whereResult;
+        }
+        if ($whereAll) {
+            $where = $where ?
+                $where . ' AND ' . $whereAll :
+                'WHERE ' . $whereAll;
+            $whereAllSql = 'WHERE ' . $whereAll;
+        }
+        // Main query to actually get the data
+        $data = DB::select(
+            "SELECT SQL_CALC_FOUND_ROWS `" .
+            implode("`, `", self::pluck($columns, 'db')) .
+            "` FROM " . $table . $where . $order . $limit
+        );
+        // Data set length after filtering
+        $resFilterLength = DB::select("SELECT FOUND_ROWS() AS cnt");
+        $recordsFiltered = $resFilterLength[0]->cnt;
+        // Total data set length
+        $resTotalLength = DB::select("SELECT COUNT(*) AS cnt FROM " . $table . $whereAllSql);
+        $recordsTotal = $resTotalLength[0]->cnt;
+        
+        /* Output */
+        return [
+            "draw"            => intval(Request::get('draw')),
+            "recordsTotal"    => intval($recordsTotal),
+            "recordsFiltered" => intval($recordsFiltered),
+            "data"            => self::data_output($columns, $data),
+        ];
+    }
+
+    /**
+     * Display data entry operations
+     *
+     * @param $active
+     * @param $row
+     * @param bool $show
+     * @param bool $edit
+     * @param bool|true $del - if set to false, do not show delete link
+     * @return string
+     */
+    static function dtOps($active, $row, $show = true, $edit = true, $del = true) {
+
+        $user = Auth::user();
+        $id = $row['id'];
+        $showLink = sprintf(Snippet::DT_LINK_SHOW, 'show_' . $id);
+        $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
+        $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
+        
+        return
+            Snippet::status($active) .
+            ($show ? ($user->can('act', self::uris()['show']) ? $showLink : '') : '') .
+            ($edit ? ($user->can('act', self::uris()['edit']) ? $editLink : '') : '') .
+            ($del ? ($user->can('act', self::uris()['destroy']) ? $delLink : '') : '');
+        
+    }
+    
+    /**
+     * Create the data output array for the DataTables rows
+     *
+     * @param  array $columns Column information array
+     * @param  array $data Data from the SQL get
+     * @return array Formatted data in a row based format
+     */
+    static function data_output(array $columns, array $data) {
+        
+        $out = [];
+        $length = count($data);
+        for ($i = 0; $i < $length; $i++) {
+            $row = [];
+            $_data = (array)$data[$i];
+            $j = 0;
+            foreach ($_data as $name => $value) {
+                if (isset($value) && self::validateDate($value) && $name != 'birthday' && $name != 'punch_time') {
+                    Carbon::setLocale('zh');
+                    $dt = Carbon::createFromFormat('Y-m-d H:i:s', $value);
+                    $value = $dt->diffForhumans();
+                }
+                $column = $columns[$j];
+                if (isset($column['formatter'])) {
+                    $row[$column['dt']] = $column['formatter']($value, $_data);
+                } else {
+                    $row[$column['dt']] = $value;
+                }
+                $j++;
+            }
+            $out[] = $row;
+        }
+        
+        return $out;
+        
+    }
+    
+    /**
+     * Return a string from an array or a string
+     *
+     * @param  array|string $a Array to join
+     * @param  string $join Glue for the concatenation
+     * @return string Joined string
+     */
+    static function _flatten($a, $join = ' AND ') {
+        
+        if (!$a) {
+            return '';
+        } else if ($a && is_array($a)) {
+            return implode($join, $a);
+        }
+        
+        return $a;
+        
+    }
+    
+    private static function validateDate($date, $format = 'Y-m-d H:i:s') {
+        
+        $d = DateTime::createFromFormat($format, $date);
+        return $d && $d->format($format) == $date;
         
     }
     
@@ -247,163 +404,6 @@ class DatatableFacade extends Facade {
         }
         
         return $where;
-        
-    }
-    
-    /**
-     * Create the data output array for the DataTables rows
-     *
-     * @param  array $columns Column information array
-     * @param  array $data Data from the SQL get
-     * @return array Formatted data in a row based format
-     */
-    static function data_output(array $columns, array $data) {
-        
-        $out = [];
-        $length = count($data);
-        for ($i = 0; $i < $length; $i++) {
-            $row = [];
-            $_data = (array)$data[$i];
-            $j = 0;
-            foreach ($_data as $name => $value) {
-                if (isset($value) && self::validateDate($value) && $name != 'birthday' && $name != 'punch_time') {
-                    Carbon::setLocale('zh');
-                    $dt = Carbon::createFromFormat('Y-m-d H:i:s', $value);
-                    $value = $dt->diffForhumans();
-                }
-                $column = $columns[$j];
-                if (isset($column['formatter'])) {
-                    $row[$column['dt']] = $column['formatter']($value, $_data);
-                } else {
-                    $row[$column['dt']] = $value;
-                }
-                $j++;
-            }
-            $out[] = $row;
-        }
-        
-        return $out;
-        
-    }
-    
-    /**
-     * The difference between this method and the `simple` one, is that you can
-     * apply additional `where` conditions to the SQL queries. These can be in
-     * one of two forms:
-     *
-     * * 'Result condition' - This is applied to the result set, but not the
-     *   overall paging information query - i.e. it will not effect the number
-     *   of records that a user sees they can have access to. This should be
-     *   used when you want apply a filtering condition that the user has sent.
-     * * 'All condition' - This is applied to all queries that are made and
-     *   reduces the number of records that the user can access. This should be
-     *   used in conditions where you don't want the user to ever have access to
-     *   particular records (for example, restricting by a login id).
-     *
-     * @param Model $model
-     * @param  array $columns Column information array
-     * @param  string $whereResult WHERE condition to apply to the result set
-     * @param  string $whereAll WHERE condition to apply to all queries
-     * @return array Server-side processing response array
-     * @internal param Request $request Data sent to server by DataTables
-     * @internal param array|PDO $conn PDO connection resource or connection parameters array
-     * @internal param string $table SQL table to query
-     * @internal param string $primaryKey Primary key of the table
-     */
-    static function complex(Model $model, $columns, $whereResult = null, $whereAll = null) {
-        
-        # $localWhereResult = [];
-        # $localWhereAll = [];
-        $whereAllSql = '';
-        $table = $model->getTable();
-        // Build the SQL query string from the request
-        $limit = self::limit();
-        $order = self::order($columns);
-        $where = self::filter($columns);
-        $whereResult = self::_flatten($whereResult);
-        $whereAll = self::_flatten($whereAll);
-        if ($whereResult) {
-            $where = $where ?
-                $where . ' AND ' . $whereResult :
-                'WHERE ' . $whereResult;
-        }
-        if ($whereAll) {
-            $where = $where ?
-                $where . ' AND ' . $whereAll :
-                'WHERE ' . $whereAll;
-            $whereAllSql = 'WHERE ' . $whereAll;
-        }
-        // Main query to actually get the data
-        $data = DB::select(
-            "SELECT SQL_CALC_FOUND_ROWS `" .
-            implode("`, `", self::pluck($columns, 'db')) .
-            "` FROM " . $table . $where . $order . $limit
-        );
-        // Data set length after filtering
-        $resFilterLength = DB::select("SELECT FOUND_ROWS() AS cnt");
-        $recordsFiltered = $resFilterLength[0]->cnt;
-        // Total data set length
-        $resTotalLength = DB::select("SELECT COUNT(*) AS cnt FROM " . $table . $whereAllSql);
-        $recordsTotal = $resTotalLength[0]->cnt;
-        
-        /* Output */
-        return [
-            "draw"            => intval(Request::get('draw')),
-            "recordsTotal"    => intval($recordsTotal),
-            "recordsFiltered" => intval($recordsFiltered),
-            "data"            => self::data_output($columns, $data),
-        ];
-    }
-    
-    /**
-     * Return a string from an array or a string
-     *
-     * @param  array|string $a Array to join
-     * @param  string $join Glue for the concatenation
-     * @return string Joined string
-     */
-    static function _flatten($a, $join = ' AND ') {
-        
-        if (!$a) {
-            return '';
-        } else if ($a && is_array($a)) {
-            return implode($join, $a);
-        }
-        
-        return $a;
-        
-    }
-    
-    /**
-     * Display data entry operations
-     *
-     * @param $active
-     * @param $row
-     * @param bool $show
-     * @param bool $edit
-     * @param bool|true $del - if set to false, do not show delete link
-     * @return string
-     */
-    static function dtOps($active, $row, $show = true, $edit = true, $del = true) {
-
-        $user = Auth::user();
-        $id = $row['id'];
-        $showLink = sprintf(Snippet::DT_LINK_SHOW, 'show_' . $id);
-        $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
-        $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
-        
-        return
-            Snippet::status($active) .
-            ($show ? ($user->can('act', self::uris()['show']) ? $showLink : '') : '') .
-            ($edit ? ($user->can('act', self::uris()['edit']) ? $editLink : '') : '') .
-            ($del ? ($user->can('act', self::uris()['destroy']) ? $delLink : '') : '');
-        
-    }
-    
-    private static function validateDate($date, $format = 'Y-m-d H:i:s') {
-        
-        $d = DateTime::createFromFormat($format, $date);
-        return $d && $d->format($format) == $date;
         
     }
     
