@@ -461,6 +461,7 @@
                 $('#import_class_id').on('change', function () {
                     $.ajax({
                         type: 'GET',
+                        dataType: 'json',
                         url: '../scores/import/' + $('#import_exam_id').val(),
                         data: {
                             _token: score.token(),
