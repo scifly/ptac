@@ -199,7 +199,7 @@ class ScoreController extends Controller {
     
         if ($examId) {
             if (Request::method() == 'POST') {
-                $this->score->template($examId, Request::input('classId'));
+                $this->score->template($examId);
                 return $this->exam->classList($examId, 'import');
             }
             $this->score->template($examId, Request::input('classId'));
