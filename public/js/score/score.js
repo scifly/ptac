@@ -458,7 +458,7 @@
                 });
             },
             onImportClassIdChange: function () {
-                $('#import_class_id').on('change', function () {
+                $(document).on('change', '#import_class_id', function () {
                     $.ajax({
                         type: 'GET',
                         dataType: 'json',
