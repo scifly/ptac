@@ -344,6 +344,7 @@
             },
             onSendExamIdChange: function () {
                 var $examId = $('#send_exam_id');
+
                 $examId.on('change',function(){
                     $.ajax({
                         url: page.siteRoot() + "scores/send",

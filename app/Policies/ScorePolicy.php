@@ -88,12 +88,16 @@ class ScorePolicy {
                     $classId = Request::input('classId');
                     $subjectIds = Request::input('subjectIds');
                     $isExamAllowed = in_array($examId, $this->examIds());
-                    $isClassAllowed = in_array($classId, $this->classIds());
-                    $allowedSubjectIds = Subject::whereSchoolId($this->schoolId())
-                        ->pluck('id')->toArray();
-                    $isSubjectAllowed = empty(array_diff(
-                        $subjectIds, array_merge([-1], $allowedSubjectIds)
-                    ));
+                    $isClassAllowed = $isSubjectAllowed = true;
+                    if ($classId && $subjectIds) {
+                        $isClassAllowed = in_array($classId, $this->classIds());
+                        $allowedSubjectIds = Subject::whereSchoolId($this->schoolId())
+                            ->pluck('id')->toArray();
+                        $isSubjectAllowed = empty(array_diff(
+                            $subjectIds, array_merge([-1], $allowedSubjectIds)
+                        ));
+                    }
+                    
                     return $isSuperRole
                         ? ($isExamAllowed && $isClassAllowed && $isSubjectAllowed)
                         : ($isExamAllowed && $isClassAllowed && $isSubjectAllowed && $this->action($user));
