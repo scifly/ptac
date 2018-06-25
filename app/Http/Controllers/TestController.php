@@ -16,7 +16,7 @@ use ReflectionMethod;
  */
 class TestController extends Controller {
     
-    use ModelTrait;
+    // use ModelTrait;
     
     protected $keyId = 'LTAIk1710IrzHBg4';
     protected $keySecret = 'xxO5XaXx3O7kB3YR14XSdFulw1x56k';
