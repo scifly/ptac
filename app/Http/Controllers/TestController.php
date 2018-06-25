@@ -2,15 +2,11 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ModelTrait;
-use App\Models\Custodian;
+use App\Models\App;
 use App\Models\Department;
-use App\Models\Message;
 use App\Models\Score;
-use App\Models\User;
-use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
-use Illuminate\Support\Facades\Request;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -32,6 +28,8 @@ class TestController extends Controller {
      */
     public function index() {
     
+        
+        dd(App::whereCorpId(1)->toArray());
         $a = [
             0 => 'a',
             1 => 'b'
