@@ -14,9 +14,6 @@
                     data = { _token: score.token() },
                     $classId = $('#' + action + '_class_id');
 
-                // if (action === 'import') {
-                //     $.extend(data, {classId: $classId.val()});
-                // }
                 $.ajax({
                     type: 'POST',
                     dataType: 'json',
