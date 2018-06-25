@@ -31,7 +31,7 @@ class TestController extends Controller {
     public function index() {
     
         
-        dd(App::whereEnabled(1)->toArray());
+        dd(App::whereEnabled(1));
         $a = [
             0 => 'a',
             1 => 'b'
