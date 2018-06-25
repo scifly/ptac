@@ -1,20 +1,22 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
-use App\Models\Action;
-use App\Models\Menu;
-use App\Models\Tab;
+use App\Policies\Route;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Support\Facades\View;
+use Throwable;
+use App\Models\Tab;
+use App\Models\Menu;
+use App\Models\Action;
+use App\Helpers\HttpStatusCode;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
-use Throwable;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class Controller extends BaseController {
     
@@ -37,6 +39,17 @@ class Controller extends BaseController {
         # 获取功能对象
         $method = Request::route()->getActionMethod();
         $controller = class_basename(Request::route()->controller);
+    
+        $routes = Action::whereController($controller)
+            ->where('route', '<>', null)
+            ->pluck('route', 'method')
+            ->toArray();
+        $uris = [];
+        foreach ($routes as $key => $value) {
+            $uris[$key] = new Route($value);
+        }
+        View::share('uris', $uris);
+        
         $action = Action::whereMethod($method)->where('controller', $controller)->first();
         abort_if(
             !$action,
