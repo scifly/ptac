@@ -4,8 +4,6 @@ namespace App\Helpers;
 use App\Models\Corp;
 use App\Models\Menu;
 use App\Models\User;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use ReflectionClass;
 use App\Models\Squad;
 use App\Models\Action;
@@ -158,7 +156,7 @@ trait ModelTrait {
      */
     static function uris() {
         
-        // if (!Request::route()) { return null; }
+        if (!Request::route()) { return null; }
         $controller = class_basename(Request::route()->controller);
         $routes = Action::whereController($controller)
             ->where('route', '<>', null)

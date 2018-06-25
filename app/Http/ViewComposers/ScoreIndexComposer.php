@@ -30,7 +30,9 @@ class ScoreIndexComposer {
             ->whereIn('id', array_intersect(explode(',', $exam ? $exam->class_ids : ''), $this->classIds()))
             ->get()->pluck('name', 'id')->toArray();
         # 生成指定考试和班级的成绩导入模板
-        (new Score)->template($exam->id, key($classList));
+        if ($exam) {
+            (new Score)->template($exam->id, key($classList));
+        }
         $subjectList = Subject::whereEnabled(1)
             ->whereIn('id', explode(',', $exam ? $exam->subject_ids : ''))
             ->get()->pluck('name', 'id')->toArray();
