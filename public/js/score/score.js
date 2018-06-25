@@ -206,7 +206,7 @@
             /** public functions */
             index: function () {
                 page.index('scores', [
-                    {className: 'text-center', targets: [1, 2, 3, 4, 5, 6, 7, 8, 10, 11]},
+                    {className: 'text-center', targets: [1, 4, 5, 6, 7, 8, 10, 11]},
                     {className: 'text-right', targets: [9]}
                 ]);
                 page.loadCss('css/score/send.css');
