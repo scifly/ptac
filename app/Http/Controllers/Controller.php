@@ -216,7 +216,7 @@ class Controller extends BaseController {
         foreach ($routes as $key => $value) {
             $uris[$key] = new Route($value);
         }
-        // View::share('uris', $uris);
+
         return $uris;
         
     }
