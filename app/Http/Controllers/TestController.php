@@ -5,6 +5,7 @@ use App\Helpers\ModelTrait;
 use App\Models\App;
 use App\Models\Department;
 use App\Models\Educator;
+use App\Models\School;
 use App\Models\Score;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -30,9 +31,7 @@ class TestController extends Controller {
     public function index() {
     
         
-        dd(Educator::whereSchoolId(1)
-            ->with('user')->get()->pluck('user.realname', 'id')
-            ->toArray());
+        dd(School::whereEnabled(1)->pluck('name', 'id'));
         $a = [
             0 => 'a',
             1 => 'b'
