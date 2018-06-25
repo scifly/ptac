@@ -25,9 +25,7 @@ class ConferenceQueueComposer {
             case '企业':
             case '学校':
                 $educators = Educator::whereSchoolId($schoolId)
-                    ->with('user')
-                    ->get()
-                    ->pluck('user.realname', 'id')
+                    ->with('user')->pluck('user.realname', 'id')
                     ->toArray();
                 break;
             default:

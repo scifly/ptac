@@ -21,7 +21,7 @@ class ScoreIndexComposer {
         
         $examList = Exam::whereEnabled(1)
             ->whereIn('id', $this->examIds())
-            ->get()->pluck('name', 'id')
+            ->pluck('name', 'id')
             ->toArray();
         reset($examList);
         $exam = Exam::find(key($examList));
@@ -39,7 +39,7 @@ class ScoreIndexComposer {
         }
         $subjectList = Subject::whereEnabled(1)
             ->whereIn('id', explode(',', $exam ? $exam->subject_ids : ''))
-            ->get()->pluck('name', 'id')->toArray();
+            ->pluck('name', 'id')->toArray();
         $items = [
             'score'         => '分数',
             'grade_rank'    => '年排名',

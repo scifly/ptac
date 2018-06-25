@@ -26,15 +26,12 @@ class GroupComposer {
         switch (Menu::find($rootMenuId)->menuType->name) {
             case '根':
                 $schools = School::whereEnabled(1)
-                    ->get()->pluck('name', 'id')
-                    ->toArray();
+                    ->pluck('name', 'id')->toArray();
                 break;
             case '企业':
                 $corp = Corp::whereMenuId($rootMenuId)->first();
                 $schools = School::whereCorpId($corp->id)
-                    ->where('enabled', 1)
-                    ->get()->pluck('name', 'id')
-                    ->toArray();
+                    ->where('enabled', 1)->pluck('name', 'id')->toArray();
                 break;
             case '学校':
                 $schools = School::whereMenuId($rootMenuId)

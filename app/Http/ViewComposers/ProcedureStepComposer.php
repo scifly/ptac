@@ -12,8 +12,7 @@ class ProcedureStepComposer {
     public function compose(View $view) {
         
         $view->with([
-            'procedures' => Procedure::whereSchoolId($this->schoolId())
-                ->get()->pluck('name', 'id'),
+            'procedures' => Procedure::whereSchoolId($this->schoolId())->pluck('name', 'id'),
         ]);
         
     }

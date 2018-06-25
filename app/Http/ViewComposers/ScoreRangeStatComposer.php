@@ -15,13 +15,13 @@ class ScoreRangeStatComposer {
         
         $grades = Grade::whereEnabled(1)
             ->whereIn('id', $this->gradeIds())
-            ->get()->pluck('name', 'id')->toArray();
+            ->pluck('name', 'id')->toArray();
         $classes = Squad::whereEnabled(1)
             ->whereIn('id', $this->classIds())
-            ->get()->pluck('name', 'id')->toArray();
+            ->pluck('name', 'id')->toArray();
         $exams = Exam::whereEnabled(1)
             ->whereRaw('class_ids IN(' . implode(',', $this->classIds()) . ')')
-            ->get()->pluck('name', 'id');
+            ->pluck('name', 'id');
         $view->with([
             'grades'  => $grades,
             'classes' => $classes,

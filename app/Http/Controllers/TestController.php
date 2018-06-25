@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ModelTrait;
 use App\Models\App;
 use App\Models\Department;
+use App\Models\Educator;
 use App\Models\Score;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -29,7 +30,9 @@ class TestController extends Controller {
     public function index() {
     
         
-        dd(App::whereCorpId(1)->pluck('name', 'id'));
+        dd(Educator::whereSchoolId(1)
+            ->with('user')->pluck('user.realname', 'id')
+            ->toArray());
         $a = [
             0 => 'a',
             1 => 'b'

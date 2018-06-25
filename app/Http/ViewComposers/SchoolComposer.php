@@ -23,8 +23,8 @@ class SchoolComposer {
     
     public function compose(View $view) {
         
-        $corps = Corp::whereEnabled(1)->get()->pluck('name', 'id');
-        $schoolTypes = SchoolType::whereEnabled(1)->get()->pluck('name', 'id');
+        $corps = Corp::whereEnabled(1)->pluck('name', 'id');
+        $schoolTypes = SchoolType::whereEnabled(1)->pluck('name', 'id');
         $params = [
             'schoolTypes' => $schoolTypes,
             'corps'       => $corps,
