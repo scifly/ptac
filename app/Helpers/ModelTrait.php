@@ -540,8 +540,11 @@ trait ModelTrait {
             header('Pragma: public'); // HTTP/1.0
             return $writer->save('php://output');
         }
-        
-        return $writer->save('uploads/' . date('Y/m/d/') . $fileName . '.xlsx');
+        $dir = 'uploads/' . date('Y/m/d');
+        if (!file_exists($dir)) {
+            mkdir($dir, 0777, true);
+        }
+        return $writer->save($dir . '/' . $fileName . '.xlsx');
         
     }
     
