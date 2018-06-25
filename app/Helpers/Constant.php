@@ -91,6 +91,7 @@ class Constant {
         'RegisterController',
         'ResetPasswordController',
         'ScoreCenterController',
+        'SyncController',
         'TestController',
     ];
     
