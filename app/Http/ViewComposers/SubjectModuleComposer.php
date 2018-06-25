@@ -16,7 +16,6 @@ class SubjectModuleComposer {
             ->pluck('name', 'id');
         $view->with([
             'subjects' => $subjects,
-            'uris'     => $this->uris(),
         ]);
         
     }

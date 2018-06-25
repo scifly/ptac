@@ -34,7 +34,6 @@ class CustodianIndexComposer {
             'grades'  => $grades,
             'classes' => $classes,
             'title'   => '导出监护人',
-            'uris'    => $this->uris(),
         ]);
         
     }

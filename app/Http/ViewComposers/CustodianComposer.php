@@ -49,7 +49,6 @@ class CustodianComposer {
             'mobiles'      => $mobiles,
             'relations'    => $relations,
             'title'        => '新增监护关系',
-            'uris'         => $this->uris(),
             'relationship' => true,
         ]);
         

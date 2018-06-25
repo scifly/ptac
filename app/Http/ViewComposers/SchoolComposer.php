@@ -35,10 +35,10 @@ class SchoolComposer {
             if (Request::route('id')) {
                 $school = School::find(Request::route('id'));
                 $params['corps'] = [
-                    $school->corp_id => $school->corp->name
+                    $school->corp_id => $school->corp->name,
                 ];
                 $params['schoolTypes'] = [
-                    $school->school_type_id => $school->schoolType->name
+                    $school->school_type_id => $school->schoolType->name,
                 ];
                 $params['disabled'] = true;
             }
@@ -51,7 +51,6 @@ class SchoolComposer {
                 $params['corps'] = [$corp->id => $corp->name];
             }
         }
-        
         $view->with($params);
         
     }

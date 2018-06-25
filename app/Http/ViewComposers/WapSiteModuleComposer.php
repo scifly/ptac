@@ -20,7 +20,6 @@ class WapSiteModuleComposer {
         $view->with([
             'wapSites' => WapSite::whereSchoolId($this->schoolId())->pluck('site_title', 'id'),
             'media'    => $media,
-            'uris'     => $this->uris(),
         ]);
         
     }

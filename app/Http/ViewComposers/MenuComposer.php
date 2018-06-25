@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ModelTrait;
 use App\Models\Icon;
 use App\Models\Menu;
 use App\Models\Tab;
@@ -10,8 +9,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
 class MenuComposer {
-    
-    use ModelTrait;
     
     protected $icon;
     
@@ -45,10 +42,9 @@ class MenuComposer {
                 ->tabs->pluck('name', 'id')->toArray();
         }
         $view->with([
-            'tabs'  => $tabs,
-            'icons' => $this->icon->icons(),
+            'tabs'         => $tabs,
+            'icons'        => $this->icon->icons(),
             'selectedTabs' => $selectedTabs,
-            'uris'  => $this->uris(),
         ]);
         
     }

@@ -10,10 +10,6 @@ class WapSiteIndexComposer {
     
     public function compose(View $view) {
         
-        $view->with([
-            'uris' => $this->uris(),
-        ]);
-        
     }
     
 }

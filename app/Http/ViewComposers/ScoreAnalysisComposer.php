@@ -51,7 +51,6 @@ class ScoreAnalysisComposer {
             $students[] = '';
         }
         $view->with([
-            'uris'     => $this->uris(),
             'classes'  => $classes,
             'examarr'  => $examarr,
             'students' => $students,

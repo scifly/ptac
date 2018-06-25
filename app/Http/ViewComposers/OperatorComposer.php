@@ -1,12 +1,12 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Models\Corp;
-use App\Models\Menu;
-use App\Models\User;
-use App\Models\Group;
-use App\Models\School;
 use App\Helpers\ModelTrait;
+use App\Models\Corp;
+use App\Models\Group;
+use App\Models\Menu;
+use App\Models\School;
+use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 

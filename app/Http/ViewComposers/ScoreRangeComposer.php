@@ -35,7 +35,6 @@ class ScoreRangeComposer {
         $view->with([
             'subjects'         => $subjects,
             'selectedSubjects' => $selectedSubjects,
-            'uris'             => $this->uris(),
         ]);
         
     }

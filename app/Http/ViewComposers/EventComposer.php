@@ -26,7 +26,6 @@ class EventComposer {
         $view->with([
             'educators' => $educatorUsers,
             'subjects'  => $subjects,
-            'uris'      => $this->uris(),
         ]);
         
     }

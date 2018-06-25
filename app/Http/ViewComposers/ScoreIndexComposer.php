@@ -26,9 +26,13 @@ class ScoreIndexComposer {
         reset($examList);
         $exam = Exam::find(key($examList));
         # 指定考试对应的班级
+        $classIds = array_intersect(
+            explode(',', $exam ? $exam->class_ids : ''),
+            $this->classIds()
+        );
         $classList = Squad::whereEnabled(1)
-            ->whereIn('id', array_intersect(explode(',', $exam ? $exam->class_ids : ''), $this->classIds()))
-            ->get()->pluck('name', 'id')->toArray();
+            ->whereIn('id', $classIds)
+            ->pluck('name', 'id')->toArray();
         # 生成指定考试和班级的成绩导入模板
         if ($exam) {
             (new Score)->template($exam->id, key($classList));
@@ -37,17 +41,16 @@ class ScoreIndexComposer {
             ->whereIn('id', explode(',', $exam ? $exam->subject_ids : ''))
             ->get()->pluck('name', 'id')->toArray();
         $items = [
-            'score' => '分数',
-            'grade_rank' => '年排名',
-            'class_rank' => '班排名',
+            'score'         => '分数',
+            'grade_rank'    => '年排名',
+            'class_rank'    => '班排名',
             'grade_average' => '年平均',
             'class_average' => '班平均',
-            'grade_max' => '年最高',
-            'class_max' => '班最高',
-            'grade_min' => '年最低',
-            'class_min' => '班最低'
+            'grade_max'     => '年最高',
+            'class_max'     => '班最高',
+            'grade_min'     => '年最低',
+            'class_min'     => '班最低',
         ];
-
         $view->with([
             'buttons'        => [
                 'send'   => [
@@ -81,7 +84,6 @@ class ScoreIndexComposer {
                 '班级排名', '年级排名', '成绩', '创建于', '更新于', '状态 . 操作',
             ],
             'batch'          => true,
-            // 'uris'           => $this->uris(),
             'exams'          => $examList,
             'classes'        => $classList,
             'subjects'       => $subjectList,

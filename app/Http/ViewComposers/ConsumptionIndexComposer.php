@@ -1,12 +1,9 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ModelTrait;
 use Illuminate\Contracts\View\View;
 
 class ConsumptionIndexComposer {
-    
-    use ModelTrait;
     
     public function compose(View $view) {
         
@@ -24,7 +21,6 @@ class ConsumptionIndexComposer {
                 ],
             ],
             'titles'  => ['#', '学生', '消费地点', '消费机ID', '类型', '金额', '时间'],
-            'uris'    => $this->uris(),
         ]);
         
     }

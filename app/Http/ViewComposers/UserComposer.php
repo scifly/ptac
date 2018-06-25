@@ -1,14 +1,11 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ModelTrait;
 use App\Models\Group;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
 class UserComposer {
-    
-    use ModelTrait;
     
     public function compose(View $view) {
         
@@ -35,7 +32,6 @@ class UserComposer {
         }
         $view->with([
             'groups' => $groups,
-            'uris'   => $this->uris(),
         ]);
         
     }

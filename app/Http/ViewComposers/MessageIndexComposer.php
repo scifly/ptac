@@ -23,11 +23,10 @@ class MessageIndexComposer {
             $apps[$datum['id']] = $datum['name'] . '|' . $datum['square_logo_url'];
         }
         $view->with([
-            'titles'         => ['#', '通信方式', '应用', '消息批次', '接收者', '类型', '发送于', '状态(发送/阅读)'],
-            'apps'           => $apps,
-            'smsMaxLength'   => 300,
-            'messageTypes'   => MessageType::pluck('name', 'id')->toArray(),
-            'uris'           => $this->uris(),
+            'titles'       => ['#', '通信方式', '应用', '消息批次', '接收者', '类型', '发送于', '状态(发送/阅读)'],
+            'apps'         => $apps,
+            'smsMaxLength' => 300,
+            'messageTypes' => MessageType::pluck('name', 'id')->toArray(),
         ]);
     }
     

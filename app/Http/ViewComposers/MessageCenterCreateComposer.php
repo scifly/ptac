@@ -1,13 +1,12 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Models\App;
+use App\Helpers\ModelTrait;
 use App\Models\Department;
 use App\Models\Grade;
+use App\Models\MessageType;
 use App\Models\School;
 use App\Models\Squad;
-use App\Helpers\ModelTrait;
-use App\Models\MessageType;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 

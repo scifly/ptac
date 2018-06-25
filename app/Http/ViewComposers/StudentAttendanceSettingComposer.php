@@ -33,7 +33,6 @@ class StudentAttendanceSettingComposer {
             'grades'    => $grades,
             'semesters' => Semester::whereSchoolId($schoolId)->pluck('name', 'id'),
             'days'      => $days,
-            'uris'      => $this->uris(),
         ]);
         
     }

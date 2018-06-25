@@ -20,9 +20,8 @@ class MajorComposer {
                 ->subjects->pluck('name', 'id')->toArray();
         }
         $view->with([
-            'subjects' => Subject::whereSchoolId($schoolId)->pluck('name', 'id'),
+            'subjects'         => Subject::whereSchoolId($schoolId)->pluck('name', 'id'),
             'selectedSubjects' => $selectedSubjects,
-            'uris'     => $this->uris(),
         ]);
         
     }

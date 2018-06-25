@@ -49,7 +49,6 @@ class ConferenceQueueComposer {
         $view->with([
             'conferenceRooms' => $conferenceRooms,
             'educators'       => $educators,
-            'uris'            => $this->uris(),
         ]);
         
     }

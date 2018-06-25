@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ModelTrait;
 use App\Models\Exam;
 use App\Models\Squad;
 use App\Models\Subject;
@@ -9,8 +8,6 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
 class ExamShowComposer {
-    
-    use ModelTrait;
     
     public function compose(View $view) {
         
@@ -20,7 +17,6 @@ class ExamShowComposer {
         $view->with([
             'classes'  => Squad::whereIn('id', $classIds)->pluck('name', 'id')->toArray(),
             'subjects' => Subject::whereIn('id', $subjectIds)->pluck('name', 'id')->toArray(),
-            'uris'     => $this->uris(),
         ]);
         
     }

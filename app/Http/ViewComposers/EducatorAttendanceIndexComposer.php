@@ -1,12 +1,9 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ModelTrait;
 use Illuminate\Contracts\View\View;
 
 class EducatorAttendanceIndexComposer {
-    
-    use ModelTrait;
     
     public function compose(View $view) {
         
@@ -19,7 +16,6 @@ class EducatorAttendanceIndexComposer {
                     'icon'  => 'fa fa-bar-chart',
                 ],
             ],
-            'uris'    => $this->uris(),
         ]);
         
     }

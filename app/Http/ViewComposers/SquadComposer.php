@@ -44,7 +44,6 @@ class SquadComposer {
             'grades'            => $grades,
             'educators'         => $educatorList,
             'selectedEducators' => $selectedEducators,
-            'uris'              => $this->uris(),
         ]);
         
     }

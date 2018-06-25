@@ -12,7 +12,7 @@ class GroupCreateComposer {
     use ModelTrait;
     
     public function compose(View $view) {
-
+        
         $menu = new Menu();
         $currentMenuId = session('menuId');
         if ($this->schoolId()) {
@@ -25,7 +25,6 @@ class GroupCreateComposer {
         }
         $view->with([
             'schools' => $schools,
-            'uris'    => $this->uris(),
         ]);
         
     }

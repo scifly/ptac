@@ -14,7 +14,6 @@ class ProcedureStepComposer {
         $view->with([
             'procedures' => Procedure::whereSchoolId($this->schoolId())
                 ->get()->pluck('name', 'id'),
-            'uris'       => $this->uris(),
         ]);
         
     }

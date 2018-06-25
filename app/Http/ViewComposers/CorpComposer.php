@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ModelTrait;
 use App\Models\Company;
 use App\Models\Corp;
 use App\Models\Menu;
@@ -9,8 +8,6 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
 class CorpComposer {
-    
-    use ModelTrait;
     
     protected $menu;
     
@@ -33,13 +30,11 @@ class CorpComposer {
             }
             $view->with([
                 'companies' => $companies,
-                'disabled' => $disabled,
-                'uris' => $this->uris()
+                'disabled'  => $disabled,
             ]);
         } else {
             $view->with([
                 'companies' => $companies,
-                'uris'      => $this->uris(),
             ]);
         }
         

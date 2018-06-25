@@ -22,7 +22,6 @@ class StudentComposer {
             ->where('enabled', 1)
             ->pluck('name', 'id')
             ->toArray();
-        
         if (Request::route('id')) {
             $gradeId = Student::find(Request::route('id'))->squad->grade_id;
         } else {
@@ -44,7 +43,6 @@ class StudentComposer {
             'classes' => $classes,
             'user'    => $user,
             'mobiles' => $mobiles,
-            'uris'    => $this->uris(),
         ]);
         
     }

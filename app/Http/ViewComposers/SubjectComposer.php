@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ModelTrait;
 use App\Models\Grade;
 use App\Models\Major;
 use App\Models\Subject;
@@ -9,8 +8,6 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
 class SubjectComposer {
-    
-    use ModelTrait;
     
     protected $major, $grade;
     
@@ -35,7 +32,6 @@ class SubjectComposer {
             'majors'         => $this->major->majorList(),
             'selectedGrades' => $selectedGrades,
             'selectedMajors' => $selectedMajors,
-            'uris'           => $this->uris(),
         ]);
         
     }

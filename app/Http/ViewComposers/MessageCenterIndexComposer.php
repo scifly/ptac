@@ -2,7 +2,6 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
 use App\Models\Message;
 use App\Models\MessageType;
 use App\Models\School;
@@ -13,10 +12,8 @@ use Illuminate\Support\Facades\Auth;
 
 class MessageCenterIndexComposer {
     
-    use ModelTrait;
-    
     public function compose(View $view) {
-    
+        
         $user = Auth::user();
         $sent = Message::whereSUserId($user->id)->get()
             ->unique('msl_id')->sortByDesc('created_at')
@@ -29,14 +26,13 @@ class MessageCenterIndexComposer {
         $count = Message::whereRUserId($user->id)
             ->where('read', '0')->count();
         $school = School::find(session('schoolId'));
-    
         $view->with([
             'messageTypes' => MessageType::pluck('name', 'id'),
-            'sent' => $sent,
-            'received' => $received,
-            'count' => $count,
-            'acronym' => $school->corp->acronym,
-            'canSend' => !$user->custodian ? true : false
+            'sent'         => $sent,
+            'received'     => $received,
+            'count'        => $count,
+            'acronym'      => $school->corp->acronym,
+            'canSend'      => !$user->custodian ? true : false,
         ]);
         
     }

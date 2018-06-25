@@ -26,7 +26,6 @@ class ConsumptionStatComposer {
         $classes = Squad::whereIn('id', $this->classIds())->pluck('name', 'id')->toArray();
         $grades = Grade::whereIn('id', $this->gradeIds())->pluck('name', 'id')->toArray();
         $view->with([
-            'uris'     => $this->uris(),
             'ranges'   => $ranges,
             'students' => $students,
             'classes'  => $classes,

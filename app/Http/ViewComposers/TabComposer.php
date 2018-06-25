@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ModelTrait;
 use App\Models\Action;
 use App\Models\Icon;
 use App\Models\Menu;
@@ -10,8 +9,6 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
 class TabComposer {
-    
-    use ModelTrait;
     
     protected $icon, $action, $menu;
     
@@ -45,7 +42,6 @@ class TabComposer {
             ],
             'menus'         => $this->menu->leaves(1),
             'selectedMenus' => $selectedMenus,
-            'uris'          => $this->uris(),
         ]);
         
     }

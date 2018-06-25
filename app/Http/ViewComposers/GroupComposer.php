@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ModelTrait;
 use App\Models\Action;
 use App\Models\Corp;
 use App\Models\Group;
@@ -11,8 +10,6 @@ use App\Models\Tab;
 use Illuminate\Contracts\View\View;
 
 class GroupComposer {
-    
-    use ModelTrait;
     
     protected $excludedActions = [
         '创建学校', '保存学校', '删除学校',
@@ -46,7 +43,7 @@ class GroupComposer {
                 break;
             default:
                 break;
-                
+            
         }
         foreach ($tabs as $tab) {
             $actions = Action::whereController($tab->controller)
@@ -69,7 +66,6 @@ class GroupComposer {
         $view->with([
             'tabActions' => $tabActions,
             'schools'    => $schools,
-            'uris'       => $this->uris(),
         ]);
         
     }

@@ -1,15 +1,12 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ModelTrait;
 use App\Models\ConferenceQueue;
 use App\Models\Educator;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
 class ConferenceQueueEditComposer {
-    
-    use ModelTrait;
     
     protected $educator;
     
@@ -20,7 +17,6 @@ class ConferenceQueueEditComposer {
         $view->with([
             'selectedEducators' => $this->educator->educatorList(
                 ConferenceQueue::find(Request::route('id'))->educator_ids),
-            'uris'              => $this->uris(),
         ]);
         
     }

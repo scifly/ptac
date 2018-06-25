@@ -7,7 +7,6 @@ use App\Models\Department;
 use App\Models\DepartmentType;
 use App\Models\Educator;
 use App\Models\Group;
-use App\Models\School;
 use App\Models\Squad;
 use App\Models\Subject;
 use App\Models\Team;
@@ -29,7 +28,6 @@ class EducatorComposer {
     public function compose(View $view) {
         
         $schoolId = $this->schoolId();
-    
         $squads = Squad::whereIn('id', $this->classIds())
             ->where('enabled', 1)->pluck('name', 'id')
             ->toArray();
@@ -38,7 +36,6 @@ class EducatorComposer {
             $gradeIds[] = Squad::find($id)->grade_id;
         }
         $gradeIds = array_unique($gradeIds);
-        
         $squads[0] = '(请选择)';
         ksort($squads);
         $subjects = Subject::whereSchoolId($schoolId)
@@ -50,14 +47,12 @@ class EducatorComposer {
                 $subjectList[$subject->id] = $subject->name;
             }
         }
-    
         $teams = Team::whereSchoolId($schoolId)
             ->where('enabled', 1)->pluck('name', 'id')
             ->toArray();
         $groups = Group::whereSchoolId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id')->toArray();
-        
         $subjectList[0] = '(请选择)';
         ksort($subjectList);
         $mobiles = $selectedTeams = $selectedDepartmentIds = $selectedDepartments = [];
@@ -83,7 +78,6 @@ class EducatorComposer {
             'selectedTeams'         => $selectedTeams,
             'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
             'selectedDepartments'   => $selectedDepartments,
-            'uris'                  => $this->uris(),
         ]);
         
     }
@@ -103,11 +97,11 @@ class EducatorComposer {
             $text = $department['name'];
             $departmentType = DepartmentType::find($department['department_type_id'])->name;
             $nodes[] = [
-                'id' => $department['id'],
+                'id'     => $department['id'],
                 'parent' => $parentId,
-                'text' => $text,
-                'icon' => Constant::NODE_TYPES[$departmentType]['icon'],
-                'type' => Constant::NODE_TYPES[$departmentType]['type'],
+                'text'   => $text,
+                'icon'   => Constant::NODE_TYPES[$departmentType]['icon'],
+                'type'   => Constant::NODE_TYPES[$departmentType]['type'],
             ];
         }
         

@@ -1,17 +1,13 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ModelTrait;
 use App\Models\App;
 use App\Models\Corp;
 use App\Models\Menu;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Auth;
 
 class AppIndexComposer {
-    
-    use ModelTrait;
     
     protected $corp, $menu;
     
@@ -36,8 +32,7 @@ class AppIndexComposer {
         $this->formatDateTime($apps);
         $view->with([
             'corps' => $corps,
-            'apps' => $apps,
-            'uris' => $this->uris()
+            'apps'  => $apps,
         ]);
         
     }

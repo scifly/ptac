@@ -14,7 +14,6 @@ class EducatorIndexComposer {
         
         $departments = Department::whereIn('id', $this->departmentIds(Auth::id()))
             ->pluck('name', 'id')->toArray();
-        
         $view->with([
             'buttons'        => [
                 'import' => [
@@ -33,7 +32,6 @@ class EducatorIndexComposer {
             'departments'    => $departments,
             'importTemplate' => 'files/educators.xlsx',
             'title'          => '导出教职员工',
-            'uris'           => $this->uris(),
         ]);
         
     }

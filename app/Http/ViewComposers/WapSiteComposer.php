@@ -1,15 +1,12 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ModelTrait;
 use App\Models\Media;
 use App\Models\WapSite;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
 class WapSiteComposer {
-    
-    use ModelTrait;
     
     protected $media;
     
@@ -28,10 +25,8 @@ class WapSiteComposer {
                 ? $this->media->medias(explode(',', $ws->media_ids))
                 : null;
         }
-        
         $view->with([
             'medias' => $medias,
-            'uris' => $this->uris()
         ]);
         
     }

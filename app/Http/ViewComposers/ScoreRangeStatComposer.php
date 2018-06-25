@@ -22,12 +22,10 @@ class ScoreRangeStatComposer {
         $exams = Exam::whereEnabled(1)
             ->whereRaw('class_ids IN(' . implode(',', $this->classIds()) . ')')
             ->get()->pluck('name', 'id');
-            
         $view->with([
             'grades'  => $grades,
             'classes' => $classes,
             'exams'   => $exams,
-            'uris'    => $this->uris(),
         ]);
         
     }

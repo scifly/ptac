@@ -1,15 +1,12 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Helpers\ModelTrait;
 use App\Models\Action;
 use App\Models\ActionType;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
 class ActionComposer {
-    
-    use ModelTrait;
     
     public function compose(View $view) {
         
@@ -24,7 +21,6 @@ class ActionComposer {
         $view->with([
             'actionTypes'         => ActionType::pluck('name', 'id'),
             'selectedActionTypes' => $selectedActionTypes ?? null,
-            // 'uris'                => $this->uris(),
         ]);
         
     }

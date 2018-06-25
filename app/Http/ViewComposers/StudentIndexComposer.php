@@ -21,7 +21,6 @@ class StudentIndexComposer {
             ->where('enabled', 1)
             ->pluck('name', 'id')
             ->toArray();
-        
         $view->with([
             'buttons'        => [
                 'import' => [
@@ -44,7 +43,6 @@ class StudentIndexComposer {
             'classes'        => $classes,
             'importTemplate' => 'files/students.xlsx',
             'title'          => '导出学籍',
-            'uris'           => $this->uris(),
         ]);
         
     }

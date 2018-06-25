@@ -12,7 +12,6 @@ class WapSiteModuleIndexComposer {
         
         $view->with([
             'titles' => ['#', '栏目名称', '所属网站', '创建于', '更新于', '状态 . 操作'],
-            'uris'   => $this->uris(),
         ]);
         
     }

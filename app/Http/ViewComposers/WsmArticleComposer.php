@@ -4,8 +4,6 @@ namespace App\Http\ViewComposers;
 use App\Helpers\ModelTrait;
 use App\Models\Media;
 use App\Models\School;
-use App\Models\WapSite;
-use App\Models\WapSiteModule;
 use App\Models\WsmArticle;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
@@ -35,12 +33,11 @@ class WsmArticleComposer {
             );
         }
         $view->with([
-            'wsms' => School::find($schoolId)
+            'wsms'   => School::find($schoolId)
                 ->wapSite->wapSiteModules
                 ->pluck('name', 'id')
                 ->toArray(),
             'medias' => $medias,
-            'uris' => $this->uris(),
         ]);
         
     }
