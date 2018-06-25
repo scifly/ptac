@@ -29,7 +29,7 @@ class TestController extends Controller {
     public function index() {
     
         
-        dd(App::whereCorpId(1)->get()->pluck('name', 'id'));
+        dd(App::whereCorpId(1)->pluck('name', 'id'));
         $a = [
             0 => 'a',
             1 => 'b'
