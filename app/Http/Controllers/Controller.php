@@ -204,6 +204,7 @@ class Controller extends BaseController {
      * 返回指定控制器对应的所有路由
      *
      * @param $controller
+     * @return array
      */
     private function uris($controller) {
     
@@ -215,7 +216,8 @@ class Controller extends BaseController {
         foreach ($routes as $key => $value) {
             $uris[$key] = new Route($value);
         }
-        View::share('uris', $uris);
+        // View::share('uris', $uris);
+        return $uris;
         
     }
     
