@@ -23,7 +23,7 @@ class TestController extends Controller {
      */
     public function index() {
         
-        dd(App::whereEnabled(1));
+        dd(env('APP_NAME'));
         $a = [
             0 => 'a',
             1 => 'b',
