@@ -32,7 +32,7 @@
 <div class="main" style="margin:15% auto;width: 360px">
     <div class="box box-success">
         <div class="box-header with-border">
-            <a href="#"><b>智慧校园安全平台 - PTAC</b></a>
+            <a href="#"><b>{!! config('app.name') !!} . PTAC</b></a>
         </div>
         <!-- /.login-logo -->
         <div class="box-body">

@@ -5,7 +5,6 @@ use App\Models\Department;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
-use Illuminate\Support\Facades\App;
 use ReflectionClass;
 use ReflectionMethod;
 
