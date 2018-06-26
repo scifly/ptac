@@ -38,7 +38,7 @@ class ActionController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->action->datatable()
+                $this->action->index()
             );
         }
         abort_if(!$this->action->scan(), HttpStatusCode::NOT_FOUND);

@@ -1,10 +1,8 @@
 <?php
-
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Datatable;
 use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use App\Models\ActionType as ActionType;
@@ -53,7 +51,7 @@ use Throwable;
  * @mixin Eloquent
  */
 class Action extends Model {
-
+    
     use ModelTrait;
     
     protected $fillable = [
@@ -63,10 +61,10 @@ class Action extends Model {
     ];
     
     protected $routes;
-
+    
     const ACTIONS_WITHOUT_VIEW_AND_JS = [
         'destroy', 'store', 'update',
-        'sort', 'move', 'rankTabs', 'sanction'
+        'sort', 'move', 'rankTabs', 'sanction',
     ];
     
     /**
@@ -75,14 +73,14 @@ class Action extends Model {
      * @return HasMany
      */
     function tabs() { return $this->hasMany('App\Models\Tab'); }
-
+    
     /**
      * 返回HTTP请求方法中包含GET以及路由中不带参数的action列表
      *
      * @return array
      */
     function actions() {
-
+        
         $data = self::whereEnabled(1)->get([
             'controller', 'name', 'id',
             'action_type_ids', 'route',
@@ -99,9 +97,9 @@ class Action extends Model {
             }
         }
         ksort($actions);
-
+        
         return $actions;
-
+        
     }
     
     /**
@@ -177,57 +175,58 @@ class Action extends Model {
      *
      * @return array
      */
-    function datatable() {
+    function index() {
         
         $columns = [
             ['db' => 'Action.id', 'dt' => 0],
             [
-                'db' => 'Action.name', 'dt' => 1,
+                'db'        => 'Action.name', 'dt' => 1,
                 'formatter' => function ($d) {
                     return empty($d) ? '-' : sprintf(Snippet::ICON, 'fa fa-gears', '') . $d;
                 },
             ],
             [
-                'db' => 'Action.method', 'dt' => 2,
+                'db'        => 'Action.method', 'dt' => 2,
                 'formatter' => function ($d) {
                     return !empty($d) ? sprintf(Snippet::BADGE_GREEN, $d) : '-';
                 },
             ],
             [
-                'db' => 'Action.route', 'dt' => 3,
+                'db'        => 'Action.route', 'dt' => 3,
                 'formatter' => function ($d) {
                     return !empty($d) ? sprintf(Snippet::BADGE_YELLOW, $d) : '-';
                 },
             ],
             [
-                'db' => 'Action.controller', 'dt' => 4,
+                'db'        => 'Action.controller', 'dt' => 4,
                 'formatter' => function ($d) {
                     return !empty($d) ? sprintf(Snippet::BADGE_RED, $d) : '-';
                 },
             ],
             [
-                'db' => 'Action.view', 'dt' => 5,
+                'db'        => 'Action.view', 'dt' => 5,
                 'formatter' => function ($d) {
                     return !empty($d) ? sprintf(Snippet::BADGE_LIGHT_BLUE, $d) : '-';
                 },
             ],
             [
-                'db' => 'Action.js', 'dt' => 6,
+                'db'        => 'Action.js', 'dt' => 6,
                 'formatter' => function ($d) {
                     return !empty($d) ? sprintf(Snippet::BADGE_MAROON, $d) : '-';
                 },
             ],
             [
-                'db' => 'Action.action_type_ids', 'dt' => 7,
+                'db'        => 'Action.action_type_ids', 'dt' => 7,
                 'formatter' => function ($d) {
                     return !empty($d) ? self::actionTypes($d) : '-';
                 },
             ],
             [
-                'db' => 'Action.enabled', 'dt' => 8,
+                'db'        => 'Action.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
+                    
                     return Snippet::status($d) . $editLink;
                 },
             ],
@@ -245,12 +244,11 @@ class Action extends Model {
      * @throws Throwable
      */
     function scan() {
-
+        
         $this->routes = Route::getRoutes()->getRoutes();
         $controllers = self::scanDirs(self::siteRoot() . Constant::CONTROLLER_DIR);
         # 获取控制器的名字空间
         $this->controllerNamespaces($controllers);
-
         # 移除excluded控制器
         $controllerNames = array_diff(
             $this->controllerNames($controllers),
@@ -295,19 +293,19 @@ class Action extends Model {
                     ) {
                         $ctlr = $this->controllerName($className);
                         $selfDefinedMethods[$className][$action] = [
-                            'name' => $this->methodComment($obj, $method),
-                            'method' => $action,
-                            'remark' => '',
-                            'controller' => $ctlr,
-                            'view' => $this->viewPath($ctlr, $action),
-                            'route' => $this->actionRoute($ctlr, $action),
+                            'name'            => $this->methodComment($obj, $method),
+                            'method'          => $action,
+                            'remark'          => '',
+                            'controller'      => $ctlr,
+                            'view'            => $this->viewPath($ctlr, $action),
+                            'route'           => $this->actionRoute($ctlr, $action),
                             'action_type_ids' => $this->actionTypeIds($ctlr, $action),
-                            'js' => $this->jsPath($ctlr, $action),
+                            'js'              => $this->jsPath($ctlr, $action),
                         ];
                     }
                 }
             }
-
+            
         }
         foreach ($selfDefinedMethods as $actions) {
             foreach ($actions as $action) {
@@ -324,20 +322,20 @@ class Action extends Model {
                     $a->save();
                 } else {
                     $this->create([
-                        'name' => trim($action['name']),
-                        'method' => $action['method'],
-                        'remark' => $action['remark'],
-                        'controller' => $action['controller'],
-                        'view' => $action['view'],
-                        'route' => $action['route'],
+                        'name'            => trim($action['name']),
+                        'method'          => $action['method'],
+                        'remark'          => $action['remark'],
+                        'controller'      => $action['controller'],
+                        'view'            => $action['view'],
+                        'route'           => $action['route'],
                         'action_type_ids' => $action['action_type_ids'],
-                        'js' => $action['js'],
-                        'enabled' => Constant::ENABLED,
+                        'js'              => $action['js'],
+                        'enabled'         => Constant::ENABLED,
                     ]);
                 }
             }
         }
-
+        
         return true;
     }
     
@@ -395,7 +393,7 @@ class Action extends Model {
      * @return array
      */
     private function scanDirs($rootDir, $allData = []) {
-
+        
         // set filenames invisible if you want
         $invisibleFileNames = [".", "..", ".htaccess", ".htpasswd"];
         // run through content of root directory
@@ -415,8 +413,9 @@ class Action extends Model {
                 }
             }
         }
+        
         return $allData;
-
+        
     }
     
     /**
@@ -429,7 +428,7 @@ class Action extends Model {
      * @throws Throwable
      */
     private function delNonExistingMethods($methods, $className) {
-
+        
         // remove non-existing methods of current controller
         $currentMethods = self::methodNames($methods);
         $existingMethods = [];
@@ -450,11 +449,11 @@ class Action extends Model {
                 throw $e;
             }
         }
-
+        
         return true;
-
+        
     }
-
+    
     /**
      * 获取指定方法的名称
      *
@@ -462,17 +461,17 @@ class Action extends Model {
      * @return array
      */
     private function methodNames($methods) {
-
+        
         $methodNames = [];
         /** @var ReflectionMethod $method */
         foreach ($methods as $method) {
             $methodNames[] = $method->getName();
         }
-
+        
         return $methodNames;
-
+        
     }
-
+    
     /**
      * 返回去除名字空间路径的控制器名称
      *
@@ -480,13 +479,13 @@ class Action extends Model {
      * @return mixed
      */
     private function controllerName($controller) {
-
+        
         $nameSpacePaths = explode('\\', $controller);
-
+        
         return $nameSpacePaths[sizeof($nameSpacePaths) - 1];
-
+        
     }
-
+    
     /**
      * 获取方法备注名称
      *
@@ -495,7 +494,7 @@ class Action extends Model {
      * @return mixed|string
      */
     private function methodComment(ReflectionClass $controllerObj, ReflectionMethod $method) {
-       
+        
         $comment = $controllerObj->getMethod($method->getName())->getDocComment();
         $name = 'n/a';
         preg_match_all("#\/\*\*\n\s{5}\*[^\*]*\*#", $comment, $matches);
@@ -507,10 +506,11 @@ class Action extends Model {
                 $name = str_replace(str_split("\r\n/*"), '', $matches[0][0]);
             }
         }
+        
         return $name;
-
+        
     }
-
+    
     /**
      * 获取控制器action对应的View路径
      *
@@ -519,7 +519,7 @@ class Action extends Model {
      * @return string
      */
     private function viewPath($controller, $action) {
-    
+        
         if (in_array($action, self::ACTIONS_WITHOUT_VIEW_AND_JS)) {
             return null;
         }
@@ -543,14 +543,14 @@ class Action extends Model {
                     $viewPath = Inflector::singularize(self::tableName($controller)) . '.' . $action;
                     break;
             }
-
+            
             return $viewPath;
         }
-
+        
         return '';
-
+        
     }
-
+    
     /**
      * 根据控制器名称返回表名称
      *
@@ -558,7 +558,7 @@ class Action extends Model {
      * @return string 数据表名称
      */
     private function tableName($controller) {
-
+        
         $modelName = substr(
             $controller, 0,
             strlen($controller) - strlen('Controller')
@@ -566,11 +566,11 @@ class Action extends Model {
         if ($modelName === 'Squad') {
             return 'classes';
         }
-
+        
         return Inflector::pluralize(Inflector::tableize($modelName));
-
+        
     }
-
+    
     /**
      * 根据控制器名称和action名称返回action对应的路由名称
      *
@@ -579,7 +579,7 @@ class Action extends Model {
      * @return mixed 路由名称
      */
     private function actionRoute($controller, $action) {
-
+        
         $action = ($action == 'destroy' ? 'delete' : $action);
         if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
             $route = $this->tableName($controller) . '/' . $action;
@@ -589,11 +589,11 @@ class Action extends Model {
                 }
             }
         }
-
+        
         return null;
-
+        
     }
-
+    
     /**
      * 返回指定action的HTTP请求类型名称
      *
@@ -602,7 +602,7 @@ class Action extends Model {
      * @return null|string
      */
     private function actionTypeIds($controller, $action) {
-
+        
         $action = ($action == 'destroy' ? 'delete' : $action);
         $actionTypes = ActionType::pluck('id', 'name')->toArray();
         if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
@@ -615,14 +615,14 @@ class Action extends Model {
                     }
                 }
             }
-
+            
             return implode(',', $actionTypeIds);
         }
-
+        
         return null;
-
+        
     }
-
+    
     /**
      * 返回指定action对应的js路径
      *
@@ -631,18 +631,19 @@ class Action extends Model {
      * @return mixed
      */
     private function jsPath($ctlr, $action) {
-
+        
         if (!in_array($ctlr, Constant::EXCLUDED_CONTROLLERS)) {
             $prefix = str_singular($this->tableName($ctlr));
             $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
             if (in_array($action, self::ACTIONS_WITHOUT_VIEW_AND_JS)) {
                 return null;
             }
+            
             return 'js/' . $prefix . '/' . $action . '.js';
         }
-
+        
         return null;
-
+        
     }
     
     /**
@@ -665,5 +666,5 @@ class Action extends Model {
         return implode(', ', $actionTypes);
         
     }
-
+    
 }
