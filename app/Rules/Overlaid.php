@@ -7,7 +7,6 @@ use App\Models\Grade;
 use App\Models\Semester;
 use App\Models\StudentAttendanceSetting;
 use Illuminate\Contracts\Validation\Rule;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 class Overlaid implements Rule {

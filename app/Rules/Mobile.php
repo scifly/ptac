@@ -19,7 +19,7 @@ class Mobile implements Rule {
      *
      * @param  string $attribute
      * @param  mixed $value
-     * @return bool
+     * @return void
      */
     public function passes($attribute, $value) {
     

@@ -8,7 +8,6 @@ use App\Helpers\ModelTrait;
 use App\Helpers\PolicyTrait;
 use App\Models\ConferenceParticipant;
 use App\Models\ConferenceQueue;
-use App\Models\ConferenceRoom;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;

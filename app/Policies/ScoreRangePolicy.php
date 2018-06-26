@@ -9,7 +9,6 @@ use App\Models\ScoreRange;
 use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 class ScoreRangePolicy {

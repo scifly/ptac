@@ -9,7 +9,6 @@ use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use App\Helpers\PolicyTrait;
 use App\Helpers\HttpStatusCode;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Auth\Access\HandlesAuthorization;
 

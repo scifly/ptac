@@ -1,23 +1,24 @@
 <?php
 namespace App\Jobs;
 
-use Throwable;
-use Exception;
-use Validator;
+use App\Events\JobResponse;
+use App\Helpers\HttpStatusCode;
+use App\Helpers\ModelTrait;
 use App\Models\Score;
 use App\Models\Student;
-use App\Events\JobResponse;
+use Exception;
 use Illuminate\Bus\Queueable;
-use App\Helpers\HttpStatusCode;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
+use Throwable;
+use Validator;
 
 class ImportScore implements ShouldQueue {
     
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait;
     
     protected $data, $classId, $userId;
     
@@ -42,12 +43,12 @@ class ImportScore implements ShouldQueue {
      * @throws Throwable
      */
     public function handle() {
-    
+        
         $response = [
-            'userId' => $this->userId,
-            'title' => __('messages.score.title'),
+            'userId'     => $this->userId,
+            'title'      => __('messages.score.title'),
             'statusCode' => HttpStatusCode::OK,
-            'message' => __('messages.score.import_succeeded')
+            'message'    => __('messages.score.import_succeeded'),
         ];
         list($inserts, $updates, $illegals) = $this->validateData($this->data);
         if (empty($updates) && empty($inserts)) {
@@ -56,20 +57,25 @@ class ImportScore implements ShouldQueue {
             $response['message'] = __('messages.invalid_data_format');
         } else {
             try {
-                DB::transaction(function () use ($inserts, $updates) {
+                DB::transaction(function () use ($inserts, $updates, $illegals) {
                     # 插入数据
                     $this->insert($inserts);
                     # 更新数据
                     $this->update($updates);
+                    # 生成错误数据excel文件
+                    if (!empty($illegals)) {
+                        $this->excel($illegals, 'illegals', '错误数据', false);
+                        $response['url'] = 'uploads/' . date('Y/m/d/') . 'illegals.xlsx';
+                    }
                 });
             } catch (Exception $e) {
                 $response['statusCode'] = $e->getCode();
                 $response['messages'] = $e->getMessage();
             }
-            # todo: 生成非法数据excel文件及下载链接
+            
         }
         event(new JobResponse($response));
-    
+        
         return true;
         
     }
@@ -81,16 +87,16 @@ class ImportScore implements ShouldQueue {
      * @return array
      */
     private function validateData($data) {
-    
+        
         $rules = [
             'student_number' => 'required',
             'subject_id'     => 'required|integer',
             'exam_id'        => 'required|integer',
             'score'          => 'required|numeric',
         ];
-        # 不合法的数据
+        # 非法数据
         $illegals = [];
-        # 更新的数据
+        # 需要更新的数据
         $updates = [];
         # 需要添加的数据
         $inserts = [];
@@ -102,20 +108,23 @@ class ImportScore implements ShouldQueue {
                 'exam_id'        => $datum['exam_id'],
                 'score'          => $datum['score'],
             ];
-            $status = Validator::make($score, $rules);
-            if ($status->fails()) {
-                $illegals[] = $datum;
+            $result = Validator::make($score, $rules);
+            if ($result->fails()) {
+                $datum['error'] = json_encode($result->errors());
+                $illegals[] = array_values($datum);
                 continue;
             }
             $student = Student::whereStudentNumber($score['student_number'])->first();
             # 数据非法
             if (!$student) {
-                $illegals[] = $datum;
+                $datum['error'] = __('messages.student.not_found');
+                $illegals[] = array_values($datum);
                 continue;
             }
             # 判断这个学生是否在这个班级
             if ($student->class_id != $this->classId) {
-                $illegals[] = $datum;
+                $datum['error'] = __('messages.score.student_class_mismatch');
+                $illegals[] = array_values($datum);
                 continue;
             }
             $scoreExists = Score::whereEnabled(1)
@@ -141,12 +150,11 @@ class ImportScore implements ShouldQueue {
      * @throws Exception
      */
     private function insert(array $inserts) {
-    
+        
         try {
             DB::transaction(function () use ($inserts) {
                 foreach ($inserts as $insert) {
                     $student = Student::whereStudentNumber($insert['student_number'])->first();
-                    #先创建记录
                     Score::create([
                         'student_id' => $student->id,
                         'subject_id' => $insert['subject_id'],
@@ -171,12 +179,11 @@ class ImportScore implements ShouldQueue {
      * @throws Exception
      */
     private function update(array $updates) {
-    
+        
         try {
             DB::transaction(function () use ($updates) {
                 foreach ($updates as $update) {
                     $student = Student::whereStudentNumber($update['student_number'])->first();
-                    #先找到需要更新的记录
                     $score = Score::whereEnabled(1)
                         ->whereExamId($update['exam_id'])
                         ->whereStudentId($student->id)

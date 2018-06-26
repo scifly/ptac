@@ -8,7 +8,6 @@ use App\Helpers\PolicyTrait;
 use App\Models\Squad;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 class SquadPolicy {

@@ -28,6 +28,9 @@ var notify = function (e) {
         e['response']['message'],
         image
     );
+    if (typeof e['response']['url'] !== 'undefined') {
+        window.location = page.siteRoot() + e['response']['url'];
+    }
 };
 // noinspection JSUnusedLocalSymbols
 const app = new Vue({
