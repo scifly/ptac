@@ -20,7 +20,7 @@ $(function () {
             showDrag: false
         },
         uploadExtraData: {
-            '_token': $('#csrf_token').attr('content')
+            _token: page.token()
         }
     });
     // 上传成功

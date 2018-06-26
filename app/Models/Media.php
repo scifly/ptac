@@ -130,7 +130,7 @@ class Media extends Model {
      * @return bool|null
      * @throws Exception
      */
-    function remove($id) {
+    function remove($id = null) {
         
         return $this->del($this, $id);
         
@@ -146,9 +146,12 @@ class Media extends Model {
         
         try {
             DB::transaction(function () use ($id) {
+                $media = $this->find($id);
                 (new WapSite)->removeMedia($id);
                 (new WsmArticle)->removeMedia($id);
                 WapSiteModule::whereMediaId($id)->update(['media_id' => 0]);
+                Storage::disk('uploads')->delete($media->path);
+                $media->delete();
             });
         } catch (Exception $e) {
             throw $e;

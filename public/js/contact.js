@@ -14,9 +14,6 @@
                 relationship: 'relationship',
                 mobiles: 'mobiles'
             }, options),
-            token: function () {
-                return $('#csrf_token').attr('content');
-            },
             mobiles: function (formId, requestType, ajaxUrl) {
                 var $tbody = $('#' + contact.options.mobiles).find('tbody');
                 page.initICheck($tbody);
@@ -132,7 +129,7 @@
                         dataType: 'json',
                         url: page.siteRoot() + uri,
                         data: {
-                            _token: contact.token(),
+                            _token: page.token(),
                             field: 'grade',
                             id: gradeId
                         },
@@ -171,7 +168,7 @@
                         dataType: 'json',
                         url: page.siteRoot() + uri,
                         data: {
-                            _token: contact.token(),
+                            _token: page.token(),
                             field: 'class',
                             id: classId
                         },
@@ -273,7 +270,7 @@
                 $('#confirm-import').off('click').on('click', function () {
                     var formData = new FormData();
 
-                    formData.append('_token', contact.token());
+                    formData.append('_token', page.token());
                     formData.append('file', $('#fileupload')[0].files[0]);
                     page.inform("导入通讯录", '正在导入中...', page.info);
 

@@ -7,7 +7,7 @@
                 var $range = $('#range'),
                     dates = $range.html().split(' - '),
                     data = {
-                        _token: $('#csrf_token').attr('content'),
+                        _token: page.token(),
                         start_date: $.trim(dates[0]),
                         end_date: $.trim(dates[1])
                     };
@@ -112,7 +112,7 @@
                         url: page.siteRoot() + table + '/detail',
                         type: 'POST',
                         data: {
-                            _token: $('#csrf_token').attr('content'),
+                            _token: page.token(),
                             class_id: $('#class_id').val(),
                             type: $(this).attr('data-type'),
                             date: $(this).parent().prev().text()

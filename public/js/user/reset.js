@@ -38,7 +38,7 @@ $('#reset').on('click', function (e) {
         data: {
             password: password.value,
             pwd: pwd1.value,
-            _token: $('#csrf_token').attr('content')
+            _token: page.token()
         },
         success: function (result) {
             if (result.statusCode === 400) {

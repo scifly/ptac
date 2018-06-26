@@ -38,9 +38,6 @@
                     stripes: true
                 }
             },
-            token: function () {
-                return $('#csrf_token').attr('content');
-            },
             getSelector: function (node) {
                 return $.jstree.reference(node.reference).get_node(node.reference);
             },
@@ -59,7 +56,7 @@
                     url: page.siteRoot() + table + '/index',
                     data: {
                         data: positions,
-                        _token: tree.token()
+                        _token: page.token()
                     }
                 });
             },
@@ -70,7 +67,7 @@
                     type: 'POST',
                     dataType: 'json',
                     url: page.siteRoot() + table + '/index/' + id + '/' + parentId,
-                    data: {_token: tree.token()},
+                    data: {_token: page.token()},
                     success: function () {
                         $.when(
                             tree.sort(table)
@@ -332,7 +329,7 @@
                                 type: 'POST',
                                 dataType: 'json',
                                 data: function (node) {
-                                    return {id: node.id, _token: tree.token()};
+                                    return {id: node.id, _token: page.token()};
                                 }
                             },
                             error: function (e) {
@@ -362,7 +359,7 @@
                         type: 'DELETE',
                         dataType: 'json',
                         url: page.siteRoot() + table + '/delete/' + nodeid,
-                        data: {_token: tree.token()},
+                        data: {_token: page.token()},
                         success: function (result) {
                             page.inform('删除节点', result.message, page.success);
                             $.when(
@@ -403,7 +400,7 @@
                             dataType: 'json',
                             data: function (node) {
                                 return {
-                                    id: node.id, _token: tree.token()
+                                    id: node.id, _token: page.token()
                                 }
                             }
                         },

@@ -7,7 +7,6 @@
                 mediaId: '#media_id',
                 preview: '.preview'
             }, options),
-            token: function () { return $('#csrf_token').attr('content'); },
             upload: function (action) {
                 $(wsm.options.file).on('change', function () {
                     var file = $(this)[0].files[0],
@@ -15,7 +14,7 @@
                         data = new FormData();
 
                     data.append('file', file);
-                    data.append('_token', wsm.token());
+                    data.append('_token', page.token());
                     page.inform('微网站栏目', '图片上传中...', page.info);
                     $('.overlay').show();
                     $.ajax({

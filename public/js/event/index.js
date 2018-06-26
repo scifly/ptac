@@ -59,7 +59,7 @@ $(function () {
             $startPicker.val(moment(date).format('YYYY-MM-DD HH:mm:ss'));
             $endPicker.val(moment(date).format('YYYY-MM-DD HH:mm:ss'));
 
-            copiedEventObject._token = $('#csrf_token').attr('content');
+            copiedEventObject._token = page.token();
             //调用日期时间选择器，格式化时间
             $startPicker.datepicker("destroy");
             $endPicker.datepicker("destroy");
@@ -163,7 +163,7 @@ $(function () {
                                 $.ajax({
                                     type: 'DELETE',
                                     url: '../events/delete/' + event.id,
-                                    data: {_token: $('#csrf_token').attr('content')},
+                                    data: {_token: page.token()},
                                     success: function (result) {
                                         if (result.statusCode === 200) {
                                             $('#calendar').fullCalendar('removeEvents', event.id);
@@ -212,7 +212,7 @@ $(function () {
                     dayDiff: delta._days,
                     hoursDiff: delta._data.hours,
                     minutesDiff: delta._data.minutes,
-                    _token: $('#csrf_token').attr('content')
+                    _token: page.token()
                 },
                 success: function (result) {
                     if (result.statusCode === 200) {
@@ -252,7 +252,7 @@ $(function () {
                     dayDiff: delta._days,
                     hoursDiff: delta._data.hours,
                     minutesDiff: delta._data.minutes,
-                    _token: $('#csrf_token').attr('content'),
+                    _token: page.token(),
                     action: 'resize'
                 },
                 success: function (result) {
@@ -351,7 +351,7 @@ $(function () {
             type: 'DELETE',
             dataType: 'json',
             url: '../events/delete/' + listId,
-            data: {_token: $('#csrf_token').attr('content')},
+            data: {_token: page.token()},
             success: function (result) {
                 if (result.statusCode === 200) {
                     row.remove();

@@ -27,7 +27,7 @@ $(document).on('click', '#sort', function () {
         url: page.siteRoot() + 'menus/sort/' + $('#menuId').val(),
         data: {
             data: ranks,
-            _token: $('#csrf_token').attr('content')
+            _token: page.token()
         },
         success: function (result) {
             $('.overlay').hide();

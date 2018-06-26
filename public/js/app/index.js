@@ -104,7 +104,7 @@ $('#confirm-delete').on('click', function () {
         type: 'DELETE',
         dataType: 'json',
         url: page.siteRoot() + 'apps/delete/' + id,
-        data: {_token: $('#csrf_token').attr('content')},
+        data: {_token: page.token()},
         success: function (result) {
             page.inform(result.title, result.message, page.success);
             page.getTabContent($('#tab_' + page.getActiveTabId()), 'apps/index');

@@ -1,5 +1,4 @@
-var token = $('#csrf_token').attr('content'),
-    message = {
+var message = {
         text: { content: '' },
         image: { media_id: '', media_name: '', type: 'image/*' },
         voice: { media_id: '', media_name: '', type: 'audio/*' },
@@ -133,7 +132,7 @@ $search.on("input propertychange change", function () {
         data = {
             keyword: keyword,
             target: type,
-            _token: token
+            _token: wap.token()
         };
 
     $.ajax({
@@ -163,7 +162,7 @@ $('#back').on('click', function () {
         url: 'create',
         data: {
             target: 'list',
-            _token: token
+            _token: wap.token()
         },
         success: function (result) {
             var html = '';
@@ -188,7 +187,7 @@ $(document).on('click', '.targets', function () {
         url: 'create',
         data: {
             departmentId: id,
-            _token: token
+            _token: wap.token()
         },
         success: function (result) {
             var html = result['targets'].length === 0 ? '暂无' : '';
@@ -530,7 +529,7 @@ $send.on('click', function () {
         return false;
     }
     formData = {
-        _token: token,
+        _token: wap.token(),
         type: type,
         user_ids: userIds,
         dept_ids: departmentIds,
@@ -558,7 +557,7 @@ function upload(uploader, mpnews) {
         type = $msgType.val();
 
     formData.append('file', $(uploader)[0].files[0]);
-    formData.append('_token', token);
+    formData.append('_token', wap.token());
     formData.append('type', type === 'mpnews' ? 'image' : type);
     $notification.show();
 

@@ -6,7 +6,7 @@ $('#avatar_upload').change(function () {
         data: {
             id: $('input[name=avatar_url]').attr("id"),
             avatar: $('#avatar_upload')[0].files[0],
-            _token: $('#csrf_token').attr('content')
+            _token: page.token()
         },
         type: 'POST',
         dataType: 'json',

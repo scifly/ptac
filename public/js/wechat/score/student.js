@@ -16,7 +16,7 @@ $subjectId.on("change", function () {
             examId: $examId.val(),
             studentId: $studentId.val(),
             subject_id : $subjectId.val(),
-            _token: $('#csrf_token').attr('content')
+            _token: wap.token()
         },
         success: function (result) {
             var html= '',

@@ -2,7 +2,7 @@ var dom = $('#panel');//获取dom
 $(function(){
     $.ajaxSetup({
         headers: {
-            'X-CSRF-TOKEN': $("#csrf_token").attr('content')
+            'X-CSRF-TOKEN': page.token()
         }
     });
     $("[name='pollQuestion']").select2({

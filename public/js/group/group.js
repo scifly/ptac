@@ -27,9 +27,6 @@
                 group.ifActionUnChecked();
                 $.tree().initTree(group.loadTree);
             },
-            token: function () {
-                return $('#csrf_token').attr('content');
-            },
             loadTree: function () {
                 var $menuTree = $('#' + group.options.menuTree),
                     $schoolId = $('#' + group.options.schoolId),
@@ -62,7 +59,7 @@
                             data: function (node) {
                                 return {
                                     id: node.id,
-                                    _token: group.token()
+                                    _token: page.token()
                                 }
                             }
                         }

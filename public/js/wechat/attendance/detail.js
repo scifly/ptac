@@ -1,5 +1,4 @@
-var token = $('#csrf_token').attr('content'),
-    $year, $month,
+var $year, $month,
     months = {
         '一月': '01', '二月': '02', '三月': '03', '四月': '04', '五月': '05', '六月': '06',
         '七月': '07', '八月': '08', '九月': '09', '十月': '10', '十一月': '11', '十二月': '12',
@@ -34,7 +33,7 @@ $.when($("#inline-calendar").calendar({
             });
         },
         error: function (e) {
-            page.errorHandler(e);
+            wap.errorHandler(e);
         }
     });
 });
@@ -51,7 +50,7 @@ $(document).on('click', '.picker-calendar-year-picker a, .picker-calendar-month-
             id: $('#id').val(),
             date: $year.text() + '-' + months[$month.text()] + '-01',
             type: 'month',
-            _token: token
+            _token: wap.token()
         },
         success: function (result) {
             var str = '',
@@ -88,7 +87,7 @@ $(document).on('click', '.picker-calendar-year-picker a, .picker-calendar-month-
             $('.kaoqin-tongji tbody').html(str);
         },
         error: function (e) {
-            page.errorHandler(e);
+            wap.errorHandler(e);
         }
     });
 });
@@ -107,7 +106,7 @@ $('.picker-calendar-day').on('click', function () {
             id: $('#id').val(),
             date: year + '-' + month + '-' + day,
             type: 'day',
-            _token: token
+            _token: wap.token()
         },
         success: function (result) {
             var html = '',
@@ -154,7 +153,7 @@ $('.picker-calendar-day').on('click', function () {
             $('.kaoqin-day-detail').html(html)
         },
         error: function (e) {
-            page.errorHandler(e);
+            wap.errorHandler(e);
         }
     });
 });

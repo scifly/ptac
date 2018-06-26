@@ -1,6 +1,5 @@
 var $mslId = $('#msl_id'),
     $id = $('#id'), 
-    token = $('#csrf_token').attr('content'),
     $edit = $('.icon-bianji'),
     $delete = $('.delete-message'),
     $showComment = $('.js-show-comment'),
@@ -18,7 +17,7 @@ $delete.on('click', function () {
                 type: 'DELETE',
                 dataType: 'json',
                 url: '../delete/' + $id.val(),
-                data: { _token: token },
+                data: { _token: wap.token() },
                 success: function (result) {
                     $.alert(result['message'], function () {
                         window.location.href = '../';
@@ -75,7 +74,7 @@ $(document).on('click', '.delete-replay', function () {
                 type: 'DELETE',
                 dataType: 'json',
                 url: '../remove/' + id,
-                data: {_token: $('#csrf_token').attr('content')},
+                data: {_token: wap.token()},
                 success: function () {
                     $.alert("删除成功！", function () {
                         replies();
@@ -95,7 +94,7 @@ function replies() {
         dataType: 'json',
         url: '../replies',
         data: {
-            _token: $('#csrf_token').attr('content'),
+            _token: wap.token(),
             id: $id.val(),
             msl_id: $mslId.val()
         },

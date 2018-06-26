@@ -36,7 +36,7 @@ function ApplySelect2()
     //设置ajax全局header跨域访问
     $.ajaxSetup({
         headers: {
-            'X-CSRF-TOKEN': $("#csrf_token").attr('content')
+            'X-CSRF-TOKEN': page.token()
         }
     });
     //初始化select2

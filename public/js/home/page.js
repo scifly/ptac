@@ -463,7 +463,7 @@ var page = {
                 data: {
                     ids: selected,
                     action: action,
-                    _token: $('#csrf_token').attr('content')
+                    _token: page.token()
                 },
                 success: function (result) {
                     $('.overlay').hide();
@@ -528,7 +528,7 @@ var page = {
             page.ajaxRequest(
                 'DELETE',
                 table + '/delete/' + id,
-                {_token: $('#csrf_token').attr('content')},
+                {_token: page.token()},
                 table
             );
         });

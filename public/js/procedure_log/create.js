@@ -20,11 +20,11 @@ $(function () {
             showDrag: false
         },
         uploadExtraData: {
-            '_token': $('#csrf_token').attr('content')
+            _token: page.token()
         }
     });
     // 上传成功
-    $uploadFile.on("filebatchuploadsuccess", function (event, data, previewId, index) {
+    $uploadFile.on("filebatchuploadsuccess", function (event, data) {
         // 填充数据1
         var response = data.response.data;
         $.each(response, function (index, obj) {
@@ -59,7 +59,7 @@ $(function () {
                 if (result.statusCode === 200) {
                     obj.parent().remove();
                 }
-                crud.inform(
+                page.inform(
                     '操作结果', result.message,
                     result.statusCode === 200 ? crud.success : crud.failure
                 );

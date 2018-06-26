@@ -42,7 +42,7 @@ $("#searchInput").on("input propertychange change", function() {
         data: {
             keyword: keyword,
             type: type,
-            _token: $('#csrf_token').attr('content')
+            _token: wap.token()
         },
         success: function (result) {
             var str = '', i, message;

@@ -6,7 +6,7 @@ $(function () {
             url: "../users/upload_ava/" + $('input[name=avatar_url]').attr("id"),
             data: {
                 avatar: $('#avatar_upload')[0].files[0],
-                _token: $('#csrf_token').attr('content')
+                _token: page.token()
             },
             type: 'POST',
             dataType: 'json',

@@ -100,7 +100,7 @@
                     type: 'POST',
                     dataType: 'json',
                     data: {
-                        _token: $('#csrf_token').attr('content'),
+                        _token: page.token(),
                         field: field,
                         value: value
                     },

@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Throwable;
 
@@ -121,38 +120,15 @@ class WapSiteModule extends Model {
         try {
             //删除原有的图片
             DB::transaction(function () use ($request) {
-                self::removeMedias($request);
-                self::create($request->all());
+                Request::merge(['ids' => $request->input('del_ids')]);
+                (new Media)->remove();
+                $this->create($request->all());
             });
         } catch (Exception $e) {
             throw $e;
         }
         
         return true;
-        
-    }
-    
-    /**
-     * 更新网站栏目
-     *
-     * @param $request
-     * @throws Exception
-     */
-    private function removeMedias(WapSiteModuleRequest $request) {
-        
-        //删除原有的图片
-        $mediaIds = $request->input('del_id');
-        if ($mediaIds) {
-            $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
-            foreach ($medias as $media) {
-                Storage::disk('uploads')->delete($media->path);
-            }
-            try {
-                Media::whereIn('id', $mediaIds)->delete();
-            } catch (Exception $e) {
-                throw $e;
-            }
-        }
         
     }
     
@@ -167,9 +143,9 @@ class WapSiteModule extends Model {
         
         try {
             DB::transaction(function () use ($request, $id) {
-                $this->removeMedias($request);
-                
-                return $this->find($id)->update(
+                Request::merge(['ids' => $request->input('del_ids')]);
+                (new Media)->remove();
+                $this->find($id)->update(
                     $request->except('_method', '_token', 'del_id')
                 );
             });

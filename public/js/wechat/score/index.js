@@ -22,7 +22,7 @@ function examList(more) {
             start: start,
             keyword: $search.val(),
             target_id: $targetId.val(),
-            _token: $('#csrf_token').attr('content')
+            _token: wap.token()
         },
         success: function (result) {
             var html = '', exams = result['exams'];

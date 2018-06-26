@@ -19,7 +19,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Throwable;
 
@@ -130,7 +129,7 @@ class WapSite extends Model {
         
         return [
             'ws'     => $ws,
-            'medias' => (new Media())->medias(
+            'medias' => (new Media)->medias(
                 explode(",", $ws->media_ids)
             ),
             'show'   => true,
@@ -180,16 +179,12 @@ class WapSite extends Model {
      */
     function modify(WapSiteRequest $request, $id) {
         
-        $wapSite = self::find($id);
-        if (!$wapSite) {
-            return false;
-        }
         try {
             DB::transaction(function () use ($request, $id) {
-                self::removeMedias($request);
-                
-                return self::find($id)->update(
-                    $request->except('_method', '_token', 'del_ids')
+                Request::merge(['ids' => $request->input('del_ids')]);
+                (new Media)->remove();
+                return $this->find($id)->update(
+                    $request->all()
                 );
             });
         } catch (Exception $e) {
@@ -197,24 +192,6 @@ class WapSite extends Model {
         }
         
         return true;
-        
-    }
-    
-    /**
-     * @param $request
-     * @throws Exception
-     */
-    private function removeMedias(WapSiteRequest $request) {
-        
-        //删除原有的图片
-        $mediaIds = $request->input('del_ids');
-        if ($mediaIds) {
-            $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
-            foreach ($medias as $media) {
-                Storage::disk('uploads')->delete($media->path);
-            }
-            Media::whereIn('id', $mediaIds)->delete();
-        }
         
     }
     
@@ -276,10 +253,8 @@ class WapSite extends Model {
         
     }
     
-    /** Helper functions -------------------------------------------------------------------------------------------- */
-
     /**
-     * 返回微官网首页
+     * 微信端
      *
      * @return Factory|View|string
      */

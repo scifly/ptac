@@ -1,5 +1,4 @@
-var token = $('#csrf_token').attr('content'),
-    $squad = $('#squad'),
+var $squad = $('#squad'),
     $rule = $('#rule'),
     $startDate = $('#start-date');
 
@@ -19,7 +18,7 @@ $('#choose .close-popup').on('click', function () {
         return false;
     }
     attendances({
-        _token: token,
+        _token: wap.token(),
         squad: squad,
         rule: rule,
         date: date
@@ -65,7 +64,7 @@ function onClassChange(squads) {
             type: 'POST',
             dataType: 'json',
             data: {
-                _token: token,
+                _token: wap.token(),
                 classId: classId,
             },
             url: 'at/chart',
@@ -135,7 +134,7 @@ function checkRule() {
     $.ajax({
         type: 'POST',
         data: {
-            _token: token,
+            _token: wap.token(),
             date: $startDate.val(),
             rule: $rule.attr('data-value'),
             check: true

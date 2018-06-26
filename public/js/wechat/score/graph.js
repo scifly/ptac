@@ -14,7 +14,7 @@ function getdata($active){
         dataType: 'json',
         url: "sc/graph",
         data: {
-            _token: $('#csrf_token').attr('content'),
+            _token: wap.token(),
             subject: subject_id,
             student_id: $studentId.val(),
             exam_id: $examId.val()

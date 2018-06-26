@@ -4,7 +4,7 @@ $(function () {
     $('#avatar_upload').change(function () {
         var formData = new FormData();
         formData.append('avatar', $('#avatar_upload')[0].files[0]);
-        formData.append('_token', $('#csrf_token').attr('content'));
+        formData.append('_token', page.token());
         var id = $('input[name=avatar_url]').attr("id");
         $.ajax({
             url: "../personal_infos/upload_ava/" + id,

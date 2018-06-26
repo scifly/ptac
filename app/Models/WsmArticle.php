@@ -14,7 +14,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Throwable;
 
@@ -150,36 +149,15 @@ class WsmArticle extends Model {
         try {
             //删除原有的图片
             DB::transaction(function () use ($request) {
-                self::removeMedias($request);
-                
-                return self::create($request->all());
+                Request::merge(['ids' => $request->input('del_ids')]);
+                (new Media)->remove();
+                return $this->create($request->all());
             });
         } catch (Exception $e) {
             throw $e;
         }
         
         return true;
-        
-    }
-    
-    /**
-     * 移除关联的媒体文件
-     *
-     * @param $request
-     * @throws Exception
-     */
-    private function removeMedias(WsmArticleRequest $request) {
-        
-        // 删除原有的图片
-        $mediaIds = $request->input('del_ids');
-        if ($mediaIds) {
-            $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
-            foreach ($medias as $media) {
-                $paths = explode("/", $media->path);
-                Storage::disk('uploads')->delete($paths[sizeof($paths) - 1]);
-            }
-            Media::whereIn('id', $mediaIds)->delete();
-        }
         
     }
     
@@ -196,11 +174,9 @@ class WsmArticle extends Model {
         
         try {
             DB::transaction(function () use ($request, $id) {
-                $this->removeMedias($request);
-                
-                return $this->find($id)->update(
-                    $request->except('_method', '_token', 'del_ids')
-                );
+                Request::merge(['ids' => $request->input('del_ids')]);
+                (new Media)->remove();
+                $this->find($id)->update($request->all());
             });
         } catch (Exception $e) {
             throw $e;

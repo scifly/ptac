@@ -6,12 +6,9 @@
                 {}, options
             ),
             /** helper functions */
-            token: function () {
-                return $('#csrf_token').attr('content');
-            },
             classList: function (action) {
                 var url = '../scores/' + action + '/' + $('#' + action + '_exam_id').val(),
-                    data = { _token: score.token() },
+                    data = { _token: page.token() },
                     $classId = $('#' + action + '_class_id');
 
                 $.ajax({
@@ -37,7 +34,7 @@
             list: function (type, id) {
                 $.ajax({
                     type: 'GET',
-                    data: { _token: score.token() },
+                    data: { _token: page.token() },
                     url: '../scores/stat/' + type + '/' + id,
                     success: function (result) {
                         var $typeId = $('#' + type + '_id'),
@@ -242,7 +239,7 @@
                     $.ajax({
                         type: 'GET',
                         dataType: 'json',
-                        data: { _token: score.token() },
+                        data: { _token: page.token() },
                         url: 'create/' + $examId.val(),
                         success: function (result) {
                             score.getSsList(result);
@@ -260,7 +257,7 @@
                     $.ajax({
                         type: 'GET',
                         dataType: 'json',
-                        data: { _token: score.token() },
+                        data: { _token: page.token() },
                         url: 'create/' + $('#id').val() + '/' + $examId.val(),
                         success: function (result) {
                             score.getSsList(result);
@@ -303,7 +300,7 @@
                         type: 'POST',
                         cache: false,
                         data: {
-                            _token: score.token(),
+                            _token: page.token(),
                             examId: examId,
                             classId: classId,
                             subjectIds: subjectIds,
@@ -351,7 +348,7 @@
                         type: 'POST',
                         cache: false,
                         data: {
-                            _token: score.token(),
+                            _token: page.token(),
                             examId: $examId.val()
                         },
                         success: function (result) {
@@ -405,7 +402,7 @@
                             type: 'POST',
                             cache: false,
                             data: {
-                                _token: score.token(),
+                                _token: page.token(),
                                 data: JSON.stringify(data)
                             },
                             success: function (result) {
@@ -432,7 +429,7 @@
                     $('.overlay').show();
                     $.ajax({
                         type: 'GET',
-                        data: { _token: score.token() },
+                        data: { _token: page.token() },
                         url: '../scores/rank/' + $('#rank_exam_id').val(),
                         success: function (result) {
                             $('.overlay').hide();
@@ -462,7 +459,7 @@
                         dataType: 'json',
                         url: '../scores/import/' + $('#import_exam_id').val(),
                         data: {
-                            _token: score.token(),
+                            _token: page.token(),
                             classId: $('#import_class_id').val()
                         },
                         error: function (e) {
@@ -478,7 +475,7 @@
                         data = new FormData();
 
                     data.append('file', $('#fileupload')[0].files[0]);
-                    data.append('_token', score.token());
+                    data.append('_token', page.token());
                     data.append('examId', examId);
                     data.append('classId', classId);
                     $.ajax({
@@ -537,7 +534,7 @@
                 $('#analyze').off('click').on('click', function () {
                     var statType = parseInt($('.checked').find('.minimal').val()),
                         data = {
-                            _token: score.token(),
+                            _token: page.token(),
                             classId: $('#class_id').val()
                         };
                     $('.overlay').show();

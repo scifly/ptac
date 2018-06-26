@@ -1,6 +1,5 @@
 //# sourceURL=index.js
-var token = $('#csrf_token').attr('content'),
-    $targetIds = $('#selected-node-ids'),
+var $targetIds = $('#selected-node-ids'),
     $message = $('#message'),
     $messageTypeId = $('#message_type_id'),
     $messageContent = $('#message-content'),
@@ -364,7 +363,7 @@ function send(preview) {
         targetIds = 'user-0-' + $('#userId').val();
     }
     formData = {
-        _token: token,
+        _token: page.token(),
         type: type,
         app_ids: appIds,
         targetIds: targetIds,
@@ -469,7 +468,7 @@ function upload($file) {
     $('.overlay').show();
     var data = new FormData();
     data.append('file', file);
-    data.append('_token', token);
+    data.append('_token', page.token());
     data.append('type', type === 'mpnews' ? 'image' : type);
     $.ajax({
         type: 'POST',

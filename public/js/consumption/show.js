@@ -52,7 +52,7 @@ $stat.on('click', function () {
         dataType: 'json',
         url: page.siteRoot() + 'consumptions/stat',
         data: {
-            '_token': $('#csrf_token').attr('content'),
+            '_token': page.token(),
             'range_id': $rangeId.val(),
             'student_id': $studentId.val() !== null ? $studentId.val() : 0,
             'class_id': $classId.val() !== null ? $classId.val() : 0,
@@ -108,7 +108,7 @@ var getDetails = function (detail) {
         dataType: 'json',
         url: page.siteRoot() + 'consumptions/stat?detail=' + detail,
         data: {
-            '_token': $('#csrf_token').attr('content'),
+            '_token': page.token(),
             'range_id': $rangeId.val(),
             'student_id': $studentId.val() !== null ? $studentId.val() : 0,
             'class_id': $classId.val() !== null ? $classId.val() : 0,
