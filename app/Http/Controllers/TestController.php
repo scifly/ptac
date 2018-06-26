@@ -1,11 +1,11 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\App;
 use App\Models\Department;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
+use Illuminate\Support\Facades\App;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -24,6 +24,7 @@ class TestController extends Controller {
      */
     public function index() {
         
+        dd(config('app.name'));
         dd($this->getAppNamespace());
         $a = [
             0 => 'a',
