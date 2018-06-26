@@ -1,12 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
-use Exception;
-use Throwable;
-use App\Models\Corp;
-use Illuminate\Http\JsonResponse;
 use App\Http\Requests\CorpRequest;
+use App\Models\Corp;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 企业
@@ -36,7 +36,7 @@ class CorpController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->corp->datatable()
+                $this->corp->index()
             );
         }
         

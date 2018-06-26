@@ -1,16 +1,15 @@
 <?php
-
 namespace App\Models;
 
+use App\Helpers\ModelTrait;
+use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Carbon\Carbon;
-use App\Helpers\ModelTrait;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 
 /**
  * App\Models\Mobile 手机号码
@@ -33,11 +32,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @mixin Eloquent
  */
 class Mobile extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $fillable = ['mobile', 'user_id', 'isdefault', 'enabled'];
-
+    
     /**
      * 返回指定手机所属的用户对象
      *
@@ -54,17 +53,17 @@ class Mobile extends Model {
      * @throws Exception
      */
     function store(array $mobiles, User $user) {
-    
+        
         try {
             DB::transaction(function () use ($mobiles, $user) {
                 self::whereUserId($user->id)->delete();
                 $records = [];
                 foreach ($mobiles as $mobile) {
                     $records[] = [
-                        'user_id' => $user->id,
-                        'mobile' => $mobile['mobile'],
+                        'user_id'   => $user->id,
+                        'mobile'    => $mobile['mobile'],
                         'isdefault' => $mobile['isdefault'],
-                        'enabled' => $mobile['enabled']
+                        'enabled'   => $mobile['enabled'],
                     ];
                 }
                 $this->insert($records);
@@ -74,9 +73,9 @@ class Mobile extends Model {
         }
         
         return true;
-
+        
     }
-
+    
     /**
      * 更新手机号码
      *
@@ -89,7 +88,7 @@ class Mobile extends Model {
         return $id
             ? $this->find($id)->update($data)
             : $this->batch($this);
-
+        
     }
     
     /**
@@ -100,11 +99,11 @@ class Mobile extends Model {
      * @throws Exception
      */
     function remove($id = null) {
-
+        
         return $id
             ? $this->find($id)->delete()
             : $this->whereIn('id', array_values(Request::input('ids')))->delete();
-
+        
     }
     
 }

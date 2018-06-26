@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Helpers\Constant;
@@ -28,9 +27,9 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|GroupTab whereUpdatedAt($value)
  */
 class GroupTab extends Model {
-
+    
     protected $table = 'groups_tabs';
-
+    
     protected $fillable = ['group_id', 'tab_id', 'enabled'];
     
     /**
@@ -50,11 +49,11 @@ class GroupTab extends Model {
                 $records = [];
                 foreach ($ids as $id) {
                     $records[] = [
-                        'group_id' => $groupId,
-                        'tab_id' => $id,
+                        'group_id'   => $groupId,
+                        'tab_id'     => $id,
                         'created_at' => now()->toDateTimeString(),
                         'updated_at' => now()->toDateTimeString(),
-                        'enabled' => Constant::ENABLED,
+                        'enabled'    => Constant::ENABLED,
                     ];
                 }
                 $this->insert($records);
@@ -64,7 +63,7 @@ class GroupTab extends Model {
         }
         
         return true;
-
+        
     }
-
+    
 }

@@ -1,7 +1,7 @@
 <?php
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Datatable;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
@@ -91,6 +91,70 @@ class Event extends Model {
     function subject() { return $this->belongsTo('App\Models\Subject'); }
     
     /**
+     * 待办事项列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'Event.id', 'dt' => 0],
+            ['db' => 'Event.title', 'dt' => 1],
+            ['db' => 'Event.remark', 'dt' => 2],
+            ['db' => 'Event.location', 'dt' => 3],
+            ['db' => 'Event.start', 'dt' => 4],
+            ['db' => 'Event.end', 'dt' => 5],
+            [
+                'db'        => 'Event.ispublic', 'dt' => 6,
+                'formatter' => function ($d) {
+                    if (!empty($d)) {
+                        return $d
+                            ? sprintf(Snippet::BADGE_GREEN, '是')
+                            : sprintf(Snippet::BADGE_RED, '否');
+                    }
+                    
+                    return Snippet::BADGE_GRAY;
+                },
+            ],
+            ['db' => 'Subject.name', 'dt' => 7],
+            [
+                'db'        => 'Event.alertable', 'dt' => 8,
+                'formatter' => function ($d) {
+                    return $d
+                        ? sprintf(Snippet::BADGE_GREEN, '是')
+                        : sprintf(Snippet::BADGE_RED, '否');
+                },
+            ],
+            ['db' => 'User.realname', 'dt' => 9],
+            ['db' => 'Event.updated_at', 'dt' => 10],
+        ];
+        $joins = [
+            [
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'User.id = Event.user_id',
+                ],
+            ],
+            [
+                'table'      => 'subjects',
+                'alias'      => 'Subject',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Subject.id = Event.subject_id',
+                ],
+            ],
+        ];
+        $condition = 'Event.enabled = 1';
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
+        
+    }
+    
+    /**
      * 保存事件
      *
      * @param array $data
@@ -155,70 +219,6 @@ class Event extends Model {
         }
         
         return true;
-        
-    }
-    
-    /**
-     * 待办事项列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'Event.id', 'dt' => 0],
-            ['db' => 'Event.title', 'dt' => 1],
-            ['db' => 'Event.remark', 'dt' => 2],
-            ['db' => 'Event.location', 'dt' => 3],
-            ['db' => 'Event.start', 'dt' => 4],
-            ['db' => 'Event.end', 'dt' => 5],
-            [
-                'db'        => 'Event.ispublic', 'dt' => 6,
-                'formatter' => function ($d) {
-                    if (!empty($d)) {
-                        return $d
-                            ? sprintf(Snippet::BADGE_GREEN, '是')
-                            : sprintf(Snippet::BADGE_RED, '否');
-                    }
-                    
-                    return Snippet::BADGE_GRAY;
-                },
-            ],
-            ['db' => 'Subject.name', 'dt' => 7],
-            [
-                'db'        => 'Event.alertable', 'dt' => 8,
-                'formatter' => function ($d) {
-                    return $d
-                        ? sprintf(Snippet::BADGE_GREEN, '是')
-                        : sprintf(Snippet::BADGE_RED, '否');
-                },
-            ],
-            ['db' => 'User.realname', 'dt' => 9],
-            ['db' => 'Event.updated_at', 'dt' => 10],
-        ];
-        $joins = [
-            [
-                'table'      => 'users',
-                'alias'      => 'User',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'User.id = Event.user_id',
-                ],
-            ],
-            [
-                'table'      => 'subjects',
-                'alias'      => 'Subject',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'Subject.id = Event.subject_id',
-                ],
-            ],
-        ];
-        $condition = 'Event.enabled = 1';
-        
-        return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
-        );
         
     }
     

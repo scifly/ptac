@@ -1,8 +1,7 @@
 <?php
-
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Datatable;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -41,28 +40,65 @@ use Illuminate\Support\Facades\Request;
  * @property-read ProcedureLog $procedureLog
  */
 class EducatorAppeal extends Model {
-
+    
     protected $table = 'educator_appeals';
-
+    
     protected $fillable = [
         'educator_id', 'ea_ids', 'appeal_content',
         'procedure_log_id', 'approver_educator_ids',
         'reated_educator_ids', 'status',
     ];
-
+    
     /**
      * 获取对应的教职员工对象
      *
      * @return BelongsTo
      */
     function educator() { return $this->belongsTo('App\Models\Educator'); }
-
+    
     /**
      * 获取对应的流程日志对象
      *
      * @return BelongsTo
      */
     function procedureLog() { return $this->belongsTo('App\Models\ProcedureLog'); }
+    
+    /**
+     * 教职员工申诉记录列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'EducatorAppeal.id', 'dt' => 0],
+            ['db' => 'Educator.name as educatorname', 'dt' => 1],
+            ['db' => 'EducatorAppeal.appeal_content', 'dt' => 2],
+            ['db' => 'ProcedureLog.id', 'dt' => 3],
+            ['db' => 'EducatorAppeal.created_at', 'dt' => 4],
+            ['db' => 'EducatorAppeal.updated_at', 'dt' => 5],
+            [
+                'db'        => 'EducatorAppeal.status', 'dt' => 6,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row);
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table'      => 'educators',
+                'alias'      => 'Educator',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Educator.id = EducatorAppeal.educator_id',
+                ],
+            ],
+        ];
+        
+        // todo: 根据学校和角色显示教职员工申诉记录
+        return Datatable::simple($this, $columns, $joins);
+        
+    }
     
     /**
      * 保存申诉
@@ -97,7 +133,7 @@ class EducatorAppeal extends Model {
      * @throws Exception
      */
     function remove($id = null) {
-
+        
         return $id
             ? $this->find($id)->delete()
             : $this->whereIn('id', array_values(Request::input('ids')))->delete();
@@ -114,7 +150,7 @@ class EducatorAppeal extends Model {
     function removeEducator($educatorId) {
         
         try {
-            DB::transaction(function() use ($educatorId) {
+            DB::transaction(function () use ($educatorId) {
                 $this->where('educator_id', $educatorId)->delete();
                 $approvers = $this->whereRaw($educatorId . ' IN (approver_educator_ids)')->get();
                 $relates = $this->whereRaw($educatorId . ' IN (related_educator_ids)')->get();
@@ -157,42 +193,4 @@ class EducatorAppeal extends Model {
         
     }
     
-    /**
-     * 教职员工申诉记录列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'EducatorAppeal.id', 'dt' => 0],
-            ['db' => 'Educator.name as educatorname', 'dt' => 1],
-            ['db' => 'EducatorAppeal.appeal_content', 'dt' => 2],
-            ['db' => 'ProcedureLog.id', 'dt' => 3],
-            ['db' => 'EducatorAppeal.created_at', 'dt' => 4],
-            ['db' => 'EducatorAppeal.updated_at', 'dt' => 5],
-            [
-                'db' => 'EducatorAppeal.status', 'dt' => 6,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row);
-                },
-            ],
-        ];
-        $joins = [
-            [
-                'table' => 'educators',
-                'alias' => 'Educator',
-                'type' => 'INNER',
-                'conditions' => [
-                    'Educator.id = EducatorAppeal.educator_id',
-                ],
-            ],
-        ];
-
-        // todo: 根据学校和角色显示教职员工申诉记录
-
-        return Datatable::simple($this, $columns, $joins);
-        
-    }
-
 }

@@ -1,21 +1,21 @@
 <?php
 namespace App\Models;
 
-use Throwable;
-use Exception;
-use Carbon\Carbon;
-use Illuminate\View\View;
-use App\Helpers\ModelTrait;
+use App\Facades\Datatable;
 use App\Helpers\HttpStatusCode;
-use Illuminate\Support\Facades\DB;
+use App\Helpers\ModelTrait;
+use App\Http\Requests\WapSiteModuleRequest;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Database\Eloquent\Builder;
-use App\Http\Requests\WapSiteModuleRequest;
-use Illuminate\Database\Eloquent\Collection;
-use App\Facades\DatatableFacade as Datatable;
+use Illuminate\View\View;
+use Throwable;
 
 /**
  * App\Models\WapSiteModule 微网站栏目
@@ -56,9 +56,57 @@ class WapSiteModule extends Model {
         
     }
     
+    /**
+     * 返回所属的媒体对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     function media() { return $this->belongsTo('App\Models\Media'); }
     
+    /**
+     * 返回所属的微网站对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     function wapsite() { return $this->belongsTo('App\Models\WapSite', 'wap_site_id'); }
+    
+    /**
+     * 返回微网站栏目列表（后台）
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'WapSiteModule.id', 'dt' => 0],
+            ['db' => 'WapSiteModule.name', 'dt' => 1],
+            ['db' => 'WapSite.site_title', 'dt' => 2],
+            ['db' => 'WapSiteModule.created_at', 'dt' => 3],
+            ['db' => 'WapSiteModule.updated_at', 'dt' => 4],
+            [
+                'db'        => 'WapSiteModule.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table'      => 'wap_sites',
+                'alias'      => 'WapSite',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'WapSite.id = WapSiteModule.wap_site_id',
+                ],
+            ],
+        ];
+        $condition = 'WapSite.school_id = ' . $this->schoolId();
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
+        
+    }
     
     /**
      * 保存网站栏目
@@ -168,6 +216,8 @@ class WapSiteModule extends Model {
         
     }
     
+    /** 微信端 ------------------------------------------------------------------------------------------------------- */
+
     /**
      * 上传微网站栏目图片
      *
@@ -194,44 +244,8 @@ class WapSiteModule extends Model {
         
     }
     
-    /**
-     * 返回微网站栏目列表（后台）
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'WapSiteModule.id', 'dt' => 0],
-            ['db' => 'WapSiteModule.name', 'dt' => 1],
-            ['db' => 'WapSite.site_title', 'dt' => 2],
-            ['db' => 'WapSiteModule.created_at', 'dt' => 3],
-            ['db' => 'WapSiteModule.updated_at', 'dt' => 4],
-            [
-                'db'        => 'WapSiteModule.enabled', 'dt' => 5,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                },
-            ],
-        ];
-        $joins = [
-            [
-                'table'      => 'wap_sites',
-                'alias'      => 'WapSite',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'WapSite.id = WapSiteModule.wap_site_id',
-                ],
-            ],
-        ];
-        $condition = 'WapSite.school_id = ' . $this->schoolId();
-        
-        return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
-        );
-        
-    }
-    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+
     /**
      * 返回微网站栏目列表（微信）
      *

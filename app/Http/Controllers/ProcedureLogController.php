@@ -49,7 +49,7 @@ class ProcedureLogController extends Controller {
             $where = 'ProcedureLog.id in (' . implode(',', $ids) . ')';
             
             return response()->json(
-                $this->pl->datatable($where)
+                $this->pl->index($where)
             );
         }
         
@@ -75,7 +75,7 @@ class ProcedureLogController extends Controller {
                 ->toArray();
             $where = 'ProcedureLog.id in (' . implode(',', $ids) . ') and FIND_IN_SET(' . $userId . ',ProcedureStep.approver_user_ids)';
             
-            return response()->json($this->pl->datatable($where));
+            return response()->json($this->pl->index($where));
         }
         
         return $this->output();
@@ -94,7 +94,7 @@ class ProcedureLogController extends Controller {
             $userId = 3;
             $where = '(FIND_IN_SET(' . $userId . ',ProcedureStep.related_user_ids) or FIND_IN_SET(' . $userId . ',ProcedureStep.approver_user_ids))';
             
-            return response()->json($this->pl->datatable($where));
+            return response()->json($this->pl->index($where));
             
         }
         

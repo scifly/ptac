@@ -34,7 +34,7 @@ class ConsumptionController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->consumption->datatable()
+                $this->consumption->index()
             );
         }
         

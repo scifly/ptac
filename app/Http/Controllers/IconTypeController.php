@@ -36,7 +36,7 @@ class IconTypeController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->it->datatable()
+                $this->it->index()
             );
         }
         

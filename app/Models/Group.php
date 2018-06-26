@@ -1,21 +1,20 @@
 <?php
-
 namespace App\Models;
 
+use App\Facades\Datatable;
+use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
+use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Carbon\Carbon;
-use App\Helpers\Snippet;
-use App\Helpers\ModelTrait;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use App\Facades\DatatableFacade as Datatable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 
 /**
  * App\Models\Group 角色
@@ -42,11 +41,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @mixin Eloquent
  */
 class Group extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $table = 'groups';
-
+    
     protected $fillable = [
         'name', 'school_id', 'remark', 'enabled',
     ];
@@ -57,7 +56,7 @@ class Group extends Model {
      * @return HasMany
      */
     function users() { return $this->hasMany('App\Models\User'); }
-
+    
     /**
      * 返回指定角色所属的学校对象
      *
@@ -87,6 +86,79 @@ class Group extends Model {
     function tabs() { return $this->belongsToMany('App\Models\Tab', 'groups_tabs'); }
     
     /**
+     * 角色列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'Groups.id', 'dt' => 0],
+            [
+                'db'        => 'Groups.name', 'dt' => 1,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-meh-o', '') . $d;
+                },
+            ],
+            [
+                'db'        => 'School.name as schoolname', 'dt' => 2,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-university text-purple', '') .
+                        '<span class="text-purple">' . $d . '</span>';
+                },
+            ],
+            [
+                'db'        => 'Corp.name as corpname', 'dt' => 3,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-weixin text-green', '') .
+                        '<span class="text-green">' . $d . '</span>';
+                },
+            ],
+            ['db' => 'Groups.remark', 'dt' => 4],
+            ['db' => 'Groups.created_at', 'dt' => 5],
+            ['db' => 'Groups.updated_at', 'dt' => 6],
+            [
+                'db'        => 'Groups.enabled', 'dt' => 7,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        $condition = 'Groups.school_id IS NOT NULL ';
+        $joins = [
+            [
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'School.id = Groups.school_id',
+                ],
+            ],
+            [
+                'table'      => 'corps',
+                'alias'      => 'Corp',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Corp.id = School.corp_id',
+                ],
+            ],
+        ];
+        $menu = new Menu();
+        $currentMenuId = session('menuId');
+        if ($this->schoolId()) {
+            $condition .= 'AND School.id = ' . $this->schoolId();
+        } else if ($corpMenuId = $menu->menuId($currentMenuId, '企业')) {
+            $corpId = Corp::whereMenuId($corpMenuId)->first()->id;
+            $condition .= 'AND Corp.id = ' . $corpId;
+        }
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
+        
+    }
+    
+    /**
      * 保存角色
      *
      * @param array $data
@@ -95,13 +167,13 @@ class Group extends Model {
      * @throws \Throwable
      */
     function store(array $data) {
-
+        
         try {
             DB::transaction(function () use ($data) {
                 $group = self::create([
-                    'name' => $data['name'],
-                    'remark' => $data['remark'],
-                    'enabled' => $data['enabled'],
+                    'name'      => $data['name'],
+                    'remark'    => $data['remark'],
+                    'enabled'   => $data['enabled'],
                     'school_id' => $data['school_id'],
                 ]);
                 (new ActionGroup)->storeByGroupId($group->id, $data['action_ids']);
@@ -113,7 +185,7 @@ class Group extends Model {
         }
         
         return true;
-
+        
     }
     
     /**
@@ -126,12 +198,12 @@ class Group extends Model {
      * @throws \Throwable
      */
     function modify(array $data, $id) {
-
+        
         try {
             DB::transaction(function () use ($data, $id) {
                 $this->find($id)->update([
-                    'name' => $data['name'],
-                    'remark' => $data['remark'],
+                    'name'    => $data['name'],
+                    'remark'  => $data['remark'],
                     'enabled' => $data['enabled'],
                 ]);
                 (new ActionGroup)->storeByGroupId($id, $data['action_ids']);
@@ -143,7 +215,7 @@ class Group extends Model {
         }
         
         return true;
-
+        
     }
     
     /**
@@ -154,9 +226,9 @@ class Group extends Model {
      * @throws Exception
      */
     function remove($id = null) {
-
+        
         return $this->del($this, $id);
-
+        
     }
     
     /**
@@ -169,7 +241,7 @@ class Group extends Model {
     function purge($id) {
         
         try {
-            DB::transaction(function() use ($id) {
+            DB::transaction(function () use ($id) {
                 ActionGroup::whereGroupId($id)->delete();
                 GroupMenu::whereGroupId($id)->delete();
                 GroupTab::whereGroupId($id)->delete();
@@ -189,7 +261,7 @@ class Group extends Model {
      * @return \Illuminate\Http\JsonResponse
      */
     function menuTree() {
-    
+        
         $schoolId = Request::query('schoolId');
         $menuId = School::find($schoolId)->menu_id;
         
@@ -197,77 +269,4 @@ class Group extends Model {
         
     }
     
-    /**
-     * 角色列表
-     *
-     * @return array
-     */
-    function datatable() {
-
-        $columns = [
-            ['db' => 'Groups.id', 'dt' => 0],
-            [
-                'db' => 'Groups.name', 'dt' => 1,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-meh-o', '') . $d;
-                }
-            ],
-            [
-                'db' => 'School.name as schoolname', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-university text-purple', '') .
-                        '<span class="text-purple">' . $d . '</span>';
-                }
-            ],
-            [
-                'db' => 'Corp.name as corpname', 'dt' => 3,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-weixin text-green', '') .
-                        '<span class="text-green">' . $d . '</span>';
-                }
-            ],
-            ['db' => 'Groups.remark', 'dt' => 4],
-            ['db' => 'Groups.created_at', 'dt' => 5],
-            ['db' => 'Groups.updated_at', 'dt' => 6],
-            [
-                'db' => 'Groups.enabled', 'dt' => 7,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                },
-            ],
-        ];
-        $condition = 'Groups.school_id IS NOT NULL ';
-        $joins = [
-            [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
-                'conditions' => [
-                    'School.id = Groups.school_id'
-                ]
-            ],
-            [
-                'table' => 'corps',
-                'alias' => 'Corp',
-                'type' => 'INNER',
-                'conditions' => [
-                    'Corp.id = School.corp_id'
-                ]
-            ]
-        ];
-        $menu = new Menu();
-        $currentMenuId = session('menuId');
-        if ($this->schoolId()) {
-            $condition .= 'AND School.id = ' . $this->schoolId();
-        } else if ($corpMenuId = $menu->menuId($currentMenuId, '企业')) {
-            $corpId = Corp::whereMenuId($corpMenuId)->first()->id;
-            $condition .= 'AND Corp.id = ' . $corpId;
-        }
-
-        return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
-        );
-
-    }
-
 }

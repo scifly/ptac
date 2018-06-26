@@ -1,20 +1,20 @@
 <?php
 namespace App\Models;
 
+use App\Facades\Datatable;
+use App\Helpers\Constant;
+use App\Helpers\HttpStatusCode;
+use App\Helpers\ModelTrait;
+use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Throwable;
-use Carbon\Carbon;
-use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
-use App\Helpers\HttpStatusCode;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * App\Models\Exam 考试
@@ -75,6 +75,52 @@ class Exam extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     function scores() { return $this->hasMany('App\Models\Score'); }
+    
+    /**
+     * 考试列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'Exam.id', 'dt' => 0],
+            ['db' => 'Exam.name', 'dt' => 1],
+            ['db' => 'Exam.remark', 'dt' => 2],
+            ['db' => 'ExamType.name as examtypename', 'dt' => 3],
+            ['db' => 'Exam.max_scores', 'dt' => 4],
+            ['db' => 'Exam.pass_scores', 'dt' => 5],
+            ['db' => 'Exam.start_date', 'dt' => 6],
+            ['db' => 'Exam.end_date', 'dt' => 7],
+            ['db' => 'Exam.created_at', 'dt' => 8],
+            ['db' => 'Exam.updated_at', 'dt' => 9],
+            [
+                'db'        => 'Exam.enabled', 'dt' => 10,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table'      => 'exam_types',
+                'alias'      => 'ExamType',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'ExamType.id = Exam.exam_type_id',
+                ],
+            ],
+        ];
+        $condition = 'ExamType.school_id = ' . $this->schoolId();
+        if (!in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
+            $condition .= ' AND class_ids IN (' . implode(',', $this->classIds()) . ')';
+        }
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
+        
+    }
     
     /**
      * 保存考试
@@ -242,52 +288,6 @@ class Exam extends Model {
         return response()->json([
             'html' => $this->singleSelectList($classes, $action ? $action . '_class_id' : 'class_id'),
         ]);
-        
-    }
-    
-    /**
-     * 考试列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'Exam.id', 'dt' => 0],
-            ['db' => 'Exam.name', 'dt' => 1],
-            ['db' => 'Exam.remark', 'dt' => 2],
-            ['db' => 'ExamType.name as examtypename', 'dt' => 3],
-            ['db' => 'Exam.max_scores', 'dt' => 4],
-            ['db' => 'Exam.pass_scores', 'dt' => 5],
-            ['db' => 'Exam.start_date', 'dt' => 6],
-            ['db' => 'Exam.end_date', 'dt' => 7],
-            ['db' => 'Exam.created_at', 'dt' => 8],
-            ['db' => 'Exam.updated_at', 'dt' => 9],
-            [
-                'db'        => 'Exam.enabled', 'dt' => 10,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                },
-            ],
-        ];
-        $joins = [
-            [
-                'table'      => 'exam_types',
-                'alias'      => 'ExamType',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'ExamType.id = Exam.exam_type_id',
-                ],
-            ],
-        ];
-        $condition = 'ExamType.school_id = ' . $this->schoolId();
-        if (!in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
-            $condition .= ' AND class_ids IN (' . implode(',', $this->classIds()) . ')';
-        }
-        
-        return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
-        );
         
     }
     

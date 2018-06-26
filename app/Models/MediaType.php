@@ -1,15 +1,15 @@
 <?php
 namespace App\Models;
 
+use App\Facades\Datatable;
+use App\Helpers\ModelTrait;
+use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Carbon\Carbon;
-use App\Helpers\ModelTrait;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\MediaType 媒体类型
@@ -43,6 +43,33 @@ class MediaType extends Model {
      * @return HasMany
      */
     function medias() { return $this->hasMany('App\Models\Media'); }
+    
+    /**
+     * 媒体类型列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'MediaType.id', 'dt' => 0],
+            ['db' => 'MediaType.name', 'dt' => 1],
+            ['db' => 'MediaType.remark', 'dt' => 2],
+            ['db' => 'MediaType.created_at', 'dt' => 3],
+            ['db' => 'MediaType.updated_at', 'dt' => 4],
+            [
+                'db'        => 'MediaType.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        
+        return Datatable::simple(
+            $this->getModel(), $columns
+        );
+        
+    }
     
     /**
      * 保存媒体类型
@@ -98,33 +125,6 @@ class MediaType extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-        
-    }
-    
-    /**
-     * 媒体类型列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'MediaType.id', 'dt' => 0],
-            ['db' => 'MediaType.name', 'dt' => 1],
-            ['db' => 'MediaType.remark', 'dt' => 2],
-            ['db' => 'MediaType.created_at', 'dt' => 3],
-            ['db' => 'MediaType.updated_at', 'dt' => 4],
-            [
-                'db'        => 'MediaType.enabled', 'dt' => 5,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                },
-            ],
-        ];
-        
-        return Datatable::simple(
-            $this->getModel(), $columns
-        );
         
     }
     

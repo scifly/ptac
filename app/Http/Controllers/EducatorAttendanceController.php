@@ -34,7 +34,7 @@ class EducatorAttendanceController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->ea->datatable()
+                $this->ea->index()
             );
         }
         

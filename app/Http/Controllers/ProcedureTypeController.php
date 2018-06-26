@@ -36,7 +36,7 @@ class ProcedureTypeController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->pt->datatable()
+                $this->pt->index()
             );
         }
         

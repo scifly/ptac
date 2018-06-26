@@ -1,8 +1,7 @@
 <?php
-
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use App\Http\Requests\MajorRequest;
@@ -42,34 +41,34 @@ use Throwable;
 class Major extends Model {
     
     use ModelTrait;
-
+    
     protected $table = 'majors';
-
+    
     protected $fillable = [
         'name', 'remark', 'school_id', 'enabled',
     ];
-
+    
     /**
      * 返回专业所属的学校对象
      *
      * @return BelongsTo
      */
     function school() { return $this->belongsTo('App\Models\School'); }
-
+    
     /**
      * 获取指定专业所包含的科目对象
      *
      * @return BelongsToMany
      */
     function subjects() {
-
+        
         return $this->belongsToMany(
             'App\Models\Subject',
             'majors_subjects',
             'major_id',
             'subject_id'
         );
-
+        
     }
     
     /**
@@ -78,9 +77,52 @@ class Major extends Model {
      * @return Collection
      */
     function majorList() {
-
+        
         return self::whereSchoolId($this->schoolId())->get()->pluck('name', 'id');
-
+        
+    }
+    
+    /**
+     * 专业列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'Major.id', 'dt' => 0],
+            [
+                'db'        => 'Major.name', 'dt' => 1,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-graduation-cap', '') . $d;
+                },
+            ],
+            ['db' => 'Major.remark', 'dt' => 2],
+            ['db' => 'Major.created_at', 'dt' => 3],
+            ['db' => 'Major.updated_at', 'dt' => 4],
+            [
+                'db'        => 'Major.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'School.id = Major.school_id',
+                ],
+            ],
+        ];
+        $condition = 'Major.school_id = ' . $this->schoolId();
+        
+        return DataTable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
+        
     }
     
     /**
@@ -91,7 +133,7 @@ class Major extends Model {
      * @throws Throwable
      */
     function store(MajorRequest $request) {
-
+        
         try {
             DB::transaction(function () use ($request) {
                 $major = $this->create($request->all());
@@ -103,7 +145,7 @@ class Major extends Model {
         }
         
         return true;
-
+        
     }
     
     /**
@@ -115,7 +157,7 @@ class Major extends Model {
      * @throws Throwable
      */
     function modify(MajorRequest $request, $id) {
-
+        
         try {
             DB::transaction(function () use ($request, $id) {
                 $this->find($id)->update($request->all());
@@ -152,7 +194,7 @@ class Major extends Model {
      * @throws Exception
      */
     function purge($id) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 MajorSubject::whereMajorId($id)->delete();
@@ -161,52 +203,9 @@ class Major extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }
     
-    /**
-     * 专业列表
-     *
-     * @return array
-     */
-    function datatable() {
-
-        $columns = [
-            ['db' => 'Major.id', 'dt' => 0],
-            [
-                'db' => 'Major.name', 'dt' => 1,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-graduation-cap', '') . $d;
-                }
-            ],
-            ['db' => 'Major.remark', 'dt' => 2],
-            ['db' => 'Major.created_at', 'dt' => 3],
-            ['db' => 'Major.updated_at', 'dt' => 4],
-            [
-                'db' => 'Major.enabled', 'dt' => 5,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                },
-            ],
-        ];
-        $joins = [
-            [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
-                'conditions' => [
-                    'School.id = Major.school_id',
-                ],
-            ],
-        ];
-        $condition = 'Major.school_id = ' . $this->schoolId();
-
-        return DataTable::simple(
-            $this->getModel(), $columns, $joins, $condition
-        );
-
-    }
-
 }

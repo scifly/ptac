@@ -1,14 +1,14 @@
 <?php
 namespace App\Http\Controllers;
 
-use Exception;
-use Throwable;
-use App\Models\Tab;
-use App\Models\Menu;
 use App\Helpers\HttpStatusCode;
 use App\Http\Requests\TabRequest;
+use App\Models\Menu;
+use App\Models\Tab;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 卡片
@@ -39,7 +39,7 @@ class TabController extends Controller {
     public function index() {
         
         if (Request::get('draw')) {
-            return response()->json($this->tab->datatable());
+            return response()->json($this->tab->index());
         }
         abort_if(!$this->tab->scan(), HttpStatusCode::NOT_FOUND);
         
@@ -76,7 +76,7 @@ class TabController extends Controller {
         return $this->result(
             $this->tab->modify($request->all(), $id)
         );
-    
+        
     }
     
 }

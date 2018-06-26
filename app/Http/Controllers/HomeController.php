@@ -3,8 +3,6 @@ namespace App\Http\Controllers;
 
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
-use App\Helpers\Wechat\WXBizMsgCrypt;
-use App\Models\Corp;
 use App\Models\Menu;
 use App\Models\MenuTab;
 use App\Models\School;
@@ -13,7 +11,6 @@ use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
@@ -149,7 +146,7 @@ class HomeController extends Controller {
             
             return response()->json($this->result);
         }
-   
+        
         return view('home.page', [
             'menu'       => $this->menu->menuHtml($this->menu->rootMenuId()),
             'tabs'       => $tabArray,
@@ -165,14 +162,15 @@ class HomeController extends Controller {
      * @return Factory|View
      */
     public function wIndex() {
-    
+        
         $app = Request::query('app');
         $user = Auth::user();
         $schoolIds = $user->schoolIds($user->id, session('corpId'));
+        
         return view('wechat.schools', [
-            'app' => Constant::APPS[$app],
+            'app'     => Constant::APPS[$app],
             'schools' => School::whereIn('id', $schoolIds)->pluck('name', 'id'),
-            'url' => $app . '?schoolId='
+            'url'     => $app . '?schoolId=',
         ]);
         
     }

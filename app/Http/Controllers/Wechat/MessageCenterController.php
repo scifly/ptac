@@ -1,25 +1,25 @@
 <?php
 namespace App\Http\Controllers\Wechat;
 
-use Exception;
-use Throwable;
-use App\Models\User;
-use App\Models\Media;
-use App\Models\Message;
-use App\Models\Student;
-use Illuminate\View\View;
-use App\Models\Department;
-use App\Models\MessageReply;
-use App\Models\DepartmentUser;
 use App\Helpers\HttpStatusCode;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Routing\Redirector;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MessageRequest;
-use Illuminate\Http\RedirectResponse;
+use App\Models\Department;
+use App\Models\DepartmentUser;
+use App\Models\Media;
+use App\Models\Message;
+use App\Models\MessageReply;
+use App\Models\Student;
+use App\Models\User;
+use Exception;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Redirector;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
+use Illuminate\View\View;
+use Throwable;
 
 class MessageCenterController extends Controller {
     
@@ -41,7 +41,7 @@ class MessageCenterController extends Controller {
         Student $student, MessageReply $mr,
         DepartmentUser $du
     ) {
-
+        
         $this->middleware('wechat');
         $this->message = $message;
         $this->user = $user;
@@ -72,7 +72,7 @@ class MessageCenterController extends Controller {
      * @throws Throwable
      */
     public function create() {
-
+        
         if (Request::method() == 'POST') {
             return Request::has('file')
                 ? $this->message->upload()
@@ -80,9 +80,9 @@ class MessageCenterController extends Controller {
                     $this->message->search()
                 );
         }
-
+        
         return view('wechat.message_center.create');
-
+        
     }
     
     /**
@@ -97,9 +97,9 @@ class MessageCenterController extends Controller {
         $sent = $this->message->send(
             $request->all()
         );
-
+        
         return response()->json([
-            'message' => $sent ? __('messages.ok') : __('messages.message.failed')
+            'message' => $sent ? __('messages.ok') : __('messages.message.failed'),
         ], $sent ? HttpStatusCode::OK : HttpStatusCode::INTERNAL_SERVER_ERROR);
         
     }
@@ -118,7 +118,7 @@ class MessageCenterController extends Controller {
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-
+        
         return view('wechat.message_center.create', [
             'message' => $message,
         ]);
@@ -134,13 +134,13 @@ class MessageCenterController extends Controller {
      * @throws Throwable
      */
     public function read($id) {
-
+        
         $this->message->read($id);
-
+        
         return response()->json([
-            'message' => __('messages.ok')
+            'message' => __('messages.ok'),
         ]);
-    
+        
     }
     
     /**
@@ -173,7 +173,7 @@ class MessageCenterController extends Controller {
         $deleted = $message->delete();
         
         return response()->json([
-            'message' => $deleted ? __('messages.ok') : __('messages.fail')
+            'message' => $deleted ? __('messages.ok') : __('messages.fail'),
         ], $deleted ? HttpStatusCode::OK : HttpStatusCode::INTERNAL_SERVER_ERROR);
         
     }
@@ -198,7 +198,7 @@ class MessageCenterController extends Controller {
         }
         
         return response()->json([
-            'messages' => $messages
+            'messages' => $messages,
         ]);
         
     }
@@ -214,7 +214,7 @@ class MessageCenterController extends Controller {
         $replied = $this->mr->store($input);
         
         return response()->json([
-            'message' => $replied ? __('messages.ok') : __('messages.fail')
+            'message' => $replied ? __('messages.ok') : __('messages.fail'),
         ], $replied ? HttpStatusCode::OK : HttpStatusCode::INTERNAL_SERVER_ERROR);
         
     }
@@ -236,7 +236,7 @@ class MessageCenterController extends Controller {
         $removed = $mr->delete();
         
         return response()->json([
-            'message' => $removed ? __('messages.del_ok') : __('messages.del_fail')
+            'message' => $removed ? __('messages.del_ok') : __('messages.del_fail'),
         ], $removed ? HttpStatusCode::OK : HttpStatusCode::INTERNAL_SERVER_ERROR);
         
     }

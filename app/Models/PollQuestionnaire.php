@@ -1,20 +1,19 @@
 <?php
-
 namespace App\Models;
 
-use Exception;
-use Carbon\Carbon;
+use App\Facades\Datatable;
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use App\Facades\DatatableFacade as Datatable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\PollQuestionnaire 调查问卷
@@ -45,23 +44,23 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @mixin \Eloquent
  */
 class PollQuestionnaire extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $table = 'poll_questionnaires';
-
+    
     protected $fillable = [
         'school_id', 'user_id', 'name',
-        'start', 'end', 'enabled'
+        'start', 'end', 'enabled',
     ];
-
+    
     /**
      * 返回指定调查问卷所属的学校对象
      *
      * @return BelongsTo
      */
     function school() { return $this->belongsTo('App\Models\School'); }
-
+    
     /**
      * 返回调查问卷发起者的用户对象
      *
@@ -119,6 +118,59 @@ class PollQuestionnaire extends Model {
     }
     
     /**
+     * 投票问卷列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'PollQuestionnaire.id', 'dt' => 0],
+            ['db' => 'PollQuestionnaire.name', 'dt' => 1],
+            ['db' => 'School.name as school_name', 'dt' => 2],
+            ['db' => 'User.realname', 'dt' => 3],
+            ['db' => 'PollQuestionnaire.start', 'dt' => 4],
+            ['db' => 'PollQuestionnaire.end', 'dt' => 5],
+            ['db' => 'PollQuestionnaire.created_at', 'dt' => 6],
+            ['db' => 'PollQuestionnaire.updated_at', 'dt' => 7],
+            [
+                'db'        => 'PollQuestionnaire.enabled', 'dt' => 8,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row);
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'School.id = PollQuestionnaire.school_id',
+                ],
+            ],
+            [
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'User.id = PollQuestionnaire.user_id',
+                ],
+            ],
+        ];
+        $condition = 'School.id = ' . $this->schoolId();
+        $user = Auth::user();
+        if (!in_array($user->group->name, Constant::SUPER_ROLES)) {
+            $condition .= ' AND PollQuestionnaire.user_id = ' . $user->id;
+        }
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
+        
+    }
+    
+    /**
      * 保存调查问卷
      *
      * @param array $data
@@ -153,7 +205,7 @@ class PollQuestionnaire extends Model {
     function remove($id = null) {
         
         return $this->del($this, $id);
-
+        
     }
     
     /**
@@ -164,7 +216,7 @@ class PollQuestionnaire extends Model {
      * @throws Exception
      */
     function purge($id) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 PollQuestionnaireParticipant::wherePqId($id)->delete();
@@ -175,61 +227,8 @@ class PollQuestionnaire extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
-
-    }
-    
-    /**
-     * 投票问卷列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'PollQuestionnaire.id', 'dt' => 0],
-            ['db' => 'PollQuestionnaire.name', 'dt' => 1],
-            ['db' => 'School.name as school_name', 'dt' => 2],
-            ['db' => 'User.realname', 'dt' => 3],
-            ['db' => 'PollQuestionnaire.start', 'dt' => 4],
-            ['db' => 'PollQuestionnaire.end', 'dt' => 5],
-            ['db' => 'PollQuestionnaire.created_at', 'dt' => 6],
-            ['db' => 'PollQuestionnaire.updated_at', 'dt' => 7],
-            [
-                'db' => 'PollQuestionnaire.enabled', 'dt' => 8,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row);
-                },
-            ],
-        ];
-        $joins = [
-            [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
-                'conditions' => [
-                    'School.id = PollQuestionnaire.school_id',
-                ],
-            ],
-            [
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'INNER',
-                'conditions' => [
-                    'User.id = PollQuestionnaire.user_id',
-                ],
-            ],
-        ];
-        $condition = 'School.id = ' . $this->schoolId();
-        $user = Auth::user();
-        if (!in_array($user->group->name, Constant::SUPER_ROLES)) {
-            $condition .= ' AND PollQuestionnaire.user_id = ' . $user->id;
-        }        
-        
-        return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
-        );
         
     }
     

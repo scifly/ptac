@@ -1,15 +1,15 @@
 <?php
 namespace App\Http\Controllers;
 
-use Exception;
-use Throwable;
-use App\Models\School;
-use App\Models\Educator;
-use App\Models\Department;
 use App\Helpers\HttpStatusCode;
-use Illuminate\Http\JsonResponse;
 use App\Http\Requests\EducatorRequest;
+use App\Models\Department;
+use App\Models\Educator;
+use App\Models\School;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 教职员工
@@ -43,7 +43,7 @@ class EducatorController extends Controller {
         
         return Request::get('draw')
             ? response()->json(
-                $this->educator->datatable()
+                $this->educator->index()
             )
             : $this->output();
         
@@ -88,7 +88,7 @@ class EducatorController extends Controller {
     public function show($id) {
         
         return $this->output([
-            'educator' => $this->educator->find($id)
+            'educator' => $this->educator->find($id),
         ]);
         
     }
@@ -105,7 +105,7 @@ class EducatorController extends Controller {
         return Request::method() === 'POST'
             ? $this->department->contacts(false)
             : $this->output([
-                'educator' => $this->educator->find($id)
+                'educator' => $this->educator->find($id),
             ]);
         
     }

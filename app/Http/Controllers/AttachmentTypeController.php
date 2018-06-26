@@ -36,7 +36,7 @@ class AttachmentTypeController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->at->datatable()
+                $this->at->index()
             );
         }
         

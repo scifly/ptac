@@ -1,13 +1,13 @@
 <?php
 namespace App\Http\Controllers;
 
-use Throwable;
-use Exception;
+use App\Http\Requests\ScoreRequest;
 use App\Models\Exam;
 use App\Models\Score;
+use Exception;
 use Illuminate\Http\JsonResponse;
-use App\Http\Requests\ScoreRequest;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 成绩
@@ -40,7 +40,7 @@ class ScoreController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->score->datatable()
+                $this->score->index()
             );
         }
         
@@ -196,13 +196,15 @@ class ScoreController extends Controller {
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function import($examId = null) {
-    
+        
         if ($examId) {
             if (Request::method() == 'POST') {
                 $this->score->template($examId);
+                
                 return $this->exam->classList($examId, 'import');
             }
             $this->score->template($examId, Request::input('classId'));
+            
             return response()->json();
         }
         

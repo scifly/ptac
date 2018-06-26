@@ -1,18 +1,18 @@
 <?php
 namespace App\Models;
 
-use Eloquent;
-use Exception;
-use Carbon\Carbon;
 use App\Facades\Wechat;
-use App\Jobs\SyncApp;
 use App\Helpers\HttpStatusCode;
 use App\Http\Requests\AppRequest;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Database\Eloquent\Model;
+use App\Jobs\SyncApp;
+use Carbon\Carbon;
+use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -86,6 +86,82 @@ class App extends Model {
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     function messages() { return $this->hasMany('App\Models\Message'); }
+    
+    /**
+     * 返回指定企业对应的应用列表
+     *
+     * @param AppRequest $request
+     * @return JsonResponse
+     */
+    function index(AppRequest $request) {
+        
+        $corpId = $request->query('corpId');
+        $apps = App::whereCorpId($corpId)->get()->toArray();
+        if (empty($apps)) {
+            return response()->json([
+                'apps' => '<tr id="na"><td colspan="8" style="text-align: center;">( n/a )</td></tr>',
+            ]);
+        }
+        $tr =
+            '<tr id="app%s">
+                <td>%s</td>
+                <td class="text-center">%s</td>
+                <td class="text-center">%s</td>
+                <td class="text-center"><img style="width: 16px; height: 16px;" src="%s"/></td>
+                <td class="text-center">%s</td>
+                <td class="text-center">%s</td>
+                <td class="text-center">%s</td>
+                <td class="text-right">
+                    %s
+                    &nbsp;&nbsp;&nbsp;
+                    <a href="#"><i class="fa fa-pencil" title="修改"></i></a>
+                    &nbsp;&nbsp;
+                    <a href="#"><i class="fa fa-remove text-red" title="删除"</a>
+                </td>
+            </tr>';
+        $html = '';
+        foreach ($apps as $app) {
+            $this->formatDateTime($app);
+            $html .= sprintf(
+                $tr,
+                $app['agentid'],
+                $app['id'],
+                $app['agentid'],
+                $app['name'],
+                $app['square_logo_url'],
+                $app['secret'],
+                $app['created_at'],
+                $app['updated_at'],
+                $app['enabled']
+                    ? '<i class="fa fa-circle text-green" title="已启用"></i>'
+                    : '<i class="fa fa-circle text-gray" title="未启用"></i>'
+            );
+        }
+        
+        return response()->json([
+            'apps' => $html,
+        ]);
+        
+    }
+    
+    /**
+     * 将日期时间转换为人类友好的格式
+     *
+     * @param $app
+     */
+    private function formatDateTime(&$app) {
+        
+        Carbon::setLocale('zh');
+        if ($app['created_at']) {
+            $dt = Carbon::createFromFormat('Y-m-d H:i:s', $app['created_at']);
+            $app['created_at'] = $dt->diffForHumans();
+        }
+        if ($app['updated_at']) {
+            $dt = Carbon::createFromFormat('Y-m-d H:i:s', $app['updated_at']);
+            $app['updated_at'] = $dt->diffForHumans();
+        }
+        
+    }
     
     /**
      * 保存App
@@ -166,6 +242,20 @@ class App extends Model {
         
     }
     
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+
+    /**
+     * 保存新创建的app
+     *
+     * @param array $data
+     * @return $this|bool|Model
+     */
+    private function store(array $data) {
+        
+        return $this->create($data) ?? false;
+        
+    }
+    
     /**
      * 移除应用
      *
@@ -185,94 +275,6 @@ class App extends Model {
         }
         
         return true;
-        
-    }
-    
-    /**
-     * 返回指定企业对应的应用列表
-     *
-     * @param AppRequest $request
-     * @return JsonResponse
-     */
-    function index(AppRequest $request) {
-        
-        $corpId = $request->query('corpId');
-        $apps = App::whereCorpId($corpId)->get()->toArray();
-        if (empty($apps)) {
-            return response()->json([
-                'apps' => '<tr id="na"><td colspan="8" style="text-align: center;">( n/a )</td></tr>',
-            ]);
-        }
-        $tr =
-            '<tr id="app%s">
-                <td>%s</td>
-                <td class="text-center">%s</td>
-                <td class="text-center">%s</td>
-                <td class="text-center"><img style="width: 16px; height: 16px;" src="%s"/></td>
-                <td class="text-center">%s</td>
-                <td class="text-center">%s</td>
-                <td class="text-center">%s</td>
-                <td class="text-right">
-                    %s
-                    &nbsp;&nbsp;&nbsp;
-                    <a href="#"><i class="fa fa-pencil" title="修改"></i></a>
-                    &nbsp;&nbsp;
-                    <a href="#"><i class="fa fa-remove text-red" title="删除"</a>
-                </td>
-            </tr>';
-        $html = '';
-        foreach ($apps as $app) {
-            $this->formatDateTime($app);
-            $html .= sprintf(
-                $tr,
-                $app['agentid'],
-                $app['id'],
-                $app['agentid'],
-                $app['name'],
-                $app['square_logo_url'],
-                $app['secret'],
-                $app['created_at'],
-                $app['updated_at'],
-                $app['enabled']
-                    ? '<i class="fa fa-circle text-green" title="已启用"></i>'
-                    : '<i class="fa fa-circle text-gray" title="未启用"></i>'
-            );
-        }
-        
-        return response()->json([
-            'apps' => $html,
-        ]);
-        
-    }
-    
-    /**
-     * 保存新创建的app
-     *
-     * @param array $data
-     * @return $this|bool|Model
-     */
-    private function store(array $data) {
-        
-        return $this->create($data) ?? false;
-        
-    }
-    
-    /**
-     * 将日期时间转换为人类友好的格式
-     *
-     * @param $app
-     */
-    private function formatDateTime(&$app) {
-        
-        Carbon::setLocale('zh');
-        if ($app['created_at']) {
-            $dt = Carbon::createFromFormat('Y-m-d H:i:s', $app['created_at']);
-            $app['created_at'] = $dt->diffForHumans();
-        }
-        if ($app['updated_at']) {
-            $dt = Carbon::createFromFormat('Y-m-d H:i:s', $app['updated_at']);
-            $app['updated_at'] = $dt->diffForHumans();
-        }
         
     }
     

@@ -41,7 +41,7 @@ class StudentController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->student->datatable()
+                $this->student->index()
             );
         }
         
@@ -106,12 +106,13 @@ class StudentController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-    
+        
         if (Request::method() === 'POST') {
             return $this->student->classList();
         }
         $student = $this->student->find($id);
         $student->grade_id = Squad::find($student->class_id)->grade_id;
+        
         return $this->output([
             'student' => $student // $this->student->find($id),
         ]);

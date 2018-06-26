@@ -36,7 +36,7 @@ class ComboTypeController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->ct->datatable()
+                $this->ct->index()
             );
         }
         
@@ -82,7 +82,7 @@ class ComboTypeController extends Controller {
     public function edit($id) {
         
         return $this->output([
-            'ct' => $this->ct->find($id)
+            'ct' => $this->ct->find($id),
         ]);
         
     }

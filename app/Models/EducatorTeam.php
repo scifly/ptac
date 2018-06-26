@@ -1,11 +1,10 @@
 <?php
-
 namespace App\Models;
 
-use Eloquent;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * App\Models\EducatorTeam 教职员工与教职员工组关系
@@ -25,9 +24,9 @@ use Illuminate\Database\Eloquent\Builder;
  * @mixin Eloquent
  */
 class EducatorTeam extends Model {
-
+    
     protected $table = 'educators_teams';
-
+    
     protected $fillable = ['educator_id', 'team_id', 'enabled'];
-
+    
 }

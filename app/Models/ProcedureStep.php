@@ -1,17 +1,17 @@
 <?php
 namespace App\Models;
 
+use App\Facades\Datatable;
+use App\Helpers\ModelTrait;
+use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Carbon\Carbon;
-use App\Helpers\ModelTrait;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Database\Eloquent\Builder;
-use App\Facades\DatatableFacade as Datatable;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\ProcedureStep 审批流程步骤
@@ -57,81 +57,11 @@ class ProcedureStep extends Model {
     function procedure() { return $this->belongsTo('App\Models\Procedure'); }
     
     /**
-     * 保存审批流程步骤
-     *
-     * @param array $data
-     * @return bool
-     */
-    function store(array $data) {
-        
-        return $this->create($data) ? true : false;
-        
-    }
-    
-    /**
-     * 更新审批流程步骤
-     *
-     * @param array $data
-     * @param $id
-     * @return bool
-     */
-    function modify(array $data, $id = null) {
-        
-        return $id
-            ? $this->find($id)->update($data)
-            : $this->batch($this);
-        
-    }
-    
-    /**
-     * 删除审批流程步骤
-     *
-     * @param $id
-     * @return bool|null
-     * @throws Exception
-     */
-    function remove($id = null) {
-        
-        return $id
-            ? $this->find($id)->delete()
-            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
-        
-    }
-    
-    /**
-     * 从审批流程步骤中删除指定的用户
-     *
-     * @param $userId
-     * @throws Exception
-     */
-    function removeUser($userId) {
-        
-        try {
-            DB::transaction(function () use ($userId) {
-                $condition = $userId . ' IN (approver_user_ids) OR ' . $userId . ' IN (related_user_ids)';
-                $pses = $this->whereRaw($condition)->get();
-                foreach ($pses as $ps) {
-                    $user_ids = array_map(function ($field) use ($ps, $userId) {
-                        return implode(',', array_diff(explode(',', $ps->{$field}), [$userId]));
-                    }, ['approver_user_ids', 'related_user_ids']);
-                    $ps->update([
-                        'approver_user_ids' => $user_ids[0],
-                        'related_user_ids'  => $user_ids[1],
-                    ]);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-    }
-    
-    /**
      * 审批流程步骤列表
      *
      * @return array
      */
-    function datatable() {
+    function index() {
         
         $columns = [
             ['db' => 'ProcedureStep.id', 'dt' => 0],
@@ -187,18 +117,6 @@ class ProcedureStep extends Model {
     }
     
     /**
-     * 返回相关人用户列表
-     *
-     * @param $id
-     * @return string
-     */
-    private function relatedUsers($id) {
-        
-        return $this->users($id, 'related_user_ids');
-        
-    }
-    
-    /**
      * 根据流程步骤ID获取审批者/相关人用户列表
      *
      * @param $id integer 流程步骤ID
@@ -211,6 +129,90 @@ class ProcedureStep extends Model {
         $userList = collect($userIds)->flatten()->toArray();
         
         return implode(',', $userList);
+        
+    }
+    
+    /**
+     * 返回相关人用户列表
+     *
+     * @param $id
+     * @return string
+     */
+    private function relatedUsers($id) {
+        
+        return $this->users($id, 'related_user_ids');
+        
+    }
+    
+    /**
+     * 保存审批流程步骤
+     *
+     * @param array $data
+     * @return bool
+     */
+    function store(array $data) {
+        
+        return $this->create($data) ? true : false;
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+
+    /**
+     * 更新审批流程步骤
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     */
+    function modify(array $data, $id = null) {
+        
+        return $id
+            ? $this->find($id)->update($data)
+            : $this->batch($this);
+        
+    }
+    
+    /**
+     * 删除审批流程步骤
+     *
+     * @param $id
+     * @return bool|null
+     * @throws Exception
+     */
+    function remove($id = null) {
+        
+        return $id
+            ? $this->find($id)->delete()
+            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
+        
+    }
+    
+    /**
+     * 从审批流程步骤中删除指定的用户
+     *
+     * @param $userId
+     * @throws Exception
+     */
+    function removeUser($userId) {
+        
+        try {
+            DB::transaction(function () use ($userId) {
+                $condition = $userId . ' IN (approver_user_ids) OR ' . $userId . ' IN (related_user_ids)';
+                $pses = $this->whereRaw($condition)->get();
+                foreach ($pses as $ps) {
+                    $user_ids = array_map(function ($field) use ($ps, $userId) {
+                        return implode(',', array_diff(explode(',', $ps->{$field}), [$userId]));
+                    }, ['approver_user_ids', 'related_user_ids']);
+                    $ps->update([
+                        'approver_user_ids' => $user_ids[0],
+                        'related_user_ids'  => $user_ids[1],
+                    ]);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
         
     }
     

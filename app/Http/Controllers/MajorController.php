@@ -36,7 +36,7 @@ class MajorController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->major->datatable()
+                $this->major->index()
             );
         }
         

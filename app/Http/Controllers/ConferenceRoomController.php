@@ -24,7 +24,6 @@ class ConferenceRoomController extends Controller {
         $this->cr = $cr;
         $this->approve($cr);
         
-        
     }
     
     /**
@@ -37,7 +36,7 @@ class ConferenceRoomController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->cr->datatable()
+                $this->cr->index()
             );
         }
         

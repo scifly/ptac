@@ -1,7 +1,7 @@
 <?php
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
@@ -55,6 +55,35 @@ class ScoreRange extends Model {
      * @return BelongsTo
      */
     function school() { return $this->belongsTo('App\Models\School'); }
+    
+    /**
+     * 分数统计范围列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'ScoreRange.id', 'dt' => 0],
+            ['db' => 'ScoreRange.name', 'dt' => 1],
+            ['db' => 'ScoreRange.start_score', 'dt' => 2],
+            ['db' => 'ScoreRange.end_score', 'dt' => 3],
+            ['db' => 'ScoreRange.created_at', 'dt' => 4],
+            ['db' => 'ScoreRange.updated_at', 'dt' => 5],
+            [
+                'db'        => 'ScoreRange.enabled', 'dt' => 6,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        $condition = 'ScoreRange.school_id = ' . $this->schoolId();
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, null, $condition
+        );
+        
+    }
     
     /**
      * 保存成绩统计项
@@ -117,35 +146,6 @@ class ScoreRange extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-        
-    }
-    
-    /**
-     * 分数统计范围列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'ScoreRange.id', 'dt' => 0],
-            ['db' => 'ScoreRange.name', 'dt' => 1],
-            ['db' => 'ScoreRange.start_score', 'dt' => 2],
-            ['db' => 'ScoreRange.end_score', 'dt' => 3],
-            ['db' => 'ScoreRange.created_at', 'dt' => 4],
-            ['db' => 'ScoreRange.updated_at', 'dt' => 5],
-            [
-                'db'        => 'ScoreRange.enabled', 'dt' => 6,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                },
-            ],
-        ];
-        $condition = 'ScoreRange.school_id = ' . $this->schoolId();
-        
-        return Datatable::simple(
-            $this->getModel(), $columns, null, $condition
-        );
         
     }
     

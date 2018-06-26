@@ -1,24 +1,23 @@
 <?php
-
 namespace App\Models;
 
-use Eloquent;
-use Throwable;
-use Exception;
-use Carbon\Carbon;
-use App\Helpers\Snippet;
+use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use App\Http\Requests\CorpRequest;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Session;
+use Carbon\Carbon;
+use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use App\Facades\DatatableFacade as Datatable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
+use Throwable;
 
 /**
  * App\Models\Corp 企业
@@ -129,6 +128,58 @@ class Corp extends Model {
     }
     
     /**
+     * 企业列表
+     *
+     * @return mixed
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'Corp.id', 'dt' => 0],
+            [
+                'db'        => 'Corp.name', 'dt' => 1,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-weixin text-green', '') .
+                        '<span class="text-green">' . $d . '</span>';
+                },
+            ],
+            ['db' => 'Corp.acronym', 'dt' => 2],
+            [
+                'db'        => 'Company.name as companyname', 'dt' => 3,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-building text-blue', '') .
+                        '<span class="text-blue">' . $d . '</span>';
+                },
+            ],
+            ['db' => 'Corp.corpid', 'dt' => 4],
+            ['db' => 'Corp.contact_sync_secret', 'dt' => 5],
+            ['db' => 'Corp.created_at', 'dt' => 6],
+            ['db' => 'Corp.updated_at', 'dt' => 7],
+            [
+                'db'        => 'Corp.enabled', 'dt' => 8,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table'      => 'companies',
+                'alias'      => 'Company',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Company.id = Corp.company_id',
+                ],
+            ],
+        ];
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins
+        );
+        
+    }
+    
+    /**
      * 保存企业
      *
      * @param CorpRequest $request
@@ -151,7 +202,7 @@ class Corp extends Model {
                 # 更新“企业微信”的部门id和菜单id
                 $corp->update([
                     'department_id' => $department->id,
-                    'menu_id' => $menu->id
+                    'menu_id'       => $menu->id,
                 ]);
             });
         } catch (Exception $e) {
@@ -209,7 +260,7 @@ class Corp extends Model {
      * @throws Exception
      */
     function purge($id) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $corp = $this->find($id);
@@ -224,8 +275,8 @@ class Corp extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-        return true;
         
+        return true;
         
     }
     
@@ -236,73 +287,23 @@ class Corp extends Model {
      */
     function corpId() {
         
-        if (!Session::exists('menuId')) { return null; }
+        if (!Session::exists('menuId')) {
+            return null;
+        }
         $user = Auth::user();
         switch ($user->group->name) {
             case '运营':
             case '企业':
                 $corpMenuId = (new Menu)->menuId(session('menuId'), '企业');
+                
                 return $corpMenuId ? $this->where('menu_id', $corpMenuId)->first()->id : null;
             case '学校':
                 $schoolMenuId = (new Menu)->menuId(session('menuId'));
+                
                 return School::whereMenuId($schoolMenuId)->first()->corp_id;
             default:
                 return School::find($user->educator->school_id)->corp_id;
         }
-        
-    }
-    
-    
-    
-    /**
-     * 企业列表
-     *
-     * @return mixed
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'Corp.id', 'dt' => 0],
-            [
-                'db' => 'Corp.name', 'dt' => 1,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-weixin text-green', '') .
-                        '<span class="text-green">' . $d . '</span>';
-                }
-            ],
-            ['db' => 'Corp.acronym', 'dt' => 2],
-            [
-                'db' => 'Company.name as companyname', 'dt' => 3,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-building text-blue', '') .
-                        '<span class="text-blue">' . $d . '</span>';
-                }
-            ],
-            ['db' => 'Corp.corpid', 'dt' => 4],
-            ['db' => 'Corp.contact_sync_secret', 'dt' => 5],
-            ['db' => 'Corp.created_at', 'dt' => 6],
-            ['db' => 'Corp.updated_at', 'dt' => 7],
-            [
-                'db' => 'Corp.enabled', 'dt' => 8,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                },
-            ],
-        ];
-        $joins = [
-            [
-                'table' => 'companies',
-                'alias' => 'Company',
-                'type' => 'INNER',
-                'conditions' => [
-                    'Company.id = Corp.company_id',
-                ],
-            ],
-        ];
-        
-        return Datatable::simple(
-            $this->getModel(), $columns, $joins
-        );
         
     }
     

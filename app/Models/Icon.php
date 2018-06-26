@@ -1,8 +1,7 @@
 <?php
-
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
@@ -37,39 +36,39 @@ use Illuminate\Support\Facades\DB;
  * @mixin \Eloquent
  */
 class Icon extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $fillable = ['name', 'remark', 'icon_type_id', 'enabled'];
-
+    
     /**
      * 返回指定图标所属的图标类型对象
      *
      * @return BelongsTo
      */
     function iconType() { return $this->belongsTo('App\Models\IconType'); }
-
+    
     /**
      * 返回Icon包含的菜单对象
      *
      * @return HasMany
      */
     function menus() { return $this->hasMany('App\Models\Menu'); }
-
+    
     /**
      * 返回指定图标包含的所有卡片对象
      *
      * @return HasMany
      */
     function tabs() { return $this->hasMany('App\Models\Tab'); }
-
+    
     /**
      * 返回Icon列表
      *
      * @return array
      */
     function icons() {
-
+        
         $data = self::whereEnabled(1)->get();
         $icons = [];
         foreach ($data as $datum) {
@@ -77,9 +76,49 @@ class Icon extends Model {
         }
         
         return $icons;
-
+        
     }
-
+    
+    /**
+     * 图标列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'Icon.id', 'dt' => 0],
+            [
+                'db'        => 'Icon.name', 'dt' => 1,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, $d, '') . $d;
+                },
+            ],
+            ['db' => 'IconType.name as icontypename', 'dt' => 2],
+            ['db' => 'Icon.created_at', 'dt' => 3],
+            ['db' => 'Icon.updated_at', 'dt' => 4],
+            [
+                'db'        => 'Icon.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table'      => 'icon_types',
+                'alias'      => 'IconType',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'IconType.id = Icon.icon_type_id',
+                ],
+            ],
+        ];
+        
+        return Datatable::simple($this->getModel(), $columns, $joins);
+        
+    }
+    
     /**
      * 保存图标
      *
@@ -87,11 +126,11 @@ class Icon extends Model {
      * @return bool
      */
     function store(array $data) {
-
+        
         return $this->create($data) ? true : false;
-
+        
     }
-
+    
     /**
      * 更新图标
      *
@@ -100,11 +139,11 @@ class Icon extends Model {
      * @return bool
      */
     function modify(array $data, $id = null) {
-
+        
         return $id
             ? $this->find($id)->update($data)
             : $this->batch($this);
-
+        
     }
     
     /**
@@ -115,9 +154,9 @@ class Icon extends Model {
      * @throws Exception
      */
     function remove($id) {
-
+        
         return $this->del($this, $id);
-
+        
     }
     
     /**
@@ -139,44 +178,4 @@ class Icon extends Model {
         
     }
     
-    /**
-     * 图标列表
-     *
-     * @return array
-     */
-    function datatable() {
-
-        $columns = [
-            ['db' => 'Icon.id', 'dt' => 0],
-            [
-                'db' => 'Icon.name', 'dt' => 1,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, $d, '') . $d;
-                },
-            ],
-            ['db' => 'IconType.name as icontypename', 'dt' => 2],
-            ['db' => 'Icon.created_at', 'dt' => 3],
-            ['db' => 'Icon.updated_at', 'dt' => 4],
-            [
-                'db' => 'Icon.enabled', 'dt' => 5,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                },
-            ],
-        ];
-        $joins = [
-            [
-                'table' => 'icon_types',
-                'alias' => 'IconType',
-                'type' => 'INNER',
-                'conditions' => [
-                    'IconType.id = Icon.icon_type_id',
-                ],
-            ],
-        ];
-
-        return Datatable::simple($this->getModel(), $columns, $joins);
-
-    }
-
 }

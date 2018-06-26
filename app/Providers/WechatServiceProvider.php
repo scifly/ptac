@@ -1,7 +1,7 @@
 <?php
 namespace App\Providers;
 
-use App\Facades\Wechat as Wechat;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
 
 class WechatServiceProvider extends ServiceProvider {
@@ -11,9 +11,7 @@ class WechatServiceProvider extends ServiceProvider {
      *
      * @return void
      */
-    public function boot() {
-        //
-    }
+    public function boot() { }
     
     /**
      * Register the application services.
@@ -21,8 +19,10 @@ class WechatServiceProvider extends ServiceProvider {
      * @return void
      */
     public function register() {
-        $this->app->singleton('Wechat', function () {
-            return new Wechat;
+
+        App::bind('wechat', function () {
+            return new \App\Helpers\Wechat;
         });
+        
     }
 }

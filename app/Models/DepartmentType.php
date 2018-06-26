@@ -1,18 +1,18 @@
 <?php
 namespace App\Models;
 
-use Eloquent;
-use Exception;
-use Carbon\Carbon;
-use ReflectionClass;
+use App\Facades\Datatable;
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
+use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
+use ReflectionClass;
 
 /**
  * App\Models\DepartmentType 部门类型
@@ -44,6 +44,33 @@ class DepartmentType extends Model {
      * @return HasMany
      */
     function departments() { return $this->hasMany('App\Models\Department'); }
+    
+    /**
+     * 部门类型列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'DepartmentType.id', 'dt' => 0],
+            ['db' => 'DepartmentType.name', 'dt' => 1],
+            ['db' => 'DepartmentType.remark', 'dt' => 2],
+            ['db' => 'DepartmentType.created_at', 'dt' => 3],
+            ['db' => 'DepartmentType.updated_at', 'dt' => 4],
+            [
+                'db'        => 'DepartmentType.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        
+        return Datatable::simple(
+            $this->getModel(), $columns
+        );
+        
+    }
     
     /**
      * 创建部门类型
@@ -124,33 +151,6 @@ class DepartmentType extends Model {
             $dtType,
             $this->where('name', $dtType)->first()->id,
         ];
-        
-    }
-    
-    /**
-     * 部门类型列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'DepartmentType.id', 'dt' => 0],
-            ['db' => 'DepartmentType.name', 'dt' => 1],
-            ['db' => 'DepartmentType.remark', 'dt' => 2],
-            ['db' => 'DepartmentType.created_at', 'dt' => 3],
-            ['db' => 'DepartmentType.updated_at', 'dt' => 4],
-            [
-                'db'        => 'DepartmentType.enabled', 'dt' => 5,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                },
-            ],
-        ];
-        
-        return Datatable::simple(
-            $this->getModel(), $columns
-        );
         
     }
     

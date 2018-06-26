@@ -1,12 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
-use Exception;
-use Throwable;
-use App\Models\Subject;
-use Illuminate\Http\JsonResponse;
 use App\Http\Requests\SubjectRequest;
+use App\Models\Subject;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 科目
@@ -36,7 +36,7 @@ class SubjectController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->subject->datatable()
+                $this->subject->index()
             );
         }
         

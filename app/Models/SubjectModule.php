@@ -1,7 +1,7 @@
 <?php
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
@@ -49,6 +49,45 @@ class SubjectModule extends Model {
     function subject() { return $this->belongsTo('App\Models\Subject'); }
     
     /**
+     * 科目次分类列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'SubjectModule.id', 'dt' => 0],
+            ['db' => 'Subject.name as subjectname', 'dt' => 1],
+            ['db' => 'SubjectModule.name', 'dt' => 2],
+            ['db' => 'SubjectModule.weight', 'dt' => 3],
+            ['db' => 'SubjectModule.created_at', 'dt' => 4],
+            ['db' => 'SubjectModule.updated_at', 'dt' => 5],
+            [
+                'db'        => 'SubjectModule.enabled', 'dt' => 6,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table'      => 'subjects',
+                'alias'      => 'Subject',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Subject.id = SubjectModule.subject_id',
+                ],
+            ],
+        ];
+        $condition = 'Subject.school_id = ' . $this->schoolId();
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
+        
+    }
+    
+    /**
      * 保存科目次分类
      *
      * @param array $data
@@ -85,45 +124,6 @@ class SubjectModule extends Model {
         return $id
             ? $this->find($id)->delete()
             : $this->whereIn('id', array_values(Request::input('ids')))->delete();
-        
-    }
-    
-    /**
-     * 科目次分类列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'SubjectModule.id', 'dt' => 0],
-            ['db' => 'Subject.name as subjectname', 'dt' => 1],
-            ['db' => 'SubjectModule.name', 'dt' => 2],
-            ['db' => 'SubjectModule.weight', 'dt' => 3],
-            ['db' => 'SubjectModule.created_at', 'dt' => 4],
-            ['db' => 'SubjectModule.updated_at', 'dt' => 5],
-            [
-                'db'        => 'SubjectModule.enabled', 'dt' => 6,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                },
-            ],
-        ];
-        $joins = [
-            [
-                'table'      => 'subjects',
-                'alias'      => 'Subject',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'Subject.id = SubjectModule.subject_id',
-                ],
-            ],
-        ];
-        $condition = 'Subject.school_id = ' . $this->schoolId();
-        
-        return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
-        );
         
     }
     

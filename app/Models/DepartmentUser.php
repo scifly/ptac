@@ -1,16 +1,16 @@
 <?php
 namespace App\Models;
 
-use Eloquent;
-use Throwable;
-use Exception;
-use Carbon\Carbon;
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
+use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * App\Models\DepartmentUser 部门 & 用户绑定关系

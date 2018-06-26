@@ -35,7 +35,7 @@ class AttendanceMachineController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->am->datatable()
+                $this->am->index()
             );
         }
         
@@ -81,7 +81,7 @@ class AttendanceMachineController extends Controller {
     public function edit($id) {
         
         return $this->output([
-            'am' => $this->am->find($id)
+            'am' => $this->am->find($id),
         ]);
         
     }

@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-
 use App\Http\Requests\WapSiteModuleRequest;
 use App\Models\WapSiteModule;
 use Exception;
@@ -37,7 +36,7 @@ class WapSiteModuleController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->wsm->datatable()
+                $this->wsm->index()
             );
         }
         
@@ -84,12 +83,12 @@ class WapSiteModuleController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-
+        
         if (Request::method() == 'POST') {
             return $this->wsm->upload();
         }
         $wsm = $this->wsm->find($id);
-
+        
         return $this->output([
             'wsm' => $wsm,
         ]);

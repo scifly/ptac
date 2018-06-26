@@ -36,7 +36,7 @@ class SchoolController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->school->datatable()
+                $this->school->index()
             );
         }
         

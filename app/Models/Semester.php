@@ -1,7 +1,7 @@
 <?php
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
@@ -66,6 +66,35 @@ class Semester extends Model {
     }
     
     /**
+     * 学期列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'Semester.id', 'dt' => 0],
+            ['db' => 'Semester.name as semestername', 'dt' => 1],
+            ['db' => 'Semester.start_date', 'dt' => 2],
+            ['db' => 'Semester.end_date', 'dt' => 3],
+            ['db' => 'Semester.created_at', 'dt' => 4],
+            ['db' => 'Semester.updated_at', 'dt' => 5],
+            [
+                'db'        => 'Semester.enabled', 'dt' => 6,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        $condition = 'Semester.school_id = ' . $this->schoolId();
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, null, $condition
+        );
+        
+    }
+    
+    /**
      * 创建学期
      *
      * @param array $data
@@ -122,35 +151,6 @@ class Semester extends Model {
         }
         
         return true;
-        
-    }
-    
-    /**
-     * 学期列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'Semester.id', 'dt' => 0],
-            ['db' => 'Semester.name as semestername', 'dt' => 1],
-            ['db' => 'Semester.start_date', 'dt' => 2],
-            ['db' => 'Semester.end_date', 'dt' => 3],
-            ['db' => 'Semester.created_at', 'dt' => 4],
-            ['db' => 'Semester.updated_at', 'dt' => 5],
-            [
-                'db'        => 'Semester.enabled', 'dt' => 6,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                },
-            ],
-        ];
-        $condition = 'Semester.school_id = ' . $this->schoolId();
-        
-        return Datatable::simple(
-            $this->getModel(), $columns, null, $condition
-        );
         
     }
     

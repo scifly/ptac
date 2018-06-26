@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-
 use App\Http\Requests\ProcedureStepRequest;
 use App\Models\ProcedureStep;
 use Exception;
@@ -37,7 +36,7 @@ class ProcedureStepController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->ps->datatable()
+                $this->ps->index()
             );
         }
         

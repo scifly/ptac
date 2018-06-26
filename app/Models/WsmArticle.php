@@ -1,22 +1,22 @@
 <?php
 namespace App\Models;
 
+use App\Facades\Datatable;
+use App\Helpers\HttpStatusCode;
+use App\Helpers\ModelTrait;
+use App\Http\Requests\WsmArticleRequest;
+use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Throwable;
-use Carbon\Carbon;
-use Illuminate\View\View;
-use App\Helpers\ModelTrait;
-use App\Helpers\HttpStatusCode;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\WsmArticleRequest;
-use Illuminate\Database\Eloquent\Builder;
-use App\Facades\DatatableFacade as Datatable;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\View\View;
+use Throwable;
 
 /**
  * App\Models\WsmArticle 微网站栏目文章
@@ -79,9 +79,61 @@ class WsmArticle extends Model {
         
     }
     
-    function thumbnailmedia() {
+    /**
+     * 返回所属的缩略图媒体对象
+     *
+     * @return BelongsTo
+     */
+    function thumbnailMedia() {
         
         return $this->belongsTo('App\Models\Media', 'thumbnail_media_id', 'id');
+        
+    }
+    
+    /**
+     * 微网站文章列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'WsmArticle.id', 'dt' => 0],
+            ['db' => 'Wsm.name as wsmname', 'dt' => 1],
+            ['db' => 'WsmArticle.name', 'dt' => 2],
+            ['db' => 'WsmArticle.summary', 'dt' => 3],
+            ['db' => 'WsmArticle.created_at', 'dt' => 4],
+            ['db' => 'WsmArticle.updated_at', 'dt' => 5],
+            [
+                'db'        => 'WsmArticle.enabled', 'dt' => 6,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table'      => 'wap_site_modules',
+                'alias'      => 'Wsm',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Wsm.id = WsmArticle.wsm_id',
+                ],
+            ],
+            [
+                'table'      => 'wap_sites',
+                'alias'      => 'WapSite',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'WapSite.id = Wsm.wap_site_id',
+                ],
+            ],
+        ];
+        $condition = 'WapSite.school_id = ' . $this->schoolId();
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
         
     }
     
@@ -126,11 +178,7 @@ class WsmArticle extends Model {
                 $paths = explode("/", $media->path);
                 Storage::disk('uploads')->delete($paths[sizeof($paths) - 1]);
             }
-            try {
-                Media::whereIn('id', $mediaIds)->delete();
-            } catch (Exception $e) {
-                throw $e;
-            }
+            Media::whereIn('id', $mediaIds)->delete();
         }
         
     }
@@ -202,6 +250,8 @@ class WsmArticle extends Model {
         
     }
     
+    /** 微信端 ------------------------------------------------------------------------------------------------------- */
+
     /**
      * 上传微网站文章轮播图
      *
@@ -233,53 +283,8 @@ class WsmArticle extends Model {
         
     }
     
-    /**
-     * 微网站文章列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'WsmArticle.id', 'dt' => 0],
-            ['db' => 'Wsm.name as wsmname', 'dt' => 1],
-            ['db' => 'WsmArticle.name', 'dt' => 2],
-            ['db' => 'WsmArticle.summary', 'dt' => 3],
-            ['db' => 'WsmArticle.created_at', 'dt' => 4],
-            ['db' => 'WsmArticle.updated_at', 'dt' => 5],
-            [
-                'db'        => 'WsmArticle.enabled', 'dt' => 6,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                },
-            ],
-        ];
-        $joins = [
-            [
-                'table'      => 'wap_site_modules',
-                'alias'      => 'Wsm',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'Wsm.id = WsmArticle.wsm_id',
-                ],
-            ],
-            [
-                'table'      => 'wap_sites',
-                'alias'      => 'WapSite',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'WapSite.id = Wsm.wap_site_id',
-                ],
-            ],
-        ];
-        $condition = 'WapSite.school_id = ' . $this->schoolId();
-        
-        return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
-        );
-        
-    }
-    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+
     /**
      * 返回指定栏目文章
      *

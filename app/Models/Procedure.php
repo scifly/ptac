@@ -1,8 +1,7 @@
 <?php
-
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
@@ -40,44 +39,83 @@ use Illuminate\Support\Facades\DB;
  * @property-read Collection|ProcedureStep[] $procedureSteps
  */
 class Procedure extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $table = 'procedures';
-
+    
     protected $fillable = [
         'procedure_type_id', 'school_id', 'name',
         'remark', 'enabled',
     ];
-
+    
     /**
      * 返回指定流程所属的学校对象
      *
      * @return BelongsTo
      */
     function school() { return $this->belongsTo('App\Models\School'); }
-
+    
     /**
      * 返回指定流程所属的流程类型对象
      *
      * @return BelongsTo
      */
     function procedureType() { return $this->belongsTo('App\Models\ProcedureType'); }
-
+    
     /**
      * 获取指定审批流程包含的所有审批流程步骤对象
      *
      * @return HasMany
      */
     function procedureSteps() { return $this->hasMany('App\Models\ProcedureStep'); }
-
+    
     /**
      * 获取指定审批流程包含的所有流程审批日志对象
      *
      * @return HasMany
      */
     function procedureLogs() { return $this->hasMany('App\Models\ProcedureLog'); }
-
+    
+    /**
+     * 审批流程列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'Procedures.id', 'dt' => 0],
+            ['db' => 'ProcedureType.name as proceduretypename', 'dt' => 1],
+            ['db' => 'Procedures.name', 'dt' => 2],
+            ['db' => 'Procedures.remark', 'dt' => 3],
+            ['db' => 'Procedures.created_at', 'dt' => 4],
+            ['db' => 'Procedures.updated_at', 'dt' => 5],
+            [
+                'db'        => 'Procedures.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row);
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table'      => 'procedure_types',
+                'alias'      => 'ProcedureType',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'ProcedureType.id = Procedures.procedure_type_id',
+                ],
+            ],
+        ];
+        $condition = 'School.id = ' . $this->schoolId();
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
+        
+    }
+    
     /**
      * 保存审批流程
      *
@@ -87,9 +125,9 @@ class Procedure extends Model {
     function store(array $data) {
         
         return $this->create($data) ? true : false;
-
+        
     }
-
+    
     /**
      * 更新审批流程
      *
@@ -102,7 +140,7 @@ class Procedure extends Model {
         return $id
             ? $this->find($id)->update($data)
             : $this->batch($this);
-
+        
     }
     
     /**
@@ -113,9 +151,9 @@ class Procedure extends Model {
      * @throws Exception
      */
     function remove($id = null) {
-
+        
         return $this->del($this, $id);
-
+        
     }
     
     /**
@@ -140,44 +178,5 @@ class Procedure extends Model {
         
     }
     
-    /**
-     * 审批流程列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'Procedures.id', 'dt' => 0],
-            ['db' => 'ProcedureType.name as proceduretypename', 'dt' => 1],
-            ['db' => 'Procedures.name', 'dt' => 2],
-            ['db' => 'Procedures.remark', 'dt' => 3],
-            ['db' => 'Procedures.created_at', 'dt' => 4],
-            ['db' => 'Procedures.updated_at', 'dt' => 5],
-            [
-                'db' => 'Procedures.enabled', 'dt' => 5,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row);
-                },
-            ],
-        ];
-        $joins = [
-            [
-                'table' => 'procedure_types',
-                'alias' => 'ProcedureType',
-                'type' => 'INNER',
-                'conditions' => [
-                    'ProcedureType.id = Procedures.procedure_type_id',
-                ],
-            ],
-        ];
-        $condition = 'School.id = ' . $this->schoolId();
-
-        return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
-        );
-        
-    }
-
 }
 

@@ -25,7 +25,7 @@ class ScoreCenterController extends Controller {
      * @param Exam $exam
      */
     public function __construct(Score $score, Exam $exam) {
-
+        
         $this->middleware('wechat');
         $this->score = $score;
         $this->exam = $exam;
@@ -74,7 +74,7 @@ class ScoreCenterController extends Controller {
     public function analyze() {
         
         return $this->score->analyze();
-       
+        
     }
     
     /**

@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers\Wechat;
 
-use App\Helpers\WechatTrait;
 use App\Http\Controllers\Controller;
 use App\Models\WapSite;
 use App\Models\WapSiteModule;
@@ -9,8 +8,6 @@ use App\Models\WsmArticle;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 
 class MobileSiteController extends Controller {
@@ -18,7 +15,7 @@ class MobileSiteController extends Controller {
     protected $ws, $wsm, $wsma;
     
     function __construct(WapSite $ws, WapSiteModule $wsm, WsmArticle $wsma) {
-
+        
         $this->middleware('wechat');
         $this->ws = $ws;
         $this->wsm = $wsm;

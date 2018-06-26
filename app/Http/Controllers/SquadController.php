@@ -1,13 +1,13 @@
 <?php
 namespace App\Http\Controllers;
 
-use Exception;
-use Throwable;
-use App\Models\Squad;
-use App\Models\Educator;
-use Illuminate\Http\JsonResponse;
 use App\Http\Requests\SquadRequest;
+use App\Models\Educator;
+use App\Models\Squad;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 班级
@@ -38,7 +38,7 @@ class SquadController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->class->datatable()
+                $this->class->index()
             );
         }
         
@@ -83,7 +83,7 @@ class SquadController extends Controller {
     public function edit($id) {
         
         return $this->output([
-            'class' => $this->class->find($id)
+            'class' => $this->class->find($id),
         ]);
         
     }

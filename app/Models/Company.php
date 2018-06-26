@@ -1,22 +1,21 @@
 <?php
 namespace App\Models;
 
-use Eloquent;
-use Exception;
-use Throwable;
-use Carbon\Carbon;
-use App\Helpers\Snippet;
 use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
-use Illuminate\Support\Facades\DB;
+use App\Helpers\Snippet;
 use App\Http\Requests\CompanyRequest;
-use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
+use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-// use App\Facades\DatatableFacade as Datatable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * App\Models\Company 运营者公司
@@ -83,6 +82,37 @@ class Company extends Model {
     function schools() {
         
         return $this->hasManyThrough('App\Models\School', 'App\Models\Corp');
+        
+    }
+    
+    /**
+     * 运营者列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'Company.id', 'dt' => 0],
+            [
+                'db'        => 'Company.name', 'dt' => 1,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-building text-blue', '') .
+                        '<span class="text-blue">' . $d . '</span>';
+                },
+            ],
+            ['db' => 'Company.remark', 'dt' => 2],
+            ['db' => 'Company.created_at', 'dt' => 3],
+            ['db' => 'Company.updated_at', 'dt' => 4],
+            [
+                'db'        => 'Company.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        
+        return Datatable::simple($this->getModel(), $columns);
         
     }
     
@@ -178,37 +208,6 @@ class Company extends Model {
         }
         
         return true;
-        
-    }
-    
-    /**
-     * 运营者列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'Company.id', 'dt' => 0],
-            [
-                'db'        => 'Company.name', 'dt' => 1,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-building text-blue', '') .
-                        '<span class="text-blue">' . $d . '</span>';
-                },
-            ],
-            ['db' => 'Company.remark', 'dt' => 2],
-            ['db' => 'Company.created_at', 'dt' => 3],
-            ['db' => 'Company.updated_at', 'dt' => 4],
-            [
-                'db'        => 'Company.enabled', 'dt' => 5,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                },
-            ],
-        ];
-        
-        return Datatable::simple($this->getModel(), $columns);
         
     }
     

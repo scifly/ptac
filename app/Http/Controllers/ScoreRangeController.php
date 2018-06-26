@@ -39,7 +39,7 @@ class ScoreRangeController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->sr->datatable()
+                $this->sr->index()
             );
         }
         
@@ -85,7 +85,7 @@ class ScoreRangeController extends Controller {
     public function edit($id) {
         
         return $this->output([
-            'sr' => $this->sr->find($id)
+            'sr' => $this->sr->find($id),
         ]);
         
     }
@@ -129,7 +129,7 @@ class ScoreRangeController extends Controller {
      * @throws Throwable
      */
     public function stat() {
-
+        
         if (Request::method() == 'POST') {
             return $this->sr->stat();
         }

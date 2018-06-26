@@ -1,8 +1,7 @@
 <?php
-
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
@@ -39,27 +38,56 @@ use Illuminate\Support\Facades\DB;
 class AttendanceMachine extends Model {
     
     use ModelTrait;
-
+    
     protected $table = 'attendance_machines';
-
+    
     protected $fillable = [
         'name', 'location', 'school_id',
         'machineid', 'enabled',
     ];
-
+    
     /**
      * 返回考勤机所属的学校对象
      *
      * @return BelongsTo
      */
     function school() { return $this->belongsTo('App\Models\School'); }
-
+    
     /**
      * 获取指定考勤机的学生考勤记录对象
      *
      * @return HasMany
      */
     function studentAttendances() { return $this->hasMany('App\Models\StudentAttendance'); }
+    
+    /**
+     * 考勤机列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'AttendanceMachine.id', 'dt' => 0],
+            ['db' => 'AttendanceMachine.name', 'dt' => 1],
+            ['db' => 'AttendanceMachine.location', 'dt' => 2],
+            ['db' => 'AttendanceMachine.machineid', 'dt' => 3],
+            ['db' => 'AttendanceMachine.created_at', 'dt' => 4],
+            ['db' => 'AttendanceMachine.updated_at', 'dt' => 5],
+            [
+                'db'        => 'AttendanceMachine.enabled', 'dt' => 6,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        $condition = 'AttendanceMachine.school_id = ' . $this->schoolId();
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, null, $condition
+        );
+        
+    }
     
     /**
      * 保存考勤机
@@ -97,7 +125,7 @@ class AttendanceMachine extends Model {
      * @throws Exception
      */
     function remove($id = null) {
-    
+        
         return $this->del($this, $id);
         
     }
@@ -110,47 +138,18 @@ class AttendanceMachine extends Model {
      * @throws Exception
      */
     function purge($id) {
-    
+        
         try {
-            DB::transaction(function() use ($id) {
+            DB::transaction(function () use ($id) {
                 StudentAttendance::whereAttendanceMachineId($id)->delete();
                 $this->find($id)->delete();
             });
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }
     
-    /**
-     * 考勤机列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'AttendanceMachine.id', 'dt' => 0],
-            ['db' => 'AttendanceMachine.name', 'dt' => 1],
-            ['db' => 'AttendanceMachine.location', 'dt' => 2],
-            ['db' => 'AttendanceMachine.machineid', 'dt' => 3],
-            ['db' => 'AttendanceMachine.created_at', 'dt' => 4],
-            ['db' => 'AttendanceMachine.updated_at', 'dt' => 5],
-            [
-                'db' => 'AttendanceMachine.enabled', 'dt' => 6,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                },
-            ],
-        ];
-        $condition = 'AttendanceMachine.school_id = ' . $this->schoolId();
-
-        return Datatable::simple(
-            $this->getModel(), $columns, null, $condition
-        );
-        
-    }
-
 }

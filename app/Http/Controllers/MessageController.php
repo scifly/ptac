@@ -42,7 +42,7 @@ class MessageController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->message->datatable()
+                $this->message->index()
             );
         }
         if (Request::method() == 'POST') {

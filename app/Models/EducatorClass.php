@@ -2,10 +2,10 @@
 namespace App\Models;
 
 use Exception;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Request;
 
 /**
  * App\Models\EducatorClass 教职员工与班级关系
@@ -43,8 +43,18 @@ class EducatorClass extends Model {
      */
     function classes() { return $this->belongsTo('App\Models\Educator'); }
     
-    function squad() { return $this->belongsTo('App\Models\squad', 'class_id', 'id'); }
+    /**
+     * 返回所属的班级对象
+     *
+     * @return BelongsTo
+     */
+    function squad() { return $this->belongsTo('App\Models\Squad', 'class_id', 'id'); }
     
+    /**
+     * 返回所属的科目对象
+     *
+     * @return BelongsTo
+     */
     function subject() { return $this->belongsTo('App\Models\subject'); }
     
     /**

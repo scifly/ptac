@@ -35,7 +35,7 @@ class ConferenceParticipantController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->cp->datatable()
+                $this->cp->index()
             );
         }
         

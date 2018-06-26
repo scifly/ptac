@@ -35,7 +35,7 @@ class ExamTypeController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->et->datatable()
+                $this->et->index()
             );
         }
         
@@ -79,7 +79,7 @@ class ExamTypeController extends Controller {
     public function edit($id) {
         
         return $this->output([
-            'et' => ExamType::find($id)
+            'et' => ExamType::find($id),
         ]);
         
     }

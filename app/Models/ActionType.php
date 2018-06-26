@@ -1,9 +1,9 @@
 <?php
 namespace App\Models;
 
+use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
-use App\Facades\DatatableFacade as Datatable;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -37,14 +37,27 @@ class ActionType extends Model {
     protected $fillable = ['name', 'remark', 'enabled'];
     
     /**
-     * 返回指定Http请求类型包含的功能
+     * Http请求类型列表
      *
-     * @param $id
-     * @return Collection|\Illuminate\Support\Collection|static[]
+     * @return array
      */
-    function actions($id) {
+    function index() {
         
-        return Action::whereRaw('FIND_IN_SET(' . $id . ', action_type_ids')->get();
+        $columns = [
+            ['db' => 'ActionType.id', 'dt' => 0],
+            ['db' => 'ActionType.name', 'dt' => 1],
+            ['db' => 'ActionType.remark', 'dt' => 2],
+            ['db' => 'ActionType.created_at', 'dt' => 3],
+            ['db' => 'ActionType.updated_at', 'dt' => 4],
+            [
+                'db'        => 'ActionType.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        
+        return Datatable::simple($this->getModel(), $columns);
         
     }
     
@@ -109,29 +122,14 @@ class ActionType extends Model {
     }
     
     /**
-     * Http请求类型列表
+     * 返回指定Http请求类型包含的功能
      *
-     * @return array
+     * @param $id
+     * @return Collection|\Illuminate\Support\Collection|static[]
      */
-    function datatable() {
+    function actions($id) {
         
-        $columns = [
-            ['db' => 'ActionType.id', 'dt' => 0],
-            ['db' => 'ActionType.name', 'dt' => 1],
-            ['db' => 'ActionType.remark', 'dt' => 2],
-            ['db' => 'ActionType.created_at', 'dt' => 3],
-            ['db' => 'ActionType.updated_at', 'dt' => 4],
-            [
-                'db'        => 'ActionType.enabled', 'dt' => 5,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                },
-            ],
-        ];
-        
-        return Datatable::simple(
-            $this->getModel(), $columns
-        );
+        return Action::whereRaw('FIND_IN_SET(' . $id . ', action_type_ids)')->get();
         
     }
     

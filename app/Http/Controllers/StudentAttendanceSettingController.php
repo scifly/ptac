@@ -1,12 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StudentAttendanceSettingRequest;
+use App\Models\StudentAttendanceSetting;
 use Exception;
-use Throwable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
-use App\Models\StudentAttendanceSetting;
-use App\Http\Requests\StudentAttendanceSettingRequest;
+use Throwable;
 
 /**
  * 学生考勤设置
@@ -36,7 +36,7 @@ class StudentAttendanceSettingController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->sas->datatable()
+                $this->sas->index()
             );
         }
         

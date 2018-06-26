@@ -1,12 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
-use Exception;
-use Throwable;
+use App\Http\Requests\DepartmentTypeRequest;
 use App\Models\DepartmentType;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
-use App\Http\Requests\DepartmentTypeRequest;
+use Throwable;
 
 /**
  * 部门类型
@@ -36,7 +36,7 @@ class DepartmentTypeController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->dt->datatable()
+                $this->dt->index()
             );
         }
         

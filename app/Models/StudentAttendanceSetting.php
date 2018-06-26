@@ -1,19 +1,18 @@
 <?php
-
 namespace App\Models;
 
-use Eloquent;
-use Exception;
-use Carbon\Carbon;
-use App\Helpers\Snippet;
+use App\Facades\Datatable;
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Model;
+use App\Helpers\Snippet;
+use Carbon\Carbon;
+use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
-use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\StudentAttendanceSetting 学生考勤设置
@@ -50,7 +49,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class StudentAttendanceSetting extends Model {
     
     use ModelTrait;
-
+    
     protected $table = 'student_attendance_settings';
     
     protected $fillable = [
@@ -89,6 +88,72 @@ class StudentAttendanceSetting extends Model {
     }
     
     /**
+     * 学生考勤设置记录列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'StudentAttendanceSetting.id', 'dt' => 0],
+            ['db' => 'StudentAttendanceSetting.name', 'dt' => 1],
+            ['db' => 'Grade.name as gradename', 'dt' => 2],
+            ['db' => 'Semester.name as semestername', 'dt' => 3],
+            [
+                'db'        => 'StudentAttendanceSetting.ispublic', 'dt' => 4,
+                'formatter' => function ($d) {
+                    return $d == 1 ? '是' : '否';
+                },
+            ],
+            ['db' => 'StudentAttendanceSetting.start', 'dt' => 5],
+            ['db' => 'StudentAttendanceSetting.end', 'dt' => 6],
+            ['db' => 'StudentAttendanceSetting.day', 'dt' => 7],
+            ['db'        => 'StudentAttendanceSetting.inorout', 'dt' => 8,
+             'formatter' => function ($d) {
+                 return $d
+                     ? sprintf(Snippet::BADGE_GREEN, '进')
+                     : sprintf(Snippet::BADGE_GREEN, '出');
+             },
+            ],
+            ['db' => 'StudentAttendanceSetting.msg_template', 'dt' => 9],
+            [
+                'db'        => 'StudentAttendanceSetting.updated_at', 'dt' => 10,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table'      => 'grades',
+                'alias'      => 'Grade',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Grade.id = StudentAttendanceSetting.grade_id',
+                ],
+            ],
+            [
+                'table'      => 'semesters',
+                'alias'      => 'Semester',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Semester.id = StudentAttendanceSetting.semester_id',
+                ],
+            ],
+        ];
+        $condition = 'Semester.school_id = ' . $this->schoolId();
+        $user = Auth::user();
+        if (!in_array($user->group->name, Constant::SUPER_ROLES)) {
+            $condition .= ' AND StudentAttendanceSetting.grade_id IN (' . implode(',', $this->gradeIds()) . ')';
+        }
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
+        
+    }
+    
+    /**
      * 保存学生考勤设置
      *
      * @param array $data
@@ -96,7 +161,7 @@ class StudentAttendanceSetting extends Model {
      */
     function store(array $data) {
         
-        return $this->create($data) ? true: false;
+        return $this->create($data) ? true : false;
         
     }
     
@@ -121,9 +186,9 @@ class StudentAttendanceSetting extends Model {
      * @throws Exception
      */
     function remove($id = null) {
-
+        
         return $this->del($this, $id);
-    
+        
     }
     
     /**
@@ -148,70 +213,4 @@ class StudentAttendanceSetting extends Model {
         
     }
     
-    /**
-     * 学生考勤设置记录列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'StudentAttendanceSetting.id', 'dt' => 0],
-            ['db' => 'StudentAttendanceSetting.name', 'dt' => 1],
-            ['db' => 'Grade.name as gradename', 'dt' => 2],
-            ['db' => 'Semester.name as semestername', 'dt' => 3],
-            [
-                'db' => 'StudentAttendanceSetting.ispublic', 'dt' => 4,
-                'formatter' => function ($d) {
-                    return $d == 1 ? '是' : '否';
-                },
-            ],
-            ['db' => 'StudentAttendanceSetting.start', 'dt' => 5],
-            ['db' => 'StudentAttendanceSetting.end', 'dt' => 6],
-            ['db' => 'StudentAttendanceSetting.day', 'dt' => 7],
-            ['db' => 'StudentAttendanceSetting.inorout', 'dt' => 8,
-                'formatter' => function ($d) {
-                    return $d 
-                        ? sprintf(Snippet::BADGE_GREEN, '进')
-                        : sprintf(Snippet::BADGE_GREEN, '出');
-                },
-            ],
-            ['db' => 'StudentAttendanceSetting.msg_template', 'dt' => 9],
-            [
-                'db' => 'StudentAttendanceSetting.updated_at', 'dt' => 10,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row,false);
-                },
-            ],
-        ];
-        $joins = [
-            [
-                'table' => 'grades',
-                'alias' => 'Grade',
-                'type' => 'INNER',
-                'conditions' => [
-                    'Grade.id = StudentAttendanceSetting.grade_id',
-                ],
-            ],
-            [
-                'table' => 'semesters',
-                'alias' => 'Semester',
-                'type' => 'INNER',
-                'conditions' => [
-                    'Semester.id = StudentAttendanceSetting.semester_id',
-                ],
-            ],
-        ];
-        $condition = 'Semester.school_id = ' . $this->schoolId();
-        $user = Auth::user();
-        if (!in_array($user->group->name, Constant::SUPER_ROLES)) {
-            $condition .= ' AND StudentAttendanceSetting.grade_id IN (' . implode(',', $this->gradeIds()) . ')';
-        }
-        
-        return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
-        );
-
-    }
-
 }

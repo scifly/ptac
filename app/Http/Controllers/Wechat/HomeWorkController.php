@@ -14,7 +14,7 @@ class HomeWorkController extends Controller {
     }
     
     public function index() {
-    
+        
         return $this->hw->wIndex();
         
     }

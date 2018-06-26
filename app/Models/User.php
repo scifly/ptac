@@ -1,7 +1,7 @@
 <?php
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Datatable;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
@@ -94,8 +94,8 @@ class User extends Authenticatable {
     
     use HasApiTokens, Notifiable, ModelTrait;
     
+    const SELECT_HTML = '<select class="form-control select2" style="width: 100%;" id="ID" name="ID">';
     protected $table = 'users';
-    
     /**
      * The attributes that are mass assignable.
      *
@@ -109,9 +109,6 @@ class User extends Authenticatable {
         'order', 'mobile', 'enabled', 'synced',
         'subscribed',
     ];
-    
-    const SELECT_HTML = '<select class="form-control select2" style="width: 100%;" id="ID" name="ID">';
-    
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -251,14 +248,15 @@ class User extends Authenticatable {
     }
     
     /**
-     * 创建企业号会员
+     * 批量更新企业号会员
      *
-     * @param $id
-     * @return bool
+     * @param $ids
      */
-    function createWechatUser($id) {
+    function batchUpdateWechatUsers($ids) {
         
-        return $this->sync($id, 'create');
+        foreach ($ids as $id) {
+            $this->updateWechatUser($id);
+        }
         
     }
     
@@ -275,278 +273,64 @@ class User extends Authenticatable {
     }
     
     /**
-     * 批量更新企业号会员
-     *
-     * @param $ids
-     */
-    function batchUpdateWechatUsers($ids) {
-        
-        foreach ($ids as $id) {
-            $this->updateWechatUser($id);
-        }
-        
-    }
-    
-    /**
-     * 删除企业号会员
+     * 同步企业微信会员
      *
      * @param $id
+     * @param $action
      * @return bool
      */
-    function deleteWechatUser($id) {
+    function sync($id, $action) {
         
-        return $this->sync($id, 'delete');
-        
-    }
-    
-    /**
-     * 保存超级用户
-     *
-     * @param array $data
-     * @return bool
-     * @throws Exception
-     * @throws Throwable
-     */
-    function store(array $data) {
-        
-        try {
-            DB::transaction(function () use ($data) {
-                # 创建用户
-                $user = $this->create([
-                    'username'     => $data['username'],
-                    'userid'       => uniqid('manager_'),
-                    'password'     => bcrypt($data['password']),
-                    'group_id'     => $data['group_id'],
-                    'email'        => $data['email'],
-                    'realname'     => $data['realname'],
-                    'gender'       => $data['gender'],
-                    'english_name' => $data['english_name'],
-                    'telephone'    => $data['telephone'],
-                    'enabled'      => $data['enabled'],
-                    'synced'       => $data['synced'],
-                    'avatar_url'   => '',
-                    'isleader'     => 0,
-                    'subscribed'   => 0,
-                ]);
-                # 创建教职员工
-                Educator::create([
-                    'user_id'   => $user->id,
-                    'school_id' => $this->schoolId(),
-                    'sms_quote' => 0,
-                    'enabled'   => 1,
-                ]);
-                # 保存手机号码
-                (new Mobile)->store($data['mobile'], $user);
-                # 保存用户&部门隶属关系
-                (new DepartmentUser)->store([
-                    'department_id' => $this->departmentId($data),
-                    'user_id'       => $user->id,
-                    'enabled'       => $data['enabled'],
-                ]);
-                # 创建企业号成员
-                $this->createWechatUser($user->id);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    
-    /**
-     * 更新超级用户
-     *
-     * @param array $data
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function modify(array $data, $id = null) {
-        
-        if (!$id) {
-            $ids = Request::input('ids');
-            foreach ($ids as $id) {
-                $this->updateWechatUser($id);
-            }
-            
-            return $this->batch($this);
-        }
         $user = $this->find($id);
-        try {
-            # 更新用户数据
-            DB::transaction(function () use ($data, $id, $user) {
-                $user->update([
-                    'username'     => $data['username'],
-                    'group_id'     => $data['group_id'],
-                    'email'        => $data['email'],
-                    'realname'     => $data['realname'],
-                    'gender'       => $data['gender'],
-                    'english_name' => $data['english_name'],
-                    'telephone'    => $data['telephone'],
-                    'enabled'      => $data['enabled'],
-                ]);
-                # 更新手机号码
-                Mobile::whereUserId($user->id)->delete();
-                (new Mobile)->store($data['mobile'], $user);
-                # 更新部门数据
-                DepartmentUser::whereUserId($user->id)->delete();
-                (new DepartmentUser)->store([
-                    'department_id' => $this->departmentId($data),
-                    'user_id'       => $user->id,
-                    'enabled'       => Constant::ENABLED,
-                ]);
-                # 更新企业号成员记录
-                $this->updateWechatUser($user->id);
-            });
-        } catch (Exception $e) {
-            throw $e;
+        switch ($user->group->name) {
+            case '运营':
+                $corpIds = Corp::pluck('id')->toArray();
+                break;
+            case '企业':
+                $departmentIds = $user->departments->pluck('id')->toArray();
+                $corpIds = [Corp::whereDepartmentId(head($departmentIds))->first()->id];
+                break;
+            case '学生':
+                $corpIds = [$user->student->squad->grade->school->corp_id];
+                break;
+            case '监护人':
+                $students = $user->custodian->students;
+                $corpIds = [];
+                foreach ($students as $student) {
+                    $corpIds[] = $student->squad->grade->school->corp_id;
+                }
+                break;
+            default: # 学校、教职员工或其他角色:
+                $corpIds = [$user->educator->school->corp_id];
+                break;
         }
+        if ($action == 'delete') {
+            $data = [
+                'userid'  => $user->userid,
+                'corpIds' => $corpIds,
+            ];
+        } else {
+            $data = [
+                'corpIds'      => $corpIds,
+                'userid'       => $user->userid,
+                'name'         => $user->realname,
+                'english_name' => $user->english_name,
+                'position'     => $user->group->name,
+                'mobile'       => head(
+                    $user->mobiles
+                        ->where('isdefault', 1)
+                        ->pluck('mobile')->toArray()
+                ),
+                'email'        => $user->email,
+                'department'   => in_array($user->group->name, ['运营', '企业'])
+                    ? [1] : $user->departments->pluck('id')->toArray(),
+                'gender'       => $user->gender,
+                'enable'       => $user->enabled,
+            ];
+        }
+        SyncMember::dispatch($data, Auth::id(), $action);
         
         return true;
-        
-    }
-    
-    /**
-     * 删除用户
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function remove($id = null) {
-        
-        if (!$id) {
-            $ids = Request::input('ids');
-            try {
-                DB::transaction(function () use ($ids) {
-                    array_map(function ($id) { $this->purge($id); }, $ids);
-                });
-            } catch (Exception $e) {
-                throw $e;
-            }
-            
-            return true;
-        }
-        
-        return $this->purge($id);
-        
-    }
-    
-    /**
-     * 删除联系人(学生、监护人、教职员工）及所有相关数据
-     *
-     * @param Model $contact
-     * @param null $id
-     * @return bool
-     * @throws ReflectionException
-     * @throws Exception
-     */
-    function removeContact(Model $contact, $id = null) {
-        
-        if (!$id) {
-            $ids = Request::input('ids');
-            $type = lcfirst((new ReflectionClass($contact))->getShortName());
-            abort_if(
-                !empty($ids) && empty(array_intersect(
-                    array_values($ids),
-                    array_map('strval', $this->contactIds($type))
-                )),
-                HttpStatusCode::UNAUTHORIZED,
-                __('messages.unauthorized')
-            );
-            try {
-                DB::transaction(function () use ($contact, $ids) {
-                    foreach ($ids as $id) {
-                        $contact->{'purge'}($id);
-                    }
-                });
-            } catch (Exception $e) {
-                throw $e;
-            }
-            
-            return true;
-        }
-        
-        return $contact->{'purge'}($id);
-        
-    }
-    
-    /**
-     * 返回指定用户所属的所有部门id
-     *
-     * @param integer $id 用户id
-     * @return array
-     */
-    function departmentIds($id) {
-        
-        $departments = self::find($id)->departments;
-        $departmentIds = [];
-        foreach ($departments as $d) {
-            $departmentIds[] = $d->id;
-            $departmentIds = array_merge(
-                $departmentIds, $d->subDepartmentIds($d->id)
-            );
-        }
-        
-        return array_unique($departmentIds);
-        
-    }
-    
-    /**
-     * 返回指定角色对应的企业/学校列表HTML
-     * 或返回指定企业对应的学校列表HTML
-     *
-     * @return JsonResponse
-     */
-    function csList() {
-        
-        function corps() {
-            
-            $user = Auth::user();
-            switch ($user->group->name) {
-                case '运营':
-                    return Corp::whereEnabled(1)->pluck('name', 'id')->toArray();
-                case '企业':
-                    $departmentId = $this->head($user);
-                    $corp = Corp::whereDepartmentId($departmentId)->first();
-                    
-                    return [$corp->id => $corp->name];
-                default:
-                    return [];
-            }
-            
-        }
-        
-        $field = Request::input('field');
-        $value = Request::input('value');
-        abort_if(
-            !in_array($field, ['group_id', 'corp_id']),
-            HttpStatusCode::NOT_ACCEPTABLE,
-            __('messages.not_acceptable')
-        );
-        $result = [
-            'statusCode' => HttpStatusCode::OK,
-        ];
-        # 获取企业和学校列表
-        $corpId = 0;
-        if ($field == 'group_id') {
-            $role = Group::find($value)->name;
-            $corps = corps();
-            $result['corpList'] = $this->selectList($corps, 'corp_id');
-            if ($role == '学校') {
-                reset($corps);
-                $corpId = key($corps);
-            }
-        } else {
-            $corpId = $value;
-        }
-        $schools = $corpId ? School::whereCorpId($corpId)
-            ->where('enabled', 1)->get()
-            ->pluck('name', 'id')->toArray() : [];
-        $result['schoolList'] = $this->selectList($schools, 'school_id');
-        
-        return response()->json($result);
         
     }
     
@@ -555,7 +339,7 @@ class User extends Authenticatable {
      *
      * @return array
      */
-    function datatable() {
+    function index() {
         
         $columns = [
             ['db' => 'User.id', 'dt' => 0],
@@ -664,22 +448,172 @@ class User extends Authenticatable {
         
     }
     
-    /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
-     * 获取Select HTML
+     * 保存超级用户
      *
-     * @param array $items
-     * @param $field
-     * @return string
+     * @param array $data
+     * @return bool
+     * @throws Exception
+     * @throws Throwable
      */
-    private function selectList(array $items, $field) {
+    function store(array $data) {
         
-        $html = str_replace('ID', $field, self::SELECT_HTML);
-        foreach ($items as $key => $value) {
-            $html .= '<option value="' . $key . '">' . $value . '</option>';
+        try {
+            DB::transaction(function () use ($data) {
+                # 创建用户
+                $user = $this->create([
+                    'username'     => $data['username'],
+                    'userid'       => uniqid('manager_'),
+                    'password'     => bcrypt($data['password']),
+                    'group_id'     => $data['group_id'],
+                    'email'        => $data['email'],
+                    'realname'     => $data['realname'],
+                    'gender'       => $data['gender'],
+                    'english_name' => $data['english_name'],
+                    'telephone'    => $data['telephone'],
+                    'enabled'      => $data['enabled'],
+                    'synced'       => $data['synced'],
+                    'avatar_url'   => '',
+                    'isleader'     => 0,
+                    'subscribed'   => 0,
+                ]);
+                # 创建教职员工
+                Educator::create([
+                    'user_id'   => $user->id,
+                    'school_id' => $this->schoolId(),
+                    'sms_quote' => 0,
+                    'enabled'   => 1,
+                ]);
+                # 保存手机号码
+                (new Mobile)->store($data['mobile'], $user);
+                # 保存用户&部门隶属关系
+                (new DepartmentUser)->store([
+                    'department_id' => $this->departmentId($data),
+                    'user_id'       => $user->id,
+                    'enabled'       => $data['enabled'],
+                ]);
+                # 创建企业号成员
+                $this->createWechatUser($user->id);
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
         
-        return $html . '</select>';
+        return true;
+        
+    }
+    
+    /**
+     * 获取超级用户所处的部门id
+     *
+     * @param $data
+     * @return int|mixed|null
+     */
+    private function departmentId($data) {
+        
+        switch (Group::find($data['group_id'])->name) {
+            case '运营':
+                return Department::whereDepartmentTypeId(
+                    DepartmentType::whereName('根')->first()->id
+                )->first()->id;
+            case '企业':
+                return Corp::find($data['corp_id'])->department_id;
+            case '学校':
+                return School::find($data['school_id'])->department_id;
+            default:
+                return null;
+        }
+        
+    }
+    
+    /**
+     * 创建企业号会员
+     *
+     * @param $id
+     * @return bool
+     */
+    function createWechatUser($id) {
+        
+        return $this->sync($id, 'create');
+        
+    }
+    
+    /**
+     * 更新超级用户
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     * @throws Throwable
+     */
+    function modify(array $data, $id = null) {
+        
+        if (!$id) {
+            $ids = Request::input('ids');
+            foreach ($ids as $id) {
+                $this->updateWechatUser($id);
+            }
+            
+            return $this->batch($this);
+        }
+        $user = $this->find($id);
+        try {
+            # 更新用户数据
+            DB::transaction(function () use ($data, $id, $user) {
+                $user->update([
+                    'username'     => $data['username'],
+                    'group_id'     => $data['group_id'],
+                    'email'        => $data['email'],
+                    'realname'     => $data['realname'],
+                    'gender'       => $data['gender'],
+                    'english_name' => $data['english_name'],
+                    'telephone'    => $data['telephone'],
+                    'enabled'      => $data['enabled'],
+                ]);
+                # 更新手机号码
+                Mobile::whereUserId($user->id)->delete();
+                (new Mobile)->store($data['mobile'], $user);
+                # 更新部门数据
+                DepartmentUser::whereUserId($user->id)->delete();
+                (new DepartmentUser)->store([
+                    'department_id' => $this->departmentId($data),
+                    'user_id'       => $user->id,
+                    'enabled'       => Constant::ENABLED,
+                ]);
+                # 更新企业号成员记录
+                $this->updateWechatUser($user->id);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
+    /**
+     * 删除用户
+     *
+     * @param $id
+     * @return bool
+     * @throws Throwable
+     */
+    function remove($id = null) {
+        
+        if (!$id) {
+            $ids = Request::input('ids');
+            try {
+                DB::transaction(function () use ($ids) {
+                    array_map(function ($id) { $this->purge($id); }, $ids);
+                });
+            } catch (Exception $e) {
+                throw $e;
+            }
+            
+            return true;
+        }
+        
+        return $this->purge($id);
         
     }
     
@@ -717,87 +651,151 @@ class User extends Authenticatable {
     }
     
     /**
-     * 同步企业微信会员
+     * 删除企业号会员
      *
      * @param $id
-     * @param $action
      * @return bool
      */
-    function sync($id, $action) {
+    function deleteWechatUser($id) {
         
-        $user = $this->find($id);
-        switch ($user->group->name) {
-            case '运营':
-                $corpIds = Corp::pluck('id')->toArray();
-                break;
-            case '企业':
-                $departmentIds = $user->departments->pluck('id')->toArray();
-                $corpIds = [Corp::whereDepartmentId(head($departmentIds))->first()->id];
-                break;
-            case '学生':
-                $corpIds = [$user->student->squad->grade->school->corp_id];
-                break;
-            case '监护人':
-                $students = $user->custodian->students;
-                $corpIds = [];
-                foreach ($students as $student) {
-                    $corpIds[] = $student->squad->grade->school->corp_id;
-                }
-                break;
-            default: # 学校、教职员工或其他角色:
-                $corpIds = [$user->educator->school->corp_id];
-                break;
-        }
-        if ($action == 'delete') {
-            $data = [
-                'userid'  => $user->userid,
-                'corpIds' => $corpIds,
-            ];
-        } else {
-            $data = [
-                'corpIds'      => $corpIds,
-                'userid'       => $user->userid,
-                'name'         => $user->realname,
-                'english_name' => $user->english_name,
-                'position'     => $user->group->name,
-                'mobile'       => head(
-                    $user->mobiles
-                        ->where('isdefault', 1)
-                        ->pluck('mobile')->toArray()
-                ),
-                'email'        => $user->email,
-                'department'   => in_array($user->group->name, ['运营', '企业'])
-                    ? [1] : $user->departments->pluck('id')->toArray(),
-                'gender'       => $user->gender,
-                'enable'       => $user->enabled,
-            ];
-        }
-        SyncMember::dispatch($data, Auth::id(), $action);
-        
-        return true;
+        return $this->sync($id, 'delete');
         
     }
     
     /**
-     * 获取超级用户所处的部门id
+     * 删除联系人(学生、监护人、教职员工）及所有相关数据
      *
-     * @param $data
-     * @return int|mixed|null
+     * @param Model $contact
+     * @param null $id
+     * @return bool
+     * @throws ReflectionException
+     * @throws Exception
      */
-    private function departmentId($data) {
+    function removeContact(Model $contact, $id = null) {
         
-        switch (Group::find($data['group_id'])->name) {
-            case '运营':
-                return Department::whereDepartmentTypeId(
-                    DepartmentType::whereName('根')->first()->id
-                )->first()->id;
-            case '企业':
-                return Corp::find($data['corp_id'])->department_id;
-            case '学校':
-                return School::find($data['school_id'])->department_id;
-            default:
-                return null;
+        if (!$id) {
+            $ids = Request::input('ids');
+            $type = lcfirst((new ReflectionClass($contact))->getShortName());
+            abort_if(
+                !empty($ids) && empty(array_intersect(
+                    array_values($ids),
+                    array_map('strval', $this->contactIds($type))
+                )),
+                HttpStatusCode::UNAUTHORIZED,
+                __('messages.unauthorized')
+            );
+            try {
+                DB::transaction(function () use ($contact, $ids) {
+                    foreach ($ids as $id) {
+                        $contact->{'purge'}($id);
+                    }
+                });
+            } catch (Exception $e) {
+                throw $e;
+            }
+            
+            return true;
         }
+        
+        return $contact->{'purge'}($id);
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+
+    /**
+     * 返回指定用户所属的所有部门id
+     *
+     * @param integer $id 用户id
+     * @return array
+     */
+    function departmentIds($id) {
+        
+        $departments = self::find($id)->departments;
+        $departmentIds = [];
+        foreach ($departments as $d) {
+            $departmentIds[] = $d->id;
+            $departmentIds = array_merge(
+                $departmentIds, $d->subDepartmentIds($d->id)
+            );
+        }
+        
+        return array_unique($departmentIds);
+        
+    }
+    
+    /**
+     * 返回指定角色对应的企业/学校列表HTML
+     * 或返回指定企业对应的学校列表HTML
+     *
+     * @return JsonResponse
+     */
+    function csList() {
+        
+        function corps() {
+            
+            $user = Auth::user();
+            switch ($user->group->name) {
+                case '运营':
+                    return Corp::whereEnabled(1)->pluck('name', 'id')->toArray();
+                case '企业':
+                    $departmentId = $this->head($user);
+                    $corp = Corp::whereDepartmentId($departmentId)->first();
+                    
+                    return [$corp->id => $corp->name];
+                default:
+                    return [];
+            }
+            
+        }
+        
+        $field = Request::input('field');
+        $value = Request::input('value');
+        abort_if(
+            !in_array($field, ['group_id', 'corp_id']),
+            HttpStatusCode::NOT_ACCEPTABLE,
+            __('messages.not_acceptable')
+        );
+        $result = [
+            'statusCode' => HttpStatusCode::OK,
+        ];
+        # 获取企业和学校列表
+        $corpId = 0;
+        if ($field == 'group_id') {
+            $role = Group::find($value)->name;
+            $corps = corps();
+            $result['corpList'] = $this->selectList($corps, 'corp_id');
+            if ($role == '学校') {
+                reset($corps);
+                $corpId = key($corps);
+            }
+        } else {
+            $corpId = $value;
+        }
+        $schools = $corpId ? School::whereCorpId($corpId)
+            ->where('enabled', 1)->get()
+            ->pluck('name', 'id')->toArray() : [];
+        $result['schoolList'] = $this->selectList($schools, 'school_id');
+        
+        return response()->json($result);
+        
+    }
+    
+    /**
+     * 获取Select HTML
+     *
+     * @param array $items
+     * @param $field
+     * @return string
+     */
+    private function selectList(array $items, $field) {
+        
+        $html = str_replace('ID', $field, self::SELECT_HTML);
+        foreach ($items as $key => $value) {
+            $html .= '<option value="' . $key . '">' . $value . '</option>';
+        }
+        
+        return $html . '</select>';
         
     }
     

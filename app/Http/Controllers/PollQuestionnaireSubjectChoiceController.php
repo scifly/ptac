@@ -36,7 +36,7 @@ class PollQuestionnaireSubjectChoiceController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->pqsc->datatable()
+                $this->pqsc->index()
             );
         }
         
@@ -81,7 +81,7 @@ class PollQuestionnaireSubjectChoiceController extends Controller {
     public function edit($id) {
         
         return $this->output([
-            'pqsc' => $this->pqsc->find($id)
+            'pqsc' => $this->pqsc->find($id),
         ]);
         
     }

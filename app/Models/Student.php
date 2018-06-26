@@ -1,29 +1,29 @@
 <?php
 namespace App\Models;
 
-use Eloquent;
-use Throwable;
-use Exception;
-use Carbon\Carbon;
-use App\Helpers\Snippet;
+use App\Facades\Datatable;
 use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
-use App\Jobs\ImportStudent;
 use App\Helpers\HttpStatusCode;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Model;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Storage;
+use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
+use App\Jobs\ImportStudent;
+use Carbon\Carbon;
+use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use App\Facades\DatatableFacade as Datatable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Throwable;
 
 /**
  * App\Models\Student 学生
@@ -78,6 +78,7 @@ class Student extends Model {
         'grade' => 1,
         'all'   => 2,
     ];
+    
     protected $fillable = [
         'user_id', 'class_id', 'student_number',
         'card_number', 'oncampus', 'birthday',
@@ -129,6 +130,92 @@ class Student extends Model {
      * @return HasMany
      */
     function consumptions() { return $this->hasMany('App\Models\Consumption'); }
+    
+    /**
+     * 学生列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'Student.id', 'dt' => 0],
+            ['db' => 'User.realname as realname', 'dt' => 1],
+            [
+                'db'        => 'User.gender as gender', 'dt' => 2,
+                'formatter' => function ($d) {
+                    return $d == 1 ? Snippet::MALE : Snippet::FEMALE;
+                },
+            ],
+            [
+                'db'        => 'Squad.name as classname', 'dt' => 3,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-users', '') . $d;
+                },
+            ],
+            ['db' => 'Student.student_number', 'dt' => 4],
+            ['db' => 'Student.card_number', 'dt' => 5],
+            [
+                'db'        => 'Student.oncampus', 'dt' => 6,
+                'formatter' => function ($d) {
+                    return $d == 1 ? '是' : '否';
+                },
+            ],
+            [
+                'db'        => 'Student.id as mobile', 'dt' => 7,
+                'formatter' => function ($d) {
+                    $student = $this->find($d);
+                    $mobiles = $student->user->mobiles;
+                    $mobile = [];
+                    foreach ($mobiles as $key => $value) {
+                        $mobile[] = $value->mobile;
+                    }
+                    
+                    return implode(',', $mobile);
+                },
+            ],
+            [
+                'db'        => 'Student.birthday', 'dt' => 8,
+                'formatter' => function ($d) {
+                    return $d ? substr($d, 0, 10) : '';
+                },
+            ],
+            ['db' => 'Student.created_at', 'dt' => 9],
+            ['db' => 'Student.updated_at', 'dt' => 10],
+            [
+                'db'        => 'Student.enabled', 'dt' => 11,
+                'formatter' => function ($d, $row) {
+                    return $this->syncStatus($d, $row);
+                },
+            ],
+            ['db' => 'User.synced', 'dt' => 12],
+            ['db' => 'User.subscribed', 'dt' => 13],
+        ];
+        $joins = [
+            [
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'User.id = Student.user_id',
+                ],
+            ],
+            [
+                'table'      => 'classes',
+                'alias'      => 'Squad',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Squad.id = Student.class_id',
+                ],
+            ],
+        ];
+        $condition = 'Student.id In (' . implode(',', $this->contactIds('student')) . ')';
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
+        
+    }
     
     /**
      * 保存新创建的学生记录
@@ -467,92 +554,6 @@ class Student extends Model {
         }
         
         return [$grades, $classes];
-        
-    }
-    
-    /**
-     * 学生列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'Student.id', 'dt' => 0],
-            ['db' => 'User.realname as realname', 'dt' => 1],
-            [
-                'db'        => 'User.gender as gender', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return $d == 1 ? Snippet::MALE : Snippet::FEMALE;
-                },
-            ],
-            [
-                'db'        => 'Squad.name as classname', 'dt' => 3,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-users', '') . $d;
-                },
-            ],
-            ['db' => 'Student.student_number', 'dt' => 4],
-            ['db' => 'Student.card_number', 'dt' => 5],
-            [
-                'db'        => 'Student.oncampus', 'dt' => 6,
-                'formatter' => function ($d) {
-                    return $d == 1 ? '是' : '否';
-                },
-            ],
-            [
-                'db'        => 'Student.id as mobile', 'dt' => 7,
-                'formatter' => function ($d) {
-                    $student = $this->find($d);
-                    $mobiles = $student->user->mobiles;
-                    $mobile = [];
-                    foreach ($mobiles as $key => $value) {
-                        $mobile[] = $value->mobile;
-                    }
-                    
-                    return implode(',', $mobile);
-                },
-            ],
-            [
-                'db'        => 'Student.birthday', 'dt' => 8,
-                'formatter' => function ($d) {
-                    return $d ? substr($d, 0, 10) : '';
-                },
-            ],
-            ['db' => 'Student.created_at', 'dt' => 9],
-            ['db' => 'Student.updated_at', 'dt' => 10],
-            [
-                'db'        => 'Student.enabled', 'dt' => 11,
-                'formatter' => function ($d, $row) {
-                    return $this->syncStatus($d, $row);
-                },
-            ],
-            ['db' => 'User.synced', 'dt' => 12],
-            ['db' => 'User.subscribed', 'dt' => 13],
-        ];
-        $joins = [
-            [
-                'table'      => 'users',
-                'alias'      => 'User',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'User.id = Student.user_id',
-                ],
-            ],
-            [
-                'table'      => 'classes',
-                'alias'      => 'Squad',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'Squad.id = Student.class_id',
-                ],
-            ],
-        ];
-        $condition = 'Student.id In (' . implode(',', $this->contactIds('student')) . ')';
-        
-        return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
-        );
         
     }
     

@@ -36,7 +36,7 @@ class PollQuestionnaireController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->pq->datatable()
+                $this->pq->index()
             );
         }
         

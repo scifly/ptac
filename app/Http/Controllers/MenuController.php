@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-
 use App\Http\Requests\MenuRequest;
 use App\Models\Menu;
 use App\Models\MenuTab;
@@ -142,7 +141,7 @@ class MenuController extends Controller {
         return Request::method() == 'POST'
             ? $this->result($this->mt->storeTabRanks($id, Request::get('data')))
             : $this->output();
-
+        
     }
     
 }

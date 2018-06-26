@@ -1,11 +1,10 @@
 <?php
-
 namespace App\Models;
 
+use App\Facades\Datatable;
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
-use App\Facades\DatatableFacade as Datatable;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -35,17 +34,44 @@ use ReflectionException;
  * @property-read Collection|\App\Models\Menu[] $menus
  */
 class MenuType extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $fillable = ['name', 'remark', 'enabled'];
- 
+    
     /**
      * 获取指定菜单类型所包含的所有菜单对象
      *
      * @return HasMany
      */
     function menus() { return $this->hasMany('App\Models\Menu'); }
+    
+    /**
+     * 菜单类型列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'MenuType.id', 'dt' => 0],
+            ['db' => 'MenuType.name', 'dt' => 1],
+            ['db' => 'MenuType.remark', 'dt' => 2],
+            ['db' => 'MenuType.created_at', 'dt' => 3],
+            ['db' => 'MenuType.updated_at', 'dt' => 4],
+            [
+                'db'        => 'MenuType.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        
+        return Datatable::simple(
+            $this->getModel(), $columns
+        );
+        
+    }
     
     /**
      * 保存菜单类型
@@ -56,9 +82,9 @@ class MenuType extends Model {
     function store(array $data) {
         
         return $this->create($data) ? true : false;
-
+        
     }
-
+    
     /**
      * 更新菜单类型
      *
@@ -69,7 +95,7 @@ class MenuType extends Model {
     function modify(array $data, $id) {
         
         return $this->find($id)->update($data);
-
+        
     }
     
     /**
@@ -82,7 +108,7 @@ class MenuType extends Model {
     function remove($id = null) {
         
         return $this->del($this, $id);
-
+        
     }
     
     /**
@@ -92,7 +118,7 @@ class MenuType extends Model {
      * @throws Exception
      */
     function purge($id) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $this->delRelated('menu_type_id', 'Menu', $id);
@@ -101,7 +127,7 @@ class MenuType extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
     }
     
     /**
@@ -112,42 +138,20 @@ class MenuType extends Model {
      * @throws ReflectionException
      */
     function mtIds(Model $model): array {
-    
+        
         $icons = [
             'company' => Icon::whereName('fa fa-building')->first()->id,
             'corp'    => Icon::whereName('fa fa-weixin')->first()->id,
             'school'  => Icon::whereName('fa fa-university')->first()->id,
         ];
-        $iconType =lcfirst((new ReflectionClass(get_class($model)))->getShortName());
+        $iconType = lcfirst((new ReflectionClass(get_class($model)))->getShortName());
         $mtType = array_search($iconType, Constant::MENU_TYPES);
         
         return [
             $icons[$iconType],
-            $this->where('name', $mtType)->first()->id
+            $this->where('name', $mtType)->first()->id,
         ];
         
     }
     
-    function datatable() {
-    
-        $columns = [
-            ['db' => 'MenuType.id', 'dt' => 0],
-            ['db' => 'MenuType.name', 'dt' => 1],
-            ['db' => 'MenuType.remark', 'dt' => 2],
-            ['db' => 'MenuType.created_at', 'dt' => 3],
-            ['db' => 'MenuType.updated_at', 'dt' => 4],
-            [
-                'db' => 'MenuType.enabled', 'dt' => 5,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                }
-            ]
-        ];
-    
-        return Datatable::simple(
-            $this->getModel(), $columns
-        );
-        
-    }
-
 }

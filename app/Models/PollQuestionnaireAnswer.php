@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Carbon\Carbon;
@@ -34,9 +33,9 @@ use Illuminate\Support\Facades\Request;
  * @property-read User $user
  */
 class PollQuestionnaireAnswer extends Model {
-
+    
     protected $table = 'poll_questionnaire_answers';
-
+    
     protected $fillable = ['user_id', 'pqs_id', 'pq_id', 'answer', 'created_at', 'updated_at'];
     
     /**
@@ -65,7 +64,7 @@ class PollQuestionnaireAnswer extends Model {
     function pqSubject() {
         
         return $this->belongsTo('App\Models\PollQuestionnaireSubject', 'pqs_id');
-    
+        
     }
     
     /**
@@ -76,7 +75,7 @@ class PollQuestionnaireAnswer extends Model {
      */
     function store(array $data) {
         
-        return $this->create($data) ? true: false;
+        return $this->create($data) ? true : false;
         
     }
     

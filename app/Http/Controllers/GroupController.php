@@ -38,7 +38,7 @@ class GroupController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->group->datatable()
+                $this->group->index()
             );
         }
         

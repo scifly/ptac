@@ -2,7 +2,6 @@
 namespace App\Models;
 
 use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -28,8 +27,6 @@ use Illuminate\Support\Facades\DB;
  * @mixin Eloquent
  */
 class ActionGroup extends Model {
-    
-    use ModelTrait;
     
     protected $table = 'actions_groups';
     

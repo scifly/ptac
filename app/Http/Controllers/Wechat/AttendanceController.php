@@ -1,12 +1,12 @@
 <?php
 namespace App\Http\Controllers\Wechat;
 
-use Throwable;
-use Illuminate\View\View;
-use Illuminate\Http\JsonResponse;
-use App\Models\StudentAttendance;
 use App\Http\Controllers\Controller;
+use App\Models\StudentAttendance;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\JsonResponse;
+use Illuminate\View\View;
+use Throwable;
 
 /**
  * 微信考勤

@@ -1,16 +1,16 @@
 <?php
 namespace App\Models;
 
+use App\Facades\Datatable;
+use App\Helpers\Snippet;
+use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Carbon\Carbon;
-use App\Helpers\Snippet;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
-use App\Facades\DatatableFacade as Datatable;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\ProcedureLog 审批流程日志
@@ -51,9 +51,6 @@ class ProcedureLog extends Model {
     
     // todo: needs to be refactored
     const DT_PEND = '<span class="badge bg-orange">%s</span>';
-    
-    protected $table = 'procedure_logs';
-    
     const JOINS = [
         [
             'table'      => 'procedures',
@@ -72,7 +69,7 @@ class ProcedureLog extends Model {
             ],
         ],
     ];
-    
+    protected $table = 'procedure_logs';
     protected $fillable = [
         'initiator_user_id',
         'procedure_id',
@@ -136,6 +133,54 @@ class ProcedureLog extends Model {
     }
     
     /**
+     * 审批流程日志列表
+     *
+     * @param $where
+     * @return array
+     */
+    function index($where) {
+        
+        $columns = [
+            ['db' => 'ProcedureLog.first_log_id', 'dt' => 0],
+            [
+                'db'        => 'ProcedureLog.initiator_user_id', 'dt' => 1,
+                'formatter' => function ($d) {
+                    return User::find($d)->realname;
+                },
+            ],
+            ['db' => 'Procedures.name as procedure_name', 'dt' => 2],
+            ['db' => 'ProcedureStep.name procedure_step_name', 'dt' => 3],
+            ['db' => 'ProcedureLog.initiator_msg', 'dt' => 4],
+            ['db' => 'ProcedureLog.updated_at', 'dt' => 5],
+            [
+                'db'        => 'ProcedureLog.step_status', 'dt' => 6,
+                'formatter' => function ($d, $row) {
+                    switch ($d) {
+                        case 0:
+                            $status = Snippet::status(true);
+                            break;
+                        case 1:
+                            $status = Snippet::status(false);
+                            break;
+                        case 2:
+                            $status = sprintf(self::DT_PEND, '待定');
+                            break;
+                        default:
+                            $status = Snippet::status(false);
+                            break;
+                    }
+                    $id = $row['first_log_id'];
+                    $showLink = sprintf(Snippet::DT_LINK_SHOW, $id);
+                    
+                    return $status . $showLink;
+                },
+            ],
+        ];
+        
+        return Datatable::simple($this->getModel(), $columns, self::JOINS, $where);
+    }
+    
+    /**
      * 保存审批流程日志
      *
      * @param array $data
@@ -192,54 +237,6 @@ class ProcedureLog extends Model {
             throw $e;
         }
         
-    }
-    
-    /**
-     * 审批流程日志列表
-     *
-     * @param $where
-     * @return array
-     */
-    function datatable($where) {
-        
-        $columns = [
-            ['db' => 'ProcedureLog.first_log_id', 'dt' => 0],
-            [
-                'db'        => 'ProcedureLog.initiator_user_id', 'dt' => 1,
-                'formatter' => function ($d) {
-                    return User::find($d)->realname;
-                },
-            ],
-            ['db' => 'Procedures.name as procedure_name', 'dt' => 2],
-            ['db' => 'ProcedureStep.name procedure_step_name', 'dt' => 3],
-            ['db' => 'ProcedureLog.initiator_msg', 'dt' => 4],
-            ['db' => 'ProcedureLog.updated_at', 'dt' => 5],
-            [
-                'db'        => 'ProcedureLog.step_status', 'dt' => 6,
-                'formatter' => function ($d, $row) {
-                    switch ($d) {
-                        case 0:
-                            $status = Snippet::status(true);
-                            break;
-                        case 1:
-                            $status = Snippet::status(false);
-                            break;
-                        case 2:
-                            $status = sprintf(self::DT_PEND, '待定');
-                            break;
-                        default:
-                            $status = Snippet::status(false);
-                            break;
-                    }
-                    $id = $row['first_log_id'];
-                    $showLink = sprintf(Snippet::DT_LINK_SHOW, $id);
-                    
-                    return $status . $showLink;
-                },
-            ],
-        ];
-        
-        return Datatable::simple($this->getModel(), $columns, self::JOINS, $where);
     }
     
 }

@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-
 use App\Http\Requests\WapSiteRequest;
 use App\Models\WapSite;
 use Exception;
@@ -49,11 +48,11 @@ class WapSiteController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-    
+        
         if (Request::method() == 'POST') {
             return $this->ws->upload();
         }
-    
+        
         return $this->output([
             'ws' => WapSite::find($id),
         ]);

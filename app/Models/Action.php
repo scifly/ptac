@@ -54,18 +54,16 @@ class Action extends Model {
     
     use ModelTrait;
     
+    const ACTIONS_WITHOUT_VIEW_AND_JS = [
+        'destroy', 'store', 'update',
+        'sort', 'move', 'rankTabs', 'sanction',
+    ];
     protected $fillable = [
         'name', 'method', 'remark',
         'controller', 'view', 'route',
         'js', 'action_type_ids', 'enabled',
     ];
-    
     protected $routes;
-    
-    const ACTIONS_WITHOUT_VIEW_AND_JS = [
-        'destroy', 'store', 'update',
-        'sort', 'move', 'rankTabs', 'sanction',
-    ];
     
     /**
      * 返回当前action包含的卡片
@@ -112,19 +110,6 @@ class Action extends Model {
     function modify(array $data, $id) {
         
         return $this->find($id)->update($data);
-        
-    }
-    
-    /**
-     * 删除功能
-     *
-     * @param null $id
-     * @return bool
-     * @throws Exception
-     */
-    function remove($id = null) {
-        
-        return $this->del($this, $id);
         
     }
     
@@ -237,6 +222,27 @@ class Action extends Model {
     }
     
     /**
+     * 根据ActionType IDs返回Http action名称
+     *
+     * @param $action_type_ids
+     * @return string
+     */
+    private function actionTypes($action_type_ids) {
+        
+        $actionTypes = [];
+        $actionTypeIds = explode(',', $action_type_ids);
+        foreach ($actionTypeIds as $actionTypeId) {
+            $actionType = ActionType::whereId($actionTypeId)->where('enabled', 1)->first();
+            if ($actionType) {
+                $actionTypes[] = $actionType->name;
+            }
+        }
+        
+        return implode(', ', $actionTypes);
+        
+    }
+    
+    /**
      * 扫描所有控制器中的方法
      *
      * @return bool
@@ -340,52 +346,6 @@ class Action extends Model {
     }
     
     /**
-     * 获取网站根所处的路径
-     *
-     * @return bool|string
-     */
-    function siteRoot() {
-        
-        return substr(__DIR__, 0, stripos(__DIR__, 'app/Models'));
-        
-    }
-    
-    /**
-     * 返回控制器的完整名字空间路径
-     *
-     * @param $controllers
-     */
-    function controllerNamespaces(&$controllers) {
-        
-        $siteRoot = str_replace('/', '\\', $this->siteRoot());
-        for ($i = 0; $i < sizeof($controllers); $i++) {
-            $controllers[$i] = str_replace('/', '\\', $controllers[$i]);
-            $controllers[$i] = str_replace($siteRoot, '', $controllers[$i]);
-            $controllers[$i] = str_replace('.php', '', $controllers[$i]);
-        }
-        
-    }
-    
-    /**
-     * 返回去除名字空间路径的控制器名称数组
-     *
-     * @param $controllers
-     * @return array
-     */
-    function controllerNames($controllers) {
-        
-        $controllerNames = [];
-        foreach ($controllers as $controller) {
-            $paths = explode('\\', $controller);
-            $controllerNames[] = $paths[sizeof($paths) - 1];
-        }
-        
-        return $controllerNames;
-        
-    }
-    
-    /** Helper functions -------------------------------------------------------------------------------------------- */
-    /**
      * 返回所有控制器的完整路径
      *
      * @param $rootDir
@@ -415,6 +375,66 @@ class Action extends Model {
         }
         
         return $allData;
+        
+    }
+    
+    /**
+     * 获取网站根所处的路径
+     *
+     * @return bool|string
+     */
+    function siteRoot() {
+        
+        return substr(__DIR__, 0, stripos(__DIR__, 'app/Models'));
+        
+    }
+    
+    /**
+     * 返回控制器的完整名字空间路径
+     *
+     * @param $controllers
+     */
+    function controllerNamespaces(&$controllers) {
+        
+        $siteRoot = str_replace('/', '\\', $this->siteRoot());
+        for ($i = 0; $i < sizeof($controllers); $i++) {
+            $controllers[$i] = str_replace('/', '\\', $controllers[$i]);
+            $controllers[$i] = str_replace($siteRoot, '', $controllers[$i]);
+            $controllers[$i] = str_replace('.php', '', $controllers[$i]);
+        }
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+
+    /**
+     * 返回去除名字空间路径的控制器名称数组
+     *
+     * @param $controllers
+     * @return array
+     */
+    function controllerNames($controllers) {
+        
+        $controllerNames = [];
+        foreach ($controllers as $controller) {
+            $paths = explode('\\', $controller);
+            $controllerNames[] = $paths[sizeof($paths) - 1];
+        }
+        
+        return $controllerNames;
+        
+    }
+    
+    /**
+     * 删除功能
+     *
+     * @param null $id
+     * @return bool
+     * @throws Exception
+     */
+    function remove($id = null) {
+        
+        return $this->del($this, $id);
         
     }
     
@@ -643,27 +663,6 @@ class Action extends Model {
         }
         
         return null;
-        
-    }
-    
-    /**
-     * 根据ActionType IDs返回Http action名称
-     *
-     * @param $action_type_ids
-     * @return string
-     */
-    private function actionTypes($action_type_ids) {
-        
-        $actionTypes = [];
-        $actionTypeIds = explode(',', $action_type_ids);
-        foreach ($actionTypeIds as $actionTypeId) {
-            $actionType = ActionType::whereId($actionTypeId)->where('enabled', 1)->first();
-            if ($actionType) {
-                $actionTypes[] = $actionType->name;
-            }
-        }
-        
-        return implode(', ', $actionTypes);
         
     }
     

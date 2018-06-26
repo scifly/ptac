@@ -1,19 +1,18 @@
 <?php
-
 namespace App\Models;
 
-use Exception;
-use Carbon\Carbon;
-use App\Helpers\Snippet;
+use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Model;
+use App\Helpers\Snippet;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use App\Facades\DatatableFacade as Datatable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\ConferenceQueue 会议队列
@@ -54,39 +53,113 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static Builder|ConferenceQueue whereStatus($value)
  */
 class ConferenceQueue extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $table = 'conference_queues';
-
+    
     protected $fillable = [
         'name', 'remark', 'start', 'end',
         'user_id', 'educator_ids', 'attended_educator_ids',
         'conference_room_id', 'attendance_qrcode_url',
-        'event_id', 'status'
+        'event_id', 'status',
     ];
-
+    
     /**
      * 返回举行指定会议的会议室对象
      *
      * @return BelongsTo
      */
     function conferenceRoom() { return $this->belongsTo('App\Models\ConferenceRoom'); }
-
+    
     /**
      * 获取参与指定会议的所有教职员工对象
      *
      * @return HasMany
      */
     function conferenceParticipants() { return $this->hasMany('App\Models\ConferenceParticipant'); }
-
+    
     /**
      * 获取会议发起者的用户对象
      *
      * @return BelongsTo
      */
     function user() { return $this->belongsTo('App\Models\User'); }
-
+    
+    /**
+     * 会议列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'ConferenceQueue.id', 'dt' => 0],
+            ['db' => 'ConferenceQueue.name', 'dt' => 1],
+            ['db' => 'User.realname', 'dt' => 2],
+            ['db' => 'ConferenceRoom.name as conferenceroomname', 'dt' => 3],
+            ['db' => 'ConferenceQueue.start', 'dt' => 4],
+            ['db' => 'ConferenceQueue.end', 'dt' => 5],
+            ['db' => 'ConferenceQueue.remark', 'dt' => 6],
+            [
+                'db'        => 'ConferenceQueue.status', 'dt' => 7,
+                'formatter' => function ($d, $row) {
+                    $user = Auth::user();
+                    $id = $row['id'];
+                    $statusHtml = '<i class="fa fa-circle text-%s" title="%s"></i>';
+                    $status = '';
+                    switch ($d) {
+                        case 0:
+                            $status = sprintf($statusHtml, 'green', '进行中');
+                            break;
+                        case 1:
+                            $status = sprintf($statusHtml, 'red', '已结束');
+                            break;
+                        case 2:
+                            $status = sprintf($statusHtml, 'gray', '已取消');
+                            break;
+                        default:
+                            break;
+                    }
+                    $showLink = sprintf(Snippet::DT_LINK_SHOW, 'show_' . $id);
+                    $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
+                    $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
+                    
+                    return
+                        $status .
+                        ($user->can('act', self::uris()['show']) ? $showLink : '') .
+                        ($user->can('act', self::uris()['edit']) ? $editLink : '') .
+                        ($user->can('act', self::uris()['destroy']) ? $delLink : '');
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table'      => 'conference_rooms',
+                'alias'      => 'ConferenceRoom',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'ConferenceRoom.id = ConferenceQueue.conference_room_id',
+                ],
+            ],
+            [
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'User.id = ConferenceQueue.user_id',
+                ],
+            ],
+        ];
+        $condition = 'ConferenceRoom.school_id = ' . $this->schoolId();
+        if (!in_array(Auth::user()->group->name, ['运营', '企业', '学校'])) {
+            $condition .= ' AND ConferenceQueue.user_id = ' . Auth::id();
+        }
+        
+        return Datatable::simple($this->getModel(), $columns, $joins, $condition);
+        
+    }
+    
     /**
      * 保存会议
      *
@@ -94,9 +167,9 @@ class ConferenceQueue extends Model {
      * @return bool
      */
     function store(array $data) {
-
+        
         return $this->create($data) ? true : false;
-
+        
     }
     
     /**
@@ -108,9 +181,9 @@ class ConferenceQueue extends Model {
      * @throws Exception
      */
     function modify(array $data, $id) {
-
+        
         return $this->find($id)->update($data);
-
+        
     }
     
     /**
@@ -121,9 +194,9 @@ class ConferenceQueue extends Model {
      * @throws Exception
      */
     function remove($id = null) {
-
+        
         return $this->del($this, $id);
-
+        
     }
     
     /**
@@ -135,7 +208,7 @@ class ConferenceQueue extends Model {
     function purge($id) {
         
         try {
-            DB::transaction(function() use ($id) {
+            DB::transaction(function () use ($id) {
                 ConferenceParticipant::whereConferenceQueueId($id)->delete();
                 $this->find($id)->delete();
             });
@@ -170,77 +243,4 @@ class ConferenceQueue extends Model {
         
     }
     
-    /**
-     * 会议列表
-     *
-     * @return array
-     */
-    function datatable() {
-
-        $columns = [
-            ['db' => 'ConferenceQueue.id', 'dt' => 0],
-            ['db' => 'ConferenceQueue.name', 'dt' => 1],
-            ['db' => 'User.realname', 'dt' => 2],
-            ['db' => 'ConferenceRoom.name as conferenceroomname', 'dt' => 3],
-            ['db' => 'ConferenceQueue.start', 'dt' => 4],
-            ['db' => 'ConferenceQueue.end', 'dt' => 5],
-            ['db' => 'ConferenceQueue.remark', 'dt' => 6],
-            [
-                'db' => 'ConferenceQueue.status', 'dt' => 7,
-                'formatter' => function ($d, $row) {
-                    $user = Auth::user();
-                    $id = $row['id'];
-                    $statusHtml = '<i class="fa fa-circle text-%s" title="%s"></i>';
-                    $status = '';
-                    switch ($d) {
-                        case 0:
-                            $status = sprintf($statusHtml, 'green', '进行中');
-                            break;
-                        case 1:
-                            $status = sprintf($statusHtml, 'red', '已结束');
-                            break;
-                        case 2:
-                            $status = sprintf($statusHtml, 'gray', '已取消');
-                            break;
-                        default: break;
-                    }
-                    $showLink = sprintf(Snippet::DT_LINK_SHOW, 'show_' . $id);
-                    $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
-                    $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
-
-                    return
-                        $status .
-                        ($user->can('act', self::uris()['show']) ? $showLink : '') .
-                        ($user->can('act', self::uris()['edit']) ? $editLink : '') .
-                        ($user->can('act', self::uris()['destroy']) ? $delLink : '');
-                },
-            ],
-        ];
-        $joins = [
-            [
-                'table' => 'conference_rooms',
-                'alias' => 'ConferenceRoom',
-                'type' => 'INNER',
-                'conditions' => [
-                    'ConferenceRoom.id = ConferenceQueue.conference_room_id',
-                ],
-            ],
-            [
-                'table' => 'users',
-                'alias' => 'User',
-                'type' => 'INNER',
-                'conditions' => [
-                    'User.id = ConferenceQueue.user_id',
-                ],
-            ],
-        ];
-        $condition = 'ConferenceRoom.school_id = ' . $this->schoolId();
-        if (!in_array(Auth::user()->group->name, ['运营', '企业', '学校'])) {
-            $condition .= ' AND ConferenceQueue.user_id = ' . Auth::id();
-        }
-
-        return Datatable::simple($this->getModel(), $columns, $joins, $condition);
-
-    }
-
 }

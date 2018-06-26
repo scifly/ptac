@@ -1,24 +1,24 @@
 <?php
 namespace App\Models;
 
-use Eloquent;
-use Throwable;
-use Exception;
-use Carbon\Carbon;
-use App\Helpers\Snippet;
+use App\Facades\Datatable;
 use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
 use App\Helpers\HttpStatusCode;
-use Illuminate\Support\Facades\DB;
+use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use App\Http\Requests\GradeRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
+use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use App\Facades\DatatableFacade as Datatable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * App\Models\Grade 年级
@@ -111,6 +111,78 @@ class Grade extends Model {
     }
     
     /**
+     * 年级列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'Grade.id', 'dt' => 0],
+            [
+                'db'        => 'Grade.name', 'dt' => 1,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-object-group', '') . $d;
+                },
+            ],
+            [
+                'db'        => 'Grade.educator_ids', 'dt' => 2,
+                'formatter' => function ($d) {
+                    if (empty($d)) {
+                        return '';
+                    }
+                    $educatorIds = explode(',', $d);
+                    $educators = [];
+                    foreach ($educatorIds as $id) {
+                        $educator = Educator::find($id);
+                        if (!empty($educator) && $educator->user) {
+                            $educators[] = $educator->user->realname;
+                        }
+                    }
+                    
+                    return implode(', ', $educators);
+                },
+            ],
+            ['db' => 'Grade.created_at', 'dt' => 3],
+            ['db' => 'Grade.updated_at', 'dt' => 4],
+            [
+                'db'        => 'Grade.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return $this->syncStatus($d, $row, false);
+                },
+            ],
+            ['db' => 'Department.synced as synced', 'dt' => 6],
+        ];
+        $joins = [
+            [
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'School.id = Grade.school_id',
+                ],
+            ],
+            [
+                'table'      => 'departments',
+                'alias'      => 'Department',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Department.id = Grade.department_id',
+                ],
+            ],
+        ];
+        $condition = 'School.id = ' . $this->schoolId();
+        if (!in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
+            $condition .= ' AND Grade.id IN (' . implode(',', $this->gradeIds()) . ')';
+        }
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
+        
+    }
+    
+    /**
      * 保存年级
      *
      * @param GradeRequest $request
@@ -182,7 +254,7 @@ class Grade extends Model {
      * @throws Exception
      */
     function purge($id) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $grade = $this->find($id);
@@ -197,6 +269,7 @@ class Grade extends Model {
         } catch (Exception $e) {
             throw $e;
         }
+        
         return true;
         
     }
@@ -267,78 +340,6 @@ class Grade extends Model {
         $departmentIds = $this->whereIn('id', $ids)->pluck('department_id')->toArray();
         
         return Department::whereIn('id', $departmentIds)->get();
-        
-    }
-    
-    /**
-     * 年级列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'Grade.id', 'dt' => 0],
-            [
-                'db'        => 'Grade.name', 'dt' => 1,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-object-group', '') . $d;
-                },
-            ],
-            [
-                'db'        => 'Grade.educator_ids', 'dt' => 2,
-                'formatter' => function ($d) {
-                    if (empty($d)) {
-                        return '';
-                    }
-                    $educatorIds = explode(',', $d);
-                    $educators = [];
-                    foreach ($educatorIds as $id) {
-                        $educator = Educator::find($id);
-                        if (!empty($educator) && $educator->user) {
-                            $educators[] = $educator->user->realname;
-                        }
-                    }
-                    
-                    return implode(', ', $educators);
-                },
-            ],
-            ['db' => 'Grade.created_at', 'dt' => 3],
-            ['db' => 'Grade.updated_at', 'dt' => 4],
-            [
-                'db'        => 'Grade.enabled', 'dt' => 5,
-                'formatter' => function ($d, $row) {
-                    return $this->syncStatus($d, $row, false);
-                },
-            ],
-            ['db' => 'Department.synced as synced', 'dt' => 6]
-        ];
-        $joins = [
-            [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
-                'conditions' => [
-                    'School.id = Grade.school_id'
-                ]
-            ],
-            [
-                'table' => 'departments',
-                'alias' => 'Department',
-                'type' => 'INNER',
-                'conditions' => [
-                    'Department.id = Grade.department_id'
-                ]
-            ]
-        ];
-        $condition = 'School.id = ' . $this->schoolId();
-        if (!in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
-            $condition .= ' AND Grade.id IN (' . implode(',', $this->gradeIds()) . ')';
-        }
-        
-        return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
-        );
         
     }
     

@@ -1,17 +1,17 @@
 <?php
 namespace App\Models;
 
+use App\Facades\Datatable;
+use App\Helpers\ModelTrait;
+use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Carbon\Carbon;
-use App\Helpers\ModelTrait;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use App\Facades\DatatableFacade as Datatable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\ExamType 考试类型
@@ -53,6 +53,44 @@ class ExamType extends Model {
      * @return HasMany
      */
     function exams() { return $this->hasMany('App\Models\Exam'); }
+    
+    /**
+     * 考试类型列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'ExamType.id', 'dt' => 0],
+            ['db' => 'ExamType.name', 'dt' => 1],
+            ['db' => 'ExamType.remark', 'dt' => 2],
+            ['db' => 'ExamType.created_at', 'dt' => 3],
+            ['db' => 'ExamType.updated_at', 'dt' => 4],
+            [
+                'db'        => 'ExamType.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'School.id = ExamType.school_id',
+                ],
+            ],
+        ];
+        $condition = 'ExamType.school_id = ' . $this->schoolId();
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
+        
+    }
     
     /**
      * 保存考试类型
@@ -111,44 +149,6 @@ class ExamType extends Model {
         }
         
         return true;
-        
-    }
-    
-    /**
-     * 考试类型列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'ExamType.id', 'dt' => 0],
-            ['db' => 'ExamType.name', 'dt' => 1],
-            ['db' => 'ExamType.remark', 'dt' => 2],
-            ['db' => 'ExamType.created_at', 'dt' => 3],
-            ['db' => 'ExamType.updated_at', 'dt' => 4],
-            [
-                'db'        => 'ExamType.enabled', 'dt' => 5,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                },
-            ],
-        ];
-        $joins = [
-            [
-                'table'      => 'schools',
-                'alias'      => 'School',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'School.id = ExamType.school_id',
-                ],
-            ],
-        ];
-        $condition = 'ExamType.school_id = ' . $this->schoolId();
-        
-        return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
-        );
         
     }
     

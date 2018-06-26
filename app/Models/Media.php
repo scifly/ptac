@@ -1,21 +1,20 @@
 <?php
-
 namespace App\Models;
 
-use Eloquent;
-use Exception;
-use Carbon\Carbon;
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
+use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * App\Models\Media 媒体
@@ -43,15 +42,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read WsmArticle $wsmArticle
  */
 class Media extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $table = 'medias';
-
+    
     protected $fillable = [
         'path', 'remark', 'media_type_id', 'enabled',
     ];
-
+    
     /**
      * 返回指定媒体所属的媒体类型对象
      *
@@ -72,7 +71,7 @@ class Media extends Model {
      * @return HasOne
      */
     function wsmArticle() { return $this->hasOne('App\Models\WsmArticle'); }
-
+    
     /**
      * 获取指定媒体所包含的所有菜单对象
      *
@@ -87,16 +86,16 @@ class Media extends Model {
      * @return array|null
      */
     function medias(array $ids) {
-
+        
         $medias = null;
         foreach ($ids as $id) {
             $medias[] = $this->find($id);
         }
-
+        
         return $medias;
-
+        
     }
-
+    
     /**
      * 保存媒体
      *
@@ -104,11 +103,11 @@ class Media extends Model {
      * @return bool
      */
     function store(array $data) {
-
+        
         return $this->create($data) ? true : false;
-
+        
     }
-
+    
     /**
      * 更新媒体
      *
@@ -117,11 +116,11 @@ class Media extends Model {
      * @return bool
      */
     function modify(array $data, $id = null) {
-
+        
         return $id
             ? $this->find($id)->update($data)
             : $this->batch($this);
-
+        
     }
     
     /**
@@ -132,9 +131,9 @@ class Media extends Model {
      * @throws Exception
      */
     function remove($id) {
-
+        
         return $this->del($this, $id);
-
+        
     }
     
     /**
@@ -165,7 +164,7 @@ class Media extends Model {
      * @return array|bool
      */
     function upload($file, $remark = '') {
-
+        
         if ($file->isValid()) {
             # 文件名
             $filename = uniqid() . '-' . $file->getClientOriginalName();
@@ -179,10 +178,10 @@ class Media extends Model {
             // $filename = uniqid() . '.' . $ext;
             // 使用新建的uploads本地存储空间（目录）
             if (
-                Storage::disk('uploads')->put(
-                    date('Y/m/d/', time()) . $filename,
-                    file_get_contents($realPath)
-                )
+            Storage::disk('uploads')->put(
+                date('Y/m/d/', time()) . $filename,
+                file_get_contents($realPath)
+            )
             ) {
                 $filePath = $this->uploadedFilePath($filename);
                 $media = $this->create([
@@ -191,7 +190,7 @@ class Media extends Model {
                     'media_type_id' => $type,
                     'enabled'       => Constant::ENABLED,
                 ]);
-
+                
                 return [
                     'id'       => $media->id,
                     'path'     => $filePath,
@@ -200,25 +199,31 @@ class Media extends Model {
                 ];
             }
         }
-
+        
         return null;
-
+        
     }
-
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
      * @param $type
      * @return int
      */
     private function mediaTypeId($type) {
-
+        
         switch (explode('/', $type)[0]) {
-            case 'image': return 1;
-            case 'audio': return 2;
-            case 'video': return 3;
-            case 'application': return 4;
-            default: return 5;
+            case 'image':
+                return 1;
+            case 'audio':
+                return 2;
+            case 'video':
+                return 3;
+            case 'application':
+                return 4;
+            default:
+                return 5;
         }
-
+        
     }
-
+    
 }

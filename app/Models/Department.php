@@ -1,26 +1,26 @@
 <?php
 namespace App\Models;
 
+use App\Helpers\Constant;
+use App\Helpers\HttpStatusCode;
+use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
+use App\Jobs\SyncDepartment;
+use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Throwable;
-use Carbon\Carbon;
-use App\Helpers\Snippet;
-use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
-use App\Jobs\SyncDepartment;
-use App\Helpers\HttpStatusCode;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * App\Models\Department 部门
@@ -125,34 +125,6 @@ class Department extends Model {
     }
     
     /**
-     * 直接子部门
-     *
-     * @return HasMany
-     */
-    function children() {
-        
-        return $this->hasMany('App\Models\Department', 'parent_id', 'id');
-        
-    }
-    
-    /**
-     * 创建部门
-     *
-     * @param array $data
-     * @return Department|bool|Model
-     */
-    function store(array $data) {
-        
-        $department = $this->create($data);
-        if ($department && $this->needSync($department)) {
-            $this->sync($department->id, 'create');
-        }
-        
-        return $department;
-        
-    }
-    
-    /**
      * 创建并返回指定（运营/企业/学校/年级/班级）对应的部门对象
      *
      * @param Model $model
@@ -188,21 +160,108 @@ class Department extends Model {
     }
     
     /**
-     * 更新部门
+     * 创建部门
      *
      * @param array $data
-     * @param $id
-     * @return bool|Collection|Model|null|static|static[]
+     * @return Department|bool|Model
      */
-    function modify(array $data, $id) {
+    function store(array $data) {
         
-        $department = self::find($id);
-        $updated = $department->update($data);
-        if ($this->needSync($department) && $updated) {
-            $this->sync($id, 'update');
+        $department = $this->create($data);
+        if ($department && $this->needSync($department)) {
+            $this->sync($department->id, 'create');
         }
         
-        return $updated ?? $this->find($id);
+        return $department;
+        
+    }
+    
+    /**
+     * 判断指定部门是否需要同步到企业微信
+     *
+     * @param Department $department
+     * @return bool
+     */
+    private function needSync(Department $department) {
+        
+        return !in_array(
+            $department->departmentType->name, ['根', '运营', '企业']
+        );
+        
+    }
+    
+    /**
+     * 同步企业微信部门
+     *
+     * @param $id
+     * @param $action
+     * @return bool
+     */
+    private function sync($id, $action) {
+        
+        $department = $this->find($id);
+        $data = $action == 'delete'
+            ? ['id' => $id, 'corp_id' => $this->corpId($id)]
+            : [
+                'id'       => $department->id,
+                'name'     => $department->name,
+                'parentid' => $department->departmentType->name == '学校' ? 1 : $department->parent_id,
+                'order'    => $department->order,
+                'corp_id'  => $this->corpId($id),
+            ];
+        SyncDepartment::dispatch($data, Auth::id(), $action);
+        
+        return true;
+        
+    }
+    
+    /**
+     * 返回指定部门所属的企业id
+     *
+     * @param $id
+     * @return int|mixed
+     */
+    function corpId($id) {
+        
+        $department = $this->find($id);
+        switch ($department->departmentType->name) {
+            case '运营':
+                return null;
+            case '企业':
+                return Corp::whereDepartmentId($id)->first()->id;
+            default:
+                $parent = $this->find($id)->parent;
+                while ($parent->departmentType->name != '企业') {
+                    $id = $parent->id;
+                    
+                    return $this->corpId($id);
+                }
+                
+                return Corp::whereDepartmentId($parent->id)->first()->id;
+        }
+        
+    }
+    
+    /**
+     * 更新年级/班级主任与部门的绑定关系
+     *
+     * @param $dtType
+     * @param $model
+     * @param $department
+     * @throws Throwable
+     */
+    private function updateDu($dtType, $model, $department): void {
+        
+        if (in_array($dtType, ['grade', 'squad'])) {
+            $users = User::with('educators')
+                ->whereIn('educator.id', explode(',', $model->{'educator_ids'}))
+                ->get();
+            if (!empty($users)) {
+                (new DepartmentUser())->storeByDepartmentId(
+                    $department->id, $users->pluck('user.id')
+                );
+            }
+        }
         
     }
     
@@ -240,6 +299,25 @@ class Department extends Model {
         } catch (Exception $e) {
             throw $e;
         }
+        
+    }
+    
+    /**
+     * 更新部门
+     *
+     * @param array $data
+     * @param $id
+     * @return bool|Collection|Model|null|static|static[]
+     */
+    function modify(array $data, $id) {
+        
+        $department = self::find($id);
+        $updated = $department->update($data);
+        if ($this->needSync($department) && $updated) {
+            $this->sync($id, 'update');
+        }
+        
+        return $updated ?? $this->find($id);
         
     }
     
@@ -292,6 +370,50 @@ class Department extends Model {
         }
         
         return true;
+        
+    }
+    
+    /**
+     * 返回指定部门所有子部门的id
+     *
+     * @param $id
+     * @return array
+     */
+    function subDepartmentIds($id) {
+        
+        static $subDepartmentIds;
+        $childrenIds = Department::whereParentId($id)->pluck('id')->toArray();
+        if ($childrenIds) {
+            foreach ($childrenIds as $childId) {
+                $subDepartmentIds[] = $childId;
+                $this->subDepartmentIds($childId);
+            }
+        }
+        
+        return $subDepartmentIds ?? [];
+        
+    }
+    
+    /**
+     * 返回指定部门所处的级别
+     *
+     * @param integer $id 部门ID
+     * @param integer $level 部门所处级别
+     * @return int|null
+     */
+    private function level($id, &$level) {
+        
+        $department = $this->find($id);
+        if (!$department) {
+            return null;
+        }
+        $parent = $department->parent;
+        if ($parent) {
+            $level += 1;
+            $this->level($parent->id, $level);
+        }
+        
+        return $level;
         
     }
     
@@ -351,166 +473,8 @@ class Department extends Model {
         
     }
     
-    /**
-     * 返回所有叶节点部门
-     *
-     * @return array
-     */
-    function leaves() {
-        
-        $leaves = [];
-        $leafPath = [];
-        $departments = $this->nodes();
-        /** @var Department $department */
-        foreach ($departments as $department) {
-            if (empty($department->children()->count())) {
-                $path = self::leafPath($department->id, $leafPath);
-                $leaves[$department->id] = $path;
-                $leafPath = [];
-            }
-        }
-        
-        return $leaves;
-        
-    }
-    
-    /**
-     * 获取联系人树
-     *
-     * @param bool $contact - 联系人树是否包含部门中的联系人
-     * @return array|\Illuminate\Http\JsonResponse
-     */
-    function contacts($contact = true) {
-        
-        $user = Auth::user();
-        $contacts = [];
-        if (in_array($user->group->name, Constant::SUPER_ROLES)) {
-            $departmentId = School::find($this->schoolId())->department_id;
-            $visibleNodes = $this->tree($departmentId);
-        } else {
-            $nodes = $this->tree();
-            # 当前用户可访问的所有部门id
-            $allowedDepartmentIds = $this->departmentIds($user->id);
-            # 当前用户可访问部门的所有上级部门id
-            $allowedParentIds = [];
-            foreach ($allowedDepartmentIds as $id) {
-                $allowedParentIds[$id] = $this->parentIds($id);
-            }
-            # 对当前用户可见的所有部门节点
-            $visibleNodes = [];
-            foreach ($nodes as $node) {
-                if (!$node['selectable']) {
-                    foreach ($allowedParentIds as $departmentId => $parentIds) {
-                        if (in_array($node['id'], $parentIds)) {
-                            $visibleNodes[] = $node;
-                            break;
-                        }
-                    }
-                } else {
-                    $visibleNodes[] = $node;
-                }
-            }
-        }
-        # 获取可见部门下的所有联系人
-        if ($contact) {
-            foreach ($visibleNodes as $node) {
-                if ($node['selectable']) {
-                    # 读取当前部门下的所有用户
-                    $users = $this->find($node['id'])->users;
-                    foreach ($users as $u) {
-                        $contacts[] = [
-                            'id'         => 'user-' . $node['id'] . '-' . $u->id,
-                            'parent'     => $node['id'],
-                            'text'       => $u->realname,
-                            'selectable' => 1,
-                            'type'       => 'user',
-                        ];
-                    }
-                }
-            }
-        }
-        return response()->json(
-            array_merge($visibleNodes, $contacts)
-        );
-        
-    }
-    
-    /**
-     * 获取指定部门（含所有子部门）的所有用户
-     *
-     * @param $ids
-     * @return array
-     */
-    function partyUsers($ids) {
-        
-        $departmentIds = [];
-        foreach ($ids as $id) {
-            $departmentIds = array_merge(
-                $departmentIds, $this->subDepartmentIds($id)
-            );
-        }
-        $ids = array_unique($departmentIds);
-        $userIds = [];
-        foreach ($ids as $id) {
-            $userIds = array_merge(
-                $userIds, $this->find($id)->users->pluck('id')->toArray()
-            );
-        }
-        $userIds = array_unique($userIds);
-        
-        return User::whereIn('id', $userIds)->get();
-        
-    }
-    
-    /**
-     * 返回指定部门所有子部门的id
-     *
-     * @param $id
-     * @return array
-     */
-    function subDepartmentIds($id) {
-        
-        static $subDepartmentIds;
-        $childrenIds = Department::whereParentId($id)->pluck('id')->toArray();
-        if ($childrenIds) {
-            foreach ($childrenIds as $childId) {
-                $subDepartmentIds[] = $childId;
-                $this->subDepartmentIds($childId);
-            }
-        }
-        
-        return $subDepartmentIds ?? [];
-        
-    }
-    
-    /**
-     * 返回指定部门所属的企业id
-     *
-     * @param $id
-     * @return int|mixed
-     */
-    function corpId($id) {
-        
-        $department = $this->find($id);
-        switch ($department->departmentType->name) {
-            case '运营':
-                return null;
-            case '企业':
-                return Corp::whereDepartmentId($id)->first()->id;
-            default:
-                $parent = $this->find($id)->parent;
-                while ($parent->departmentType->name != '企业') {
-                    $id = $parent->id;
-                    
-                    return $this->corpId($id);
-                }
-                
-                return Corp::whereDepartmentId($parent->id)->first()->id;
-        }
-        
-    }
-    
     /** Helper functions -------------------------------------------------------------------------------------------- */
+
     /**
      * 获取用于显示jstree的部门数据
      *
@@ -590,73 +554,6 @@ class Department extends Model {
     }
     
     /**
-     * 获取指定部门的完整路径
-     *
-     * @param $id
-     * @param array $path
-     * @return string
-     */
-    private function leafPath($id, array &$path) {
-        
-        $department = self::find($id);
-        if (!isset($department)) {
-            return '';
-        }
-        $path[] = $department->name;
-        if (isset($department->parent_id)) {
-            self::leafPath($department->parent_id, $path);
-        }
-        krsort($path);
-        
-        return implode(' . ', $path);
-        
-    }
-    
-    /**
-     * 更新年级/班级主任与部门的绑定关系
-     *
-     * @param $dtType
-     * @param $model
-     * @param $department
-     * @throws Throwable
-     */
-    private function updateDu($dtType, $model, $department): void {
-        
-        if (in_array($dtType, ['grade', 'squad'])) {
-            $users = User::with('educators')
-                ->whereIn('educator.id', explode(',', $model->{'educator_ids'}))
-                ->get();
-            if (!empty($users)) {
-                (new DepartmentUser())->storeByDepartmentId(
-                    $department->id, $users->pluck('user.id')
-                );
-            }
-        }
-        
-    }
-    
-    /**
-     * 返回指定部门所处的级别
-     *
-     * @param integer $id 部门ID
-     * @param integer $level 部门所处级别
-     * @return int|null
-     */
-    private function level($id, &$level) {
-        
-        $department = $this->find($id);
-        if (!$department) { return null; }
-        $parent = $department->parent;
-        if ($parent) {
-            $level += 1;
-            $this->level($parent->id, $level);
-        }
-        
-        return $level;
-        
-    }
-    
-    /**
      * 获取当前用户的根部门ID
      *
      * @param bool $subRoot
@@ -693,24 +590,23 @@ class Department extends Model {
     }
     
     /**
-     * 返回指定部门的所有上级（校级及以下）部门id
+     * 返回用户所处的顶级部门id
      *
-     * @param $id
-     * @return array
+     * @return int
      */
-    private function parentIds($id) {
+    private function topDeptId() {
         
-        static $ids = [];
-        $d = $this->find($id);
-        $p = $d->parent;
-        while ($p->departmentType->name != '学校') {
-            $ids[] = $p->id;
-            
-            return $this->parentIds($p->id);
+        $ids = Auth::user()->departments->pluck('id')->toArray();
+        $levels = [];
+        foreach ($ids as $id) {
+            $level = 0;
+            $levels[$id] = self::level($id, $level);
         }
-        $ids[] = $p->id;
+        asort($levels);
+        reset($levels);
+        $topLevelId = key($levels);
         
-        return $ids;
+        return self::find($topLevelId)->parent->id;
         
     }
     
@@ -761,20 +657,6 @@ class Department extends Model {
             default:
                 return false;
         }
-        
-    }
-    
-    /**
-     * 判断指定部门是否需要同步到企业微信
-     *
-     * @param Department $department
-     * @return bool
-     */
-    private function needSync(Department $department) {
-        
-        return !in_array(
-            $department->departmentType->name, ['根', '运营', '企业']
-        );
         
     }
     
@@ -839,48 +721,170 @@ class Department extends Model {
     }
     
     /**
-     * 返回用户所处的顶级部门id
+     * 返回所有叶节点部门
      *
-     * @return int
+     * @return array
      */
-    private function topDeptId() {
+    function leaves() {
         
-        $ids = Auth::user()->departments->pluck('id')->toArray();
-        $levels = [];
-        foreach ($ids as $id) {
-            $level = 0;
-            $levels[$id] = self::level($id, $level);
+        $leaves = [];
+        $leafPath = [];
+        $departments = $this->nodes();
+        /** @var Department $department */
+        foreach ($departments as $department) {
+            if (empty($department->children()->count())) {
+                $path = self::leafPath($department->id, $leafPath);
+                $leaves[$department->id] = $path;
+                $leafPath = [];
+            }
         }
-        asort($levels);
-        reset($levels);
-        $topLevelId = key($levels);
         
-        return self::find($topLevelId)->parent->id;
+        return $leaves;
         
     }
     
     /**
-     * 同步企业微信部门
+     * 直接子部门
+     *
+     * @return HasMany
+     */
+    function children() {
+        
+        return $this->hasMany('App\Models\Department', 'parent_id', 'id');
+        
+    }
+    
+    /**
+     * 获取指定部门的完整路径
      *
      * @param $id
-     * @param $action
-     * @return bool
+     * @param array $path
+     * @return string
      */
-    private function sync($id, $action) {
+    private function leafPath($id, array &$path) {
         
-        $department = $this->find($id);
-        $data = $action == 'delete'
-            ? ['id' => $id, 'corp_id' => $this->corpId($id)]
-            : [
-                'id'        => $department->id,
-                'name'      => $department->name,
-                'parentid' => $department->departmentType->name == '学校' ? 1 : $department->parent_id,
-                'order'     => $department->order,
-                'corp_id'   => $this->corpId($id),
-            ];
-        SyncDepartment::dispatch($data, Auth::id(), $action);
+        $department = self::find($id);
+        if (!isset($department)) {
+            return '';
+        }
+        $path[] = $department->name;
+        if (isset($department->parent_id)) {
+            self::leafPath($department->parent_id, $path);
+        }
+        krsort($path);
         
-        return true;
+        return implode(' . ', $path);
+        
+    }
+    
+    /**
+     * 获取联系人树
+     *
+     * @param bool $contact - 联系人树是否包含部门中的联系人
+     * @return array|\Illuminate\Http\JsonResponse
+     */
+    function contacts($contact = true) {
+        
+        $user = Auth::user();
+        $contacts = [];
+        if (in_array($user->group->name, Constant::SUPER_ROLES)) {
+            $departmentId = School::find($this->schoolId())->department_id;
+            $visibleNodes = $this->tree($departmentId);
+        } else {
+            $nodes = $this->tree();
+            # 当前用户可访问的所有部门id
+            $allowedDepartmentIds = $this->departmentIds($user->id);
+            # 当前用户可访问部门的所有上级部门id
+            $allowedParentIds = [];
+            foreach ($allowedDepartmentIds as $id) {
+                $allowedParentIds[$id] = $this->parentIds($id);
+            }
+            # 对当前用户可见的所有部门节点
+            $visibleNodes = [];
+            foreach ($nodes as $node) {
+                if (!$node['selectable']) {
+                    foreach ($allowedParentIds as $departmentId => $parentIds) {
+                        if (in_array($node['id'], $parentIds)) {
+                            $visibleNodes[] = $node;
+                            break;
+                        }
+                    }
+                } else {
+                    $visibleNodes[] = $node;
+                }
+            }
+        }
+        # 获取可见部门下的所有联系人
+        if ($contact) {
+            foreach ($visibleNodes as $node) {
+                if ($node['selectable']) {
+                    # 读取当前部门下的所有用户
+                    $users = $this->find($node['id'])->users;
+                    foreach ($users as $u) {
+                        $contacts[] = [
+                            'id'         => 'user-' . $node['id'] . '-' . $u->id,
+                            'parent'     => $node['id'],
+                            'text'       => $u->realname,
+                            'selectable' => 1,
+                            'type'       => 'user',
+                        ];
+                    }
+                }
+            }
+        }
+        
+        return response()->json(
+            array_merge($visibleNodes, $contacts)
+        );
+        
+    }
+    
+    /**
+     * 返回指定部门的所有上级（校级及以下）部门id
+     *
+     * @param $id
+     * @return array
+     */
+    private function parentIds($id) {
+        
+        static $ids = [];
+        $d = $this->find($id);
+        $p = $d->parent;
+        while ($p->departmentType->name != '学校') {
+            $ids[] = $p->id;
+            
+            return $this->parentIds($p->id);
+        }
+        $ids[] = $p->id;
+        
+        return $ids;
+        
+    }
+    
+    /**
+     * 获取指定部门（含所有子部门）的所有用户
+     *
+     * @param $ids
+     * @return array
+     */
+    function partyUsers($ids) {
+        
+        $departmentIds = [];
+        foreach ($ids as $id) {
+            $departmentIds = array_merge(
+                $departmentIds, $this->subDepartmentIds($id)
+            );
+        }
+        $ids = array_unique($departmentIds);
+        $userIds = [];
+        foreach ($ids as $id) {
+            $userIds = array_merge(
+                $userIds, $this->find($id)->users->pluck('id')->toArray()
+            );
+        }
+        $userIds = array_unique($userIds);
+        
+        return User::whereIn('id', $userIds)->get();
         
     }
     

@@ -1,12 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
-use Exception;
-use Throwable;
-use App\Models\App;
 use App\Http\Requests\AppRequest;
+use App\Models\App;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 微信企业应用
@@ -54,7 +54,7 @@ class AppController extends Controller {
     public function edit($id) {
         
         return $this->output([
-            'app' => $this->app->find($id)
+            'app' => $this->app->find($id),
         ]);
         
     }

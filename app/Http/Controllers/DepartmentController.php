@@ -1,12 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
-use Exception;
-use Throwable;
+use App\Http\Requests\DepartmentRequest;
 use App\Models\Department;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
-use App\Http\Requests\DepartmentRequest;
+use Throwable;
 
 /**
  * 部门

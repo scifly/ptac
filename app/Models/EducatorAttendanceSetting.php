@@ -1,8 +1,7 @@
 <?php
-
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
@@ -43,27 +42,79 @@ use Illuminate\Support\Facades\DB;
 class EducatorAttendanceSetting extends Model {
     
     use ModelTrait;
-
+    
     protected $table = 'educator_attendance_settings';
-
+    
     protected $fillable = [
         'name', 'school_id', 'start',
-        'end', 'inorout', 'enabled'
+        'end', 'inorout', 'enabled',
     ];
-
+    
     /**
      * 获取对应的所有教职员工考勤记录对象
      *
      * @return HasMany
      */
     function educatorAttendances() { return $this->hasMany('App\Models\EducatorAttendance', 'eas_id'); }
-
+    
     /**
      * 返回所属的学校对象
      *
      * @return BelongsTo
      */
     function school() { return $this->belongsTo('App\Models\School'); }
+    
+    /**
+     * 教职员工考勤设置列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'EducatorAttendanceSetting.id', 'dt' => 0],
+            ['db' => 'EducatorAttendanceSetting.name', 'dt' => 1],
+            [
+                'db'        => 'School.name as schoolname ', 'dt' => 2,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-university', '') . $d;
+                },
+            ],
+            ['db' => 'EducatorAttendanceSetting.start', 'dt' => 3],
+            ['db' => 'EducatorAttendanceSetting.end', 'dt' => 4],
+            [
+                'db'        => 'EducatorAttendanceSetting.inorout', 'dt' => 5,
+                'formatter' => function ($d) {
+                    return $d
+                        ? sprintf(Snippet::BADGE_GREEN, '进')
+                        : sprintf(Snippet::BADGE_RED, '出');
+                },
+            ],
+            ['db' => 'EducatorAttendanceSetting.created_at', 'dt' => 6],
+            [
+                'db'        => 'EducatorAttendanceSetting.enabled', 'dt' => 7,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'School.id = EducatorAttendanceSetting.school_id',
+                ],
+            ],
+        ];
+        $condition = 'EducatorAttendanceSetting.school_id = ' . $this->schoolId();
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
+        
+    }
     
     /**
      * 保存教职员工考勤设置
@@ -98,7 +149,7 @@ class EducatorAttendanceSetting extends Model {
      * @throws Exception
      */
     function remove($id = null) {
-
+        
         return $this->del($this, $id);
         
     }
@@ -113,7 +164,7 @@ class EducatorAttendanceSetting extends Model {
     function purge($id) {
         
         try {
-            DB::transaction(function() use ($id) {
+            DB::transaction(function () use ($id) {
                 EducatorAttendance::whereEasId($id)->delete();
                 $this->find($id)->delete();
             });
@@ -125,56 +176,4 @@ class EducatorAttendanceSetting extends Model {
         
     }
     
-    /**
-     * 教职员工考勤设置列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'EducatorAttendanceSetting.id', 'dt' => 0],
-            ['db' => 'EducatorAttendanceSetting.name', 'dt' => 1],
-            [
-                'db' => 'School.name as schoolname ', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-university', '') . $d;
-                }
-            ],
-            ['db' => 'EducatorAttendanceSetting.start', 'dt' => 3],
-            ['db' => 'EducatorAttendanceSetting.end', 'dt' => 4],
-            [
-                'db' => 'EducatorAttendanceSetting.inorout', 'dt' => 5,
-                'formatter' => function ($d) {
-                    return $d
-                        ? sprintf(Snippet::BADGE_GREEN, '进')
-                        : sprintf(Snippet::BADGE_RED, '出');
-                },
-            ],
-            ['db' => 'EducatorAttendanceSetting.created_at', 'dt' => 6],
-            [
-                'db' => 'EducatorAttendanceSetting.enabled', 'dt' => 7,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                },
-            ],
-        ];
-        $joins = [
-            [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
-                'conditions' => [
-                    'School.id = EducatorAttendanceSetting.school_id',
-                ],
-            ],
-        ];
-        $condition = 'EducatorAttendanceSetting.school_id = ' . $this->schoolId();
-        
-        return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
-        );
-
-    }
-
 }

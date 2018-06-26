@@ -1,23 +1,23 @@
 <?php
 namespace App\Models;
 
+use App\Facades\Datatable;
+use App\Helpers\HttpStatusCode;
+use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
+use App\Http\Requests\SquadRequest;
+use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Throwable;
-use Carbon\Carbon;
-use App\Helpers\Snippet;
-use App\Helpers\ModelTrait;
-use App\Helpers\HttpStatusCode;
-use Illuminate\Support\Facades\DB;
-use App\Http\Requests\SquadRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use App\Facades\DatatableFacade as Datatable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * App\Models\Squad 班级
@@ -100,6 +100,84 @@ class Squad extends Model {
     }
     
     /**
+     * 班级列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'Squad.id', 'dt' => 0],
+            [
+                'db'        => 'Squad.name', 'dt' => 1,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-users', '') . $d;
+                },
+            ],
+            [
+                'db'        => 'Grade.name as gradename', 'dt' => 2,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-object-group', '') . $d;
+                },
+            ],
+            [
+                'db'        => 'Squad.educator_ids', 'dt' => 3,
+                'formatter' => function ($d) {
+                    if (empty($d)) {
+                        return '';
+                    }
+                    $educatorIds = explode(',', $d);
+                    $educators = [];
+                    foreach ($educatorIds as $id) {
+                        $educator = Educator::find($id);
+                        if ($educator) {
+                            if ($educator->user) {
+                                $educators[] = $educator->user->realname;
+                            }
+                        }
+                        
+                    }
+                    
+                    return implode(', ', $educators);
+                },
+            ],
+            ['db' => 'Squad.created_at', 'dt' => 4],
+            ['db' => 'Squad.updated_at', 'dt' => 5],
+            [
+                'db'        => 'Squad.enabled', 'dt' => 6,
+                'formatter' => function ($d, $row) {
+                    return $this->syncStatus($d, $row, false);
+                },
+            ],
+            ['db' => 'Department.synced as synced', 'dt' => 7],
+        ];
+        $joins = [
+            [
+                'table'      => 'grades',
+                'alias'      => 'Grade',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Grade.id = Squad.grade_id',
+                ],
+            ],
+            [
+                'table'      => 'departments',
+                'alias'      => 'Department',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Department.id = Squad.department_id',
+                ],
+            ],
+        ];
+        $condition = 'Squad.id IN (' . implode(',', $this->classIds()) . ')';
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
+        
+    }
+    
+    /**
      * 保存班级
      *
      * @param SquadRequest $request
@@ -116,7 +194,7 @@ class Squad extends Model {
                 $department = (new Department)->storeDepartment($class, 'grade');
                 # 更新“班级”的部门id
                 $class->update([
-                    'department_id' => $department->id
+                    'department_id' => $department->id,
                 ]);
             });
         } catch (Exception $e) {
@@ -136,7 +214,7 @@ class Squad extends Model {
      * @throws Exception
      */
     function modify(SquadRequest $request, $id = null) {
-       
+        
         if (!$id) {
             return $this->batch($this);
         }
@@ -176,7 +254,7 @@ class Squad extends Model {
      * @throws Exception
      */
     function purge($id) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $class = $this->find($id);
@@ -187,7 +265,7 @@ class Squad extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }
@@ -234,13 +312,15 @@ class Squad extends Model {
         $students = $class ? $class->students : [];
         $items = [];
         foreach ($students as $student) {
-            if (!$student->user) { continue; }
+            if (!$student->user) {
+                continue;
+            }
             $items[$student->id] = $student->user->realname .
                 '(' . $student->student_number . ')';
         }
         
         return response()->json([
-            'html' => $this->singleSelectList($items, 'student_id')
+            'html' => $this->singleSelectList($items, 'student_id'),
         ]);
         
     }
@@ -263,82 +343,6 @@ class Squad extends Model {
         $departmentIds = $this->whereIn('id', $ids)->pluck('department_id')->toArray();
         
         return Department::whereIn('id', $departmentIds)->get();
-        
-    }
-    
-    /**
-     * 班级列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'Squad.id', 'dt' => 0],
-            [
-                'db'        => 'Squad.name', 'dt' => 1,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-users', '') . $d;
-                },
-            ],
-            [
-                'db'        => 'Grade.name as gradename', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-object-group', '') . $d;
-                },
-            ],
-            [
-                'db'        => 'Squad.educator_ids', 'dt' => 3,
-                'formatter' => function ($d) {
-                    if (empty($d)) { return ''; }
-                    $educatorIds = explode(',', $d);
-                    $educators = [];
-                    foreach ($educatorIds as $id) {
-                        $educator = Educator::find($id);
-                        if ($educator) {
-                            if ($educator->user) {
-                                $educators[] = $educator->user->realname;
-                            }
-                        }
-                        
-                    }
-                    
-                    return implode(', ', $educators);
-                },
-            ],
-            ['db' => 'Squad.created_at', 'dt' => 4],
-            ['db' => 'Squad.updated_at', 'dt' => 5],
-            [
-                'db'        => 'Squad.enabled', 'dt' => 6,
-                'formatter' => function ($d, $row) {
-                    return $this->syncStatus($d, $row, false);
-                },
-            ],
-            ['db' => 'Department.synced as synced', 'dt' => 7]
-        ];
-        $joins = [
-            [
-                'table'      => 'grades',
-                'alias'      => 'Grade',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'Grade.id = Squad.grade_id',
-                ],
-            ],
-            [
-                'table' => 'departments',
-                'alias' => 'Department',
-                'type' => 'INNER',
-                'conditions' => [
-                    'Department.id = Squad.department_id'
-                ]
-            ]
-        ];
-        $condition = 'Squad.id IN (' . implode(',', $this->classIds()) . ')';
-        
-        return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
-        );
         
     }
     

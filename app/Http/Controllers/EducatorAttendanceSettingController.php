@@ -36,7 +36,7 @@ class EducatorAttendanceSettingController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->eas->datatable()
+                $this->eas->index()
             );
         }
         
@@ -78,7 +78,7 @@ class EducatorAttendanceSettingController extends Controller {
     public function edit($id) {
         
         return $this->output([
-            'eas' => $this->eas->find($id)
+            'eas' => $this->eas->find($id),
         ]);
         
     }

@@ -1,8 +1,7 @@
 <?php
-
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Doctrine\Common\Collections\Collection;
@@ -31,13 +30,13 @@ use Illuminate\Support\Facades\DB;
  * @property-read Collection|Message[] $messages
  */
 class CommType extends Model {
-
+    
     use ModelTrait;
     
     protected $table = 'comm_types';
-
+    
     protected $fillable = ['name', 'remark', 'enabled'];
-
+    
     /**
      * 返回指定通信方式包含的所有消息对象
      *
@@ -46,8 +45,33 @@ class CommType extends Model {
     function messages() { return $this->hasMany('App\Models\Message'); }
     
     /**
+     * 通信方式列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'CommType.id', 'dt' => 0],
+            ['db' => 'CommType.name', 'dt' => 1],
+            ['db' => 'CommType.remark', 'dt' => 2],
+            ['db' => 'CommType.created_at', 'dt' => 3],
+            ['db' => 'CommType.updated_at', 'dt' => 4],
+            [
+                'db'        => 'CommType.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        
+        return Datatable::simple($this->getModel(), $columns);
+        
+    }
+    
+    /**
      * 保存通信类型
-     * 
+     *
      * @param array $data
      * @return bool
      */
@@ -94,7 +118,7 @@ class CommType extends Model {
         try {
             DB::transaction(function () use ($id) {
                 Message::whereCommTypeId($id)->update([
-                    'comm_type_id' => 0
+                    'comm_type_id' => 0,
                 ]);
                 $this->find($id)->delete();
             });
@@ -104,29 +128,4 @@ class CommType extends Model {
         
     }
     
-    /**
-     * 通信方式列表
-     *
-     * @return array
-     */
-    function datatable() {
-
-        $columns = [
-            ['db' => 'CommType.id', 'dt' => 0],
-            ['db' => 'CommType.name', 'dt' => 1],
-            ['db' => 'CommType.remark', 'dt' => 2],
-            ['db' => 'CommType.created_at', 'dt' => 3],
-            ['db' => 'CommType.updated_at', 'dt' => 4],
-            [
-                'db' => 'CommType.enabled', 'dt' => 5,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                },
-            ],
-        ];
-
-        return Datatable::simple($this->getModel(), $columns);
-
-    }
-
 }

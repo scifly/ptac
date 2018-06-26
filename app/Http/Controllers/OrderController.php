@@ -36,7 +36,7 @@ class OrderController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->order->datatable()
+                $this->order->index()
             );
         }
         

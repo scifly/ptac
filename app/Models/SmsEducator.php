@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Carbon\Carbon;
@@ -30,12 +29,12 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin \Eloquent
  */
 class SmsEducator extends Model {
-
+    
     protected $table = 'sms_educators';
     
     protected $fillable = [
         'educator_id', 'user_id', 'statistic_time',
-        'balance', 'deposit_count', 'enabled'
+        'balance', 'deposit_count', 'enabled',
     ];
     
 }

@@ -36,7 +36,7 @@ class WsmArticleController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->wsma->datatable()
+                $this->wsma->index()
             );
         }
         
@@ -51,7 +51,7 @@ class WsmArticleController extends Controller {
      * @throws Throwable
      */
     public function create() {
-    
+        
         if (Request::method() == 'POST') {
             return $this->wsma->upload();
         }
@@ -99,13 +99,13 @@ class WsmArticleController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-
+        
         if (Request::method() == 'POST') {
             return $this->wsma->upload();
         }
         
         return $this->output([
-            'article' => WsmArticle::find($id)
+            'article' => WsmArticle::find($id),
         ]);
         
     }

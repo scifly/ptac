@@ -1,7 +1,7 @@
 <?php
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Exception;
@@ -41,6 +41,31 @@ class SchoolType extends Model {
      * @return HasMany
      */
     function schools() { return $this->hasMany('App\Models\School'); }
+    
+    /**
+     * 学校类型列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'SchoolType.id', 'dt' => 0],
+            ['db' => 'SchoolType.name', 'dt' => 1],
+            ['db' => 'SchoolType.remark', 'dt' => 2],
+            ['db' => 'SchoolType.created_at', 'dt' => 3],
+            ['db' => 'SchoolType.updated_at', 'dt' => 4],
+            [
+                'db'        => 'SchoolType.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        
+        return Datatable::simple($this->getModel(), $columns);
+        
+    }
     
     /**
      * 保存学校类型
@@ -99,31 +124,6 @@ class SchoolType extends Model {
         }
         
         return true;
-        
-    }
-    
-    /**
-     * 学校类型列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'SchoolType.id', 'dt' => 0],
-            ['db' => 'SchoolType.name', 'dt' => 1],
-            ['db' => 'SchoolType.remark', 'dt' => 2],
-            ['db' => 'SchoolType.created_at', 'dt' => 3],
-            ['db' => 'SchoolType.updated_at', 'dt' => 4],
-            [
-                'db'        => 'SchoolType.enabled', 'dt' => 5,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                },
-            ],
-        ];
-        
-        return Datatable::simple($this->getModel(), $columns);
         
     }
     

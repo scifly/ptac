@@ -1,25 +1,25 @@
 <?php
 namespace App\Models;
 
+use App\Facades\Datatable;
+use App\Helpers\Constant;
+use App\Helpers\HttpStatusCode;
+use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
+use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Throwable;
-use Carbon\Carbon;
-use App\Helpers\Snippet;
-use App\Helpers\Constant;
-use Illuminate\View\View;
-use App\Helpers\ModelTrait;
-use App\Helpers\HttpStatusCode;
-use Illuminate\Validation\Rule;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
-use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Validation\Rule;
+use Illuminate\View\View;
+use Throwable;
 
 /**
  * App\Models\StudentAttendance 学生考勤记录
@@ -58,6 +58,11 @@ class StudentAttendance extends Model {
     
     use ModelTrait;
     
+    const EXPORT_TITLES = [
+        '姓名', '监护人', '手机号码', '打卡时间', '进/出',
+    ];
+    const WEEK_DAYS = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+    const VIEW_NS = 'wechat.attendance.';
     protected $table = 'student_attendances';
     protected $fillable = [
         'id', 'student_id', 'punch_time', 'sas_id',
@@ -65,11 +70,6 @@ class StudentAttendance extends Model {
         'status', 'longitude', 'latitude', 'created_at',
         'updated_at',
     ];
-    const EXPORT_TITLES = [
-        '姓名', '监护人', '手机号码', '打卡时间', '进/出',
-    ];
-    const WEEK_DAYS = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-    const VIEW_NS = 'wechat.attendance.';
     
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -92,6 +92,77 @@ class StudentAttendance extends Model {
     function studentAttendanceSetting() {
         
         return $this->belongsTo('App\Models\StudentAttendanceSetting', 'sas_id', 'id');
+        
+    }
+    
+    /**
+     * 学生考勤记录列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'StudentAttendance.id', 'dt' => 0],
+            ['db' => 'User.realname', 'dt' => 1],
+            ['db' => 'Student.card_number', 'dt' => 2],
+            ['db' => 'StudentAttendance.punch_time', 'dt' => 3],
+            ['db' => 'StudentAttendanceSetting.name as sasname', 'dt' => 4],
+            ['db' => 'AttendanceMachine.name as machinename', 'dt' => 5],
+            [
+                'db'        => 'StudentAttendance.inorout', 'dt' => 6,
+                'formatter' => function ($d) {
+                    if ($d == 2) {
+                        return '';
+                    } else {
+                        return $d
+                            ? sprintf(Snippet::BADGE_GREEN, '进')
+                            : sprintf(Snippet::BADGE_RED, '出');
+                    }
+                },
+            ],
+            ['db' => 'StudentAttendance.status', 'dt' => 7],
+        ];
+        $joins = [
+            [
+                'table'      => 'students',
+                'alias'      => 'Student',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Student.id = StudentAttendance.student_id',
+                ],
+            ],
+            [
+                'table'      => 'attendance_machines',
+                'alias'      => 'AttendanceMachine',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'AttendanceMachine.id = StudentAttendance.attendance_machine_id',
+                ],
+            ],
+            [
+                'table'      => 'student_attendance_settings',
+                'alias'      => 'StudentAttendanceSetting',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'StudentAttendanceSetting.id = StudentAttendance.sas_id',
+                ],
+            ],
+            [
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'User.id = Student.user_id',
+                ],
+            ],
+        ];
+        $condition = 'StudentAttendance.student_id IN(' .
+            implode(',', $this->contactIds('student')) . ')';
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
         
     }
     
@@ -233,333 +304,6 @@ class StudentAttendance extends Model {
     }
     
     /**
-     * 获取考勤明细
-     *
-     * @return array
-     */
-    function detail() {
-        
-        $details = $this->details();
-        # 缓存导出数据
-        $this->cache($details);
-        
-        return $details;
-        
-    }
-    
-    /**
-     * 导出考勤明细
-     *
-     * @return mixed
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
-     */
-    function export() {
-        
-        abort_if(
-            !session('sa_details'),
-            HttpStatusCode::BAD_REQUEST,
-            __('messages.bad_request')
-        );
-        $details = session('sa_details');
-        Session::forget('sa_details');
-        
-        return $this->excel(
-            $details,
-            '学生考勤明细',
-            '考勤明细'
-        );
-        
-    }
-    
-    /**
-     * 学生考勤记录列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'StudentAttendance.id', 'dt' => 0],
-            ['db' => 'User.realname', 'dt' => 1],
-            ['db' => 'Student.card_number', 'dt' => 2],
-            ['db' => 'StudentAttendance.punch_time', 'dt' => 3],
-            ['db' => 'StudentAttendanceSetting.name as sasname', 'dt' => 4],
-            ['db' => 'AttendanceMachine.name as machinename', 'dt' => 5],
-            [
-                'db'        => 'StudentAttendance.inorout', 'dt' => 6,
-                'formatter' => function ($d) {
-                    if ($d == 2) {
-                        return '';
-                    } else {
-                        return $d
-                            ? sprintf(Snippet::BADGE_GREEN, '进')
-                            : sprintf(Snippet::BADGE_RED, '出');
-                    }
-                },
-            ],
-            ['db' => 'StudentAttendance.status', 'dt' => 7],
-        ];
-        $joins = [
-            [
-                'table'      => 'students',
-                'alias'      => 'Student',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'Student.id = StudentAttendance.student_id',
-                ],
-            ],
-            [
-                'table'      => 'attendance_machines',
-                'alias'      => 'AttendanceMachine',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'AttendanceMachine.id = StudentAttendance.attendance_machine_id',
-                ],
-            ],
-            [
-                'table'      => 'student_attendance_settings',
-                'alias'      => 'StudentAttendanceSetting',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'StudentAttendanceSetting.id = StudentAttendance.sas_id',
-                ],
-            ],
-            [
-                'table'      => 'users',
-                'alias'      => 'User',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'User.id = Student.user_id',
-                ],
-            ],
-        ];
-        $condition = 'StudentAttendance.student_id IN(' .
-            implode(',', $this->contactIds('student')) . ')';
-        
-        return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
-        );
-        
-    }
-    
-    /**
-     * 考勤中心首页
-     *
-     * @return Factory|View
-     */
-    function wIndex() {
-        
-        $user = Auth::user();
-        # 禁止学生学生访问考勤记录
-        abort_if(
-            !$user || $user->group->name == '学生',
-            HttpStatusCode::UNAUTHORIZED,
-            __('messages.unauthorized')
-        );
-        # 如果不是监护人，则返回教职员工页面
-        if (!$user->custodian) {
-            return view(self::VIEW_NS . 'educator');
-        }
-        $students = $user->custodian->students;
-        foreach ($students as $student) {
-            $data = $this->wStat($student->id);
-            $student->abnormal = count($data['adays']);
-            $student->normal = count($data['ndays']);
-            $student->schoolname = $student->class->grade->school->name;
-            $student->studentname = $student->user->realname;
-            $student->class_id = $student->squad->name;;
-        }
-        
-        return view(self::VIEW_NS . 'custodian', [
-            'students' => $students,
-        ]);
-        
-    }
-    
-    /**
-     * 返回指定学生的考勤记录
-     *
-     * @param null $studentId
-     * @return JsonResponse|View
-     */
-    function wDetail($studentId = null) {
-        
-        $user = Auth::user();
-        if (Request::method() == 'POST') {
-            $studentId = Request::input('id');
-            $type = Request::input('type');
-            $date = Request::input('date');
-            Request::validate([
-                'id'   => 'required|integer',
-                'type' => ['required', 'string', Rule::in(['month', 'day']),],
-                'date' => 'required|date',
-            ]);
-            abort_if(
-                !in_array($studentId, $this->contactIds('student', $user, $user->educator->school_id)),
-                HttpStatusCode::NOT_ACCEPTABLE,
-                __('messages.invalid_argument')
-            );
-            if ($type == 'month') {
-                $response = [
-                    'data' => $this->wStat(
-                        Request::get('id'),
-                        $date, date('Y-m-t', strtotime($date))
-                    ),
-                ];
-            } else {
-                list($ins, $outs) = $this->attendances($studentId, $date);
-                $response = [
-                    'date' => $date,
-                    'ins'  => $ins,
-                    'outs' => $outs,
-                ];
-            }
-            
-            return response()->json($response);
-        }
-        $today = date('Y-m-d', time());
-        list($ins, $outs) = $this->attendances($studentId, $today);
-        $data = $this->wStat($studentId);
-        if (Request::ajax() && Request::method() == 'GET') {
-            return response()->json(['days' => $data]);
-        }
-        
-        return view(self::VIEW_NS . 'detail', [
-            'id'   => $studentId,
-            'data' => $data,
-            'date' => $today,
-            'ins'  => $ins,
-            'outs' => $outs,
-        ]);
-        
-    }
-    
-    /**
-     * 学生考勤饼图
-     *
-     * @return JsonResponse
-     * @throws Throwable
-     */
-    function wChart() {
-        
-        $input = Request::all();
-        if (isset($input['check'])) {
-            return $this->wCheck();
-        }
-        if (isset($input['classId'])) {
-            return $this->wRule($input['classId']);
-        }
-        # 角色判断
-        $user = Auth::user();
-        abort_if(
-            !$user || $user->group->name == '学生',
-            HttpStatusCode::UNAUTHORIZED,
-            __('messages.unauthorized')
-        );
-        $schoolId = $user->educator ? $user->educator->school_id : session('schoolId');
-        # 对当前用户可见的所有班级ids
-        $classIds = $this->classIds($schoolId);
-        abort_if(
-            empty(array_diff($classIds, [0])),
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            __('messages.class.no_related_classes')
-        );
-        $classes = Squad::whereIn('id', $classIds)->get();
-        $data['classNames'] = [];
-        foreach ($classes as $class) {
-            $data['classNames'][] = [
-                'title' => $class->name,
-                'value' => $class->id,
-            ];
-        }
-        $data['classNames'] = array_unique(
-            $data['classNames'], SORT_REGULAR
-        );
-        # 根据年级分组规则
-        $gradeIds = $this->gradeIds($schoolId);
-        $rules = StudentAttendanceSetting::whereIn('grade_id', $gradeIds)->get();
-        $data['ruleNames'] = [];
-        foreach ($rules as $rule) {
-            $data['ruleNames'][] = [
-                'title' => $rule->name,
-                'value' => $rule->id,
-            ];
-        }
-        # 获取饼图数据
-        $data = !isset($input['squad'], $input['time'], $input['rule'])
-            ? $this->defcharts($classIds, $data)
-            : $this->fltcharts($input, $data);
-        abort_if(
-            !$data,
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            '请加入相应的考勤规则！'
-        );
-        
-        return response()->json([
-            'data' => $data,
-        ]);
-        
-    }
-    
-    /** Helper functions -------------------------------------------------------------------------------------------- */
-    /**
-     * 返回指定班级对应的年级考勤规则
-     *
-     * @param $classId
-     * @return JsonResponse
-     */
-    private function wRule($classId) {
-        
-        # 当前年级所有考勤规则，不分学期
-        $gradeId = Squad::find($classId)->grade_id;
-        $rules = StudentAttendanceSetting::whereGradeId($gradeId)->get();
-        $data = [];
-        foreach ($rules as $r) {
-            $data[] = [
-                'title' => $r->name,
-                'value' => $r->id,
-            ];
-        }
-        abort_if(
-            empty($data),
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            '该年级未设置考勤规则！'
-        );
-        
-        return response()->json([
-            'data' => $data,
-        ]);
-        
-    }
-    
-    /**
-     * 验证考勤规则
-     *
-     * @return JsonResponse
-     */
-    private function wCheck() {
-        
-        $input = Request::all();
-        $result = [
-            'statusCode' => HttpStatusCode::OK,
-            'message'    => '',
-        ];
-        if (isset($input['date'], $input['rule'])) {
-            # 获取规则的星期
-            $ruleDay = StudentAttendanceSetting::find($input['rule'])->day;
-            $weekDay = self::WEEK_DAYS[date("w", strtotime($input['date']))];
-            if ($ruleDay != $weekDay) {
-                $result['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-                $result['message'] = '请选择和规则对应的星期！';
-            }
-        }
-        
-        return response()->json($result);
-        
-    }
-    
-    /**
      * 获取指定学生的最新考勤数据
      *
      * @param string $studentIds - 学生id列表
@@ -600,6 +344,23 @@ class StudentAttendance extends Model {
         
     }
     
+    /**
+     * 获取考勤明细
+     *
+     * @return array
+     */
+    function detail() {
+        
+        $details = $this->details();
+        # 缓存导出数据
+        $this->cache($details);
+        
+        return $details;
+        
+    }
+    
+    /** 微信端 ------------------------------------------------------------------------------------------------------- */
+
     /**
      * @return array
      */
@@ -715,6 +476,67 @@ class StudentAttendance extends Model {
     }
     
     /**
+     * 导出考勤明细
+     *
+     * @return mixed
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     */
+    function export() {
+        
+        abort_if(
+            !session('sa_details'),
+            HttpStatusCode::BAD_REQUEST,
+            __('messages.bad_request')
+        );
+        $details = session('sa_details');
+        Session::forget('sa_details');
+        
+        return $this->excel(
+            $details,
+            '学生考勤明细',
+            '考勤明细'
+        );
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+
+    /**
+     * 考勤中心首页
+     *
+     * @return Factory|View
+     */
+    function wIndex() {
+        
+        $user = Auth::user();
+        # 禁止学生学生访问考勤记录
+        abort_if(
+            !$user || $user->group->name == '学生',
+            HttpStatusCode::UNAUTHORIZED,
+            __('messages.unauthorized')
+        );
+        # 如果不是监护人，则返回教职员工页面
+        if (!$user->custodian) {
+            return view(self::VIEW_NS . 'educator');
+        }
+        $students = $user->custodian->students;
+        foreach ($students as $student) {
+            $data = $this->wStat($student->id);
+            $student->abnormal = count($data['adays']);
+            $student->normal = count($data['ndays']);
+            $student->schoolname = $student->class->grade->school->name;
+            $student->studentname = $student->user->realname;
+            $student->class_id = $student->squad->name;;
+        }
+        
+        return view(self::VIEW_NS . 'custodian', [
+            'students' => $students,
+        ]);
+        
+    }
+    
+    /**
      * 获取指定学生的考勤数据（异常和正常）
      *
      * @param $studentId
@@ -760,6 +582,205 @@ class StudentAttendance extends Model {
             'aSum'  => count($aDays),
             'nSum'  => count($nDays),
         ];
+        
+    }
+    
+    /**
+     * 返回指定学生的考勤记录
+     *
+     * @param null $studentId
+     * @return JsonResponse|View
+     */
+    function wDetail($studentId = null) {
+        
+        $user = Auth::user();
+        if (Request::method() == 'POST') {
+            $studentId = Request::input('id');
+            $type = Request::input('type');
+            $date = Request::input('date');
+            Request::validate([
+                'id'   => 'required|integer',
+                'type' => ['required', 'string', Rule::in(['month', 'day']),],
+                'date' => 'required|date',
+            ]);
+            abort_if(
+                !in_array($studentId, $this->contactIds('student', $user, $user->educator->school_id)),
+                HttpStatusCode::NOT_ACCEPTABLE,
+                __('messages.invalid_argument')
+            );
+            if ($type == 'month') {
+                $response = [
+                    'data' => $this->wStat(
+                        Request::get('id'),
+                        $date, date('Y-m-t', strtotime($date))
+                    ),
+                ];
+            } else {
+                list($ins, $outs) = $this->attendances($studentId, $date);
+                $response = [
+                    'date' => $date,
+                    'ins'  => $ins,
+                    'outs' => $outs,
+                ];
+            }
+            
+            return response()->json($response);
+        }
+        $today = date('Y-m-d', time());
+        list($ins, $outs) = $this->attendances($studentId, $today);
+        $data = $this->wStat($studentId);
+        if (Request::ajax() && Request::method() == 'GET') {
+            return response()->json(['days' => $data]);
+        }
+        
+        return view(self::VIEW_NS . 'detail', [
+            'id'   => $studentId,
+            'data' => $data,
+            'date' => $today,
+            'ins'  => $ins,
+            'outs' => $outs,
+        ]);
+        
+    }
+    
+    /**
+     * 获取指定学生指定日期的所有考勤记录
+     *
+     * @param $studentId
+     * @param $date
+     * @return array
+     */
+    private function attendances($studentId, $date) {
+        
+        $attendances = $this->whereStudentId($studentId)
+            ->whereDate('punch_time', $date)
+            ->orderBy('punch_time', 'ASC')
+            ->get()->groupBy('inorout');
+        
+        return [$attendances[1], head($attendances)];
+        
+    }
+    
+    /**
+     * 学生考勤饼图
+     *
+     * @return JsonResponse
+     * @throws Throwable
+     */
+    function wChart() {
+        
+        $input = Request::all();
+        if (isset($input['check'])) {
+            return $this->wCheck();
+        }
+        if (isset($input['classId'])) {
+            return $this->wRule($input['classId']);
+        }
+        # 角色判断
+        $user = Auth::user();
+        abort_if(
+            !$user || $user->group->name == '学生',
+            HttpStatusCode::UNAUTHORIZED,
+            __('messages.unauthorized')
+        );
+        $schoolId = $user->educator ? $user->educator->school_id : session('schoolId');
+        # 对当前用户可见的所有班级ids
+        $classIds = $this->classIds($schoolId);
+        abort_if(
+            empty(array_diff($classIds, [0])),
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            __('messages.class.no_related_classes')
+        );
+        $classes = Squad::whereIn('id', $classIds)->get();
+        $data['classNames'] = [];
+        foreach ($classes as $class) {
+            $data['classNames'][] = [
+                'title' => $class->name,
+                'value' => $class->id,
+            ];
+        }
+        $data['classNames'] = array_unique(
+            $data['classNames'], SORT_REGULAR
+        );
+        # 根据年级分组规则
+        $gradeIds = $this->gradeIds($schoolId);
+        $rules = StudentAttendanceSetting::whereIn('grade_id', $gradeIds)->get();
+        $data['ruleNames'] = [];
+        foreach ($rules as $rule) {
+            $data['ruleNames'][] = [
+                'title' => $rule->name,
+                'value' => $rule->id,
+            ];
+        }
+        # 获取饼图数据
+        $data = !isset($input['squad'], $input['time'], $input['rule'])
+            ? $this->defcharts($classIds, $data)
+            : $this->fltcharts($input, $data);
+        abort_if(
+            !$data,
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            '请加入相应的考勤规则！'
+        );
+        
+        return response()->json([
+            'data' => $data,
+        ]);
+        
+    }
+    
+    /**
+     * 验证考勤规则
+     *
+     * @return JsonResponse
+     */
+    private function wCheck() {
+        
+        $input = Request::all();
+        $result = [
+            'statusCode' => HttpStatusCode::OK,
+            'message'    => '',
+        ];
+        if (isset($input['date'], $input['rule'])) {
+            # 获取规则的星期
+            $ruleDay = StudentAttendanceSetting::find($input['rule'])->day;
+            $weekDay = self::WEEK_DAYS[date("w", strtotime($input['date']))];
+            if ($ruleDay != $weekDay) {
+                $result['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+                $result['message'] = '请选择和规则对应的星期！';
+            }
+        }
+        
+        return response()->json($result);
+        
+    }
+    
+    /**
+     * 返回指定班级对应的年级考勤规则
+     *
+     * @param $classId
+     * @return JsonResponse
+     */
+    private function wRule($classId) {
+        
+        # 当前年级所有考勤规则，不分学期
+        $gradeId = Squad::find($classId)->grade_id;
+        $rules = StudentAttendanceSetting::whereGradeId($gradeId)->get();
+        $data = [];
+        foreach ($rules as $r) {
+            $data[] = [
+                'title' => $r->name,
+                'value' => $r->id,
+            ];
+        }
+        abort_if(
+            empty($data),
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            '该年级未设置考勤规则！'
+        );
+        
+        return response()->json([
+            'data' => $data,
+        ]);
         
     }
     
@@ -825,24 +846,6 @@ class StudentAttendance extends Model {
             $attendances->where('status', 0), $attendances);
         
         return !empty($data) ? $data : false;
-        
-    }
-    
-    /**
-     * 获取指定学生指定日期的所有考勤记录
-     *
-     * @param $studentId
-     * @param $date
-     * @return array
-     */
-    private function attendances($studentId, $date) {
-        
-        $attendances = $this->whereStudentId($studentId)
-            ->whereDate('punch_time', $date)
-            ->orderBy('punch_time', 'ASC')
-            ->get()->groupBy('inorout');
-        
-        return [$attendances[1], head($attendances)];
         
     }
     

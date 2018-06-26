@@ -1,11 +1,11 @@
 <?php
 namespace App\Models;
 
+use App\Facades\Datatable;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
-use App\Facades\DatatableFacade as Datatable;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -45,15 +45,13 @@ class EducatorAttendance extends Model {
     
     use ModelTrait;
     
+    const EXPORT_TITLES = [
+        '姓名', '手机号码', '打卡时间', '进/出', '状态',
+    ];
     protected $table = 'educator_attendances';
-    
     protected $fillable = [
         'educator_id', 'punch_time', 'longitude',
         'latitude', 'inorout', 'eas_id',
-    ];
-    
-    const EXPORT_TITLES = [
-        '姓名', '手机号码', '打卡时间', '进/出', '状态',
     ];
     
     /**
@@ -71,6 +69,70 @@ class EducatorAttendance extends Model {
     function educatorAttendanceSetting() {
         
         return $this->belongsTo('App\Models\EducatorAttendanceSetting', 'eas_id');
+        
+    }
+    
+    /**
+     * 教职员工考勤记录列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'EducatorAttendance.id', 'dt' => 0],
+            ['db' => 'User.realname', 'dt' => 1],
+            ['db' => 'EducatorAttendance.punch_time', 'dt' => 2],
+            [
+                'db'        => 'EducatorAttendance.inorout', 'dt' => 3,
+                'formatter' => function ($d) {
+                    return $d
+                        ? sprintf(Snippet::BADGE_GREEN, '进')
+                        : sprintf(Snippet::BADGE_RED, '出');
+                },
+            ],
+            ['db' => 'EducatorAttendanceSetting.name', 'dt' => 4],
+            [
+                'db'        => 'EducatorAttendance.status', 'dt' => 5,
+                'formatter' => function ($d) {
+                    return $d
+                        ? sprintf(Snippet::BADGE_GREEN, '正常')
+                        : sprintf(Snippet::BADGE_RED, '异常');
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table'      => 'educators',
+                'alias'      => 'Educator',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Educator.id = EducatorAttendance.educator_id',
+                ],
+            ],
+            [
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'User.id = Educator.user_id',
+                ],
+            ],
+            [
+                'table'      => 'educator_attendance_settings',
+                'alias'      => 'EducatorAttendanceSetting',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'EducatorAttendanceSetting.id = EducatorAttendance.eas_id',
+                ],
+            ],
+        ];
+        $condition = 'EducatorAttendance.educator_id IN(' .
+            implode(',', $this->contactIds('educator')) . ')';
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
         
     }
     
@@ -198,110 +260,6 @@ class EducatorAttendance extends Model {
     }
     
     /**
-     * 获取考勤明细
-     *
-     * @return mixed
-     */
-    function detail() {
-        
-        $details = $this->details();
-        # 缓存导出数据
-        $this->cache($details);
-        
-        return $details;
-        
-    }
-    
-    /**
-     * 导出教职员工考勤明细
-     *
-     * @return mixed
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
-     */
-    function export() {
-        
-        abort_if(
-            !session('ea_details'),
-            HttpStatusCode::BAD_REQUEST,
-            __('messages.bad_request')
-        );
-        $details = session('ea_details');
-        Session::forget('ea_details');
-        
-        return $this->excel(
-            $details,
-            '教职员工考勤明细',
-            '考勤明细'
-        );
-        
-    }
-    
-    /**
-     * 教职员工考勤记录列表
-     *
-     * @return array
-     */
-    public function datatable() {
-        
-        $columns = [
-            ['db' => 'EducatorAttendance.id', 'dt' => 0],
-            ['db' => 'User.realname', 'dt' => 1],
-            ['db' => 'EducatorAttendance.punch_time', 'dt' => 2],
-            [
-                'db'        => 'EducatorAttendance.inorout', 'dt' => 3,
-                'formatter' => function ($d) {
-                    return $d
-                        ? sprintf(Snippet::BADGE_GREEN, '进')
-                        : sprintf(Snippet::BADGE_RED, '出');
-                },
-            ],
-            ['db' => 'EducatorAttendanceSetting.name', 'dt' => 4],
-            [
-                'db'        => 'EducatorAttendance.status', 'dt' => 5,
-                'formatter' => function ($d) {
-                    return $d
-                        ? sprintf(Snippet::BADGE_GREEN, '正常')
-                        : sprintf(Snippet::BADGE_RED, '异常');
-                },
-            ],
-        ];
-        $joins = [
-            [
-                'table'      => 'educators',
-                'alias'      => 'Educator',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'Educator.id = EducatorAttendance.educator_id',
-                ],
-            ],
-            [
-                'table'      => 'users',
-                'alias'      => 'User',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'User.id = Educator.user_id',
-                ],
-            ],
-            [
-                'table'      => 'educator_attendance_settings',
-                'alias'      => 'EducatorAttendanceSetting',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'EducatorAttendanceSetting.id = EducatorAttendance.eas_id',
-                ],
-            ],
-        ];
-        $condition = 'EducatorAttendance.educator_id IN(' .
-            implode(',', $this->contactIds('educator')) . ')';
-        
-        return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
-        );
-        
-    }
-    
-    /**
      * 获取考勤数据
      *
      * @param $educatorIds
@@ -342,6 +300,23 @@ class EducatorAttendance extends Model {
         
     }
     
+    /**
+     * 获取考勤明细
+     *
+     * @return mixed
+     */
+    function detail() {
+        
+        $details = $this->details();
+        # 缓存导出数据
+        $this->cache($details);
+        
+        return $details;
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+
     /**
      * @return array
      */
@@ -452,4 +427,30 @@ class EducatorAttendance extends Model {
         session(['ea_details' => $rows]);
         
     }
+    
+    /**
+     * 导出教职员工考勤明细
+     *
+     * @return mixed
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     */
+    function export() {
+        
+        abort_if(
+            !session('ea_details'),
+            HttpStatusCode::BAD_REQUEST,
+            __('messages.bad_request')
+        );
+        $details = session('ea_details');
+        Session::forget('ea_details');
+        
+        return $this->excel(
+            $details,
+            '教职员工考勤明细',
+            '考勤明细'
+        );
+        
+    }
+    
 }

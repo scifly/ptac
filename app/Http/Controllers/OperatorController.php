@@ -1,12 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
-use Exception;
-use Throwable;
-use App\Models\User;
-use Illuminate\Http\JsonResponse;
 use App\Http\Requests\OperatorRequest;
+use App\Models\User;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 超级用户
@@ -38,7 +38,7 @@ class OperatorController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->user->datatable()
+                $this->user->index()
             );
         }
         
@@ -88,11 +88,11 @@ class OperatorController extends Controller {
      * @throws Throwable
      */
     public function edit($id) {
-    
+        
         if (Request::method() == 'POST') {
             return $this->user->csList();
         }
-    
+        
         return $this->output([
             'user' => $this->user->find($id),
         ]);
@@ -126,7 +126,7 @@ class OperatorController extends Controller {
      * @throws Throwable
      */
     public function destroy($id = null) {
-    
+        
         return $this->result(
             $this->user->remove($id)
         );

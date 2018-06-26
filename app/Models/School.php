@@ -1,7 +1,7 @@
 <?php
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Datatable;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
@@ -256,6 +256,75 @@ class School extends Model {
     }
     
     /**
+     * 学校列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'School.id', 'dt' => 0],
+            [
+                'db'        => 'School.name as schoolname', 'dt' => 1,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-university text-purple', '') . $d;
+                },
+            ],
+            ['db' => 'School.address', 'dt' => 2],
+            ['db' => 'SchoolType.name as typename', 'dt' => 3],
+            [
+                'db'        => 'Corp.name as corpname', 'dt' => 4,
+                'formatter' => function ($d) {
+                    return sprintf(Snippet::ICON, 'fa-weixin text-green', '') . $d;
+                },
+            ],
+            ['db' => 'School.created_at', 'dt' => 5],
+            ['db' => 'School.updated_at', 'dt' => 6],
+            [
+                'db'        => 'School.enabled', 'dt' => 7,
+                'formatter' => function ($d, $row) {
+                    return $this->syncStatus($d, $row, false);
+                },
+            ],
+            ['db' => 'Department.synced as synced', 'dt' => 8],
+        ];
+        $joins = [
+            [
+                'table'      => 'school_types',
+                'alias'      => 'SchoolType',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'SchoolType.id = School.school_type_id',
+                ],
+            ],
+            [
+                'table'      => 'corps',
+                'alias'      => 'Corp',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Corp.id = School.corp_id',
+                ],
+            ],
+            [
+                'table'      => 'departments',
+                'alias'      => 'Department',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Department.id = School.department_id',
+                ],
+            ],
+        ];
+        # 仅在企业级显示学校列表
+        $rootMenuId = (new Menu)->rootMenuId(true);
+        $condition = 'Corp.id = ' . Corp::whereMenuId($rootMenuId)->first()->id;
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
+        
+    }
+    
+    /**
      * 保存学校
      *
      * @param SchoolRequest $request
@@ -390,75 +459,6 @@ class School extends Model {
             $this->singleSelectList($grades, 'grade_id'),
             key($grades),
         ];
-        
-    }
-    
-    /**
-     * 学校列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'School.id', 'dt' => 0],
-            [
-                'db'        => 'School.name as schoolname', 'dt' => 1,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-university text-purple', '') . $d;
-                },
-            ],
-            ['db' => 'School.address', 'dt' => 2],
-            ['db' => 'SchoolType.name as typename', 'dt' => 3],
-            [
-                'db'        => 'Corp.name as corpname', 'dt' => 4,
-                'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-weixin text-green', '') . $d;
-                },
-            ],
-            ['db' => 'School.created_at', 'dt' => 5],
-            ['db' => 'School.updated_at', 'dt' => 6],
-            [
-                'db'        => 'School.enabled', 'dt' => 7,
-                'formatter' => function ($d, $row) {
-                    return $this->syncStatus($d, $row, false);
-                },
-            ],
-            ['db' => 'Department.synced as synced', 'dt' => 8],
-        ];
-        $joins = [
-            [
-                'table'      => 'school_types',
-                'alias'      => 'SchoolType',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'SchoolType.id = School.school_type_id',
-                ],
-            ],
-            [
-                'table'      => 'corps',
-                'alias'      => 'Corp',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'Corp.id = School.corp_id',
-                ],
-            ],
-            [
-                'table'      => 'departments',
-                'alias'      => 'Department',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'Department.id = School.department_id',
-                ],
-            ],
-        ];
-        # 仅在企业级显示学校列表
-        $rootMenuId = (new Menu)->rootMenuId(true);
-        $condition = 'Corp.id = ' . Corp::whereMenuId($rootMenuId)->first()->id;
-        
-        return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
-        );
         
     }
     

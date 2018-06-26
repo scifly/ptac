@@ -36,7 +36,7 @@ class ConferenceQueueController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->cq->datatable()
+                $this->cq->index()
             );
         }
         
@@ -95,7 +95,7 @@ class ConferenceQueueController extends Controller {
     public function edit($id) {
         
         return $this->output([
-            'cq' => $this->cq->find($id)
+            'cq' => $this->cq->find($id),
         ]);
         
     }

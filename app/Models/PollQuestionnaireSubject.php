@@ -1,11 +1,10 @@
 <?php
-
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Datatable;
 use App\Helpers\Constant;
-use App\Helpers\Snippet;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -45,22 +44,20 @@ use Illuminate\Support\Facades\DB;
  * @property-read Collection|PollQuestionnaireSubjectChoice[] $pollQuestionnaireSubjectChoices
  */
 class PollQuestionnaireSubject extends Model {
-
+    
     use ModelTrait;
-
-    protected $table = 'poll_questionnaire_subjects';
-
-    protected $fillable = [
-        'subject', 'pq_id', 'subject_type',
-        'created_at', 'updated_at'
-    ];
     
     const SUBJECT_TYPES = [
         0 => '单选',
         1 => '多选',
-        2 => '填空'
+        2 => '填空',
     ];
-
+    protected $table = 'poll_questionnaire_subjects';
+    protected $fillable = [
+        'subject', 'pq_id', 'subject_type',
+        'created_at', 'updated_at',
+    ];
+    
     /**
      * 返回指定调查问卷题目对应的答案对象
      *
@@ -71,7 +68,7 @@ class PollQuestionnaireSubject extends Model {
         return $this->hasOne('App\Models\PollQuestionnaireAnswer', 'pqs_id', 'id');
         
     }
-
+    
     /**
      * 返回指定调查问卷题目对应的选项
      *
@@ -82,7 +79,7 @@ class PollQuestionnaireSubject extends Model {
         return $this->hasMany("App\Models\PollQuestionnaireSubjectChoice", 'pqs_id', 'id');
         
     }
-
+    
     /**
      * 返回指定调查问卷题目对应的调查问卷对象
      *
@@ -95,6 +92,66 @@ class PollQuestionnaireSubject extends Model {
     }
     
     /**
+     * 投票问卷问题列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'PollQuestionnaireSubject.id', 'dt' => 0],
+            ['db' => 'PollQuestionnaireSubject.subject', 'dt' => 1],
+            ['db' => 'PollQuestionnaire.name as pq_name', 'dt' => 2],
+            [
+                'db'        => 'PollQuestionnaireSubject.subject_type', 'dt' => 3,
+                'formatter' => function ($d) {
+                    return self::SUBJECT_TYPES[$d];
+                },
+            ],
+            ['db' => 'PollQuestionnaire.created_at', 'dt' => 4],
+            ['db' => 'PollQuestionnaire.updated_at', 'dt' => 5],
+            [
+                'db'        => 'PollQuestionnaireSubject.id as subject_id', 'dt' => 6,
+                'formatter' => function ($d) {
+                    $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $d);
+                    $delLink = sprintf(Snippet::DT_LINK_DEL, $d);
+                    
+                    return ($this::uris()['edit'] ? $editLink : '')
+                        . ($this::uris()['destroy'] ? $delLink : '');
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table'      => 'poll_questionnaires',
+                'alias'      => 'PollQuestionnaire',
+                'type'       => 'left',
+                'conditions' => [
+                    'PollQuestionnaire.id = PollQuestionnaireSubject.pq_id',
+                ],
+            ],
+            [
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'School.id = PollQuestionnaire.school_id',
+                ],
+            ],
+        ];
+        $condition = 'School.id = ' . $this->schoolId();
+        $user = Auth::user();
+        if (!in_array($user->group->name, Constant::SUPER_ROLES)) {
+            $condition .= ' AND PollQuestionnaire.user_id = ' . $user->id;
+        }
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
+        
+    }
+    
+    /**
      * 保存调查问卷题目
      *
      * @param array $data
@@ -102,7 +159,7 @@ class PollQuestionnaireSubject extends Model {
      */
     function store(array $data) {
         
-        return $this->create($data) ? true: false;
+        return $this->create($data) ? true : false;
         
     }
     
@@ -127,9 +184,9 @@ class PollQuestionnaireSubject extends Model {
      * @throws Exception
      */
     function remove($id = null) {
-
+        
         return $this->del($this, $id);
-
+        
     }
     
     /**
@@ -140,7 +197,7 @@ class PollQuestionnaireSubject extends Model {
      * @throws Exception
      */
     function purge($id) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 PollQuestionnaireAnswer::wherePqsId($id)->delete();
@@ -150,68 +207,9 @@ class PollQuestionnaireSubject extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-    
-        return true;
-    
-    }
-    
-    /**
-     * 投票问卷问题列表
-     *
-     * @return array
-     */
-    function datatable() {
-
-        $columns = [
-            ['db' => 'PollQuestionnaireSubject.id', 'dt' => 0],
-            ['db' => 'PollQuestionnaireSubject.subject', 'dt' => 1],
-            ['db' => 'PollQuestionnaire.name as pq_name', 'dt' => 2],
-            [
-                'db' => 'PollQuestionnaireSubject.subject_type', 'dt' => 3,
-                'formatter' => function ($d) {
-                    return self::SUBJECT_TYPES[$d];
-                },
-            ],
-            ['db' => 'PollQuestionnaire.created_at', 'dt' => 4],
-            ['db' => 'PollQuestionnaire.updated_at', 'dt' => 5],
-            [
-                'db' => 'PollQuestionnaireSubject.id as subject_id', 'dt' => 6,
-                'formatter' => function ($d) {
-                    $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $d);
-                    $delLink = sprintf(Snippet::DT_LINK_DEL, $d);
-                    return ($this::uris()['edit'] ? $editLink : '')
-                        . ($this::uris()['destroy'] ? $delLink : '');
-                },
-            ],
-        ];
-        $joins = [
-            [
-                'table' => 'poll_questionnaires',
-                'alias' => 'PollQuestionnaire',
-                'type' => 'left',
-                'conditions' => [
-                    'PollQuestionnaire.id = PollQuestionnaireSubject.pq_id',
-                ],
-            ],
-            [
-                'table' => 'schools',
-                'alias' => 'School',
-                'type' => 'INNER',
-                'conditions' => [
-                    'School.id = PollQuestionnaire.school_id',
-                ],
-            ],
-        ];
-        $condition = 'School.id = ' . $this->schoolId();
-        $user = Auth::user();
-        if (!in_array($user->group->name, Constant::SUPER_ROLES)) {
-            $condition .= ' AND PollQuestionnaire.user_id = ' . $user->id;
-        }
         
-        return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
-        );
-
+        return true;
+        
     }
     
 }

@@ -1,7 +1,7 @@
 <?php
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
@@ -44,6 +44,33 @@ class ProcedureType extends Model {
      * @return HasMany
      */
     function procedures() { return $this->hasMany('App\Models\Procedure'); }
+    
+    /**
+     * 流程种类列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'ProcedureType.id', 'dt' => 0],
+            ['db' => 'ProcedureType.name', 'dt' => 1],
+            ['db' => 'ProcedureType.remark', 'dt' => 2],
+            ['db' => 'ProcedureType.created_at', 'dt' => 3],
+            ['db' => 'ProcedureType.updated_at', 'dt' => 4],
+            [
+                'db'        => 'ProcedureType.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        
+        return Datatable::simple(
+            $this->getModel(), $columns
+        );
+        
+    }
     
     /**
      * 保存审批流程类型
@@ -99,33 +126,6 @@ class ProcedureType extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-        
-    }
-    
-    /**
-     * 流程种类列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'ProcedureType.id', 'dt' => 0],
-            ['db' => 'ProcedureType.name', 'dt' => 1],
-            ['db' => 'ProcedureType.remark', 'dt' => 2],
-            ['db' => 'ProcedureType.created_at', 'dt' => 3],
-            ['db' => 'ProcedureType.updated_at', 'dt' => 4],
-            [
-                'db'        => 'ProcedureType.enabled', 'dt' => 5,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                },
-            ],
-        ];
-        
-        return Datatable::simple(
-            $this->getModel(), $columns
-        );
         
     }
     

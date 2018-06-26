@@ -1,24 +1,24 @@
 <?php
 namespace App\Models;
 
+use App\Facades\Datatable;
+use App\Helpers\Constant;
+use App\Helpers\HttpStatusCode;
+use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
+use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Throwable;
-use Carbon\Carbon;
-use App\Helpers\Snippet;
-use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
-use App\Helpers\HttpStatusCode;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * App\Models\Custodian 监护人
@@ -71,6 +71,85 @@ class Custodian extends Model {
             'custodians_students',
             'custodian_id',
             'student_id'
+        );
+        
+    }
+    
+    /**
+     * 监护人记录列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'Custodian.id', 'dt' => 0],
+            ['db' => 'User.realname', 'dt' => 1],
+            [
+                'db'        => 'CustodianStudent.student_id', 'dt' => 2,
+                'formatter' => function ($d) {
+                    return Student::find($d)->user->realname;
+                },
+            ],
+            ['db' => 'User.email', 'dt' => 3],
+            ['db'        => 'User.gender', 'dt' => 4,
+             'formatter' => function ($d) {
+                 return $d == 1 ? Snippet::MALE : Snippet::FEMALE;
+             },
+            ],
+            ['db'        => 'Custodian.id as mobile', 'dt' => 5,
+             'formatter' => function ($d) {
+                 $custodian = $this->find($d);
+                 $mobiles = Mobile::whereUserId($custodian->user_id)->get();
+                 $mobile = [];
+                 foreach ($mobiles as $key => $value) {
+                     $mobile[] = $value->mobile;
+                 }
+                
+                 return implode(',', $mobile);
+             },
+            ],
+            ['db' => 'Custodian.created_at', 'dt' => 6],
+            ['db' => 'Custodian.updated_at', 'dt' => 7],
+            [
+                'db'        => 'User.enabled', 'dt' => 8,
+                'formatter' => function ($d, $row) {
+                    return $this->syncStatus($d, $row);
+                },
+            ],
+            ['db' => 'User.synced', 'dt' => 9],
+            ['db' => 'User.subscribed', 'dt' => 10],
+        ];
+        $joins = [
+            [
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'User.id = Custodian.user_id',
+                ],
+            ],
+            [
+                'table'      => 'custodians_students',
+                'alias'      => 'CustodianStudent',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'CustodianStudent.custodian_id = Custodian.id',
+                ],
+            ],
+            [
+                'table'      => 'students',
+                'alias'      => 'Student',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Student.id = CustodianStudent.student_id',
+                ],
+            ],
+        ];
+        $condition = 'Custodian.id IN (' . implode(',', $this->contactIds('custodian')) . ')';
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
         );
         
     }
@@ -254,12 +333,12 @@ class Custodian extends Model {
     /**
      * 导出（仅对当前用户可见的）监护人记录
      *
-     * @return array
+     * @return array|bool
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     function export() {
-    
+        
         $range = Request::query('range');
         $departmentId = null;
         switch ($range) {
@@ -278,7 +357,9 @@ class Custodian extends Model {
         $custodians = $this->whereIn('id', $custodianIds)->get();
         $records = [self::EXCEL_EXPORT_TITLE];
         foreach ($custodians as $custodian) {
-            if (!$custodian->user) { continue; }
+            if (!$custodian->user) {
+                continue;
+            }
             $records[] = [
                 $custodian->user->realname,
                 $custodian->user->gender == Constant::ENABLED ? '男' : '女',
@@ -320,85 +401,6 @@ class Custodian extends Model {
         }
         
         return response()->json($result);
-        
-    }
-    
-    /**
-     * 监护人记录列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'Custodian.id', 'dt' => 0],
-            ['db' => 'User.realname', 'dt' => 1],
-            [
-                'db'        => 'CustodianStudent.student_id', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return Student::find($d)->user->realname;
-                },
-            ],
-            ['db' => 'User.email', 'dt' => 3],
-            ['db'        => 'User.gender', 'dt' => 4,
-             'formatter' => function ($d) {
-                 return $d == 1 ? Snippet::MALE : Snippet::FEMALE;
-             },
-            ],
-            ['db'        => 'Custodian.id as mobile', 'dt' => 5,
-             'formatter' => function ($d) {
-                 $custodian = $this->find($d);
-                 $mobiles = Mobile::whereUserId($custodian->user_id)->get();
-                 $mobile = [];
-                 foreach ($mobiles as $key => $value) {
-                     $mobile[] = $value->mobile;
-                 }
-                
-                 return implode(',', $mobile);
-             },
-            ],
-            ['db' => 'Custodian.created_at', 'dt' => 6],
-            ['db' => 'Custodian.updated_at', 'dt' => 7],
-            [
-                'db'        => 'User.enabled', 'dt' => 8,
-                'formatter' => function ($d, $row) {
-                    return $this->syncStatus($d, $row);
-                },
-            ],
-            ['db' => 'User.synced', 'dt' => 9],
-            ['db' => 'User.subscribed', 'dt' => 10],
-        ];
-        $joins = [
-            [
-                'table'      => 'users',
-                'alias'      => 'User',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'User.id = Custodian.user_id',
-                ],
-            ],
-            [
-                'table'      => 'custodians_students',
-                'alias'      => 'CustodianStudent',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'CustodianStudent.custodian_id = Custodian.id',
-                ],
-            ],
-            [
-                'table'      => 'students',
-                'alias'      => 'Student',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'Student.id = CustodianStudent.student_id',
-                ],
-            ],
-        ];
-        $condition = 'Custodian.id IN (' . implode(',', $this->contactIds('custodian')) . ')';
-        
-        return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
-        );
         
     }
     

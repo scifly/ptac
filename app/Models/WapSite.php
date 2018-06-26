@@ -1,27 +1,27 @@
 <?php
 namespace App\Models;
 
-use Eloquent;
-use Throwable;
-use Exception;
-use Carbon\Carbon;
-use Illuminate\View\View;
+use App\Facades\Datatable;
 use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
 use App\Helpers\HttpStatusCode;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
+use App\Helpers\ModelTrait;
 use App\Http\Requests\WapSiteRequest;
+use Carbon\Carbon;
+use Eloquent;
+use Exception;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use App\Facades\DatatableFacade as Datatable;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
+use Throwable;
 
 /**
  * App\Models\WapSite 微网站
@@ -201,6 +201,24 @@ class WapSite extends Model {
     }
     
     /**
+     * @param $request
+     * @throws Exception
+     */
+    private function removeMedias(WapSiteRequest $request) {
+        
+        //删除原有的图片
+        $mediaIds = $request->input('del_ids');
+        if ($mediaIds) {
+            $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
+            foreach ($medias as $media) {
+                Storage::disk('uploads')->delete($media->path);
+            }
+            Media::whereIn('id', $mediaIds)->delete();
+        }
+        
+    }
+    
+    /**
      * 删除微网站
      *
      * @param null $id
@@ -258,6 +276,8 @@ class WapSite extends Model {
         
     }
     
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+
     /**
      * 返回微官网首页
      *
@@ -285,24 +305,6 @@ class WapSite extends Model {
                 explode(',', $wapSite->media_ids)
             ),
         ]);
-        
-    }
-    
-    /**
-     * @param $request
-     * @throws Exception
-     */
-    private function removeMedias(WapSiteRequest $request) {
-        
-        //删除原有的图片
-        $mediaIds = $request->input('del_ids');
-        if ($mediaIds) {
-            $medias = Media::whereIn('id', $mediaIds)->get(['id', 'path']);
-            foreach ($medias as $media) {
-                Storage::disk('uploads')->delete($media->path);
-            }
-            Media::whereIn('id', $mediaIds)->delete();
-        }
         
     }
     

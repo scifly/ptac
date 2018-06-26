@@ -1,15 +1,14 @@
 <?php
-
 namespace App\Models;
 
+use App\Helpers\Constant;
+use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Throwable;
-use Carbon\Carbon;
-use App\Helpers\Constant;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * App\Models\MenuTab
@@ -31,9 +30,9 @@ use Illuminate\Database\Eloquent\Builder;
  * @method static Builder|MenuTab whereUpdatedAt($value)
  */
 class MenuTab extends Model {
-
+    
     protected $table = 'menus_tabs';
-
+    
     protected $fillable = ['menu_id', 'tab_id', 'tab_order', 'enabled'];
     
     /**
@@ -51,11 +50,11 @@ class MenuTab extends Model {
                 $records = [];
                 foreach ($tabIds as $tabId) {
                     $records[] = [
-                        'menu_id' => $menuId,
-                        'tab_id' => $tabId,
+                        'menu_id'    => $menuId,
+                        'tab_id'     => $tabId,
                         'created_at' => now()->toDateTimeString(),
                         'updated_at' => now()->toDateTimeString(),
-                        'enabled' => Constant::ENABLED,
+                        'enabled'    => Constant::ENABLED,
                     ];
                 }
                 $this->insert($records);
@@ -65,7 +64,7 @@ class MenuTab extends Model {
         }
         
         return true;
-
+        
     }
     
     /**
@@ -83,11 +82,11 @@ class MenuTab extends Model {
                 $records = [];
                 foreach ($menuIds as $menuId) {
                     $records[] = [
-                        'menu_id' => $menuId,
-                        'tab_id' => $tabId,
+                        'menu_id'    => $menuId,
+                        'tab_id'     => $tabId,
                         'created_at' => now()->toDateTimeString(),
                         'updated_at' => now()->toDateTimeString(),
-                        'enabled' => Constant::ENABLED,
+                        'enabled'    => Constant::ENABLED,
                     ];
                 }
                 $this->insert($records);
@@ -97,9 +96,9 @@ class MenuTab extends Model {
         }
         
         return true;
-
+        
     }
-
+    
     /**
      * 保存卡片排序
      *
@@ -123,7 +122,7 @@ class MenuTab extends Model {
         }
         
         return true;
-
+        
     }
     
     /**
@@ -133,7 +132,7 @@ class MenuTab extends Model {
      * @return array
      */
     function tabIdsByMenuId($menuId) {
-    
+        
         return self::whereMenuId($menuId)
             ->orderBy('tab_order')
             ->pluck('tab_id')

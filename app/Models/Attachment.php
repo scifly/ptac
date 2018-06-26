@@ -1,12 +1,11 @@
 <?php
-
 namespace App\Models;
 
-use Eloquent;
-use Carbon\Carbon;
 use App\Helpers\ModelTrait;
-use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
@@ -28,11 +27,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @mixin Eloquent
  */
 class Attachment extends Model {
-
+    
     use ModelTrait;
     
     protected $fillable = ['accachment_type_id', 'url', 'enabled'];
-
+    
     /**
      * 返回所属附件类型对象
      *
@@ -79,5 +78,4 @@ class Attachment extends Model {
         
     }
     
-
 }

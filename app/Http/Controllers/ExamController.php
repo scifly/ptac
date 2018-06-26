@@ -36,7 +36,7 @@ class ExamController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->exam->datatable()
+                $this->exam->index()
             );
         }
         
@@ -82,7 +82,7 @@ class ExamController extends Controller {
     public function show($id) {
         
         return $this->output([
-            'exam' => $this->exam->find($id)
+            'exam' => $this->exam->find($id),
         ]);
         
     }

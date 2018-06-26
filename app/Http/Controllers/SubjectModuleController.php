@@ -36,7 +36,7 @@ class SubjectModuleController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->sm->datatable()
+                $this->sm->index()
             );
         }
         

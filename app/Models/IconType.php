@@ -1,8 +1,7 @@
 <?php
-
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
@@ -31,18 +30,45 @@ use Illuminate\Support\Facades\DB;
  * @mixin Eloquent
  */
 class IconType extends Model {
-
+    
     use ModelTrait;
-
+    
     protected $fillable = ['name', 'remark', 'enabled'];
-
+    
     /**
      * 获取指定图标类型包含的所有图标对象
      *
      * @return HasMany
      */
     function icons() { return $this->hasMany('App\Models\Icon'); }
-
+    
+    /**
+     * 图标类型列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'IconType.id', 'dt' => 0],
+            ['db' => 'IconType.name', 'dt' => 1],
+            ['db' => 'IconType.remark', 'dt' => 2],
+            ['db' => 'IconType.created_at', 'dt' => 3],
+            ['db' => 'IconType.updated_at', 'dt' => 4],
+            [
+                'db'        => 'IconType.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row);
+                },
+            ],
+        ];
+        
+        return Datatable::simple(
+            $this->getModel(), $columns
+        );
+        
+    }
+    
     /**
      * 保存图标类型
      *
@@ -50,11 +76,11 @@ class IconType extends Model {
      * @return bool
      */
     function store(array $data) {
-
+        
         return $this->create($data) ? true : false;
-
+        
     }
-
+    
     /**
      * 更新图标类型
      *
@@ -63,9 +89,9 @@ class IconType extends Model {
      * @return bool
      */
     function modify(array $data, $id) {
-
+        
         return $this->find($id)->update($data);
-
+        
     }
     
     /**
@@ -76,9 +102,9 @@ class IconType extends Model {
      * @throws Exception
      */
     function remove($id = null) {
-    
+        
         return $this->del($this, $id);
-
+        
     }
     
     /**
@@ -100,31 +126,4 @@ class IconType extends Model {
         
     }
     
-    /**
-     * 图标类型列表
-     *
-     * @return array
-     */
-    function datatable() {
-
-        $columns = [
-            ['db' => 'IconType.id', 'dt' => 0],
-            ['db' => 'IconType.name', 'dt' => 1],
-            ['db' => 'IconType.remark', 'dt' => 2],
-            ['db' => 'IconType.created_at', 'dt' => 3],
-            ['db' => 'IconType.updated_at', 'dt' => 4],
-            [
-                'db' => 'IconType.enabled', 'dt' => 5,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row);
-                },
-            ],
-        ];
-        
-        return Datatable::simple(
-            $this->getModel(), $columns
-        );
-        
-    }
-
 }

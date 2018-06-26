@@ -1,12 +1,11 @@
 <?php
-
 namespace App\Models;
 
+use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -27,13 +26,23 @@ use Illuminate\Support\Facades\Request;
  * @property-read User $user
  */
 class PollQuestionnaireParticipant extends Model {
-
+    
     protected $table = 'poll_questionnaire_participants';
-
+    
     protected $fillable = ['pq_id', 'user_id', 'created_at', 'updated-at'];
-
-    function pollquestionnaire() { return $this->belongsTo('App\Models\PollQuestionnaire'); }
-
+    
+    /**
+     * 返回所属的调查问卷对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    function pollQuestionnaire() { return $this->belongsTo('App\Models\PollQuestionnaire'); }
+    
+    /**
+     * 返回所属的用户对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     function user() { return $this->belongsTo('App\Models\User'); }
     
     /**

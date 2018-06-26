@@ -1,17 +1,17 @@
 <?php
 namespace App\Models;
 
+use App\Facades\Datatable;
+use App\Helpers\HttpStatusCode;
+use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
+use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Carbon\Carbon;
-use App\Helpers\Snippet;
-use App\Helpers\ModelTrait;
-use App\Helpers\HttpStatusCode;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -90,6 +90,67 @@ class ScoreTotal extends Model {
     }
     
     /**
+     * 总成绩记录列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'ScoreTotal.id', 'dt' => 0],
+            ['db' => 'Student.student_number', 'dt' => 1],
+            ['db' => 'User.realname', 'dt' => 2],
+            ['db' => 'Exam.name as examname', 'dt' => 3],
+            ['db' => 'ScoreTotal.score', 'dt' => 4],
+            ['db' => 'ScoreTotal.class_rank', 'dt' => 5],
+            ['db' => 'ScoreTotal.grade_rank', 'dt' => 6],
+            ['db' => 'ScoreTotal.created_at', 'dt' => 7],
+            ['db' => 'ScoreTotal.updated_at', 'dt' => 8],
+            [
+                'db'        => 'ScoreTotal.enabled', 'dt' => 9,
+                'formatter' => function ($d, $row) {
+                    $id = $row['id'];
+                    $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
+                    
+                    return Snippet::status($d) . $delLink;
+                },
+            ],
+        ];
+        $joins = [
+            [
+                'table'      => 'students',
+                'alias'      => 'Student',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Student.id = ScoreTotal.student_id',
+                ],
+            ],
+            [
+                'table'      => 'exams',
+                'alias'      => 'Exam',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Exam.id = ScoreTotal.exam_id',
+                ],
+            ],
+            [
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'User.id = Student.user_id',
+                ],
+            ],
+        ];
+        $condition = 'Student.id IN (' . implode(',', $this->contactIds('student')) . ')';
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
+        
+    }
+    
+    /**
      * 保存总成绩
      *
      * @param array $data
@@ -154,67 +215,6 @@ class ScoreTotal extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-        
-    }
-    
-    /**
-     * 总成绩记录列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'ScoreTotal.id', 'dt' => 0],
-            ['db' => 'Student.student_number', 'dt' => 1],
-            ['db' => 'User.realname', 'dt' => 2],
-            ['db' => 'Exam.name as examname', 'dt' => 3],
-            ['db' => 'ScoreTotal.score', 'dt' => 4],
-            ['db' => 'ScoreTotal.class_rank', 'dt' => 5],
-            ['db' => 'ScoreTotal.grade_rank', 'dt' => 6],
-            ['db' => 'ScoreTotal.created_at', 'dt' => 7],
-            ['db' => 'ScoreTotal.updated_at', 'dt' => 8],
-            [
-                'db'        => 'ScoreTotal.enabled', 'dt' => 9,
-                'formatter' => function ($d, $row) {
-                    $id = $row['id'];
-                    $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
-                    
-                    return Snippet::status($d) . $delLink;
-                },
-            ],
-        ];
-        $joins = [
-            [
-                'table'      => 'students',
-                'alias'      => 'Student',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'Student.id = ScoreTotal.student_id',
-                ],
-            ],
-            [
-                'table'      => 'exams',
-                'alias'      => 'Exam',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'Exam.id = ScoreTotal.exam_id',
-                ],
-            ],
-            [
-                'table'      => 'users',
-                'alias'      => 'User',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'User.id = Student.user_id',
-                ],
-            ],
-        ];
-        $condition = 'Student.id IN (' . implode(',', $this->contactIds('student')) . ')';
-        
-        return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
-        );
         
     }
     

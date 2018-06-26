@@ -36,7 +36,7 @@ class SemesterController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->semester->datatable()
+                $this->semester->index()
             );
         }
         
@@ -82,7 +82,7 @@ class SemesterController extends Controller {
     public function edit($id) {
         
         return $this->output([
-            'semester' => $this->semester->find($id)
+            'semester' => $this->semester->find($id),
         ]);
         
     }

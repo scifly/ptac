@@ -1,17 +1,17 @@
 <?php
 namespace App\Models;
 
+use App\Facades\Datatable;
+use App\Helpers\ModelTrait;
+use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Carbon\Carbon;
-use App\Helpers\ModelTrait;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use App\Facades\DatatableFacade as Datatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Models\Team 教职员工组
@@ -73,6 +73,34 @@ class Team extends Model {
     }
     
     /**
+     * 教职员工组列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'Team.id', 'dt' => 0],
+            ['db' => 'Team.name', 'dt' => 1],
+            ['db' => 'Team.remark', 'dt' => 2],
+            ['db' => 'Team.created_at', 'dt' => 3],
+            ['db' => 'Team.updated_at', 'dt' => 4],
+            [
+                'db'        => 'Team.enabled', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        $condition = 'Team.school_id = ' . $this->schoolId();
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, null, $condition
+        );
+        
+    }
+    
+    /**
      * 保存教职员工组
      *
      * @param array $data
@@ -129,34 +157,6 @@ class Team extends Model {
         }
         
         return true;
-        
-    }
-    
-    /**
-     * 教职员工组列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'Team.id', 'dt' => 0],
-            ['db' => 'Team.name', 'dt' => 1],
-            ['db' => 'Team.remark', 'dt' => 2],
-            ['db' => 'Team.created_at', 'dt' => 3],
-            ['db' => 'Team.updated_at', 'dt' => 4],
-            [
-                'db'        => 'Team.enabled', 'dt' => 5,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                },
-            ],
-        ];
-        $condition = 'Team.school_id = ' . $this->schoolId();
-        
-        return Datatable::simple(
-            $this->getModel(), $columns, null, $condition
-        );
         
     }
     

@@ -77,7 +77,7 @@ class UserController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->message->datatable()
+                $this->message->index()
             );
         }
         
@@ -94,7 +94,7 @@ class UserController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->event->datatable()
+                $this->event->index()
             );
         }
         
@@ -122,7 +122,6 @@ class UserController extends Controller {
         );
         
     }
-    
     
     /**
      * 上传用户头像

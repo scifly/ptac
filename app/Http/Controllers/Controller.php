@@ -1,22 +1,21 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
+use App\Models\Action;
+use App\Models\Menu;
+use App\Models\Tab;
 use App\Policies\Route;
 use Exception;
-use Illuminate\Support\Facades\View;
-use Throwable;
-use App\Models\Tab;
-use App\Models\Menu;
-use App\Models\Action;
-use App\Helpers\HttpStatusCode;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Throwable;
 
 class Controller extends BaseController {
     
@@ -96,7 +95,7 @@ class Controller extends BaseController {
                 'uri'        => Request::path(),
                 'html'       => view($view, $params)->render(),
                 'js'         => $action->js,
-                'department' => $menu->department(session('menuId'))
+                'department' => $menu->department(session('menuId')),
             ]);
         }
         # 如果是非Ajax请求，且用户已登录
@@ -109,12 +108,12 @@ class Controller extends BaseController {
                 $params['breadcrumb'] = $action->name;
                 
                 return view('home.page', [
-                    'menu'    => $menu->menuHtml($menu->rootMenuId()),
-                    'tabs'    => [],
-                    'content' => view($view, $params)->render(),
-                    'menuId'  => session('menuId'),
-                    'js'      => 'js/home/page',
-                    'department' => $menu->department($menu->id)
+                    'menu'       => $menu->menuHtml($menu->rootMenuId()),
+                    'tabs'       => [],
+                    'content'    => view($view, $params)->render(),
+                    'menuId'     => session('menuId'),
+                    'js'         => 'js/home/page',
+                    'department' => $menu->department($menu->id),
                 ]);
             }
         }
@@ -133,6 +132,27 @@ class Controller extends BaseController {
     }
     
     /**
+     * 返回指定控制器对应的所有路由
+     *
+     * @param $controller
+     * @return array
+     */
+    private function uris($controller) {
+        
+        $routes = Action::whereController($controller)
+            ->where('route', '<>', null)
+            ->pluck('route', 'method')
+            ->toArray();
+        $uris = [];
+        foreach ($routes as $key => $value) {
+            $uris[$key] = new Route($value);
+        }
+        
+        return $uris;
+        
+    }
+    
+    /**
      * 返回操作结果提示信息
      *
      * @param mixed $result
@@ -141,34 +161,31 @@ class Controller extends BaseController {
      * @return JsonResponse|string
      */
     protected function result($result, String $success = null, String $failure = null) {
-    
+        
         # 获取功能名称
         $e = new Exception();
         $method = $e->getTrace()[1]['function'];
-        $path = explode('\\' , get_called_class());
+        $path = explode('\\', get_called_class());
         $controller = $path[sizeof($path) - 1];
         unset($e);
         $title = Action::whereMethod($method)
             ->where('controller', $controller)
             ->first()->name;
-        
         # 获取Http状态码
         $statusCode = $result
             ? HttpStatusCode::OK
             : HttpStatusCode::INTERNAL_SERVER_ERROR;
-        
         # 获取状态消息
         $message = $result
             ? ($success ?? __('messages.ok'))
             : ($failure ?? __('messages.fail'));
-        
         # 输出状态码及消息
         if (Request::ajax()) {
             return $result
                 ? response()->json([
                     'statusCode' => $statusCode,
                     'message'    => $message,
-                    'title'      => $title
+                    'title'      => $title,
                 ])
                 : abort($statusCode, $message);
         }
@@ -194,30 +211,9 @@ class Controller extends BaseController {
                 $args = [$model->find($request->route('id')), true];
             }
             $this->authorize($action, $args);
-    
+            
             return $next($request);
         });
-        
-    }
-    
-    /**
-     * 返回指定控制器对应的所有路由
-     *
-     * @param $controller
-     * @return array
-     */
-    private function uris($controller) {
-    
-        $routes = Action::whereController($controller)
-            ->where('route', '<>', null)
-            ->pluck('route', 'method')
-            ->toArray();
-        $uris = [];
-        foreach ($routes as $key => $value) {
-            $uris[$key] = new Route($value);
-        }
-
-        return $uris;
         
     }
     

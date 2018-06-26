@@ -27,7 +27,7 @@ class CompanyController extends Controller {
         $this->middleware(['auth', 'checkrole']);
         $this->company = $company;
         $this->approve($company);
-    
+        
     }
     
     /**
@@ -40,7 +40,7 @@ class CompanyController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->company->datatable()
+                $this->company->index()
             );
         }
         

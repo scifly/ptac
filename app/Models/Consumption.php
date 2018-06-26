@@ -1,11 +1,11 @@
 <?php
 namespace App\Models;
 
+use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
-use App\Facades\DatatableFacade as Datatable;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -42,20 +42,17 @@ class Consumption extends Model {
     
     use ModelTrait;
     
-    protected $table = 'consumptions';
-    
-    protected $fillable = [
-        'student_id', 'location', 'machineid',
-        'ctype', 'amount', 'ctime', 'merchant',
-    ];
-    
     const STAT_RANGE = [
         'student' => 1,
         'class'   => 2,
         'grade'   => 3,
     ];
-    
     const EXPORT_TITLES = ['#', '姓名', '性别', '所属班级', '消费类型', '消费金额', '消费时间', '商品'];
+    protected $table = 'consumptions';
+    protected $fillable = [
+        'student_id', 'location', 'machineid',
+        'ctype', 'amount', 'ctime', 'merchant',
+    ];
     
     /**
      * 返回消费记录所属的学生对象
@@ -65,6 +62,62 @@ class Consumption extends Model {
     function student() {
         
         return $this->belongsTo('App\Models\Student');
+        
+    }
+    
+    /**
+     * 消费记录列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'Consumption.id', 'dt' => 0],
+            ['db' => 'User.realname', 'dt' => 1],
+            ['db' => 'Consumption.location', 'dt' => 2],
+            ['db' => 'Consumption.machineid', 'dt' => 3],
+            [
+                'db'        => 'Consumption.ctype', 'dt' => 4,
+                'formatter' => function ($d) {
+                    return $d == 0
+                        ? sprintf(Snippet::BADGE_GREEN, '充值')
+                        : sprintf(Snippet::BADGE_RED, '消费');
+                },
+            ],
+            [
+                'db'        => 'Consumption.amount', 'dt' => 5,
+                'formatter' => function ($d) {
+                    setlocale(LC_MONETARY, 'zh_CN.UTF-8');
+                    
+                    return money_format('%.2n', $d);
+                },
+            ],
+            ['db' => 'Consumption.ctime', 'dt' => 6],
+        ];
+        $joins = [
+            [
+                'table'      => 'students',
+                'alias'      => 'Student',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Student.id = Consumption.student_id',
+                ],
+            ],
+            [
+                'table'      => 'users',
+                'alias'      => 'User',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'User.id = Student.user_id',
+                ],
+            ],
+        ];
+        $condition = 'Student.id IN (' . implode(',', $this->contactIds('student')) . ')';
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
         
     }
     
@@ -147,10 +200,58 @@ class Consumption extends Model {
     }
     
     /**
+     * @param array $conditions
+     * @return array
+     */
+    private function parseConditions(array $conditions): array {
+        
+        $dateRange = explode(' - ', $conditions['date_range']);
+        $range = [$dateRange[0] . ' 00:00:00', $dateRange[1] . ' 23:59:59'];
+        $rangeId = $conditions['range_id'];
+        
+        return [$range, $rangeId];
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+
+    /**
+     * 获取需要返回消费记录的学生ids
+     *
+     * @param array $conditions
+     * @param $rangeId
+     * @return array
+     */
+    private function getStudentIds(array $conditions, $rangeId): array {
+        
+        $studentIds = [];
+        switch ($rangeId) {
+            case self::STAT_RANGE['student']:
+                $studentIds = [$conditions['student_id']];
+                break;
+            case self::STAT_RANGE['class']:
+                $classId = $conditions['class_id'];
+                $studentIds = Squad::find($classId)
+                    ->students->pluck('id')->toArray();
+                break;
+            case self::STAT_RANGE['grade']:
+                $gradeId = $conditions['grade_id'];
+                $studentIds = Grade::find($gradeId)
+                    ->students->pluck('id')->toArray();
+                break;
+            default:
+                break;
+        }
+        
+        return $studentIds;
+        
+    }
+    
+    /**
      * 批量导出
      *
      * @param null|integer $detail , null - 导出所有记录, 0 - 导出消费明细, 1 - 导出充值明细
      * @param array $conditions
+     * @return bool
      * @throws Exception
      */
     function export($detail = null, array $conditions = []) {
@@ -185,107 +286,6 @@ class Consumption extends Model {
         
         return $this->excel($records);
         
-    }
-    
-    /**
-     * 消费记录列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'Consumption.id', 'dt' => 0],
-            ['db' => 'User.realname', 'dt' => 1],
-            ['db' => 'Consumption.location', 'dt' => 2],
-            ['db' => 'Consumption.machineid', 'dt' => 3],
-            [
-                'db'        => 'Consumption.ctype', 'dt' => 4,
-                'formatter' => function ($d) {
-                    return $d == 0
-                        ? sprintf(Snippet::BADGE_GREEN, '充值')
-                        : sprintf(Snippet::BADGE_RED, '消费');
-                },
-            ],
-            [
-                'db'        => 'Consumption.amount', 'dt' => 5,
-                'formatter' => function ($d) {
-                    setlocale(LC_MONETARY, 'zh_CN.UTF-8');
-                    
-                    return money_format('%.2n', $d);
-                },
-            ],
-            ['db' => 'Consumption.ctime', 'dt' => 6],
-        ];
-        $joins = [
-            [
-                'table'      => 'students',
-                'alias'      => 'Student',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'Student.id = Consumption.student_id',
-                ],
-            ],
-            [
-                'table'      => 'users',
-                'alias'      => 'User',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'User.id = Student.user_id',
-                ],
-            ],
-        ];
-        $condition = 'Student.id IN (' . implode(',', $this->contactIds('student')) . ')';
-        
-        return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
-        );
-        
-    }
-    
-    /**
-     * 获取需要返回消费记录的学生ids
-     *
-     * @param array $conditions
-     * @param $rangeId
-     * @return array
-     */
-    private function getStudentIds(array $conditions, $rangeId): array {
-        
-        $studentIds = [];
-        switch ($rangeId) {
-            case self::STAT_RANGE['student']:
-                $studentIds = [$conditions['student_id']];
-                break;
-            case self::STAT_RANGE['class']:
-                $classId = $conditions['class_id'];
-                $studentIds = Squad::find($classId)
-                    ->students->pluck('id')->toArray();
-                break;
-            case self::STAT_RANGE['grade']:
-                $gradeId = $conditions['grade_id'];
-                $studentIds = Grade::find($gradeId)
-                    ->students->pluck('id')->toArray();
-                break;
-            default:
-                break;
-        }
-        
-        return $studentIds;
-        
-    }
-    
-    /**
-     * @param array $conditions
-     * @return array
-     */
-    private function parseConditions(array $conditions): array {
-        
-        $dateRange = explode(' - ', $conditions['date_range']);
-        $range = [$dateRange[0] . ' 00:00:00', $dateRange[1] . ' 23:59:59'];
-        $rangeId = $conditions['range_id'];
-        
-        return [$range, $rangeId];
     }
     
 }

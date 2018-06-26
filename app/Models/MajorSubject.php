@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Carbon\Carbon;
@@ -28,9 +27,9 @@ use Throwable;
  * @property-read Subject $subject
  */
 class MajorSubject extends Model {
-
+    
     protected $table = 'majors_subjects';
-
+    
     protected $fillable = ['major_id', 'subject_id'];
     
     /**
@@ -41,13 +40,13 @@ class MajorSubject extends Model {
      * @throws Throwable
      */
     function storeByMajorId($majorId, array $subjectIds) {
-
+        
         try {
             DB::transaction(function () use ($majorId, $subjectIds) {
                 $records = [];
                 foreach ($subjectIds as $subjectId) {
                     $records[] = [
-                        'major_id' => $majorId,
+                        'major_id'   => $majorId,
                         'subject_id' => $subjectId,
                         'created_at' => now()->toDateTimeString(),
                         'updated_at' => now()->toDateTimeString(),
@@ -69,13 +68,13 @@ class MajorSubject extends Model {
      * @throws Throwable
      */
     function storeBySubjectId($subjectId, $majorIds) {
-
+        
         try {
             DB::transaction(function () use ($subjectId, $majorIds) {
                 $records = [];
                 foreach ($majorIds as $majorId) {
                     $records[] = [
-                        'major_id' => $majorId,
+                        'major_id'   => $majorId,
                         'subject_id' => $subjectId,
                         'created_at' => now()->toDateTimeString(),
                         'updated_at' => now()->toDateTimeString(),
@@ -86,7 +85,7 @@ class MajorSubject extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-
+        
     }
-
+    
 }

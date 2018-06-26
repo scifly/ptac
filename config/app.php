@@ -204,7 +204,6 @@ return [
         'Validator'    => Illuminate\Support\Facades\Validator::class,
         'View'         => Illuminate\Support\Facades\View::class,
         'Wechat'       => App\Facades\Wechat::class,
-        // 'Datatable'    => App\Facades\DatatableFacade::class,
         'Datatable'    => App\Facades\Datatable::class,
         'GeneralClass' => App\Facades\GeneralClass::class,
         'Form'         => Collective\Html\FormFacade::class,

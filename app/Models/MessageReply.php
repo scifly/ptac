@@ -1,12 +1,12 @@
 <?php
 namespace App\Models;
 
-use Eloquent;
-use Carbon\Carbon;
 use App\Helpers\ModelTrait;
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Request;
 
 /**

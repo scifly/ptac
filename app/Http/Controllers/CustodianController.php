@@ -3,8 +3,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CustodianRequest;
 use App\Models\Custodian;
-use App\Models\Grade;
-use App\Models\Squad;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -40,7 +38,7 @@ class CustodianController extends Controller {
         
         return Request::get('draw')
             ? response()->json(
-                $this->custodian->datatable()
+                $this->custodian->index()
             )
             : $this->output();
     }
@@ -104,7 +102,7 @@ class CustodianController extends Controller {
         return Request::method() === 'POST'
             ? $this->custodian->csList()
             : $this->output([
-                'custodian' => $this->custodian->find($id)
+                'custodian' => $this->custodian->find($id),
             ]);
         
     }
@@ -151,7 +149,7 @@ class CustodianController extends Controller {
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function export() {
-    
+        
         return Request::method() == 'POST'
             ? $this->custodian->csList()
             : $this->custodian->export();

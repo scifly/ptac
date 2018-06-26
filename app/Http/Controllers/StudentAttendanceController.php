@@ -38,7 +38,7 @@ class StudentAttendanceController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->sa->datatable()
+                $this->sa->index()
             );
         }
         
@@ -62,9 +62,10 @@ class StudentAttendanceController extends Controller {
                     Request::input('id')
                 );
                 $this->result['html']['classes'] = $classes;
-    
+                
                 return response()->json($this->result);
             }
+            
             return response()->json(
                 $this->sa->stat()
             );

@@ -38,7 +38,7 @@ class GradeController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->grade->datatable()
+                $this->grade->index()
             );
         }
         

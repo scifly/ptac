@@ -36,7 +36,7 @@ class MenuTypeController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->mt->datatable()
+                $this->mt->index()
             );
         }
         

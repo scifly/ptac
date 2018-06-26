@@ -1,8 +1,7 @@
 <?php
-
 namespace App\Models;
 
-use App\Facades\DatatableFacade as Datatable;
+use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
@@ -40,20 +39,62 @@ use Illuminate\Support\Facades\DB;
 class ComboType extends Model {
     
     use ModelTrait;
-
+    
     protected $table = 'combo_types';
-
+    
     protected $fillable = [
         'name', 'amount', 'discount',
         'school_id', 'months', 'enabled',
     ];
-
+    
     /**
      * 返回套餐类型所属的学校对象
      *
      * @return BelongsTo
      */
     function school() { return $this->belongsTo('App\Models\school'); }
+    
+    /**
+     * 套餐类型列表
+     *
+     * @return array
+     */
+    function index() {
+        
+        $columns = [
+            ['db' => 'ComboType.id', 'dt' => 0],
+            ['db' => 'ComboType.name', 'dt' => 1],
+            [
+                'db'        => 'ComboType.amount', 'dt' => 2,
+                'formatter' => function ($d) {
+                    setlocale(LC_MONETARY, 'zh_CN.UTF-8');
+                    
+                    return money_format('%.2n', $d);
+                },
+            ],
+            [
+                'db'        => 'ComboType.discount', 'dt' => 3,
+                'formatter' => function ($d) {
+                    return $d . '%';
+                },
+            ],
+            ['db' => 'ComboType.months', 'dt' => 4],
+            ['db' => 'ComboType.created_at', 'dt' => 5],
+            ['db' => 'ComboType.updated_at', 'dt' => 6],
+            [
+                'db'        => 'ComboType.enabled', 'dt' => 7,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row, false);
+                },
+            ],
+        ];
+        $condition = 'ComboType.school_id = ' . $this->schoolId();
+        
+        return Datatable::simple(
+            $this->getModel(), $columns, null, $condition
+        );
+        
+    }
     
     /**
      * 保存套餐类型
@@ -104,7 +145,7 @@ class ComboType extends Model {
         try {
             DB::transaction(function () use ($id) {
                 Order::whereComboTypeId($id)->update([
-                    'combo_type_id' => 0
+                    'combo_type_id' => 0,
                 ]);
                 $this->find($id)->delete();
             });
@@ -114,45 +155,4 @@ class ComboType extends Model {
         
     }
     
-    /**
-     * 套餐类型列表
-     *
-     * @return array
-     */
-    function datatable() {
-        
-        $columns = [
-            ['db' => 'ComboType.id', 'dt' => 0],
-            ['db' => 'ComboType.name', 'dt' => 1],
-            [
-                'db' => 'ComboType.amount', 'dt' => 2,
-                'formatter' => function($d) {
-                    setlocale(LC_MONETARY, 'zh_CN.UTF-8');
-                    return money_format('%.2n', $d);
-                }
-            ],
-            [
-                'db' => 'ComboType.discount', 'dt' => 3,
-                'formatter' => function($d) {
-                    return $d . '%';
-                }
-            ],
-            ['db' => 'ComboType.months', 'dt' => 4],
-            ['db' => 'ComboType.created_at', 'dt' => 5],
-            ['db' => 'ComboType.updated_at', 'dt' => 6],
-            [
-                'db' => 'ComboType.enabled', 'dt' => 7,
-                'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
-                },
-            ],
-        ];
-        $condition = 'ComboType.school_id = ' . $this->schoolId();
-        
-        return Datatable::simple(
-            $this->getModel(), $columns, null, $condition
-        );
-
-    }
-
 }
