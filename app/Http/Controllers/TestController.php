@@ -5,6 +5,7 @@ use App\Models\App;
 use App\Models\Department;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use Illuminate\Console\DetectsApplicationNamespace;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -14,7 +15,7 @@ use ReflectionMethod;
  */
 class TestController extends Controller {
     
-    // use ModelTrait;
+    use DetectsApplicationNamespace;
     protected $keyId = 'LTAIk1710IrzHBg4';
     protected $keySecret = 'xxO5XaXx3O7kB3YR14XSdFulw1x56k';
     protected $callerShowNumber = '02388373982';
@@ -23,7 +24,7 @@ class TestController extends Controller {
      */
     public function index() {
         
-        dd(env('APP_NAME'));
+        dd($this->getAppNamespace());
         $a = [
             0 => 'a',
             1 => 'b',
