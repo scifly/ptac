@@ -8,6 +8,7 @@ use App\Models\Corp;
 use App\Facades\Wechat;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
@@ -16,9 +17,10 @@ class WechatAuth {
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  \Closure $next
+     * @param  Request $request
+     * @param  Closure $next
      * @return mixed
+     * @throws Exception
      */
     public function handle($request, Closure $next) {
     
@@ -50,7 +52,7 @@ class WechatAuth {
             abort_if(
                 $result['errcode'],
                 HttpStatusCode::INTERNAL_SERVER_ERROR,
-                Wechat::ERRMSGS[$result['errcode']]
+                Constant::WXERR[$result['errcode']]
             );
             $user = User::whereEnabled(1)->where('userid', $result['UserId'])->first();
             abort_if(

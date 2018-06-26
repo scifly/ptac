@@ -106,6 +106,7 @@ class ConferenceQueueController extends Controller {
      * @param ConferenceQueueRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Exception
      */
     public function update(ConferenceQueueRequest $request, $id) {
         

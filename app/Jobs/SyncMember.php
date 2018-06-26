@@ -5,6 +5,7 @@ use App\Models\Corp;
 use App\Helpers\JobTrait;
 use App\Helpers\Constant;
 use App\Events\JobResponse;
+use Exception;
 use Illuminate\Bus\Queueable;
 use App\Helpers\HttpStatusCode;
 use Illuminate\Queue\SerializesModels;
@@ -43,6 +44,7 @@ class SyncMember implements ShouldQueue {
      * Execute the job.
      *
      * @return bool
+     * @throws Exception
      */
     public function handle() {
     

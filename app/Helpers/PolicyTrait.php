@@ -4,7 +4,6 @@ namespace App\Helpers;
 use App\Models\Action;
 use App\Models\ActionGroup;
 use App\Models\User;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 trait PolicyTrait {

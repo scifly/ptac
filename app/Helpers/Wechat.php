@@ -126,7 +126,7 @@ class Wechat {
     const URL_BATCH_SEND_SMS = "http://sdk2.028lk.com:9880/sdk2/BatchSend2.aspx?CorpID=%s&Pwd=%s&Mobile=%s&Content=%s&Cell=%s&SendTime=%s";
     # 接收短信回复
     const URL_GET_RESPONSE_SMS = "http://sdk2.028lk.com:9880/sdk2/Get.aspx?CorpID=%s&Pwd=%s";
-
+    
     # 错误代码 & 消息
     const ERRMSGS = [
         -1 => '系统繁忙',
@@ -1243,7 +1243,7 @@ class Wechat {
         
         return $errcode == 0
             ? ['errcode' => 0, 'access_token' => $result->{'access_token'}]
-            : ['errcode' => $errcode, 'errmsg' => self::ERRMSGS[$errcode]];
+            : ['errcode' => $errcode, 'errmsg' => Constant::WXERR[$errcode]];
         
     }
     

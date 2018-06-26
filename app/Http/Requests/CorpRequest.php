@@ -2,7 +2,6 @@
 namespace App\Http\Requests;
 
 use App\Helpers\ModelTrait;
-use App\Models\Company;
 use App\Models\Corp;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;

@@ -33,7 +33,8 @@ class Snippet {
     const MENU_DEFAULT_ICON = '<i class="fa fa-circle-o" style="width: 20px;"></i>';
     const MENU_ICON = '<i class="%s" style="width: 20px;"></i>';
     # 不包含子菜单的模板
-    const SIMPLE = '<li%s><a id="%s" href="%s" class="leaf"><i class="%s"></i> %s</a></li>';
+    const /** @noinspection HtmlUnknownTarget */
+        SIMPLE = '<li%s><a id="%s" href="%s" class="leaf"><i class="%s"></i> %s</a></li>';
     # 包含子菜单的HTML模板
     const TREE = <<<HTML
             <li class="treeview%s">

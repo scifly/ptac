@@ -136,6 +136,7 @@ class ScoreController extends Controller {
      * 发送成绩
      *
      * @return JsonResponse
+     * @throws Exception
      */
     public function send() {
         

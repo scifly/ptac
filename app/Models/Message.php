@@ -357,6 +357,7 @@ class Message extends Model {
      * @param $mobiles
      * @param $content
      * @return string
+     * @throws Exception
      */
     function sendSms($mobiles, $content) {
         
@@ -458,6 +459,7 @@ class Message extends Model {
      * 上传媒体文件
      *
      * @return JsonResponse
+     * @throws Exception
      */
     function upload() {
         
@@ -517,7 +519,7 @@ class Message extends Model {
         abort_if(
             $result->{'errcode'},
             HttpStatusCode::INTERNAL_SERVER_ERROR,
-            Wechat::ERRMSGS[$result->{'errcode'}]
+            Constant::WXERR[$result->{'errcode'}]
         );
         $uploadedFile['media_id'] = $result->{'media_id'};
         

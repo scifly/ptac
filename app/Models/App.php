@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Wechat;
+use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Http\Requests\AppRequest;
 use App\Jobs\SyncApp;
@@ -102,6 +103,7 @@ class App extends Model {
                 'apps' => '<tr id="na"><td colspan="8" style="text-align: center;">( n/a )</td></tr>',
             ]);
         }
+        /** @noinspection HtmlUnknownTarget */
         $tr =
             '<tr id="app%s">
                 <td>%s</td>
@@ -191,7 +193,7 @@ class App extends Model {
         abort_if(
             $result->{'errcode'},
             HttpStatusCode::INTERNAL_SERVER_ERROR,
-            Wechat::ERRMSGS[$result->{'errcode'}]
+            Constant::WXERR[$result->{'errcode'}]
         );
         # 更新/创建本地应用记录
         $data = [

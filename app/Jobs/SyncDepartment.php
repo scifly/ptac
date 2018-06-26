@@ -7,6 +7,7 @@ use App\Helpers\Constant;
 use App\Models\Department;
 use App\Events\JobResponse;
 use App\Helpers\ModelTrait;
+use Exception;
 use Illuminate\Bus\Queueable;
 use App\Helpers\HttpStatusCode;
 use Illuminate\Queue\SerializesModels;
@@ -45,6 +46,7 @@ class SyncDepartment implements ShouldQueue {
      * Execute the job
      *
      * @return bool
+     * @throws Exception
      */
     public function handle() {
     
@@ -81,7 +83,7 @@ class SyncDepartment implements ShouldQueue {
         }
         if ($result->{'errcode'}) {
             $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-            $response['message'] = Wechat::ERRMSGS[$result->{'errcode'}];
+            $response['message'] = Constant::WXERR[$result->{'errcode'}];
             event(new JobResponse($response));
             return false;
         }

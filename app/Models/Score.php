@@ -674,6 +674,7 @@ class Score extends Model {
      *
      * @param $data
      * @return array
+     * @throws Exception
      */
     function send($data) {
         

@@ -3,9 +3,11 @@ namespace App\Jobs;
 
 use App\Events\JobResponse;
 use App\Facades\Wechat;
+use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Models\App;
 use App\Models\Corp;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -35,6 +37,7 @@ class SyncApp implements ShouldQueue {
      * Execute the job
      *
      * @return mixed
+     * @throws Exception
      */
     public function handle() {
         
@@ -69,7 +72,7 @@ class SyncApp implements ShouldQueue {
         );
         if ($result->{'errcode'}) {
             $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-            $response['message'] = Wechat::ERRMSGS[$result->{'errcode'}];
+            $response['message'] = Constant::WXERR[$result->{'errcode'}];
         }
         event(new JobResponse($response));
         

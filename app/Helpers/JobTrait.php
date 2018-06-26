@@ -3,9 +3,8 @@ namespace App\Helpers;
 
 use App\Models\Corp;
 use App\Models\User;
-use App\Models\School;
 use App\Facades\Wechat;
-use Illuminate\Support\Facades\Log;
+use Exception;
 
 trait JobTrait {
     
@@ -15,6 +14,7 @@ trait JobTrait {
      * @param $data
      * @param $action - create/
      * @return array
+     * @throws Exception
      */
     function syncMember($data, $action): array {
         
@@ -39,6 +39,7 @@ trait JobTrait {
      * @param array $app - 应用详情
      * @param array $message - 消息详情
      * @return array|bool|mixed
+     * @throws Exception
      */
     function sendMessage(Corp $corp, array $app, array $message) {
         
@@ -48,7 +49,7 @@ trait JobTrait {
         
         return [
             'errcode' => $result->{'errcode'},
-            'errmsg' => Wechat::ERRMSGS[$result->{'errcode'}],
+            'errmsg' => Constant::WXERR[$result->{'errcode'}],
             'invaliduser' => isset($result->{'invaliduser'}) ? $result->{'invaliduser'} : '',
             'invalidparty' => isset($result->{'invalidparty'}) ? $result->{'invalidparty'} : '',
         ];
@@ -63,6 +64,7 @@ trait JobTrait {
      * @param mixed $data
      * @param string $action
      * @return bool|mixed
+     * @throws Exception
      */
     private function operate($corpid, $secret, $data, $action) {
         
@@ -81,7 +83,7 @@ trait JobTrait {
         }
         $response = [
             'errcode' => $result->{'errcode'},
-            'errmsg' => Wechat::ERRMSGS[$result->{'errcode'}]
+            'errmsg' => Constant::WXERR[$result->{'errcode'}]
         ];
         
         return $response;

@@ -189,6 +189,7 @@ class ManageStudentAttendance implements ShouldQueue {
      * @param $userId
      * @param $msg
      * @return bool
+     * @throws Exception
      */
     private function pushMessage($userId, $msg) {
         

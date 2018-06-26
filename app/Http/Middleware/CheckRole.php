@@ -7,8 +7,6 @@ use App\Models\Action;
 use App\Models\ActionGroup;
 use App\Models\Corp;
 use App\Models\Department;
-use App\Models\DepartmentUser;
-use App\Models\Group;
 use App\Models\GroupMenu;
 use App\Models\Menu;
 use App\Models\School;

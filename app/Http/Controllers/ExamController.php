@@ -107,6 +107,7 @@ class ExamController extends Controller {
      * @param ExamRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Exception
      */
     public function update(ExamRequest $request, $id) {
         

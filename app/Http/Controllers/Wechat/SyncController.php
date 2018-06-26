@@ -21,6 +21,7 @@ class SyncController extends Controller {
     
     /**
      * 接收通讯录变更事件
+     * @throws \Exception
      */
     public function sync() {
         

@@ -5,6 +5,7 @@ use App\Models\App;
 use App\Models\Corp;
 use App\Models\User;
 use App\Facades\Wechat;
+use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
@@ -16,11 +17,13 @@ trait WechatTrait {
         'sc' => '成绩中心',
         'mc' => '消息中心',
     ];
+    
     /**
      * 登录
      *
      * @param $returnUrl
      * @return bool|RedirectResponse|Redirector
+     * @throws Exception
      */
     function signin($returnUrl) {
         
@@ -50,7 +53,7 @@ trait WechatTrait {
         abort_if(
             $result['errcode'],
             HttpStatusCode::INTERNAL_SERVER_ERROR,
-            Wechat::ERRMSGS[$result['errcode']]
+            Constant::WXERR[$result['errcode']]
         );
         $user = User::whereEnabled(1)->where('userid', $result['UserId'])->first();
         abort_if(
