@@ -59,7 +59,7 @@ class ExamPolicy {
             $isSubjectAllowed = empty(array_diff($subjectIds, $allowedSubjectIds));
             $isClassAllowed = empty(array_diff($classIds, $this->classIds()));
         }
-        if (in_array($action, ['show', 'edit', 'update', 'destroy'])) {
+        if (in_array($action, ['show', 'edit', 'update', 'delete'])) {
             $isExamAllowed = empty(array_diff(explode(',', $exam->class_ids), $this->classIds()));
         }
         switch ($action) {
@@ -72,7 +72,7 @@ class ExamPolicy {
                     : ($isExamTypeAllowed && $isClassAllowed && $isSubjectAllowed && $this->action($user));
             case 'show':
             case 'edit':
-            case 'destroy':
+            case 'delete':
                 return $isSuperRole ? $isExamAllowed : ($isExamAllowed && $this->action($user));
             case 'update':
                 return $isSuperRole

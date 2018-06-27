@@ -27,7 +27,6 @@ class Email implements Rule {
      */
     public function passes($attribute, $value) {
         
-    
         $users = User::whereEmail($value)->get();
         $u = new User;
         foreach ($users as $user) {
