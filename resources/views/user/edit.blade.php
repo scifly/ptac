@@ -67,7 +67,7 @@
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('partials.icon_addon', ['class' => 'fa-mobile'])
-                        {!! Form::text('mobile', $mobile, [
+                        {!! Form::text('mobile', null, [
                             'class' => 'form-control text-blue',
                             'data-parsley-length' => [11, 11],
                         ]) !!}
