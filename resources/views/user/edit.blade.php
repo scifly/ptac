@@ -9,7 +9,7 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-        <!-- 用户名 -->
+            <!-- 用户名 -->
             <div class="form-group">
                 {!! Form::label('username', '用户名', [
                     'class' => 'col-sm-3 control-label'

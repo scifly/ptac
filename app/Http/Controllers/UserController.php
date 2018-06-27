@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserRequest;
 use App\Models\Event;
 use App\Models\Message;
 use App\Models\User;
@@ -36,7 +37,7 @@ class UserController extends Controller {
     public function edit() {
         
         return $this->output([
-            'user' => Auth::user()
+            'user' => $this->user->find(Auth::id())
         ]);
 
     }
@@ -44,15 +45,16 @@ class UserController extends Controller {
     /**
      * 更新用户
      *
+     * @param UserRequest $request
      * @return JsonResponse|string
      * @throws Throwable
      */
-    public function update() {
+    public function update(UserRequest $request) {
         
         $user = Auth::user();
         
         return $this->result(
-            $user->modify(Request::all(), $user->id)
+            $user->modify($request->all(), $user->id)
         );
         
     }

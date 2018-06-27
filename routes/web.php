@@ -132,18 +132,6 @@ Route::group(['prefix' => 'score_ranges'], function () {
     Route::get('stat', $c . '@stat');
     Route::post('stat', $c . '@stat');
 });
-# 成绩统计/打印
-# 成绩发布
-# Route::group(['prefix' => 'scoreSend'], function () {
-#     $c = 'Score_SendController';
-#     Route::get('/', $c . '@index');
-#     Route::get('index', $c . '@index@index');
-#     Route::Post('getgrade/{id}', $c . '@getGrade');
-#     Route::Post('getclass/{id}', $c . '@getClass');
-#     Route::Post('getexam/{id}', $c . '@getExam');
-#     Route::Post('getsubject/{id}', $c . '@getSubject');
-#     Route::post('preview/{examId}/{classId}/{subjectIds}/{itemId}', $c . '@preview');
-# });
 
 /** 考勤管理 */
 # 考勤设置 - 考勤时段设置.考勤机设置
