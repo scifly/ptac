@@ -36,9 +36,9 @@
                         @include('partials.icon_addon', ['class' => 'fa-user-o'])
                         {!! Form::text('realname', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '(不超过60个汉字)',
+                            'placeholder' => '(不超过10个汉字)',
                             'required' => 'true',
-                            'data-parsley-length' => [2, 60],
+                            'data-parsley-length' => [2, 10],
                         ]) !!}
                     </div>
                 </div>
@@ -54,7 +54,7 @@
                         {!! Form::text('english_name', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(可选)',
-                            'data-parsley-length' => [2, 64],
+                            'data-parsley-length' => [2, 20],
                         ]) !!}
                     </div>
                 </div>
@@ -84,8 +84,6 @@
                         @include('partials.icon_addon', ['class' => 'fa-envelope-o'])
                         {{ Form::text('email', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '(请输入电子邮件地址)',
-                            'required' => 'true',
                             'type' => 'email',
                             'maxlength' => '255',
                             'data-parsley-type'=>"email"
@@ -103,7 +101,6 @@
                         @include('partials.icon_addon', ['class' => 'fa-phone'])
                         {{ Form::text('telephone', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '请输入座机号码(可选}',
                         ]) }}
                     </div>
                 </div>

@@ -247,7 +247,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('team.create_edit', $ns . 'TeamComposer');
     
         # 用户中心 - User
-        View::composer('user.profile', $ns . 'UserProfileComposer');
+        View::composer('user.edit', $ns . 'UserEditComposer');
         View::composer('user.reset', $ns . 'UserResetComposer');
         View::composer('user.message', $ns . 'UserMessageComposer');
         View::composer('user.event', $ns . 'UserEventComposer');

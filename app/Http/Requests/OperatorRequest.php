@@ -3,6 +3,7 @@ namespace App\Http\Requests;
 
 use App\Helpers\Constant;
 use App\Models\Group;
+use App\Rules\Email;
 use App\Rules\Mobile;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -62,13 +63,12 @@ class OperatorRequest extends FormRequest {
             'realname'              => 'required|string',
             'english_name'          => 'nullable|string|between:2,64',
             'gender'                => 'required|boolean',
-            'email'                 => 'nullable|email|unique:users,email,' .
-                $this->input('id') . ',id',
+            'user.email'            => ['nullable', 'email', new Email],
             'password'              => 'string|min:6|confirmed',
             'password_confirmation' => 'string|min:6',
             'mobile.*'              => ['required', new Mobile],
             'enabled'               => 'required|boolean',
-            'synced'               => 'required|boolean',
+            'synced'                => 'required|boolean',
         ];
         
     }

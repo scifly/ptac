@@ -1,9 +1,11 @@
 <?php
 namespace App\Rules;
 
+use App\Models\Corp;
 use App\Models\User;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 
 class Email implements Rule {
     
@@ -26,14 +28,21 @@ class Email implements Rule {
      * @return bool
      */
     public function passes($attribute, $value) {
-        
+    
+        $action = Request::method();
+        # 即将被添加的email对应的userId
+        $userId = (is_array($value) && $action == 'PUT') ? Request::input('user_id') : Auth::id();
+        # 即将被添加的email所属企业的corp_id
+        $_corpIds = $action == 'POST'
+            ? [Request::input('corp_id', (new Corp)->corpId())]
+            : (new User)->corpIds($userId);
         $users = User::whereEmail($value)->get();
-        $u = new User;
         foreach ($users as $user) {
+            $corpIds = $user->corpIds($user->id);
             if (
-                $user->id != Auth::id() &&
                 $user->email == $value &&
-                !empty(array_intersect($u->corpIds(Auth::id()), $u->corpIds($user->id)))
+                !empty(array_intersect($_corpIds, $corpIds)) &&
+                ($action == 'PUT' ? $user->id != $userId : true)
             ) {
                 return false;
             }

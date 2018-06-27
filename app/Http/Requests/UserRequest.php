@@ -23,13 +23,12 @@ class UserRequest extends FormRequest {
     public function rules() {
         
         return [
-            'username'   => 'required|string|unique:users,username,' . Auth::id() . ',id',
-            'realname'   => 'required|string|between:2,10',
-            'english_name' => 'nullable|string|between:2, 10',
-            'mobile'     => ['required', new Mobile],
-            'email'      => ['nullable', 'email', new Email],
-            'telephone'  => 'nullable|string|regex:/^(\(\d{3,4}\)|\d{3,4}-|\s)?\d{7,14}$/',
-            'gender'     => 'required|boolean',
+            'username'     => 'required|string|unique:users,username,' . Auth::id() . ',id',
+            'realname'     => 'required|string|between:2,10',
+            'english_name' => 'nullable|string|between:2,20',
+            'mobile'       => ['required', new Mobile],
+            'email'        => ['nullable', 'email', new Email],
+            'gender'       => 'required|boolean',
         ];
         
     }

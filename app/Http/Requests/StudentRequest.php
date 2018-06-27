@@ -2,6 +2,7 @@
 namespace App\Http\Requests;
 
 use App\Helpers\Constant;
+use App\Rules\Email;
 use App\Rules\Mobile;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Request;
@@ -36,9 +37,8 @@ class StudentRequest extends FormRequest {
                 $this->input('user_id') . ',user_id',
             'user.realname'  => 'required|string',
             'user.gender'    => 'required|boolean',
-            'user.email'     => 'nullable|email|unique:users,email,' .
-                $this->input('user_id') . ',id',
-            'mobile.*'       => ['required', new Mobile()],
+            'user.email'     => ['nullable', 'email', new Email],
+            'mobile.*'       => ['required', new Mobile],
             'remark'         => 'required|string',
             'student_number' => 'required|alphanum|between:2,32|unique:students,student_number,' .
                 $this->input('user_id') . ',user_id',

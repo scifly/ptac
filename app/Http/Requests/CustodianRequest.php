@@ -3,6 +3,7 @@ namespace App\Http\Requests;
 
 use App\Helpers\Constant;
 use App\Models\Group;
+use App\Rules\Email;
 use App\Rules\Mobile;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Request;
@@ -36,9 +37,8 @@ class CustodianRequest extends FormRequest {
             'user.realname' => 'required|string',
             'user.gender'   => 'required|boolean',
             'user.group_id' => 'required|integer',
-            'user.email'    => 'nullable|email|unique:users,email,' .
-                $this->input('user_id') . ',id',
-            'mobile.*'      => ['required', new Mobile()],
+            'user.email'    => ['nullable', 'email', new Email],
+            'mobile.*'      => ['required', new Mobile],
             'student_ids'   => 'required',
         ];
         

@@ -3,6 +3,7 @@ namespace App\Http\Requests;
 
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
+use App\Rules\Email;
 use App\Rules\Mobile;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Request;
@@ -30,17 +31,16 @@ class EducatorRequest extends FormRequest {
             ];
         }
         return [
-            'educator.school_id'          => 'required|integer',
-            'user.group_id'               => 'required|integer',
-            'user.realname'               => 'required|string',
-            'user.gender'                 => 'required|boolean',
-            'user.enabled'                => 'required|boolean',
-            'user.email'                  => 'nullable|email|unique:users,email,' .
-                $this->input('user_id') . ',id',
-            'user.password'               => 'string|min:3|confirmed',
-            'user.password_confirmation ' => 'string|min:3',
-            'mobile.*'                    => ['required', new Mobile()],
-            'selectedDepartments'         => 'required|array',
+            'educator.school_id'         => 'required|integer',
+            'user.group_id'              => 'required|integer',
+            'user.realname'              => 'required|string',
+            'user.gender'                => 'required|boolean',
+            'user.enabled'               => 'required|boolean',
+            'user.email'                 => ['nullable', 'email', new Email],
+            'user.password'              => 'string|min:3|confirmed',
+            'user.password_confirmation' => 'string|min:3',
+            'mobile.*'                   => ['required', new Mobile],
+            'selectedDepartments'        => 'required|array',
         ];
         
     }
