@@ -21,7 +21,7 @@
                             'class' => 'form-control text-blue',
                             'placeholder' => '(用户名不能为空)',
                             'required' => 'true',
-                            'data-parsley-length' => [6, 255]
+                            'data-parsley-length' => '[6, 255]'
                         ]) !!}
                     </div>
                 </div>
@@ -38,7 +38,7 @@
                             'class' => 'form-control text-blue',
                             'placeholder' => '(不超过10个汉字)',
                             'required' => 'true',
-                            'data-parsley-length' => [2, 10],
+                            'data-parsley-length' => '[2, 10]',
                         ]) !!}
                     </div>
                 </div>
@@ -54,7 +54,7 @@
                         {!! Form::text('english_name', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(可选)',
-                            'data-parsley-length' => [2, 20],
+                            'data-parsley-length' => '[2, 20]',
                         ]) !!}
                     </div>
                 </div>
@@ -69,7 +69,7 @@
                         @include('partials.icon_addon', ['class' => 'fa-mobile'])
                         {!! Form::text('mobile', $mobile, [
                             'class' => 'form-control text-blue',
-                            'data-parsley-length' => [11, 11],
+                            'data-parsley-length' => '[11, 11]',
                         ]) !!}
                     </div>
                 </div>
