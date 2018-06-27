@@ -101,6 +101,7 @@
                         @include('partials.icon_addon', ['class' => 'fa-phone'])
                         {{ Form::text('telephone', null, [
                             'class' => 'form-control text-blue',
+                            'placeholder' => '(选填)'
                         ]) }}
                     </div>
                 </div>
