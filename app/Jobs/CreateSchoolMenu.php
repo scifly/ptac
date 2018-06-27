@@ -143,7 +143,7 @@ class CreateSchoolMenu implements ShouldQueue {
         '个人信息' => [
             'id' => 0,
             'parent_id' => '用户中心',
-            'uri' => 'users/profile',
+            'uri' => 'users/edit',
             'icon' => 'fa fa-user',
             'tabs' => null
         ],

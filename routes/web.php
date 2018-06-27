@@ -80,8 +80,8 @@ Route::group(['prefix' => 'students'], function () {
 # 用户中心
 Route::group(['prefix' => 'users'], function () {
     $c = 'UserController';
-    Route::get('profile', $c . '@edit');
-    Route::put('profile', $c . '@update');
+    Route::get('edit', $c . '@edit');
+    Route::put('update', $c . '@update');
     Route::get('reset', $c. '@reset');
     Route::post('reset', $c . '@reset');
     Route::get('message', $c . '@messages');
@@ -254,15 +254,6 @@ Route::group(['prefix' => 'conference_participants'], function () {
     Route::post('store', $c . '@store');
     Route::get('show/{id}', $c . '@show');
 });
-# 申诉
-
-/** 用户中心 */
-Route::get('users/profile', 'UserController@edit');
-Route::put('users/profile', 'UserController@update');
-Route::get('users/reset', 'UserController@reset');
-Route::post('users/reset', 'UserController@reset');
-Route::get('users/messages', 'UserController@messages');
-Route::get('users/events', 'UserController@events');
 
 # 消息中心
 Route::group(['prefix' => 'messages'], function () {
