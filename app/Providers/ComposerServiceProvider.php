@@ -246,6 +246,12 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('team.index', $ns . 'TeamIndexComposer');
         View::composer('team.create_edit', $ns . 'TeamComposer');
     
+        # 用户中心 - User
+        View::composer('user.profile', $ns . 'UserProfileComposer');
+        View::composer('user.reset', $ns . 'UserResetComposer');
+        View::composer('user.message', $ns . 'UserMessageComposer');
+        View::composer('user.event', $ns . 'UserEventComposer');
+        
         # 微网站 - WapSite
         View::composer('wap_site.index', $ns . 'WapSiteIndexComposer');
         View::composer('wap_site.create_edit', $ns . 'WapSiteComposer');

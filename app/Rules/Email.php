@@ -5,7 +5,7 @@ use App\Models\User;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 
-class Mobile implements Rule {
+class Email implements Rule {
     
     /**
      * Create a new rule instance.
@@ -25,19 +25,19 @@ class Mobile implements Rule {
      */
     public function passes($attribute, $value) {
     
-        $mobiles = \App\Models\Mobile::whereMobile($value)->get();
-        $user = new User;
-        foreach ($mobiles as $mobile) {
+        $users = User::whereEmail($value)->get();
+        $u = new User;
+        foreach ($users as $user) {
             if (
-                $mobile->user_id != Auth::id() &&
-                $mobile->mobile == $value &&
-                !empty(array_intersect($user->corpIds(Auth::id()), $user->corpIds($mobile->user_id)))
+                $user->id != Auth::id() &&
+                $user->email == $value &&
+                !empty(array_intersect($u->corpIds(Auth::id()), $u->corpIds($user->id)))
             ) {
                 return false;
             }
         }
         
-        return preg_match('/^1[34578][0-9]{9}$/', $value);
+        return true;
     
     }
     
@@ -48,7 +48,7 @@ class Mobile implements Rule {
      */
     public function message() {
         
-        return ':attribute号码格式不正确或已存在';
+        return ':attribute已存在';
         
     }
     

@@ -77,13 +77,16 @@ Route::group(['prefix' => 'students'], function () {
     Route::get('export', $c . '@export');
     Route::post('export', $c . '@export');
 });
-# 用户
-Route::group(['prefix' => 'users'], routes('UserController'));
+# 用户中心
 Route::group(['prefix' => 'users'], function () {
     $c = 'UserController';
-    Route::get('event', $c . '@event');
+    Route::get('profile', $c . '@edit');
+    Route::put('profile', $c . '@update');
+    Route::get('reset', $c. '@reset');
+    Route::post('reset', $c . '@reset');
+    Route::get('message', $c . '@messages');
+    Route::get('event', $c . '@events');
 });
-Route::post('users/upload_ava/{id}', 'UserController@uploadAvatar');
 
 /** 成绩管理 */
 # 考试管理 - 考试设置.考试类型设置

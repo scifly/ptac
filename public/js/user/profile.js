@@ -10,8 +10,7 @@ $('.edit_input').on('click', function () {
 
 function update($input) {
     $input.blur(function () {
-        var id = $('#id').val(),
-            telephone = $('#telephone').val(),
+        var telephone = $('#telephone').val(),
             email = $('#email').val();
 
         const reg = /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4}$/;
@@ -27,7 +26,7 @@ function update($input) {
         $.ajax({
             type: 'PUT',
             dataType: 'json',
-            url: 'update/' + id,
+            url: 'profile',
             data: $form.serialize(),
             success: function (result) {
                 page.inform(result.title, result.message, page.success);

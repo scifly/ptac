@@ -66,7 +66,7 @@ class OperatorRequest extends FormRequest {
                 $this->input('id') . ',id',
             'password'              => 'string|min:6|confirmed',
             'password_confirmation' => 'string|min:6',
-            'mobile.*'              => ['required', new Mobiles()],
+            'mobile.*'              => ['required', new Mobiles],
             'enabled'               => 'required|boolean',
             'synced'               => 'required|boolean',
         ];

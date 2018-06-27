@@ -51,7 +51,7 @@ class AppServiceProvider extends ServiceProvider {
                 $message
             );
         });
-
+        
     }
     
     /**

@@ -1,7 +1,10 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Rules\Email;
+use App\Rules\Mobile;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class UserRequest extends FormRequest {
     
@@ -19,35 +22,15 @@ class UserRequest extends FormRequest {
      */
     public function rules() {
         
-        $rule = [];
-        if ($this->method() === "PUT") {
-            $rule = [
-                'username'   => 'required|string|unique:users,username,' .
-                    $this->input('id') . ',id',
-                'email'      => 'nullable|email|unique:users,email,' .
-                    $this->input('id') . ',id',
-                'group_id'   => 'required|integer',
-                'password'   => 'required|string|min:6|confirmed',
-                'gender'     => 'required|boolean',
-                'realname'   => 'required|string|between:2,10',
-                'avatar_url' => 'required|url',
-                'userid'     => 'required|string|unique:users,userid,' .
-                    $this->input('id') . ',id',
-                'synced'     => 'required|boolean',
-                'enabled'    => 'required|boolean',
-            ];
-        }
-        
-        return $rule;
-        
-    }
-    
-    protected function prepareForValidation() {
-        
-        $input = $this->all();
-        $input['avatar_url'] = ''; # 需从企业微信后台同步
-        $input['synced'] = 0; # 需从企业微信后台同步
-        $this->replace($input);
+        return [
+            'username'   => 'required|string|unique:users,username,' . Auth::id() . ',id',
+            'realname'   => 'required|string|between:2,10',
+            'english_name' => 'nullable|string|between:2, 10',
+            'mobile'     => ['required', new Mobile],
+            'email'      => ['nullable', 'email', new Email],
+            'telephone'  => 'nullable|string|regex:/^(\(\d{3,4}\)|\d{3,4}-|\s)?\d{7,14}$/',
+            'gender'     => 'required|boolean',
+        ];
         
     }
     

@@ -24,6 +24,7 @@ use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Request;
 use Laravel\Passport\Client;
 use Laravel\Passport\HasApiTokens;
@@ -206,69 +207,6 @@ class User extends Authenticatable {
     function pqParticipants() {
         
         return $this->hasMany('App\Models\PollQuestionnaireParticipant');
-        
-    }
-    
-    /**
-     * 返回用户列表(id, name)
-     *
-     * @param array $ids
-     * @return array
-     */
-    function userList(array $ids) {
-        
-        $list = [];
-        foreach ($ids as $id) {
-            $user = self::find($id);
-            $list[$user->id] = $user->realname;
-        }
-        
-        return $list;
-        
-    }
-    
-    /**
-     * 根据部门id获取部门所属学校的部门id
-     *
-     * @param $deptId
-     * @return int|mixed
-     */
-    function schoolDeptId(&$deptId) {
-        
-        $dept = Department::find($deptId);
-        $typeId = DepartmentType::whereName('学校')->first()->id;
-        if ($dept->department_type_id != $typeId) {
-            $deptId = $dept->parent_id;
-            
-            return self::schoolDeptId($deptId);
-        } else {
-            return $deptId;
-        }
-        
-    }
-    
-    /**
-     * 批量更新企业号会员
-     *
-     * @param $ids
-     */
-    function batchUpdateWechatUsers($ids) {
-        
-        foreach ($ids as $id) {
-            $this->updateWechatUser($id);
-        }
-        
-    }
-    
-    /**
-     * 更新企业号会员
-     *
-     * @param $id
-     * @return bool
-     */
-    function updateWechatUser($id) {
-        
-        return $this->sync($id, 'update');
         
     }
     
@@ -504,29 +442,6 @@ class User extends Authenticatable {
     }
     
     /**
-     * 获取超级用户所处的部门id
-     *
-     * @param $data
-     * @return int|mixed|null
-     */
-    private function departmentId($data) {
-        
-        switch (Group::find($data['group_id'])->name) {
-            case '运营':
-                return Department::whereDepartmentTypeId(
-                    DepartmentType::whereName('根')->first()->id
-                )->first()->id;
-            case '企业':
-                return Corp::find($data['corp_id'])->department_id;
-            case '学校':
-                return School::find($data['school_id'])->department_id;
-            default:
-                return null;
-        }
-        
-    }
-    
-    /**
      * 创建企业号会员
      *
      * @param $id
@@ -592,6 +507,51 @@ class User extends Authenticatable {
     }
     
     /**
+     * 更新企业号会员
+     *
+     * @param $id
+     * @return bool
+     */
+    function updateWechatUser($id) {
+        
+        return $this->sync($id, 'update');
+        
+    }
+    
+    /**
+     * 批量更新企业号会员
+     *
+     * @param $ids
+     */
+    function batchUpdateWechatUsers($ids) {
+        
+        foreach ($ids as $id) {
+            $this->updateWechatUser($id);
+        }
+        
+    }
+    
+    /**
+     * 重置密码
+     *
+     * @return bool
+     */
+    function reset() {
+        
+        $user = $this->find(Auth::id());
+        abort_if(
+            !Hash::check(Request::input('password'), $user->password),
+            HttpStatusCode::BAD_REQUEST,
+            __('messages.bad_request')
+        );
+        
+        return $user->update([
+            'password' => bcrypt(Request::input('pwd'))
+        ]);
+        
+    }
+    
+    /**
      * 删除用户
      *
      * @param $id
@@ -624,7 +584,7 @@ class User extends Authenticatable {
      * @return bool
      * @throws Throwable
      */
-    private function purge($id): bool {
+    function purge($id): bool {
         
         try {
             DB::transaction(function () use ($id) {
@@ -647,18 +607,6 @@ class User extends Authenticatable {
         }
         
         return true;
-        
-    }
-    
-    /**
-     * 删除企业号会员
-     *
-     * @param $id
-     * @return bool
-     */
-    function deleteWechatUser($id) {
-        
-        return $this->sync($id, 'delete');
         
     }
     
@@ -701,8 +649,18 @@ class User extends Authenticatable {
         
     }
     
-    /** Helper functions -------------------------------------------------------------------------------------------- */
-
+    /**
+     * 删除企业号会员
+     *
+     * @param $id
+     * @return bool
+     */
+    function deleteWechatUser($id) {
+        
+        return $this->sync($id, 'delete');
+        
+    }
+    
     /**
      * 返回指定用户所属的所有部门id
      *
@@ -721,6 +679,24 @@ class User extends Authenticatable {
         }
         
         return array_unique($departmentIds);
+        
+    }
+    
+    /**
+     * 返回用户列表(id, name)
+     *
+     * @param array $ids
+     * @return array
+     */
+    function userList(array $ids) {
+        
+        $list = [];
+        foreach ($ids as $id) {
+            $user = self::find($id);
+            $list[$user->id] = $user->realname;
+        }
+        
+        return $list;
         
     }
     
@@ -778,6 +754,66 @@ class User extends Authenticatable {
         $result['schoolList'] = $this->selectList($schools, 'school_id');
         
         return response()->json($result);
+        
+    }
+    
+    /**
+     * 根据部门id获取部门所属学校的部门id
+     *
+     * @param $deptId
+     * @return int|mixed
+     */
+    function schoolDeptId(&$deptId) {
+        
+        $dept = Department::find($deptId);
+        $typeId = DepartmentType::whereName('学校')->first()->id;
+        if ($dept->department_type_id != $typeId) {
+            $deptId = $dept->parent_id;
+            
+            return self::schoolDeptId($deptId);
+        } else {
+            return $deptId;
+        }
+        
+    }
+    
+    /**
+     * 返回指定用户所属的所有企业id
+     *
+     * @param $id
+     * @return array
+     */
+    function corpIds($id) {
+        
+        $user = $this->find($id);
+
+        return $user->group->name == '运营'
+            ? Corp::pluck('id')->toArray()
+            : [(new Department)->corpId($this->head($user))];
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+    /**
+     * 获取超级用户所处的部门id
+     *
+     * @param $data
+     * @return int|mixed|null
+     */
+    private function departmentId($data) {
+        
+        switch (Group::find($data['group_id'])->name) {
+            case '运营':
+                return Department::whereDepartmentTypeId(
+                    DepartmentType::whereName('根')->first()->id
+                )->first()->id;
+            case '企业':
+                return Corp::find($data['corp_id'])->department_id;
+            case '学校':
+                return School::find($data['school_id'])->department_id;
+            default:
+                return null;
+        }
         
     }
     

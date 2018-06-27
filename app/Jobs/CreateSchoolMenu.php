@@ -157,7 +157,14 @@ class CreateSchoolMenu implements ShouldQueue {
         '我的消息' => [
             'id' => 0,
             'parent_id' => '用户中心',
-            'uri' => 'users/reset',
+            'uri' => 'users/message',
+            'icon' => 'fa fa-user',
+            'tabs' => null
+        ],
+        '待办事项' => [
+            'id' => 0,
+            'parent_id' => '用户中心',
+            'uri' => 'users/event',
             'icon' => 'fa fa-user',
             'tabs' => null
         ],
@@ -236,7 +243,7 @@ class CreateSchoolMenu implements ShouldQueue {
     protected $educatorMenus = [
         '首页', '消息中心', '通讯录', '学生', '教职员工', '监护人', '考勤管理',
         '学生考勤查询统计', '学生消费管理', '成绩中心', '考试设置', '成绩管理',
-        '用户中心', '个人信息', '重置密码', '我的消息'
+        '用户中心', '个人信息', '重置密码', '我的消息', '待办事项'
     ];
     
     protected $educatorTabs = [
