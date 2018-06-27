@@ -9,7 +9,7 @@ use App\Models\Squad;
 use App\Models\Group;
 use App\Models\Mobile;
 use App\Models\School;
-use App\Rules\Mobiles;
+use App\Rules\Mobile;
 use App\Models\Student;
 use App\Models\Custodian;
 use App\Helpers\ModelTrait;
@@ -110,7 +110,7 @@ class ImportStudent implements ShouldQueue {
             'school'         => 'required|string|between:4,20',
             'grade'          => 'required|string|between:3,20',
             'class'          => 'required|string|between:2,20',
-            'mobile'         => 'required', new Mobiles(),
+            'mobile'         => 'required', new Mobile(),
             'student_number' => 'required|alphanum|between:2,32',
             'card_number'    => 'required|alphanum|between:2,32',
             'oncampus'       => ['required', Rule::in(['住读', '走读'])],

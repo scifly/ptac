@@ -149,7 +149,7 @@ class WsmArticle extends Model {
         try {
             //删除原有的图片
             DB::transaction(function () use ($request) {
-                Request::merge(['ids' => $request->input('del_ids')]);
+                Request::merge(['ids' => $request->input('del_ids', [])]);
                 (new Media)->remove();
                 return $this->create($request->all());
             });
@@ -174,7 +174,7 @@ class WsmArticle extends Model {
         
         try {
             DB::transaction(function () use ($request, $id) {
-                Request::merge(['ids' => $request->input('del_ids')]);
+                Request::merge(['ids' => $request->input('del_ids', [])]);
                 (new Media)->remove();
                 $this->find($id)->update($request->all());
             });

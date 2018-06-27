@@ -8,7 +8,7 @@ use App\Helpers\Snippet;
 use App\Http\Requests\CustodianRequest;
 use App\Http\Requests\EducatorRequest;
 use App\Jobs\ImportEducator;
-use App\Rules\Mobiles;
+use App\Rules\Mobile;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -654,7 +654,7 @@ class Educator extends Model {
             'gender'           => ['required', Rule::in(['男', '女'])],
             'birthday'         => 'required|date',
             'school'           => 'required|string|between:4,20',
-            'mobile'           => 'required', new Mobiles(),
+            'mobile'           => 'required', new Mobile(),
             'grades'           => 'nullable|string',
             'classes'          => 'nullable|string',
             'classes_subjects' => 'nullable|string',

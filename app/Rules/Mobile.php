@@ -1,54 +1,49 @@
 <?php
 namespace App\Rules;
 
+use App\Models\Corp;
 use App\Models\User;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 
 class Mobile implements Rule {
     
-    /**
-     * Create a new rule instance.
-     *
-     * @return void
-     */
-    public function __construct() {
-        //
-    }
+    private $mobile;
     
-    /**
-     * Determine if the validation rule passes.
-     *
-     * @param  string $attribute
-     * @param  mixed $value
-     * @return bool
-     */
     public function passes($attribute, $value) {
-    
-        $mobiles = \App\Models\Mobile::whereMobile($value)->get();
+
+        $this->mobile = is_array($value) ? $value['mobile'] : $value;
+        $action = Request::method();
         $user = new User;
+        $corp = new Corp;
+        if (is_array($value)) {
+            $userId = $action == 'POST' ? Auth::id() : Request::input('user_id');
+        } else {
+            $userId = Auth::id();
+        }
+        # 即将被添加的手机号码所属企业的corp_id
+        $_corpIds = $action == 'POST' ? [$corp->corpId()] : $user->corpIds($userId);
+        # 已有的相同手机号码
+        $mobiles = \App\Models\Mobile::whereMobile($this->mobile)->get();
         foreach ($mobiles as $mobile) {
+            $corpIds = $user->corpIds($mobile->user_id);
             if (
-                $mobile->user_id != Auth::id() &&
-                $mobile->mobile == $value &&
-                !empty(array_intersect($user->corpIds(Auth::id()), $user->corpIds($mobile->user_id)))
+                $this->mobile == $mobile->mobile &&
+                !empty(array_intersect($_corpIds, $corpIds)) &&
+                ($action == 'PUT' ? $mobile->user_id != $userId : true)
             ) {
                 return false;
             }
         }
         
-        return preg_match('/^1[34578][0-9]{9}$/', $value);
-    
+        return preg_match('/^1[34578][0-9]{9}$/', $this->mobile);
+        
     }
     
-    /**
-     * Get the validation error message.
-     *
-     * @return string
-     */
     public function message() {
         
-        return ':attribute号码格式不正确或已存在';
+        return "手机号 {$this->mobile} 已存在或者格式不正确";
         
     }
     

@@ -3,7 +3,7 @@ namespace App\Http\Requests;
 
 use App\Helpers\Constant;
 use App\Models\Group;
-use App\Rules\Mobiles;
+use App\Rules\Mobile;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
@@ -66,7 +66,7 @@ class OperatorRequest extends FormRequest {
                 $this->input('id') . ',id',
             'password'              => 'string|min:6|confirmed',
             'password_confirmation' => 'string|min:6',
-            'mobile.*'              => ['required', new Mobiles],
+            'mobile.*'              => ['required', new Mobile],
             'enabled'               => 'required|boolean',
             'synced'               => 'required|boolean',
         ];

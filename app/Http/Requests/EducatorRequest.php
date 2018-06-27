@@ -3,7 +3,7 @@ namespace App\Http\Requests;
 
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
-use App\Rules\Mobiles;
+use App\Rules\Mobile;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\Rule;
@@ -39,7 +39,7 @@ class EducatorRequest extends FormRequest {
                 $this->input('user_id') . ',id',
             'user.password'               => 'string|min:3|confirmed',
             'user.password_confirmation ' => 'string|min:3',
-            'mobile.*'                    => ['required', new Mobiles()],
+            'mobile.*'                    => ['required', new Mobile()],
             'selectedDepartments'         => 'required|array',
         ];
         

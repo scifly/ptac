@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 
 class Email implements Rule {
     
+    private $email;
+    
     /**
      * Create a new rule instance.
      *
@@ -24,6 +26,7 @@ class Email implements Rule {
      * @return bool
      */
     public function passes($attribute, $value) {
+        
     
         $users = User::whereEmail($value)->get();
         $u = new User;
