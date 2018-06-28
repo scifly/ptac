@@ -5,6 +5,7 @@ use App\Rules\Email;
 use App\Rules\Mobile;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 
 class UserRequest extends FormRequest {
     
@@ -21,6 +22,15 @@ class UserRequest extends FormRequest {
      * @return array
      */
     public function rules() {
+        
+        $paths = explode('/', Request::path());
+        if ($paths[1] == 'reset') {
+            return [
+                'old_password' => 'required|string',
+                'password' => 'required|string|min:8|confirmed',
+                'password_confirmation' => 'required|string|min:8'
+            ];
+        }
         
         return [
             'username'     => 'required|string|unique:users,username,' . Auth::id() . ',id',
