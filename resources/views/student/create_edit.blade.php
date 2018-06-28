@@ -112,13 +112,18 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('student_number', null, [
-                        'class' => 'form-control text-blue',
-                        'placeholder' => '小写字母与阿拉伯数字',
-                        'data-parsley-type' => 'alphanum',
-                        'required' => 'true',
-                        'data-parsley-length' => '[2, 32]'
-                    ]) !!}
+                    <div class="input-group" style="width: 100%;">
+                        <div class="input-group-addon" style="width: 45px;">
+                            <strong>学</strong>
+                        </div>
+                        {!! Form::text('student_number', null, [
+                            'class' => 'form-control text-blue',
+                            'placeholder' => '小写字母与阿拉伯数字',
+                            'data-parsley-type' => 'alphanum',
+                            'required' => 'true',
+                            'data-parsley-length' => '[2, 32]'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             <!-- 卡号 -->
@@ -127,13 +132,18 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('card_number', null, [
-                        'class' => 'form-control text-blue',
-                        'placeholder' => '小写字母与阿拉伯数字',
-                        'required' => 'true',
-                        'data-parsley-type' => 'alphanum',
-                        'data-parsley-length' => '[2, 32]'
-                    ]) !!}
+                    <div class="input-group" style="width: 100%;">
+                        <div class="input-group-addon" style="width: 45px;">
+                            <strong>学</strong>
+                        </div>
+                        {!! Form::text('card_number', null, [
+                            'class' => 'form-control text-blue',
+                            'placeholder' => '小写字母与阿拉伯数字',
+                            'required' => 'true',
+                            'data-parsley-type' => 'alphanum',
+                            'data-parsley-length' => '[2, 32]'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             <!-- 生日 -->
