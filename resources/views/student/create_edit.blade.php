@@ -134,7 +134,7 @@
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
                         <div class="input-group-addon" style="width: 45px;">
-                            <strong>学</strong>
+                            <strong>卡</strong>
                         </div>
                         {!! Form::text('card_number', null, [
                             'class' => 'form-control text-blue',
