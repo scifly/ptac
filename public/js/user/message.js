@@ -18,7 +18,8 @@
 //     lengthMenu: [[15, 25, 50, -1], [15, 25, 50, '所有']]
 // });
 //# sourceURL=message.js
-var options = [
-    { className: 'text-center', targets: [0, 1, 2, 3, 4, 5, 6, 7, 8] },
-];
-page.initDatatable('users', options, 'message');
+// var options = [
+//     { className: 'text-center', targets: [0, 1, 2, 3, 4, 5, 6, 7, 8] },
+// ];
+// page.initDatatable('users', options, 'message');
+page.index('messages');
