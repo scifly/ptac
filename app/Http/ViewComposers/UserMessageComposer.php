@@ -3,13 +3,9 @@ namespace App\Http\ViewComposers;
 
 use Illuminate\Contracts\View\View;
 
-class UserResetComposer {
+class UserMessageComposer {
     
     public function compose(View $view) {
-        
-        $view->with([
-            'disabled' => true
-        ]);
         
     }
     
