@@ -93,13 +93,9 @@ class UserController extends Controller {
      */
     public function event() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->event->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->event->index())
+            : $this->output();
         
     }
     
