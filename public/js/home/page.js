@@ -342,7 +342,7 @@ var page = {
             }
         });
     },
-    initDatatable: function (table, options, action) {
+    initDatatable: function (table, options, method) {
         var rowIds = [],
             selected = [],
             $tbody = $('#data-table tbody'),
@@ -355,7 +355,7 @@ var page = {
                 var $datatable = $('#data-table'),
                     columns = $datatable.find('thead tr th').length,
                     statusCol = {className: 'text-right', targets: [columns - 1]},
-                    uri = typeof action === 'undefined' ? '/index' : '/' + action;
+                    uri = typeof method === 'undefined' ? '/index' : '/' + method;
 
                 if (typeof options === 'undefined') {
                     options = [statusCol];
