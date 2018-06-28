@@ -79,7 +79,7 @@ class UserController extends Controller {
      * @throws Throwable
      */
     public function message() {
-        
+    
         return Request::get('draw')
             ? response()->json($this->message->index())
             : $this->output();
