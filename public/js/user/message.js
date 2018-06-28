@@ -1,4 +1,4 @@
-$('#data-table').dataTable({
+$('#data-table').DataTable({
     processing: true,
     serverSide: true,
     ajax: {
