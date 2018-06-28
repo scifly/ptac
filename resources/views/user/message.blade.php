@@ -1,1 +1,1 @@
-@include('partials.index');
+@include('partials.index')
