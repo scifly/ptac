@@ -69,7 +69,7 @@
                         @include('partials.icon_addon', ['class' => 'fa-phone'])
                         {{ Form::text('user[telephone]', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '请输入座机号码(可选}',
+                            'placeholder' => '请输入座机号码（可选）',
                         ]) }}
                     </div>
                 </div>
