@@ -61,7 +61,7 @@ class ScoreIndexComposer {
                 'import' => [
                     'id'    => 'import',
                     'label' => '批量导入',
-                    'icon'  => 'fa fa-cloud-upload',
+                    'icon'  => 'fa fa-upload',
                 ],
                 'export' => [
                     'id'    => 'export',
