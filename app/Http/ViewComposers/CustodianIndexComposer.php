@@ -26,7 +26,7 @@ class CustodianIndexComposer {
                 'export' => [
                     'id'    => 'export',
                     'label' => '批量导出',
-                    'icon'  => 'fa fa-arrow-circle-down',
+                    'icon'  => 'fa fa-cloud-download',
                 ],
             ],
             'batch'   => true,

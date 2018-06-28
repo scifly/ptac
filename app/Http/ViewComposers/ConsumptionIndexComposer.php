@@ -17,7 +17,7 @@ class ConsumptionIndexComposer {
                 'export' => [
                     'id'    => 'export',
                     'label' => '批量导出',
-                    'icon'  => 'fa fa-arrow-circle-down',
+                    'icon'  => 'fa fa-cloud-download',
                 ],
             ],
             'titles'  => ['#', '学生', '消费地点', '消费机ID', '类型', '金额', '时间'],

@@ -61,12 +61,12 @@ class ScoreIndexComposer {
                 'import' => [
                     'id'    => 'import',
                     'label' => '批量导入',
-                    'icon'  => 'fa fa-arrow-circle-up',
+                    'icon'  => 'fa fa-cloud-upload',
                 ],
                 'export' => [
                     'id'    => 'export',
                     'label' => '批量导出',
-                    'icon'  => 'fa fa-arrow-circle-down',
+                    'icon'  => 'fa fa-cloud-download',
                 ],
                 'rank'   => [
                     'id'    => 'rank',
