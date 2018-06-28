@@ -471,30 +471,45 @@ class User extends Authenticatable {
             
             return $this->batch($this);
         }
-        $user = $this->find($id);
         try {
             # 更新用户数据
-            DB::transaction(function () use ($data, $id, $user) {
-                $user->update([
-                    'username'     => $data['username'],
-                    'group_id'     => $data['group_id'],
-                    'email'        => $data['email'],
-                    'realname'     => $data['realname'],
-                    'gender'       => $data['gender'],
-                    'english_name' => $data['english_name'],
-                    'telephone'    => $data['telephone'],
-                    'enabled'      => $data['enabled'],
-                ]);
-                # 更新手机号码
-                Mobile::whereUserId($user->id)->delete();
-                (new Mobile)->store($data['mobile'], $user);
-                # 更新部门数据
-                DepartmentUser::whereUserId($user->id)->delete();
-                (new DepartmentUser)->store([
-                    'department_id' => $this->departmentId($data),
-                    'user_id'       => $user->id,
-                    'enabled'       => Constant::ENABLED,
-                ]);
+            DB::transaction(function () use ($data, $id) {
+                $user = $this->find($id);
+                if (isset($data['enabled'])) {
+                    $user->update([
+                        'username'     => $data['username'],
+                        'group_id'     => $data['group_id'],
+                        'email'        => $data['email'],
+                        'realname'     => $data['realname'],
+                        'gender'       => $data['gender'],
+                        'english_name' => $data['english_name'],
+                        'telephone'    => $data['telephone'],
+                        'enabled'      => $data['enabled'],
+                    ]);
+                    # 更新手机号码
+                    Mobile::whereUserId($user->id)->delete();
+                    (new Mobile)->store($data['mobile'], $user);
+                    # 更新部门数据
+                    DepartmentUser::whereUserId($user->id)->delete();
+                    (new DepartmentUser)->store([
+                        'department_id' => $this->departmentId($data),
+                        'user_id'       => $user->id,
+                        'enabled'       => Constant::ENABLED,
+                    ]);
+                } else {
+                    $user->update([
+                        'username'     => $data['username'],
+                        'email'        => $data['email'],
+                        'realname'     => $data['realname'],
+                        'gender'       => $data['gender'],
+                        'english_name' => $data['english_name'],
+                        'telephone'    => $data['telephone'],
+                    ]);
+                    # 更新手机号码
+                    Mobile::whereUserId($user->id)->where('isdefault', 1)->update([
+                        'mobile' => $data['mobile']
+                    ]);
+                }
                 # 更新企业号成员记录
                 $this->updateWechatUser($user->id);
             });
