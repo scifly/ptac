@@ -66,7 +66,7 @@ class ScoreIndexComposer {
                 'export' => [
                     'id'    => 'export',
                     'label' => '批量导出',
-                    'icon'  => 'fa fa-cloud-download',
+                    'icon'  => 'fa fa-download',
                 ],
                 'rank'   => [
                     'id'    => 'rank',

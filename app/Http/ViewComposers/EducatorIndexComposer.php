@@ -24,7 +24,7 @@ class EducatorIndexComposer {
                 'export' => [
                     'id'    => 'export',
                     'label' => '批量导出',
-                    'icon'  => 'fa fa-cloud-download',
+                    'icon'  => 'fa fa-download',
                 ],
             ],
             'batch'          => true,
