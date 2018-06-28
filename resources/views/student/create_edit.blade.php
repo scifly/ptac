@@ -5,16 +5,16 @@
     <div class="box-body">
         <div class="form-horizontal">
             <!-- 学生ID -->
-        @if (isset($student['id']))
-            <!-- 学生ID -->
-            {{ Form::hidden('id', $student['id'], ['id' => 'id']) }}
-        @endif
-        <!-- 学生UserID -->
-        @if (isset($student['user_id']))
+            @if (isset($student['id']))
+                <!-- 学生ID -->
+                {{ Form::hidden('id', $student['id'], ['id' => 'id']) }}
+            @endif
             <!-- 学生UserID -->
-            {{ Form::hidden('user_id', $student['user_id'], ['id' => 'user_id']) }}
-        @endif
-        <!-- 学生姓名 -->
+            @if (isset($student['user_id']))
+                <!-- 学生UserID -->
+                {{ Form::hidden('user_id', $student['user_id'], ['id' => 'user_id']) }}
+            @endif
+            <!-- 学生姓名 -->
             <!-- 真实姓名 -->
             <div class="form-group">
                 {{ Form::label('user[realname]', '姓名', [

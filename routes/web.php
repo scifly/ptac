@@ -84,8 +84,8 @@ Route::group(['prefix' => 'users'], function () {
     Route::put('update', $c . '@update');
     Route::get('reset', $c. '@reset');
     Route::post('reset', $c . '@reset');
-    Route::get('message', $c . '@messages');
-    Route::get('event', $c . '@events');
+    Route::get('message', $c . '@message');
+    Route::get('event', $c . '@event');
 });
 
 /** 成绩管理 */
