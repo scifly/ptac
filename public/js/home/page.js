@@ -342,7 +342,7 @@ var page = {
             }
         });
     },
-    initDatatable: function (table, options) {
+    initDatatable: function (table, options, action) {
         var rowIds = [],
             selected = [],
             $tbody = $('#data-table tbody'),
@@ -354,7 +354,8 @@ var page = {
             showTable = function () {
                 var $datatable = $('#data-table'),
                     columns = $datatable.find('thead tr th').length,
-                    statusCol = {className: 'text-right', targets: [columns - 1]};
+                    statusCol = {className: 'text-right', targets: [columns - 1]},
+                    uri = typeof action === 'undefined' ? '/index' : '/' + action;
 
                 if (typeof options === 'undefined') {
                     options = [statusCol];
@@ -365,7 +366,7 @@ var page = {
                     processing: true,
                     serverSide: true,
                     ajax: {
-                        url: page.siteRoot() + table + '/index' + page.getQueryString(),
+                        url: page.siteRoot() + table + uri + page.getQueryString(),
                         error: function (e) {
                             page.errorHandler(e);
                         }
