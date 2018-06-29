@@ -11,7 +11,7 @@
                     // 'breadcrumb' => '个人信息'
                 ])
             </div>
-            <div class="modal-footer"></div>
+            {{--<div class="modal-footer"></div>--}}
         </div>
     </div>
 </div>
