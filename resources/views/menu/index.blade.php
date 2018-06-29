@@ -1,8 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        <span id="breadcrumb" style="color: #999; font-size: 13px;">
-            <i class="fa fa-gears">&nbsp;&nbsp;{!! $breadcrumb !!}</i>
-        </span>
+        <span id="breadcrumb" style="color: #999; font-size: 13px;">{!! $breadcrumb !!}</span>
         <div class="box-tools pull-right">
             @if (isset($buttons))
                 @foreach ($buttons as $button)
