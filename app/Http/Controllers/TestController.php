@@ -23,7 +23,7 @@ class TestController extends Controller {
      */
     public function index() {
         
-        dd(config('app.name'));
+        dd(bcrypt('#ilikeit09'));
         dd($this->getAppNamespace());
         $a = [
             0 => 'a',
