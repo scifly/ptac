@@ -4,7 +4,7 @@
     'data-parsley-validate' => 'true'
 ]) !!}
 <div class="box box-default box-solid">
-    @if ($breadcrub)
+    @if (isset($breadcrumb))
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
