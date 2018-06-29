@@ -8,15 +8,19 @@
         <img src="{{ URL::asset('img/user2-160x160.jpg') }}" class="img-circle" alt="用户头像">
         <p>
             {{ Auth::user()->realname }} - {{ Auth::user()->group->name ?? null }}
-            <small>2012年入会</small>
+            <small>{!! date('Y', strtotime(Auth::user()->created_at)) !!}年加入</small>
         </p>
     </li>
     <li class="user-footer">
         <div class="pull-left">
-            <a href="#" class="btn btn-default btn-flat" id="profile">个人信息</a>
+            <a href="#" class="btn btn-default btn-flat" id="profile">
+                <i class="fa fa-user"> 个人信息</i>
+            </a>
         </div>
         <div class="pull-right">
-            <a href="{{ URL::route('logout') }}" class="btn btn-default btn-flat">退出登录</a>
+            <a href="{{ URL::route('logout') }}" class="btn btn-default btn-flat">
+                <i class="fa fa-sign-out"> 退出登录</i>
+            </a>
         </div>
     </li>
 </ul>
