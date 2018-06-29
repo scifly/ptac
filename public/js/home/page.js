@@ -1,7 +1,7 @@
 var oPage = {title: '', url: location.href};
 var updateHistory = true;
 var replaceState = true;
-var docTitle = '家校通';
+var docTitle = '';
 var $cip = $('#cip');
 // noinspection JSUnusedGlobalSymbols
 var page = {
