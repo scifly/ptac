@@ -8,7 +8,6 @@
             <div class="modal-body with-border">
                 @include('user.edit', [
                     'user' => Auth::user(),
-                    'mobile' => '12345678901',
                     'breadcrumb' => '个人信息'
                 ])
             </div>
