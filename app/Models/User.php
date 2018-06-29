@@ -555,13 +555,13 @@ class User extends Authenticatable {
         
         $user = $this->find(Auth::id());
         abort_if(
-            !Hash::check(Request::input('password'), $user->password),
+            !Hash::check(Request::input('old_password'), $user->password),
             HttpStatusCode::BAD_REQUEST,
             __('messages.bad_request')
         );
         
         return $user->update([
-            'password' => bcrypt(Request::input('pwd'))
+            'password' => bcrypt(Request::input('password'))
         ]);
         
     }
