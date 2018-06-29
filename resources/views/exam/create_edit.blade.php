@@ -21,12 +21,12 @@
                 </div>
             </div>
             @include('partials.single_select', [
-                'label' => '所属考试类型',
+                'label' => '考试类型',
                 'id' => 'exam_type_id',
                 'items' => $examtypes
             ])
             @include('partials.multiple_select', [
-                'label' => '所属班级',
+                'label' => '参与班级',
                 'id' => 'class_ids',
                 'items' => $classes,
                 'selectedItems' => isset($selectedClasses) ? $selectedClasses : []
@@ -38,25 +38,40 @@
                 'selectedItems' => isset($selectedSubjects) ? $selectedSubjects : []
             ])
             <div class="form-group">
-                {!! Form::label('start_date', '考试开始日期', [
+                {!! Form::label('daterange', '起止日期', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::date('start_date', null, [
-                        'class' => 'form-control text-blue',
-                    ]) !!}
+                    <div class="input-group">
+                        @include('partials.icon_addon', ['class' => 'fa-calendar'])
+                        {!! Form::text('daterange', null, [
+                            'class' => 'form-control text-blue',
+                            'placeholder' => '(开始日期 - 结束日期)',
+                            'required' => 'true',
+                        ]) !!}
+                    </div>
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('end_date', '考试结束日期', [
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::date('end_date', null, [
-                        'class' => 'form-control text-blue',
-                    ]) !!}
-                </div>
-            </div>
+            {{--<div class="form-group">--}}
+                {{--{!! Form::label('start_date', '考试开始日期', [--}}
+                    {{--'class' => 'col-sm-3 control-label'--}}
+                {{--]) !!}--}}
+                {{--<div class="col-sm-6">--}}
+                    {{--{!! Form::date('start_date', null, [--}}
+                        {{--'class' => 'form-control text-blue',--}}
+                    {{--]) !!}--}}
+                {{--</div>--}}
+            {{--</div>--}}
+            {{--<div class="form-group">--}}
+                {{--{!! Form::label('end_date', '考试结束日期', [--}}
+                    {{--'class' => 'col-sm-3 control-label'--}}
+                {{--]) !!}--}}
+                {{--<div class="col-sm-6">--}}
+                    {{--{!! Form::date('end_date', null, [--}}
+                        {{--'class' => 'form-control text-blue',--}}
+                    {{--]) !!}--}}
+                {{--</div>--}}
+            {{--</div>--}}
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
