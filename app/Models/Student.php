@@ -143,7 +143,9 @@ class Student extends Model {
             [
                 'db' => 'User.realname as realname', 'dt' => 1,
                 'formatter' => function ($d, $row) {
-                    $src = $row['avatar_url'] ?? 'img/' . ($row['gender'] ? 'girl.png' : 'boy.png');
+                    $src = empty($row['avatar_url'])
+                        ? 'img/' . ($row['gender'] ? 'girl.png' : 'boy.png')
+                        : $row['avatar_url'];
                     return '<img class="img-circle" src="' . $src . '"> ' . $d;
                 }
             ],
