@@ -169,7 +169,7 @@ var page = {
                 switch (result.statusCode) {
                     case 200:
                         var dIcon = result['department']['icon'] ? result['department']['icon'] : 'fa fa-send-o',
-                            dName = result['department']['name'] ? result['department']['name'] : '家校通运营';
+                            dName = result['department']['name'] ? result['department']['name'] : '运营';
 
                         $('.d_icon').removeClass().addClass('fa ' + dIcon + ' d_icon');
                         $('.d_name').html(dName);

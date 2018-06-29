@@ -808,7 +808,7 @@ class Menu extends Model {
     function department($id) {
         
         $icon = 'fa fa-send-o text-blue';
-        $name = '家校通运营';
+        $name = '运营';
         $departmentMenuId = $this->menuId($id);
         if ($departmentMenuId) {
             $icon = 'fa fa-university text-purple';
