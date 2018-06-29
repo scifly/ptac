@@ -6,12 +6,8 @@
                 <h4 class="modal-title">个人信息</h4>
             </div>
             <div class="modal-body with-border">
-                @include('user.edit', [
-                    'user' => Auth::user(),
-                    // 'breadcrumb' => '个人信息'
-                ])
+                @include('user.edit', ['user' => Auth::user()])
             </div>
-            {{--<div class="modal-footer"></div>--}}
         </div>
     </div>
 </div>

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="csrf_token" content="{{ csrf_token() }}" id="csrf_token">
-    <title>家校通</title>
+    <title>{!! config('app.name') !!}</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="stylesheet" href="{{ URL::asset('css/bootstrap.min.css') }}">
@@ -220,14 +220,8 @@
     <!-- Content Wrapper -->
     <div class="content-wrapper">
         <section class="content-header">
-            <h1>
-                @yield('header')
-            </h1>
-            <ol class="breadcrumb">
-                {{--<li><a href="#"><i class="fa fa-dashboard"></i> 首页</a></li>
-                <li class="active">家校通</li>--}}
-                @yield('breadcrumb')
-            </ol>
+            <h1>@yield('header')</h1>
+            <ol class="breadcrumb">@yield('breadcrumb')</ol>
         </section>
         <!--content-->
         <section class="content">
