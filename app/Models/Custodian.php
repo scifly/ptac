@@ -88,7 +88,7 @@ class Custodian extends Model {
                 'db' => 'User.realname', 'dt' => 1,
                 'formatter' => function ($d, $row) {
                     $src = empty($row['avatar_url'])
-                        ? 'img/' . ($row['gender'] ? 'female.png' : 'male.png')
+                        ? 'img/' . ($row['gender'] ? 'male.png' : 'female.png')
                         : $row['avatar_url'];
                     return '<img class="img-circle" style="height:28px;" src="' . $src . '"> ' . $d;
                 }
