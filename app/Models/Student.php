@@ -146,7 +146,7 @@ class Student extends Model {
                     $src = empty($row['avatar_url'])
                         ? '/img/' . ($row['gender'] ? 'girl.png' : 'boy.png')
                         : $row['avatar_url'];
-                    return '<img class="img-circle" style="height:16px;" src="' . $src . '"> ' . $d;
+                    return '<img class="img-circle" style="height:16px; vertical-align: text-top;" src="' . $src . '"> ' . $d;
                 }
             ],
             [
