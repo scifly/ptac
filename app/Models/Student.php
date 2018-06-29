@@ -140,7 +140,13 @@ class Student extends Model {
         
         $columns = [
             ['db' => 'Student.id', 'dt' => 0],
-            ['db' => 'User.realname as realname', 'dt' => 1],
+            [
+                'db' => 'User.realname as realname', 'dt' => 1,
+                'formatter' => function ($d, $row) {
+                    $src = $row['avatar_url'] ?? 'img/' . ($row['gender'] ? 'girl.png' : 'boy.png');
+                    return '<img class="img-circle" src="' . $src . '"> ' . $d;
+                }
+            ],
             [
                 'db'        => 'User.gender as gender', 'dt' => 2,
                 'formatter' => function ($d) {
@@ -190,6 +196,7 @@ class Student extends Model {
             ],
             ['db' => 'User.synced', 'dt' => 12],
             ['db' => 'User.subscribed', 'dt' => 13],
+            ['db' => 'User.avatar_url', 'dt' => 14],
         ];
         $joins = [
             [

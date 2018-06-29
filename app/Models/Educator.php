@@ -192,7 +192,13 @@ class Educator extends Model {
         
         $columns = [
             ['db' => 'Educator.id', 'dt' => 0],
-            ['db' => 'User.realname as username', 'dt' => 1],
+            [
+                'db' => 'User.realname as username', 'dt' => 1,
+                'formatter' => function ($d, $row) {
+                    $src = $row['avatar_url'] ?? 'img/' . ($row['gender'] ? 'female.png' : 'male.png');
+                    return '<img class="img-circle" src="' . $src . '"> ' . $d;
+                }
+            ],
             ['db' => 'Educator.created_at', 'dt' => 2],
             ['db' => 'Educator.updated_at', 'dt' => 3],
             [
@@ -208,6 +214,8 @@ class Educator extends Model {
             ],
             ['db' => 'User.synced', 'dt' => 5],
             ['db' => 'User.subscribed', 'dt' => 6],
+            ['db' => 'User.avatar_url', 'dt' => 7],
+            ['db' => 'User.gender', 'dt' => 7],
         ];
         $joins = [
             [

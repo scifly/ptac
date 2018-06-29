@@ -308,25 +308,31 @@ class User extends Authenticatable {
                         . '<span class="' . $color . '">' . $d . '</span>';
                 },
             ],
-            ['db' => 'User.avatar_url', 'dt' => 3],
-            ['db' => 'User.realname', 'dt' => 4],
             [
-                'db'        => 'User.gender', 'dt' => 5,
+                'db' => 'User.realname', 'dt' => 3,
+                'formatter' => function ($d, $row) {
+                    $src = $row['avatar_url'] ?? 'img/' . ($row['gender'] ? 'female.png' : 'male.png');
+                    return '<img class="img-circle" src="' . $src . '"> ' . $d;
+                }
+            ],
+            [
+                'db'        => 'User.gender', 'dt' => 4,
                 'formatter' => function ($d) {
                     return $d ? Snippet::MALE : Snippet::FEMALE;
                 },
             ],
-            ['db' => 'User.email', 'dt' => 6],
-            ['db' => 'User.created_at', 'dt' => 7],
-            ['db' => 'User.updated_at', 'dt' => 8],
+            ['db' => 'User.email', 'dt' => 5],
+            ['db' => 'User.created_at', 'dt' => 6],
+            ['db' => 'User.updated_at', 'dt' => 7],
             [
-                'db'        => 'User.enabled', 'dt' => 9,
+                'db'        => 'User.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     return $this->syncStatus($d, $row);
                 },
             ],
-            ['db' => 'User.synced', 'dt' => 10],
-            ['db' => 'User.subscribed', 'dt' => 11],
+            ['db' => 'User.synced', 'dt' => 9],
+            ['db' => 'User.subscribed', 'dt' => 10],
+            ['db' => 'User.avatar_url', 'dt' => 11],
         ];
         $joins = [
             [

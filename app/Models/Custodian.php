@@ -84,7 +84,13 @@ class Custodian extends Model {
         
         $columns = [
             ['db' => 'Custodian.id', 'dt' => 0],
-            ['db' => 'User.realname', 'dt' => 1],
+            [
+                'db' => 'User.realname', 'dt' => 1,
+                'formatter' => function ($d, $row) {
+                    $src = $row['avatar_url'] ?? 'img/' . ($row['gender'] ? 'female.png' : 'male.png');
+                    return '<img class="img-circle" src="' . $src . '"> ' . $d;
+                }
+            ],
             [
                 'db'        => 'CustodianStudent.student_id', 'dt' => 2,
                 'formatter' => function ($d) {
@@ -119,6 +125,7 @@ class Custodian extends Model {
             ],
             ['db' => 'User.synced', 'dt' => 9],
             ['db' => 'User.subscribed', 'dt' => 10],
+            ['db' => 'User.avatar_url', 'dt' => 11],
         ];
         $joins = [
             [
