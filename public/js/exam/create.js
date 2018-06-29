@@ -9,7 +9,7 @@ $.getScript(
                 page.loadCss(plugins.daterangepicker.css);
                 $('#daterange').daterangepicker({
                     locale: {
-                        format: "YYYY.MM.DD",
+                        format: "YYYY-MM-DD",
                         separator: ' - ',
                         applyLabel: "确定",
                         cancelLabel: "取消",
