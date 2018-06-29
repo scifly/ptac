@@ -10,7 +10,7 @@ $.getScript(
                 $('#daterange').daterangepicker({
                     locale: {
                         format: "YYYY-MM-DD",
-                        separator: ' - ',
+                        separator: ' ~ ',
                         applyLabel: "确定",
                         cancelLabel: "取消",
                         fromLabel: "从",
