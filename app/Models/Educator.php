@@ -195,7 +195,9 @@ class Educator extends Model {
             [
                 'db' => 'User.realname as username', 'dt' => 1,
                 'formatter' => function ($d, $row) {
-                    $src = $row['avatar_url'] ?? 'img/' . ($row['gender'] ? 'female.png' : 'male.png');
+                    $src = empty($row['avatar_url'])
+                        ? '/img/' . ($row['gender'] ? 'female.png' : 'male.png')
+                        : $row['avatar_url'];
                     return '<img class="img-circle" style="height:16px; vertical-align: text-top;" src="' . $src . '"> ' . $d;
                 }
             ],
