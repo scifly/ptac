@@ -28,12 +28,14 @@
             @include('partials.multiple_select', [
                 'label' => '参与班级',
                 'id' => 'class_ids',
+                'icon' => 'fa fa-users',
                 'items' => $classes,
                 'selectedItems' => isset($selectedClasses) ? $selectedClasses : []
             ])
             @include('partials.multiple_select', [
                 'label' => '科目',
                 'id' => 'subject_ids',
+                'icon' => 'fa fa-book',
                 'items' => $subjects,
                 'selectedItems' => isset($selectedSubjects) ? $selectedSubjects : []
             ])
