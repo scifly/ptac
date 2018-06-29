@@ -312,7 +312,7 @@ class User extends Authenticatable {
                 'db' => 'User.realname', 'dt' => 3,
                 'formatter' => function ($d, $row) {
                     $src = $row['avatar_url'] ?? 'img/' . ($row['gender'] ? 'female.png' : 'male.png');
-                    return '<img class="img-circle" src="' . $src . '"> ' . $d;
+                    return '<img class="img-circle" style="height:16px; vertical-align: text-top;" src="' . $src . '"> ' . $d;
                 }
             ],
             [
