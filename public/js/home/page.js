@@ -1,8 +1,6 @@
-var oPage = {title: '', url: location.href};
-var updateHistory = true;
-var replaceState = true;
-var docTitle = '';
-var $cip = $('#cip');
+var oPage = {title: '', url: location.href},
+    updateHistory = true, replaceState = true,
+    $cip = $('#cip');
 // noinspection JSUnusedGlobalSymbols
 var page = {
     success: 'img/confirm.png',
@@ -223,7 +221,7 @@ var page = {
                                 });
                             }
                             // Wrapper中的Html不含卡片，更新浏览器History
-                            document.title = docTitle + ' - ' + result['title'];
+                            document.title = result['title'];
                             // 0 - tabId, 1 - menuId, 2 - menuUrl
                             oPage.title = '0,' + page.getActiveMenuId() + ',' + page.getMenuUrl();
                             oPage.url = page.siteRoot() + result['uri'];
@@ -285,8 +283,7 @@ var page = {
                         // }
                     });
                     // 更新浏览器抬头
-                    var breadcrumb = $('#breadcrumb').html();
-                    document.title = docTitle + ' - ' + breadcrumb;
+                    document.title = $('#breadcrumb').html();
                     // 更新浏览器访问历史
                     // 0 - tabId, 1 - menuId, 2 - menuUrl
                     oPage.title = tabId + ',' + page.getActiveMenuId() + ',' + page.getMenuUrl();
