@@ -4,7 +4,7 @@
             {{--<div class="modal-header">--}}
             {{--</div>--}}
             <div class="modal-body with-border">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                {{--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>--}}
                 @include('user.edit', [
                     'user' => Auth::user(),
                     'breadcrumb' => '个人信息'
