@@ -12,12 +12,17 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('name', null, [
-                        'class' => 'form-control text-blue',
-                        'placeholder' => '(不超过40个汉字)',
-                        'required' => 'true',
-                        'data-parsley-length' => '[4, 40]'
-                    ]) !!}
+                    <div class="input-group" style="width: 100%;">
+                        <div class="input-group-addon" style="width: 45px;">
+                            <strong>名</strong>
+                        </div>
+                        {!! Form::text('name', null, [
+                            'class' => 'form-control text-blue',
+                            'placeholder' => '(不超过40个汉字)',
+                            'required' => 'true',
+                            'data-parsley-length' => '[4, 40]'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             @include('partials.single_select', [
