@@ -32,7 +32,10 @@
 <div class="main" style="margin:15% auto;width: 360px">
     <div class="box box-success">
         <div class="box-header with-border">
-            <a href="#"><b>{!! config('app.name') !!}</b></a>
+            <a href="#">
+                <i class="fa fa-sign-in"></i>&nbsp;
+                <b>{!! config('app.name') !!}</b>
+            </a>
         </div>
         <!-- /.login-logo -->
         <div class="box-body">
