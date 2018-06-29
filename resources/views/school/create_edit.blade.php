@@ -53,7 +53,7 @@
                         {!! Form::text('signature', null, [
                             'class' => 'form-control text-blue',
                             'required' => 'true',
-                            'placeholder'=>'签名格式必须为[内容]',
+                            'placeholder'=>'签名格式：【内容】',
                             'data-parsley-length' => '[2, 7]'
                         ]) !!}
                     </div>
