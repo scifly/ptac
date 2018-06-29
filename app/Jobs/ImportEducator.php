@@ -79,7 +79,6 @@ class ImportEducator implements ShouldQueue {
                             'password'   => bcrypt('12345678'),
                             'realname'   => $row['name'],
                             'gender'     => $row['gender'] == '男' ? '0' : '1',
-                            'avatar_url' => '00001.jpg',
                             'userid'     => uniqid('educator_'),
                             'isleader'   => 0,
                             'enabled'    => 1,

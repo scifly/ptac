@@ -9,7 +9,6 @@ use App\Models\Squad;
 use App\Models\Group;
 use App\Models\Mobile;
 use App\Models\School;
-use App\Rules\Mobile;
 use App\Models\Student;
 use App\Models\Custodian;
 use App\Helpers\ModelTrait;
@@ -192,7 +191,6 @@ class ImportStudent implements ShouldQueue {
                         'password'   => bcrypt('student8888'),
                         'realname'   => $insert['name'],
                         'gender'     => $insert['gender'] == '男' ? '0' : '1',
-                        'avatar_url' => '00001.jpg',
                         'userid'     => uniqid('student_'),
                         'isleader'   => 0,
                         'enabled'    => 1,
@@ -225,7 +223,6 @@ class ImportStudent implements ShouldQueue {
                                         'password'   => bcrypt('custodian8888'),
                                         'realname'   => $paths[1],
                                         'gender'     => $paths[2] == '男' ? '0' : '1',
-                                        'avatar_url' => '00001.jpg',
                                         'userid'     => uniqid('custodian_'),
                                         'isleader'   => 0,
                                         'enabled'    => 1,
@@ -384,7 +381,6 @@ class ImportStudent implements ShouldQueue {
                                         'password'   => bcrypt('custodian8888'),
                                         'realname'   => $paths[1],
                                         'gender'     => $paths[2] == '男' ? '0' : '1',
-                                        'avatar_url' => '00001.jpg',
                                         'userid'     => uniqid('custodian_'),
                                         'isleader'   => 0,
                                         'enabled'    => 1,

@@ -8,7 +8,6 @@ use App\Helpers\Snippet;
 use App\Http\Requests\CustodianRequest;
 use App\Http\Requests\EducatorRequest;
 use App\Jobs\ImportEducator;
-use App\Rules\Mobile;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -258,7 +257,6 @@ class Educator extends Model {
                     'email'        => $user['email'],
                     'realname'     => $user['realname'],
                     'gender'       => $user['gender'],
-                    'avatar_url'   => '00001.jpg',
                     'userid'       => 'user_' . uniqid(),
                     'isleader'     => 0,
                     'english_name' => $user['english_name'],
@@ -413,7 +411,6 @@ class Educator extends Model {
                     'email'        => $user['email'],
                     'realname'     => $user['realname'],
                     'gender'       => $user['gender'],
-                    'avatar_url'   => '00001.jpg',
                     'isleader'     => 0,
                     'english_name' => $user['english_name'],
                     'telephone'    => $user['telephone'],
