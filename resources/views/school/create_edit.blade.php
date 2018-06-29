@@ -29,11 +29,16 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('address', null, [
-                        'class' => 'form-control text-blue',
-                        'required' => 'true',
-                        'data-parsley-length' => '[6, 255]'
-                    ]) !!}
+                    <div class="input-group" style="width: 100%;">
+                        <div class="input-group-addon" style="width: 45px;">
+                            <strong>地</strong>
+                        </div>
+                        {!! Form::text('address', null, [
+                            'class' => 'form-control text-blue',
+                            'required' => 'true',
+                            'data-parsley-length' => '[6, 255]'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             <div class="form-group">
@@ -41,12 +46,17 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('signature', null, [
-                        'class' => 'form-control text-blue',
-                        'required' => 'true',
-                        'placeholder'=>'签名格式必须为[内容]',
-                        'data-parsley-length' => '[2, 7]'
-                    ]) !!}
+                    <div class="input-group" style="width: 100%;">
+                        <div class="input-group-addon" style="width: 45px;">
+                            <strong>签</strong>
+                        </div>
+                        {!! Form::text('signature', null, [
+                            'class' => 'form-control text-blue',
+                            'required' => 'true',
+                            'placeholder'=>'签名格式必须为[内容]',
+                            'data-parsley-length' => '[2, 7]'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             @if (in_array(Auth::user()->group->name, ['运营', '企业']))
