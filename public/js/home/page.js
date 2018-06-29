@@ -758,9 +758,10 @@ $(function () {
     // 刷新菜单
     page.refreshMenus();
     // 个人信息弹窗
-    $('#profile').on('click', function () {
+    $('#profile').on('click', function (e) {
+        e.preventDefault();
         page.edit('formUser', 'users');
-        $('#user-profile').modal({backdrop: true})
+        $('#user-profile').modal({backdrop: true});
     });
     // 获取状态为active的卡片
     var $activeTabPane = $('#tab_' + page.getActiveTabId());
