@@ -56,7 +56,7 @@
                     </div>
                     <div class="col-xs-4">
                         <button onclick="void(0)" class="btn btn-primary btn-block btn-flat" id="signin">
-                            <i class="fa fa-sign-in"></i>&nbsp;登录
+                            <i class="fa fa-sign-in">&nbsp;登录</i>
                         </button>
                     </div>
                 </div>
