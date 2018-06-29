@@ -4,9 +4,11 @@
     'data-parsley-validate' => 'true'
 ]) !!}
 <div class="box box-default box-solid">
+    @if ($breadcrub)
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
+    @endif
     <div class="box-body">
         <div class="form-horizontal">
             <!-- 用户名 -->
