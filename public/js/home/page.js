@@ -757,6 +757,11 @@ $.getMultiScripts = function (arr) {
 $(function () {
     // 刷新菜单
     page.refreshMenus();
+    // 个人信息弹窗
+    $('#profile').on('click', function () {
+        page.edit('formUser', 'users');
+        $('#user-profile').modal({backdrop: true})
+    });
     // 获取状态为active的卡片
     var $activeTabPane = $('#tab_' + page.getActiveTabId());
     // 初始化浏览器历史相关的popstate事件

@@ -43,6 +43,7 @@
     </div>
     <!-- 页面尾部 -->
     @include('partials.site_footer')
+    @include('home.profile')
 </div>
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
 <script src="{{ URL::asset('js/jquery-ui.min.js') }}"></script>

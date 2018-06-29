@@ -13,7 +13,7 @@
     </li>
     <li class="user-footer">
         <div class="pull-left">
-            <a href="#" class="btn btn-default btn-flat">个人中心</a>
+            <a href="#" class="btn btn-default btn-flat" id="profile">个人信息</a>
         </div>
         <div class="pull-right">
             <a href="{{ URL::route('logout') }}" class="btn btn-default btn-flat">退出登录</a>

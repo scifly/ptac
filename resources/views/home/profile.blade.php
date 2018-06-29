@@ -6,7 +6,10 @@
                 <h4 class="modal-title">个人信息</h4>
             </div>
             <div class="modal-body with-border">
-                @include('user.edit')
+                @include('user.edit', [
+                    'user' => Auth::user(),
+                    'mobile' => '12345678901'
+                ])
             </div>
             <div class="modal-footer"></div>
         </div>
