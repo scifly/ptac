@@ -5,6 +5,7 @@ use App\Models\Department;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
+use Illuminate\Support\Facades\Auth;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -22,8 +23,8 @@ class TestController extends Controller {
     /**
      */
     public function index() {
-        
-        dd(bcrypt('#ilikeit09'));
+
+        dd(get_class(Auth::user()));
         dd($this->getAppNamespace());
         $a = [
             0 => 'a',
