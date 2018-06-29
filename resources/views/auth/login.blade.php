@@ -32,12 +32,11 @@
 <div class="main" style="margin:15% auto;width: 360px">
     <div class="box box-success">
         <div class="box-header with-border">
-            <i class="fa fa-sign-in"></i>&nbsp;
             <b>{!! config('app.name') !!}</b>
         </div>
         <!-- /.login-logo -->
         <div class="box-body">
-            <p class="login-box-msg">请登录</p>
+            {{--<p class="login-box-msg">请登录</p>--}}
             <form  method="post">
                 {!! csrf_field() !!}
                 <div class="form-group has-feedback">
@@ -56,7 +55,9 @@
                         </div>
                     </div>
                     <div class="col-xs-4">
-                        <button onclick="void(0)" class="btn btn-primary btn-block btn-flat" id="signin">登录</button>
+                        <button onclick="void(0)" class="btn btn-primary btn-block btn-flat" id="signin">
+                            <i class="fa fa-sign-in"></i>&nbsp;登录
+                        </button>
                     </div>
                 </div>
             </form>
