@@ -7,6 +7,7 @@
             <!-- 用户id -->
             @if (!empty($user['id']))
                 {{ Form::hidden('id', $user['id'], ['id' => 'id']) }}
+                @include('partials.avatar')
             @endif
             <!-- 用户名 -->
             <div class="form-group">

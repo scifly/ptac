@@ -7,10 +7,8 @@
             <!-- 监护人ID -->
             @if (!empty($custodian['id']))
                 {{ Form::hidden('id', $custodian['id'], ['id' => 'id']) }}
-            @endif
-            <!-- 监护人UserID -->
-            @if (!empty($custodian['user_id']))
                 {{ Form::hidden('user_id', $custodian['user_id'], ['id' => 'user_id']) }}
+                @include('partials.avatar', ['user' => $custodian->user])
             @endif
             <!-- 监护人姓名 -->
             <div class="form-group">

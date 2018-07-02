@@ -6,9 +6,8 @@
         <div class="form-horizontal form-main">
             @if (isset($educator['id']))
                 {{ Form::hidden('id', $educator['id'], ['id' => 'id']) }}
-            @endif
-            @if (isset($educator['user_id']))
                 {{ Form::hidden('user_id', $educator['user_id'], ['id' => 'user_id']) }}
+                @include('partials.avatar', ['user' => $educator->user])
             @endif
             <!-- 真实姓名 -->
             <div class="form-group">

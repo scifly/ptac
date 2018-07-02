@@ -8,11 +8,10 @@
             @if (isset($student['id']))
                 <!-- 学生ID -->
                 {{ Form::hidden('id', $student['id'], ['id' => 'id']) }}
-            @endif
-            <!-- 学生UserID -->
-            @if (isset($student['user_id']))
                 <!-- 学生UserID -->
                 {{ Form::hidden('user_id', $student['user_id'], ['id' => 'user_id']) }}
+                <!-- 学生头像 -->
+                @include('partials.avatar', ['user' => $student->user])
             @endif
             <!-- 学生姓名 -->
             <!-- 真实姓名 -->
