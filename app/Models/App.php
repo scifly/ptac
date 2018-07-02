@@ -109,7 +109,7 @@ class App extends Model {
                 <td>%s</td>
                 <td class="text-center">%s</td>
                 <td class="text-center">%s</td>
-                <td class="text-center"><img style="width: 16px; height: 16px;" src="%s"/></td>
+                <td class="text-center"><img class="img-circle" style="height: 16px;" src="%s"/></td>
                 <td class="text-center">%s</td>
                 <td class="text-center">%s</td>
                 <td class="text-center">%s</td>
