@@ -55,11 +55,11 @@ class SyncController extends Controller {
             $corp->contact_sync_secret,
             true
         );
-        if ($token['errcode']) { return false; }
+        if ($token['errcode']) { return $token['errcode']; }
         $member = json_decode(Wechat::getUser($token['access_token'], $userid));
         if ($member->{'errcode'}) {
             Log::debug(json_encode($member));
-            return false;
+            return $member->{'errcode'};
         }
         $type = $event->{'Event'};
         Log::debug('event type: ' . $type);
@@ -100,7 +100,7 @@ class SyncController extends Controller {
                 break;
         }
         
-        return true;
+        return '';
         
     }
     
