@@ -74,24 +74,24 @@ class SyncController extends Controller {
                 break;
             case 'change_contact':
                 $data = [
-                    'gender'     => property_exists($member, 'Gender')
-                        ? ($member->{'Gender'} == 1 ? 0 : 1)
+                    'gender'     => property_exists($member, 'gender')
+                        ? ($member->{'gender'} == 1 ? 0 : 1)
                         : $user->gender,
-                    'email'      => property_exists($member, 'Email')
-                        ? $member->{'Email'}
+                    'email'      => property_exists($member, 'email')
+                        ? $member->{'email'}
                         : $user->email,
-                    'avatar_url' => property_exists($member, 'Avatar')
-                        ? $member->{'Avatar'}
+                    'avatar_url' => property_exists($member, 'avatar')
+                        ? $member->{'avatar'}
                         : $user->avatar_url,
-                    'subscribed' => property_exists($member, 'Status')
-                        ? ($member->{'Status'} == 1 ? 1 : 0)
+                    'subscribed' => property_exists($member, 'status')
+                        ? ($member->{'status'} == 1 ? 1 : 0)
                         : $user->subscribed,
                 ];
                 Log::debug(json_encode($data));
                 $user->update($data);
-                if (property_exists($member, 'Mobile')) {
+                if (property_exists($member, 'mobile')) {
                     Mobile::whereUserId($user->id)->where('isdefault', 1)->first()->update([
-                        'mobile' => $member->{'Mobile'},
+                        'mobile' => $member->{'mobile'},
                     ]);
                 }
                 break;
