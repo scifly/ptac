@@ -84,50 +84,49 @@ class Custodian extends Model {
         
         $columns = [
             ['db' => 'Custodian.id', 'dt' => 0],
+            ['db' => 'User.realname', 'dt' => 1],
             [
-                'db' => 'User.realname', 'dt' => 1,
+                'db'        => 'User.avatar_url', 'dt' => 2,
                 'formatter' => function ($d, $row) {
-                    $src = empty($row['avatar_url'])
-                        ? '/img/' . ($row['gender'] ? 'male.png' : 'female.png')
-                        : $row['avatar_url'];
-                    return '<img class="img-circle" style="height:28px;" src="' . $src . '"> ' . $d;
-                }
+                    return Snippet::avatar($d, $row);
+                },
             ],
             [
-                'db'        => 'CustodianStudent.student_id', 'dt' => 2,
+                'db'        => 'User.gender', 'dt' => 3,
+                'formatter' => function ($d) {
+                    return $d ? Snippet::MALE : Snippet::FEMALE;
+                },
+            ],
+            [
+                'db'        => 'CustodianStudent.student_id', 'dt' => 4,
                 'formatter' => function ($d) {
                     return Student::find($d)->user->realname;
                 },
             ],
-            ['db' => 'User.email', 'dt' => 3],
-            ['db'        => 'User.gender', 'dt' => 4,
-             'formatter' => function ($d) {
-                 return $d == 1 ? Snippet::MALE : Snippet::FEMALE;
-             },
-            ],
-            ['db'        => 'Custodian.id as mobile', 'dt' => 5,
-             'formatter' => function ($d) {
-                 $custodian = $this->find($d);
-                 $mobiles = Mobile::whereUserId($custodian->user_id)->get();
-                 $mobile = [];
-                 foreach ($mobiles as $key => $value) {
-                     $mobile[] = $value->mobile;
-                 }
-                
-                 return implode(',', $mobile);
-             },
-            ],
-            ['db' => 'Custodian.created_at', 'dt' => 6],
-            ['db' => 'Custodian.updated_at', 'dt' => 7],
+            ['db' => 'User.email', 'dt' => 5],
             [
-                'db'        => 'User.enabled', 'dt' => 8,
+                'db'        => 'Custodian.id as mobile', 'dt' => 6,
+                'formatter' => function ($d) {
+                    $custodian = $this->find($d);
+                    $mobiles = Mobile::whereUserId($custodian->user_id)->get();
+                    $mobile = [];
+                    foreach ($mobiles as $key => $value) {
+                        $mobile[] = $value->mobile;
+                    }
+                    
+                    return implode(',', $mobile);
+                },
+            ],
+            ['db' => 'Custodian.created_at', 'dt' => 7],
+            ['db' => 'Custodian.updated_at', 'dt' => 8],
+            [
+                'db'        => 'User.enabled', 'dt' => 9,
                 'formatter' => function ($d, $row) {
                     return $this->syncStatus($d, $row);
                 },
             ],
-            ['db' => 'User.synced', 'dt' => 9],
-            ['db' => 'User.subscribed', 'dt' => 10],
-            ['db' => 'User.avatar_url', 'dt' => 11],
+            ['db' => 'User.synced', 'dt' => 10],
+            ['db' => 'User.subscribed', 'dt' => 11],
         ];
         $joins = [
             [
