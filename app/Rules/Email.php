@@ -31,7 +31,9 @@ class Email implements Rule {
     
         $action = Request::method();
         # 即将被添加的email对应的userId
-        $userId = (is_array(Request::input('mobile')) && $action == 'PUT') ? Request::input('user_id') : Auth::id();
+        $userId = (is_array(Request::input('mobile')) && $action == 'PUT')
+            ? Request::input('user_id') ?? Request::input('id')
+            : Auth::id();
         # 即将被添加的email所属企业的corp_id
         $_corpIds = $action == 'POST'
             ? [Request::input('corp_id', (new Corp)->corpId())]

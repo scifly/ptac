@@ -17,7 +17,9 @@ class Mobile implements Rule {
         $action = Request::method();
         $user = new User;
         $corp = new Corp;
-        $userId = (is_array($value) && $action == 'PUT') ? Request::input('user_id') : Auth::id();
+        $userId = (is_array($value) && $action == 'PUT')
+            ? Request::input('user_id') ?? Request::input('id')
+            : Auth::id();
         # 即将被添加的手机号码所属企业的corp_id
         $_corpIds = $action == 'POST' ? [$corp->corpId()] : $user->corpIds($userId);
         # 已有的相同手机号码
