@@ -26,6 +26,9 @@ class SyncController extends Controller {
      */
     public function sync() {
         
+        $this->verifyUrl();
+        exit;
+        
         $paths = explode('/', Request::path());
         $corp = Corp::whereAcronym($paths[0])->first();
         // 假设企业号在公众平台上设置的参数如下
@@ -45,7 +48,7 @@ class SyncController extends Controller {
             Request::getContent(),
             $content
         );
-        if ($errcode) { return false; }
+        if ($errcode) { return $errcode; }
         $event = simplexml_load_string($content, 'SimpleXMLElement', LIBXML_NOCDATA);
         $userid = $event->{'UserID'};
         Log::debug(json_encode($event));
