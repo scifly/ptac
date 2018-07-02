@@ -8,6 +8,6 @@
             <img src="{{ $user->avatar_url ? $user->avatar_url : asset('img/user2-160x160.jpg') }}"
                  class="img-circle" style="height: 80px;">
         </div>
-        <p class="help-block">用户的微信账号头像，此处不可更改。</p>
+        <p class="help-block">（同步自用户的微信账号，此处不可更改）</p>
     </div>
 </div>
