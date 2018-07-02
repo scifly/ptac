@@ -82,7 +82,12 @@ trait JobTrait {
             User::whereUserid($data['userid'])->first()->update(['synced' => 1]);
             if ($action == 'updateUser') {
                 $member = json_decode(Wechat::getUser($accessToken, $data['userid']));
-                
+                if (!$member->{'errcode'} && $member->{'status'} == 1) {
+                    User::whereUserid($data['userid'])->first()->update([
+                        'avatar_url' => $member->{'avatar'},
+                        'subscribed' => 1
+                    ]);
+                }
             }
         }
         $response = [
