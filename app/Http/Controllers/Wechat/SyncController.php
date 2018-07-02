@@ -29,24 +29,43 @@ class SyncController extends Controller {
         $paths = explode('/', Request::path());
         $corp = Corp::whereAcronym($paths[0])->first();
         // 假设企业号在公众平台上设置的参数如下
-        $encodingAesKey = $corp->encoding_aes_key;
-        $token = $corp->token;
-        $corpId = $corp->corpid;
-        $wxcpt = new WXBizMsgCrypt($token, $encodingAesKey, $corpId);
+        $wxcpt = new WXBizMsgCrypt(
+            $corp->token,
+            $corp->encoding_aes_key,
+            $corp->corpid
+        );
         $msgSignature = Request::query('msg_signature');
         $timestamp = Request::query('timestamp');
         $nonce = Request::query('nonce');
         $content = '';
-        $errcode = $wxcpt->DecryptMsg($msgSignature, $timestamp, $nonce, Request::getContent(), $content);
+        $errcode = $wxcpt->DecryptMsg(
+            $msgSignature,
+            $timestamp,
+            $nonce,
+            Request::getContent(),
+            $content
+        );
         if ($errcode) {
             Log::debug('Errcode: ' . $errcode);
             return false;
         }
         $event = simplexml_load_string($content, 'SimpleXMLElement', LIBXML_NOCDATA);
-        Log::debug(json_encode($event));
         $userid = $event->{'FromUserName'};
         $user = User::whereUserid($userid)->first();
+        $token = Wechat::getAccessToken(
+            $corp->corpid,
+            $corp->contact_sync_secret,
+            true
+        );
+        if ($token['errcode']) {
+            Log::debug(json_encode($token));
+            return false;
+        }
         $member = json_decode(Wechat::getUser($token['access_token'], $userid));
+        if ($member['errcode']) {
+            Log::debug(json_encode($member));
+            return false;
+        }
         $type = $event->{'Event'};
         switch ($type) {
             case 'subscribe':
