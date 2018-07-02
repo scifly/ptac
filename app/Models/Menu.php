@@ -306,7 +306,7 @@ class Menu extends Model {
         
         static $subMenuIds;
         $childrenIds = Menu::whereParentId($id)->pluck('id')->toArray();
-        if ($childrenIds) {
+        if (!empty($childrenIds)) {
             foreach ($childrenIds as $childId) {
                 $subMenuIds[] = $childId;
                 self::subMenuIds($childId);
