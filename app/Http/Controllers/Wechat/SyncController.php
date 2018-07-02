@@ -62,7 +62,7 @@ class SyncController extends Controller {
             return false;
         }
         $member = json_decode(Wechat::getUser($token['access_token'], $userid));
-        if ($member['errcode']) {
+        if ($member->{'errcode'}) {
             Log::debug(json_encode($member));
             return false;
         }
