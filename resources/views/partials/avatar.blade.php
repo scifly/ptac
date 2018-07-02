@@ -5,7 +5,7 @@
     ]) !!}
     <div class="col-sm-6">
         <div class="input-group">
-            <img src="{{ $user->avatar_url ? $user->avatar_url : asset('img/user2-160x160.jpg') }}"
+            <img src="{{ $user->avatar_url ?? asset('img/default.png') }}"
                  class="img-circle" style="height: 80px;">
         </div>
         <p class="help-block">（头像同步自用户的微信账号，此处不可更改）</p>
