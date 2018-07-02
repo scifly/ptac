@@ -315,7 +315,7 @@ class User extends Authenticatable {
                         ? '/img/' . ($row['gender'] ? 'male.png' : 'female.png')
                         : $row['avatar_url'];
                     return '<img class="img-circle" style="height:28px; vertical-align: middle;" src="' . $src . '"> '
-                        . '<span>' . $d . '</span>';
+                        . '<span style="">' . $d . '</span>';
                 }
             ],
             [
