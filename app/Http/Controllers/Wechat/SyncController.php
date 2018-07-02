@@ -62,7 +62,6 @@ class SyncController extends Controller {
             return $member->{'errcode'};
         }
         $type = $event->{'Event'};
-        Log::debug('event type: ' . $type);
         switch ($type) {
             case 'subscribe':
                 $user->update([
@@ -88,13 +87,13 @@ class SyncController extends Controller {
                         ? ($member->{'Status'} == 1 ? 1 : 0)
                         : $user->subscribed,
                 ];
+                Log::debug(json_encode($data));
                 $user->update($data);
                 if (property_exists($member, 'Mobile')) {
                     Mobile::whereUserId($user->id)->where('isdefault', 1)->first()->update([
                         'mobile' => $member->{'Mobile'},
                     ]);
                 }
-                Log::debug('You have reached here so far');
                 break;
             default:
                 break;
