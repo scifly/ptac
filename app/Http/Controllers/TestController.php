@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Facades\Wechat;
 use App\Models\Department;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -21,16 +22,19 @@ class TestController extends Controller {
     protected $callerShowNumber = '02388373982';
     
     /**
+     * @throws \Exception
      */
     public function index() {
 
-        dd(get_class(Auth::user()));
-        dd($this->getAppNamespace());
-        $a = [
-            0 => 'a',
-            1 => 'b',
-        ];
-        dd(key($a));
+        $token = Wechat::getAccessToken(
+            'wxe75227cead6b8aec',
+            'IoiSOIsOGrdps03Lx_h5V3cCvMl3ibu-FyqqAsy-qLM',
+            true
+        );
+        $accessToken = $token['access_token'];
+        $member = json_decode(Wechat::getUser($accessToken, 'haoyh'));
+        dd($member);
+        
 
     }
     

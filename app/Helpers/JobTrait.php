@@ -80,6 +80,10 @@ trait JobTrait {
         }
         if (!$result->{'errcode'} && $action != 'deleteUser') {
             User::whereUserid($data['userid'])->first()->update(['synced' => 1]);
+            if ($action == 'updateUser') {
+                $member = json_decode(Wechat::getUser($accessToken, $data['userid']));
+                
+            }
         }
         $response = [
             'errcode' => $result->{'errcode'},
