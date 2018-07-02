@@ -789,7 +789,7 @@ class User extends Authenticatable {
 
         return $user->group->name == '运营'
             ? Corp::pluck('id')->toArray()
-            : [(new Department)->corpId($this->head($user))];
+            : [(new Department)->corpId($this->head($user) ?? 1)];
         
     }
     
