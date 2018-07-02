@@ -5,7 +5,8 @@
 </a>
 <ul class="dropdown-menu">
     <li class="user-header">
-        <img src="{{ URL::asset('img/user2-160x160.jpg') }}" class="img-circle" alt="用户头像">
+        <img src="{{ Auth::user()->avatar_url ? Auth::user()->avatar_url : URL::asset('img/user2-160x160.jpg') }}"
+             class="img-circle" alt="用户头像">
         <p>
             {{ Auth::user()->realname }}
             <small>角色：{{ Auth::user()->group->name ?? null }}</small>
