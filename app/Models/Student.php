@@ -140,37 +140,35 @@ class Student extends Model {
         
         $columns = [
             ['db' => 'Student.id', 'dt' => 0],
+            ['db' => 'User.realname as realname', 'dt' => 1],
             [
-                'db' => 'User.realname as realname', 'dt' => 1,
+                'db' => 'User.avatar_url', 'dt' => 2,
                 'formatter' => function ($d, $row) {
-                    $src = empty($row['avatar_url'])
-                        ? '/img/' . ($row['gender'] ? 'boy.png' : 'girl.png')
-                        : $row['avatar_url'];
-                    return '<img class="img-circle" style="height:28px;" src="' . $src . '"> ' . $d;
+                    return Snippet::avatar($d, $row, false);
                 }
             ],
             [
-                'db'        => 'User.gender as gender', 'dt' => 2,
+                'db'        => 'User.gender as gender', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return $d == 1 ? Snippet::MALE : Snippet::FEMALE;
+                    return Snippet::gender($d);
                 },
             ],
             [
-                'db'        => 'Squad.name as classname', 'dt' => 3,
+                'db'        => 'Squad.name as classname', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-users', '') . $d;
+                    return Snippet::squad($d);
                 },
             ],
-            ['db' => 'Student.student_number', 'dt' => 4],
-            ['db' => 'Student.card_number', 'dt' => 5],
+            ['db' => 'Student.student_number', 'dt' => 5],
+            ['db' => 'Student.card_number', 'dt' => 6],
             [
-                'db'        => 'Student.oncampus', 'dt' => 6,
+                'db'        => 'Student.oncampus', 'dt' => 7,
                 'formatter' => function ($d) {
                     return $d == 1 ? '是' : '否';
                 },
             ],
             [
-                'db'        => 'Student.id as mobile', 'dt' => 7,
+                'db'        => 'Student.id as mobile', 'dt' => 8,
                 'formatter' => function ($d) {
                     $student = $this->find($d);
                     $mobiles = $student->user->mobiles;
@@ -183,22 +181,21 @@ class Student extends Model {
                 },
             ],
             [
-                'db'        => 'Student.birthday', 'dt' => 8,
+                'db'        => 'Student.birthday', 'dt' => 9,
                 'formatter' => function ($d) {
                     return $d ? substr($d, 0, 10) : '';
                 },
             ],
-            ['db' => 'Student.created_at', 'dt' => 9],
-            ['db' => 'Student.updated_at', 'dt' => 10],
+            ['db' => 'Student.created_at', 'dt' => 10],
+            ['db' => 'Student.updated_at', 'dt' => 11],
             [
-                'db'        => 'Student.enabled', 'dt' => 11,
+                'db'        => 'Student.enabled', 'dt' => 12,
                 'formatter' => function ($d, $row) {
                     return $this->syncStatus($d, $row);
                 },
             ],
-            ['db' => 'User.synced', 'dt' => 12],
-            ['db' => 'User.subscribed', 'dt' => 13],
-            ['db' => 'User.avatar_url', 'dt' => 14],
+            ['db' => 'User.synced', 'dt' => 13],
+            ['db' => 'User.subscribed', 'dt' => 14],
         ];
         $joins = [
             [

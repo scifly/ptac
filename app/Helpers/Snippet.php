@@ -131,4 +131,40 @@ HTML;
         
     }
     
+    /**
+     * 返回企业对应的html（含图标及名称）
+     *
+     * @param $d
+     * @return string
+     */
+    static function corp($d) {
+    
+        return sprintf(Snippet::ICON, 'fa-weixin text-green', '') . $d;
+        
+    }
+    
+    /**
+     * 返回学校对应的html（含图标及名称）
+     *
+     * @param $d
+     * @return string
+     */
+    static function school($d) {
+        
+        return sprintf(Snippet::ICON, 'fa-university text-purple', '') . $d;
+        
+    }
+    
+    /**
+     * 返回班级对应的html（含图标及名称）
+     *
+     * @param $d
+     * @return string
+     */
+    static function squad($d) {
+    
+        return sprintf(Snippet::ICON, 'fa-users', '') . $d;
+        
+    }
+    
 }
