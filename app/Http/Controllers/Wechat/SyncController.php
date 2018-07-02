@@ -62,6 +62,7 @@ class SyncController extends Controller {
             return false;
         }
         $type = $event->{'Event'};
+        Log::debug('event type: ' . $type);
         switch ($type) {
             case 'subscribe':
                 $user->update([
