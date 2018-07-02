@@ -87,8 +87,8 @@ class Custodian extends Model {
             ['db' => 'User.realname', 'dt' => 1],
             [
                 'db'        => 'User.avatar_url', 'dt' => 2,
-                'formatter' => function ($d, $row) {
-                    return Snippet::avatar($d, $row);
+                'formatter' => function ($d) {
+                    return Snippet::avatar($d);
                 },
             ],
             [

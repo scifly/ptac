@@ -74,16 +74,11 @@ HTML;
      * 返回通讯录用户头像
      *
      * @param $d
-     * @param $row
-     * @param bool $adult
      * @return string
      */
-    static function avatar($d, $row, $adult = true) {
+    static function avatar($d) {
     
-        $male = $adult ? 'male.png' : 'boy.png';
-        $female = $adult ? 'female.png' : 'girl.png';
-        $src = empty($d) ? '/img/' . ($row['gender'] ? $male : $female) : $d;
-        return '<img class="img-circle" style="height:16px;" src="' . $src . '"> ';
+        return '<img class="img-circle" style="height:16px;" src="' . ($d ?? '/img/default.png') . '"> ';
         
     }
     

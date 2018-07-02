@@ -143,8 +143,8 @@ class Student extends Model {
             ['db' => 'User.realname as realname', 'dt' => 1],
             [
                 'db' => 'User.avatar_url', 'dt' => 2,
-                'formatter' => function ($d, $row) {
-                    return Snippet::avatar($d, $row, false);
+                'formatter' => function ($d) {
+                    return Snippet::avatar($d);
                 }
             ],
             [
