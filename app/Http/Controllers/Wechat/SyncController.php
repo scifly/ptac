@@ -94,6 +94,7 @@ class SyncController extends Controller {
                         'mobile' => $member->{'Mobile'},
                     ]);
                 }
+                Log::debug('You have reached here so far');
                 break;
             default:
                 break;
