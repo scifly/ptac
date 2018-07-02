@@ -45,22 +45,17 @@ class SyncController extends Controller {
             Request::getContent(),
             $content
         );
-        if ($errcode) {
-            Log::debug('Errcode: ' . $errcode);
-            return false;
-        }
+        if ($errcode) { return false; }
         $event = simplexml_load_string($content, 'SimpleXMLElement', LIBXML_NOCDATA);
         $userid = $event->{'FromUserName'};
+        Log::debug('userid: ' . $userid);
         $user = User::whereUserid($userid)->first();
         $token = Wechat::getAccessToken(
             $corp->corpid,
             $corp->contact_sync_secret,
             true
         );
-        if ($token['errcode']) {
-            Log::debug(json_encode($token));
-            return false;
-        }
+        if ($token['errcode']) { return false; }
         $member = json_decode(Wechat::getUser($token['access_token'], $userid));
         if ($member->{'errcode'}) {
             Log::debug(json_encode($member));
