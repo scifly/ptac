@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Corp;
 use App\Models\Mobile;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -38,9 +39,11 @@ class SyncController extends Controller {
         $content = '';
         $errcode = $wxcpt->DecryptMsg($msgSignature, $timestamp, $nonce, Request::getContent(), $content);
         if ($errcode) {
+            Log::debug('Errcode: ' . $errcode);
             return false;
         }
         $event = simplexml_load_string($content, 'SimpleXMLElement', LIBXML_NOCDATA);
+        Log::debug(json_encode($event));
         $userid = $event->{'FromUserName'};
         $user = User::whereUserid($userid)->first();
         $member = json_decode(Wechat::getUser($token['access_token'], $userid));
