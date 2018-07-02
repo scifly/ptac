@@ -313,7 +313,7 @@ class Menu extends Model {
             }
         }
         
-        return $subMenuIds;
+        return $subMenuIds ?? [];
         
     }
     
