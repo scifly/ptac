@@ -108,13 +108,13 @@ class Score extends Model {
             [
                 'db'        => 'Grade.name as gradename', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-object-group', '') . $d;
+                    return Snippet::grade($d);
                 },
             ],
             [
                 'db'        => 'Squad.name', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-users', '') . $d;
+                    return Snippet::squad($d);
                 },
             ],
             ['db' => 'Student.student_number', 'dt' => 4],

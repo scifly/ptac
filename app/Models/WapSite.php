@@ -5,6 +5,7 @@ use App\Facades\Datatable;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use App\Http\Requests\WapSiteRequest;
 use Carbon\Carbon;
 use Eloquent;
@@ -76,7 +77,12 @@ class WapSite extends Model {
         
         $columns = [
             ['db' => 'WapSite.id', 'dt' => 0],
-            ['db' => 'School.name', 'dt' => 1],
+            [
+                'db' => 'School.name', 'dt' => 1,
+                'formatter' => function ($d) {
+                    return Snippet::school($d);
+                }
+            ],
             ['db' => 'WapSite.site_title', 'dt' => 2],
             ['db' => 'WapSite.created_at', 'dt' => 3],
             ['db' => 'WapSite.updated_at', 'dt' => 4],

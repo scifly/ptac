@@ -4,6 +4,7 @@ namespace App\Models;
 use App\Facades\Datatable;
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -127,7 +128,12 @@ class PollQuestionnaire extends Model {
         $columns = [
             ['db' => 'PollQuestionnaire.id', 'dt' => 0],
             ['db' => 'PollQuestionnaire.name', 'dt' => 1],
-            ['db' => 'School.name as school_name', 'dt' => 2],
+            [
+                'db' => 'School.name as school_name', 'dt' => 2,
+                'formatter' => function ($d) {
+                    return Snippet::school($d);
+                }
+            ],
             ['db' => 'User.realname', 'dt' => 3],
             ['db' => 'PollQuestionnaire.start', 'dt' => 4],
             ['db' => 'PollQuestionnaire.end', 'dt' => 5],

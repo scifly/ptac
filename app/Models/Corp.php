@@ -139,8 +139,7 @@ class Corp extends Model {
             [
                 'db'        => 'Corp.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-weixin text-green', '') .
-                        '<span class="text-green">' . $d . '</span>';
+                    return Snippet::corp($d);
                 },
             ],
             ['db' => 'Corp.acronym', 'dt' => 2],

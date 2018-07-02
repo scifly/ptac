@@ -103,15 +103,13 @@ class Group extends Model {
             [
                 'db'        => 'School.name as schoolname', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-university text-purple', '') .
-                        '<span class="text-purple">' . $d . '</span>';
+                    return Snippet::school($d);
                 },
             ],
             [
                 'db'        => 'Corp.name as corpname', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-weixin text-green', '') .
-                        '<span class="text-green">' . $d . '</span>';
+                    return Snippet::corp($d);
                 },
             ],
             ['db' => 'Groups.remark', 'dt' => 4],

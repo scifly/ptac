@@ -156,6 +156,18 @@ HTML;
     }
     
     /**
+     * 返回年级对应的html（含图标及名称）
+     *
+     * @param $d
+     * @return string
+     */
+    static function grade($d) {
+    
+        return sprintf(Snippet::ICON, 'fa-object-group', '') . $d;
+        
+    }
+    
+    /**
      * 返回班级对应的html（含图标及名称）
      *
      * @param $d

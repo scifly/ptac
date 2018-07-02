@@ -122,7 +122,7 @@ class Grade extends Model {
             [
                 'db'        => 'Grade.name', 'dt' => 1,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-object-group', '') . $d;
+                    return Snippet::grade($d);
                 },
             ],
             [

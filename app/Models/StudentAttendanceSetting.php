@@ -97,7 +97,12 @@ class StudentAttendanceSetting extends Model {
         $columns = [
             ['db' => 'StudentAttendanceSetting.id', 'dt' => 0],
             ['db' => 'StudentAttendanceSetting.name', 'dt' => 1],
-            ['db' => 'Grade.name as gradename', 'dt' => 2],
+            [
+                'db' => 'Grade.name as gradename', 'dt' => 2,
+                'formatter' => function ($d) {
+                    return Snippet::grade($d);
+                }
+            ],
             ['db' => 'Semester.name as semestername', 'dt' => 3],
             [
                 'db'        => 'StudentAttendanceSetting.ispublic', 'dt' => 4,
@@ -112,7 +117,7 @@ class StudentAttendanceSetting extends Model {
              'formatter' => function ($d) {
                  return $d
                      ? sprintf(Snippet::BADGE_GREEN, '进')
-                     : sprintf(Snippet::BADGE_GREEN, '出');
+                     : sprintf(Snippet::BADGE_RED, '出');
              },
             ],
             ['db' => 'StudentAttendanceSetting.msg_template', 'dt' => 9],
