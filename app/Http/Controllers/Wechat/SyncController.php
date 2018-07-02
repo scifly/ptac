@@ -48,7 +48,7 @@ class SyncController extends Controller {
         if ($errcode) { return false; }
         $event = simplexml_load_string($content, 'SimpleXMLElement', LIBXML_NOCDATA);
         $userid = $event->{'ToUserName'};
-        Log::debug('userid: ' . $userid);
+        Log::debug(json_encode($event));
         $user = User::whereUserid($userid)->first();
         $token = Wechat::getAccessToken(
             $corp->corpid,
