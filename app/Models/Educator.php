@@ -191,19 +191,23 @@ class Educator extends Model {
         
         $columns = [
             ['db' => 'Educator.id', 'dt' => 0],
+            ['db' => 'User.realname as username', 'dt' => 1],
             [
-                'db' => 'User.realname as username', 'dt' => 1,
+                'db' => 'User.avatar_url', 'dt' => 2,
                 'formatter' => function ($d, $row) {
-                    $src = empty($row['avatar_url'])
-                        ? '/img/' . ($row['gender'] ? 'male.png' : 'female.png')
-                        : $row['avatar_url'];
-                    return '<img class="img-circle" style="height:28px;" src="' . $src . '"> ' . $d;
+                    return Snippet::avatar($d, $row);
                 }
             ],
-            ['db' => 'Educator.created_at', 'dt' => 2],
-            ['db' => 'Educator.updated_at', 'dt' => 3],
             [
-                'db'        => 'Educator.enabled', 'dt' => 4,
+                'db' => 'User.gender', 'dt' => 3,
+                'formatter' => function ($d) {
+                    return Snippet::gender($d);
+                }
+            ],
+            ['db' => 'Educator.created_at', 'dt' => 4],
+            ['db' => 'Educator.updated_at', 'dt' => 5],
+            [
+                'db'        => 'Educator.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $user = Auth::user();
@@ -213,10 +217,8 @@ class Educator extends Model {
                         ($user->can('act', self::uris()['recharge']) ? $rechargeLink : '');
                 },
             ],
-            ['db' => 'User.synced', 'dt' => 5],
-            ['db' => 'User.subscribed', 'dt' => 6],
-            ['db' => 'User.avatar_url', 'dt' => 7],
-            ['db' => 'User.gender', 'dt' => 7],
+            ['db' => 'User.synced', 'dt' => 7],
+            ['db' => 'User.subscribed', 'dt' => 8],
         ];
         $joins = [
             [

@@ -87,4 +87,48 @@ HTML;
         
     }
     
+    /**
+     * 返回性别符号
+     *
+     * @param $d
+     * @return string
+     */
+    static function gender($d) {
+    
+        return $d ? Snippet::MALE : Snippet::FEMALE;
+        
+    }
+    
+    /**
+     * 返回角色对应的html（含图标及名称）
+     *
+     * @param $d
+     * @return string
+     */
+    static function role($d) {
+    
+        switch ($d) {
+            case '运营':
+                $color = 'text-blue';
+                $class = 'fa-building';
+                break;
+            case '企业':
+                $color = 'text-green';
+                $class = 'fa-weixin';
+                break;
+            case '学校':
+                $color = 'text-purple';
+                $class = 'fa-university';
+                break;
+            default:
+                $color = '';
+                $class = '';
+                break;
+        }
+    
+        return sprintf(Snippet::ICON, $class . ' ' . $color, '')
+            . '<span class="' . $color . '">' . $d . '</span>';
+        
+    }
+    
 }

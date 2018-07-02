@@ -285,27 +285,7 @@ class User extends Authenticatable {
             [
                 'db'        => 'Groups.name as role', 'dt' => 2,
                 'formatter' => function ($d) {
-                    switch ($d) {
-                        case '运营':
-                            $color = 'text-blue';
-                            $class = 'fa-building';
-                            break;
-                        case '企业':
-                            $color = 'text-green';
-                            $class = 'fa-weixin';
-                            break;
-                        case '学校':
-                            $color = 'text-purple';
-                            $class = 'fa-university';
-                            break;
-                        default:
-                            $color = '';
-                            $class = '';
-                            break;
-                    }
-                    
-                    return sprintf(Snippet::ICON, $class . ' ' . $color, '')
-                        . '<span class="' . $color . '">' . $d . '</span>';
+                    return Snippet::role($d);
                 },
             ],
             ['db' => 'User.realname', 'dt' => 3],
@@ -318,7 +298,7 @@ class User extends Authenticatable {
             [
                 'db'        => 'User.gender', 'dt' => 5,
                 'formatter' => function ($d) {
-                    return $d ? Snippet::MALE : Snippet::FEMALE;
+                    return Snippet::gender($d);
                 },
             ],
             ['db' => 'User.email', 'dt' => 6],
