@@ -26,8 +26,8 @@ class SyncController extends Controller {
      */
     public function sync() {
         
-        $this->verifyUrl();
-        exit;
+        // $this->verifyUrl();
+        // exit;
         
         $paths = explode('/', Request::path());
         $corp = Corp::whereAcronym($paths[0])->first();
