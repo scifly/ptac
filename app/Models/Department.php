@@ -478,7 +478,7 @@ class Department extends Model {
      * @param null $rootId
      * @return array
      */
-    private function tree($rootId = null) {
+    function tree($rootId = null) {
         
         $user = Auth::user() ?? User::find(585);
         $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
@@ -491,6 +491,8 @@ class Department extends Model {
             $departments = $this->nodes($rootId);
         }
         $allowedDepartmentIds = $this->departmentIds($user->id);
+        dd($departments->toArray());
+        dd($allowedDepartmentIds);
         $nodes = [];
         for ($i = 0; $i < sizeof($departments); $i++) {
             $id = $departments[$i]['id'];
@@ -797,8 +799,6 @@ class Department extends Model {
             foreach ($allowedDepartmentIds as $id) {
                 $allowedParentIds[$id] = $this->parentIds($id);
             }
-            dd($nodes);
-            dd($allowedParentIds);
             # 对当前用户可见的所有部门节点
             $visibleNodes = [];
             foreach ($nodes as $node) {
