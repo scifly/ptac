@@ -10,7 +10,7 @@
                         <a href="#{{ $tab['id'] }}" data-toggle="tab" data-uri="{{ $tab['url'] }}"
                            class="tab @if ($tab['active']) text-blue @else text-gray @endif"
                         >
-                            <i class="{{ $tab['icon'] ?? 'fa fa-calendar' }}" style="width: 20px;"></i>
+                            <i class="{{ $tab['icon'] ?? 'fa fa-calendar-check-o' }}" style="width: 20px;"></i>
                             {{ $tab['name'] }}
                         </a>
                     </li>
