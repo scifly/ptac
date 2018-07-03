@@ -591,7 +591,7 @@ class Department extends Model {
      *
      * @return int
      */
-    private function topDeptId() {
+    function topDeptId() {
         
         $ids = Auth::user()->departments->pluck('id')->toArray();
         $levels = [];
