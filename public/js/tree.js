@@ -55,19 +55,23 @@
                     dataType: 'json',
                     url: page.siteRoot() + table + '/index',
                     data: {
+                        action: 'sort',
                         data: positions,
                         _token: page.token()
                     }
                 });
             },
             move: function (table, e, data) {
-                var id = data.node.id;
-                var parentId = data.node.parent;
                 return $.ajax({
                     type: 'POST',
                     dataType: 'json',
-                    url: page.siteRoot() + table + '/index/' + id + '/' + parentId,
-                    data: {_token: page.token()},
+                    url: page.siteRoot() + table + '/index',
+                    data: {
+                        action: 'move',
+                        id: data.node.id,
+                        parentId: data.node.parent,
+                        _token: page.token()
+                    },
                     success: function () {
                         $.when(
                             tree.sort(table)
@@ -329,7 +333,11 @@
                                 type: 'POST',
                                 dataType: 'json',
                                 data: function (node) {
-                                    return {id: node.id, _token: page.token()};
+                                    return {
+                                        action: 'tree',
+                                        id: node.id,
+                                        _token: page.token()
+                                    };
                                 }
                             },
                             error: function (e) {

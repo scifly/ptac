@@ -362,9 +362,7 @@
                         formId = 'formEducator';
                         contact.onAddClassClick();
                         $.getMultiScripts(['js/tree.js']).done(
-                            function() {
-                                $.tree().list('educators/create', 'department');
-                            }
+                            function() { $.tree().list('educators/create', 'department'); }
                         );
                         break;
                     case 'operators':
@@ -395,9 +393,7 @@
                         formId = 'formEducator';
                         contact.onAddClassClick();
                         $.getMultiScripts(['js/tree.js']).done(
-                            function() {
-                                $.tree().list('educators/edit/' + id, 'department');
-                            }
+                            function() { $.tree().list('educators/edit/' + id, 'department'); }
                         );
                         break;
                     case 'operators':

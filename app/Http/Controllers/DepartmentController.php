@@ -27,19 +27,15 @@ class DepartmentController extends Controller {
     }
     
     /**
-     * 部门列表
+     * 部门列表/排序/移动
      *
-     * @param null $deptId
-     * @param null $parentDeptId
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function index($deptId = null, $parentDeptId = null) {
+    public function index() {
         
         if (Request::method() === 'POST') {
-            return $this->department->index(
-                $deptId, $parentDeptId
-            );
+            return $this->department->index();
         }
         
         return $this->output();

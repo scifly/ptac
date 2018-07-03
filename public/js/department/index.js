@@ -1,5 +1,3 @@
 $.getMultiScripts(['js/tree.js']).done(
-    function() {
-        $.tree().manage('departments');
-    }
+    function() { $.tree().manage('departments'); }
 );

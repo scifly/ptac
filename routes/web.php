@@ -305,8 +305,8 @@ Route::group(['prefix' => 'icon_types'], routes('IconTypeController'));
 # 部门管理
 Route::group(['prefix' => 'departments'], function () {
     $c = 'DepartmentController';
-    Route::get('index/{deptId?}/{parentDeptId?}', $c . '@index');
-    Route::post('index/{deptId?}/{parentDeptId?}', $c . '@index');
+    Route::get('index', $c . '@index');
+    Route::post('index', $c . '@index');
     Route::get('create/{parentId}', $c . '@create');
     Route::post('store', $c . '@store');
     Route::get('edit/{id}', $c . '@edit');
@@ -326,8 +326,8 @@ Route::group(['prefix' => 'tabs'], function () {
 # 菜单管理
 Route::group(['prefix' => 'menus'], function () {
     $c = 'MenuController';
-    Route::get('index/{menuId?}/{parentMenuId?}', $c . '@index');
-    Route::post('index/{menuId?}/{parentMenuId?}', $c . '@index');
+    Route::get('index', $c . '@index');
+    Route::post('index', $c . '@index');
     Route::get('create/{parentId}', $c . '@create');
     Route::get('edit/{id}', $c . '@edit');
     Route::post('store', $c . '@store');

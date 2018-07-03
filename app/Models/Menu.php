@@ -320,49 +320,54 @@ class Menu extends Model {
     /**
      * 菜单列表(菜单移动、排序)
      *
-     * @param null $id
-     * @param null $parentId
      * @return bool|JsonResponse
      * @throws Exception
      */
-    function index($id = null, $parentId = null) {
+    function index() {
         
-        if (Request::has('id')) {
-            return $this->tree(
-                $this->rootMenuId(true)
-            );
-        } else if (Request::has('data')) {
-            # 保存菜单排序
-            $positions = Request::get('data');
-            $originalPositions = $this->orderBy('position')
-                ->whereIn('id', array_keys($positions))
-                ->pluck('position', 'id')->toArray();
-            foreach ($positions as $id => $position) {
-                $originalPosition = array_slice(
-                    $originalPositions, $position, 1, true
-                );
-                $this->find($id)->update([
-                    'position' => $originalPosition[key($originalPosition)],
-                ]);
-            }
-        } else {
-            # 移动菜单
-            abort_if(
-                !$this->find($id) || !$this->find($parentId),
-                HttpStatusCode::NOT_FOUND,
-                __('messages.not_found')
-            );
-            if ($this->movable($id, $parentId)) {
-                $moved = $this->move($id, $parentId);
+        $response = response()->json();
+        switch (Request::input('action')) {
+            case 'tree':
+                $response = $this->tree($this->rootMenuId(true));
+                break;
+            case 'sort':
+                # 保存菜单排序
+                $positions = Request::get('data');
+                $originalPositions = $this->orderBy('position')
+                    ->whereIn('id', array_keys($positions))
+                    ->pluck('position', 'id')->toArray();
+                foreach ($positions as $id => $position) {
+                    $originalPosition = array_slice(
+                        $originalPositions, $position, 1, true
+                    );
+                    $this->find($id)->update([
+                        'position' => $originalPosition[key($originalPosition)],
+                    ]);
+                }
+                break;
+            case 'move':
+                $id = Request::input('id');
+                $parentId = Request::input('parentId');
+                # 移动菜单
                 abort_if(
-                    !$moved,
-                    HttpStatusCode::BAD_REQUEST,
-                    __('messages.bad_request')
+                    !$this->find($id) || !$this->find($parentId),
+                    HttpStatusCode::NOT_FOUND,
+                    __('messages.not_found')
                 );
-            }
+                if ($this->movable($id, $parentId)) {
+                    $moved = $this->move($id, $parentId);
+                    abort_if(
+                        !$moved,
+                        HttpStatusCode::BAD_REQUEST,
+                        __('messages.bad_request')
+                    );
+                }
+                break;
+            default:
+                break;
         }
         
-        return response()->json();
+        return $response;
         
     }
     

@@ -53,7 +53,7 @@ $('body').on('click', '.delete', function () {
     $(this).parent().parent().remove();
     $pre.append('<input type="hidden" name="del_ids[]" value="' + $(this).parent().siblings().attr('id') + '">');
 });
-$.getMultiScripts(['js/tree.js']).done(function () {
-    $.tree().list('messages/get_depart_users', 'contact');
-});
+$.getMultiScripts(['js/tree.js']).done(
+    function () { $.tree().list('messages/get_depart_users', 'contact'); }
+);
 

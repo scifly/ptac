@@ -418,59 +418,63 @@ class Department extends Model {
     }
     
     /**
-     * 部门列表
+     * 部门列表/排序/移动
      *
-     * @param null $id
-     * @param null $parentId
      * @return bool|JsonResponse
      * @throws Exception
      */
-    function index($id = null, $parentId = null) {
+    function index() {
         
-        if (Request::has('id')) {
-            # 部门列表
-            return response()->json(
-                $this->tree(
-                    $this->rootDepartmentId(true)
-                )
-            );
-        } else if (Request::has('data')) {
-            # 保存部门排序
-            $orders = Request::get('data');
-            $originalOrders = $this->orderBy('order')
-                ->whereIn('id', array_keys($orders))
-                ->get()->pluck('order', 'id')->toArray();
-            foreach ($orders as $id => $order) {
-                $originalOrder = array_slice($originalOrders, $order, 1, true);
-                $this->find($id)->update([
-                    'order' => $originalOrder[key($originalOrder)],
-                ]);
-            }
-        } else {
-            # 移动部门
-            $department = $this->find($id);
-            $parentDepartment = $this->find($parentId);
-            abort_if(
-                !$department || !$parentDepartment,
-                HttpStatusCode::NOT_FOUND
-            );
-            if ($department->movable($id, $parentId)) {
-                $moved = $department->move($id, $parentId);
-                if ($moved && $this->needSync($department)) {
-                    $department = $this->find($id);
-                    $this->sync([
-                        'id'        => $department->id,
-                        'name'      => $department->name,
-                        'parent_id' => $department->departmentType->name == '学校' ? 1 : $department->parent_id,
-                        'order'     => $department->order,
-                        'corp_id'   => $this->corpId($department->id),
-                    ], 'update');
+        $response = response()->json();
+        switch (Request::input('action')) {
+            case 'tree':
+                $response = response()->json(
+                    $this->tree($this->rootDepartmentId(true))
+                );
+                break;
+            case 'sort':
+                # 保存部门排序
+                $orders = Request::get('data');
+                $originalOrders = $this->orderBy('order')
+                    ->whereIn('id', array_keys($orders))
+                    ->get()->pluck('order', 'id')->toArray();
+                foreach ($orders as $id => $order) {
+                    $originalOrder = array_slice($originalOrders, $order, 1, true);
+                    $this->find($id)->update([
+                        'order' => $originalOrder[key($originalOrder)],
+                    ]);
+                };
+                break;
+            case 'move':
+                # 移动部门
+                $id = Request::input('id');
+                $parentId = Request::input('parentId');
+                $department = $this->find($id);
+                $parentDepartment = $this->find($parentId);
+                abort_if(
+                    !$department || !$parentDepartment,
+                    HttpStatusCode::NOT_FOUND
+                );
+                if ($department->movable($id, $parentId)) {
+                    $moved = $department->move($id, $parentId);
+                    if ($moved && $this->needSync($department)) {
+                        $department = $this->find($id);
+                        $this->sync([
+                            'id'        => $department->id,
+                            'name'      => $department->name,
+                            'parent_id' => $department->departmentType->name == '学校' ? 1 : $department->parent_id,
+                            'order'     => $department->order,
+                            'corp_id'   => $this->corpId($department->id),
+                        ], 'update');
+                    }
                 }
-            }
+                break;
+            default:
+                break;
         }
         
-        return response()->json();
-        
+        return $response;
+    
     }
     
     /** Helper functions -------------------------------------------------------------------------------------------- */

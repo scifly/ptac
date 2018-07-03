@@ -7,9 +7,7 @@
             <ul class="nav nav-tabs">
                 @foreach ($tabs as $tab)
                     <li @if($tab['active']) class="active" @endif>
-                        <a href="#{{ $tab['id'] }}"
-                           data-toggle="tab"
-                           data-uri="{{ $tab['url'] }}"
+                        <a href="#{{ $tab['id'] }}" data-toggle="tab" data-uri="{{ $tab['url'] }}"
                            class="tab @if ($tab['active']) text-blue @else text-gray @endif"
                         >
                             <i class="{{ $tab['icon'] ?? 'fa fa-circle-o' }}" style="width: 20px;"></i>

@@ -195,9 +195,9 @@ $choose.on('click', function () {
     $targets.show();
 });
 // 部门及联系人树加载
-$.getMultiScripts(['js/tree.js']).done(function () {
-    $.tree().list('messages/index', 'contact');
-});
+$.getMultiScripts(['js/tree.js']).done(
+    function () { $.tree().list('messages/index', 'contact'); }
+);
 // 关闭发送对象选择窗口
 $(document).on('click', '#cancel .close-targets', function () {
     $message.show();

@@ -29,17 +29,15 @@ class MenuController extends Controller {
     }
     
     /**
-     * 菜单列表
+     * 菜单列表/排序/移动
      *
-     * @param null $menuId
-     * @param null $parentMenuId
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function index($menuId = null, $parentMenuId = null) {
+    public function index() {
         
         return Request::method() == 'POST'
-            ? $this->menu->index($menuId, $parentMenuId)
+            ? $this->menu->index()
             : $this->output();
         
     }
@@ -70,9 +68,7 @@ class MenuController extends Controller {
     public function store(MenuRequest $request) {
         
         return $this->result(
-            $this->menu->store(
-                $request
-            )
+            $this->menu->store($request)
         );
         
     }
