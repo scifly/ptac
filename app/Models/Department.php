@@ -480,7 +480,7 @@ class Department extends Model {
      */
     function tree($rootId = null) {
         
-        $user = Auth::user() ?? User::find(585);
+        $user = Auth::user();
         $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
         if (isset($rootId)) {
             $departments = $this->nodes($rootId);
@@ -491,8 +491,6 @@ class Department extends Model {
             $departments = $this->nodes($rootId);
         }
         $allowedDepartmentIds = $this->departmentIds($user->id);
-        dd($departments->toArray());
-        dd($allowedDepartmentIds);
         $nodes = [];
         for ($i = 0; $i < sizeof($departments); $i++) {
             $id = $departments[$i]['id'];
@@ -601,7 +599,7 @@ class Department extends Model {
      */
     private function topDeptId() {
         
-        $user = Auth::user() ?? User::find(585);
+        $user = Auth::user();
         $ids = $user->departments->pluck('id')->toArray();
         $levels = [];
         foreach ($ids as $id) {
@@ -791,7 +789,7 @@ class Department extends Model {
      */
     function contacts($contact = true) {
         
-        $user = Auth::user() ?? User::find(585);
+        $user = Auth::user();
         $contacts = [];
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {
             $departmentId = School::find($this->schoolId())->department_id;
