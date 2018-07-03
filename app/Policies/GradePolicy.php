@@ -54,7 +54,6 @@ class GradePolicy {
         $isGradeAllowed = $isDepartmentAllowed = $isEducatorAllowed = false;
         if (in_array($action, ['store', 'update'])) {
             $departmentId = Request::input('department_id');
-            Log::debug($departmentId);
             $educatorIds = Request::input('educator_ids') ?? [];
             $isDepartmentAllowed = !$departmentId ? true : in_array($departmentId, $this->departmentIds($user->id));
             $isEducatorAllowed = empty(array_diff($educatorIds, $this->contactIds('educator')));
