@@ -544,7 +544,13 @@ class Department extends Model {
         if (!isset($rootId)) {
             $nodes = $this->orderBy('order')->all();
         } else {
-            $departmentIds = array_merge([$rootId], $this->subDepartmentIds($rootId));
+            $departmentIds = array_merge(
+                [$rootId],
+                array_intersect(
+                    $this->departmentIds(Auth::id()),
+                    $this->subDepartmentIds($rootId)
+                )
+            );
             $nodes = $this->orderBy('order')->whereIn('id', $departmentIds)->get();
         }
         
