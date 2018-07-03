@@ -449,7 +449,7 @@
                     var $tree = $('#tree');
                     // 展开所有节点
                     // $tree.jstree('close_all');
-                    $tree.jstree('open_node', '#');
+                    $tree.jstree('open_node', $('#'));
                     // 初始化 根据后台数据节点数组 选中
                     $tree.jstree().check_node(selectedDepartmentIds);
                     $($tree.jstree(true).get_json($tree, {flat: true})).each(function () {
