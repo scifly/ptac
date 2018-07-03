@@ -446,10 +446,11 @@
                     }
                     $('#tree' + selected.node.id).remove();
                 }).on('loaded.jstree', function () {
-                    var $tree = $('#tree');
-                    // 展开所有节点
-                    $tree.jstree('close_all');
-                    // $tree.jstree('open_node', $('#85'));
+                    var $tree = $('#tree'),
+                        rootId = $tree.jstree(true).get_node('#').children[0];
+
+                    // 展开第一级节点
+                    $tree.jstree('open_node', $('#' + rootId));
                     // 初始化 根据后台数据节点数组 选中
                     $tree.jstree().check_node(selectedDepartmentIds);
                     $($tree.jstree(true).get_json($tree, {flat: true})).each(function () {
