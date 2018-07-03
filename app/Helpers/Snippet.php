@@ -81,7 +81,8 @@ HTML;
      */
     static function avatar($d) {
     
-        return '<img class="img-circle" style="height:16px;" src="' . ($d ?? '/img/default.png') . '"> ';
+        return '<img class="img-circle" style="height:16px;" src="' .
+            (!empty($d) ? $d : '/img/default.png') . '"> ';
         
     }
     
