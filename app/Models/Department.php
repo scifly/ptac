@@ -458,14 +458,7 @@ class Department extends Model {
                 if ($department->movable($id, $parentId)) {
                     $moved = $department->move($id, $parentId);
                     if ($moved && $this->needSync($department)) {
-                        $department = $this->find($id);
-                        $this->sync([
-                            'id'        => $department->id,
-                            'name'      => $department->name,
-                            'parent_id' => $department->departmentType->name == '学校' ? 1 : $department->parent_id,
-                            'order'     => $department->order,
-                            'corp_id'   => $this->corpId($department->id),
-                        ], 'update');
+                        $this->sync($id, 'update');
                     }
                 }
                 break;
