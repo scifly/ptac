@@ -125,9 +125,9 @@ class ScorePolicy {
                     $isExamAllowed = in_array($examId, $this->examIds());
                     return $isSuperRole ? $isExamAllowed : ($isExamAllowed && $this->action($user));
                 }
-                if (Request::route('type') && Request::route('value')) {
+                if (Request::has('type') && Request::has('id')) {
                     $type = Request::route('type');
-                    $value = Request::route('value');
+                    $value = Request::route('id');
                     $isTypeAllowed = in_array($type, ['class', 'student']);
                     if ($isTypeAllowed) {
                         if ($type == 'class') {
