@@ -121,24 +121,37 @@ class ScorePolicy {
                 return $isSuperRole ? $isExamAllowed : ($isExamAllowed && $this->action($user));
             case 'stat':
                 if (Request::method() == 'POST') {
-                    $examId = Request::input('examId');
-                    $isExamAllowed = in_array($examId, $this->examIds());
-                    return $isSuperRole ? $isExamAllowed : ($isExamAllowed && $this->action($user));
-                }
-                if (Request::has('type') && Request::has('id')) {
-                    $type = Request::route('type');
-                    $value = Request::route('id');
-                    $isTypeAllowed = in_array($type, ['class', 'student']);
-                    if ($isTypeAllowed) {
-                        if ($type == 'class') {
-                            $isExamAllowed = in_array($value, $this->examIds());
-                            return $isSuperRole ? $isExamAllowed : ($isExamAllowed && $this->action($user));
+                    if (Request::has('type') && Request::has('id')) {
+                        $type = Request::route('type');
+                        $value = Request::route('id');
+                        $isTypeAllowed = in_array($type, ['class', 'student']);
+                        if ($isTypeAllowed) {
+                            if ($type == 'class') {
+                                $isExamAllowed = in_array($value, $this->examIds());
+                                return $isSuperRole ? $isExamAllowed : ($isExamAllowed && $this->action($user));
+                            } else {
+                                $isClassAllowed = in_array($value, $this->classIds());
+                                return $isSuperRole ? $isClassAllowed : ($isClassAllowed && $this->action($user));
+                            }
                         } else {
-                            $isClassAllowed = in_array($value, $this->classIds());
-                            return $isSuperRole ? $isClassAllowed : ($isClassAllowed && $this->action($user));
+                            return false;
                         }
-                    } else {
-                        return false;
+                    }
+                    $classId = Request::input('classId');
+                    $isClassAllowed = in_array($classId, $this->classIds());
+                    if (Request::has('examId')) {
+                        $examId = Request::input('examId');
+                        $isExamAllowed = in_array($examId, $this->examIds());
+                        return $isSuperRole
+                            ? $isClassAllowed && $isExamAllowed
+                            : ($isClassAllowed && $isExamAllowed && $this->action($user));
+                    }
+                    if (Request::has('studentId')) {
+                        $studentId = Request::input('studentId');
+                        $isStudentAllowed = in_array($studentId, $this->contactIds('student'));
+                        return $isSuperRole
+                            ? $isClassAllowed && $isStudentAllowed
+                            : ($isClassAllowed && $isStudentAllowed && $this->action($user));
                     }
                 }
                 return $isSuperRole ? true : $this->action($user);
