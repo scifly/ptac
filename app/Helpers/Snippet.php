@@ -134,7 +134,8 @@ HTML;
      */
     static function corp($d) {
     
-        return sprintf(Snippet::ICON, 'fa-weixin text-green', '') . $d;
+        return sprintf(Snippet::ICON, 'fa-weixin text-green', '') .
+            '<span class="text-green">' . $d . '</span>';
         
     }
     
@@ -146,7 +147,8 @@ HTML;
      */
     static function school($d) {
         
-        return sprintf(Snippet::ICON, 'fa-university text-purple', '') . $d;
+        return sprintf(Snippet::ICON, 'fa-university text-purple', '') .
+            '<span class="text-purple">' . $d . '</span>';
         
     }
     
