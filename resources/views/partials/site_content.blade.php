@@ -10,13 +10,9 @@
                         <a href="#{{ $tab['id'] }}"
                            data-toggle="tab"
                            data-uri="{{ $tab['url'] }}"
-                           class="tab @if($tab['active']) text-blue @else text-gray @endif"
+                           class="tab @if ($tab['active']) text-blue @else text-gray @endif"
                         >
-                            @if(isset($tab['icon']))
-                                <i class="{{ $tab['icon'] }}" style="width: 20px;"></i>
-                            @else
-                                <i class="fa fa-circle-o" style="width: 20px;"></i>
-                            @endif
+                            <i class="{{ $tab['icon'] ?? 'fa fa-circle-o' }}" style="width: 20px;"></i>
                             {{ $tab['name'] }}
                         </a>
                     </li>
@@ -24,7 +20,7 @@
             </ul>
             <div class="tab-content">
                 @foreach ($tabs as $tab)
-                    <div class="@if($tab['active']) active @endif tab-pane card" id="{{ $tab['id'] }}">
+                    <div class="@if ($tab['active']) active @endif tab-pane card" id="{{ $tab['id'] }}">
                     </div>
                 @endforeach
             </div>
