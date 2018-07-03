@@ -784,7 +784,7 @@ class Department extends Model {
      */
     function contacts($contact = true) {
         
-        $user = Auth::user() ?? $this->find(585);
+        $user = Auth::user() ?? User::find(585);
         $contacts = [];
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {
             $departmentId = School::find($this->schoolId())->department_id;
