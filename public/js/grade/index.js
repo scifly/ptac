@@ -1,4 +1,3 @@
-var options = [
-    {className: 'text-center', targets: [3, 4]}
-];
-page.index('grades', options);
+page.index('grades', [
+    { className: 'text-center', targets: [2, 3, 4] }
+]);
