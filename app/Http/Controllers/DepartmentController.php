@@ -27,7 +27,7 @@ class DepartmentController extends Controller {
     }
     
     /**
-     * 部门列表/排序/移动
+     * 部门列表.排序.移动
      *
      * @return bool|JsonResponse
      * @throws Throwable

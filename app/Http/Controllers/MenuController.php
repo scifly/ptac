@@ -29,7 +29,7 @@ class MenuController extends Controller {
     }
     
     /**
-     * 菜单列表/排序/移动
+     * 菜单列表.排序.移动
      *
      * @return bool|JsonResponse
      * @throws Throwable
