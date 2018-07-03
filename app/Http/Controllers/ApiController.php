@@ -11,10 +11,20 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Throwable;
 
+/**
+ * Class ApiController
+ * @package App\Http\Controllers
+ */
 class ApiController extends Controller {
     
     protected $consumption, $sa, $ea;
     
+    /**
+     * ApiController constructor.
+     * @param Consumption $consumption
+     * @param StudentAttendance $sa
+     * @param EducatorAttendance $ea
+     */
     function __construct(
         Consumption $consumption,
         StudentAttendance $sa,

@@ -18,6 +18,10 @@ class ProcedureTypeController extends Controller {
     
     protected $pt;
     
+    /**
+     * ProcedureTypeController constructor.
+     * @param ProcedureType $pt
+     */
     function __construct(ProcedureType $pt) {
         
         $this->middleware(['auth', 'checkrole']);

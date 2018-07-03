@@ -7,18 +7,29 @@ use App\Models\Grade;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class GradeComposer
+ * @package App\Http\ViewComposers
+ */
 class GradeComposer {
     
     use ModelTrait;
     
     protected $educator;
     
+    /**
+     * GradeComposer constructor.
+     * @param Educator $educator
+     */
     function __construct(Educator $educator) {
         
         $this->educator = $educator;
         
     }
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $schoolId = $this->schoolId();

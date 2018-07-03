@@ -3,6 +3,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class SquadRequest
+ * @package App\Http\Requests
+ */
 class SquadRequest extends FormRequest {
     
     /**
@@ -12,6 +16,9 @@ class SquadRequest extends FormRequest {
      */
     public function authorize() { return true; }
     
+    /**
+     * @return array
+     */
     public function rules() {
         
         return [
@@ -26,6 +33,9 @@ class SquadRequest extends FormRequest {
         
     }
     
+    /**
+     * @return bool
+     */
     public function wantsJson() { return true; }
     
     protected function prepareForValidation() {

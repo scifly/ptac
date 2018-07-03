@@ -3,8 +3,15 @@ namespace App\Http\ViewComposers;
 
 use Illuminate\Contracts\View\View;
 
+/**
+ * Class PqChoiceIndexComposer
+ * @package App\Http\ViewComposers
+ */
 class PqChoiceIndexComposer {
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $view->with([

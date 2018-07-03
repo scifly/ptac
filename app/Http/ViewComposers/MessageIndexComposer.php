@@ -7,10 +7,17 @@ use App\Models\MessageType;
 use App\Models\School;
 use Illuminate\Contracts\View\View;
 
+/**
+ * Class MessageIndexComposer
+ * @package App\Http\ViewComposers
+ */
 class MessageIndexComposer {
     
     use ModelTrait;
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $school = School::find($this->schoolId());

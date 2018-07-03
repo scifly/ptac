@@ -6,10 +6,17 @@ use App\Models\Educator;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 
+/**
+ * Class EventComposer
+ * @package App\Http\ViewComposers
+ */
 class EventComposer {
     
     use ModelTrait;
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $schoolId = $this->schoolId();

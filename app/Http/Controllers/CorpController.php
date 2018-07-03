@@ -18,6 +18,10 @@ class CorpController extends Controller {
     
     protected $corp;
     
+    /**
+     * CorpController constructor.
+     * @param Corp $corp
+     */
     function __construct(Corp $corp) {
         
         $this->middleware(['auth', 'checkrole']);

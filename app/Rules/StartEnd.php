@@ -3,6 +3,10 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 
+/**
+ * Class StartEnd
+ * @package App\Rules
+ */
 class StartEnd implements Rule {
     
     /**

@@ -4,6 +4,10 @@ namespace App\Http\Requests;
 use App\Models\MenuType;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class MenuRequest
+ * @package App\Http\Requests
+ */
 class MenuRequest extends FormRequest {
     
     /**

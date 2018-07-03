@@ -19,6 +19,10 @@ class OrderController extends Controller {
     
     protected $order;
     
+    /**
+     * OrderController constructor.
+     * @param Order $order
+     */
     function __construct(Order $order) {
         
         $this->middleware(['auth']);

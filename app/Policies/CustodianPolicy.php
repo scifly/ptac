@@ -11,6 +11,10 @@ use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class CustodianPolicy
+ * @package App\Policies
+ */
 class CustodianPolicy {
 
     use HandlesAuthorization, ModelTrait, PolicyTrait;

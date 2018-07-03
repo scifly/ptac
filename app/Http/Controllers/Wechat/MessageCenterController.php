@@ -21,6 +21,10 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 use Throwable;
 
+/**
+ * Class MessageCenterController
+ * @package App\Http\Controllers\Wechat
+ */
 class MessageCenterController extends Controller {
     
     protected $message, $user, $department, $media, $student, $mr, $du;

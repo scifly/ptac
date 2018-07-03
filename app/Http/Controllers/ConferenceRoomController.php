@@ -18,6 +18,10 @@ class ConferenceRoomController extends Controller {
     
     protected $cr;
     
+    /**
+     * ConferenceRoomController constructor.
+     * @param ConferenceRoom $cr
+     */
     function __construct(ConferenceRoom $cr) {
         
         $this->middleware(['auth', 'checkrole']);

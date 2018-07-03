@@ -10,6 +10,10 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class CommonPolicy
+ * @package App\Policies
+ */
 class CommonPolicy {
     
     use HandlesAuthorization, ModelTrait, PolicyTrait;

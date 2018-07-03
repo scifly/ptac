@@ -18,6 +18,10 @@ class ComboTypeController extends Controller {
     
     protected $ct;
     
+    /**
+     * ComboTypeController constructor.
+     * @param ComboType $ct
+     */
     function __construct(ComboType $ct) {
         
         $this->middleware(['auth', 'checkrole']);

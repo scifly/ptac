@@ -13,6 +13,10 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class ConsumptionPolicy
+ * @package App\Policies
+ */
 class ConsumptionPolicy {
     
     use HandlesAuthorization, ModelTrait, PolicyTrait;
@@ -26,6 +30,10 @@ class ConsumptionPolicy {
         //
     }
     
+    /**
+     * @param User $user
+     * @return bool
+     */
     public function show(User $user) {
         
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {
@@ -38,6 +46,11 @@ class ConsumptionPolicy {
         
     }
     
+    /**
+     * @param User $user
+     * @param ConsumptionStat $cs
+     * @return bool
+     */
     public function stat(User $user, ConsumptionStat $cs) {
         
         switch ($cs->rangeId) {
@@ -71,6 +84,10 @@ class ConsumptionPolicy {
         
     }
     
+    /**
+     * @param User $user
+     * @return bool
+     */
     function export(User $user) {
     
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {

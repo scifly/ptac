@@ -9,18 +9,29 @@ use App\Models\SchoolType;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class SchoolComposer
+ * @package App\Http\ViewComposers
+ */
 class SchoolComposer {
     
     use ModelTrait;
     
     protected $menu;
     
+    /**
+     * SchoolComposer constructor.
+     * @param Menu $menu
+     */
     function __construct(Menu $menu) {
         
         $this->menu = $menu;
         
     }
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $corps = Corp::whereEnabled(1)->pluck('name', 'id');

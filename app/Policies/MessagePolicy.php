@@ -5,6 +5,10 @@ namespace App\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+/**
+ * Class MessagePolicy
+ * @package App\Policies
+ */
 class MessagePolicy
 {
     use HandlesAuthorization;

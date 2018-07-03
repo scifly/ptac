@@ -3,6 +3,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class ConsumptionRequest
+ * @package App\Http\Requests
+ */
 class ConsumptionRequest extends FormRequest {
     
     /**

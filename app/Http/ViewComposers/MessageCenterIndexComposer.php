@@ -10,8 +10,15 @@ use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class MessageCenterIndexComposer
+ * @package App\Http\ViewComposers
+ */
 class MessageCenterIndexComposer {
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $user = Auth::user();

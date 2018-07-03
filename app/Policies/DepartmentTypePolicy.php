@@ -6,6 +6,10 @@ use App\Models\DepartmentType;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+/**
+ * Class DepartmentTypePolicy
+ * @package App\Policies
+ */
 class DepartmentTypePolicy {
     
     use HandlesAuthorization;

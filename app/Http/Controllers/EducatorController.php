@@ -21,6 +21,12 @@ class EducatorController extends Controller {
     
     protected $educator, $department, $school;
     
+    /**
+     * EducatorController constructor.
+     * @param Educator $educator
+     * @param Department $department
+     * @param School $school
+     */
     public function __construct(Educator $educator, Department $department, School $school) {
         
         $this->middleware(['auth', 'checkrole']);

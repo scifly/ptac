@@ -11,6 +11,10 @@ use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class GradePolicy
+ * @package App\Policies
+ */
 class GradePolicy {
     
     use HandlesAuthorization, ModelTrait, PolicyTrait;

@@ -8,10 +8,17 @@ use App\Models\Student;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 
+/**
+ * Class ScoreStatComposer
+ * @package App\Http\ViewComposers
+ */
 class ScoreStatComposer {
     
     use ModelTrait;
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         /** 班级、考试、科目和学生列表 */

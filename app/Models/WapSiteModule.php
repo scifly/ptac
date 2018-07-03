@@ -49,6 +49,9 @@ class WapSiteModule extends Model {
         'media_id', 'enabled',
     ];
     
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     function wsmArticles() {
         
         return $this->hasMany('App\Models\WsmArticle', 'wsm_id', 'id');

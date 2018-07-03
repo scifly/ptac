@@ -17,6 +17,10 @@ class ExamTypeController extends Controller {
     
     protected $et;
     
+    /**
+     * ExamTypeController constructor.
+     * @param ExamType $et
+     */
     function __construct(ExamType $et) {
         
         $this->middleware(['auth', 'checkrole']);

@@ -7,6 +7,10 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class UserRequest
+ * @package App\Http\Requests
+ */
 class UserRequest extends FormRequest {
     
     /**

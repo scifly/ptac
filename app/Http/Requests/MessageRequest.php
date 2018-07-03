@@ -8,6 +8,10 @@ use App\Models\MessageType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class MessageRequest
+ * @package App\Http\Requests
+ */
 class MessageRequest extends FormRequest {
     
     /**
@@ -17,6 +21,9 @@ class MessageRequest extends FormRequest {
      */
     public function authorize() { return true; }
     
+    /**
+     * @return array
+     */
     public function rules() {
     
         return [

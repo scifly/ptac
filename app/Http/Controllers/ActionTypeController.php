@@ -18,6 +18,10 @@ class ActionTypeController extends Controller {
     
     protected $at;
     
+    /**
+     * ActionTypeController constructor.
+     * @param ActionType $at
+     */
     function __construct(ActionType $at) {
         
         $this->middleware(['auth', 'checkrole']);

@@ -10,10 +10,20 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 use Illuminate\View\View;
 
+/**
+ * Class MobileSiteController
+ * @package App\Http\Controllers\Wechat
+ */
 class MobileSiteController extends Controller {
     
     protected $ws, $wsm, $wsma;
     
+    /**
+     * MobileSiteController constructor.
+     * @param WapSite $ws
+     * @param WapSiteModule $wsm
+     * @param WsmArticle $wsma
+     */
     function __construct(WapSite $ws, WapSiteModule $wsm, WsmArticle $wsma) {
         
         $this->middleware('wechat');

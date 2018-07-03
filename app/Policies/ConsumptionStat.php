@@ -1,10 +1,17 @@
 <?php
 namespace App\Policies;
-
+/**
+ * Class ConsumptionStat
+ * @package App\Policies
+ */
 class ConsumptionStat {
 
     public $rangeId, $studentId, $classId, $gradeId, $dateRange;
     
+    /**
+     * ConsumptionStat constructor.
+     * @param array $conditions
+     */
     public function __construct(array $conditions) {
         
         $this->rangeId = $conditions['range_id'];

@@ -19,6 +19,11 @@ class GroupController extends Controller {
     
     protected $group, $menu;
     
+    /**
+     * GroupController constructor.
+     * @param Group $group
+     * @param Menu $menu
+     */
     function __construct(Group $group, Menu $menu) {
         
         $this->middleware(['auth', 'checkrole']);

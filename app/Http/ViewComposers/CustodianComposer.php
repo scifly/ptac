@@ -10,10 +10,17 @@ use App\Models\Student;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class CustodianComposer
+ * @package App\Http\ViewComposers
+ */
 class CustodianComposer {
     
     use ModelTrait;
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $grades = Grade::whereIn('id', $this->gradeIds())

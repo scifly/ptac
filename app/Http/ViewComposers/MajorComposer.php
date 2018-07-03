@@ -7,10 +7,17 @@ use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class MajorComposer
+ * @package App\Http\ViewComposers
+ */
 class MajorComposer {
     
     use ModelTrait;
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $schoolId = $this->schoolId();

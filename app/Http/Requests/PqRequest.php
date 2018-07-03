@@ -4,6 +4,10 @@ namespace App\Http\Requests;
 use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class PqRequest
+ * @package App\Http\Requests
+ */
 class PqRequest extends FormRequest {
     
     use ModelTrait;
@@ -15,6 +19,9 @@ class PqRequest extends FormRequest {
      */
     public function authorize() { return true; }
     
+    /**
+     * @return array
+     */
     public function rules() {
         return [
             'name'      => 'required|string|max:255|unique:poll_questionnaires,name,' .

@@ -6,6 +6,10 @@ use App\Models\User;
 use App\Facades\Wechat;
 use Exception;
 
+/**
+ * Trait JobTrait
+ * @package App\Helpers
+ */
 trait JobTrait {
     
     /**

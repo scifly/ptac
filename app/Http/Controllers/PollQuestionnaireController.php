@@ -18,6 +18,10 @@ class PollQuestionnaireController extends Controller {
     
     protected $pq;
     
+    /**
+     * PollQuestionnaireController constructor.
+     * @param PollQuestionnaire $pq
+     */
     function __construct(PollQuestionnaire $pq) {
         
         $this->middleware(['auth', 'checkrole']);

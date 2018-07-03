@@ -1,6 +1,9 @@
 <?php
 namespace App\Helpers;
-
+/**
+ * Class Snippet
+ * @package App\Helpers
+ */
 class Snippet {
     
     # 字体颜色

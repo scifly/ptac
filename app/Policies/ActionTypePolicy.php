@@ -6,6 +6,10 @@ use App\Models\ActionType;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+/**
+ * Class ActionTypePolicy
+ * @package App\Policies
+ */
 class ActionTypePolicy {
     
     use HandlesAuthorization;

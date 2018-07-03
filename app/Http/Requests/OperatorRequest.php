@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\Rule;
 
+/**
+ * Class OperatorRequest
+ * @package App\Http\Requests
+ */
 class OperatorRequest extends FormRequest {
     
     /**

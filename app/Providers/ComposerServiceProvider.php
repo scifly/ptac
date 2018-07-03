@@ -5,6 +5,10 @@ use App\Helpers\ModelTrait;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * Class ComposerServiceProvider
+ * @package App\Providers
+ */
 class ComposerServiceProvider extends ServiceProvider {
     
     use ModelTrait;

@@ -6,10 +6,17 @@ use App\Models\Educator;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 
+/**
+ * Class EventIndexComposer
+ * @package App\Http\ViewComposers
+ */
 class EventIndexComposer {
     
     use ModelTrait;
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $schoolId = $this->schoolId();

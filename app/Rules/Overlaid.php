@@ -9,6 +9,10 @@ use App\Models\StudentAttendanceSetting;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class Overlaid
+ * @package App\Rules
+ */
 class Overlaid implements Rule {
     
     use ModelTrait;

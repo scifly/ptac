@@ -19,6 +19,11 @@ class SquadController extends Controller {
     
     protected $class, $educator;
     
+    /**
+     * SquadController constructor.
+     * @param Squad $class
+     * @param Educator $educator
+     */
     public function __construct(Squad $class, Educator $educator) {
         
         $this->middleware(['auth', 'checkrole']);

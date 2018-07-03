@@ -3,8 +3,15 @@ namespace App\Http\ViewComposers;
 
 use Illuminate\Contracts\View\View;
 
+/**
+ * Class ExamIndexComposer
+ * @package App\Http\ViewComposers
+ */
 class ExamIndexComposer {
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $view->with([

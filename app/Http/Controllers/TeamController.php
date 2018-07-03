@@ -18,6 +18,10 @@ class TeamController extends Controller {
     
     protected $team;
     
+    /**
+     * TeamController constructor.
+     * @param Team $team
+     */
     public function __construct(Team $team) {
         
         $this->middleware(['auth', 'checkrole']);

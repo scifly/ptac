@@ -6,6 +6,10 @@ use App\Rules\Overlaid;
 use App\Rules\StartEnd;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class EducatorAttendanceSettingRequest
+ * @package App\Http\Requests
+ */
 class EducatorAttendanceSettingRequest extends FormRequest {
     
     use ModelTrait;

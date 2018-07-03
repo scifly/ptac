@@ -9,6 +9,10 @@ use App\Models\Menu;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+/**
+ * Class AppPolicy
+ * @package App\Policies
+ */
 class AppPolicy {
 
     use HandlesAuthorization;

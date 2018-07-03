@@ -1,6 +1,9 @@
 <?php
 namespace App\Helpers;
-
+/**
+ * Class Constant
+ * @package App\Helpers
+ */
 class Constant {
     
     # 状态

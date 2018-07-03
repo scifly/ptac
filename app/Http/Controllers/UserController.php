@@ -20,6 +20,12 @@ class UserController extends Controller {
     
     protected $user, $message, $event;
     
+    /**
+     * UserController constructor.
+     * @param User $user
+     * @param Message $message
+     * @param Event $event
+     */
     function __construct(User $user, Message $message, Event $event) {
         
         $this->middleware(['auth', 'checkrole']);

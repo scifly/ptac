@@ -5,8 +5,15 @@ use App\Models\Group;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class GroupEditComposer
+ * @package App\Http\ViewComposers
+ */
 class GroupEditComposer {
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $group = Group::find(Request::route('id'));

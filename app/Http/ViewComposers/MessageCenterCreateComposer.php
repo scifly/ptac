@@ -10,12 +10,21 @@ use App\Models\Squad;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class MessageCenterCreateComposer
+ * @package App\Http\ViewComposers
+ */
 class MessageCenterCreateComposer {
     
     use ModelTrait;
     
     protected $grade, $squad;
     
+    /**
+     * MessageCenterCreateComposer constructor.
+     * @param Grade $grade
+     * @param Squad $squad
+     */
     function __construct(Grade $grade, Squad $squad) {
         
         $this->grade = $grade;
@@ -23,6 +32,9 @@ class MessageCenterCreateComposer {
         
     }
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $user = Auth::user();

@@ -3,6 +3,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class EducatorAttendanceRequest
+ * @package App\Http\Requests
+ */
 class EducatorAttendanceRequest extends FormRequest {
     
     /**

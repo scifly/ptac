@@ -12,6 +12,10 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class WechatAuth
+ * @package App\Http\Middleware
+ */
 class WechatAuth {
     
     /**

@@ -24,6 +24,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+/**
+ * Class ImportEducator
+ * @package App\Jobs
+ */
 class ImportEducator implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;

@@ -3,6 +3,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class MenuTypeRequest
+ * @package App\Http\Requests
+ */
 class MenuTypeRequest extends FormRequest {
     
     /**

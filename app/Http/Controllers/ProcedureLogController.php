@@ -23,6 +23,11 @@ class ProcedureLogController extends Controller {
     
     protected $pl, $media;
     
+    /**
+     * ProcedureLogController constructor.
+     * @param ProcedureLog $pl
+     * @param Media $media
+     */
     function __construct(ProcedureLog $pl, Media $media) {
         
         $this->middleware(['auth', 'checkrole']);

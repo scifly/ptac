@@ -104,7 +104,7 @@ class Action extends Model {
      * 更新功能
      *
      * @param array $data
-     * @param $id
+     * @param integer $id
      * @return bool
      */
     function modify(array $data, $id) {
@@ -116,7 +116,7 @@ class Action extends Model {
     /**
      * 删除指定功能的所有相关数据
      *
-     * @param $id
+     * @param integer $id
      * @throws Exception
      */
     function purge($id) {
@@ -136,7 +136,7 @@ class Action extends Model {
     /**
      * 从所有功能中移除指定的功能请求类型
      *
-     * @param $actionTypeId
+     * @param integer $actionTypeId
      * @throws Exception
      */
     function removeActionType($actionTypeId) {
@@ -224,7 +224,7 @@ class Action extends Model {
     /**
      * 根据ActionType IDs返回Http action名称
      *
-     * @param $action_type_ids
+     * @param string $action_type_ids
      * @return string
      */
     private function actionTypes($action_type_ids) {
@@ -348,7 +348,7 @@ class Action extends Model {
     /**
      * 返回所有控制器的完整路径
      *
-     * @param $rootDir
+     * @param string $rootDir
      * @param array $allData
      * @return array
      */
@@ -392,9 +392,9 @@ class Action extends Model {
     /**
      * 返回控制器的完整名字空间路径
      *
-     * @param $controllers
+     * @param array $controllers
      */
-    function controllerNamespaces(&$controllers) {
+    function controllerNamespaces(array &$controllers) {
         
         $siteRoot = str_replace('/', '\\', $this->siteRoot());
         for ($i = 0; $i < sizeof($controllers); $i++) {
@@ -410,10 +410,10 @@ class Action extends Model {
     /**
      * 返回去除名字空间路径的控制器名称数组
      *
-     * @param $controllers
+     * @param array $controllers
      * @return array
      */
-    function controllerNames($controllers) {
+    function controllerNames(array $controllers) {
         
         $controllerNames = [];
         foreach ($controllers as $controller) {
@@ -428,7 +428,7 @@ class Action extends Model {
     /**
      * 删除功能
      *
-     * @param null $id
+     * @param null|integer $id
      * @return bool
      * @throws Exception
      */
@@ -441,13 +441,13 @@ class Action extends Model {
     /**
      * 删除指定控制器中不存在的方法
      *
-     * @param $methods
-     * @param $className
+     * @param array $methods
+     * @param string $className
      * @return bool
      * @throws Exception
      * @throws Throwable
      */
-    private function delNonExistingMethods($methods, $className) {
+    private function delNonExistingMethods(array $methods, string $className) {
         
         // remove non-existing methods of current controller
         $currentMethods = self::methodNames($methods);

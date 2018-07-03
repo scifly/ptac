@@ -3,6 +3,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class ExamRequest
+ * @package App\Http\Requests
+ */
 class ExamRequest extends FormRequest {
     
     /**
@@ -12,6 +16,9 @@ class ExamRequest extends FormRequest {
      */
     public function authorize() { return true; }
     
+    /**
+     * @return array
+     */
     public function rules() {
         
         return [

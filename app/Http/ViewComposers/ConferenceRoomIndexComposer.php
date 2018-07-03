@@ -3,8 +3,15 @@ namespace App\Http\ViewComposers;
 
 use Illuminate\Contracts\View\View;
 
+/**
+ * Class ConferenceRoomIndexComposer
+ * @package App\Http\ViewComposers
+ */
 class ConferenceRoomIndexComposer {
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $view->with([

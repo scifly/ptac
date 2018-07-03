@@ -6,6 +6,10 @@ use App\Models\AlertType;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+/**
+ * Class AlertTypePolicy
+ * @package App\Policies
+ */
 class AlertTypePolicy {
     
     use HandlesAuthorization;

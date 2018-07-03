@@ -19,6 +19,11 @@ class MenuController extends Controller {
     
     protected $menu, $mt;
     
+    /**
+     * MenuController constructor.
+     * @param Menu $menu
+     * @param MenuTab $mt
+     */
     function __construct(Menu $menu, MenuTab $mt) {
         
         $this->middleware(['auth', 'checkrole']);

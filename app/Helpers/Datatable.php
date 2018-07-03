@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class Datatable
+ * @package App\Helpers
+ */
 class Datatable {
     
     use ModelTrait;

@@ -11,6 +11,10 @@ use App\Models\User;
 use App\Models\WapSite;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+/**
+ * Class MethodPolicy
+ * @package App\Policies
+ */
 class MethodPolicy {
     
     use HandlesAuthorization, PolicyTrait;
@@ -27,7 +31,12 @@ class MethodPolicy {
         $this->menu = $menu;
         
     }
-
+    
+    /**
+     * @param User $user
+     * @param Route $route
+     * @return bool
+     */
     public function act(User $user, Route $route) {
     
         $role = $user->group->name;
@@ -63,6 +72,11 @@ class MethodPolicy {
 
     }
     
+    /**
+     * @param array $actions
+     * @param $id
+     * @return array
+     */
     private function allowedActions(array $actions, $id) {
         
         return array_map(

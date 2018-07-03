@@ -18,6 +18,10 @@ class WapSiteModuleController extends Controller {
     
     protected $wsm;
     
+    /**
+     * WapSiteModuleController constructor.
+     * @param WapSiteModule $wsm
+     */
     public function __construct(WapSiteModule $wsm) {
         
         $this->middleware(['auth', 'checkrole']);

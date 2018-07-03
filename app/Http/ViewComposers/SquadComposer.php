@@ -8,18 +8,29 @@ use App\Models\Squad;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class SquadComposer
+ * @package App\Http\ViewComposers
+ */
 class SquadComposer {
     
     use ModelTrait;
     
     protected $educator;
     
+    /**
+     * SquadComposer constructor.
+     * @param Educator $educator
+     */
     function __construct(Educator $educator) {
         
         $this->educator = $educator;
         
     }
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $grades = Grade::whereIn('id', $this->gradeIds())

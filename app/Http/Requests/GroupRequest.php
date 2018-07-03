@@ -4,10 +4,17 @@ namespace App\Http\Requests;
 use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class GroupRequest
+ * @package App\Http\Requests
+ */
 class GroupRequest extends FormRequest {
     
     use ModelTrait;
     
+    /**
+     * @return bool
+     */
     public function authorize() { return true; }
     
     /**

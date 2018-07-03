@@ -6,10 +6,17 @@ use App\Models\Department;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class EducatorIndexComposer
+ * @package App\Http\ViewComposers
+ */
 class EducatorIndexComposer {
     
     use ModelTrait;
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $departments = Department::whereIn('id', $this->departmentIds(Auth::id()))

@@ -21,6 +21,10 @@ class EventController extends Controller {
     
     protected $event;
     
+    /**
+     * EventController constructor.
+     * @param Event $event
+     */
     function __construct(Event $event) {
         
         $this->middleware(['auth', 'checkrole']);

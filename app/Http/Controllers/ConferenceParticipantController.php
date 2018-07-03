@@ -17,6 +17,10 @@ class ConferenceParticipantController extends Controller {
     
     protected $cp;
     
+    /**
+     * ConferenceParticipantController constructor.
+     * @param ConferenceParticipant $cp
+     */
     function __construct(ConferenceParticipant $cp) {
         
         $this->middleware(['auth', 'checkrole']);

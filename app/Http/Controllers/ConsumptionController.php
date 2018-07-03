@@ -18,6 +18,10 @@ class ConsumptionController extends Controller {
     
     protected $consumption;
     
+    /**
+     * ConsumptionController constructor.
+     * @param Consumption $consumption
+     */
     function __construct(Consumption $consumption) {
         
         $this->middleware(['auth', 'checkrole']);

@@ -4,6 +4,10 @@ namespace App\Http\Requests;
 use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class AttendanceMachineRequest
+ * @package App\Http\Requests
+ */
 class AttendanceMachineRequest extends FormRequest {
     
     use ModelTrait;

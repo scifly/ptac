@@ -20,6 +20,11 @@ class ScoreRangeController extends Controller {
     
     protected $sr, $subject;
     
+    /**
+     * ScoreRangeController constructor.
+     * @param ScoreRange $sr
+     * @param Subject $subject
+     */
     function __construct(ScoreRange $sr, Subject $subject) {
         
         $this->middleware(['auth']);

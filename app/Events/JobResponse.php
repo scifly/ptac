@@ -8,6 +8,10 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Class JobResponse
+ * @package App\Events
+ */
 class JobResponse implements ShouldBroadcast {
     
     use Dispatchable, InteractsWithSockets, SerializesModels;

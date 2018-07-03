@@ -19,6 +19,10 @@ class ActionController extends Controller {
     
     protected $action;
     
+    /**
+     * ActionController constructor.
+     * @param Action $action
+     */
     function __construct(Action $action) {
         
         $this->middleware(['auth', 'checkrole']);

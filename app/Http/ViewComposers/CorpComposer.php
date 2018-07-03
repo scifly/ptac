@@ -7,16 +7,27 @@ use App\Models\Menu;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class CorpComposer
+ * @package App\Http\ViewComposers
+ */
 class CorpComposer {
     
     protected $menu;
     
+    /**
+     * CorpComposer constructor.
+     * @param Menu $menu
+     */
     function __construct(Menu $menu) {
         
         $this->menu = $menu;
         
     }
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $companies = Company::pluck('name', 'id');

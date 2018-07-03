@@ -7,10 +7,17 @@ use App\Models\Squad;
 use App\Models\Student;
 use Illuminate\Contracts\View\View;
 
+/**
+ * Class ConsumptionStatComposer
+ * @package App\Http\ViewComposers
+ */
 class ConsumptionStatComposer {
     
     use ModelTrait;
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $ranges = [

@@ -8,14 +8,25 @@ use App\Models\Student;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class StudentComposer
+ * @package App\Http\ViewComposers
+ */
 class StudentComposer {
     
     use ModelTrait;
     
     protected $student;
     
+    /**
+     * StudentComposer constructor.
+     * @param Student $student
+     */
     function __construct(Student $student) { $this->student = $student; }
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $grades = Grade::whereIn('id', $this->gradeIds())

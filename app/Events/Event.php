@@ -7,6 +7,10 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Class Event
+ * @package App\Events
+ */
 class Event {
     
     use Dispatchable, InteractsWithSockets, SerializesModels;

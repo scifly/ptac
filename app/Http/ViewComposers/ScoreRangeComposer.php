@@ -7,10 +7,17 @@ use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class ScoreRangeComposer
+ * @package App\Http\ViewComposers
+ */
 class ScoreRangeComposer {
     
     use ModelTrait;
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $schoolId = $this->schoolId();

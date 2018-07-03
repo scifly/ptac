@@ -16,6 +16,10 @@ use Illuminate\Support\Facades\DB;
 use Throwable;
 use Validator;
 
+/**
+ * Class ImportScore
+ * @package App\Jobs
+ */
 class ImportScore implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait;

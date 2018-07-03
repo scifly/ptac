@@ -6,8 +6,15 @@ use App\Models\ActionType;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class ActionComposer
+ * @package App\Http\ViewComposers
+ */
 class ActionComposer {
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $actionTypeIds = explode(

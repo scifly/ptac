@@ -6,6 +6,10 @@ use App\Models\MediaType;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+/**
+ * Class MediaTypePolicy
+ * @package App\Policies
+ */
 class MediaTypePolicy {
     
     use HandlesAuthorization;

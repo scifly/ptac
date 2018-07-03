@@ -18,6 +18,10 @@ class MediaTypeController extends Controller {
     
     protected $mt;
     
+    /**
+     * MediaTypeController constructor.
+     * @param MediaType $mt
+     */
     function __construct(MediaType $mt) {
         
         $this->middleware(['auth', 'checkrole']);

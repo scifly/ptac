@@ -7,10 +7,17 @@ use App\Models\School;
 use App\Models\Student;
 use Illuminate\Contracts\View\View;
 
+/**
+ * Class ScoreAnalysisComposer
+ * @package App\Http\ViewComposers
+ */
 class ScoreAnalysisComposer {
     
     use ModelTrait;
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $schoolId = $this->schoolId();

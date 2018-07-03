@@ -5,6 +5,10 @@ use App\Rules\Overlaid;
 use App\Rules\StartEnd;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class StudentAttendanceSettingRequest
+ * @package App\Http\Requests
+ */
 class StudentAttendanceSettingRequest extends FormRequest {
     
     /**

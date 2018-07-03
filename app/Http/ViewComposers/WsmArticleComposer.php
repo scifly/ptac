@@ -8,12 +8,20 @@ use App\Models\WsmArticle;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class WsmArticleComposer
+ * @package App\Http\ViewComposers
+ */
 class WsmArticleComposer {
     
     use ModelTrait;
     
     protected $media;
     
+    /**
+     * WsmArticleComposer constructor.
+     * @param Media $media
+     */
     function __construct(Media $media) {
         
         $this->media = $media;

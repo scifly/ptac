@@ -18,6 +18,10 @@ class ProcedureStepController extends Controller {
     
     protected $ps;
     
+    /**
+     * ProcedureStepController constructor.
+     * @param ProcedureStep $ps
+     */
     function __construct(ProcedureStep $ps) {
         
         $this->middleware(['auth', 'checkrole']);

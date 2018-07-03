@@ -19,6 +19,11 @@ class ScoreController extends Controller {
     
     protected $score, $exam;
     
+    /**
+     * ScoreController constructor.
+     * @param Score $score
+     * @param Exam $exam
+     */
     public function __construct(Score $score, Exam $exam) {
         
         $this->middleware(['auth', 'checkrole']);

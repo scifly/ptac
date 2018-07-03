@@ -15,10 +15,19 @@ use App\Models\WapSite;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class CheckRole
+ * @package App\Http\Middleware
+ */
 class CheckRole {
     
     protected $department, $menu;
     
+    /**
+     * CheckRole constructor.
+     * @param Department $department
+     * @param Menu $menu
+     */
     function __construct(Department $department, Menu $menu) {
         
         $this->department = $department;
@@ -120,6 +129,11 @@ class CheckRole {
         
     }
     
+    /**
+     * @param array $actions
+     * @param $id
+     * @return array
+     */
     private function allowedActions(array $actions, $id) {
         
         return array_map(

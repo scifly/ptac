@@ -18,6 +18,10 @@ class SubjectModuleController extends Controller {
     
     protected $sm;
     
+    /**
+     * SubjectModuleController constructor.
+     * @param SubjectModule $sm
+     */
     function __construct(SubjectModule $sm) {
         
         $this->middleware(['auth', 'checkrole']);

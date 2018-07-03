@@ -5,6 +5,10 @@ use App\Models\Department;
 use App\Models\DepartmentType;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class DepartmentRequest
+ * @package App\Http\Requests
+ */
 class DepartmentRequest extends FormRequest {
     
     /**

@@ -12,6 +12,10 @@ use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class PollQuestionnaireSubjectChoicePolicy
+ * @package App\Policies
+ */
 class PollQuestionnaireSubjectChoicePolicy {
     
     use HandlesAuthorization, ModelTrait, PolicyTrait;

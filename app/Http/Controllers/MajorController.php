@@ -18,6 +18,10 @@ class MajorController extends Controller {
     
     protected $major;
     
+    /**
+     * MajorController constructor.
+     * @param Major $major
+     */
     function __construct(Major $major) {
         
         $this->middleware(['auth', 'checkrole']);

@@ -11,6 +11,10 @@ use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Trait WechatTrait
+ * @package App\Helpers
+ */
 trait WechatTrait {
     
     protected $apps = [

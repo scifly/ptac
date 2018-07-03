@@ -7,10 +7,17 @@ use App\Models\Grade;
 use App\Models\Squad;
 use Illuminate\Contracts\View\View;
 
+/**
+ * Class ScoreRangeStatComposer
+ * @package App\Http\ViewComposers
+ */
 class ScoreRangeStatComposer {
     
     use ModelTrait;
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $grades = Grade::whereEnabled(1)

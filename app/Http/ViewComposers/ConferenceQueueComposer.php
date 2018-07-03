@@ -9,10 +9,17 @@ use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class ConferenceQueueComposer
+ * @package App\Http\ViewComposers
+ */
 class ConferenceQueueComposer {
     
     use ModelTrait;
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $schoolId = $this->schoolId();

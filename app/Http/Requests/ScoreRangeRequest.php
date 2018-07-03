@@ -4,6 +4,10 @@ namespace App\Http\Requests;
 use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class ScoreRangeRequest
+ * @package App\Http\Requests
+ */
 class ScoreRangeRequest extends FormRequest {
     
     use ModelTrait;

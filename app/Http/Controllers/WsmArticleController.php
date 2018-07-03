@@ -18,6 +18,10 @@ class WsmArticleController extends Controller {
     
     protected $wsma;
     
+    /**
+     * WsmArticleController constructor.
+     * @param WsmArticle $wsma
+     */
     function __construct(WsmArticle $wsma) {
         
         $this->middleware(['auth', 'checkrole']);

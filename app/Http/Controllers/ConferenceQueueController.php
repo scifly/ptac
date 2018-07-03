@@ -18,6 +18,10 @@ class ConferenceQueueController extends Controller {
     
     protected $cq;
     
+    /**
+     * ConferenceQueueController constructor.
+     * @param ConferenceQueue $cq
+     */
     function __construct(ConferenceQueue $cq) {
         
         $this->middleware(['auth', 'checkrole']);

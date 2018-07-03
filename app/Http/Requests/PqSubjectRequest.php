@@ -3,6 +3,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class PqSubjectRequest
+ * @package App\Http\Requests
+ */
 class PqSubjectRequest extends FormRequest {
     
     /**
@@ -12,6 +16,9 @@ class PqSubjectRequest extends FormRequest {
      */
     public function authorize() { return true; }
     
+    /**
+     * @return array
+     */
     public function rules() {
         
         return [

@@ -6,6 +6,10 @@ use App\Rules\Overlaid;
 use App\Rules\StartEnd;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class SemesterRequest
+ * @package App\Http\Requests
+ */
 class SemesterRequest extends FormRequest {
     
     use ModelTrait;

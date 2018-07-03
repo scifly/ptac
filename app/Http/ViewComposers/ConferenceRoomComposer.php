@@ -4,10 +4,17 @@ namespace App\Http\ViewComposers;
 use App\Helpers\ModelTrait;
 use Illuminate\Contracts\View\View;
 
+/**
+ * Class ConferenceRoomComposer
+ * @package App\Http\ViewComposers
+ */
 class ConferenceRoomComposer {
     
     use ModelTrait;
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
     }

@@ -6,6 +6,10 @@ use App\Models\Corp;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class CorpRequest
+ * @package App\Http\Requests
+ */
 class CorpRequest extends FormRequest {
 
     use ModelTrait;

@@ -18,6 +18,10 @@ class OperatorController extends Controller {
     
     protected $user;
     
+    /**
+     * OperatorController constructor.
+     * @param User $user
+     */
     function __construct(User $user) {
         
         $this->middleware(['auth', 'checkrole']);

@@ -24,6 +24,15 @@ class PollQuestionnaireParticipantController extends Controller {
     protected $pq, $pqp, $pqa, $pqc, $pqs;
     protected $user, $school, $tempChoice = [], $result = [], $count;
     
+    /**
+     * PollQuestionnaireParticipantController constructor.
+     * @param PollQuestionnaire $pq
+     * @param PollQuestionnaireAnswer $pqa
+     * @param PollQuestionnaireSubjectChoice $pqc
+     * @param PollQuestionnaireSubject $pqs
+     * @param PollQuestionnaireParticipant $pqp
+     * @param User $user
+     */
     function __construct(
         PollQuestionnaire $pq,
         PollQuestionnaireAnswer $pqa,
@@ -65,6 +74,10 @@ class PollQuestionnaireParticipantController extends Controller {
         
     }
     
+    /**
+     * @param Request $q
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $q) {
         
         # 先获取项和题转换数组操作

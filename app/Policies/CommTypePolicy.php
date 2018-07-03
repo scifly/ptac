@@ -6,6 +6,10 @@ use App\Models\CommType;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+/**
+ * Class CommTypePolicy
+ * @package App\Policies
+ */
 class CommTypePolicy {
     
     use HandlesAuthorization;

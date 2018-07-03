@@ -7,6 +7,10 @@ use App\Helpers\PolicyTrait;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+/**
+ * Class EducatorAttendancePolicy
+ * @package App\Policies
+ */
 class EducatorAttendancePolicy {
     
     use HandlesAuthorization, PolicyTrait;

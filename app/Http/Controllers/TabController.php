@@ -20,6 +20,11 @@ class TabController extends Controller {
     
     protected $tab, $menu;
     
+    /**
+     * TabController constructor.
+     * @param Tab $tab
+     * @param Menu $menu
+     */
     function __construct(Tab $tab, Menu $menu) {
         
         $this->middleware(['auth', 'checkrole']);

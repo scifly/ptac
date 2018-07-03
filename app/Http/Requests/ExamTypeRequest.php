@@ -4,6 +4,10 @@ namespace App\Http\Requests;
 use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class ExamTypeRequest
+ * @package App\Http\Requests
+ */
 class ExamTypeRequest extends FormRequest {
     
     use ModelTrait;
@@ -15,6 +19,9 @@ class ExamTypeRequest extends FormRequest {
      */
     public function authorize() { return true; }
     
+    /**
+     * @return array
+     */
     public function rules() {
         
         return [

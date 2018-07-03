@@ -11,6 +11,10 @@ use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class ScoreRangePolicy
+ * @package App\Policies
+ */
 class ScoreRangePolicy {
     
     use HandlesAuthorization, ModelTrait, PolicyTrait;

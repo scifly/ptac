@@ -4,6 +4,15 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
+/**
+ * Class Kernel
+ * @package App\Console
+ */
+
+/**
+ * Class Kernel
+ * @package App\Console
+ */
 class Kernel extends ConsoleKernel {
     
     /**
@@ -32,6 +41,7 @@ class Kernel extends ConsoleKernel {
      * @return void
      */
     protected function commands() {
+        /** @noinspection PhpIncludeInspection */
         require base_path('routes/console.php');
     }
 }

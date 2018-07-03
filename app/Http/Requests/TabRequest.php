@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\Rule;
 
+/**
+ * Class TabRequest
+ * @package App\Http\Requests
+ */
 class TabRequest extends FormRequest {
     
     /**

@@ -18,6 +18,10 @@ class SemesterController extends Controller {
     
     protected $semester;
     
+    /**
+     * SemesterController constructor.
+     * @param Semester $semester
+     */
     function __construct(Semester $semester) {
         
         $this->middleware(['auth', 'checkrole']);

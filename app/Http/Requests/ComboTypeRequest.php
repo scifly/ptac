@@ -4,12 +4,22 @@ namespace App\Http\Requests;
 use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class ComboTypeRequest
+ * @package App\Http\Requests
+ */
 class ComboTypeRequest extends FormRequest {
     
     use ModelTrait;
     
+    /**
+     * @return bool
+     */
     public function authorize() { return true; }
     
+    /**
+     * @return array
+     */
     public function rules() {
         
         return [

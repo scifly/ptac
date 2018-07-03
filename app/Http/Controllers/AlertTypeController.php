@@ -18,6 +18,10 @@ class AlertTypeController extends Controller {
     
     protected $at;
     
+    /**
+     * AlertTypeController constructor.
+     * @param AlertType $at
+     */
     function __construct(AlertType $at) {
         
         $this->middleware(['auth', 'checkrole']);

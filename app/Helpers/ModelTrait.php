@@ -20,6 +20,10 @@ use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
+/**
+ * Trait ModelTrait
+ * @package App\Helpers
+ */
 trait ModelTrait {
     
     /**

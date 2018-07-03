@@ -10,6 +10,10 @@ use App\Models\WsmArticle;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class WsmArticlePolicy
+ * @package App\Policies
+ */
 class WsmArticlePolicy {
     
     use HandlesAuthorization, PolicyTrait, ModelTrait;

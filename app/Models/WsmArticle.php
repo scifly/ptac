@@ -60,6 +60,10 @@ class WsmArticle extends Model {
     
     protected $media;
     
+    /**
+     * WsmArticle constructor.
+     * @param array $attributes
+     */
     function __construct(array $attributes = []) {
         
         parent::__construct($attributes);

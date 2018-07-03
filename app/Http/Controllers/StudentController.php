@@ -20,6 +20,11 @@ class StudentController extends Controller {
     
     protected $student, $grade;
     
+    /**
+     * StudentController constructor.
+     * @param Student $student
+     * @param Grade $grade
+     */
     function __construct(Student $student, Grade $grade) {
         
         $this->middleware(['auth', 'checkrole']);

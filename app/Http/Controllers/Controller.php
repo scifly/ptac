@@ -17,6 +17,10 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Throwable;
 
+/**
+ * Class Controller
+ * @package App\Http\Controllers
+ */
 class Controller extends BaseController {
     
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;

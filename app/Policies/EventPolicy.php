@@ -6,6 +6,10 @@ use App\Models\Event;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+/**
+ * Class EventPolicy
+ * @package App\Policies
+ */
 class EventPolicy {
     
     use HandlesAuthorization;
@@ -19,12 +23,22 @@ class EventPolicy {
         //
     }
     
+    /**
+     * @param User $user
+     * @param Event $event
+     * @return bool
+     */
     public function destroy(User $user, Event $event) {
         
         return $this->objectPerm($user, $event);
         
     }
     
+    /**
+     * @param User $user
+     * @param Event $event
+     * @return bool
+     */
     private function objectPerm(User $user, Event $event) {
         
         abort_if(

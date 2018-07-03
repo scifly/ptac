@@ -18,6 +18,10 @@ class EducatorAttendanceSettingController extends Controller {
     
     protected $eas;
     
+    /**
+     * EducatorAttendanceSettingController constructor.
+     * @param EducatorAttendanceSetting $eas
+     */
     function __construct(EducatorAttendanceSetting $eas) {
         
         $this->middleware(['auth', 'checkrole']);

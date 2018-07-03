@@ -8,12 +8,23 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class MenuComposer
+ * @package App\Http\ViewComposers
+ */
 class MenuComposer {
     
     protected $icon;
     
+    /**
+     * MenuComposer constructor.
+     * @param Icon $icon
+     */
     function __construct(Icon $icon) { $this->icon = $icon; }
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $role = Auth::user()->group->name;

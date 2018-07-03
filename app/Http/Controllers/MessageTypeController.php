@@ -18,6 +18,10 @@ class MessageTypeController extends Controller {
     
     protected $mt;
     
+    /**
+     * MessageTypeController constructor.
+     * @param MessageType $mt
+     */
     function __construct(MessageType $mt) {
         
         $this->middleware(['auth', 'checkrole']);

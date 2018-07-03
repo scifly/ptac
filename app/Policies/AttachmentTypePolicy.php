@@ -6,6 +6,10 @@ use App\Models\AttachmentType;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+/**
+ * Class AttachmentTypePolicy
+ * @package App\Policies
+ */
 class AttachmentTypePolicy {
     
     use HandlesAuthorization;

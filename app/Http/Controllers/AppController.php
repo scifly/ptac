@@ -18,6 +18,10 @@ class AppController extends Controller {
     
     protected $app;
     
+    /**
+     * AppController constructor.
+     * @param App $app
+     */
     function __construct(App $app) {
         
         $this->middleware(['auth', 'checkrole']);

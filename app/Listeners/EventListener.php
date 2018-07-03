@@ -3,6 +3,10 @@ namespace App\Listeners;
 
 use App\Events\Event;
 
+/**
+ * Class EventListener
+ * @package App\Listeners
+ */
 class EventListener {
     
     /**

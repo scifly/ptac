@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Facades\Wechat;
 use App\Models\Department;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -69,12 +68,19 @@ class TestController extends Controller {
         
     }
     
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function listen() {
         
         return view('test.listen');
         
     }
     
+    /**
+     * @param ReflectionClass $class
+     * @return mixed
+     */
     function getTraitMethodsRefs(ReflectionClass $class) {
         
         $traitMethods = call_user_func_array(
@@ -96,6 +102,10 @@ class TestController extends Controller {
         
     }
     
+    /**
+     * @param ReflectionClass $class
+     * @return mixed
+     */
     function getClassMethodsRefs(ReflectionClass $class) {
         
         return call_user_func_array(
@@ -108,6 +118,11 @@ class TestController extends Controller {
         
     }
     
+    /**
+     * @param $id
+     * @param $level
+     * @return int
+     */
     private function getLevel($id, &$level) {
         
         /** @var Department $parent */

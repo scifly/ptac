@@ -3,6 +3,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class MediaTypeRequest
+ * @package App\Http\Requests
+ */
 class MediaTypeRequest extends FormRequest {
     
     /**

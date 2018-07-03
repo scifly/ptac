@@ -18,6 +18,10 @@ class CommTypeController extends Controller {
     
     protected $ct;
     
+    /**
+     * CommTypeController constructor.
+     * @param CommType $ct
+     */
     function __construct(CommType $ct) {
         
         $this->middleware(['auth', 'checkrole']);

@@ -18,6 +18,10 @@ class ExamController extends Controller {
     
     protected $exam;
     
+    /**
+     * ExamController constructor.
+     * @param Exam $exam
+     */
     function __construct(Exam $exam) {
         
         $this->middleware(['auth', 'checkrole']);

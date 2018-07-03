@@ -4,6 +4,10 @@ namespace App\Providers;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * Class WechatServiceProvider
+ * @package App\Providers
+ */
 class WechatServiceProvider extends ServiceProvider {
     
     /**

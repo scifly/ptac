@@ -23,6 +23,10 @@ use App\Models\StudentAttendanceSetting;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
+/**
+ * Class ManageStudentAttendance
+ * @package App\Jobs
+ */
 class ManageStudentAttendance implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;

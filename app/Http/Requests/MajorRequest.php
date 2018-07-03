@@ -4,6 +4,10 @@ namespace App\Http\Requests;
 use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class MajorRequest
+ * @package App\Http\Requests
+ */
 class MajorRequest extends FormRequest {
     
     use ModelTrait;

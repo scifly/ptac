@@ -18,6 +18,10 @@ class DepartmentTypeController extends Controller {
     
     protected $dt;
     
+    /**
+     * DepartmentTypeController constructor.
+     * @param DepartmentType $dt
+     */
     function __construct(DepartmentType $dt) {
         
         $this->middleware(['auth', 'checkrole']);

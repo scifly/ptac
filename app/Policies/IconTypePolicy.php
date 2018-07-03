@@ -6,6 +6,10 @@ use App\Models\IconType;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+/**
+ * Class IconTypePolicy
+ * @package App\Policies
+ */
 class IconTypePolicy {
     
     use HandlesAuthorization;

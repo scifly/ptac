@@ -11,12 +11,20 @@ use App\Models\Corp;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class CorpPolicy
+ * @package App\Policies
+ */
 class CorpPolicy {
 
     use HandlesAuthorization, ModelTrait;
     
     protected $menu;
-
+    
+    /**
+     * CorpPolicy constructor.
+     * @param Menu $menu
+     */
     function __construct(Menu $menu) {
         
         $this->menu = $menu;

@@ -10,6 +10,10 @@ use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class ScoreTotalPolicy
+ * @package App\Policies
+ */
 class ScoreTotalPolicy {
     
     use HandlesAuthorization, PolicyTrait, ModelTrait;

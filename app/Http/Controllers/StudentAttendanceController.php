@@ -18,6 +18,12 @@ class StudentAttendanceController extends Controller {
     
     protected $sa, $student, $grade;
     
+    /**
+     * StudentAttendanceController constructor.
+     * @param StudentAttendance $sa
+     * @param Student $student
+     * @param Grade $grade
+     */
     function __construct(StudentAttendance $sa, Student $student, Grade $grade) {
         
         $this->middleware(['auth', 'checkrole']);

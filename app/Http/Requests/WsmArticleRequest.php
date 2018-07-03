@@ -3,6 +3,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class WsmArticleRequest
+ * @package App\Http\Requests
+ */
 class WsmArticleRequest extends FormRequest {
     
     /**
@@ -12,6 +16,9 @@ class WsmArticleRequest extends FormRequest {
      */
     public function authorize() { return true; }
     
+    /**
+     * @return array
+     */
     public function rules() {
         
         return [
@@ -25,6 +32,9 @@ class WsmArticleRequest extends FormRequest {
         
     }
     
+    /**
+     * @return bool
+     */
     public function wantsJson() { return true; }
     
     protected function prepareForValidation() {

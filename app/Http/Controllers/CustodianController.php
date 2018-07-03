@@ -18,6 +18,10 @@ class CustodianController extends Controller {
     
     protected $custodian;
     
+    /**
+     * CustodianController constructor.
+     * @param Custodian $custodian
+     */
     function __construct(Custodian $custodian) {
         
         $this->middleware(['auth', 'checkrole']);

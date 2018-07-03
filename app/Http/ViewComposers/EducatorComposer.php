@@ -13,18 +13,29 @@ use App\Models\Team;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class EducatorComposer
+ * @package App\Http\ViewComposers
+ */
 class EducatorComposer {
     
     use ModelTrait;
     
     protected $department;
     
+    /**
+     * EducatorComposer constructor.
+     * @param Department $department
+     */
     function __construct(Department $department) {
         
         $this->department = $department;
         
     }
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $schoolId = $this->schoolId();

@@ -18,6 +18,10 @@ class MenuTypeController extends Controller {
     
     protected $mt;
     
+    /**
+     * MenuTypeController constructor.
+     * @param MenuType $mt
+     */
     function __construct(MenuType $mt) {
         
         $this->middleware(['auth', 'checkrole']);

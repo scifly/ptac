@@ -10,6 +10,10 @@ use App\Models\WapSite;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class WapSitePolicy
+ * @package App\Policies
+ */
 class WapSitePolicy {
     
     use HandlesAuthorization, PolicyTrait, ModelTrait;

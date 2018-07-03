@@ -3,6 +3,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class ProcedureLogRequest
+ * @package App\Http\Requests
+ */
 class ProcedureLogRequest extends FormRequest {
     
     /**
@@ -12,6 +16,9 @@ class ProcedureLogRequest extends FormRequest {
      */
     public function authorize() { return true; }
     
+    /**
+     * @return array
+     */
     public function rules() {
         
         return [

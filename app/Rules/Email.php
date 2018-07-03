@@ -7,6 +7,10 @@ use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class Email
+ * @package App\Rules
+ */
 class Email implements Rule {
     
     private $email;

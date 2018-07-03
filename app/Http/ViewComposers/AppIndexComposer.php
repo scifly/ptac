@@ -7,10 +7,19 @@ use App\Models\Menu;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 
+/**
+ * Class AppIndexComposer
+ * @package App\Http\ViewComposers
+ */
 class AppIndexComposer {
     
     protected $corp, $menu;
     
+    /**
+     * AppIndexComposer constructor.
+     * @param Corp $corp
+     * @param Menu $menu
+     */
     function __construct(Corp $corp, Menu $menu) {
         
         $this->corp = $corp;
@@ -18,6 +27,9 @@ class AppIndexComposer {
         
     }
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $rootMenuId = $this->menu->menuId(session('menuId'), '企业');
@@ -37,6 +49,9 @@ class AppIndexComposer {
         
     }
     
+    /**
+     * @param $apps
+     */
     private function formatDateTime(&$apps) {
         
         Carbon::setLocale('zh');

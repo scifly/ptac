@@ -18,6 +18,10 @@ class IconController extends Controller {
     
     protected $icon;
     
+    /**
+     * IconController constructor.
+     * @param Icon $icon
+     */
     function __construct(Icon $icon) {
         
         $this->middleware(['auth', 'checkrole']);

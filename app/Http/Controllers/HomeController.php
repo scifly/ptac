@@ -28,6 +28,12 @@ class HomeController extends Controller {
     
     protected $tab, $mt, $menu;
     
+    /**
+     * HomeController constructor.
+     * @param Tab $tab
+     * @param MenuTab $mt
+     * @param Menu $menu
+     */
     public function __construct(Tab $tab, MenuTab $mt, Menu $menu) {
         
         $this->middleware(['auth', 'checkrole']);

@@ -12,6 +12,10 @@ use App\Helpers\HttpStatusCode;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+/**
+ * Class EducatorPolicy
+ * @package App\Policies
+ */
 class EducatorPolicy {
 
     use HandlesAuthorization, ModelTrait, PolicyTrait;

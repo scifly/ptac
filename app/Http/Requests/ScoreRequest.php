@@ -6,6 +6,10 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\Rule;
 
+/**
+ * Class ScoreRequest
+ * @package App\Http\Requests
+ */
 class ScoreRequest extends FormRequest {
     
     /**

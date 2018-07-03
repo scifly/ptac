@@ -10,20 +10,35 @@ use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class OperatorComposer
+ * @package App\Http\ViewComposers
+ */
 class OperatorComposer {
     
     use ModelTrait;
     
     protected $menu;
     
+    /**
+     * OperatorComposer constructor.
+     * @param Menu $menu
+     */
     function __construct(Menu $menu) {
         
         $this->menu = $menu;
         
     }
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
-        
+    
+        /**
+         * @param array $names
+         * @return array
+         */
         function groups(array $names) {
             return Group::whereIn('name', $names)->pluck('name', 'id')->toArray();
         }

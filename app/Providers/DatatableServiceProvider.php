@@ -4,6 +4,10 @@ namespace App\Providers;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * Class DatatableServiceProvider
+ * @package App\Providers
+ */
 class DatatableServiceProvider extends ServiceProvider {
     
     /**

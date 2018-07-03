@@ -11,6 +11,10 @@ use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class PollQuestionnaireSubjectPolicy
+ * @package App\Policies
+ */
 class PollQuestionnaireSubjectPolicy {
     
     use HandlesAuthorization, ModelTrait, PolicyTrait;
@@ -24,6 +28,10 @@ class PollQuestionnaireSubjectPolicy {
         //
     }
     
+    /**
+     * @param User $user
+     * @return bool
+     */
     public function cs(User $user) {
         
         $role = $user->group->name;
@@ -39,6 +47,12 @@ class PollQuestionnaireSubjectPolicy {
         
     }
     
+    /**
+     * @param User $user
+     * @param PollQuestionnaireSubject|null $pqs
+     * @param bool $abort
+     * @return bool
+     */
     public function operation(User $user, PollQuestionnaireSubject $pqs = null, $abort = false) {
         
         abort_if(

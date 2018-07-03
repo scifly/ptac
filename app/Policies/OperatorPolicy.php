@@ -12,6 +12,10 @@ use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class OperatorPolicy
+ * @package App\Policies
+ */
 class OperatorPolicy {
     
     use HandlesAuthorization, ModelTrait;

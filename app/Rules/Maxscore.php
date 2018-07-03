@@ -4,6 +4,10 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 
+/**
+ * Class Maxscore
+ * @package App\Rules
+ */
 class Maxscore implements Rule {
 
     /**

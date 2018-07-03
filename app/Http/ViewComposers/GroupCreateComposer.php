@@ -7,10 +7,17 @@ use App\Models\Menu;
 use App\Models\School;
 use Illuminate\Contracts\View\View;
 
+/**
+ * Class GroupCreateComposer
+ * @package App\Http\ViewComposers
+ */
 class GroupCreateComposer {
     
     use ModelTrait;
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $menu = new Menu();

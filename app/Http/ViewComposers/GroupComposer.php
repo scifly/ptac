@@ -9,6 +9,10 @@ use App\Models\School;
 use App\Models\Tab;
 use Illuminate\Contracts\View\View;
 
+/**
+ * Class GroupComposer
+ * @package App\Http\ViewComposers
+ */
 class GroupComposer {
     
     protected $excludedActions = [
@@ -16,6 +20,9 @@ class GroupComposer {
         '创建微网站', '保存微网站', '删除微网站',
     ];
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $tabActions = [];

@@ -707,7 +707,10 @@ class User extends Authenticatable {
      * @return JsonResponse
      */
     function csList() {
-        
+    
+        /**
+         * @return array
+         */
         function corps() {
             
             $user = Auth::user();

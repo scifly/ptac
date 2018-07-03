@@ -19,6 +19,11 @@ class GradeController extends Controller {
     
     protected $grade, $educator;
     
+    /**
+     * GradeController constructor.
+     * @param Grade $grade
+     * @param Educator $educator
+     */
     function __construct(Grade $grade, Educator $educator) {
         
         $this->middleware(['auth', 'checkrole']);

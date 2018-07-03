@@ -13,6 +13,10 @@ use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class ExamPolicy
+ * @package App\Policies
+ */
 class ExamPolicy {
     
     use HandlesAuthorization, ModelTrait, PolicyTrait;

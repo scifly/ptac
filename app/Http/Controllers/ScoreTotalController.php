@@ -17,6 +17,10 @@ class ScoreTotalController extends Controller {
     
     protected $st;
     
+    /**
+     * ScoreTotalController constructor.
+     * @param ScoreTotal $st
+     */
     function __construct(ScoreTotal $st) {
         
         $this->middleware(['auth', 'checkrole']);

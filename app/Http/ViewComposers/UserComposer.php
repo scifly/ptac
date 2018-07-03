@@ -5,8 +5,15 @@ use App\Models\Group;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class UserComposer
+ * @package App\Http\ViewComposers
+ */
 class UserComposer {
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $rootGroupId = Group::whereName('运营')->first()->id;

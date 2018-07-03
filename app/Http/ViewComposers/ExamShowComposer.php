@@ -7,8 +7,15 @@ use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class ExamShowComposer
+ * @package App\Http\ViewComposers
+ */
 class ExamShowComposer {
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $exam = Exam::find(Request::route('id'));

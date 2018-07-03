@@ -18,6 +18,10 @@ class WapSiteController extends Controller {
     
     protected $ws;
     
+    /**
+     * WapSiteController constructor.
+     * @param WapSite $ws
+     */
     public function __construct(WapSite $ws) {
         
         $this->middleware(['auth', 'checkrole']);

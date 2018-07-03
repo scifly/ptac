@@ -1,6 +1,9 @@
 <?php
 namespace App\Helpers;
-
+/**
+ * Class HttpStatusCode
+ * @package App\Helpers
+ */
 class HttpStatusCode {
     
     # Informational 1xx

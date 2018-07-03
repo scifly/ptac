@@ -10,6 +10,10 @@ use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class StudentAttendancePolicy
+ * @package App\Policies
+ */
 class StudentAttendancePolicy {
     
     use HandlesAuthorization, ModelTrait, PolicyTrait;

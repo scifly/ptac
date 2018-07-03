@@ -4,6 +4,10 @@ namespace App\Providers;
 use App\Models\MenuType;
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * Class TestServiceProvider
+ * @package App\Providers
+ */
 class TestServiceProvider extends ServiceProvider {
     
     /**
@@ -21,8 +25,5 @@ class TestServiceProvider extends ServiceProvider {
      * @return void
      */
     public function register() {
-        $this->app->bind(MenuType::class, function ($app) {
-            return new MenuType();
-        });
     }
 }

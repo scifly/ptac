@@ -9,6 +9,10 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\Rule;
 
+/**
+ * Class EducatorRequest
+ * @package App\Http\Requests
+ */
 class EducatorRequest extends FormRequest {
     
     use ModelTrait;
@@ -20,6 +24,9 @@ class EducatorRequest extends FormRequest {
      */
     public function authorize() { return true; }
     
+    /**
+     * @return array
+     */
     public function rules() {
     
         if (Request::has('ids')) {

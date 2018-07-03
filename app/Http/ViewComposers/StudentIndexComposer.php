@@ -6,10 +6,17 @@ use App\Models\Grade;
 use App\Models\Squad;
 use Illuminate\Contracts\View\View;
 
+/**
+ * Class StudentIndexComposer
+ * @package App\Http\ViewComposers
+ */
 class StudentIndexComposer {
     
     use ModelTrait;
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $grades = Grade::whereIn('id', $this->gradeIds())

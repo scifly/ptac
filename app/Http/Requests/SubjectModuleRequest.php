@@ -3,6 +3,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class SubjectModuleRequest
+ * @package App\Http\Requests
+ */
 class SubjectModuleRequest extends FormRequest {
     
     /**

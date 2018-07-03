@@ -5,6 +5,10 @@ use App\Models\App;
 use App\Models\Corp;
 use Exception;
 
+/**
+ * Class Wechat
+ * @package App\Helpers
+ */
 class Wechat {
     
     # 应用授权作用域

@@ -4,6 +4,10 @@ namespace App\Http\Requests;
 use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class WapSiteRequest
+ * @package App\Http\Requests
+ */
 class WapSiteRequest extends FormRequest {
     
     use ModelTrait;
@@ -15,6 +19,9 @@ class WapSiteRequest extends FormRequest {
      */
     public function authorize() { return true; }
     
+    /**
+     * @return array
+     */
     public function rules() {
         
         return [

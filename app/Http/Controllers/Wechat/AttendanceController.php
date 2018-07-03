@@ -18,6 +18,10 @@ class AttendanceController extends Controller {
     
     protected $sa;
     
+    /**
+     * AttendanceController constructor.
+     * @param StudentAttendance $sa
+     */
     function __construct(StudentAttendance $sa) {
         
         $this->middleware('wechat');

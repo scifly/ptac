@@ -17,6 +17,10 @@ class AttendanceMachineController extends Controller {
     
     protected $am;
     
+    /**
+     * AttendanceMachineController constructor.
+     * @param AttendanceMachine $am
+     */
     function __construct(AttendanceMachine $am) {
         
         $this->middleware(['auth', 'checkrole']);

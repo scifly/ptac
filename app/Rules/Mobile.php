@@ -7,10 +7,19 @@ use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class Mobile
+ * @package App\Rules
+ */
 class Mobile implements Rule {
     
     private $mobile;
     
+    /**
+     * @param string $attribute
+     * @param mixed $value
+     * @return bool|false|int
+     */
     public function passes($attribute, $value) {
 
         $this->mobile = is_array($value) ? $value['mobile'] : $value;
@@ -39,6 +48,9 @@ class Mobile implements Rule {
         
     }
     
+    /**
+     * @return string
+     */
     public function message() {
         
         return "手机号 {$this->mobile} 已存在或者格式不正确";

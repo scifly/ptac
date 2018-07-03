@@ -3,6 +3,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class ActionTypeRequest
+ * @package App\Http\Requests
+ */
 class ActionTypeRequest extends FormRequest {
     
     /**

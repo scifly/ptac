@@ -8,10 +8,20 @@ use App\Models\Tab;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class TabComposer
+ * @package App\Http\ViewComposers
+ */
 class TabComposer {
     
     protected $icon, $action, $menu;
     
+    /**
+     * TabComposer constructor.
+     * @param Icon $icon
+     * @param Action $action
+     * @param Menu $menu
+     */
     function __construct(Icon $icon, Action $action, Menu $menu) {
         
         $this->icon = $icon;
@@ -20,6 +30,9 @@ class TabComposer {
         
     }
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $selectedMenus = null;

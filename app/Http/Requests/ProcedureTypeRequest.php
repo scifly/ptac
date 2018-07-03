@@ -4,6 +4,10 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class ProcedureTypeRequest
+ * @package App\Http\Requests
+ */
 class ProcedureTypeRequest extends FormRequest {
     
     /**

@@ -6,6 +6,10 @@ use App\Models\Tab;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+/**
+ * Class TabPolicy
+ * @package App\Policies
+ */
 class TabPolicy {
     
     use HandlesAuthorization;
@@ -19,7 +23,12 @@ class TabPolicy {
         //
     }
     
-    
+    /**
+     * @param User $user
+     * @param Tab|null $tab
+     * @param bool $abort
+     * @return bool
+     */
     public function operation(User $user, Tab $tab = null, $abort = false) {
         
         abort_if(

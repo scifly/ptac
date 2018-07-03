@@ -18,6 +18,10 @@ class AttachmentTypeController extends Controller {
     
     protected $at;
     
+    /**
+     * AttachmentTypeController constructor.
+     * @param AttachmentType $at
+     */
     function __construct(AttachmentType $at) {
         
         $this->middleware(['auth', 'checkrole']);

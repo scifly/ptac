@@ -9,6 +9,10 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\Rule;
 
+/**
+ * Class CustodianRequest
+ * @package App\Http\Requests
+ */
 class CustodianRequest extends FormRequest {
     
     /**

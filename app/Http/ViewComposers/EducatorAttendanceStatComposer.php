@@ -3,8 +3,15 @@ namespace App\Http\ViewComposers;
 
 use Illuminate\Contracts\View\View;
 
+/**
+ * Class EducatorAttendanceStatComposer
+ * @package App\Http\ViewComposers
+ */
 class EducatorAttendanceStatComposer {
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $view->with([

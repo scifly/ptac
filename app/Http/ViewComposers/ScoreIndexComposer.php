@@ -8,6 +8,10 @@ use App\Models\Squad;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 
+/**
+ * Class ScoreIndexComposer
+ * @package App\Http\ViewComposers
+ */
 class ScoreIndexComposer {
     
     use ModelTrait;

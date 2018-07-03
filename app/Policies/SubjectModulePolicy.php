@@ -11,6 +11,10 @@ use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class SubjectModulePolicy
+ * @package App\Policies
+ */
 class SubjectModulePolicy {
     
     use HandlesAuthorization, ModelTrait, PolicyTrait;

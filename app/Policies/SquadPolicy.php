@@ -10,6 +10,10 @@ use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Class SquadPolicy
+ * @package App\Policies
+ */
 class SquadPolicy {
     
     use HandlesAuthorization, ModelTrait, PolicyTrait;
@@ -23,6 +27,10 @@ class SquadPolicy {
         //
     }
     
+    /**
+     * @param User $user
+     * @return bool
+     */
     public function cs(User $user) {
         
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {

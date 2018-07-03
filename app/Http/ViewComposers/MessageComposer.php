@@ -7,8 +7,15 @@ use App\Models\MessageType;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 
+/**
+ * Class MessageComposer
+ * @package App\Http\ViewComposers
+ */
 class MessageComposer {
     
+    /**
+     * @param View $view
+     */
     public function compose(View $view) {
         
         $view->with([
