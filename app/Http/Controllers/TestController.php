@@ -25,15 +25,10 @@ class TestController extends Controller {
      */
     public function index() {
 
-        $token = Wechat::getAccessToken(
-            'wxe75227cead6b8aec',
-            'IoiSOIsOGrdps03Lx_h5V3cCvMl3ibu-FyqqAsy-qLM',
-            true
-        );
-        $accessToken = $token['access_token'];
-        $member = json_decode(Wechat::getUser($accessToken, 'haoyh'));
-        dd($member);
-        
+        $tab = [
+            'ab' => '3829',
+        ];
+        dd($tab['cd'] ?? 'yes');
 
     }
     
