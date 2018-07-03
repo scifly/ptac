@@ -589,11 +589,13 @@ class Department extends Model {
     /**
      * 返回用户所处的顶级部门id
      *
+     * @param null $userId
      * @return int
      */
-    function topDeptId() {
+    function topDeptId($userId = null) {
         
-        $ids = Auth::user()->departments->pluck('id')->toArray();
+        $user = Auth::id() ? Auth::user() : User::find($userId);
+        $ids = $user->departments->pluck('id')->toArray();
         $levels = [];
         foreach ($ids as $id) {
             $level = 0;
