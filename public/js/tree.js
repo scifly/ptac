@@ -358,7 +358,7 @@
                         // 展开所有节点
                         // $tree.jstree('open_all');
                         // 展开第一级节点
-                        $tree.jstree('open_node' + $('#' + $tree.jstree(true).get_node('#').children[0]));
+                        $tree.jstree('open_node', $('#' + $tree.jstree(true).get_node('#').children[0]));
                         tree.sort(table);
                     }).on('move_node.jstree', function (e, data) {
                         return tree.move(table, e, data);
