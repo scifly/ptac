@@ -592,7 +592,7 @@ class Department extends Model {
      * @param null $userId
      * @return int
      */
-    function topDeptId($userId = null) {
+    private function topDeptId($userId = null) {
         
         $user = Auth::id() ? Auth::user() : User::find($userId);
         $ids = $user->departments->pluck('id')->toArray();
@@ -798,6 +798,7 @@ class Department extends Model {
             foreach ($allowedDepartmentIds as $id) {
                 $allowedParentIds[$id] = $this->parentIds($id);
             }
+            dd($allowedParentIds);
             # 对当前用户可见的所有部门节点
             $visibleNodes = [];
             foreach ($nodes as $node) {
