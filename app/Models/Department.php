@@ -193,8 +193,8 @@ class Department extends Model {
     /**
      * 同步企业微信部门
      *
-     * @param $id
-     * @param $action
+     * @param integer $id
+     * @param string $action
      * @return bool
      */
     private function sync($id, $action) {
@@ -839,10 +839,10 @@ class Department extends Model {
     /**
      * 返回指定部门的所有上级（校级及以下）部门id
      *
-     * @param $id
+     * @param integer $id
      * @return array
      */
-    private function parentIds($id) {
+    private function parentIds($id): array {
         
         static $ids = [];
         $d = $this->find($id);
@@ -861,7 +861,7 @@ class Department extends Model {
     /**
      * 获取指定部门（含所有子部门）的所有用户
      *
-     * @param $ids
+     * @param array $ids
      * @return array
      */
     function partyUsers($ids) {
