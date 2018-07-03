@@ -797,6 +797,7 @@ class Department extends Model {
             foreach ($allowedDepartmentIds as $id) {
                 $allowedParentIds[$id] = $this->parentIds($id);
             }
+            dd($nodes);
             dd($allowedParentIds);
             # 对当前用户可见的所有部门节点
             $visibleNodes = [];
