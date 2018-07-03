@@ -39,10 +39,16 @@ class StudentComposer {
             reset($grades);
             $gradeId = key($grades);
         }
-        $classes = Squad::whereGradeId($gradeId)
-            ->where('enabled', 1)
-            ->pluck('name', 'id')
-            ->toArray();
+        if (empty($grades)) {
+            $classes = Squad::whereIn('id', $this->classIds())
+                ->pluck('name', 'id')
+                ->toArray();
+        } else {
+            $classes = Squad::whereGradeId($gradeId)
+                ->where('enabled', 1)
+                ->pluck('name', 'id')
+                ->toArray();
+        }
         $mobiles = $user = null;
         if (Request::route('id')) {
             $student = Student::find(Request::route('id'));
