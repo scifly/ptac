@@ -47,7 +47,7 @@ class WapSitePolicy {
         $action = explode('/', Request::path())[1];
         switch ($action) {
             case 'index':
-                return $isSuperRole && $user->group->name != '学校';
+                return $isSuperRole;
             case 'edit':
             case 'update':
                 return $isSuperRole && in_array($ws->school_id, $this->schoolIds());
