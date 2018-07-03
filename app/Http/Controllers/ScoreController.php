@@ -174,18 +174,15 @@ class ScoreController extends Controller {
     /**
      * 统计分析
      *
-     * @param null $type
-     * @param null $value
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function stat($type = null, $value = null) {
+    public function stat() {
         
         if (Request::method() === 'POST') {
-            return $this->score->stat();
-        }
-        if (isset($type, $value)) {
-            return $this->score->lists($type, $value);
+            return Request::has('type')
+                ? $this->score->lists()
+                : $this->score->stat();
         }
         
         return $this->output();

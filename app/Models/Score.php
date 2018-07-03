@@ -1120,16 +1120,17 @@ class Score extends Model {
     /**
      * 返回指定考试/班级对应的班级/学生列表html
      *
-     * @param $type
-     * @param $value
      * @return JsonResponse
      */
-    function lists($type, $value) {
+    function lists() {
+        
+        $type = Request::input('type');
+        $value = Request::input('id');
         
         return response()->json(
             $type == 'class'
-                ? (new Exam())->classList($value)
-                : (new Squad())->studentList($value)
+                ? (new Exam)->classList($value)
+                : (new Squad)->studentList($value)
         );
         
     }

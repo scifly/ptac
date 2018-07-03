@@ -33,9 +33,13 @@
             },
             list: function (type, id) {
                 $.ajax({
-                    type: 'GET',
-                    data: { _token: page.token() },
-                    url: '../scores/stat/' + type + '/' + id,
+                    type: 'POST',
+                    data: {
+                        type: type,
+                        id: id,
+                        _token: page.token()
+                    },
+                    url: '../scores/stat',
                     success: function (result) {
                         var $typeId = $('#' + type + '_id'),
                             $typeNext = $typeId.next(),

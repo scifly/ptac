@@ -8,6 +8,6 @@ $('input[name="type"]').on('ifClicked', function () {
         $('#student').slideDown();
     }
 });
-$.getMultiScripts(['js/score/score.js']).done(function () {
-    $.score().stat();
-});
+$.getMultiScripts(['js/score/score.js']).done(
+    function () {$.score().stat();}
+);

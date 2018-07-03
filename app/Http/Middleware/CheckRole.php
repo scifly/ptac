@@ -46,7 +46,6 @@ class CheckRole {
     public function handle($request, Closure $next) {
         
         $route = trim($request->route()->uri());
-        Log::debug('route: ' . $route);
         $user = Auth::user();
         $groupId = $user->group_id;
         $role = $user->group->name;
