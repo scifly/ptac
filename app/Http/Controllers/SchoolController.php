@@ -26,7 +26,9 @@ class SchoolController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->school = $school;
-        $this->approve($school);
+        if (!Request::has('ids')) {
+            $this->approve($school);
+        }
         
     }
     

@@ -30,7 +30,9 @@ class TabController extends Controller {
         $this->middleware(['auth', 'checkrole']);
         $this->tab = $tab;
         $this->menu = $menu;
-        $this->approve($tab);
+        if (!Request::has('ids')) {
+            $this->approve($tab);
+        }
         
     }
     

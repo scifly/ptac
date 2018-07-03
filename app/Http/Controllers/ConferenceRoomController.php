@@ -26,7 +26,9 @@ class ConferenceRoomController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->cr = $cr;
-        $this->approve($cr);
+        if (!Request::has('ids')) {
+            $this->approve($cr);
+        }
         
     }
     
