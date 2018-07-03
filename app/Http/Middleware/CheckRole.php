@@ -14,6 +14,7 @@ use App\Models\Tab;
 use App\Models\WapSite;
 use Closure;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class CheckRole
@@ -45,6 +46,7 @@ class CheckRole {
     public function handle($request, Closure $next) {
         
         $route = trim($request->route()->uri());
+        Log::debug('route: ' . $route);
         $user = Auth::user();
         $groupId = $user->group_id;
         $role = $user->group->name;
