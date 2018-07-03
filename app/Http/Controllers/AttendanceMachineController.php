@@ -25,7 +25,9 @@ class AttendanceMachineController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->am = $am;
-        $this->approve($am);
+        if (!Request::has('ids')) {
+            $this->approve($am);
+        }
         
     }
     
