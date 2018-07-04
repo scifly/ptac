@@ -170,7 +170,7 @@ class StudentController extends Controller {
         
         return $this->result(
             $this->student->import(),
-            __('messages.student.import_started'),
+            __('messages.import_started'),
             __('messages.file_upload_failed')
         );
         
