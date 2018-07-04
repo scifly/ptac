@@ -544,7 +544,7 @@ trait ModelTrait {
             header('Pragma: public'); // HTTP/1.0
             return $writer->save('php://output');
         }
-        $dir = 'public/uploads/' . date('Y/m/d/');
+        $dir = 'uploads/' . date('Y/m/d/');
         Log::debug($dir . ' exists: ' . (file_exists($dir) ? 'yes' : 'no'));
         if (!file_exists($dir)) {
             mkdir($dir, 0777, true);
