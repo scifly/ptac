@@ -326,7 +326,7 @@ class ImportStudent implements ShouldQueue {
                     $student = Student::whereStudentNumber($update['student_number'])->first();
                     $student->class_id = $update['class_id'];
                     $student->card_number = $update['card_number'];
-                    $student->oncampus = $update['card_number'];
+                    $student->oncampus = $update['oncampus'] == '住读' ? '0' : '1';
                     $student->birthday = $update['birthday'];
                     $student->remark = $update['remark'];
                     $student->save();
