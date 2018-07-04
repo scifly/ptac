@@ -670,8 +670,8 @@ class Educator extends Model {
             'departments'      => 'required|string',
         ];
         // Validator::make($data,$rules);
-        # 不合法的数据
-        $invalidRows = [];
+        # 非法数据
+        $illegals = [];
         # 需要添加的数据
         $rows = [];
         foreach ($data as &$datum) {
@@ -687,12 +687,12 @@ class Educator extends Model {
                 'departments'      => $datum['I'],
             ];
             if (Validator::make($user, $rules)->fails()) {
-                $invalidRows[] = $datum;
+                $illegals[] = $datum;
                 continue;
             }
             $school = School::whereName($user['school'])->first();
             if (!$school) {
-                $invalidRows[] = $datum;
+                $illegals[] = $datum;
                 continue;
             }
             $departments = explode(',', $user['departments']);
@@ -709,7 +709,7 @@ class Educator extends Model {
                 }
             }
             if (!$isDepartmentValid) {
-                $invalidRows[] = $datum;
+                $illegals[] = $datum;
                 continue;
             }
             $user['departments'] = $departments;

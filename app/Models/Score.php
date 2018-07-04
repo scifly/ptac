@@ -793,7 +793,7 @@ class Score extends Model {
             __('messages.score.exam_not_found')
         );
         $examSubjectIds = explode(',', $exam->subject_ids);
-        #去除表头后的数据
+        # 去除表头后的数据
         array_shift($scores);
         # 去除表格的空数据
         foreach ($scores as $key => $value) {

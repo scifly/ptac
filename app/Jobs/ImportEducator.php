@@ -22,7 +22,9 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Validation\Rule;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Validator;
 
 /**
  * Class ImportEducator
@@ -40,7 +42,7 @@ class ImportEducator implements ShouldQueue {
      * @param array $data
      * @param $userId
      */
-    public function __construct(array $data, $userId) {
+    function __construct(array $data, $userId) {
         
         $this->data = $data;
         $this->userId = $userId;
@@ -52,7 +54,7 @@ class ImportEducator implements ShouldQueue {
      * @throws Exception
      * @throws \Throwable
      */
-    public function handle() {
+    function handle() {
         
         $response = [
             'userId' => $this->userId,
@@ -215,12 +217,85 @@ class ImportEducator implements ShouldQueue {
     }
     
     /**
+     * 验证导入数据合法性
+     *
+     * @param array $data
+     * @return array
+     */
+    function validate(array $data) {
+    
+        $rules = [
+            'name'             => 'required|string|between:2,20',
+            'gender'           => ['required', Rule::in(['男', '女'])],
+            'birthday'         => 'required|date',
+            'school'           => 'required|string|between:4,20',
+            'mobile'           => 'required', new Mobile(),
+            'grades'           => 'nullable|string',
+            'classes'          => 'nullable|string',
+            'classes_subjects' => 'nullable|string',
+            'departments'      => 'required|string',
+        ];
+        // Validator::make($data,$rules);
+        # 非法数据
+        $illegals = [];
+        # 需要更新的数据
+        $updates = [];
+        # 需要添加的数据
+        $inserts = [];
+        foreach ($data as &$datum) {
+            $user = [
+                'name'             => $datum['A'],
+                'gender'           => $datum['B'],
+                'birthday'         => $datum['C'],
+                'school'           => $datum['D'],
+                'mobile'           => $datum['E'],
+                'grades'           => $datum['F'],
+                'classes'          => $datum['G'],
+                'classes_subjects' => $datum['H'],
+                'departments'      => $datum['I'],
+            ];
+            if (Validator::make($user, $rules)->fails()) {
+                $illegals[] = $datum;
+                continue;
+            }
+            $school = School::whereName($user['school'])->first();
+            if (!$school) {
+                $illegals[] = $datum;
+                continue;
+            }
+            $departments = explode(',', $user['departments']);
+            $schoolDepartmentIds = array_merge(
+                [$school->department_id],
+                (new Department)->subDepartmentIds($school->department_id)
+            );
+            $isDepartmentValid = true;
+            foreach ($departments as $d) {
+                $department = Department::whereName($d)->whereIn('id', $schoolDepartmentIds)->first();
+                if (!$department) {
+                    $isDepartmentValid = false;
+                    break;
+                }
+            }
+            if (!$isDepartmentValid) {
+                $illegals[] = $datum;
+                continue;
+            }
+            $user['departments'] = $departments;
+            $user['school_id'] = $school->id;
+            $inserts[] = $user;
+        }
+    
+        return [$inserts, $updates, $illegals];
+        
+    }
+    
+    /**
      * 更新部门&用户绑定关系
      *
      * @param User $user
      * @param $departmentId
      */
-    private function updateDu(User $user, $departmentId) {
+    function updateDu(User $user, $departmentId) {
     
         $du = DepartmentUser::whereUserId($user->id)
             ->where('department_id', $departmentId)

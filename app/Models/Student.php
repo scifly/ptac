@@ -437,33 +437,35 @@ class Student extends Model {
         // 上传文件
         $filename = uniqid() . '.' . $ext;
         $stored = Storage::disk('uploads')->put(
-            date('Y/m/d/', time()) . $filename, file_get_contents($realPath)
+            date('Y/m/d/') . $filename,
+            file_get_contents($realPath)
         );
-        if ($stored) {
-            $spreadsheet = IOFactory::load(
-                $this->uploadedFilePath($filename)
-            );
-            $students = $spreadsheet->getActiveSheet()->toArray(
-                null, true, true, true
-            );
-            abort_if(
-                !empty(array_diff(self::EXCEL_FILE_TITLE, $students[1])),
-                HttpStatusCode::NOT_ACCEPTABLE,
-                __('messages.invalid_file_format')
-            );
-            unset($students[0]);
-            $students = array_values($students);
-            foreach ($students as $key => $v) {
-                if ((array_filter($v)) == null) {
-                    unset($students[$key]);
-                }
+        abort_if(
+            !$stored,
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            __('messages.file_upload_failed')
+        );
+        $spreadsheet = IOFactory::load(
+            $this->uploadedFilePath($filename)
+        );
+        $students = $spreadsheet->getActiveSheet()->toArray(
+            null, true, true, true
+        );
+        abort_if(
+            !empty(array_diff(self::EXCEL_FILE_TITLE, $students[1])),
+            HttpStatusCode::NOT_ACCEPTABLE,
+            __('messages.invalid_file_format')
+        );
+        array_shift($students);
+        $students = array_values($students);
+        foreach ($students as $key => $value) {
+            if ((array_filter($value)) == null) {
+                unset($students[$key]);
             }
-            ImportStudent::dispatch($students, Auth::id());
-            
-            return true;
         }
+        ImportStudent::dispatch($students, Auth::id());
         
-        return false;
+        return true;
         
     }
     
