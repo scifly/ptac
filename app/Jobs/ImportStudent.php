@@ -1,28 +1,29 @@
 <?php
 namespace App\Jobs;
 
-use Exception;
-use Validator;
-use App\Models\User;
+use App\Events\JobResponse;
+use App\Helpers\HttpStatusCode;
+use App\Helpers\JobTrait;
+use App\Helpers\ModelTrait;
+use App\Models\Custodian;
+use App\Models\CustodianStudent;
+use App\Models\DepartmentUser;
 use App\Models\Grade;
-use App\Models\Squad;
 use App\Models\Group;
 use App\Models\Mobile;
 use App\Models\School;
+use App\Models\Squad;
 use App\Models\Student;
-use App\Models\Custodian;
-use App\Helpers\ModelTrait;
-use App\Events\JobResponse;
+use App\Models\User;
+use Exception;
 use Illuminate\Bus\Queueable;
-use App\Models\DepartmentUser;
-use App\Helpers\HttpStatusCode;
-use Illuminate\Validation\Rule;
-use App\Models\CustodianStudent;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
+use Validator;
 
 /**
  * Class ImportStudent
@@ -30,9 +31,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
  */
 class ImportStudent implements ShouldQueue {
     
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait;
-    
-    protected $students, $userId;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait, JobTrait;
     
     const EXCEL_FILE_TITLE = [
         '姓名', '性别', '学校', '生日',
@@ -41,15 +40,17 @@ class ImportStudent implements ShouldQueue {
         '备注', '监护关系',
     ];
     
+    public $data, $userId;
+    
     /**
      * Create a new job instance.
      *
-     * @param array $students - 学籍Excel文件
+     * @param array $data
      * @param integer $userId
      */
-    public function __construct(array $students, $userId) {
+    function __construct(array $data, $userId) {
         
-        $this->students = $students;
+        $this->data = $data;
         $this->userId = $userId;
         
     }
@@ -58,54 +59,69 @@ class ImportStudent implements ShouldQueue {
      * @throws Exception
      * @throws \Throwable
      */
-    public function handle() {
-
-        $response = $response = [
-            'userId' => $this->userId,
-            'title' => '批量导入学籍',
-            'statusCode' => HttpStatusCode::OK,
-            'message' => __('messages.ok')
-        ];
-        list($updates, $inserts, $illegals) = $this->validate($this->students);
+    function handle() {
         
-        if (empty($updates) && empty($inserts)) {
-            # 数据格式不正确，中止任务
-            $response['statusCode'] = HttpStatusCode::NOT_ACCEPTABLE;
-            $response['message'] = __('messages.invalid_data_format');
-            event(new JobResponse($response));
-            return false;
-        }
-        
-        # 验证导入数据
-        $response['statusCode'] = HttpStatusCode::ACCEPTED;
-        $response['message'] = sprintf(
-            __('messages.student.import_request_submitted'),
-            sizeof($inserts), sizeof($updates), sizeof($illegals)
-        );
-        event(new JobResponse($response));
-        
-        # 新增数据
-        $this->insert($inserts);
-        # 更新数据
-        $this->update($updates);
-        // $response['url'] = ''; # todo: 生成非法数据excel文件及下载地址
-        $response['statusCode'] = HttpStatusCode::OK;
-        $response['message'] = __('messages.student.import_succeeded');
-        event(new JobResponse($response));
-        
-        return true;
+        return $this->import($this, 'messages.student.title');
+        // $response = [
+        //     'userId'     => $this->userId,
+        //     'title'      => __('messages.student.title'),
+        //     'statusCode' => HttpStatusCode::OK,
+        //     'message'    => __('messages.import_succeeded'),
+        // ];
+        // # 验证导入数据
+        // list($updates, $inserts, $illegals) = $this->validate($this->data);
+        // if (empty($updates) && empty($inserts)) {
+        //     # 数据格式不正确，中止任务
+        //     $response['statusCode'] = HttpStatusCode::NOT_ACCEPTABLE;
+        //     $response['message'] = __('messages.invalid_data_format');
+        // } else {
+        //     try {
+        //         DB::transaction(function () use ($inserts, $updates, $illegals) {
+        //             event(new JobResponse([
+        //                 'userId'     => $this->userId,
+        //                 'title'      => __('messages.student.title'),
+        //                 'statusCode' => HttpStatusCode::ACCEPTED,
+        //                 'message'    => !count($illegals)
+        //                     ? sprintf(
+        //                         __('messages.import_request_submitted'),
+        //                         count($inserts), count($updates)
+        //                     )
+        //                     : sprintf(
+        //                         __('messages.import_request_submitted') .
+        //                         __('messages.import_illegals'),
+        //                         count($inserts), count($updates), count($illegals)
+        //                     ),
+        //             ]));
+        //             # 新增数据
+        //             $this->insert($inserts);
+        //             # 更新数据
+        //             $this->update($updates);
+        //             # 生成错误数据excel文件
+        //             if (!empty($illegals)) {
+        //                 $this->excel($illegals, 'illegals', '错误数据', false);
+        //                 $response['url'] = 'uploads/' . date('Y/m/d/') . 'illegals.xlsx';
+        //             }
+        //         });
+        //     } catch (Exception $e) {
+        //         $response['statusCode'] = $e->getCode();
+        //         $response['message'] = $e->getMessage();
+        //     }
+        // }
+        // event(new JobResponse($response));
+        //
+        // return true;
         
     }
     
     /**
      * 检查每行数据 是否符合导入数据
      *
-     * @param array $students
+     * @param array $data
      * @return array
      */
-    private function validate(array $students): array {
+    function validate(array $data): array {
         
-        unset($students[0]);
+        unset($data[0]);
         $rules = [
             'name'           => 'required|string|between:2,6',
             'gender'         => ['required', Rule::in(['男', '女'])],
@@ -126,24 +142,24 @@ class ImportStudent implements ShouldQueue {
         $updates = [];
         # 需要添加的数据
         $inserts = [];
-        for ($i = 1; $i <= count($students); $i++) {
-            $schoolName = $students[$i]['C'];
-            $gradeName = $students[$i]['E'];
-            $className = $students[$i]['F'];
-            $sn = $students[$i]['H'];
+        for ($i = 1; $i <= count($data); $i++) {
+            $schoolName = $data[$i]['C'];
+            $gradeName = $data[$i]['E'];
+            $className = $data[$i]['F'];
+            $sn = $data[$i]['H'];
             $user = [
-                'name'           => $students[$i]['A'],
-                'gender'         => $students[$i]['B'],
-                'birthday'       => $students[$i]['D'],
+                'name'           => $data[$i]['A'],
+                'gender'         => $data[$i]['B'],
+                'birthday'       => $data[$i]['D'],
                 'school'         => $schoolName,
                 'grade'          => $gradeName,
                 'class'          => $className,
-                'mobile'         => $students[$i]['G'],
+                'mobile'         => $data[$i]['G'],
                 'student_number' => $sn,
-                'card_number'    => $students[$i]['I'],
-                'oncampus'       => $students[$i]['J'],
-                'remark'         => $students[$i]['K'],
-                'relationship'   => $students[$i]['L'],
+                'card_number'    => $data[$i]['I'],
+                'oncampus'       => $data[$i]['J'],
+                'remark'         => $data[$i]['K'],
+                'relationship'   => $data[$i]['L'],
                 'class_id'       => 0,
                 'department_id'  => 0,
             ];
@@ -157,7 +173,7 @@ class ImportStudent implements ShouldQueue {
             $isClassValid = $class ? in_array($class->id, $this->classIds($school->id, $this->userId)) : false;
             # 数据非法
             if (!(!$failed && $isSchoolValid && $isGradeValid && $isClassValid)) {
-                $illegals[] = $students[$i];
+                $illegals[] = $data[$i];
                 continue;
             }
             $student = Student::whereStudentNumber($sn)->where('class_id', $class->id)->first();
@@ -181,8 +197,8 @@ class ImportStudent implements ShouldQueue {
      * @param array $inserts
      * @throws Exception
      */
-    private function insert(array $inserts) {
-    
+    function insert(array $inserts) {
+        
         try {
             DB::transaction(function () use ($inserts) {
                 foreach ($inserts as $insert) {
@@ -190,7 +206,7 @@ class ImportStudent implements ShouldQueue {
                     $relationships = explode(',', $relationship);
                     # 创建用户
                     $u = User::create([
-                        'username' => uniqid('student_'),
+                        'username'   => uniqid('student_'),
                         'group_id'   => Group::whereName('学生')->first()->id,
                         'password'   => bcrypt('student8888'),
                         'realname'   => $insert['name'],
@@ -199,7 +215,7 @@ class ImportStudent implements ShouldQueue {
                         'isleader'   => 0,
                         'enabled'    => 1,
                         'synced'     => 0,
-                        'subscribed' => 0
+                        'subscribed' => 0,
                     ]);
                     # 创建学生
                     $s = Student::create([
@@ -231,12 +247,12 @@ class ImportStudent implements ShouldQueue {
                                         'isleader'   => 0,
                                         'enabled'    => 1,
                                         'synced'     => 0,
-                                        'subscribed' => 0
+                                        'subscribed' => 0,
                                     ]);
                                     # 创建监护人
                                     $c = Custodian::create([
                                         'user_id' => $user['id'],
-                                        'enabled' => 1
+                                        'enabled' => 1,
                                     ]);
                                     # 创建 监护关系
                                     CustodianStudent::create([
@@ -307,7 +323,7 @@ class ImportStudent implements ShouldQueue {
                                 }
                             }
                         }
-        
+                        
                     }
                     # 创建学生用户手机号码
                     Mobile::create([
@@ -328,10 +344,10 @@ class ImportStudent implements ShouldQueue {
             });
         } catch (Exception $e) {
             event(new JobResponse([
-                'userId' => $this->userId,
-                'title' => '导入学籍',
+                'userId'     => $this->userId,
+                'title'      => '导入学籍',
                 'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
-                'message' => $e->getMessage()
+                'message'    => $e->getMessage(),
             ]));
             throw $e;
         }
@@ -345,8 +361,8 @@ class ImportStudent implements ShouldQueue {
      * @return bool
      * @throws Exception
      */
-    private function update(array $updates) {
-    
+    function update(array $updates) {
+        
         try {
             DB::transaction(function () use ($updates) {
                 foreach ($updates as $update) {
@@ -477,16 +493,16 @@ class ImportStudent implements ShouldQueue {
             });
         } catch (Exception $e) {
             event(new JobResponse([
-                'userId' => $this->userId,
-                'title' => '导入学籍',
+                'userId'     => $this->userId,
+                'title'      => '导入学籍',
                 'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
-                'message' => $e->getMessage()
+                'message'    => $e->getMessage(),
             ]));
             throw $e;
         }
-    
+        
         return true;
-    
+        
     }
     
 }

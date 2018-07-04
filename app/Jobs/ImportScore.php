@@ -3,6 +3,7 @@ namespace App\Jobs;
 
 use App\Events\JobResponse;
 use App\Helpers\HttpStatusCode;
+use App\Helpers\JobTrait;
 use App\Helpers\ModelTrait;
 use App\Models\Score;
 use App\Models\Student;
@@ -22,9 +23,9 @@ use Validator;
  */
 class ImportScore implements ShouldQueue {
     
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait, JobTrait;
     
-    protected $data, $classId, $userId;
+    public $data, $userId, $classId;
     
     /**
      * Create a new job instance.
@@ -33,7 +34,7 @@ class ImportScore implements ShouldQueue {
      * @param $userId
      * @param $classId
      */
-    public function __construct(array $data, $userId, $classId) {
+    function __construct(array $data, $userId, $classId) {
         
         $this->data = $data;
         $this->userId = $userId;
@@ -46,50 +47,56 @@ class ImportScore implements ShouldQueue {
      * @throws Exception
      * @throws Throwable
      */
-    public function handle() {
+    function handle() {
         
-        $response = [
-            'userId'     => $this->userId,
-            'title'      => __('messages.score.title'),
-            'statusCode' => HttpStatusCode::OK,
-            'message'    => __('messages.score.import_succeeded'),
-        ];
-        list($inserts, $updates, $illegals) = $this->validateData($this->data);
-        if (empty($updates) && empty($inserts)) {
-            # 数据格式不正确，中止任务
-            $response['statusCode'] = HttpStatusCode::NOT_ACCEPTABLE;
-            $response['message'] = __('messages.invalid_data_format');
-        } else {
-            try {
-                DB::transaction(function () use ($inserts, $updates, $illegals) {
-                    event(new JobResponse([
-                        'userId' => $this->userId,
-                        'title' => __('messages.score.title'),
-                        'statusCode' => HttpStatusCode::OK,
-                        'message' => sprintf(
-                            __('messages.score.import_request_submitted'),
-                            count($inserts), count($updates), count($illegals)
-                        )
-                    ]));
-                    # 插入数据
-                    $this->insert($inserts);
-                    # 更新数据
-                    $this->update($updates);
-                    # 生成错误数据excel文件
-                    if (!empty($illegals)) {
-                        $this->excel($illegals, 'illegals', '错误数据', false);
-                        $response['url'] = 'uploads/' . date('Y/m/d/') . 'illegals.xlsx';
-                    }
-                });
-            } catch (Exception $e) {
-                $response['statusCode'] = $e->getCode();
-                $response['messages'] = $e->getMessage();
-            }
-            
-        }
-        event(new JobResponse($response));
-        
-        return true;
+        return $this->import($this, 'messages.score.title');
+        // $response = [
+        //     'userId'     => $this->userId,
+        //     'title'      => __('messages.score.title'),
+        //     'statusCode' => HttpStatusCode::OK,
+        //     'message'    => __('messages.import_succeeded'),
+        // ];
+        // list($inserts, $updates, $illegals) = $this->validate($this->data);
+        // if (empty($updates) && empty($inserts)) {
+        //     # 数据格式不正确，中止任务
+        //     $response['statusCode'] = HttpStatusCode::NOT_ACCEPTABLE;
+        //     $response['message'] = __('messages.invalid_data_format');
+        // } else {
+        //     try {
+        //         DB::transaction(function () use ($inserts, $updates, $illegals) {
+        //             event(new JobResponse([
+        //                 'userId' => $this->userId,
+        //                 'title' => __('messages.score.title'),
+        //                 'statusCode' => HttpStatusCode::ACCEPTED,
+        //                 'message' => !count($illegals)
+        //                     ? sprintf(
+        //                         __('messages.import_request_submitted'),
+        //                         count($inserts), count($updates)
+        //                     )
+        //                     : sprintf(
+        //                         __('messages.import_request_submitted') .
+        //                         __('messages.import_illegals'),
+        //                         count($inserts), count($updates), count($illegals)
+        //                     )
+        //             ]));
+        //             # 插入数据
+        //             $this->insert($inserts);
+        //             # 更新数据
+        //             $this->update($updates);
+        //             # 生成错误数据excel文件
+        //             if (!empty($illegals)) {
+        //                 $this->excel($illegals, 'illegals', '错误数据', false);
+        //                 $response['url'] = 'uploads/' . date('Y/m/d/') . 'illegals.xlsx';
+        //             }
+        //         });
+        //     } catch (Exception $e) {
+        //         $response['statusCode'] = $e->getCode();
+        //         $response['message'] = $e->getMessage();
+        //     }
+        // }
+        // event(new JobResponse($response));
+        //
+        // return true;
         
     }
     
@@ -99,7 +106,7 @@ class ImportScore implements ShouldQueue {
      * @param $data
      * @return array
      */
-    private function validateData($data) {
+    function validate($data) {
         
         $rules = [
             'student_number' => 'required',
@@ -162,7 +169,7 @@ class ImportScore implements ShouldQueue {
      * @param array $inserts
      * @throws Exception
      */
-    private function insert(array $inserts) {
+    function insert(array $inserts) {
         
         try {
             DB::transaction(function () use ($inserts) {
@@ -191,7 +198,7 @@ class ImportScore implements ShouldQueue {
      * @param array $updates
      * @throws Exception
      */
-    private function update(array $updates) {
+    function update(array $updates) {
         
         try {
             DB::transaction(function () use ($updates) {

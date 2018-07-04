@@ -1,10 +1,12 @@
 <?php
 namespace App\Helpers;
 
+use App\Events\JobResponse;
 use App\Models\Corp;
 use App\Models\User;
 use App\Facades\Wechat;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Trait JobTrait
@@ -57,6 +59,65 @@ trait JobTrait {
             'invaliduser' => isset($result->{'invaliduser'}) ? $result->{'invaliduser'} : '',
             'invalidparty' => isset($result->{'invalidparty'}) ? $result->{'invalidparty'} : '',
         ];
+        
+    }
+    
+    /**
+     * 批量导入
+     *
+     * @param $job
+     * @param $title
+     * @return bool
+     */
+    function import($job, $title) {
+    
+        $response = [
+            'userId'     => $job->userId,
+            'title'      => __($title),
+            'statusCode' => HttpStatusCode::OK,
+            'message'    => __('messages.import_succeeded'),
+        ];
+        list($inserts, $updates, $illegals) = $job->{'validate'}($job->data);
+        if (empty($updates) && empty($inserts)) {
+            # 数据格式不正确，中止任务
+            $response['statusCode'] = HttpStatusCode::NOT_ACCEPTABLE;
+            $response['message'] = __('messages.invalid_data_format');
+        } else {
+            try {
+                DB::transaction(function () use ($job, $inserts, $updates, $illegals, $title) {
+                    event(new JobResponse([
+                        'userId' => $job->userId,
+                        'title' => __($title),
+                        'statusCode' => HttpStatusCode::ACCEPTED,
+                        'message' => !count($illegals)
+                            ? sprintf(
+                                __('messages.import_request_submitted'),
+                                count($inserts), count($updates)
+                            )
+                            : sprintf(
+                                __('messages.import_request_submitted') .
+                                __('messages.import_illegals'),
+                                count($inserts), count($updates), count($illegals)
+                            )
+                    ]));
+                    # 插入数据
+                    $job->{'insert'}($inserts);
+                    # 更新数据
+                    $job->{'update'}($updates);
+                    # 生成错误数据excel文件
+                    if (!empty($illegals)) {
+                        $job->{'excel'}($illegals, 'illegals', '错误数据', false);
+                        $response['url'] = 'uploads/' . date('Y/m/d/') . 'illegals.xlsx';
+                    }
+                });
+            } catch (Exception $e) {
+                $response['statusCode'] = $e->getCode();
+                $response['message'] = $e->getMessage();
+            }
+        }
+        event(new JobResponse($response));
+    
+        return true;
         
     }
     
