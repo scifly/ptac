@@ -22,7 +22,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Validator;
 
@@ -148,6 +147,7 @@ class ImportStudent implements ShouldQueue {
      * 插入导入的学籍数据
      *
      * @param array $inserts
+     * @return bool
      * @throws Exception
      */
     function insert(array $inserts) {
@@ -298,12 +298,14 @@ class ImportStudent implements ShouldQueue {
         } catch (Exception $e) {
             event(new JobResponse([
                 'userId'     => $this->userId,
-                'title'      => '导入学籍',
+                'title'      => __('messages.student.title'),
                 'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
                 'message'    => $e->getMessage(),
             ]));
             throw $e;
         }
+        
+        return true;
         
     }
     
@@ -447,7 +449,7 @@ class ImportStudent implements ShouldQueue {
         } catch (Exception $e) {
             event(new JobResponse([
                 'userId'     => $this->userId,
-                'title'      => '导入学籍',
+                'title'      => __('messages.student.title'),
                 'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
                 'message'    => $e->getMessage(),
             ]));
