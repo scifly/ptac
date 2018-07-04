@@ -25,7 +25,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        dd(file_exists('uploads/2018/07/04'));
+        dd(file_exists('public/uploads/2018/07/04'));
 
     }
     
