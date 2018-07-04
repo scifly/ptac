@@ -412,7 +412,7 @@ class ImportStudent implements ShouldQueue {
                                         $csData = CustodianStudent::whereCustodianId($c['id'])
                                             ->where('student_id', $student->id)
                                             ->first();
-                                        if (empty($csData)) {
+                                        if ($csData) {
                                             # 创建 监护关系
                                             CustodianStudent::create([
                                                 'custodian_id' => $csData->id,
