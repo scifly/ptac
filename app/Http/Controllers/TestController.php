@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -25,7 +26,9 @@ class TestController extends Controller {
      */
     public function index() {
     
-        dd(file_exists('uploads/2018/07/04'));
+        $dir = 'public/uploads/' . date('Y/m/d/');
+        echo file_exists($dir) ? 'yes' : 'no';
+        exit;
 
     }
     
