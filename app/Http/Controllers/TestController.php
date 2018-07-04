@@ -25,9 +25,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        mkdir('uploads/2018/07/04', 0777, true);
-        echo 'done';
-        exit;
+        dd(file_exists('uploads/2018/07/04'));
 
     }
     
