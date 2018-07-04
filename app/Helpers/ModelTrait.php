@@ -546,7 +546,6 @@ trait ModelTrait {
         }
         $dir = 'uploads/' . date('Y/m/d');
         if (!file_exists($dir)) {
-            Log::debug($dir);
             mkdir($dir, 0777, true);
         }
         return $writer->save($dir . '/' . $fileName . '.xlsx');

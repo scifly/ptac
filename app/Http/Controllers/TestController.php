@@ -24,8 +24,10 @@ class TestController extends Controller {
      * @throws \Exception
      */
     public function index() {
-
-        dd(Auth::user());
+    
+        mkdir('uploads/2018/07/04', 0777, true);
+        echo 'done';
+        exit;
 
     }
     
