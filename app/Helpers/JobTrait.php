@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Facades\Wechat;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Trait JobTrait
@@ -113,6 +114,7 @@ trait JobTrait {
             } catch (Exception $e) {
                 $response['statusCode'] = $e->getCode();
                 $response['message'] = $e->getMessage();
+                Log::debug(json_encode($e));
             }
         }
         event(new JobResponse($response));
