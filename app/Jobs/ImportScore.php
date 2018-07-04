@@ -1,8 +1,6 @@
 <?php
 namespace App\Jobs;
 
-use App\Events\JobResponse;
-use App\Helpers\HttpStatusCode;
 use App\Helpers\JobTrait;
 use App\Helpers\ModelTrait;
 use App\Models\Score;
@@ -50,53 +48,6 @@ class ImportScore implements ShouldQueue {
     function handle() {
         
         return $this->import($this, 'messages.score.title');
-        // $response = [
-        //     'userId'     => $this->userId,
-        //     'title'      => __('messages.score.title'),
-        //     'statusCode' => HttpStatusCode::OK,
-        //     'message'    => __('messages.import_succeeded'),
-        // ];
-        // list($inserts, $updates, $illegals) = $this->validate($this->data);
-        // if (empty($updates) && empty($inserts)) {
-        //     # 数据格式不正确，中止任务
-        //     $response['statusCode'] = HttpStatusCode::NOT_ACCEPTABLE;
-        //     $response['message'] = __('messages.invalid_data_format');
-        // } else {
-        //     try {
-        //         DB::transaction(function () use ($inserts, $updates, $illegals) {
-        //             event(new JobResponse([
-        //                 'userId' => $this->userId,
-        //                 'title' => __('messages.score.title'),
-        //                 'statusCode' => HttpStatusCode::ACCEPTED,
-        //                 'message' => !count($illegals)
-        //                     ? sprintf(
-        //                         __('messages.import_request_submitted'),
-        //                         count($inserts), count($updates)
-        //                     )
-        //                     : sprintf(
-        //                         __('messages.import_request_submitted') .
-        //                         __('messages.import_illegals'),
-        //                         count($inserts), count($updates), count($illegals)
-        //                     )
-        //             ]));
-        //             # 插入数据
-        //             $this->insert($inserts);
-        //             # 更新数据
-        //             $this->update($updates);
-        //             # 生成错误数据excel文件
-        //             if (!empty($illegals)) {
-        //                 $this->excel($illegals, 'illegals', '错误数据', false);
-        //                 $response['url'] = 'uploads/' . date('Y/m/d/') . 'illegals.xlsx';
-        //             }
-        //         });
-        //     } catch (Exception $e) {
-        //         $response['statusCode'] = $e->getCode();
-        //         $response['message'] = $e->getMessage();
-        //     }
-        // }
-        // event(new JobResponse($response));
-        //
-        // return true;
         
     }
     
