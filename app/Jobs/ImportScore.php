@@ -62,6 +62,15 @@ class ImportScore implements ShouldQueue {
         } else {
             try {
                 DB::transaction(function () use ($inserts, $updates, $illegals) {
+                    event(new JobResponse([
+                        'userId' => $this->userId,
+                        'title' => __('messages.score.title'),
+                        'statusCode' => HttpStatusCode::OK,
+                        'message' => sprintf(
+                            __('messages.score.import_request_submitted'),
+                            count($inserts), count($updates), count($illegals)
+                        )
+                    ]));
                     # 插入数据
                     $this->insert($inserts);
                     # 更新数据
