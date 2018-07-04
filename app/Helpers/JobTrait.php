@@ -114,7 +114,13 @@ trait JobTrait {
             } catch (Exception $e) {
                 $response['statusCode'] = $e->getCode();
                 $response['message'] = $e->getMessage();
-                Log::debug(json_encode($e));
+                Log::error(
+                    get_class($e) .
+                    '(code: ' . $e->getCode() . '): ' .
+                    $e->getMessage() . ' at ' .
+                    $e->getFile() . ' on line ' .
+                    $e->getLine()
+                );
             }
         }
         event(new JobResponse($response));
