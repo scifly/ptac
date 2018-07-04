@@ -26,8 +26,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        $dir = 'public/uploads/' . date('Y/m/d/');
-        echo file_exists($dir) ? 'yes' : 'no';
+        echo public_path();
         exit;
 
     }
