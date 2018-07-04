@@ -130,8 +130,6 @@ class ImportStudent implements ShouldQueue {
                 continue;
             }
             $student = Student::whereStudentNumber($sn)->where('class_id', $class->id)->first();
-            Log::debug('sn: ' . $sn);
-            Log::debug(json_encode($student));
             $user['class_id'] = $class->id;
             $user['department_id'] = $class->department_id;
             # 学生数据已存在 更新操作
@@ -142,7 +140,7 @@ class ImportStudent implements ShouldQueue {
             }
         }
         
-        return [$updates, $inserts, $illegals];
+        return [$inserts, $updates, $illegals];
         
     }
     
