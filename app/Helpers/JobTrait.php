@@ -85,7 +85,7 @@ trait JobTrait {
             $response['message'] = __('messages.invalid_data_format');
         } else {
             try {
-                DB::transaction(function () use ($job, $inserts, $updates, $illegals, $title) {
+                DB::transaction(function () use ($job, $inserts, $updates, $illegals, $title, &$response) {
                     event(new JobResponse([
                         'userId' => $job->userId,
                         'title' => __($title),
