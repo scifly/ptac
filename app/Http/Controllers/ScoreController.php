@@ -213,7 +213,7 @@ class ScoreController extends Controller {
         
         return $this->result(
             $this->score->upload(),
-            __('messages.score.import_started'),
+            __('messages.import_started'),
             __('messages.file_upload_failed')
         );
         
