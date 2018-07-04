@@ -22,6 +22,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Validator;
 
@@ -321,6 +322,8 @@ class ImportStudent implements ShouldQueue {
                     $relationship = str_replace(['，', '：'], [',', ':'], $update['relationship']);
                     $relationships = explode(',', $relationship);
                     $student = Student::whereStudentNumber($update['student_number'])->first();
+                    Log::debug(json_encode($student));
+                    Log::debug(json_encode($update));
                     $student->class_id = $update['class_id'];
                     $student->card_number = $update['card_number'];
                     $student->oncampus = $update['card_number'];
