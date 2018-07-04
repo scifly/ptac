@@ -123,6 +123,7 @@ trait JobTrait {
                 );
             }
         }
+        Log::debug('response: ' . json_encode($response));
         event(new JobResponse($response));
     
         return true;
