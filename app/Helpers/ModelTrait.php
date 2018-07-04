@@ -545,6 +545,7 @@ trait ModelTrait {
             return $writer->save('php://output');
         }
         $dir = 'public/uploads/' . date('Y/m/d');
+        Log::debug('exists: ' . !file_exists($dir));
         if (!file_exists($dir)) {
             mkdir($dir, 0777, true);
         }
