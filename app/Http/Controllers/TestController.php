@@ -5,6 +5,7 @@ use App\Models\Department;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
+use Illuminate\Support\Facades\Auth;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -24,10 +25,7 @@ class TestController extends Controller {
      */
     public function index() {
 
-        $tab = [
-            'ab' => '3829',
-        ];
-        dd($tab['cd'] ?? 'yes');
+        dd(Auth::user());
 
     }
     
