@@ -520,7 +520,7 @@ trait ModelTrait {
         $user = Auth::user();
         $spreadsheet = new Spreadsheet();
         $spreadsheet->getProperties()->setCreator($user->realname)
-            ->setLastModifiedBy($user->realname)
+            ->setLastModifiedBy($user ? $user->realname : 'ptac')
             ->setTitle('智校+')
             ->setSubject('智校+')
             ->setDescription('-')
