@@ -118,6 +118,7 @@ class ImportScore implements ShouldQueue {
      * 插入导入的考试成绩
      *
      * @param array $inserts
+     * @return bool
      * @throws Exception
      */
     function insert(array $inserts) {
@@ -141,12 +142,15 @@ class ImportScore implements ShouldQueue {
             throw $e;
         }
         
+        return true;
+        
     }
     
     /**
      * 更新导入的考试成绩
      *
      * @param array $updates
+     * @return bool
      * @throws Exception
      */
     function update(array $updates) {
@@ -174,6 +178,8 @@ class ImportScore implements ShouldQueue {
         } catch (Exception $e) {
             throw $e;
         }
+        
+        return true;
         
     }
     

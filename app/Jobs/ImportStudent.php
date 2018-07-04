@@ -144,7 +144,7 @@ class ImportStudent implements ShouldQueue {
     }
     
     /**
-     * 插入导入的学籍数据
+     * 插入需导入的学籍数据
      *
      * @param array $inserts
      * @return bool
@@ -310,7 +310,7 @@ class ImportStudent implements ShouldQueue {
     }
     
     /**
-     * 更新导入的学籍数据
+     * 更新已导入的学籍数据
      *
      * @param array $updates
      * @return bool
