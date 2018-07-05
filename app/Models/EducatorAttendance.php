@@ -161,7 +161,7 @@ class EducatorAttendance extends Model {
             }
         }
         
-        return $this->create([
+        $result = $this->create([
             'educator_id' => $educator->id,
             'punch_time'  => $dateTime,
             'longitude'   => $data['longitude'],
@@ -169,7 +169,17 @@ class EducatorAttendance extends Model {
             'inorout'     => $data['inorout'],
             'eas_id'      => $easId,
             'status'      => $status,
-        ]) ? true : false;
+        ]);
+    
+        return $result
+            ? response()->json([
+                'statusCode' => HttpStatusCode::OK,
+                'message'    => __('messages.ok'),
+            ])
+            : response()->json([
+                'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
+                'message'    => __('messages.internal_server_error'),
+            ]);
         
     }
     

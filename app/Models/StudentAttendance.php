@@ -170,7 +170,7 @@ class StudentAttendance extends Model {
      * 保存学生考勤记录
      *
      * @param array $data
-     * @return bool
+     * @return JsonResponse
      */
     function store(array $data) {
         
@@ -207,8 +207,7 @@ class StudentAttendance extends Model {
                 break;
             }
         }
-        
-        return $this->create([
+        $result = $this->create([
             'student_id'            => $student->id,
             'sas_id'                => $sasId,
             'punch_time'            => $punchTime,
@@ -218,7 +217,17 @@ class StudentAttendance extends Model {
             'longitude'             => $data['longitude'],
             'latitude'              => $data['latitude'],
             'media_id'              => $data['media_id'],
-        ]) ? true : false;
+        ]);
+        
+        return $result
+            ? response()->json([
+                'statusCode' => HttpStatusCode::OK,
+                'message'    => __('messages.ok'),
+            ])
+            : response()->json([
+                'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
+                'message'    => __('messages.internal_server_error'),
+            ]);
         
     }
     
@@ -360,7 +369,6 @@ class StudentAttendance extends Model {
     }
     
     /** 微信端 ------------------------------------------------------------------------------------------------------- */
-
     /**
      * @return array
      */
@@ -501,7 +509,6 @@ class StudentAttendance extends Model {
     }
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
-
     /**
      * 考勤中心首页
      *
