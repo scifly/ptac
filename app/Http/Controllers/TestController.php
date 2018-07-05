@@ -25,7 +25,7 @@ class TestController extends Controller {
     public function index() {
     
         $result = response()->json();
-        dd($result->getStatusCode());
+        dd(json_decode($result));
 
     }
     
