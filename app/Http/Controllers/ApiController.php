@@ -72,9 +72,9 @@ class ApiController extends Controller {
      */
     public function studentConsumption(ConsumptionRequest $request) {
 
-        return $this->consumption->store($request->all())
-            ? response()->json('done')
-            : response()->json('error', 400);
+        return $this->result(
+            $this->consumption->store($request->all())
+        );
         
     }
     
@@ -87,14 +87,9 @@ class ApiController extends Controller {
      */
     public function studentAttendance(StudentAttendanceRequest $request) {
 
-        $result = $this->sa->store($request->all());
-        
-        return $result
-            ? response()->json([
-                'errcode' => 0,
-                'message' => 'done'
-            ])
-            : response()->json(['message' => 'error'], 400);
+        return $this->result(
+            $this->sa->store($request->all())
+        );
         
     }
     
