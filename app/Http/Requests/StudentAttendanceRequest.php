@@ -24,15 +24,23 @@ class StudentAttendanceRequest extends FormRequest {
     public function rules() {
         
         return [
-            'card_number' => 'required|string|between:5,32',
-            'punch_time'  => 'required|date',
-            'inorout'     => 'required|integer',
-            'media_id'    => 'required|integer',
-            'longitude'   => 'required|numeric',
-            'latitude'    => 'required|numeric',
-            'machineid'   => 'required|string|between:2,20',
+            'school_id'      => 'required|integer',
+            'student_number' => 'required|string|between:5,32',
+            'punch_time'     => 'required|date',
+            'inorout'        => 'required|integer',
+            'media_id'       => 'required|integer',
+            'longitude'      => 'required|numeric',
+            'latitude'       => 'required|numeric',
+            'machineid'      => 'required|string|between:2,20',
         ];
         
+    }
+    
+    /**
+     * @return bool
+     */
+    public function wantsJson() {
+        return true;
     }
     
     protected function prepareForValidation() {
@@ -45,13 +53,6 @@ class StudentAttendanceRequest extends FormRequest {
         $input['media_id'] = 0;
         $this->replace($input);
         
-    }
-    
-    /**
-     * @return bool
-     */
-    public function wantsJson() {
-        return true;
     }
     
 }

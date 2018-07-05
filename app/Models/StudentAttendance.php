@@ -174,14 +174,11 @@ class StudentAttendance extends Model {
      */
     function store(array $data) {
         
-        $student = Student::whereCardNumber($data['card_number'])->first();
-        abort_if(!$student, HttpStatusCode::NOT_FOUND, __('messages.student.not_found'));
-        $class = $student->squad;
-        abort_if(!$class, HttpStatusCode::NOT_FOUND, __('messages.class.not_found'));
-        $grade = $class->grade;
-        abort_if(!$grade, HttpStatusCode::NOT_FOUND, __('messages.grade.not_found'));
-        $school = $grade->school;
+        $school = School::find($data['school_id']);
         abort_if(!$school, HttpStatusCode::NOT_FOUND, __('messages.school.not_found'));
+        $student = Student::whereIn('class_id', $school->classes->pluck('id')->toArray())
+            ->where('student_number', $data['student_number'])->first();
+        abort_if(!$student, HttpStatusCode::NOT_FOUND, __('messages.student.not_found'));
         $dateTime = strtotime($data['punch_time']);
         $day = Constant::WEEK_DAYS[date('w', $dateTime)];
         $strDateTime = date('Y-m-d', $dateTime);
@@ -193,7 +190,7 @@ class StudentAttendance extends Model {
         $machine = AttendanceMachine::whereMachineid($data['machineid'])
             ->where('school_id', $school->id)->first();
         abort_if(!$machine, HttpStatusCode::NOT_FOUND, __('messages.attendance_machine.not_found'));
-        $sases = StudentAttendanceSetting::whereGradeId($grade->id)
+        $sases = StudentAttendanceSetting::whereGradeId($student->squad->grade_id)
             ->where('semester_id', $semester->id)
             ->where('day', $day)->get();
         abort_if(!$sases, HttpStatusCode::NOT_FOUND, __('messages.sas.not_found'));
