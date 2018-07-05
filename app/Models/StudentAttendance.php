@@ -211,7 +211,7 @@ class StudentAttendance extends Model {
         return $this->create([
             'student_id'            => $student->id,
             'sas_id'                => $sasId,
-            'punch_time'            => $dateTime,
+            'punch_time'            => $punchTime,
             'inorout'               => $data['inorout'],
             'attendance_machine_id' => $machine->id,
             'status'                => $status,
