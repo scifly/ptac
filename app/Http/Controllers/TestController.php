@@ -24,8 +24,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        echo public_path();
-        exit;
+        return $this->apiCall();
 
     }
     
@@ -37,7 +36,7 @@ class TestController extends Controller {
                 'http://sandbox.ddd/api/login', [
                     'form_params' => [
                         'username' => 'haoyuhang',
-                        'password' => '*********',
+                        'password' => '#ilikeit09',
                     ],
                 ]
             );
