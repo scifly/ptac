@@ -36,7 +36,7 @@ class TestController extends Controller {
                 'http://sandbox.ddd/api/login', [
                     'form_params' => [
                         'username' => 'haoyuhang',
-                        'password' => '#ilikeit09',
+                        'password' => '******',
                     ],
                 ]
             );
