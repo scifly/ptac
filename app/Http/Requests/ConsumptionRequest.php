@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Requests;
 
+use App\Models\Student;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -32,6 +33,15 @@ class ConsumptionRequest extends FormRequest {
             'ctime'      => 'required|date',
             'merchant'   => 'required|string|between:2,255',
         ];
+        
+    }
+    
+    protected function prepareForValidation() {
+        
+        $input = $this->all();
+        $student = Student::whereStudentNumber($input['student_number'])->first();
+        $input['student_id'] = $student ? $student->student_number : 0;
+        $this->replace($input);
         
     }
     
