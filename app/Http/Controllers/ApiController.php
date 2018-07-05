@@ -89,7 +89,11 @@ class ApiController extends Controller {
 
         $result = $this->sa->store($request->all());
         
-        return $result ? response()->json(['message' => 'done'])
+        return $result
+            ? response()->json([
+                'errcode' => 0,
+                'message' => 'done'
+            ])
             : response()->json(['message' => 'error'], 400);
         
     }
