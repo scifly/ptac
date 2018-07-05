@@ -47,4 +47,11 @@ class StudentAttendanceRequest extends FormRequest {
         
     }
     
+    /**
+     * @return bool
+     */
+    public function wantsJson() {
+        return true;
+    }
+    
 }
