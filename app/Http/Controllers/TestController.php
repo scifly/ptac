@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Helpers\HttpStatusCode;
 use App\Models\Department;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -24,8 +25,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        $result = response()->json();
-        dd($result);
+        abort_if(true, HttpStatusCode::NOT_FOUND, __('messages.student.not_found'));
 
     }
     
