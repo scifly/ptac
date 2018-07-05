@@ -88,10 +88,9 @@ class ApiController extends Controller {
     public function studentAttendance(StudentAttendanceRequest $request) {
 
         $result = $this->sa->store($request->all());
-        Log::debug('result: ' . $result);
         
-        return $result ? response()->json()
-            : response()->json('error', 400);
+        return $result ? response()->json(['message' => 'done'])
+            : response()->json(['message' => 'error'], 400);
         
     }
     
