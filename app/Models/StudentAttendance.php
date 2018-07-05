@@ -197,7 +197,7 @@ class StudentAttendance extends Model {
             ->where('semester_id', $semester->id)
             ->where('day', $day)->get();
         abort_if(!$sases, HttpStatusCode::NOT_FOUND, __('messages.sas.not_found'));
-        $punchTime = date('H:i:s', $dateTime);
+        $punchTime = date('Y-m-d H:i:s', $dateTime);
         $status = 0; # 考勤异常
         $sasId = 0;
         foreach ($sases as $sas) {
