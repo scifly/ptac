@@ -115,7 +115,7 @@ class Handler extends ExceptionHandler {
                     break;
                 case 'NotFoundHttpException':
                     $status = HttpStatusCode::NOT_FOUND;
-                    $response['message'] = __('messages.not_found');
+                    // $response['message'] = __('messages.not_found');
                     break;
                 case 'MethodNotAllowedHttpException':
                     $status = HttpStatusCode::METHOD_NOT_ALLOWED;
