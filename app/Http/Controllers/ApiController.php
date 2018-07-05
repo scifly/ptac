@@ -9,6 +9,7 @@ use App\Models\EducatorAttendance;
 use App\Models\StudentAttendance;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
@@ -70,7 +71,7 @@ class ApiController extends Controller {
      * @return JsonResponse|string
      */
     public function studentConsumption(ConsumptionRequest $request) {
-        
+
         return $this->consumption->store($request->all())
             ? response()->json()
             : response()->json('error', 400);
@@ -86,8 +87,10 @@ class ApiController extends Controller {
      */
     public function studentAttendance(StudentAttendanceRequest $request) {
 
-        return $this->sa->store($request->all())
-            ? response()->json()
+        $result = $this->sa->store($request->all());
+        Log::debug('result: ' . $result);
+        
+        return $result ? response()->json()
             : response()->json('error', 400);
         
     }
