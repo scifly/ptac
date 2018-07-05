@@ -71,11 +71,9 @@ class ApiController extends Controller {
      */
     public function studentConsumption(ConsumptionRequest $request) {
         
-        return $this->result(
-            $this->consumption->store(
-                $request->all()
-            )
-        );
+        return $this->consumption->store($request->all())
+            ? response()->json()
+            : response()->json('error', 400);
         
     }
     
@@ -87,12 +85,10 @@ class ApiController extends Controller {
      * @throws Throwable
      */
     public function studentAttendance(StudentAttendanceRequest $request) {
-        
-        return $this->result(
-            $this->sa->store(
-                $request->all()
-            )
-        );
+
+        return $this->sa->store($request->all())
+            ? response()->json()
+            : response()->json('error', 400);
         
     }
     
@@ -105,9 +101,7 @@ class ApiController extends Controller {
     public function educatorAttendance(EducatorAttendance $request) {
         
         return $this->result(
-            $this->ea->store(
-                $request->all()
-            )
+            $this->ea->store($request->all())
         );
         
     }
