@@ -1,6 +1,8 @@
 <?php
 namespace App\Jobs;
 
+use App\Helpers\JobTrait;
+use App\Helpers\ModelTrait;
 use Exception;
 use App\Models\User;
 use App\Models\Group;
@@ -32,7 +34,7 @@ use Validator;
  */
 class ImportEducator implements ShouldQueue {
     
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait, JobTrait;
     
     protected $data, $userId;
     
@@ -71,7 +73,7 @@ class ImportEducator implements ShouldQueue {
                 $schoolDepartmentId = $school->department_id;
                 $schoolDepartmentIds = array_merge(
                     [$schoolDepartmentId],
-                    (new Department())->subDepartmentIds($schoolDepartmentId)
+                    (new Department)->subDepartmentIds($schoolDepartmentId)
                 );
                 $group = Group::whereName('教职员工')->where('school_id', $schoolId)->first();
                 throw_if(!$group, new NotFoundHttpException(__('messages.group.not_found')));
@@ -254,15 +256,10 @@ class ImportEducator implements ShouldQueue {
                 'classes_subjects' => $datum['H'],
                 'departments'      => $datum['I'],
             ];
-            if (Validator::make($user, $rules)->fails()) {
-                $illegals[] = $datum;
-                continue;
-            }
-            $school = School::whereName($user['school'])->first();
-            if (!$school) {
-                $illegals[] = $datum;
-                continue;
-            }
+            $result = Validator::make($user, $rules);
+            $failed = $result->fails();
+            $school = !$failed ? School::whereName($user['school'])->first() : null;
+            $isSchoolValid = $school ? in_array($school->id, $this->schoolIds($this->userId)) : false;
             $departments = explode(',', $user['departments']);
             $schoolDepartmentIds = array_merge(
                 [$school->department_id],
@@ -270,22 +267,192 @@ class ImportEducator implements ShouldQueue {
             );
             $isDepartmentValid = true;
             foreach ($departments as $d) {
-                $department = Department::whereName($d)->whereIn('id', $schoolDepartmentIds)->first();
+                $department = Department::whereName($d)
+                    ->whereIn('id', $schoolDepartmentIds)
+                    ->first();
                 if (!$department) {
                     $isDepartmentValid = false;
                     break;
                 }
             }
-            if (!$isDepartmentValid) {
+            if (!(!$failed && $isSchoolValid && $isDepartmentValid)) {
+                $datum['J'] = $failed
+                    ? json_encode($result->errors())
+                    : __('messages.educator.import_validation_error');
                 $illegals[] = $datum;
                 continue;
             }
             $user['departments'] = $departments;
             $user['school_id'] = $school->id;
-            $inserts[] = $user;
+            if (Mobile::whereMobile($user['mobile'])->where('isdefault', 1)->first()) {
+                $updates[] = $user;
+            } else {
+                $inserts[] = $user;
+            }
         }
     
         return [$inserts, $updates, $illegals];
+        
+    }
+    
+    /**
+     * 插入需导入的数据
+     *
+     * @param array $inserts
+     * @return bool
+     * @throws Exception
+     */
+    function insert(array $inserts) {
+        
+        try {
+            DB::transaction(function () use ($inserts) {
+                $school = School::whereName($inserts[0]['school'])->first();
+                throw_if(!$school, new NotFoundHttpException(__('messages.school_not_found')));
+                $schoolId = $school->id;
+                $schoolDepartmentId = $school->department_id;
+                $schoolDepartmentIds = array_merge(
+                    [$schoolDepartmentId],
+                    (new Department())->subDepartmentIds($schoolDepartmentId)
+                );
+                $group = Group::whereName('教职员工')->where('school_id', $schoolId)->first();
+                throw_if(!$group, new NotFoundHttpException(__('messages.group.not_found')));
+                foreach ($inserts as $insert) {
+                    # 创建用户
+                    $user = User::create([
+                        'username'   => uniqid('educator_'),
+                        'group_id'   => $group->id,
+                        'password'   => bcrypt('12345678'),
+                        'realname'   => $insert['name'],
+                        'gender'     => $insert['gender'] == '男' ? '0' : '1',
+                        'userid'     => uniqid('educator_'),
+                        'isleader'   => 0,
+                        'enabled'    => 1,
+                        'synced'     => 0,
+                        'subscribed' => 0
+                    ]);
+                    # 创建教职员工
+                    $educator = Educator::create([
+                        'user_id'   => $user->id,
+                        'school_id' => $schoolId,
+                        'sms_quote' => 0,
+                        'enabled'   => 1,
+                    ]);
+                    # 创建用户手机号码
+                    Mobile::create([
+                        'user_id'   => $user->id,
+                        'mobile'    => $insert['mobile'],
+                        'isdefault' => 1,
+                        'enabled'   => 1,
+                    ]);
+                    # 添加用户&部门绑定关系
+                    foreach ($insert['departments'] as $departmentName) {
+                        $department = Department::whereName($departmentName)
+                            ->whereIn('id', $schoolDepartmentIds)->first();
+                        DepartmentUser::create([
+                            'department_id' => $department->id,
+                            'user_id'       => $user->id,
+                            'enabled'       => 1,
+                        ]);
+                    }
+                    # 更新绑定关系
+                    $this->binding($insert, $educator);
+                    # 创建企业号成员
+                    $user->createWechatUser($user->id);
+                }
+            });
+        } catch (Exception $e) {
+            event(new JobResponse([
+                'userId'     => $this->userId,
+                'title'      => __('messages.educator.title'),
+                'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
+                'message'    => $e->getMessage(),
+            ]));
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
+    function update(array $updates) {
+        
+        try {
+        
+        } catch (Exception $e) {
+            event(new JobResponse([
+                'userId'     => $this->userId,
+                'title'      => __('messages.educator.title'),
+                'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
+                'message'    => $e->getMessage(),
+            ]));
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
+    /**
+     * 更新教职员工的年级主任、班级主任以及班级科目等绑定关系
+     *
+     * @param array $data
+     * @param Educator $educator
+     */
+    function binding(array $data, Educator $educator) {
+    
+        $school = School::find($educator->school_id);
+        # 更新年级主任
+        $gradeNames = explode(',', str_replace(['，', '：'], [',', ':'], $data['grades']));
+        foreach ($gradeNames as $gradeName) {
+            $grade = Grade::whereSchoolId($school->id)->where('name', $gradeName)->first();
+            if (!$grade) { continue; }
+            $educatorIds = array_merge(
+                explode(',', $grade->educator_ids),
+                [$educator->id]
+            );
+            $grade->educator_ids = implode(',', array_unique($educatorIds));
+            $grade->save();
+            # 更新部门&用户绑定关系
+            $this->updateDu($educator->user, $grade->department_id);
+        }
+        # 更新班级主任
+        $classeNames = explode(',', str_replace(['，', '：'], [',', ':'], $data['classes']));
+        $gradeIds = $school->grades->pluck('id')->toArray();
+        foreach ($classeNames as $classeName) {
+            $class = Squad::whereName($classeName)->whereIn('grade_id', $gradeIds)->first();
+            if (!$class) { continue; }
+            $educatorIds = array_merge(
+                explode(',', $class->educator_ids),
+                [$educator->id]
+            );
+            $class->educator_ids = implode(',', array_unique($educatorIds));;
+            $class->save();
+            # 更新部门&用户绑定关系
+            $this->updateDu($educator->user, $class->department_id);
+        }
+        # 更新班级科目绑定关系
+        $classSubjects = explode(',', str_replace(['，', '：'], [',', ':'], $data['classes_subjects']));
+        foreach ($classSubjects as $classSubject) {
+            if (empty($classSubject)) { continue; }
+            $paths = explode(':', $classSubject);
+            $class = Squad::whereName($paths[0])->whereIn('grade_id', $gradeIds)->first();
+            $subject = Subject::whereName($paths[1])->where('school_id', $school->id)->first();
+            if (!$class || !$subject) { continue; }
+            $educatorClass = EducatorClass::whereEducatorId($educator->id)
+                ->where('class_id', $class->id)
+                ->where('subject_id', $subject->id)
+                ->first();
+            if (!$educatorClass) {
+                EducatorClass::create([
+                    'educator_id' => $educator->id,
+                    'class_id'    => $class->id,
+                    'subject_id'  => $subject->id,
+                    'enabled'     => 1,
+                ]);
+            }
+            # 更新部门&用户绑定关系
+            $this->updateDu($educator->user, $class->department_id);
+        }
         
     }
     

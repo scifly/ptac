@@ -56,6 +56,7 @@ return [
     'educator'           => [
         'title'             => '教职员工',
         'not_found'         => '没有这个教职员工',
+        'import_validation_error' => '学校/部门名称错误',
         'educator_imported' => '教职员工记录已导入',
     ],
     'grade'              => [
@@ -104,6 +105,7 @@ return [
     'student'            => [
         'title'             => '学籍管理',
         'not_found'         => '未找到该学生的相关信息',
+        'import_validation_error' => '学校/年级/班级名称错误'
     ],
     'student_attendance' => [
         'title' => '学生考勤',

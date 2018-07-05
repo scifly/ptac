@@ -41,7 +41,7 @@ class StudentAttendanceRequest extends FormRequest {
         $input['inorout'] = $input['inorout'] ?? 2;
         $input['longitude'] = $input['longitude'] ?? 0;
         $input['latitude'] = $input['latitude'] ?? 0;
-        $input['attendance_machine_id'] = $input['attendId'];
+        $input['machineid'] = $input['attendid'];
         $input['media_id'] = 0;
         $this->replace($input);
         

@@ -73,7 +73,7 @@ class ImportStudent implements ShouldQueue {
      */
     function validate(array $data): array {
         
-        unset($data[0]);
+        // unset($data[0]);
         $rules = [
             'name'           => 'required|string|between:2,6',
             'gender'         => ['required', Rule::in(['男', '女'])],
@@ -88,35 +88,36 @@ class ImportStudent implements ShouldQueue {
             'remark'         => 'string|nullable',
             'relationship'   => 'string',
         ];
-        # 不合法的数据
+        # 非法数据
         $illegals = [];
-        # 更新的数据
+        # 需要更新的数据
         $updates = [];
-        # 需要添加的数据
+        # 需要新增的数据
         $inserts = [];
-        for ($i = 1; $i <= count($data); $i++) {
-            $schoolName = $data[$i]['C'];
-            $gradeName = $data[$i]['E'];
-            $className = $data[$i]['F'];
-            $sn = $data[$i]['H'];
+        for ($i = 0; $i < count($data); $i++) {
+            $datum = $data[$i];
+            $schoolName = $datum['C'];
+            $gradeName = $datum['E'];
+            $className = $datum['F'];
+            $sn = $datum['H'];
             $user = [
-                'name'           => $data[$i]['A'],
-                'gender'         => $data[$i]['B'],
-                'birthday'       => $data[$i]['D'],
+                'name'           => $datum['A'],
+                'gender'         => $datum['B'],
+                'birthday'       => $datum['D'],
                 'school'         => $schoolName,
                 'grade'          => $gradeName,
                 'class'          => $className,
-                'mobile'         => $data[$i]['G'],
+                'mobile'         => $datum['G'],
                 'student_number' => $sn,
-                'card_number'    => $data[$i]['I'],
-                'oncampus'       => $data[$i]['J'],
-                'remark'         => $data[$i]['K'],
-                'relationship'   => $data[$i]['L'],
+                'card_number'    => $datum['I'],
+                'oncampus'       => $datum['J'],
+                'remark'         => $datum['K'],
+                'relationship'   => $datum['L'],
                 'class_id'       => 0,
                 'department_id'  => 0,
             ];
-            $validator = Validator::make($user, $rules);
-            $failed = $validator->fails();
+            $result = Validator::make($user, $rules);
+            $failed = $result->fails();
             $school = !$failed ? School::whereName($schoolName)->first() : null;
             $isSchoolValid = $school ? in_array($school->id, $this->schoolIds($this->userId)) : false;
             $grade = $school ? Grade::whereName($gradeName)->where('school_id', $school->id)->first() : null;
@@ -125,7 +126,10 @@ class ImportStudent implements ShouldQueue {
             $isClassValid = $class ? in_array($class->id, $this->classIds($school->id, $this->userId)) : false;
             # 数据非法
             if (!(!$failed && $isSchoolValid && $isGradeValid && $isClassValid)) {
-                $illegals[] = $data[$i];
+                $datum['M'] = $failed
+                    ? json_encode($result->errors())
+                    : __('messages.student.import_validation_error');
+                $illegals[] = $datum;
                 continue;
             }
             $student = Student::whereStudentNumber($sn)->where('class_id', $class->id)->first();

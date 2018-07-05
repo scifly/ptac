@@ -5,8 +5,6 @@ use App\Models\Department;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -36,7 +34,7 @@ class TestController extends Controller {
         try {
             $client = new Client();
             $reponse = $client->post(
-                'http://sandbox.ddd/ptac/public/api/login', [
+                'http://sandbox.ddd/api/login', [
                     'form_params' => [
                         'username' => 'haoyuhang',
                         'password' => '*********',
@@ -45,7 +43,7 @@ class TestController extends Controller {
             );
             $token = json_decode($reponse->getBody()->getContents())->{'token'};
             $response = $client->post(
-                'http://sandbox.ddd/ptac/public/api/upload_consumption', [
+                'http://sandbox.ddd/api/student_consumption', [
                     'headers'     => [
                         'Authorization' => 'Bearer ' . $token,
                     ],
