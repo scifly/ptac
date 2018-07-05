@@ -73,7 +73,7 @@ class ApiController extends Controller {
     public function studentConsumption(ConsumptionRequest $request) {
 
         return $this->consumption->store($request->all())
-            ? response()->json()
+            ? response()->json('done')
             : response()->json('error', 400);
         
     }
