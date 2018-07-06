@@ -173,23 +173,12 @@ class EducatorController extends Controller {
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
     public function import() {
-        
-        if (Request::isMethod('post')) {
-            $file = Request::file('file');
-            abort_if(
-                empty($file),
-                HttpStatusCode::INTERNAL_SERVER_ERROR,
-                __('messages.empty_file')
-            );
-            // 文件是否上传成功
-            if ($file->isValid()) {
-                return response()->json(
-                    $this->educator->upload($file)
-                );
-            }
-        }
-        
-        return abort(HttpStatusCode::METHOD_NOT_ALLOWED);
+    
+        return $this->result(
+            $this->educator->import(),
+            __('messages.import_started'),
+            __('messages.file_upload_failed')
+        );
         
     }
     

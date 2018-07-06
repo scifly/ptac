@@ -1,22 +1,22 @@
 <?php
 namespace App\Jobs;
 
-use Throwable;
-use Exception;
+use App\Events\JobResponse;
+use App\Helpers\HttpStatusCode;
+use App\Helpers\JobTrait;
+use App\Helpers\ModelTrait;
 use App\Models\App;
 use App\Models\Corp;
-use App\Models\User;
 use App\Models\Message;
-use App\Helpers\JobTrait;
-use App\Events\JobResponse;
-use App\Helpers\ModelTrait;
-use Illuminate\Bus\Queueable;
-use App\Helpers\HttpStatusCode;
 use App\Models\MessageSendingLog;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
+use App\Models\User;
+use Exception;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Throwable;
 
 /**
  * Class SendMessage
@@ -25,7 +25,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 class SendMessage implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait, JobTrait;
-
+    
     protected $data, $userId, $corp, $apps;
     
     /**
@@ -58,10 +58,10 @@ class SendMessage implements ShouldQueue {
         
         $message = new Message();
         $response = [
-            'userId' => $this->userId,
-            'title' => __('messages.message.title'),
+            'userId'     => $this->userId,
+            'title'      => __('messages.message.title'),
             'statusCode' => HttpStatusCode::OK,
-            'message' => __('messages.message.sent')
+            'message'    => __('messages.message.sent'),
         ];
         list($users, $mobiles) = $message->targets(
             $this->data['user_ids'], $this->data['dept_ids']
@@ -93,12 +93,15 @@ class SendMessage implements ShouldQueue {
             # 发送微信消息
             $results = [];
             foreach ($this->apps as $app) {
+                $userids = User::whereIn('id', $this->data['user_ids'])
+                    ->where('subscribed', 1)
+                    ->pluck('userid')->toArray();
                 $content = [
-                    'touser'  => implode('|', User::whereIn('id', $this->data['user_ids'])->pluck('userid')->toArray()),
-                    'toparty' => implode('|', $this->data['dept_ids']),
-                    'agentid' => $app['agentid'],
-                    'msgtype' => $this->data['type'],
-                    $this->data['type'] => $this->data[$this->data['type']]
+                    'touser'            => implode('|', $userids),
+                    'toparty'           => implode('|', $this->data['dept_ids']),
+                    'agentid'           => $app['agentid'],
+                    'msgtype'           => $this->data['type'],
+                    $this->data['type'] => $this->data[$this->data['type']],
                 ];
                 # 发送消息
                 $result = $this->sendMessage($this->corp, $app, $content);
@@ -119,7 +122,9 @@ class SendMessage implements ShouldQueue {
                     $total = count($users);
                     $failed = count($message->failedUserIds($result['invaliduser'], $result['invalidparty']));
                     $succeeded = $total - $failed;
-                    if (!$succeeded) { $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR; }
+                    if (!$succeeded) {
+                        $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+                    }
                     if ($succeeded > 0 && $succeeded < $total) {
                         $response['statusCode'] = HttpStatusCode::ACCEPTED;
                     }
@@ -147,8 +152,10 @@ class SendMessage implements ShouldQueue {
             }
         }
         # 发送广播消息
-        event(new JobResponse($response));
-    
+        if ($this->userId) {
+            event(new JobResponse($response));
+        }
+        
     }
     
 }

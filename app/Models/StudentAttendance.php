@@ -6,6 +6,7 @@ use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
+use App\Jobs\SendMessage;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -39,7 +40,7 @@ use Throwable;
  * @property-read AttendanceMachine $attendanceMachine
  * @property-read Media $medias
  * @property-read Student $student
- * @property-read StudentAttendanceSetting $studentAttendancesetting
+ * @property-read StudentAttendanceSetting $studentAttendanceSetting
  * @method static Builder|StudentAttendance whereAttendanceMachineId($value)
  * @method static Builder|StudentAttendance whereCreatedAt($value)
  * @method static Builder|StudentAttendance whereId($value)
@@ -204,7 +205,7 @@ class StudentAttendance extends Model {
                 break;
             }
         }
-        $result = $this->create([
+        $sa = $this->create([
             'student_id'            => $student->id,
             'sas_id'                => $sasId,
             'punch_time'            => $punchTime,
@@ -215,16 +216,58 @@ class StudentAttendance extends Model {
             'latitude'              => $data['latitude'],
             'media_id'              => $data['media_id'],
         ]);
-        
-        return $result
-            ? response()->json([
+    
+        # 发送考勤消息
+        if ($sa) {
+            $userIds = $student->custodians->pluck('user_id')->toArray();
+            list($smsUserIds, $wechatUserIds) = array_pluck(
+                User::get(['id', 'subscribed'])
+                    ->whereIn('id', $userIds)
+                    ->groupBy('subscribed')
+                    ->toArray(),
+                '*.id'
+            );
+            $data = [
+                'dept_ids' => [],
+                'message_type_id' => MessageType::whereName('考勤消息')->first()->id,
+            ];
+            $content = strtr(
+                $sa->studentAttendanceSetting->msg_template,
+                [
+                    '{name}' => $student->user->realname,
+                    '{time}' => $sa->punch_time,
+                    '{rule}' => $sa->studentAttendanceSetting->name,
+                    '{status}' => $sa->status == 1 ? '正常' : '异常'
+                ]
+            );
+            $corp = $school->corp;
+            $apps = [App::whereCorpId($school->corp_id)->whereName('考勤中心')->first()->toArray()];
+            # 需要接收微信消息的用户
+            if (!empty($wechatUserIds)) {
+                SendMessage::dispatch(array_merge($data, [
+                    'user_ids' => $wechatUserIds,
+                    'type' => 'text',
+                    'text' => ['content' => $content]
+                ]), null, $corp, $apps);
+            }
+            # 需要接收短信消息的用户
+            if (!empty($smsUserIds)) {
+                SendMessage::dispatch(array_merge($data, [
+                    'user_ids' => $smsUserIds,
+                    'type' => 'sms',
+                    'sms' => $content
+                ]), null, $corp, $apps);
+            }
+            return response()->json([
                 'statusCode' => HttpStatusCode::OK,
                 'message'    => __('messages.ok'),
-            ])
-            : response()->json([
-                'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
-                'message'    => __('messages.internal_server_error'),
             ]);
+        }
+        
+        return response()->json([
+            'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
+            'message'    => __('messages.internal_server_error'),
+        ]);
         
     }
     

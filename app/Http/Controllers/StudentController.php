@@ -119,7 +119,7 @@ class StudentController extends Controller {
         $student->grade_id = Squad::find($student->class_id)->grade_id;
         
         return $this->output([
-            'student' => $student // $this->student->find($id),
+            'student' => $student
         ]);
         
     }
@@ -184,11 +184,9 @@ class StudentController extends Controller {
      */
     public function export() {
         
-        if (Request::method() === 'POST') {
-            return $this->student->classList();
-        }
-        
-        return $this->student->export();
+        return Request::method() == 'POST'
+            ? $this->student->classList()
+            : $this->student->export();
         
     }
     

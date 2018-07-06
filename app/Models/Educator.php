@@ -22,8 +22,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Throwable;
 
@@ -354,34 +352,6 @@ class Educator extends Model {
     }
     
     /**
-     * 去掉二维数组中的重复值
-     *
-     * @param $array2D
-     * @return array
-     */
-    private function array_unique_fb($array2D) {
-        
-        $temp = [];
-        foreach ($array2D as $v) {
-            # 降维,也可以用implode,将一维数组转换为用逗号连接的字符串
-            $v = join(',', $v);
-            $temp[] = $v;
-        }
-        # 去掉重复的字符串,也就是重复的一维数组
-        $tempUnique = array_unique($temp);
-        $csArray = [];
-        foreach ($tempUnique as $k => $v) {
-            # 再将拆开的数组重新组装
-            $tempArray = explode(',', $v);
-            $csArray[$k]['class_id'] = $tempArray[0];
-            $csArray[$k]['subject_id'] = $tempArray[1];
-        }
-        
-        return $csArray;
-        
-    }
-    
-    /**
      * 修改教职员工
      *
      * @param EducatorRequest $request
@@ -589,10 +559,35 @@ class Educator extends Model {
     }
     
     /**
-     * 批量导入
+     * 导入教职员工
+     *
+     * @return bool
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     */
+    function import() {
+    
+        abort_if(
+            Request::method() != 'POST',
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            __('messages.file_upload_failed')
+        );
+        $file = Request::file('file');
+        abort_if(
+            empty($file) || !$file->isValid(),
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            __('messages.empty_file')
+        );
+    
+        return $this->upload($file);
+        
+    }
+    
+    /**
+     * 上传教职员工excel文件
      *
      * @param UploadedFile $file
-     * @return array
+     * @return bool
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
@@ -625,106 +620,25 @@ class Educator extends Model {
             HttpStatusCode::NOT_ACCEPTABLE,
             __('messages.invalid_file_format')
         );
-        unset($educators[1]);
+        array_shift($educators);
         $educators = array_values($educators);
-        if (count($educators)) {
-            # 去除表格的空数据
-            foreach ($educators as $key => $value) {
-                if ((array_filter($value)) == null) {
-                    unset($educators[$key]);
-                }
-            }
-            $rows = self::validateData($educators);
-            if (!empty($rows)) {
-                ImportEducator::dispatch($rows, Auth::id());
+        # 去除表格的空数据
+        foreach ($educators as $key => $value) {
+            if ((array_filter($value)) == null) {
+                unset($educators[$key]);
             }
         }
+        ImportEducator::dispatch($educators, Auth::id());
         Storage::disk('uploads')->delete($filename);
         
-        return [
-            'statusCode' => HttpStatusCode::OK,
-            'message'    => '上传成功',
-        ];
-        
-    }
-    
-    /** Helper functions -------------------------------------------------------------------------------------------- */
-
-    /**
-     * 验证数据合法性
-     *
-     * @param array $data
-     * @return array
-     */
-    private function validateData(array $data) {
-        
-        $rules = [
-            'name'             => 'required|string|between:2,20',
-            'gender'           => ['required', Rule::in(['男', '女'])],
-            'birthday'         => 'required|date',
-            'school'           => 'required|string|between:4,20',
-            'mobile'           => 'required', new Mobile(),
-            'grades'           => 'nullable|string',
-            'classes'          => 'nullable|string',
-            'classes_subjects' => 'nullable|string',
-            'departments'      => 'required|string',
-        ];
-        // Validator::make($data,$rules);
-        # 非法数据
-        $illegals = [];
-        # 需要添加的数据
-        $rows = [];
-        foreach ($data as &$datum) {
-            $user = [
-                'name'             => $datum['A'],
-                'gender'           => $datum['B'],
-                'birthday'         => $datum['C'],
-                'school'           => $datum['D'],
-                'mobile'           => $datum['E'],
-                'grades'           => $datum['F'],
-                'classes'          => $datum['G'],
-                'classes_subjects' => $datum['H'],
-                'departments'      => $datum['I'],
-            ];
-            if (Validator::make($user, $rules)->fails()) {
-                $illegals[] = $datum;
-                continue;
-            }
-            $school = School::whereName($user['school'])->first();
-            if (!$school) {
-                $illegals[] = $datum;
-                continue;
-            }
-            $departments = explode(',', $user['departments']);
-            $schoolDepartmentIds = array_merge(
-                [$school->department_id],
-                (new Department())->subDepartmentIds($school->department_id)
-            );
-            $isDepartmentValid = true;
-            foreach ($departments as $d) {
-                $department = Department::whereName($d)->whereIn('id', $schoolDepartmentIds)->first();
-                if (!$department) {
-                    $isDepartmentValid = false;
-                    break;
-                }
-            }
-            if (!$isDepartmentValid) {
-                $illegals[] = $datum;
-                continue;
-            }
-            $user['departments'] = $departments;
-            $user['school_id'] = $school->id;
-            $rows[] = $user;
-        }
-        
-        return $rows;
+        return true;
         
     }
     
     /**
-     * 批量导出
+     * 批量导出教职员工
      *
-     * @return mixed
+     * @return bool
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
@@ -754,6 +668,35 @@ class Educator extends Model {
         }
         
         return $this->excel($records);
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+    /**
+     * 去掉二维数组中的重复值
+     *
+     * @param $array2D
+     * @return array
+     */
+    private function array_unique_fb($array2D) {
+        
+        $temp = [];
+        foreach ($array2D as $v) {
+            # 降维,也可以用implode,将一维数组转换为用逗号连接的字符串
+            $v = join(',', $v);
+            $temp[] = $v;
+        }
+        # 去掉重复的字符串,也就是重复的一维数组
+        $tempUnique = array_unique($temp);
+        $csArray = [];
+        foreach ($tempUnique as $k => $v) {
+            # 再将拆开的数组重新组装
+            $tempArray = explode(',', $v);
+            $csArray[$k]['class_id'] = $tempArray[0];
+            $csArray[$k]['subject_id'] = $tempArray[1];
+        }
+        
+        return $csArray;
         
     }
     

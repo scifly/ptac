@@ -401,25 +401,21 @@ class Student extends Model {
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
     function import() {
-        
-        if (Request::isMethod('post')) {
-            $file = Request::file('file');
-            abort_if(
-                empty($file),
-                HttpStatusCode::INTERNAL_SERVER_ERROR,
-                __('messages.empty_file')
-            );
-            // 文件是否上传成功
-            if ($file->isValid()) {
-                return $this->upload($file);
-            }
-        }
-        
-        return abort(
+    
+        abort_if(
+            Request::method() != 'POST',
             HttpStatusCode::INTERNAL_SERVER_ERROR,
             __('messages.file_upload_failed')
         );
+        $file = Request::file('file');
+        abort_if(
+            empty($file) || !$file->isValid(),
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            __('messages.empty_file')
+        );
         
+        return $this->upload($file);
+    
     }
     
     /**
@@ -464,6 +460,7 @@ class Student extends Model {
             }
         }
         ImportStudent::dispatch($students, Auth::id());
+        Storage::disk('uploads')->delete($filename);
         
         return true;
         

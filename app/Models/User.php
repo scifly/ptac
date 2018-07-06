@@ -48,13 +48,14 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property int $synced 是否已同步到企业号
  * @property string $userid 成员userid
  * @property string|null $english_name 英文名
  * @property int|null $isleader 上级字段，标识是否为上级。第三方暂不支持
  * @property string|null $position 职位信息
  * @property string|null $telephone 座机号码
  * @property int|null $order 部门内的排序值，默认为0。数量必须和department一致，数值越大排序越前面
- * @property int $subscribed 是否关注
+ * @property int $subscribed 是否关注企业微信
  * @property-read Custodian $custodian
  * @property-read Collection|Department[] $departments
  * @property-read Educator $educator
@@ -86,6 +87,7 @@ use Throwable;
  * @method static Builder|User whereUpdatedAt($value)
  * @method static Builder|User whereUserid($value)
  * @method static Builder|User whereSubscribed($value)
+ * @method static Builder|User whereSynced($value)
  * @method static Builder|User whereUsername($value)
  * @mixin Eloquent
  * @property-read Collection|Client[] $clients

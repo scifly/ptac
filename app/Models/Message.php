@@ -406,7 +406,7 @@ class Message extends Model {
                 'message_id'      => 0,
                 'url'             => '',
                 'media_ids'       => '0',
-                's_user_id'       => $sUserId,
+                's_user_id'       => $sUserId ?? 0,
                 'r_user_id'       => $user->id,
                 'message_type_id' => $msgTypeId,
                 'sent'            => $sent ? 1 : 0,
@@ -588,7 +588,7 @@ class Message extends Model {
                     ->where('content', 'like', '%' . $keyword . '%')
                     ->orWhere('title', 'like', '%' . $keyword . '%')
                     ->get();
-                if (sizeof($sent) != 0) {
+                if (sizeof($sent)) {
                     foreach ($sent as $s) {
                         $s['user'] = User::find($s['r_user_id'])->realname;
                     }
@@ -600,7 +600,7 @@ class Message extends Model {
                     ->where('content', 'like', '%' . $keyword . '%')
                     ->orWhere('title', 'like', '%' . $keyword . '%')
                     ->get();
-                if (sizeof($received) != 0) {
+                if (sizeof($received)) {
                     foreach ($received as $r) {
                         $r['user'] = User::find($r['user'])->realname;
                     }
@@ -689,8 +689,8 @@ class Message extends Model {
         $department = Department::find($departmentId);
         if ($department->department_type->name == '学校') {
             $response = view('wechat.message_center.select', [
-                'gradeDepts' => (new Grade())->departments($user->id),
-                'classDepts' => (new Squad())->departments($user->id),
+                'gradeDepts' => (new Grade)->departments($user->id),
+                'classDepts' => (new Squad)->departments($user->id),
                 'users'      => Collect([]),
             ])->render();
         } else {
