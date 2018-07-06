@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|MessageType whereRemark($value)
  * @method static Builder|MessageType whereUpdatedAt($value)
  * @mixin Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ApiMessage[] $apiMessages
  */
 class MessageType extends Model {
     
@@ -44,6 +45,13 @@ class MessageType extends Model {
      * @return HasMany
      */
     function messages() { return $this->hasMany('App\Models\Message'); }
+    
+    /**
+     * 返回指定消息类型包含的所有接口消息对象
+     *
+     * @return HasMany
+     */
+    function apiMessages() { return $this->hasMany('App\Models\ApiMessage'); }
     
     /**
      * 消息类型列表

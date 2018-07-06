@@ -48,6 +48,7 @@ use Throwable;
  * @mixin Eloquent
  * @property-read ExamType $examType
  * @property-read Collection|Score[] $score
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Score[] $scores
  */
 class Exam extends Model {
     

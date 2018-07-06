@@ -44,6 +44,7 @@ use Throwable;
  * @property-read WapSiteModule $wapSiteModule
  * @property-read WapSiteModule $wapsitemodule
  * @property-read Media $thumbnailmedia
+ * @property-read \App\Models\Media $thumbnailMedia
  */
 class WsmArticle extends Model {
     

@@ -54,6 +54,7 @@ use Throwable;
  * @method static Builder|StudentAttendance whereStudentId($value)
  * @method static Builder|StudentAttendance whereUpdatedAt($value)
  * @mixin Eloquent
+ * @property-read \App\Models\Media $media
  */
 class StudentAttendance extends Model {
     

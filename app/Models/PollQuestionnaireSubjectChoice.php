@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Request;
  * @method static Builder|PollQuestionnaireSubjectChoice whereSeqNo($value)
  * @method static Builder|PollQuestionnaireSubjectChoice whereUpdatedAt($value)
  * @mixin Eloquent
+ * @property-read \App\Models\PollQuestionnaireSubject $pqSubject
  */
 class PollQuestionnaireSubjectChoice extends Model {
     

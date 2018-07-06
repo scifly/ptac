@@ -45,6 +45,7 @@ use Illuminate\Support\Facades\DB;
  * @property-read Grade $grade
  * @property-read Semester $semester
  * @property-read StudentAttendance $studentAttendance
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\StudentAttendance[] $studentAttendances
  */
 class StudentAttendanceSetting extends Model {
     

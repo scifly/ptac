@@ -46,6 +46,8 @@ use Illuminate\Support\Facades\Request;
  * @method static Builder|ProcedureLog whereStepStatus($value)
  * @method static Builder|ProcedureLog whereUpdatedAt($value)
  * @mixin Eloquent
+ * @property-read \App\Models\User $initiator
+ * @property-read \App\Models\User $operator
  */
 class ProcedureLog extends Model {
     

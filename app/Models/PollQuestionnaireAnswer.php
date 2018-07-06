@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Request;
  * @property-read PollQuestionnaireSubjectChoice $pollquestionnaireChoice
  * @property-read PollQuestionnaireSubject $pollquestionnaireSubject
  * @property-read User $user
+ * @property-read \App\Models\PollQuestionnaireSubject $pqSubject
  */
 class PollQuestionnaireAnswer extends Model {
     

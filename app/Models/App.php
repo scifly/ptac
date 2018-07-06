@@ -62,6 +62,7 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|App whereUpdatedAt($value)
  * @mixin Eloquent
  * @property-read Corp $corp
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Message[] $messages
  */
 class App extends Model {
     

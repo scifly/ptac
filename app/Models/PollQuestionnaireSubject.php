@@ -42,6 +42,8 @@ use Illuminate\Support\Facades\DB;
  * @property-read PollQuestionnaire $pollQuestionnaire
  * @property-read PollQuestionnaireAnswer $pollQuestionnaireAnswer
  * @property-read Collection|PollQuestionnaireSubjectChoice[] $pollQuestionnaireSubjectChoices
+ * @property-read \App\Models\PollQuestionnaireAnswer $pqAnswer
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireSubjectChoice[] $pqsChoices
  */
 class PollQuestionnaireSubject extends Model {
     

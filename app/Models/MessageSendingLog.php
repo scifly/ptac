@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|MessageSendingLog whereRecipientCount($value)
  * @method static Builder|MessageSendingLog whereUpdatedAt($value)
  * @mixin Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ApiMessage[] $apiMessages
  */
 class MessageSendingLog extends Model {
     
@@ -47,12 +48,19 @@ class MessageSendingLog extends Model {
     function messages() { return $this->hasMany('App\Models\Message'); }
     
     /**
+     * 返回指定消息发送记录包含的所有接口消息对象
+     *
+     * @return HasMany
+     */
+    function apiMessages() { return $this->hasMany('App\Models\ApiMessage'); }
+    
+    /**
      * 保存消息发送记录
      *
      * @param $recipientCount
      * @return bool
      * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     function store($recipientCount) {
         

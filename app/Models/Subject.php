@@ -49,6 +49,7 @@ use Throwable;
  * @property-read Collection|Event[] $events
  * @property-read Collection|Squad[] $classes
  * @property-read Collection|Educator[] $educators
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Score[] $scores
  */
 class Subject extends Model {
     

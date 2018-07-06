@@ -43,6 +43,10 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|PollQuestionnaire whereUpdatedAt($value)
  * @method static Builder|PollQuestionnaire whereUserId($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireAnswer[] $pqAnswers
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireSubjectChoice[] $pqChoices
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireParticipant[] $pqParticipants
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireSubject[] $pqSubjects
  */
 class PollQuestionnaire extends Model {
     
@@ -110,7 +114,7 @@ class PollQuestionnaire extends Model {
     function pqChoices() {
         
         return $this->hasManyThrough(
-            'App\Models\PollQuestionnaireChoice',
+            'App\Models\PollQuestionnaireSubjectChoice',
             'App\Models\PollQuestionnaireSubject',
             'pq_id',
             'pqs_id'

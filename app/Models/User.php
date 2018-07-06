@@ -92,6 +92,9 @@ use Throwable;
  * @mixin Eloquent
  * @property-read Collection|Client[] $clients
  * @property-read Collection|Token[] $tokens
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Event[] $events
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireAnswer[] $pqAnswers
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireParticipant[] $pqParticipants
  */
 class User extends Authenticatable {
     

@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Request;
  * @mixin Eloquent
  * @property-read PollQuestionnaire $pollquestionnaire
  * @property-read User $user
+ * @property-read \App\Models\PollQuestionnaire $pollQuestionnaire
  */
 class PollQuestionnaireParticipant extends Model {
     

@@ -56,6 +56,7 @@ use Throwable;
  * @method static Builder|Student whereUpdatedAt($value)
  * @method static Builder|Student whereUserId($value)
  * @mixin Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Consumption[] $consumptions
  */
 class Student extends Model {
     

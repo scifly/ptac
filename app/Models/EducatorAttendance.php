@@ -40,6 +40,8 @@ use Illuminate\Support\Facades\Session;
  * @property-read EducatorAppeal $educatorAppeal
  * @property-read EducatorAttendanceSetting $educatorAttendanceSetting
  * @property-read Educator $educator
+ * @property int $status 考勤状态
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EducatorAttendance whereStatus($value)
  */
 class EducatorAttendance extends Model {
     

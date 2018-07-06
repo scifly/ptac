@@ -63,6 +63,7 @@ use Throwable;
  * @method static Builder|Message whereUpdatedAt($value)
  * @method static Builder|Message whereUrl($value)
  * @mixin Eloquent
+ * @property-read \App\Models\MessageSendingLog $messageSendinglog
  */
 class Message extends Model {
     

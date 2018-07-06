@@ -43,6 +43,7 @@ use Throwable;
  * @method static Builder|Squad whereName($value)
  * @method static Builder|Squad whereUpdatedAt($value)
  * @mixin Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Subject[] $subjects
  */
 class Squad extends Model {
     
