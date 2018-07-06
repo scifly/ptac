@@ -77,7 +77,9 @@ class SyncMember implements ShouldQueue {
                 $response['message'] = $message;
             }
         }
-        event(new JobResponse($response));
+        if ($this->userId) {
+            event(new JobResponse($response));
+        }
         
         return true;
         

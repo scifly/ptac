@@ -238,16 +238,10 @@ class Custodian extends Model {
      */
     function modify(array $data, $id = null) {
         
-        if (!$id) {
-            return $this->batch($this);
-        }
-        $custodian = $this->find($id);
-        if (!$custodian) {
-            return false;
-        }
+        if (!$id) { return $this->batchUpdateContact($this); }
         try {
-            DB::transaction(function () use ($data, $id, $custodian) {
-                
+            DB::transaction(function () use ($data, $id) {
+                $custodian = $this->find($id);
                 # 更新用户数据
                 $userId = $data['user_id'];
                 User::find($userId)->update([
@@ -317,16 +311,17 @@ class Custodian extends Model {
      * 删除监护人
      *
      * @param null $id
+     * @param bool $broadcast
      * @return bool
      * @throws Exception
      */
-    function purge($id = null) {
+    function purge($id, $broadcast = true) {
         
         try {
-            DB::transaction(function () use ($id) {
+            DB::transaction(function () use ($id, $broadcast) {
                 $custodian = $this->find($id);
                 CustodianStudent::whereCustodianId($id)->delete();
-                (new User)->remove($custodian->user_id);
+                (new User)->remove($custodian->user_id, $broadcast);
                 $custodian->delete();
             });
         } catch (Exception $e) {

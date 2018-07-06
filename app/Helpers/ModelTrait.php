@@ -45,6 +45,24 @@ trait ModelTrait {
     }
     
     /**
+     * 批量启用/禁用联系人
+     *
+     * @param Model $model
+     * @return bool
+     * @throws \Throwable
+     */
+    function batchUpdateContact(Model $model) {
+    
+        $this->batch($model);
+        $ids = Request::input('ids');
+        $userIds = $model->whereIn('id', array_values($ids))->pluck('user_id')->toArray();
+        Request::replace(['ids' => $userIds]);
+    
+        return (new User)->modify(Request::all());
+        
+    }
+    
+    /**
      * (批量)删除记录
      *
      * @param Model $model

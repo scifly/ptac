@@ -217,9 +217,10 @@ class User extends Authenticatable {
      *
      * @param $id
      * @param $action
+     * @param bool $broadcast
      * @return bool
      */
-    function sync($id, $action) {
+    function sync($id, $action, $broadcast = true) {
         
         $user = $this->find($id);
         switch ($user->group->name) {
@@ -268,7 +269,7 @@ class User extends Authenticatable {
                 'enable'       => $user->enabled,
             ];
         }
-        SyncMember::dispatch($data, Auth::id(), $action);
+        SyncMember::dispatch($data, $broadcast ? Auth::id() : null, $action);
         
         return true;
         
@@ -453,7 +454,7 @@ class User extends Authenticatable {
         if (!$id) {
             $ids = Request::input('ids');
             foreach ($ids as $id) {
-                $this->updateWechatUser($id);
+                $this->updateWechatUser($id, false);
             }
             
             return $this->batch($this);
@@ -512,11 +513,12 @@ class User extends Authenticatable {
      * 更新企业号会员
      *
      * @param $id
+     * @param bool $broadcast 是否发送广播消息，默认情况下发送，如果是批量操作则不发送
      * @return bool
      */
-    function updateWechatUser($id) {
+    function updateWechatUser($id, $broadcast = true) {
         
-        return $this->sync($id, 'update');
+        return $this->sync($id, 'update', $broadcast);
         
     }
     
@@ -557,16 +559,21 @@ class User extends Authenticatable {
      * 删除用户
      *
      * @param $id
+     * @param bool $broadcast
      * @return bool
-     * @throws Throwable
+     * @throws Exception
      */
-    function remove($id = null) {
+    function remove($id = null, $broadcast = true) {
         
         if (!$id) {
             $ids = Request::input('ids');
             try {
                 DB::transaction(function () use ($ids) {
-                    array_map(function ($id) { $this->purge($id); }, $ids);
+                    array_map(
+                        function ($id) {
+                            $this->purge($id, false);
+                        }, $ids
+                    );
                 });
             } catch (Exception $e) {
                 throw $e;
@@ -575,7 +582,7 @@ class User extends Authenticatable {
             return true;
         }
         
-        return $this->purge($id);
+        return $this->purge($id, $broadcast);
         
     }
     
@@ -583,14 +590,15 @@ class User extends Authenticatable {
      * 删除指定用户的所有数据
      *
      * @param $id
+     * @param bool $broadcast - 是否发送广播消息，默认情况下发送，如果是批量操作则不发送
      * @return bool
-     * @throws Throwable
+     * @throws Exception
      */
-    function purge($id): bool {
+    function purge($id, $broadcast = true): bool {
         
         try {
-            DB::transaction(function () use ($id) {
-                $this->deleteWechatUser($id);
+            DB::transaction(function () use ($id, $broadcast) {
+                $this->deleteWechatUser($id, $broadcast);
                 DepartmentUser::whereUserId($id)->delete();
                 Mobile::whereUserId($id)->delete();
                 (new Order)->removeUser($id);
@@ -637,7 +645,7 @@ class User extends Authenticatable {
             try {
                 DB::transaction(function () use ($contact, $ids) {
                     foreach ($ids as $id) {
-                        $contact->{'purge'}($id);
+                        $contact->{'purge'}($id, false);
                     }
                 });
             } catch (Exception $e) {
@@ -655,11 +663,12 @@ class User extends Authenticatable {
      * 删除企业号会员
      *
      * @param $id
+     * @param bool $broadcast 是否发送广播消息，默认情况下发送，如果是批量操作则不发送
      * @return bool
      */
-    function deleteWechatUser($id) {
+    function deleteWechatUser($id, $broadcast = true) {
         
-        return $this->sync($id, 'delete');
+        return $this->sync($id, 'delete', $broadcast);
         
     }
     

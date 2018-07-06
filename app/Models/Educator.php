@@ -362,18 +362,7 @@ class Educator extends Model {
      */
     function modify(EducatorRequest $request, $id = null) {
         
-        if (!$id) {
-            $this->batch($this);
-            $ids = Request::input('ids');
-            $userIds = $this->whereIn('id', array_values($ids))->pluck('user_id')->toArray();
-            Request::replace(['ids' => $userIds]);
-            
-            return (new User)->modify(Request::all());
-        }
-        $educator = $this->find($id);
-        if (!$educator) {
-            return false;
-        }
+        if (!$id) { return $this->batchUpdateContact($this); }
         try {
             DB::transaction(function () use ($request) {
                 $user = $request->input('user');
@@ -469,9 +458,7 @@ class Educator extends Model {
                     }
                 }
                 # 更新企业号成员
-                $user = new User();
-                $user->UpdateWechatUser($request->input('user_id'));
-                unset($user);
+                (new User)->UpdateWechatUser($request->input('user_id'));
             });
         } catch (Exception $e) {
             throw $e;
@@ -530,13 +517,14 @@ class Educator extends Model {
      * 删除指定教职员工的所有数据
      *
      * @param $id
+     * @param bool $broadcast
      * @return bool
      * @throws Exception
      */
-    function purge($id) {
+    function purge($id, $broadcast = true) {
         
         try {
-            DB::transaction(function () use ($id) {
+            DB::transaction(function () use ($id, $broadcast) {
                 $educator = $this->find($id);
                 ConferenceParticipant::whereEducatorId($id)->delete();
                 (new ConferenceQueue)->removeEducator($id);
@@ -547,7 +535,7 @@ class Educator extends Model {
                 Event::whereEducatorId($id)->delete();
                 (new Grade)->removeEducator($id);
                 (new Squad)->removeEducator($id);
-                (new User)->remove($educator->user_id);
+                (new User)->remove($educator->user_id, $broadcast);
                 $educator->delete();
             });
         } catch (Exception $e) {

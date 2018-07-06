@@ -298,9 +298,7 @@ class Student extends Model {
      */
     function modify(array $data, $id = null) {
         
-        if (!$id) {
-            return $this->batch($this);
-        }
+        if (!$id) { return $this->batchUpdateContact($this); }
         try {
             DB::transaction(function () use ($data, $id) {
                 $student = $this->find($id);
@@ -370,20 +368,21 @@ class Student extends Model {
      * 删除指定学生的所有数据
      *
      * @param $id
+     * @param bool $broadcast
      * @return bool
      * @throws Exception
      */
-    function purge($id) {
+    function purge($id, $broadcast = true) {
         
         try {
-            DB::transaction(function () use ($id) {
+            DB::transaction(function () use ($id, $broadcast) {
                 $student = $this->find($id);
                 Consumption::whereStudentId($id)->delete();
                 CustodianStudent::whereStudentId($id)->delete();
                 ScoreTotal::whereStudentId($id)->delete();
                 Score::whereStudentId($id)->delete();
                 StudentAttendance::whereStudentId($id)->delete();
-                (new User)->remove($student->user_id);
+                (new User)->remove($student->user_id, $broadcast);
                 $student->delete();
             });
         } catch (Exception $e) {

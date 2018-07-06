@@ -94,7 +94,7 @@ class SendMessage implements ShouldQueue {
             $results = [];
             foreach ($this->apps as $app) {
                 $userids = User::whereIn('id', $this->data['user_ids'])
-                    ->where('subscribed', 1)
+                    ->where('subscribed', 1)    # 仅发送消息给已关注的用户
                     ->pluck('userid')->toArray();
                 $content = [
                     'touser'            => implode('|', $userids),

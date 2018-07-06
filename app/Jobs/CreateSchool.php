@@ -25,7 +25,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
  * Class CreateSchoolMenu
  * @package App\Jobs
  */
-class CreateSchoolMenu implements ShouldQueue {
+class CreateSchool implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     

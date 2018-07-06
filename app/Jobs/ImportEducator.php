@@ -1,28 +1,28 @@
 <?php
 namespace App\Jobs;
 
+use App\Events\JobResponse;
+use App\Helpers\HttpStatusCode;
 use App\Helpers\JobTrait;
 use App\Helpers\ModelTrait;
-use Exception;
-use App\Models\User;
-use App\Models\Group;
-use App\Models\Grade;
-use App\Models\Squad;
-use App\Models\School;
-use App\Models\Mobile;
-use App\Models\Subject;
-use App\Models\Educator;
 use App\Models\Department;
-use App\Events\JobResponse;
-use Illuminate\Bus\Queueable;
-use App\Models\EducatorClass;
 use App\Models\DepartmentUser;
-use App\Helpers\HttpStatusCode;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
+use App\Models\Educator;
+use App\Models\EducatorClass;
+use App\Models\Grade;
+use App\Models\Group;
+use App\Models\Mobile;
+use App\Models\School;
+use App\Models\Squad;
+use App\Models\Subject;
+use App\Models\User;
+use Exception;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Validator;
@@ -58,7 +58,6 @@ class ImportEducator implements ShouldQueue {
     function handle() {
         
         return $this->import($this, __('messages.educator.title'));
-        
         // $response = [
         //     'userId' => $this->userId,
         //     'title' => __('messages.educator.title'),
@@ -216,7 +215,6 @@ class ImportEducator implements ShouldQueue {
         // event(new JobResponse($response));
         //
         // return true;
-        
     }
     
     /**
@@ -226,7 +224,7 @@ class ImportEducator implements ShouldQueue {
      * @return array
      */
     function validate(array $data) {
-    
+        
         $rules = [
             'name'             => 'required|string|between:2,20',
             'gender'           => ['required', Rule::in(['男', '女'])],
@@ -291,7 +289,7 @@ class ImportEducator implements ShouldQueue {
                 $inserts[] = $user;
             }
         }
-    
+        
         return [$inserts, $updates, $illegals];
         
     }
@@ -329,7 +327,7 @@ class ImportEducator implements ShouldQueue {
                         'isleader'   => 0,
                         'enabled'    => 1,
                         'synced'     => 0,
-                        'subscribed' => 0
+                        'subscribed' => 0,
                     ]);
                     # 创建教职员工
                     $educator = Educator::create([
@@ -376,6 +374,100 @@ class ImportEducator implements ShouldQueue {
     }
     
     /**
+     * 更新教职员工的年级主任、班级主任以及班级科目等绑定关系
+     *
+     * @param array $data
+     * @param Educator $educator
+     */
+    function binding(array $data, Educator $educator) {
+        
+        $school = School::find($educator->school_id);
+        # 更新年级主任
+        $gradeNames = explode(',', str_replace(['，', '：'], [',', ':'], $data['grades']));
+        foreach ($gradeNames as $gradeName) {
+            $grade = Grade::whereSchoolId($school->id)->where('name', $gradeName)->first();
+            if (!$grade) {
+                continue;
+            }
+            $educatorIds = array_merge(
+                explode(',', $grade->educator_ids),
+                [$educator->id]
+            );
+            $grade->educator_ids = implode(',', array_unique($educatorIds));
+            $grade->save();
+            # 更新部门&用户绑定关系
+            $this->updateDu($educator->user, $grade->department_id);
+        }
+        # 更新班级主任
+        $classeNames = explode(',', str_replace(['，', '：'], [',', ':'], $data['classes']));
+        $gradeIds = $school->grades->pluck('id')->toArray();
+        foreach ($classeNames as $classeName) {
+            $class = Squad::whereName($classeName)->whereIn('grade_id', $gradeIds)->first();
+            if (!$class) {
+                continue;
+            }
+            $educatorIds = array_merge(
+                explode(',', $class->educator_ids),
+                [$educator->id]
+            );
+            $class->educator_ids = implode(',', array_unique($educatorIds));;
+            $class->save();
+            # 更新部门&用户绑定关系
+            $this->updateDu($educator->user, $class->department_id);
+        }
+        # 更新班级科目绑定关系
+        $classSubjects = explode(',', str_replace(['，', '：'], [',', ':'], $data['classes_subjects']));
+        foreach ($classSubjects as $classSubject) {
+            if (empty($classSubject)) {
+                continue;
+            }
+            $paths = explode(':', $classSubject);
+            $class = Squad::whereName($paths[0])->whereIn('grade_id', $gradeIds)->first();
+            $subject = Subject::whereName($paths[1])->where('school_id', $school->id)->first();
+            if (!$class || !$subject) {
+                continue;
+            }
+            $educatorClass = EducatorClass::whereEducatorId($educator->id)
+                ->where('class_id', $class->id)
+                ->where('subject_id', $subject->id)
+                ->first();
+            if (!$educatorClass) {
+                EducatorClass::create([
+                    'educator_id' => $educator->id,
+                    'class_id'    => $class->id,
+                    'subject_id'  => $subject->id,
+                    'enabled'     => 1,
+                ]);
+            }
+            # 更新部门&用户绑定关系
+            $this->updateDu($educator->user, $class->department_id);
+        }
+        
+    }
+    
+    /**
+     * 更新部门&用户绑定关系
+     *
+     * @param User $user
+     * @param $departmentId
+     */
+    function updateDu(User $user, $departmentId) {
+        
+        $du = DepartmentUser::whereUserId($user->id)
+            ->where('department_id', $departmentId)
+            ->first();
+        if (!$du) {
+            DepartmentUser::create([
+                'user_id'       => $user->id,
+                'department_id' => $departmentId,
+                'enabled'       => 1,
+            ]);
+            $user->updateWechatUser($user->id);
+        }
+        
+    }
+    
+    /**
      * 更新已导入的数据
      *
      * @param array $updates
@@ -405,7 +497,8 @@ class ImportEducator implements ShouldQueue {
                     $user->gender = $update['gender'] == '男' ? '0' : '1';
                     $user->save();
                     # 更新教职员工
-                    $educator = $user->educator ?? Educator::create([
+                    $educator = $user->educator
+                        ?? Educator::create([
                             'user_id'   => $user->id,
                             'school_id' => $schoolId,
                             'sms_quote' => 0,
@@ -440,93 +533,6 @@ class ImportEducator implements ShouldQueue {
         }
         
         return true;
-        
-    }
-    
-    /**
-     * 更新教职员工的年级主任、班级主任以及班级科目等绑定关系
-     *
-     * @param array $data
-     * @param Educator $educator
-     */
-    function binding(array $data, Educator $educator) {
-    
-        $school = School::find($educator->school_id);
-        # 更新年级主任
-        $gradeNames = explode(',', str_replace(['，', '：'], [',', ':'], $data['grades']));
-        foreach ($gradeNames as $gradeName) {
-            $grade = Grade::whereSchoolId($school->id)->where('name', $gradeName)->first();
-            if (!$grade) { continue; }
-            $educatorIds = array_merge(
-                explode(',', $grade->educator_ids),
-                [$educator->id]
-            );
-            $grade->educator_ids = implode(',', array_unique($educatorIds));
-            $grade->save();
-            # 更新部门&用户绑定关系
-            $this->updateDu($educator->user, $grade->department_id);
-        }
-        # 更新班级主任
-        $classeNames = explode(',', str_replace(['，', '：'], [',', ':'], $data['classes']));
-        $gradeIds = $school->grades->pluck('id')->toArray();
-        foreach ($classeNames as $classeName) {
-            $class = Squad::whereName($classeName)->whereIn('grade_id', $gradeIds)->first();
-            if (!$class) { continue; }
-            $educatorIds = array_merge(
-                explode(',', $class->educator_ids),
-                [$educator->id]
-            );
-            $class->educator_ids = implode(',', array_unique($educatorIds));;
-            $class->save();
-            # 更新部门&用户绑定关系
-            $this->updateDu($educator->user, $class->department_id);
-        }
-        # 更新班级科目绑定关系
-        $classSubjects = explode(',', str_replace(['，', '：'], [',', ':'], $data['classes_subjects']));
-        foreach ($classSubjects as $classSubject) {
-            if (empty($classSubject)) { continue; }
-            $paths = explode(':', $classSubject);
-            $class = Squad::whereName($paths[0])->whereIn('grade_id', $gradeIds)->first();
-            $subject = Subject::whereName($paths[1])->where('school_id', $school->id)->first();
-            if (!$class || !$subject) { continue; }
-            $educatorClass = EducatorClass::whereEducatorId($educator->id)
-                ->where('class_id', $class->id)
-                ->where('subject_id', $subject->id)
-                ->first();
-            if (!$educatorClass) {
-                EducatorClass::create([
-                    'educator_id' => $educator->id,
-                    'class_id'    => $class->id,
-                    'subject_id'  => $subject->id,
-                    'enabled'     => 1,
-                ]);
-            }
-            # 更新部门&用户绑定关系
-            $this->updateDu($educator->user, $class->department_id);
-        }
-        
-    }
-    
-    /**
-     * 更新部门&用户绑定关系
-     *
-     * @param User $user
-     * @param $departmentId
-     */
-    function updateDu(User $user, $departmentId) {
-    
-        $du = DepartmentUser::whereUserId($user->id)
-            ->where('department_id', $departmentId)
-            ->first();
-        if (!$du) {
-            DepartmentUser::create([
-                'user_id' => $user->id,
-                'department_id' => $departmentId,
-                'enabled' => 1
-            ]);
-            
-            $user->updateWechatUser($user->id);
-        }
         
     }
     
