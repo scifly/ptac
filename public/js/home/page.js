@@ -66,7 +66,8 @@ var page = {
     },
     inform: function (title, text, image) {
         title = title || '提示';
-        $.gritter.add({title: title, text: text, image: page.siteRoot() + image, position: 'bottom-right'});
+        $.extend($.gritter.options, {position: 'bottom-right'});
+        $.gritter.add({title: title, text: text, image: page.siteRoot() + image});
     },
     siteRoot: function () {
         var siteRoot = window.location.origin
