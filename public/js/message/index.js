@@ -94,6 +94,7 @@ $(document).on('click', '.fa-edit', function() {
     $('#tab02').removeClass('active');
     $('a[href="#tab01"]').parent().addClass('active');
     $('#tab01').addClass('active');
+    $('.box-tools').hide();
 });
 
 
