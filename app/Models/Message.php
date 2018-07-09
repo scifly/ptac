@@ -132,10 +132,15 @@ class Message extends Model {
             [
                 'db'        => 'Message.sent', 'dt' => 7,
                 'formatter' => function ($d, $row) {
+                    $id = $row['id'];
                     $sent = Snippet::status($d, '已发', '未发');
                     $read = Snippet::status($row['read'], '已读', '未读');
+                    $status = $sent . '&nbsp;' . $read;
+                    $status .= !$d
+                        ? sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id)
+                        : sprintf(Snippet::DT_LINK_SHOW, 'show_' . $id);
                     
-                    return $sent . '&nbsp;' . $read;
+                    return $status . sprintf(Snippet::DT_LINK_DEL, $id);
                 },
             ],
             ['db' => 'Message.read', 'dt' => 8],
@@ -261,7 +266,7 @@ class Message extends Model {
         $user = Auth::user();
         $message = $this->find($id);
         $edit = ($user->id == $message->s_user_id ? true : false);
-        $object = json_decode(json_decode($message->content));
+        $object = json_decode($message->content);
         $title = $message->title;
         $type = array_search(mb_substr($message->title, -3, 2), Constant::INFO_TYPES);
         if (!$type) {
@@ -275,7 +280,7 @@ class Message extends Model {
             }
             $message->update(['title' => $title]);
         }
-        $type = $type ? $type : 'other';
+        $type = $type ?? 'other';
         Carbon::setLocale('zh');
         $content = [
             'id'         => $message->id,
