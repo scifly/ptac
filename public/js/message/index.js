@@ -88,7 +88,7 @@ $('.action-type').on('click', function () {
         $('.box-tools').slideUp();
     }
 });
-$('.fa-edit').on('click', function() {
+$(document).on('click', '.fa-edit', function() {
     var id = $(this).parents().eq(0).attr('id');
     alert(id);
 });
