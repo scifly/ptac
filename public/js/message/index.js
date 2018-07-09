@@ -83,6 +83,7 @@ $('a[href="#tab02"]').on('click', function () {
     page.initDatatable('messages', options);
 });
 $('.action-type').on('click', function () {
+    console.log($(this).find('a').prop('href'));
     if ($(this).find('a').prop('href') === '#tab02') {
         $('.box-tools').show();
     } else {
