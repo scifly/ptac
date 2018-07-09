@@ -89,8 +89,8 @@ $('.action-type').on('click', function () {
     }
 });
 $(document).on('click', '.fa-edit', function() {
-    var id = $(this).parents().eq(0).attr('id');
-    alert(id);
+    var paths = $(this).parents().eq(0).attr('id').split('_');
+    alert(paths[1]);
 });
 
 
