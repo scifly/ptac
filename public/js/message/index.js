@@ -103,7 +103,9 @@ $(document).on('click', '.fa-edit', function() {
         url: page.siteRoot() + 'messages/edit/' + id,
         success: function (result) {
             // alert(result['id'] + result['title'] + result['type']);
-            $('#text-content').val(result['type'] + result['other']);
+            var content = JSON.parse(result['other']);
+            console.log(content);
+            $('#text-content').val(result['type']);
             $('.overlay').hide();
 
         },
