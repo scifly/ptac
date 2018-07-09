@@ -24,7 +24,6 @@ class StudentAttendanceRequest extends FormRequest {
     public function rules() {
         
         return [
-            'school_id'      => 'required|integer',
             'student_number' => 'required|string|between:5,32',
             'punch_time'     => 'required|date',
             'inorout'        => 'required|integer',

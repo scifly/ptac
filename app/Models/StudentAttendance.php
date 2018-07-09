@@ -6,6 +6,7 @@ use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
+use App\Http\Requests\StudentAttendanceRequest;
 use App\Jobs\SendMessage;
 use Carbon\Carbon;
 use Eloquent;
@@ -21,6 +22,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Throwable;
+use Validator;
 
 /**
  * App\Models\StudentAttendance 学生考勤记录
@@ -169,105 +171,113 @@ class StudentAttendance extends Model {
     }
     
     /**
-     * 保存学生考勤记录
+     * 批量保存学生考勤记录
      *
-     * @param array $data
      * @return JsonResponse
+     * @throws Exception
      */
-    function store(array $data) {
+    function store() {
         
-        $school = School::find($data['school_id']);
-        abort_if(!$school, HttpStatusCode::NOT_FOUND, __('messages.school.not_found'));
-        $student = Student::whereIn('class_id', $school->classes->pluck('id')->toArray())
-            ->where('student_number', $data['student_number'])->first();
-        abort_if(!$student, HttpStatusCode::NOT_FOUND, __('messages.student.not_found'));
-        $dateTime = strtotime($data['punch_time']);
-        $day = Constant::WEEK_DAYS[date('w', $dateTime)];
-        $strDateTime = date('Y-m-d', $dateTime);
-        $semester = Semester::where('start_date', '<=', $strDateTime)
-            ->where('end_date', '>=', $strDateTime)
-            ->where('enabled', 1)
-            ->first();
-        abort_if(!$semester, HttpStatusCode::NOT_FOUND, __('messages.semester.not_found'));
-        $machine = AttendanceMachine::whereMachineid($data['machineid'])
-            ->where('school_id', $school->id)->first();
-        abort_if(!$machine, HttpStatusCode::NOT_FOUND, __('messages.attendance_machine.not_found'));
-        $sases = StudentAttendanceSetting::whereGradeId($student->squad->grade_id)
-            ->where('semester_id', $semester->id)
-            ->where('day', $day)->get();
-        abort_if(!$sases, HttpStatusCode::NOT_FOUND, __('messages.sas.not_found'));
-        $punchTime = date('Y-m-d H:i:s', $dateTime);
-        $status = 0; # 考勤异常
-        $sasId = 0;
-        foreach ($sases as $sas) {
-            $sasId = $sas->id;
-            if ($punchTime <= $sas->end && $punchTime >= $sas->start) {
-                $status = 1;
-                break;
-            }
-        }
-        $sa = $this->create([
-            'student_id'            => $student->id,
-            'sas_id'                => $sasId,
-            'punch_time'            => $punchTime,
-            'inorout'               => $data['inorout'],
-            'attendance_machine_id' => $machine->id,
-            'status'                => $status,
-            'longitude'             => $data['longitude'],
-            'latitude'              => $data['latitude'],
-            'media_id'              => $data['media_id'],
-        ]);
-    
-        # 发送考勤消息
-        if ($sa) {
-            $userIds = $student->custodians->pluck('user_id')->toArray();
-            list($smsUserIds, $wechatUserIds) = array_pluck(
-                User::get(['id', 'subscribed'])
-                    ->whereIn('id', $userIds)
-                    ->groupBy('subscribed')
-                    ->toArray(),
-                '*.id'
-            );
-            $data = [
-                'dept_ids' => [],
-                'message_type_id' => MessageType::whereName('考勤消息')->first()->id,
-            ];
-            $content = strtr(
-                $sa->studentAttendanceSetting->msg_template,
-                [
-                    '{name}' => $student->user->realname,
-                    '{time}' => $sa->punch_time,
-                    '{rule}' => $sa->studentAttendanceSetting->name,
-                    '{status}' => $sa->status == 1 ? '正常' : '异常'
-                ]
-            );
-            $corp = $school->corp;
-            $apps = [App::whereCorpId($school->corp_id)->whereName('考勤中心')->first()->toArray()];
-            # 需要接收微信消息的用户
-            if (!empty($wechatUserIds)) {
-                SendMessage::dispatch(array_merge($data, [
-                    'user_ids' => $wechatUserIds,
-                    'type' => 'text',
-                    'text' => ['content' => $content]
-                ]), null, $corp, $apps);
-            }
-            # 需要接收短信消息的用户
-            if (!empty($smsUserIds)) {
-                SendMessage::dispatch(array_merge($data, [
-                    'user_ids' => $smsUserIds,
-                    'type' => 'sms',
-                    'sms' => $content
-                ]), null, $corp, $apps);
-            }
-            return response()->json([
-                'statusCode' => HttpStatusCode::OK,
-                'message'    => __('messages.ok'),
-            ]);
+        try {
+            DB::transaction(function () {
+                $data = Request::input('data');
+                $school = School::find($data['school_id']);
+                abort_if(!$school, HttpStatusCode::NOT_FOUND, __('messages.school.not_found'));
+                foreach ($data as &$datum) {
+                    $datum['inorout'] = $datum['inorout'] ?? 2;
+                    $datum['longitude'] = $datum['longitude'] ?? 0;
+                    $datum['latitude'] = $datum['latitude'] ?? 0;
+                    $datum['machineid'] = $datum['attendid'];
+                    $datum['media_id'] = 0;
+                    $result = Validator::make($datum, (new StudentAttendanceRequest)->rules());
+                    abort_if(!$result, HttpStatusCode::NOT_ACCEPTABLE, __('messages.not_acceptable'));
+                    $student = Student::whereIn('class_id', $school->classes->pluck('id')->toArray())
+                        ->where('student_number', $datum['student_number'])->first();
+                    abort_if(!$student, HttpStatusCode::NOT_FOUND, __('messages.student.not_found'));
+                    $dateTime = strtotime($datum['punch_time']);
+                    $day = Constant::WEEK_DAYS[date('w', $dateTime)];
+                    $strDateTime = date('Y-m-d', $dateTime);
+                    $semester = Semester::where('start_date', '<=', $strDateTime)
+                        ->where('end_date', '>=', $strDateTime)
+                        ->where('enabled', 1)
+                        ->first();
+                    abort_if(!$semester, HttpStatusCode::NOT_FOUND, __('messages.semester.not_found'));
+                    $machine = AttendanceMachine::whereMachineid($datum['machineid'])
+                        ->where('school_id', $school->id)->first();
+                    abort_if(!$machine, HttpStatusCode::NOT_FOUND, __('messages.attendance_machine.not_found'));
+                    $sases = StudentAttendanceSetting::whereGradeId($student->squad->grade_id)
+                        ->where('semester_id', $semester->id)
+                        ->where('day', $day)->get();
+                    abort_if(!$sases, HttpStatusCode::NOT_FOUND, __('messages.sas.not_found'));
+                    $punchTime = date('Y-m-d H:i:s', $dateTime);
+                    $status = 0; # 考勤异常
+                    $sasId = 0;
+                    foreach ($sases as $sas) {
+                        $sasId = $sas->id;
+                        if ($punchTime <= $sas->end && $punchTime >= $sas->start) {
+                            $status = 1;
+                            break;
+                        }
+                    }
+                    $sa = $this->create([
+                        'student_id'            => $student->id,
+                        'sas_id'                => $sasId,
+                        'punch_time'            => $punchTime,
+                        'inorout'               => $datum['inorout'],
+                        'attendance_machine_id' => $machine->id,
+                        'status'                => $status,
+                        'longitude'             => $datum['longitude'],
+                        'latitude'              => $datum['latitude'],
+                        'media_id'              => $datum['media_id'],
+                    ]);
+                    $userIds = $student->custodians->pluck('user_id')->toArray();
+                    list($smsUserIds, $wechatUserIds) = array_pluck(
+                        User::get(['id', 'subscribed'])
+                            ->whereIn('id', $userIds)
+                            ->groupBy('subscribed')
+                            ->toArray(),
+                        '*.id'
+                    );
+                    $data = [
+                        'dept_ids'        => [],
+                        'message_type_id' => MessageType::whereName('考勤消息')->first()->id,
+                    ];
+                    $content = strtr(
+                        $sa->studentAttendanceSetting->msg_template,
+                        [
+                            '{name}'   => $student->user->realname,
+                            '{time}'   => $sa->punch_time,
+                            '{rule}'   => $sa->studentAttendanceSetting->name,
+                            '{status}' => $sa->status == 1 ? '正常' : '异常'
+                        ]
+                    );
+                    $corp = $school->corp;
+                    $apps = [App::whereCorpId($school->corp_id)->whereName('考勤中心')->first()->toArray()];
+                    # 需要接收微信消息的用户
+                    if (!empty($wechatUserIds)) {
+                        SendMessage::dispatch(array_merge($data, [
+                            'user_ids' => $wechatUserIds,
+                            'type'     => 'text',
+                            'text'     => ['content' => $content]
+                        ]), null, $corp, $apps);
+                    }
+                    # 需要接收短信消息的用户
+                    if (!empty($smsUserIds)) {
+                        SendMessage::dispatch(array_merge($data, [
+                            'user_ids' => $smsUserIds,
+                            'type'     => 'sms',
+                            'sms'      => $content
+                        ]), null, $corp, $apps);
+                    }
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
         
         return response()->json([
-            'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
-            'message'    => __('messages.internal_server_error'),
+            'statusCode' => HttpStatusCode::OK,
+            'message'    => __('messages.ok'),
         ]);
         
     }

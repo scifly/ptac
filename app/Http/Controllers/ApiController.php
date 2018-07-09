@@ -86,14 +86,12 @@ class ApiController extends Controller {
     /**
      * 学生考勤记录
      *
-     * @param StudentAttendanceRequest $request
      * @return JsonResponse
+     * @throws Exception
      */
-    public function studentAttendance(StudentAttendanceRequest $request) {
+    public function studentAttendance() {
 
-        return $this->sa->store(
-            $request->all()
-        );
+        return $this->sa->store();
         
     }
     
