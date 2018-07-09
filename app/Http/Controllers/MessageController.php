@@ -63,6 +63,20 @@ class MessageController extends Controller {
     }
     
     /**
+     * 编辑消息
+     *
+     * @param $id
+     * @return JsonResponse
+     */
+    public function edit($id) {
+    
+        list($content) = $this->message->show($id);
+        
+        return response()->json($content);
+    
+    }
+    
+    /**
      * 发送消息
      *
      * @param MessageRequest $request
@@ -82,6 +96,8 @@ class MessageController extends Controller {
     
     /**
      * 标记已读.未读
+     *
+     * @throws Exception
      */
     public function update() {
     

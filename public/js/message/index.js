@@ -89,14 +89,30 @@ $('.action-type').on('click', function () {
     }
 });
 $(document).on('click', '.fa-edit', function() {
-    var paths = $(this).parents().eq(0).attr('id').split('_');
-    $('a[href="#tab02"]').parent().removeClass('active');
-    $('#tab02').removeClass('active');
-    $('a[href="#tab01"]').parent().addClass('active');
-    $('#tab01').addClass('active');
-    $('.box-tools').hide();
-});
+    var paths = $(this).parents().eq(0).attr('id').split('_'),
+        id = paths[1];
 
+    $('.overlay').show();
+
+    $.ajax({
+        type: 'GET',
+        dataType: 'json',
+        url: page.siteRoot() + 'messages/edit/' + id,
+        success: function (result) {
+            alert(result['id'] + result['title'] + result['type']);
+
+            $('.overlay').hide();
+            $('a[href="#tab02"]').parent().removeClass('active');
+            $('#tab02').removeClass('active');
+            $('a[href="#tab01"]').parent().addClass('active');
+            $('#tab01').addClass('active');
+            $('.box-tools').hide();
+        },
+        error: function (e) {
+            page.errorHandler(e);
+        }
+    });
+});
 
 // 初始化消息类型卡片悬停特效、input parsley验证规则
 $('.tab').hover(

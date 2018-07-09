@@ -282,7 +282,7 @@ class Message extends Model {
      * 显示指定消息的内容
      *
      * @param $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return array
      */
     function show($id) {
         
@@ -316,11 +316,7 @@ class Message extends Model {
             $type        => $type == 'other' ? $message->content : $object->{$type},
         ];
         
-        return view('wechat.message_center.show', [
-            'content' => $content,
-            'edit'    => $edit,
-            'show'    => true,
-        ]);
+        return [$content, $edit];
         
     }
     
