@@ -89,6 +89,7 @@ $('.action-type').on('click', function () {
     }
 });
 $('.fa-pencil').on('click', function() {
+    alert('whtf');
     var id = $(this).parents().eq(0).attr('id');
     alert(id);
 });
