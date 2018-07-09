@@ -83,7 +83,9 @@ $('a[href="#tab02"]').on('click', function () {
     $('#data-table').dataTable().fnDestroy();
     page.initDatatable('messages', options);
 });
-
+$('a[href="#tab01"] a[href="#tab03"]').on('click', function () {
+    $('.box-tools').hide();
+});
 // 初始化消息类型卡片悬停特效、input parsley验证规则
 $('.tab').hover(
     function () {
