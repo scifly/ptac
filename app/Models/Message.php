@@ -224,14 +224,35 @@ class Message extends Model {
     }
     
     /**
+     * 批量标记已读/未读
+     *
+     * @throws Exception
+     */
+    function modify() {
+    
+        try {
+            DB::transaction(function () {
+                $ids = Request::input('ids');
+                $read = Request::input('action') == 'enable' ? true : false;
+                foreach ($ids as $id) {
+                    $this->read($id, $read);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+    }
+    
+    /**
      * 将指定消息的状态更新为已读，并更新指定消息的已读数量
      *
      * @param $id
+     * @param bool $read - 1:已读，0:未读
      * @return bool
      * @throws Exception
-     * @throws Throwable
      */
-    function read($id) {
+    function read($id, $read = true) {
         
         $message = $this->find($id);
         abort_if(
@@ -240,11 +261,11 @@ class Message extends Model {
             __('messages.not_found')
         );
         try {
-            DB::transaction(function () use ($message, $id) {
-                $message->read = 1;
+            DB::transaction(function () use ($message, $id, $read) {
+                $message->read = $read ? 1 : 0;
                 $message->save();
                 $msl = MessageSendingLog::find($message->msl_id);
-                $msl->read_count += 1;
+                $msl->read_count += $read ? 1 : -1;
                 $msl->save();
             });
         } catch (Exception $e) {

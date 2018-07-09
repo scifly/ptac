@@ -34,7 +34,9 @@ class MessageIndexComposer {
             'apps'         => $apps,
             'smsMaxLength' => 300,
             'messageTypes' => MessageType::pluck('name', 'id')->toArray(),
-            'batch'        => true
+            'batch'        => true,
+            'enable'       => '标记已读',
+            'disable'      => '标记未读'
         ]);
     }
     

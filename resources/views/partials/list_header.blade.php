@@ -33,10 +33,10 @@
             @endif
             @if (isset($uris['update']))
                 @can ('act', $uris['update'])
-                    <button id="batch-enable" type="button" class="btn btn-default" title="批量启用">
+                    <button id="batch-enable" type="button" class="btn btn-default" title="{{ $enable ?? '批量启用' }}">
                         <i class="fa fa-circle text-green"></i>
                     </button>
-                    <button id="batch-disable" type="button" class="btn btn-default" title="批量禁用">
+                    <button id="batch-disable" type="button" class="btn btn-default" title="{{ $disable ?? '批量禁用' }}">
                         <i class="fa fa-circle text-gray"></i>
                     </button>
                 @endcan

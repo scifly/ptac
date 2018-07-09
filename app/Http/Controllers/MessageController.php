@@ -80,4 +80,29 @@ class MessageController extends Controller {
         
     }
     
+    /**
+     * 标记已读.未读
+     */
+    public function update() {
+    
+        return $this->result(
+            $this->message->modify()
+        );
+    
+    }
+    
+    /**
+     * 删除消息
+     * @param null $id
+     * @return JsonResponse|string
+     * @throws Exception
+     */
+    public function destroy($id = null) {
+    
+        return $this->result(
+            $this->message->remove($id)
+        );
+    
+    }
+    
 }
