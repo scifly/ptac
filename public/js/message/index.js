@@ -84,10 +84,10 @@ $('a[href="#tab02"]').on('click', function () {
 });
 $('.action-type').on('click', function () {
     console.log($(this).find('a').prop('href'));
-    if ($(this).find('a').prop('href') === '#tab02') {
-        $('.box-tools').show();
+    if ($(this).find('a').attr('href') === '#tab02') {
+        $('.box-tools').slideDown();
     } else {
-        $('.box-tools').hide();
+        $('.box-tools').slideUp();
     }
 });
 // 初始化消息类型卡片悬停特效、input parsley验证规则
