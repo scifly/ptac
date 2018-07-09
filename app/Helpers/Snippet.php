@@ -37,7 +37,7 @@ class Snippet {
     const MENU_ICON = '<i class="%s" style="width: 20px;"></i>';
     # 不包含子菜单的模板
     const /** @noinspection HtmlUnknownTarget */
-        SIMPLE = '<li%s><a id="%s" href="%s" class="leaf"><i class="%s"></i> %s</a></li>';
+        SIMPLE = '<li%s><a id="%s" href="%s" class="leaf"><i class="%s"></i> <span>%s</span></a></li>';
     # 包含子菜单的HTML模板
     const TREE = <<<HTML
             <li class="treeview%s">

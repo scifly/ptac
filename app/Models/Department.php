@@ -52,9 +52,9 @@ use Throwable;
  * @method static Builder|Department whereParentId($value)
  * @method static Builder|Department whereRemark($value)
  * @method static Builder|Department whereUpdatedAt($value)
+ * @method static Builder|Department whereSynced($value)
  * @mixin Eloquent
  * @property int|null $synced 是否已同步到企业微信通讯录
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Department whereSynced($value)
  */
 class Department extends Model {
     

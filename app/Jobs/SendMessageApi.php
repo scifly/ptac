@@ -69,6 +69,7 @@ class SendMessageApi implements ShouldQueue {
                     ->whereIn('user_id', $userIds)
                     ->pluck('user_id', 'mobile')
                     ->toArray();
+                
                 # 创建发送日志
                 $msl = [
                     'read_count'      => 0,
@@ -76,7 +77,6 @@ class SendMessageApi implements ShouldQueue {
                     'recipient_count' => count($targets),
                 ];
                 $mslId = MessageSendingLog::create($msl)->id;
-                
                 
                 $message = new Message;
                 $apiMessage = new ApiMessage;

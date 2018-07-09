@@ -3,20 +3,16 @@ namespace App\Http\Controllers;
 
 use App\Helpers\HttpStatusCode;
 use App\Http\Requests\ConsumptionRequest;
-use App\Http\Requests\MessageRequest;
 use App\Http\Requests\StudentAttendanceRequest;
 use App\Jobs\SendMessageApi;
 use App\Models\Consumption;
 use App\Models\EducatorAttendance;
 use App\Models\Message;
-use App\Models\Mobile;
 use App\Models\StudentAttendance;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
-use Throwable;
 
 /**
  * Class ApiController
@@ -121,7 +117,7 @@ class ApiController extends Controller {
      * @return string
      * @throws Exception
      */
-    public function sendSms() {
+    public function sendMsg() {
     
         SendMessageApi::dispatch(
             Request::input('mobiles'),
