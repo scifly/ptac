@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/AdminLTE.min.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('css/skins/_all-skins.min.css') }}">
+    <link rel="stylesheet" href="{{ URL::asset('css/page.css') }}">
     <link rel="shortcut icon" href="{{ URL::asset('favicon.ico') }}">
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -23,10 +24,6 @@
     <!-- Google Font -->
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
-    <style>
-        /*.box.box-solid.box-default > .box-header { background-color: #f4f4f4; }*/
-        /*.box.box-solid.box-default { border: 1px solid #f4f4f4; }*/
-    </style>
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">

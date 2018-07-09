@@ -1,0 +1,6 @@
+.box.box-solid.box-default > .box-header {
+    background-color: #f4f4f4;
+}
+.box.box-solid.box-default {
+    border: 1px solid #f4f4f4;
+}
