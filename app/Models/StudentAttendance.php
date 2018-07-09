@@ -181,8 +181,11 @@ class StudentAttendance extends Model {
         try {
             DB::transaction(function () {
                 $data = Request::input('data');
-                $school = School::find($data['school_id']);
-                abort_if(!$school, HttpStatusCode::NOT_FOUND, __('messages.school.not_found'));
+                abort_if(
+                    !($school = School::find($data['school_id'])),
+                    HttpStatusCode::NOT_FOUND,
+                    __('messages.school.not_found')
+                );
                 foreach ($data as &$datum) {
                     $datum['inorout'] = $datum['inorout'] ?? 2;
                     $datum['longitude'] = $datum['longitude'] ?? 0;
