@@ -88,8 +88,7 @@ $('.action-type').on('click', function () {
         $('.box-tools').slideUp();
     }
 });
-$('.fa-pencil').on('click', function() {
-    alert('whtf');
+$('.fa-edit').on('click', function() {
     var id = $(this).parents().eq(0).attr('id');
     alert(id);
 });
