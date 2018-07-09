@@ -91,9 +91,12 @@ $('.action-type').on('click', function () {
 $(document).on('click', '.fa-edit', function() {
     var paths = $(this).parents().eq(0).attr('id').split('_'),
         id = paths[1];
-
+    $('a[href="#tab02"]').parent().removeClass('active');
+    $('#tab02').removeClass('active');
+    $('a[href="#tab01"]').parent().addClass('active');
+    $('#tab01').addClass('active');
+    $('.box-tools').hide();
     $('.overlay').show();
-
     $.ajax({
         type: 'GET',
         dataType: 'json',
@@ -102,11 +105,7 @@ $(document).on('click', '.fa-edit', function() {
             // alert(result['id'] + result['title'] + result['type']);
             $('#text-content').val(result);
             $('.overlay').hide();
-            $('a[href="#tab02"]').parent().removeClass('active');
-            $('#tab02').removeClass('active');
-            $('a[href="#tab01"]').parent().addClass('active');
-            $('#tab01').addClass('active');
-            $('.box-tools').hide();
+
         },
         error: function (e) {
             page.errorHandler(e);
