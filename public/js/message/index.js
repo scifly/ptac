@@ -4,7 +4,6 @@ var $targetIds = $('#selected-node-ids'),
     $messageTypeId = $('#message_type_id'),
     $messageContent = $('#message-content'),
 
-
     // 发送对象
     $targets = $('#targets'),
     $choose = $('#choose'),
@@ -83,13 +82,18 @@ $('a[href="#tab02"]').on('click', function () {
     page.initDatatable('messages', options);
 });
 $('.action-type').on('click', function () {
-    console.log($(this).find('a').prop('href'));
     if ($(this).find('a').attr('href') === '#tab02') {
         $('.box-tools').slideDown();
     } else {
         $('.box-tools').slideUp();
     }
 });
+$('.fa-pencil').on('click', function() {
+    var id = $(this).parents().eq(0).attr('id');
+    alert(id);
+});
+
+
 // 初始化消息类型卡片悬停特效、input parsley验证规则
 $('.tab').hover(
     function () {
