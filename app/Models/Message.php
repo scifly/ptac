@@ -303,7 +303,7 @@ class Message extends Model {
             }
             $message->update(['title' => $title]);
         }
-        $type = $type ?? 'other';
+        $type = $type ? $type : 'other';
         Carbon::setLocale('zh');
         $content = [
             'id'         => $message->id,
