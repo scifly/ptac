@@ -90,7 +90,8 @@ $('.action-type').on('click', function () {
 });
 $(document).on('click', '.fa-edit', function() {
     var paths = $(this).parents().eq(0).attr('id').split('_');
-    alert(paths[1]);
+    $('.action-type').removeClass('active');
+    $('a[href="#tab01"]').parent().addClass('active');
 });
 
 
