@@ -5,6 +5,7 @@ use App\Facades\Datatable;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
+use App\Http\Requests\EducatorAttendanceRequest;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
+use Validator;
 
 /**
  * App\Models\EducatorAttendance 教职员工考勤记录
@@ -141,47 +143,65 @@ class EducatorAttendance extends Model {
     /**
      * 保存教职员工考勤记录
      *
-     * @param array $data
      * @return bool
+     * @throws Exception
      */
-    function store(array $data) {
+    function store() {
         
-        $user = User::find($data['user_id']);
-        abort_if(!$user, HttpStatusCode::NOT_FOUND, __('messages.user_not_found'));
-        abort_if(!($educator = $user->educator), HttpStatusCode::NOT_FOUND, __('messages.educator_not_found'));
-        $dateTime = $data['punch_time'];
-        $punchTime = date('H:i:s', strtotime($dateTime));
-        $eases = EducatorAttendanceSetting::whereSchoolId($educator->school_id)
-            ->where('enabled', 1)->get();
-        $status = 0; # 考勤异常
-        $easId = 0;
-        foreach ($eases as $eas) {
-            $easId = $eas->id;
-            if ($punchTime <= $eas->end && $punchTime >= $eas->start) {
-                $status = 1;
-                break;
-            }
+        try {
+            DB::transaction(function () {
+                $data = Request::input('data');
+                foreach ($data as &$datum) {
+                    $input['longitude'] = $input['longitude'] ?? 0;
+                    $input['latitude'] = $input['latitude'] ?? 0;
+                    abort_if(
+                        !Validator::make($datum, (new EducatorAttendanceRequest)->rules()),
+                        HttpStatusCode::NOT_ACCEPTABLE,
+                        __('messages.not_acceptable')
+                    );
+                    $user = User::find($datum['user_id']);
+                    abort_if(
+                        !$user,
+                        HttpStatusCode::NOT_FOUND,
+                        __('messages.user_not_found')
+                    );
+                    abort_if(
+                        !($educator = $user->educator),
+                        HttpStatusCode::NOT_FOUND,
+                        __('messages.educator_not_found')
+                    );
+                    $dateTime = $datum['punch_time'];
+                    $punchTime = date('H:i:s', strtotime($dateTime));
+                    $eases = EducatorAttendanceSetting::whereSchoolId($educator->school_id)
+                        ->where('enabled', 1)->get();
+                    $status = 0; # 考勤异常
+                    $easId = 0;
+                    foreach ($eases as $eas) {
+                        $easId = $eas->id;
+                        if ($punchTime <= $eas->end && $punchTime >= $eas->start) {
+                            $status = 1;
+                            break;
+                        }
+                    }
+                    $this->create([
+                        'educator_id' => $educator->id,
+                        'punch_time'  => $dateTime,
+                        'longitude'   => $datum['longitude'],
+                        'latitude'    => $datum['latitude'],
+                        'inorout'     => $datum['inorout'],
+                        'eas_id'      => $easId,
+                        'status'      => $status,
+                    ]);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
-        
-        $result = $this->create([
-            'educator_id' => $educator->id,
-            'punch_time'  => $dateTime,
-            'longitude'   => $data['longitude'],
-            'latitude'    => $data['latitude'],
-            'inorout'     => $data['inorout'],
-            'eas_id'      => $easId,
-            'status'      => $status,
-        ]);
     
-        return $result
-            ? response()->json([
-                'statusCode' => HttpStatusCode::OK,
-                'message'    => __('messages.ok'),
-            ])
-            : response()->json([
-                'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
-                'message'    => __('messages.internal_server_error'),
-            ]);
+        return response()->json([
+            'statusCode' => HttpStatusCode::OK,
+            'message'    => __('messages.ok'),
+        ]);
         
     }
     

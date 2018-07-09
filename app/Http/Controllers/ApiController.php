@@ -2,8 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\HttpStatusCode;
-use App\Http\Requests\ConsumptionRequest;
-use App\Http\Requests\StudentAttendanceRequest;
 use App\Jobs\SendMessageApi;
 use App\Models\Consumption;
 use App\Models\EducatorAttendance;
@@ -72,14 +70,12 @@ class ApiController extends Controller {
     /**
      * 消费记录
      *
-     * @param ConsumptionRequest $request
      * @return JsonResponse|string
+     * @throws Exception
      */
-    public function studentConsumption(ConsumptionRequest $request) {
+    public function studentConsumption() {
 
-        return $this->consumption->store(
-            $request->all()
-        );
+        return $this->consumption->store();
         
     }
     
@@ -98,14 +94,12 @@ class ApiController extends Controller {
     /**
      * 教职员工考勤记录
      *
-     * @param EducatorAttendance $request
      * @return JsonResponse|string
+     * @throws Exception
      */
-    public function educatorAttendance(EducatorAttendance $request) {
+    public function educatorAttendance() {
         
-        return $this->ea->store(
-            $request->all()
-        );
+        return $this->ea->store();
         
     }
     

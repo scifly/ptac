@@ -5,13 +5,16 @@ use App\Facades\Datatable;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
+use App\Http\Requests\ConsumptionRequest;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use Validator;
 
 /**
  * App\Models\Consumption 消费记录
@@ -125,20 +128,30 @@ class Consumption extends Model {
     /**
      * 保存消费记录
      *
-     * @param array $data
      * @return bool
+     * @throws Exception
      */
-    function store(array $data) {
+    function store() {
         
-        return $this->create($data)
-            ? response()->json([
-                'statusCode' => HttpStatusCode::OK,
-                'message' => __('messages.ok')
-            ])
-            : response()->json([
-                'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
-                'message' => __('messages.internal_server_error')
-            ]);
+        try {
+            DB::transaction(function () {
+               $data = Request::input('data');
+               foreach ($data as &$datum) {
+                   $student = Student::whereStudentNumber($datum['student_number'])->first();
+                   $input['student_id'] = $student ? $student->student_number : 0;
+                   $result = Validator::make($datum, (new ConsumptionRequest)->rules());
+                   abort_if(!$result, HttpStatusCode::NOT_ACCEPTABLE, __('messages.not_acceptable'));
+                   $this->create($datum);
+               }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return response()->json([
+            'statusCode' => HttpStatusCode::OK,
+            'message' => __('messages.ok')
+        ]);
         
     }
     
