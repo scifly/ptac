@@ -3,7 +3,7 @@
 {{--@yield('content')--}}
 @if(!empty($tabs))
     <div class="box box-default box-solid">
-        <div class="nav-tabs-custom">
+        <div class="nav-tabs-custom" style="margin-bottom: 0;">
             <ul class="nav nav-tabs">
                 @foreach ($tabs as $tab)
                     <li @if($tab['active']) class="active" @endif>
