@@ -99,8 +99,8 @@ $(document).on('click', '.fa-edit', function() {
         dataType: 'json',
         url: page.siteRoot() + 'messages/edit/' + id,
         success: function (result) {
-            alert(result['id'] + result['title'] + result['type']);
-
+            // alert(result['id'] + result['title'] + result['type']);
+            $('#text-content').val(result);
             $('.overlay').hide();
             $('a[href="#tab02"]').parent().removeClass('active');
             $('#tab02').removeClass('active');
