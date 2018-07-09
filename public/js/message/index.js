@@ -79,12 +79,15 @@ var options = [
 $('.box-tools').hide();
 page.initDatatable('messages', options);
 $('a[href="#tab02"]').on('click', function () {
-    $('.box-tools').show();
     $('#data-table').dataTable().fnDestroy();
     page.initDatatable('messages', options);
 });
-$('a[href="#tab01"] a[href="#tab03"]').on('click', function () {
-    $('.box-tools').hide();
+$('.action-type').on('click', function () {
+    if ($(this).find('a').prop('href') === '#tab02') {
+        $('.box-tools').show();
+    } else {
+        $('.box-tools').hide();
+    }
 });
 // 初始化消息类型卡片悬停特效、input parsley验证规则
 $('.tab').hover(

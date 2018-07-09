@@ -5,17 +5,17 @@
     <div class="box-body">
         <div class="nav-tabs-custom">
             <ul class="nav nav-tabs pull-right">
-                <li>
+                <li class="action-type">
                     <a href="#tab03" data-toggle="tab">
                         <i class="fa fa-th-large"></i>&nbsp;素材库
                     </a>
                 </li>
-                <li>
+                <li class="action-type">
                     <a href="#tab02" data-toggle="tab">
                         <i class="fa fa-history"></i>&nbsp;已发送
                     </a>
                 </li>
-                <li class="active">
+                <li class="active action-type">
                     <a href="#tab01" data-toggle="tab">
                         <i class="fa fa-send"></i>&nbsp;发消息
                     </a>
