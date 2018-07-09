@@ -29,6 +29,7 @@ use Validator;
  * @property int $eas_id 所属考勤设置ID
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int $status 考勤状态
  * @method static Builder|EducatorAttendance whereCreatedAt($value)
  * @method static Builder|EducatorAttendance whereEasId($value)
  * @method static Builder|EducatorAttendance whereEducatorId($value)
@@ -38,12 +39,11 @@ use Validator;
  * @method static Builder|EducatorAttendance whereLongitude($value)
  * @method static Builder|EducatorAttendance wherePunchTime($value)
  * @method static Builder|EducatorAttendance whereUpdatedAt($value)
+ * @method static Builder|EducatorAttendance whereStatus($value)
  * @mixin Eloquent
  * @property-read EducatorAppeal $educatorAppeal
  * @property-read EducatorAttendanceSetting $educatorAttendanceSetting
  * @property-read Educator $educator
- * @property int $status 考勤状态
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\EducatorAttendance whereStatus($value)
  */
 class EducatorAttendance extends Model {
     
@@ -151,9 +151,10 @@ class EducatorAttendance extends Model {
         try {
             DB::transaction(function () {
                 $data = Request::input('data');
+                $eas = [];
                 foreach ($data as &$datum) {
-                    $input['longitude'] = $input['longitude'] ?? 0;
-                    $input['latitude'] = $input['latitude'] ?? 0;
+                    $datum['longitude'] = $datum['longitude'] ?? 0;
+                    $datum['latitude'] = $datum['latitude'] ?? 0;
                     abort_if(
                         !Validator::make($datum, (new EducatorAttendanceRequest)->rules()),
                         HttpStatusCode::NOT_ACCEPTABLE,
@@ -183,7 +184,7 @@ class EducatorAttendance extends Model {
                             break;
                         }
                     }
-                    $this->create([
+                    $eas[] = [
                         'educator_id' => $educator->id,
                         'punch_time'  => $dateTime,
                         'longitude'   => $datum['longitude'],
@@ -191,8 +192,9 @@ class EducatorAttendance extends Model {
                         'inorout'     => $datum['inorout'],
                         'eas_id'      => $easId,
                         'status'      => $status,
-                    ]);
+                    ];
                 }
+                $this->insert($eas);
             });
         } catch (Exception $e) {
             throw $e;

@@ -136,13 +136,18 @@ class Consumption extends Model {
         try {
             DB::transaction(function () {
                $data = Request::input('data');
+               $consumptions = [];
                foreach ($data as &$datum) {
                    $student = Student::whereStudentNumber($datum['student_number'])->first();
                    $input['student_id'] = $student ? $student->student_number : 0;
-                   $result = Validator::make($datum, (new ConsumptionRequest)->rules());
-                   abort_if(!$result, HttpStatusCode::NOT_ACCEPTABLE, __('messages.not_acceptable'));
-                   $this->create($datum);
+                   abort_if(
+                       !Validator::make($datum, (new ConsumptionRequest)->rules()),
+                       HttpStatusCode::NOT_ACCEPTABLE,
+                       __('messages.not_acceptable')
+                   );
+                   $consumptions[] = $datum;
                }
+               $this->insert($consumptions);
             });
         } catch (Exception $e) {
             throw $e;

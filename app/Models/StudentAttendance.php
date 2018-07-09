@@ -189,11 +189,18 @@ class StudentAttendance extends Model {
                     $datum['latitude'] = $datum['latitude'] ?? 0;
                     $datum['machineid'] = $datum['attendid'];
                     $datum['media_id'] = 0;
-                    $result = Validator::make($datum, (new StudentAttendanceRequest)->rules());
-                    abort_if(!$result, HttpStatusCode::NOT_ACCEPTABLE, __('messages.not_acceptable'));
+                    abort_if(
+                        !Validator::make($datum, (new StudentAttendanceRequest)->rules()),
+                        HttpStatusCode::NOT_ACCEPTABLE,
+                        __('messages.not_acceptable')
+                    );
                     $student = Student::whereIn('class_id', $school->classes->pluck('id')->toArray())
                         ->where('student_number', $datum['student_number'])->first();
-                    abort_if(!$student, HttpStatusCode::NOT_FOUND, __('messages.student.not_found'));
+                    abort_if(
+                        !$student,
+                        HttpStatusCode::NOT_FOUND,
+                        __('messages.student.not_found')
+                    );
                     $dateTime = strtotime($datum['punch_time']);
                     $day = Constant::WEEK_DAYS[date('w', $dateTime)];
                     $strDateTime = date('Y-m-d', $dateTime);
@@ -201,14 +208,26 @@ class StudentAttendance extends Model {
                         ->where('end_date', '>=', $strDateTime)
                         ->where('enabled', 1)
                         ->first();
-                    abort_if(!$semester, HttpStatusCode::NOT_FOUND, __('messages.semester.not_found'));
+                    abort_if(
+                        !$semester,
+                        HttpStatusCode::NOT_FOUND,
+                        __('messages.semester.not_found')
+                    );
                     $machine = AttendanceMachine::whereMachineid($datum['machineid'])
                         ->where('school_id', $school->id)->first();
-                    abort_if(!$machine, HttpStatusCode::NOT_FOUND, __('messages.attendance_machine.not_found'));
+                    abort_if(
+                        !$machine,
+                        HttpStatusCode::NOT_FOUND,
+                        __('messages.attendance_machine.not_found')
+                    );
                     $sases = StudentAttendanceSetting::whereGradeId($student->squad->grade_id)
                         ->where('semester_id', $semester->id)
                         ->where('day', $day)->get();
-                    abort_if(!$sases, HttpStatusCode::NOT_FOUND, __('messages.sas.not_found'));
+                    abort_if(
+                        empty($sases->toArray()),
+                        HttpStatusCode::NOT_FOUND,
+                        __('messages.sas.not_found')
+                    );
                     $punchTime = date('Y-m-d H:i:s', $dateTime);
                     $status = 0; # 考勤异常
                     $sasId = 0;
