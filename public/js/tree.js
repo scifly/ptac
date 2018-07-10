@@ -453,7 +453,8 @@
                         rootId = $tree.jstree(true).get_node('#').children[0];
 
                     // 展开第一级节点
-                    $tree.jstree('open_node', $('#' + rootId));
+                    // $tree.jstree('open_node', $('#' + rootId));
+                    $tree.jstree('open_all');
                     // 初始化 根据后台数据节点数组 选中
                     $tree.jstree().check_node(selectedDepartmentIds);
                     $($tree.jstree(true).get_json($tree, {flat: true})).each(function () {
