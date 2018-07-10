@@ -248,6 +248,7 @@ Route::group(['prefix' => 'messages'], function () {
     $c = 'MessageController';
     Route::get('index', $c . '@index');
     Route::post('index', $c . '@index');
+    Route::post('store', $c . '@store');
     Route::get('edit/{id}', $c . '@edit');
     Route::put('update/{id?}', $c . '@update');
     Route::post('send', $c . '@send');
