@@ -223,7 +223,7 @@ class Message extends Model {
         }
         $targetsHtml = '';
         foreach ($targetIds as $targetId) {
-            $paths = implode('-', $targetId);
+            $paths = explode('-', $targetId);
             if (sizeof($paths) > 1) {
                 $user = User::find($paths[2]);
                 $targetsHtml .= sprintf(
