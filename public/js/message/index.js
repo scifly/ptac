@@ -114,7 +114,7 @@ $(document).on('click', '.fa-edit', function() {
             $tabTitle.parent().addClass('active');
             $tabTitle.addClass('text-blue');
             $('#content_' + result['message']['msgtype']).show();
-            switch (result['type']) {
+            switch (result['message']['msgtype']) {
                 case 'text':
                     $textContent.val(result['message']['text']['content']);
                     break;
