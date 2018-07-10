@@ -430,7 +430,8 @@
                     if (!$('#' + selected.node.id + '_anchor :nth-child(1)').hasClass('jstree-checkbox')) {
                         return false;
                     }
-                    //选中事件 将选中的节点增|加到右边列表
+                    console.log('wtf');
+                    // 将选中的节点增加到右侧列表
                     var nodeHtml =
                         '<li id="tree' + selected.node.id + '">' +
                             '<span class="handle ui-sortable-handle">' +
@@ -453,16 +454,17 @@
                         rootId = $tree.jstree(true).get_node('#').children[0];
 
                     // 展开第一级节点
-                    // $tree.jstree('open_node', $('#' + rootId));
-                    $tree.jstree('open_all');
+                    $tree.jstree('open_node', $('#' + rootId));
+                    // $tree.jstree('open_all');
                     // 初始化 根据后台数据节点数组 选中
                     $tree.jstree().check_node(selectedDepartmentIds);
                     $($tree.jstree(true).get_json($tree, {flat: true})).each(function () {
-                        var node = $("#tree").jstree(true).get_node(this.id, false);
-                        var $node = $('#' + node.id);
+                        var node = $("#tree").jstree(true).get_node(this.id, false),
+                            $node = $('#' + node.id);
+
                         if (node.original.selectable !== 1) {
                             $node.find('i.jstree-checkbox').removeClass();
-                        }else {
+                        } else {
                             $node.find('i[class=""]').addClass('jstree-icon jstree-checkbox');
                         }
                     });
