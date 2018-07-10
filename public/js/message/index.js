@@ -155,11 +155,9 @@ $('.tab').hover(
             break;
         case '#content_image':
             $fileImage.attr('required', 'true');
-            $('#content_image').show();
             break;
         case '#content_audio':
             $fileAudio.attr('required', 'true');
-            $('#content_audio').show();
             break;
         case '#content_video':
             $videoTitle.attr('maxlength', 128);
@@ -194,6 +192,7 @@ $('.tab').hover(
         default:
             break;
     }
+    $($(this).attr('href')).show();
 });
 page.refreshTabs();
 // 加载消息中心css
