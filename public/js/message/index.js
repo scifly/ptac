@@ -148,6 +148,7 @@ $('.tab').hover(
     $messageContent.find(':input').removeAttr(
         'required data-parsley-length maxlength'
     );
+    $('#message-content .tab-pane').hide();
     switch ($(this).attr('href')) {
         case '#content_text':
             $textContent.attr('required', 'true');
@@ -158,6 +159,7 @@ $('.tab').hover(
             break;
         case '#content_audio':
             $fileAudio.attr('required', 'true');
+            $('#content_audio').show();
             break;
         case '#content_video':
             $videoTitle.attr('maxlength', 128);
