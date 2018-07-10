@@ -51,7 +51,7 @@ class Snippet {
 HTML;
     const TREE_NODE = <<<HTML
             <button type="button" class="btn btn-flat" style="margin-right: 5px; margin-bottom: 5px;">
-                <i class="%s">%s</i>
+                <i class="%s">%s</i>&nbsp;
                 <i class="fa fa-close remove-selected"></i>
                 <input type="hidden" name="selectedDepartments[]" value="%s" />
             </button>
