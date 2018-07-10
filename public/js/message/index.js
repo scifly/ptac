@@ -102,23 +102,27 @@ $(document).on('click', '.fa-edit', function() {
         dataType: 'json',
         url: page.siteRoot() + 'messages/edit/' + id,
         success: function (result) {
-            var $msgTypeId = $('#message_type_id');
+            var $msgTypeId = $('#message_type_id'), $tabTitle;
 
             $msgTypeId.val(result['messageTypeId']).trigger('change');
             $('#checked-nodes').html(result['targets']);
             $messageContent.find('.tab-pane').hide();
-
+            $('#message-format li').removeClass('active');
+            $('#message-format a').removeClass('text-blue');
+            $tabTitle = $('a[href="#content_' + result['type'] + '"]');
+            $tabTitle.parent().addClass('active');
+            $tabTitle.addClass('text-blue');
+            $('#content_' + result['type']).show();
             switch (result['type']) {
                 case 'text':
-
-                    $('a[href="#content_text"]').parent().addClass('text-blue');
                     $textContent.val(result['message']['text']['content']);
                     break;
                 case 'image':
                     break;
+                default:
+                    break;
             }
             $('.overlay').hide();
-
         },
         error: function (e) {
             page.errorHandler(e);
