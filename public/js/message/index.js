@@ -435,6 +435,8 @@ function message(action) {
         default:
             break;
     }
+    if (!$('#formMessage').parsley().validate()) { return false; }
+
     $.ajax({
         url: page.siteRoot() + 'messages/' + uri,
         type: requestType,
@@ -467,7 +469,7 @@ function data(preview = false) {
         message_type_id: $messageTypeId.val(),
     };
     if (preview) { $.extend(formData, { preview: 1 }); }
-    if (!$('#formMessage').parsley().validate()) { return false; }
+
     switch (type) {
         case 'text':    // 文本
             $textContent.attr('required', 'true');
