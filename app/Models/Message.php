@@ -212,7 +212,7 @@ class Message extends Model {
     function edit($id) {
     
         list($content) = $this->show($id);
-        $message = json_decode($content[$content['type']]);
+        $message = json_decode(json_decode($content[$content['type']]));
         $targetIds = explode('|', $message->{'toparty'});
         $userids = explode('|', $message->{'touser'});
         $users = User::whereIn('userid', $userids)->get();
