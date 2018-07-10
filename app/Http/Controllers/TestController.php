@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\HttpStatusCode;
+use App\Models\ComboType;
 use App\Models\Department;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -25,7 +26,15 @@ class TestController extends Controller {
      */
     public function index() {
     
-        abort_if(true, HttpStatusCode::NOT_FOUND, __('messages.student.not_found'));
+        ComboType::create([
+            'name' => 'abc',
+            'amount' => 12,
+            'discount' => 12,
+            'school_id' => 1,
+            'months' => 5,
+            'enabled' => 1,
+            'a' => 1,
+        ]);
 
     }
     

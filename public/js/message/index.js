@@ -56,7 +56,9 @@ var $targetIds = $('#selected-node-ids'),
 
     // 发送按钮
     $send = $('#send'),
-    $preview = $('#preview');
+    $preview = $('#preview'),
+    // $schedule = $('#schedule'),
+    $draft = $('#draft');
 
 // 初始化select2控件
 page.initSelect2([{
@@ -396,26 +398,67 @@ $smsContent.on('keyup', function () {
 /** 发送消息 ---------------------------------------------------------------------------------------------------------- */
 $send.on('click', function () {
     $targetIds.attr('required', 'true');
-    return send(false);
+    return message('send');
 });
 
 $preview.on('click', function () {
     $targetIds.removeAttr('required');
-    return send(true);
+    return message('preview');
 });
 
+$draft.on('click', function () {
+    return message('draft');
+});
+
+
 /** Helper functions ------------------------------------------------------------------------------------------------ */
-function send(preview) {
+function message(action) {
+    var icon = page.info,
+        uri = 'send',
+        requestType = 'POST',
+        formData = data();
+
+    switch (action) {
+        case 'send':
+            break;
+        case 'preview':
+            formData = data(true);
+            break;
+        case 'draft':
+            var $id = $('#id');
+            uri = $id.val() ? 'update/' + $id.val() : 'store';
+            requestType = $id.val() ? 'PUT' : 'POST';
+            icon = page.success;
+            break;
+        case 'schedule':
+            break;
+        default:
+            break;
+    }
+    $.ajax({
+        url: page.siteRoot() + 'messages/' + uri,
+        type: requestType,
+        dataType: 'json',
+        data: formData,
+        success: function (result) {
+            page.inform(result.title, result.message, icon);
+        },
+        error: function (e) {
+            page.errorHandler(e);
+        }
+    });
+
+    return false;
+}
+// 获取表单数据
+function data(preview = false) {
     var appIds = [$('#app_ids').val()],
-        targetIds = $('#selected-node-ids').val(),
+        targetIds = preview ? 'user-0-' + $('#userId').val() : $('#selected-node-ids').val(),
         types = $('#message-content').find('.tab-pane.active').attr('id').split('_'),
         type = types[types.length - 1],
         $container = $('#content_' + type),
         content = null, formData;
 
-    if (preview) {
-        targetIds = 'user-0-' + $('#userId').val();
-    }
     formData = {
         _token: page.token(),
         type: type,
@@ -490,20 +533,8 @@ function send(preview) {
             break;
     }
 
-    $.ajax({
-        url: page.siteRoot() + "messages/store",
-        type: 'POST',
-        dataType: 'json',
-        data: $.extend(formData, content),
-        success: function (result) {
-            page.inform(result.title, !preview ? result.message : '预览消息已发送至您的手机微信，请打开相关应用查看', page.info);
-        },
-        error: function (e) {
-            page.errorHandler(e);
-        }
-    });
+    return $.extend(formData, content);
 
-    return false;
 }
 // 上传文件 (图片、语音、视频、文件、封面图）
 function upload($file) {

@@ -45,24 +45,24 @@
                         'items' => $apps,
                     ])
                     <!-- 发送对象 -->
-                        <div class="form-group">
-                            {!! Form::label('targets', '发送对象', [
-                                'class' => 'col-sm-3 control-label'
+                    <div class="form-group">
+                        {!! Form::label('targets', '发送对象', [
+                            'class' => 'col-sm-3 control-label'
+                        ]) !!}
+                        <div class="col-sm-6">
+                            <div id="checked-nodes"></div>
+                            {!! Form::hidden('selected-node-ids', null, [
+                                'id' => 'selected-node-ids',
+                                'required' => 'true'
                             ]) !!}
-                            <div class="col-sm-6">
-                                <div id="checked-nodes"></div>
-                                {!! Form::hidden('selected-node-ids', null, [
-                                    'id' => 'selected-node-ids',
-                                    'required' => 'true'
-                                ]) !!}
-                                {!! Form::button('<i class="fa fa-user-plus text-blue">&nbsp;选择</i>', [
-                                    'id' => 'choose',
-                                    'class' => 'btn btn-box-tool',
-                                    'style' => 'margin-top: 3px;'
-                                ]) !!}
-                            </div>
+                            {!! Form::button('<i class="fa fa-user-plus text-blue">&nbsp;选择</i>', [
+                                'id' => 'choose',
+                                'class' => 'btn btn-box-tool',
+                                'style' => 'margin-top: 3px;'
+                            ]) !!}
                         </div>
-                        <!-- 消息类型 -->
+                    </div>
+                    <!-- 消息类型 -->
                     @include('partials.single_select', [
                         'label' => '消息类型',
                         'id' => 'message_type_id',
@@ -240,7 +240,7 @@
                                 <button class="btn btn-warning btn-sm" id="schedule" disabled="disabled">
                                     <i class="fa fa-clock-o"> 定时发送</i>
                                 </button>
-                                <button class="btn btn-default btn-sm" id="draft" disabled="disabled">
+                                <button class="btn btn-default btn-sm" id="draft">
                                     <i class="fa fa-save"> 存为草稿</i>
                                 </button>
                             </div>

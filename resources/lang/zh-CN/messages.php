@@ -81,6 +81,7 @@ return [
         'invalid_corp'     => '企业号不存在，请检查后重试',
         'empty_targets'    => '请选择发送对象',
         'submitted'        => '已提交消息发送请求',
+        'preview'          => '消息预览已发送至你的手机微信，请打开相关应用查看'
     ],
     'school'             => [
         'title'        => '学校管理',
