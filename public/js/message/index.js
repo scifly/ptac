@@ -106,13 +106,16 @@ $(document).on('click', '.fa-edit', function() {
 
             $msgTypeId.val(result['messageTypeId']).trigger('change');
             $('#checked-nodes').html(result['targets']);
+            $messageContent.find('.tab-pane').hide();
+
             switch (result['type']) {
                 case 'text':
 
                     $('a[href="#content_text"]').parent().addClass('text-blue');
                     $textContent.val(result['message']['text']['content']);
                     break;
-                case ''
+                case 'image':
+                    break;
             }
             $('.overlay').hide();
 
