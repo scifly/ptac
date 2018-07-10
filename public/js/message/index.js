@@ -109,10 +109,10 @@ $(document).on('click', '.fa-edit', function() {
             $messageContent.find('.tab-pane').hide();
             $('#message-format li').removeClass('active');
             $('#message-format a').removeClass('text-blue');
-            $tabTitle = $('a[href="#content_' + result['type'] + '"]');
+            $tabTitle = $('a[href="#content_' + result['message']['msgtype'] + '"]');
             $tabTitle.parent().addClass('active');
             $tabTitle.addClass('text-blue');
-            $('#content_' + result['type']).show();
+            $('#content_' + result['message']['msgtype']).show();
             switch (result['type']) {
                 case 'text':
                     $textContent.val(result['message']['text']['content']);
