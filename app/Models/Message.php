@@ -204,6 +204,57 @@ class Message extends Model {
     }
     
     /**
+     * 编辑消息
+     *
+     * @param $id
+     * @return array
+     */
+    function edit($id) {
+    
+        list($content) = $this->show($id);
+        $message = json_decode($content[$content['type']]);
+        $targetIds = explode('|', $message->{'toparty'});
+        $userids = explode('|', $message->{'touser'});
+        $users = User::whereIn('userid', $userids)->get();
+        foreach ($users as $user) {
+            foreach ($user->departments as $department) {
+                $targetIds[] = 'user-' . $department->id . '-' . $user->id;
+            }
+        }
+        $targetsHtml = '';
+        foreach ($targetIds as $targetId) {
+            $paths = implode('-', $targetId);
+            if (sizeof($paths) > 1) {
+                $user = User::find($paths[2]);
+                $targetsHtml .= sprintf(
+                    Snippet::TREE_NODE,
+                    'fa fa-user',
+                    $user->realname,
+                    $paths[2]
+                );
+            } else {
+                $department = Department::find($targetId);
+                $targetsHtml .= sprintf(
+                    Snippet::TREE_NODE,
+                    Constant::NODE_TYPES[$department->departmentType->name]['icon'],
+                    $department->name,
+                    $targetId
+                );
+            }
+        }
+    
+        return [
+            'selectedTargetIds' => $targetIds,
+            'targets' => $targetsHtml,
+            'messageTypeId' => $this->find($id)->message_type_id,
+            'messageFormat' => $content['type'],
+            'message' => $message
+        ];
+        
+        
+    }
+    
+    /**
      * 创建并发送消息
      *
      * @param array $data

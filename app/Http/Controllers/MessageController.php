@@ -70,9 +70,9 @@ class MessageController extends Controller {
      */
     public function edit($id) {
     
-        list($content) = $this->message->show($id);
-        
-        return response()->json($content);
+        return response()->json(
+            $this->message->edit($id)
+        );
     
     }
     

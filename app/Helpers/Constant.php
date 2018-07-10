@@ -75,7 +75,7 @@ class Constant {
         '学校' => ['color' => 'text-purple', 'type' => 'school', 'icon' => 'fa fa-university'],
         '年级' => ['color' => 'text-black', 'type' => 'grade', 'icon' => 'fa fa-object-group'],
         '班级' => ['color' => 'text-black', 'type' => 'class', 'icon' => 'fa fa-users'],
-        '其他' => ['color' => 'text-black', 'type' => 'other', 'icon' => 'fa fa-list'],
+        '其他' => ['color' => 'text-black', 'type' => 'other', 'icon' => 'fa fa-folder'],
     ];
     
     # 控制器相对路径

@@ -74,7 +74,7 @@
                             ]) !!}
                             <div class="col-sm-6">
                                 <div class="nav-tabs-custom">
-                                    <ul class="nav nav-tabs">
+                                    <ul class="nav nav-tabs" id="message-format">
                                         <li class="active">
                                             <a href="#content_text" data-toggle="tab" class="tab">
                                                 <i class="fa fa-file-text-o"></i>&nbsp;文本

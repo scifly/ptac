@@ -49,6 +49,14 @@ class Snippet {
                 </a>
                 <ul class="treeview-menu">
 HTML;
+    const TREE_NODE = <<<HTML
+            <button type="button" class="btn btn-flat" style="margin-right: 5px; margin-bottom: 5px;">
+                <i class="%s">%s</i>
+                <i class="fa fa-close remove-selected"></i>
+                <input type="hidden" name="selectedDepartments[]" value="%s" />
+            </button>
+HTML;
+
     
     # 性别符号
     const MALE = '<i class="fa fa-mars"></i>';

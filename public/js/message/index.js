@@ -102,10 +102,18 @@ $(document).on('click', '.fa-edit', function() {
         dataType: 'json',
         url: page.siteRoot() + 'messages/edit/' + id,
         success: function (result) {
-            // alert(result['id'] + result['title'] + result['type']);
-            var content = JSON.parse(result['other']);
-            console.log(content);
-            $('#text-content').val(result['type']);
+            var $msgTypeId = $('#message_type_id');
+
+            $msgTypeId.val(result['messageTypeId']).trigger('change');
+            $('#checked-nodes').html(result['targets']);
+            switch (result['type']) {
+                case 'text':
+
+                    $('a[href="#content_text"]').parent().addClass('text-blue');
+                    $textContent.val(result['message']['text']['content']);
+                    break;
+                case ''
+            }
             $('.overlay').hide();
 
         },
