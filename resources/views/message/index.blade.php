@@ -26,6 +26,7 @@
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="tab01">
+                    {!! Form::hidden('id', null, ['id' => 'id']) !!}
                     @include('message.targets')
                     <div class="upload-overlay overlay">
                         <i class="fa fa-refresh fa-spin"></i>
@@ -36,14 +37,14 @@
                         'id' => 'formMessage',
                         'data-parsley-validate' => 'true'
                     ]) !!}
-                        <!-- 选择应用 -->
-                        @include('partials.single_select', [
-                            'label' => '应用',
-                            'id' => 'app_ids',
-                            'icon' => 'fa fa-weixin text-green',
-                            'items' => $apps,
-                        ])
-                        <!-- 发送对象 -->
+                    <!-- 选择应用 -->
+                    @include('partials.single_select', [
+                        'label' => '应用',
+                        'id' => 'app_ids',
+                        'icon' => 'fa fa-weixin text-green',
+                        'items' => $apps,
+                    ])
+                    <!-- 发送对象 -->
                         <div class="form-group">
                             {!! Form::label('targets', '发送对象', [
                                 'class' => 'col-sm-3 control-label'
@@ -62,12 +63,12 @@
                             </div>
                         </div>
                         <!-- 消息类型 -->
-                        @include('partials.single_select', [
-                            'label' => '消息类型',
-                            'id' => 'message_type_id',
-                            'items' => $messageTypes
-                        ])
-                        <!-- 消息内容 -->
+                    @include('partials.single_select', [
+                        'label' => '消息类型',
+                        'id' => 'message_type_id',
+                        'items' => $messageTypes
+                    ])
+                    <!-- 消息内容 -->
                         <div class="form-group">
                             {!! Form::label('content', '消息内容', [
                                 'class' => 'col-sm-3 control-label'

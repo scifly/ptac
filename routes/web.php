@@ -249,8 +249,8 @@ Route::group(['prefix' => 'messages'], function () {
     Route::get('index', $c . '@index');
     Route::post('index', $c . '@index');
     Route::get('edit/{id}', $c . '@edit');
-    Route::post('store', $c . '@store');
     Route::put('update/{id?}', $c . '@update');
+    Route::post('send', $c . '@send');
     Route::delete('delete/{id?}', $c . '@destroy');
 });
 # 日历

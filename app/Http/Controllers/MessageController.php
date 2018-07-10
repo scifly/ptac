@@ -63,6 +63,22 @@ class MessageController extends Controller {
     }
     
     /**
+     * 保存消息（草稿）
+     *
+     * @param MessageRequest $request
+     * @return JsonResponse|string
+     */
+    public function store(MessageRequest $request) {
+        
+        return $this->result(
+            $this->message->store(
+                $request->all()
+            )
+        );
+        
+    }
+    
+    /**
      * 编辑消息
      *
      * @param $id
@@ -77,6 +93,24 @@ class MessageController extends Controller {
     }
     
     /**
+     * 更新消息
+     *
+     * @param MessageRequest $request
+     * @param null $id
+     * @return JsonResponse|string
+     * @throws Exception
+     */
+    public function update(MessageRequest $request, $id = null) {
+        
+        return $this->result(
+            $this->message->modify(
+                $request->all(), $id
+            )
+        );
+        
+    }
+    
+    /**
      * 发送消息
      *
      * @param MessageRequest $request
@@ -84,7 +118,7 @@ class MessageController extends Controller {
      * @throws Exception
      * @throws Throwable
      */
-    public function store(MessageRequest $request) {
+    public function send(MessageRequest $request) {
         
         return $this->result(
             $this->message->send($request->all()),
@@ -92,19 +126,6 @@ class MessageController extends Controller {
             __('messages.message.failed')
         );
         
-    }
-    
-    /**
-     * 标记已读.未读
-     *
-     * @throws Exception
-     */
-    public function update() {
-    
-        return $this->result(
-            $this->message->modify()
-        );
-    
     }
     
     /**

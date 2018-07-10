@@ -2,17 +2,23 @@
 namespace App\Http\Requests;
 
 use App\Helpers\Constant;
+use App\Helpers\ModelTrait;
 use App\Models\App;
 use App\Models\CommType;
 use App\Models\MessageType;
+use App\Models\School;
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 
 /**
  * Class MessageRequest
  * @package App\Http\Requests
  */
 class MessageRequest extends FormRequest {
+    
+    use ModelTrait;
     
     /**
      * Determine if the user is authorized to make this request.
@@ -25,8 +31,8 @@ class MessageRequest extends FormRequest {
      * @return array
      */
     public function rules() {
-    
-        return [
+        
+        $rules = [
             'comm_type_id'    => 'required|integer',
             'app_id'          => 'required|integer',
             'msl_id'          => 'required|integer',
@@ -40,10 +46,19 @@ class MessageRequest extends FormRequest {
             'message_type_id' => 'required|integer',
             'read'            => 'required|boolean',
             'sent'            => 'required|boolean',
-            'user_ids'        => 'nullable|array',
-            'dept_ids'        => 'nullable|array',
-            'app_ids'         => 'required|array'
         ];
+        
+        return array_merge(
+            $rules, explode('/', Request::path())[1] == 'send'
+            ? [
+                'user_ids' => 'nullable|array',
+                'dept_ids' => 'nullable|array',
+                'app_ids'  => 'required|array',
+            ]
+            : [
+                'content' => 'required|string',
+            ]
+        );
         
     }
     
@@ -81,7 +96,11 @@ class MessageRequest extends FormRequest {
             $input['dept_ids'] = array_unique($deptIds);
         }
         if (!isset($input['app_ids'])) {
-            $input['app_ids'] = [App::whereName('消息中心')->first()->id];
+            $schoolId = $this->schoolId() ?? session('schoolId');
+            $corp = School::find($schoolId)->corp;
+            $input['app_ids'] = [
+                App::whereName('消息中心')->where('corp_id', $corp->id)->first()->id,
+            ];
         }
         if (!isset($input['user_ids'])) {
             $input['user_ids'] = [];
@@ -89,7 +108,26 @@ class MessageRequest extends FormRequest {
         if (!isset($input['dept_ids'])) {
             $input['dept_ids'] = [];
         }
-
+        $action = explode('/', Request::path())[1];
+        if ($action != 'send') {
+            $schoolId = $this->schoolId() ?? session('schoolId');
+            $corp = School::find($schoolId)->corp;
+            if ($input['type'] == 'sms') {
+                $input['content'] = $input['sms'];
+            } else {
+                $userids = User::whereIn('id', $input['user_ids'])
+                    ->where('subscribed', 1)# 仅发送消息给已关注的用户
+                    ->pluck('userid')->toArray();
+                $data['content'] = json_encode([
+                    'touser'       => implode('|', $userids),
+                    'toparty'      => implode('|', $input['dept_ids']),
+                    'agentid'      => App::whereCorpId($corp->id)->where('name', '消息中心')->first()->agentid,
+                    'msgtype'      => $input['type'],
+                    $input['type'] => $input[$input['type']],
+                ]);
+            }
+            unset($input['user_ids'], $input['dept_ids'], $input['app_ids']);
+        }
         $this->replace($input);
         
     }

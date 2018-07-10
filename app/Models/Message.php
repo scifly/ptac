@@ -254,45 +254,43 @@ class Message extends Model {
     }
     
     /**
-     * 创建并发送消息
+     * 保存消息（草稿）
      *
      * @param array $data
      * @return bool
      */
     function store(array $data) {
-        
-        abort_if(
-            empty($data['user_ids']) && empty($data['dept_ids']) && empty($data['app_ids']),
-            HttpStatusCode::NOT_ACCEPTABLE,
-            __('messages.message.empty_targets')
-        );
-        $apps = App::whereIn('id', $data['app_ids'])->get()->toArray();
-        $corp = School::find($this->schoolId() ?? session('schoolId'))->corp;
-        abort_if(!$corp, HttpStatusCode::NOT_FOUND, __('messages.message.invalid_corp'));
-        SendMessage::dispatch($data, Auth::id(), $corp, $apps);
-        
-        return true;
+    
+        return $this->create($data) ? true : false;
         
     }
     
     /**
-     * 批量标记已读/未读
+     * 更新消息（草稿）或 批量标记已读/未读
      *
+     * @param array $data
+     * @param null $id
+     * @return bool
      * @throws Exception
      */
-    function modify() {
+    function modify(array $data, $id = null) {
     
-        try {
-            DB::transaction(function () {
-                $ids = Request::input('ids');
-                $read = Request::input('action') == 'enable' ? true : false;
-                foreach ($ids as $id) {
-                    $this->read($id, $read);
-                }
-            });
-        } catch (Exception $e) {
-            throw $e;
+        if (!$id) {
+            try {
+                DB::transaction(function () {
+                    $ids = Request::input('ids');
+                    $read = Request::input('action') == 'enable' ? true : false;
+                    foreach ($ids as $id) {
+                        $this->read($id, $read);
+                    }
+                });
+            } catch (Exception $e) {
+                throw $e;
+            }
+            return true;
         }
+    
+        return $this->find($id)->update($data);
         
     }
     
