@@ -154,6 +154,7 @@ $('.tab').hover(
             break;
         case '#content_image':
             $fileImage.attr('required', 'true');
+            $('#content_image').show();
             break;
         case '#content_audio':
             $fileAudio.attr('required', 'true');
