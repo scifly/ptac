@@ -122,7 +122,9 @@ class MessageController extends Controller {
         
         return $this->result(
             $this->message->send($request->all()),
-            __('messages.message.submitted'),
+            !$request->has('preview')
+                ? __('messages.message.submitted')
+                : __('messages.message.preview'),
             __('messages.message.failed')
         );
         

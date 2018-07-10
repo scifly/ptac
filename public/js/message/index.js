@@ -466,6 +466,7 @@ function data(preview = false) {
         targetIds: targetIds,
         message_type_id: $messageTypeId.val(),
     };
+    if (preview) { $.extend(formData, { preview: 1 }); }
     if (!$('#formMessage').parsley().validate()) { return false; }
     switch (type) {
         case 'text':    // 文本

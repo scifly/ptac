@@ -126,7 +126,6 @@ class MessageRequest extends FormRequest {
                     $input['type'] => $input[$input['type']],
                 ]);
             }
-            unset($input['user_ids'], $input['dept_ids'], $input['app_ids']);
         }
         $this->replace($input);
         
