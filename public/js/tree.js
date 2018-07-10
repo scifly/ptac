@@ -427,10 +427,10 @@
                     plugins: ['types', 'search', 'checkbox', 'wholerow'],
                     types: type === 'department' ? tree.options.departmentTypes : tree.options.contactTypes
                 }).on('check_node.jstree', function (node, selected) {
-                    console.log('wtf');
-                    if (!$('#' + selected.node.id + '_anchor :nth-child(1)').hasClass('jstree-checkbox')) {
-                        return false;
-                    }
+                    // console.log('wtf');
+                    // if (!$('#' + selected.node.id + '_anchor :nth-child(1)').hasClass('jstree-checkbox')) {
+                    //     return false;
+                    // }
                     // 将选中的节点增加到右侧列表
                     var nodeHtml =
                         '<li id="tree' + selected.node.id + '">' +
