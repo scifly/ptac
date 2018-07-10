@@ -107,9 +107,7 @@ $(document).on('click', '.fa-edit', function() {
             console.log(result);
             $msgTypeId.val(result['messageTypeId']).trigger('change');
             $('#checked-nodes').html(result['targets']);
-            $.getMultiScripts([plugins.jstree.js]).done(function () {
-                $('#tree').jstree().check_node(result['selectedTargetIds']);
-            });
+            $('#selected-node-ids').val(result['selectedTargetIds'].join(','));
             $messageContent.find('.tab-pane').hide();
             $('#message-format li').removeClass('active');
             $('#message-format a').removeClass('text-blue');

@@ -251,7 +251,6 @@ class Message extends Model {
             'message' => $message
         ];
         
-        
     }
     
     /**
