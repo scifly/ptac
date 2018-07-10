@@ -107,6 +107,7 @@ $(document).on('click', '.fa-edit', function() {
             console.log(result);
             $msgTypeId.val(result['messageTypeId']).trigger('change');
             $('#checked-nodes').html(result['targets']);
+            $('#tree').jstree(true).check_node(result['selectedTargetIds']);
             $messageContent.find('.tab-pane').hide();
             $('#message-format li').removeClass('active');
             $('#message-format a').removeClass('text-blue');
