@@ -104,6 +104,7 @@ $(document).on('click', '.fa-edit', function() {
         success: function (result) {
             var $msgTypeId = $('#message_type_id'), $tabTitle;
 
+            console.log(result);
             $msgTypeId.val(result['messageTypeId']).trigger('change');
             $('#checked-nodes').html(result['targets']);
             $messageContent.find('.tab-pane').hide();
