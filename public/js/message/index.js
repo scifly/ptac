@@ -116,7 +116,7 @@ $(document).on('click', '.fa-edit', function() {
             $('#message-format a').removeClass('text-blue').addClass('text-gray');
             $tabTitle = $('a[href="#content_' + result['message']['msgtype'] + '"]');
             $tabTitle.parent().addClass('active');
-            $tabTitle.addClass('text-blue');
+            $tabTitle.removeClass('text-gray').addClass('text-blue');
             $('#content_' + result['message']['msgtype']).show();
             switch (result['message']['msgtype']) {
                 case 'text':
