@@ -248,7 +248,7 @@ class Message extends Model {
     function edit($id) {
     
         list($content) = $this->show($id);
-        $message = json_decode($content[$content['type']]);
+        $message = $content[$content['type']];
         if (!is_object($message)) {
             $message = json_decode($message);
         }
