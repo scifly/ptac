@@ -118,7 +118,8 @@ $(document).on('click', '.fa-edit', function() {
             // 设置发送对象id
             $('#selected-node-ids').val(result['selectedTargetIds'].join(','));
             // 隐藏所有类型消息内容
-            $messageContent.find('.tab-pane').hide();
+            $messageContent.find('.tab-pane').removeClass('active').hide();
+            $container.addClass('active');
             $('#message-format li').removeClass('active');
             $('#message-format a').removeClass('text-blue').addClass('text-gray');
             $tabTitle = $('a[href="#content_' + type + '"]');
