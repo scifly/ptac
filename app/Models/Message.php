@@ -175,7 +175,7 @@ class Message extends Model {
             [
                 'table'      => 'users',
                 'alias'      => 'User',
-                'type'       => 'LEFT',
+                'type'       => 'RIGHT',
                 'conditions' => [
                     'User.id = Message.r_user_id',
                 ],
