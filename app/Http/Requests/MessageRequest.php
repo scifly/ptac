@@ -118,7 +118,7 @@ class MessageRequest extends FormRequest {
                 $userids = User::whereIn('id', $input['user_ids'])
                     ->where('subscribed', 1)# 仅发送消息给已关注的用户
                     ->pluck('userid')->toArray();
-                $data['content'] = json_encode([
+                $input['content'] = json_encode([
                     'touser'       => implode('|', $userids),
                     'toparty'      => implode('|', $input['dept_ids']),
                     'agentid'      => App::whereCorpId($corp->id)->where('name', '消息中心')->first()->agentid,
