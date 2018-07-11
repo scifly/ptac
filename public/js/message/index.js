@@ -128,7 +128,7 @@ $(document).on('click', '.fa-edit', function() {
             $container.show();
             if ($.inArray(type, uploadTypes) > -1) {
                 mediaId = result['message'][type]['media_id'];
-                src = '../../' +result['message'][type]['path'];
+                src = result['message'][type]['path'];
             }
             removeValidation();
             refreshValidation('#content_' + type);
