@@ -248,7 +248,10 @@ class Message extends Model {
     function edit($id) {
     
         list($content) = $this->show($id);
-        $message = json_decode(json_decode($content[$content['type']]));
+        $message = json_decode($content[$content['type']]);
+        if (!is_object($message)) {
+            $message = json_decode($message);
+        }
         $targetIds = explode('|', $message->{'toparty'});
         $userids = explode('|', $message->{'touser'});
         $users = User::whereIn('userid', $userids)->get();
