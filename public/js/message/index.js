@@ -108,11 +108,13 @@ $(document).on('click', '.fa-edit', function() {
         success: function (result) {
             var $msgTypeId = $('#message_type_id'), $tabTitle,
                 html = '', type = result['message']['msgtype'],
-                $container = $('#content_' + type), mediaId, src,
+                $container, mediaId, src,
                 uploadTypes = ['image', 'audio', 'video', 'file', 'mpnews'];
 
             if (type === 'textcard') { type = 'card'; }
             if (type === 'voice') { type = 'audio'; }
+
+            $container = $('#content_' + type);
             // 设置消息类型
             $msgTypeId.val(result['messageTypeId']).trigger('change');
             // 显示发送对象列表
