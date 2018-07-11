@@ -106,23 +106,26 @@ $(document).on('click', '.fa-edit', function() {
         dataType: 'json',
         url: page.siteRoot() + 'messages/edit/' + id,
         success: function (result) {
-            var $msgTypeId = $('#message_type_id'), $tabTitle;
+            var $msgTypeId = $('#message_type_id'), $tabTitle,
+                html = '', type = result['message']['msgtype'],
+                $container = $('#content_' + type);
 
             console.log(result);
+            // 设置消息类型
             $msgTypeId.val(result['messageTypeId']).trigger('change');
+            // 显示发送对象列表
             $('#checked-nodes').html(result['targets']);
+            // 设置发送对象id
             $('#selected-node-ids').val(result['selectedTargetIds'].join(','));
-
+            // 隐藏所有类型消息内容
             $messageContent.find('.tab-pane').hide();
             $('#message-format li').removeClass('active');
             $('#message-format a').removeClass('text-blue').addClass('text-gray');
             $tabTitle = $('a[href="#content_' + result['message']['msgtype'] + '"]');
             $tabTitle.parent().addClass('active');
             $tabTitle.removeClass('text-gray').addClass('text-blue');
-            $('#content_' + result['message']['msgtype']).show();
 
-            var html = '', $container = $messageContent.find('.tab-pane.active'),
-                type = result['message']['msgtype'];
+            $('#content_' + result['message']['msgtype']).show();
             switch (type) {
                 case 'text':
                     $textContent.val(result['message'][type]['content']);
