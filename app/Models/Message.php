@@ -147,7 +147,7 @@ class Message extends Model {
             [
                 'db' => 'Message.msl_id', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return $d ?? sprintf(Snippet::BADGE_GRAY, '(待定)');
+                    return $d ? $d : sprintf(Snippet::BADGE_GRAY, '(待定)');
                 }
             ],
             [
