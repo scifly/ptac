@@ -9,7 +9,10 @@
         $required ?? ''
     ]) !!}
     <a href="#" class="remove-file" style="display: none;"><i class="fa fa-remove text-red"> 删除</i></a><br />
-    {!! Form::hidden(null, null, ['class' => 'media_id']) !!}
+    {!! Form::hidden(null, null, [
+        'class' => 'media_id',
+        ''
+    ]) !!}
     @if (isset($note))
         <p class="help-block">{{ $note }}</p>
     @endif

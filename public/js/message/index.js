@@ -245,7 +245,6 @@ $(document).on('click', '.remove-file', function () {
 // 初始化html5编辑器
 // initEditor();
 
-
 /** 发送对象 ---------------------------------------------------------------------------------------------------------- */
 // 选择发送对象
 $choose.on('click', function () {
@@ -648,18 +647,14 @@ function refreshValidation(anchor) {
             $textContent.attr('required', 'true');
             break;
         case '#content_image':
-            $fileImage.attr('required', 'true');
-            break;
         case '#content_audio':
-            $fileAudio.attr('required', 'true');
+        case '#content_file':
+            $(anchor).find('.media_id').attr('required', 'true');
             break;
         case '#content_video':
             $videoTitle.attr('maxlength', 128);
             $videoDescription.attr('maxlength', 512);
-            $fileVideo.attr('required', 'true');
-            break;
-        case '#content_file':
-            $fileFile.attr('required', 'true');
+            $(anchor).find('.media_id').attr('required', 'true');
             break;
         case '#content_card':
             $cardTitle.attr({
