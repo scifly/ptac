@@ -111,7 +111,6 @@ $(document).on('click', '.fa-edit', function() {
                 $container = $('#content_' + type), mediaId, src,
                 uploadTypes = ['image', 'audio', 'video', 'file', 'mpnews'];
 
-            console.log(result);
             // 设置消息类型
             $msgTypeId.val(result['messageTypeId']).trigger('change');
             // 显示发送对象列表
@@ -122,12 +121,11 @@ $(document).on('click', '.fa-edit', function() {
             $messageContent.find('.tab-pane').hide();
             $('#message-format li').removeClass('active');
             $('#message-format a').removeClass('text-blue').addClass('text-gray');
-            $tabTitle = $('a[href="#content_' + result['message']['msgtype'] + '"]');
+            $tabTitle = $('a[href="#content_' + type + '"]');
             $tabTitle.parent().addClass('active');
             $tabTitle.removeClass('text-gray').addClass('text-blue');
 
-            $('#content_' + result['message']['msgtype']).show();
-
+            $container.show();
             if ($.inArray(type, uploadTypes) > -1) {
                 mediaId = result['message'][type]['media_id'];
                 src = '../../' +result['message'][type]['path'];
