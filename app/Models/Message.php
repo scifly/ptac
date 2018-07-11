@@ -248,10 +248,7 @@ class Message extends Model {
     function edit($id) {
     
         list($content) = $this->show($id);
-        $message = json_decode($content[$content['type']]);
-        if (!is_object($message)) {
-            $message = json_decode($message);
-        }
+        $message = $content[$content['type']];
         $targetIds = explode('|', $message->{'toparty'});
         $userids = explode('|', $message->{'touser'});
         $users = User::whereIn('userid', $userids)->get();
@@ -401,7 +398,7 @@ class Message extends Model {
             'recipients' => $msl ? $msl->recipient_count : 0,
             'msl_id'     => $msl ? $msl->id : 0,
             'type'       => $type,
-            $type        => $type == 'other' ? $message->content : $object->{$type},
+            $type        => $type == 'other' ? $message->content : $object,
         ];
         
         return [$content, $edit];
