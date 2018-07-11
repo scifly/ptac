@@ -132,6 +132,8 @@ $(document).on('click', '.fa-edit', function() {
                 mediaId = result['message'][type]['media_id'];
                 src = '../../' +result['message'][type]['path'];
             }
+            removeValidation();
+            refreshValidation('#content_' + type);
             switch (type) {
                 case 'text':
                     $textContent.val(result['message'][type]['content']);
@@ -188,55 +190,13 @@ $('.tab').hover(
         }
     }
 ).click(function () {
+    var anchor = $(this).attr('href');
+
     initUpload();
-    $messageContent.find(':input').removeAttr(
-        'required data-parsley-length maxlength'
-    );
-    $('#message-content .tab-pane').hide();
-    switch ($(this).attr('href')) {
-        case '#content_text':
-            $textContent.attr('required', 'true');
-            break;
-        case '#content_image':
-            $fileImage.attr('required', 'true');
-            break;
-        case '#content_audio':
-            $fileAudio.attr('required', 'true');
-            break;
-        case '#content_video':
-            $videoTitle.attr('maxlength', 128);
-            $videoDescription.attr('maxlength', 512);
-            $fileVideo.attr('required', 'true');
-            break;
-        case '#content_file':
-            $fileFile.attr('required', 'true');
-            break;
-        case '#content_card':
-            $cardTitle.attr({
-                'required': 'true',
-                'data-parsley-length': '[2,128]',
-            });
-            $cardDescription.attr({
-                'required': 'true',
-                'data-parsley-length': '[2,512]'
-            });
-            $cardUrl.attr({
-                'required': 'true',
-                'type': 'url'
-            });
-            break;
-        case '#content_mpnews':
-            break;
-        case '#content_sms':
-            $smsContent.attr({
-                'required': 'true',
-                'data-parsley-length': '[2,300]'
-            });
-            break;
-        default:
-            break;
-    }
-    $($(this).attr('href')).show();
+    removeValidation();
+    $messageContent.find('.tab-pane').hide();
+    refreshValidation(anchor);
+    $(anchor).show();
 });
 page.refreshTabs();
 // 加载消息中心css
@@ -675,6 +635,56 @@ function displayFile($container, mediaId, src, html) {
 function filename(uri) {
     var paths = uri.split('/');
     return paths[paths.length - 1];
+}
+function removeValidation() {
+    $messageContent.find(':input').removeAttr(
+        'required data-parsley-length maxlength'
+    );
+}
+function refreshValidation(anchor) {
+    switch (anchor) {
+        case '#content_text':
+            $textContent.attr('required', 'true');
+            break;
+        case '#content_image':
+            $fileImage.attr('required', 'true');
+            break;
+        case '#content_audio':
+            $fileAudio.attr('required', 'true');
+            break;
+        case '#content_video':
+            $videoTitle.attr('maxlength', 128);
+            $videoDescription.attr('maxlength', 512);
+            $fileVideo.attr('required', 'true');
+            break;
+        case '#content_file':
+            $fileFile.attr('required', 'true');
+            break;
+        case '#content_card':
+            $cardTitle.attr({
+                'required': 'true',
+                'data-parsley-length': '[2,128]',
+            });
+            $cardDescription.attr({
+                'required': 'true',
+                'data-parsley-length': '[2,512]'
+            });
+            $cardUrl.attr({
+                'required': 'true',
+                'type': 'url'
+            });
+            break;
+        case '#content_mpnews':
+            break;
+        case '#content_sms':
+            $smsContent.attr({
+                'required': 'true',
+                'data-parsley-length': '[2,300]'
+            });
+            break;
+        default:
+            break;
+    }
 }
 function initEditor() {
     page.loadCss(plugins.htmleditor.css);
