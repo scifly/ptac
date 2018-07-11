@@ -127,18 +127,35 @@ class Message extends Model {
             [
                 'db' => 'App.name as appname', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return $d ?? '(待定)';
+                    return $d ?? sprintf(Snippet::BADGE_GRAY, '(待定)');
                 }
             ],
-            ['db' => 'Message.msl_id', 'dt' => 3],
-            ['db' => 'User.realname', 'dt' => 4],
+            [
+                'db' => 'Message.msl_id', 'dt' => 3,
+                'formatter' => function ($d) {
+                    return $d ?? sprintf(Snippet::BADGE_GRAY, '(待定)');
+                }
+            ],
+            [
+                'db' => 'User.realname', 'dt' => 4,
+                'formatter' => function ($d, $row) {
+                    $content = json_decode($row['content']);
+                    
+                    return $d ?? sprintf(Snippet::BADGE_GRAY, $content->{'touser'} . $content->{'toparty'});
+                }
+            ],
             [
                 'db' => 'MessageType.name as messagetypename', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return $row['sent'] ? $d : $d . sprintf(Snippet::BADGE_GRAY, '(草稿)');
                 }
             ],
-            ['db' => 'Message.created_at', 'dt' => 6],
+            [
+                'db' => 'Message.created_at', 'dt' => 6,
+                'formatter' => function ($d, $row) {
+                    return $row['sent'] ? $d : sprintf(Snippet::BADGE_GRAY, '(n/a)');
+                }
+            ],
             [
                 'db'        => 'Message.sent', 'dt' => 7,
                 'formatter' => function ($d, $row) {
@@ -185,9 +202,9 @@ class Message extends Model {
             [
                 'table'      => 'users',
                 'alias'      => 'User',
-                'type'       => 'INNER',
+                'type'       => 'LEFT',
                 'conditions' => [
-                    'User.id = Message.s_user_id',
+                    'User.id = Message.r_user_id',
                 ],
             ],
         ];
