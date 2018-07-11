@@ -191,7 +191,7 @@ class Message extends Model {
                     $userIds
                 )
             );
-            $condition = 'Message.s_user_id IN' . '(' . implode(',', $userIds) . ')';
+            $condition = 'Message.s_user_id IN' . ' (' . implode(',', $userIds) . ')';
         } else {
             $condition = 'Message.s_user_id = ' . Auth::id()
                 . ' OR Message.r_user_id = ' . Auth::id();
