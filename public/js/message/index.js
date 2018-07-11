@@ -428,8 +428,8 @@ function message(action) {
             break;
         case 'draft':
             var $id = $('#id');
-            uri = $id.val() ? 'update/' + $id.val() : 'store';
-            requestType = $id.val() ? 'PUT' : 'POST';
+            uri = $id.val() !== '' ? 'update/' + $id.val() : 'store';
+            requestType = $id.val() !== '' ? 'PUT' : 'POST';
             icon = page.success;
             break;
         case 'schedule':
