@@ -133,7 +133,8 @@ class Message extends Model {
                             return $d;
                         }
                     }
-                    $type = '(' . Constant::INFO_TYPES[$content->{'msgtype'}] . ')';
+                    $type = '(' . Constant::INFO_TYPES[$content->{'msgtype'}] .
+                        ($row['sent'] ?: '.' . sprintf(Snippet::BADGE_GRAY, '草稿')) . ')';
                     return $d . sprintf(Snippet::BADGE_LIGHT_BLUE, $type);
                 }
             ],
@@ -155,12 +156,7 @@ class Message extends Model {
                     return $d ?? sprintf(Snippet::BADGE_GRAY, '(部门/会员)');
                 }
             ],
-            [
-                'db' => 'MessageType.name as messagetypename', 'dt' => 5,
-                'formatter' => function ($d, $row) {
-                    return $row['sent'] ? $d : $d . sprintf(Snippet::BADGE_GRAY, '(草稿)');
-                }
-            ],
+            ['db' => 'MessageType.name as messagetypename', 'dt' => 5],
             [
                 'db' => 'Message.created_at', 'dt' => 6,
                 'formatter' => function ($d, $row) {

@@ -75,7 +75,7 @@ $.getMultiScripts([plugins.select2.js]).done(function () {
 });
 // 初始化"已发送"datatable
 var options = [
-    {className: 'text-center', targets: [1, 2, 3, 4, 5, 6]}
+    {className: 'text-center', targets: [2, 3, 4, 5, 6]}
 ];
 $('.box-tools').hide();
 page.initDatatable('messages', options);
