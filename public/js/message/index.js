@@ -120,12 +120,36 @@ $(document).on('click', '.fa-edit', function() {
             $tabTitle.parent().addClass('active');
             $tabTitle.removeClass('text-gray').addClass('text-blue');
             $('#content_' + result['message']['msgtype']).show();
-            switch (result['message']['msgtype']) {
+
+            var html = '', $container = $messageContent.find('.tab-pane.active'),
+                type = result['message']['msgtype'];
+            switch (type) {
                 case 'text':
-                    $textContent.val(result['message']['text']['content']);
+                    $textContent.val(result['message'][type]['content']);
                     break;
                 case 'image':
-                    console.log(result);
+                    var mediaId = result['message'][type]['media_id'],
+                        src = '../../' +result['message'][type]['path'],
+                        imgAttrs = {
+                            'src':  src,
+                            'style': 'height: 200px;'
+                        };
+                    html += $('<img' + ' />', imgAttrs).prop('outerHTML');
+                    // console.log(result);
+                    $container.find('.media_id').val(mediaId).attr('data-path', src);
+
+                    var $uploadBtn = $container.find('.upload-button'),
+                        $label = $uploadBtn.find('label'),
+                        $mediaId = $uploadBtn.find('.media_id'),
+                        $removeFile = $uploadBtn.find('.remove-file'),
+                        $file = $mediaId.next();
+
+                    $label.html('<i class="fa fa-pencil"> 更换</i>');
+                    $removeFile.show();
+                    if ($file.attr('class') !== 'help-block') {
+                        $file.remove();
+                    }
+                    $mediaId.after(html);
                     break;
                 default:
                     break;
@@ -403,16 +427,13 @@ $send.on('click', function () {
     $targetIds.attr('required', 'true');
     return message('send');
 });
-
 $preview.on('click', function () {
     $targetIds.removeAttr('required');
     return message('preview');
 });
-
 $draft.on('click', function () {
     return message('draft');
 });
-
 
 /** Helper functions ------------------------------------------------------------------------------------------------ */
 function message(action) {
