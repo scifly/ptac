@@ -159,7 +159,7 @@ class Message extends Model {
             [
                 'table'      => 'apps',
                 'alias'      => 'App',
-                'type'       => 'RIGHT',
+                'type'       => 'LEFT',
                 'conditions' => [
                     'App.id = Message.app_id',
                 ],
