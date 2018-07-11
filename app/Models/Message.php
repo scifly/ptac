@@ -147,7 +147,7 @@ class Message extends Model {
             [
                 'db' => 'Message.msl_id', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return $d ? $d : sprintf(Snippet::BADGE_GRAY, '(待定)');
+                    return $d ? $d : sprintf(Snippet::BADGE_GRAY, '(n/a)');
                 }
             ],
             [
@@ -180,7 +180,8 @@ class Message extends Model {
                 },
             ],
             ['db' => 'Message.read', 'dt' => 8],
-            ['db' => 'Message.content', 'dt' => 9]
+            ['db' => 'Message.content', 'dt' => 9],
+            ['db' => 'Message.app_id', 'dt' => 10],
         ];
         $joins = [
             [
