@@ -123,7 +123,17 @@ class Message extends Model {
         
         $columns = [
             ['db' => 'Message.id', 'dt' => 0],
-            ['db' => 'CommType.name as commtypename', 'dt' => 1],
+            [
+                'db' => 'CommType.name as commtypename', 'dt' => 1,
+                'formatter' => function ($d, $row) {
+                    $content = json_decode($row['content']);
+                    if (!isset($content->{'msgtype'})) {
+                        return $d;
+                    }
+                    $type = '(' . Constant::INFO_TYPES[$content->{'msgtype'}] . ')';
+                    return $d . sprintf(Snippet::BADGE_LIGHT_BLUE, $type);
+                }
+            ],
             [
                 'db' => 'App.name as appname', 'dt' => 2,
                 'formatter' => function ($d) {
@@ -138,10 +148,8 @@ class Message extends Model {
             ],
             [
                 'db' => 'User.realname', 'dt' => 4,
-                'formatter' => function ($d, $row) {
-                    $content = json_decode($row['content']);
-                    
-                    return $d ?? sprintf(Snippet::BADGE_GRAY, $content->{'touser'} . $content->{'toparty'});
+                'formatter' => function ($d) {
+                    return $d ?? sprintf(Snippet::BADGE_GRAY, '(部门/会员)');
                 }
             ],
             [
