@@ -173,6 +173,7 @@ class Message extends Model {
                 },
             ],
             ['db' => 'Message.read', 'dt' => 8],
+            ['db' => 'Message.content', 'dt' => 9]
         ];
         $joins = [
             [
