@@ -125,6 +125,7 @@ $(document).on('click', '.fa-edit', function() {
                     $textContent.val(result['message']['text']['content']);
                     break;
                 case 'image':
+                    console.log(result);
                     break;
                 default:
                     break;
