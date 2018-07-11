@@ -601,7 +601,7 @@ function upload($file) {
                 default:
                     return false;
             }
-            displayFile($container, result['data']['media_id'], result['data']['path'], html);
+            displayFile($container, result['data']['media_id'], src, html);
         },
         error: function (e) {
             page.errorHandler(e);
