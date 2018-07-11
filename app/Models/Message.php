@@ -127,12 +127,17 @@ class Message extends Model {
             [
                 'db' => 'App.name as appname', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return $d ?? '(n/a)';
+                    return $d ?? '(待定)';
                 }
             ],
             ['db' => 'Message.msl_id', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
-            ['db' => 'MessageType.name as messagetypename', 'dt' => 5],
+            [
+                'db' => 'MessageType.name as messagetypename', 'dt' => 5,
+                'formatter' => function ($d, $row) {
+                    return $row['sent'] ? $d : $d . '(草稿)';
+                }
+            ],
             ['db' => 'Message.created_at', 'dt' => 6],
             [
                 'db'        => 'Message.sent', 'dt' => 7,
