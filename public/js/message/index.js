@@ -108,7 +108,8 @@ $(document).on('click', '.fa-edit', function() {
         success: function (result) {
             var $msgTypeId = $('#message_type_id'), $tabTitle,
                 html = '', type = result['message']['msgtype'],
-                $container = $('#content_' + type);
+                $container = $('#content_' + type), mediaId, src,
+                uploadTypes = ['image', 'audio', 'video', 'file', 'mpnews'];
 
             console.log(result);
             // 设置消息类型
@@ -126,36 +127,47 @@ $(document).on('click', '.fa-edit', function() {
             $tabTitle.removeClass('text-gray').addClass('text-blue');
 
             $('#content_' + result['message']['msgtype']).show();
+
+            if ($.inArray(type, uploadTypes) > -1) {
+                mediaId = result['message'][type]['media_id'];
+                src = '../../' +result['message'][type]['path'];
+            }
             switch (type) {
                 case 'text':
                     $textContent.val(result['message'][type]['content']);
                     break;
                 case 'image':
-                    var mediaId = result['message'][type]['media_id'],
-                        src = '../../' +result['message'][type]['path'],
-                        imgAttrs = {
-                            'src':  src,
-                            'style': 'height: 200px;'
-                        };
+                    var imgAttrs = {
+                        'src':  src,
+                        'style': 'height: 200px;',
+                        'title': '文件名：' + filename(src)
+                    };
                     html += $('<img' + ' />', imgAttrs).prop('outerHTML');
-                    // console.log(result);
-                    $container.find('.media_id').val(mediaId).attr('data-path', src);
-
-                    var $uploadBtn = $container.find('.upload-button'),
-                        $label = $uploadBtn.find('label'),
-                        $mediaId = $uploadBtn.find('.media_id'),
-                        $removeFile = $uploadBtn.find('.remove-file'),
-                        $file = $mediaId.next();
-
-                    $label.html('<i class="fa fa-pencil"> 更换</i>');
-                    $removeFile.show();
-                    if ($file.attr('class') !== 'help-block') {
-                        $file.remove();
-                    }
-                    $mediaId.after(html);
+                    break;
+                case 'audio':
+                    html += $('<i>', {'class': 'fa fa-file-sound-o'}).prop('outerHTML') + ' ' +
+                        $('<span>').prop('innerHTML', filename(src)).prop('outerHTML');
+                    break;
+                case 'video':
+                    html += '<video width="400" controls><source src="' + src + '" type="video/mp4"></video>';
+                    $container = $('#video-container');
+                    break;
+                case 'file':
+                    html += $('<i>', {'class': 'fa fa-file-o'}).prop('outerHTML') + ' ' +
+                        $('<span>').prop('innerHTML', filename(src)).prop('outerHTML');
+                    break;
+                case 'card':
+                    break;
+                case 'mpnews':
+                    // todo:
+                    break;
+                case 'sms':
                     break;
                 default:
                     break;
+            }
+            if ($.inArray(type, uploadTypes) > -1) {
+                displayFile($container, mediaId, src, html);
             }
             $('.overlay').hide();
         },
@@ -564,7 +576,6 @@ function data(preview = false) {
     }
 
     return $.extend(formData, content);
-
 }
 // 上传文件 (图片、语音、视频、文件、封面图）
 function upload($file) {
@@ -594,34 +605,36 @@ function upload($file) {
         success: function (result) {
             $('.overlay').hide();
             page.inform(result.title, result.message, page.success);
-            var html = '', $container = $messageContent.find('.tab-pane.active');
+            var html = '', $container = $messageContent.find('.tab-pane.active'),
+                filename = result['data']['filename'],
+                src = '../../' + result['data']['path'];
 
             switch (type) {
                 case 'image':
                     imgAttrs = {
-                        'src': '../../' + result.data.path,
+                        'src': src,
                         'style': 'height: 200px;',
-                        'title': '文件名：' + result.data.filename
+                        'title': '文件名：' + filename
                     };
                     html += $('<img' + ' />', imgAttrs).prop('outerHTML');
                     break;
                 case 'audio':
                     html += $('<i>', {'class': 'fa fa-file-sound-o'}).prop('outerHTML') + ' ' +
-                        $('<span>').prop('innerHTML', result.data.filename).prop('outerHTML');
+                        $('<span>').prop('innerHTML', filename).prop('outerHTML');
                     break;
                 case 'video':
-                    html += '<video width="400" controls><source src="../../' + result.data.path + '" type="video/mp4"></video>';
+                    html += '<video width="400" controls><source src="' + src + '" type="video/mp4"></video>';
                     $container = $('#video-container');
                     break;
                 case 'file':
                     html += $('<i>', {'class': 'fa fa-file-o'}).prop('outerHTML') + ' ' +
-                        $('<span>').prop('innerHTML', result.data.filename).prop('outerHTML');
+                        $('<span>').prop('innerHTML', filename).prop('outerHTML');
                     break;
                 case 'mpnews':
                     imgAttrs = {
-                        'src': '../../' + result.data.path,
+                        'src': src,
                         'style': 'height: 200px;',
-                        'title': '文件名：' + result.data.filename
+                        'title': '文件名：' + filename
                     };
                     html += $('<img' + ' />', imgAttrs).prop('outerHTML');
                     $container = $('#cover-container');
@@ -629,20 +642,7 @@ function upload($file) {
                 default:
                     return false;
             }
-            $container.find('.media_id').val(result.data.media_id).attr('data-path', result.data.path);
-
-            var $uploadBtn = $container.find('.upload-button'),
-                $label = $uploadBtn.find('label'),
-                $mediaId = $uploadBtn.find('.media_id'),
-                $removeFile = $uploadBtn.find('.remove-file'),
-                $file = $mediaId.next();
-
-            $label.html('<i class="fa fa-pencil"> 更换</i>');
-            $removeFile.show();
-            if ($file.attr('class') !== 'help-block') {
-                $file.remove();
-            }
-            $mediaId.after(html);
+            displayFile($container, result['data']['media_id'], result['data']['path'], html);
         },
         error: function (e) {
             page.errorHandler(e);
@@ -655,6 +655,26 @@ function initUpload() {
     $(document).off('change', '.file-upload').on('change', '.file-upload', function () {
         if ($(this).val() !== '') { upload($(this)); }
     });
+}
+function displayFile($container, mediaId, src, html) {
+    $container.find('.media_id').val(mediaId).attr('data-path', src);
+
+    var $uploadBtn = $container.find('.upload-button'),
+        $label = $uploadBtn.find('label'),
+        $mediaId = $uploadBtn.find('.media_id'),
+        $removeFile = $uploadBtn.find('.remove-file'),
+        $file = $mediaId.next();
+
+    $label.html('<i class="fa fa-pencil"> 更换</i>');
+    $removeFile.show();
+    if ($file.attr('class') !== 'help-block') {
+        $file.remove();
+    }
+    $mediaId.after(html);
+}
+function filename(uri) {
+    var paths = uri.split('/');
+    return paths[paths.length - 1];
 }
 function initEditor() {
     page.loadCss(plugins.htmleditor.css);
