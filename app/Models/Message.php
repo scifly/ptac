@@ -153,7 +153,7 @@ class Message extends Model {
             [
                 'db' => 'User.realname', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return $d ?? sprintf(Snippet::BADGE_GRAY, '(部门/会员)');
+                    return $d ?? sprintf(Snippet::BADGE_GRAY, '(部门 & 会员)');
                 }
             ],
             ['db' => 'MessageType.name as messagetypename', 'dt' => 5],
