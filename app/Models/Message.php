@@ -128,7 +128,10 @@ class Message extends Model {
                 'formatter' => function ($d, $row) {
                     $content = json_decode($row['content']);
                     if (!isset($content->{'msgtype'})) {
-                        return $d;
+                        $content = json_decode($content);
+                        if (!isset($content->{'msgtype'})) {
+                            return $d;
+                        }
                     }
                     $type = '(' . Constant::INFO_TYPES[$content->{'msgtype'}] . ')';
                     return $d . sprintf(Snippet::BADGE_LIGHT_BLUE, $type);
