@@ -389,13 +389,14 @@ class Message extends Model {
         }
         $type = $type ? $type : 'other';
         Carbon::setLocale('zh');
+        $msl = $message->messageSendinglog;
         $content = [
             'id'         => $message->id,
             'title'      => $title,
             'updated_at' => Carbon::createFromFormat('Y-m-d H:i:s', $message->updated_at)->diffForHumans(),
             'sender'     => User::find($message->s_user_id)->realname,
-            'recipients' => $message->messageSendinglog->recipient_count,
-            'msl_id'     => $message->messageSendinglog->id,
+            'recipients' => $msl ? $msl->recipient_count : 0,
+            'msl_id'     => $msl ? $msl->id : 0,
             'type'       => $type,
             $type        => $type == 'other' ? $message->content : $object->{$type},
         ];
