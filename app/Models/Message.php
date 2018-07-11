@@ -135,7 +135,7 @@ class Message extends Model {
             [
                 'db' => 'MessageType.name as messagetypename', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    return $row['sent'] ? $d : $d . '(草稿)';
+                    return $row['sent'] ? $d : $d . sprintf(Snippet::BADGE_GRAY, '(草稿)');
                 }
             ],
             ['db' => 'Message.created_at', 'dt' => 6],
