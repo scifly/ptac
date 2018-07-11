@@ -124,7 +124,12 @@ class Message extends Model {
         $columns = [
             ['db' => 'Message.id', 'dt' => 0],
             ['db' => 'CommType.name as commtypename', 'dt' => 1],
-            ['db' => 'App.name as appname', 'dt' => 2],
+            [
+                'db' => 'App.name as appname', 'dt' => 2,
+                'formatter' => function ($d) {
+                    return $d ?? '(n/a)';
+                }
+            ],
             ['db' => 'Message.msl_id', 'dt' => 3],
             ['db' => 'User.realname', 'dt' => 4],
             ['db' => 'MessageType.name as messagetypename', 'dt' => 5],
