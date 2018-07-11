@@ -565,7 +565,8 @@ function upload($file) {
         success: function (result) {
             $('.overlay').hide();
             page.inform(result.title, result.message, page.success);
-            var html = '', $container = $messageContent.find('.tab-pane.active'),
+            var html = '',
+                $container = $('#content_' + type),
                 filename = result['data']['filename'],
                 src = '../../' + result['data']['path'];
 
