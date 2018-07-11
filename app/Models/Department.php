@@ -42,7 +42,7 @@ use Throwable;
  * @property-read Department|null $parent
  * @property-read School $school
  * @property-read Squad $squad
- * @property-read Collection|\App\Models\User[] $users
+ * @property-read Collection|User[] $users
  * @method static Builder|Department whereCreatedAt($value)
  * @method static Builder|Department whereDepartmentTypeId($value)
  * @method static Builder|Department whereEnabled($value)

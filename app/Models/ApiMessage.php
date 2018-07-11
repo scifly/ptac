@@ -72,30 +72,18 @@ class ApiMessage extends Model {
      * 保存接口消息发送日志
      *
      * @param array $mobiles
-     * @param $sUserId
-     * @param $mslId
-     * @param $msgTypeId
-     * @param $content
-     * @param $read
-     * @param $sent
+     * @param array $data
      * @return bool
      * @throws Exception
      */
-    function log(array $mobiles, $sUserId, $mslId, $msgTypeId, $content, $read, $sent) {
+    function log(array $mobiles, array $data) {
     
         try {
-            DB::transaction(function () use ($mobiles, $sUserId, $mslId, $msgTypeId, $content, $read, $sent) {
+            DB::transaction(function () use ($mobiles, $data) {
                 $records = [];
                 foreach ($mobiles as $mobile) {
-                    $records[] = [
-                        'msl_id'       => $mslId,
-                        'message_type_id' => $msgTypeId,
-                        's_user_id' => $sUserId ?? 0,
-                        'mobile' => $mobile,
-                        'content' => $content,
-                        'read' => $read,
-                        'sent' => $sent
-                    ];
+                    $data['mobile'] = $mobile;
+                    $records[] = $data;
                 }
                 $this->insert($records);
             });

@@ -111,6 +111,8 @@ $(document).on('click', '.fa-edit', function() {
                 $container = $('#content_' + type), mediaId, src,
                 uploadTypes = ['image', 'audio', 'video', 'file', 'mpnews'];
 
+            if (type === 'textcard') { type = 'card'; }
+            if (type === 'voice') { type = 'audio'; }
             // 设置消息类型
             $msgTypeId.val(result['messageTypeId']).trigger('change');
             // 显示发送对象列表
@@ -158,11 +160,17 @@ $(document).on('click', '.fa-edit', function() {
                         $('<span>').prop('innerHTML', filename(src)).prop('outerHTML');
                     break;
                 case 'card':
+                    var card = result['message']['textcard'];
+                    $cardTitle.val(card['title']);
+                    $cardDescription.val(card['description']);
+                    $cardUrl.val(card['url']);
+                    $cardBtntxt.val(card['btntxt']);
                     break;
                 case 'mpnews':
                     // todo:
                     break;
                 case 'sms':
+                    $smsContent.val(result['message'][type]['content']);
                     break;
                 default:
                     break;
@@ -456,7 +464,9 @@ function data(preview = false) {
         types = $('#message-content').find('.tab-pane.active').attr('id').split('_'),
         type = types[types.length - 1],
         $container = $('#content_' + type),
-        content = null, formData;
+        messageId = $('#id').val(),
+        content = null, formData,
+        mediaId, path, uploadTypes = ['image', 'audio', 'video', 'file'];
 
     formData = {
         _token: page.token(),
@@ -466,7 +476,12 @@ function data(preview = false) {
         message_type_id: $messageTypeId.val(),
     };
     if (preview) { $.extend(formData, { preview: 1 }); }
+    if (messageId !== '') { $.extend(formData, { id: messageId }); }
 
+    if ($.inArray(type, uploadTypes) > -1) {
+        mediaId = $container.find('.media_id').val();
+        path = $container.find('.media_id').attr('data-path');
+    }
     switch (type) {
         case 'text':    // 文本
             $textContent.attr('required', 'true');
@@ -475,16 +490,16 @@ function data(preview = false) {
         case 'image':   // 图片
             content = {
                 image: {
-                    media_id: $container.find('.media_id').val(),
-                    path: $container.find('.media_id').attr('data-path')
+                    media_id: mediaId,
+                    path: path
                 }
             };
             break;
         case 'audio':   // 语音
             content = {
                 voice: {
-                    media_id: $container.find('.media_id').val(),
-                    path: $container.find('.media_id').attr('data-path')
+                    media_id: mediaId,
+                    path: path
                 }
             };
             formData['type'] = 'voice';
@@ -492,18 +507,18 @@ function data(preview = false) {
         case 'video':   // 视频
             content = {
                 video: {
-                    media_id: $container.find('.media_id').val(),
+                    media_id: mediaId,
                     title: $videoTitle.val(),
                     description: $videoDescription.val(),
-                    path: $container.find('.media_id').attr('data-path')
+                    path: path
                 }
             };
             break;
         case 'file':   // 文件
             content = {
                 file: {
-                    media_id: $container.find('.media_id').val(),
-                    path: $container.find('.media_id').attr('data-path')
+                    media_id: mediaId,
+                    path: path
                 }
             };
             break;

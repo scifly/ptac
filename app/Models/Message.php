@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
@@ -483,46 +484,55 @@ class Message extends Model {
     }
     
     /**
-     * 记录消息发送日志
+     * 创建消息发送日志
      *
-     * @param $users - 发送对象
-     * @param $sUserId
-     * @param $mslId - 发送日志id
-     * @param $title - 消息抬头
-     * @param $content - 消息内容（文本）
-     * @param $sent - 是否已发送
-     * @param $read - 是否已读
-     * @param $msgTypeId - 消息类型
-     * @param null $appId - 应用id
+     * @param Collection|User[] $users - 发送对象
+     * @param array $data - 消息数据
+     * @return bool
+     * @throws Exception
      */
-    function log($users, $sUserId, $mslId, $title, $content, $sent, $read, $msgTypeId, $appId = null) {
+    function log($users, array $data) {
         
-        $commType = !$appId ? '短信' : '微信';
-        $failedUserIds = [];
-        if ($commType === '微信') {
-            $failedUserIds = $this->failedUserIds($sent['invaliduser'], $sent['invalidparty']);
+        try {
+            DB::transaction(function () use ($users, $data) {
+                $commType = !$data['app_id'] ? '短信' : '微信';
+                
+                /** 如果发送的是微信消息，获取未发送成功的用户id */
+                $failedUserIds = [];
+                if ($commType === '微信') {
+                    $failedUserIds = $this->failedUserIds(
+                        $data['sent']['invaliduser'], $data['sent']['invalidparty']
+                    );
+                }
+                
+                /**  创建/更新原始消息 */
+                $data['sent'] = sizeof($failedUserIds) == sizeof($users) ? 0 : 1;
+                if (!isset($data['id'])) {
+                    # 创建原始消息
+                    $message = $this->create($data);
+                } else {
+                    # 更新原始消息
+                    $message = $this->find($data['id']);
+                    unset($data['id']);
+                    $message->update($data);
+                }
+                
+                /** 创建指定用户($users)收到的消息(应用内消息） */
+                foreach ($users as $user) {
+                    $data['r_user_id'] = $user->id;
+                    # 设置相关消息id
+                    $data['message_id'] = $message->id;
+                    if ($commType === '微信') {
+                        $data['sent'] = !in_array($user->id, $failedUserIds);
+                    }
+                    $this->create($data);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
-        foreach ($users as $user) {
-            if ($commType === '微信') {
-                $sent = !in_array($user->id, $failedUserIds);
-            }
-            $this->create([
-                'comm_type_id'    => CommType::whereName($commType)->first()->id,
-                'app_id'          => $appId ?? 0,
-                'msl_id'          => $mslId,
-                'title'           => $title,
-                'content'         => json_encode($content),
-                'serviceid'       => 0,
-                'message_id'      => 0,
-                'url'             => '',
-                'media_ids'       => '0',
-                's_user_id'       => $sUserId ?? 0,
-                'r_user_id'       => $user->id,
-                'message_type_id' => $msgTypeId,
-                'sent'            => $sent ? 1 : 0,
-                'read'            => $read ? 1 : 0,
-            ]);
-        }
+        
+        return true;
         
     }
     

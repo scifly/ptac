@@ -66,29 +66,30 @@ class SendMessage implements ShouldQueue {
         list($users, $mobiles) = $message->targets(
             $this->data['user_ids'], $this->data['dept_ids']
         );
+    
+        $this->data['s_user_id'] = $this->userId ?? 0;
         # 创建发送日志
         $msl = [
             'read_count'      => 0,
             'received_count'  => 0,
             'recipient_count' => count($users),
         ];
-        $mslId = MessageSendingLog::create($msl)->id;
+        $this->data['msl_id'] = MessageSendingLog::create($msl)->id;
         # 发送消息
         if ($this->data['type'] == 'sms') {
             # 发送短信消息
             $result = $message->sendSms(
                 $mobiles, $this->data['sms']
             );
+            $this->data['sent'] = $this->data['read'] = $result <= 0;
             # 创建广播消息
             if ($result > 0) {
                 $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
                 $response['message'] = __('messages.message.sms_send_failed');
             }
             # 创建用户消息发送日志
-            $message->log(
-                $users, $this->userId, $mslId, $this->data['title'], $this->data['sms'],
-                $result <= 0, $result <= 0, $this->data['message_type_id']
-            );
+            $this->data['content'] = json_encode($this->data['sms']);
+            $message->log($users, $this->data);
         } else {
             # 发送微信消息
             $results = [];
@@ -103,14 +104,13 @@ class SendMessage implements ShouldQueue {
                     'msgtype'           => $this->data['type'],
                     $this->data['type'] => $this->data[$this->data['type']],
                 ];
-                # 发送消息
-                $result = $this->sendMessage($this->corp, $app, $content);
-                # 创建用户消息发送日志
-                $message->log(
-                    $users, $this->userId, $mslId, $this->data['title'], $content,
-                    $result, 0, $this->data['message_type_id'], $app['id']
+                # 发送消息 & 创建用户消息发送日志
+                $this->data['sent'] = $results[$app['id']] = $this->sendMessage(
+                    $this->corp, $app, $content
                 );
-                $results[$app['id']] = $result;
+                $this->data['content'] = json_encode($content);
+                $this->data['app_id'] = $app['id'];
+                $message->log($users, $this->data);
             }
             # 创建广播消息
             if (sizeof($results) == 1) {

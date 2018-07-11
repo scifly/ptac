@@ -5,10 +5,12 @@ use App\Helpers\JobTrait;
 use App\Helpers\ModelTrait;
 use App\Models\ApiMessage;
 use App\Models\App;
+use App\Models\CommType;
 use App\Models\Department;
 use App\Models\DepartmentUser;
 use App\Models\Message;
 use App\Models\MessageSendingLog;
+use App\Models\MessageType;
 use App\Models\Mobile;
 use App\Models\School;
 use App\Models\User;
@@ -83,9 +85,16 @@ class SendMessageApi implements ShouldQueue {
                 # 发送短信
                 $mobiles = array_diff($targets, array_keys($contacts));
                 $result = $message->sendSms($mobiles, $this->content . $school->signature);
-                $apiMessage->log(
-                    $mobiles, null, $mslId, 1, $this->content, 0, $result > 0 ? 0 : 1
-                );
+                $data = [
+                    'msl_id' => $mslId,
+                    # todo: 此处需更换为接口访问用户对应的message_type_id
+                    'message_type_id' => 1,
+                    's_user_id' => 0,
+                    'content' => $this->content,
+                    'read' => 0,
+                    'sent' => $result > 0 ? 0 : 1
+                ];
+                $apiMessage->log($mobiles, $data);
                 
                 # 发送微信
                 $app = App::whereName('消息中心')->where('corp_id', $school->corp_id)->first()->toArray();
@@ -99,10 +108,26 @@ class SendMessageApi implements ShouldQueue {
                     'text' => ['content' => $this->content]
                 ];
                 $result = $this->sendMessage($school->corp, $app, $content);
-                $message->log(
-                    $users, null, $mslId, 'Third Party', json_encode($content),
-                    $result, 0, 1, $app['id']
-                );
+                $data = [
+                    'comm_type_id'    => CommType::whereName('微信')->first()->id,
+                    'app_id'          => $app['id'],
+                    'msl_id'          => $mslId,
+                    # todo: 此处需更换为接口访问用户的realname . (文本)
+                    'title'           => '[接口应用名称]消息(文本)',
+                    'content'         => json_encode($content),
+                    'serviceid'       => 0,
+                    'message_id'      => 0,
+                    'url'             => 'http://',
+                    'media_ids'       => 0,
+                    # todo: 此处需更换为接口访问用户的id
+                    's_user_id'       => 0,
+                    'r_user_id'       => 0,
+                    # todo: 此处需更换为接口访问用户对应的message_type_id
+                    'message_type_id' => MessageType::whereName('[接口应用名称]消息')->first()->id,
+                    'read'            => 0,
+                    'sent'            => $result,
+                ];
+                $message->log($users, $data);
             });
         } catch (Exception $e) {
             throw $e;
