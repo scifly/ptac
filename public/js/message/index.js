@@ -448,6 +448,10 @@ function message(action) {
     //     inputs: 'input, textarea, select, input[type=hidden], :hidden',
     // };
     if (!$('#formMessage').parsley().validate()) { return false; }
+    if ($targetIds.val() === '') {
+        page.inform('消息中心', '请选择发送对象', page.failure);
+        return false;
+    }
 
     $.ajax({
         url: page.siteRoot() + 'messages/' + uri,
@@ -665,7 +669,7 @@ function removeValidation() {
     );
 }
 function refreshValidation(anchor) {
-    $targetIds.attr('required', 'true');
+    // $targetIds.attr('required', 'true');
     switch (anchor) {
         case '#content_text':
             $textContent.attr('required', 'true');

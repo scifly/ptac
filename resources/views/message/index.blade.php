@@ -53,7 +53,6 @@
                             <div id="checked-nodes"></div>
                             {!! Form::hidden('selected-node-ids', null, [
                                 'id' => 'selected-node-ids',
-                                'data-parsley-validate-if-empty' => 'true',
                             ]) !!}
                             {!! Form::button('<i class="fa fa-user-plus text-blue">&nbsp;选择</i>', [
                                 'id' => 'choose',
