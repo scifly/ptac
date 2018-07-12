@@ -109,7 +109,7 @@ $(document).on('click', '.fa-edit', function() {
             var $msgTypeId = $('#message_type_id'), $tabTitle,
                 html = '', type = result['message']['msgtype'],
                 $container, mediaId, src,
-                uploadTypes = ['image', 'audio', 'video', 'file', 'mpnews'];
+                uploadTypes = ['image', 'audio', 'video', 'file'];
 
             if (type === 'textcard') { type = 'card'; }
             if (type === 'voice') { type = 'audio'; }
@@ -170,7 +170,20 @@ $(document).on('click', '.fa-edit', function() {
                     $cardBtntxt.val(card['btntxt']);
                     break;
                 case 'mpnews':
-                    // todo:
+                    var mpnewsList = '';
+                    mpnews = result['message'][type];
+                    mpnewsCount = mpnews['articles'].length;
+                    $addMpnews.siblings().remove();
+                    for (var i = 0; i < mpnewsCount; i++) {
+                        imgAttrs = {
+                            'class': 'mpnews',
+                            'src': mpnews['articles'][i]['image_url'],
+                            'title': mpnews['articles'][i]['title'],
+                            'id': 'mpnews-' + i
+                        };
+                        mpnewsList += $('<img' + ' />', imgAttrs).prop('outerHTML');
+                    }
+                    $addMpnews.after(mpnewsList);
                     break;
                 case 'sms':
                     $smsContent.val(result['message'][type]).trigger('change');
