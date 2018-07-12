@@ -154,7 +154,7 @@ $(document).on('click', '.fa-edit', function() {
                         $('<span>').prop('innerHTML', filename(src)).prop('outerHTML');
                     break;
                 case 'video':
-                    html += '<video width="400" controls><source src="' + src + '" type="video/mp4"></video>';
+                    html += '<video height="400" controls><source src="' + src + '" type="video/mp4"></video>';
                     $container = $('#video-container');
                     break;
                 case 'file':
@@ -599,7 +599,7 @@ function upload($file) {
                         $('<span>').prop('innerHTML', filename).prop('outerHTML');
                     break;
                 case 'video':
-                    html += '<video width="400" controls><source src="' + src + '" type="video/mp4"></video>';
+                    html += '<video height="400" controls><source src="' + src + '" type="video/mp4"></video>';
                     $container = $('#video-container');
                     break;
                 case 'file':
