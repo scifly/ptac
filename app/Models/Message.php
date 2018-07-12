@@ -610,12 +610,14 @@ class Message extends Model {
             );
         }
         $contentType = '';
+        
         switch ($type) {
             case 'image':
                 $contentType = 'image/*';
                 break;
             case 'audio':
                 $contentType = 'audio/*';
+                $type = 'voice';
                 break;
             case 'video':
                 $contentType = 'video/*';
@@ -629,7 +631,7 @@ class Message extends Model {
         $result = json_decode(
             Wechat::uploadMedia(
                 $token['access_token'],
-                Request::input('type'),
+                $type, // Request::input('type') ,
                 [
                     'file-contents' => curl_file_create(public_path($uploadedFile['path'])),
                     'filename'      => $uploadedFile['filename'],
