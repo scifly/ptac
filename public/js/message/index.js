@@ -173,7 +173,7 @@ $(document).on('click', '.fa-edit', function() {
                     // todo:
                     break;
                 case 'sms':
-                    $smsContent.val(result['message'][type]);
+                    $smsContent.val(result['message'][type]).trigger('change');
                     break;
                 default:
                     break;
