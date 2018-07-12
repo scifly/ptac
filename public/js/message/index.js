@@ -150,8 +150,9 @@ $(document).on('click', '.fa-edit', function() {
                     html += $('<img' + ' />', imgAttrs).prop('outerHTML');
                     break;
                 case 'audio':
-                    html += $('<i>', {'class': 'fa fa-file-sound-o'}).prop('outerHTML') + ' ' +
-                        $('<span>').prop('innerHTML', filename(src)).prop('outerHTML');
+                    // html += $('<i>', {'class': 'fa fa-file-sound-o'}).prop('outerHTML') + ' ' +
+                    //     $('<span>').prop('innerHTML', filename(src)).prop('outerHTML');
+                    html += '<i class="fa fa-file-sound-o"> ' + filename(src) + '</i>';
                     break;
                 case 'video':
                     var video = result['message']['video'];
@@ -161,8 +162,9 @@ $(document).on('click', '.fa-edit', function() {
                     $container = $('#video-container');
                     break;
                 case 'file':
-                    html += $('<i>', {'class': 'fa fa-file-o'}).prop('outerHTML') + ' ' +
-                        $('<span>').prop('innerHTML', filename(src)).prop('outerHTML');
+                    // html += $('<i>', {'class': 'fa fa-file-o'}).prop('outerHTML') + ' ' +
+                    //     $('<span>').prop('innerHTML', filename(src)).prop('outerHTML');
+                    html += '<i class="fa fa-file-o"> ' + filename(src) + '</i>';
                     break;
                 case 'card':
                     var card = result['message']['textcard'];
@@ -598,16 +600,18 @@ function upload($file) {
                     html += $('<img' + ' />', imgAttrs).prop('outerHTML');
                     break;
                 case 'audio':
-                    html += $('<i>', {'class': 'fa fa-file-sound-o'}).prop('outerHTML') + ' ' +
-                        $('<span>').prop('innerHTML', filename).prop('outerHTML');
+                    // html += $('<i>', {'class': 'fa fa-file-sound-o'}).prop('outerHTML') + ' ' +
+                    //     $('<span>').prop('innerHTML', filename).prop('outerHTML');
+                    html += '<i class="fa fa-file-sound-o"> ' + filename + '</i>';
                     break;
                 case 'video':
                     html += '<video height="200" controls><source src="' + src + '" type="video/mp4"></video>';
                     $container = $('#video-container');
                     break;
                 case 'file':
-                    html += $('<i>', {'class': 'fa fa-file-o'}).prop('outerHTML') + ' ' +
-                        $('<span>').prop('innerHTML', filename).prop('outerHTML');
+                    // html += $('<i>', {'class': 'fa fa-file-o'}).prop('outerHTML') + ' ' +
+                    //     $('<span>').prop('innerHTML', filename).prop('outerHTML');
+                    html += '<i class="fa fa-file-o"> ' + filename + '</i>';
                     break;
                 case 'mpnews':
                     imgAttrs = {
