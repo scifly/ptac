@@ -661,6 +661,7 @@ function removeValidation() {
     );
 }
 function refreshValidation(anchor) {
+    $targetIds.attr('required', 'true');
     switch (anchor) {
         case '#content_text':
             $textContent.attr('required', 'true');
