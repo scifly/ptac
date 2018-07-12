@@ -614,7 +614,7 @@ class Message extends Model {
             case 'image':
                 $contentType = 'image/*';
                 break;
-            case 'voice':
+            case 'audio':
                 $contentType = 'audio/*';
                 break;
             case 'video':
