@@ -150,8 +150,6 @@ $(document).on('click', '.fa-edit', function() {
                     html += $('<img' + ' />', imgAttrs).prop('outerHTML');
                     break;
                 case 'audio':
-                    // html += $('<i>', {'class': 'fa fa-file-sound-o'}).prop('outerHTML') + ' ' +
-                    //     $('<span>').prop('innerHTML', filename(src)).prop('outerHTML');
                     html += '<i class="fa fa-file-sound-o"> ' + filename(src) + '</i>';
                     break;
                 case 'video':
@@ -162,8 +160,6 @@ $(document).on('click', '.fa-edit', function() {
                     $container = $('#video-container');
                     break;
                 case 'file':
-                    // html += $('<i>', {'class': 'fa fa-file-o'}).prop('outerHTML') + ' ' +
-                    //     $('<span>').prop('innerHTML', filename(src)).prop('outerHTML');
                     html += '<i class="fa fa-file-o"> ' + filename(src) + '</i>';
                     break;
                 case 'card':
@@ -177,7 +173,7 @@ $(document).on('click', '.fa-edit', function() {
                     // todo:
                     break;
                 case 'sms':
-                    $smsContent.val(result['message'][type]['content']);
+                    $smsContent.val(result['message'][type]);
                     break;
                 default:
                     break;
