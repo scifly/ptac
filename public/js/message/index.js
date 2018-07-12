@@ -549,7 +549,7 @@ function data(preview = false) {
             break;
         case 'sms': // 短信
             appIds = [0];
-            content = {sms: $('#contentSms').val()};
+            content = {sms: $smsContent.val()};
             break;
         default:
             break;
