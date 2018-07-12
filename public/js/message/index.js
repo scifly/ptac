@@ -154,6 +154,9 @@ $(document).on('click', '.fa-edit', function() {
                         $('<span>').prop('innerHTML', filename(src)).prop('outerHTML');
                     break;
                 case 'video':
+                    var video = result['message']['video'];
+                    $videoTitle.val(video['title']);
+                    $videoDescription.val(video['description']);
                     html += '<video height="400" controls><source src="' + src + '" type="video/mp4"></video>';
                     $container = $('#video-container');
                     break;
