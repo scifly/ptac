@@ -395,7 +395,7 @@ $(document).on('click', '#remove-mpnews', function () {
 // 获取短信输入字符数
 $smsLength.text('已输入0个字符， 还可输入' + smsMaxlength + '个字符');
 $contentSms.attr('maxlength', smsMaxlength);
-$smsContent.on('keyup', function () {
+$smsContent.on('keyup change', function () {
     currentLength = $(this).val().length;
     availableLength = smsMaxlength - currentLength;
     if (availableLength < 0) {
