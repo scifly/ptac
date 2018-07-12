@@ -443,10 +443,10 @@ function message(action) {
         default:
             break;
     }
-    window.ParsleyConfig = {
-        excluded: 'input[type=button], input[type=submit], input[type=reset]',
-        inputs: 'input, textarea, select, input[type=hidden], :hidden',
-    };
+    // window.ParsleyConfig = {
+    //     excluded: 'input[type=button], input[type=submit], input[type=reset]',
+    //     inputs: 'input, textarea, select, input[type=hidden], :hidden',
+    // };
     if (!$('#formMessage').parsley().validate()) { return false; }
 
     $.ajax({
