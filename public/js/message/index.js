@@ -443,10 +443,6 @@ function message(action) {
         default:
             break;
     }
-    // window.ParsleyConfig = {
-    //     excluded: 'input[type=button], input[type=submit], input[type=reset]',
-    //     inputs: 'input, textarea, select, input[type=hidden], :hidden',
-    // };
     if (!$('#formMessage').parsley().validate()) { return false; }
     if ($targetIds.val() === '') {
         page.inform('消息中心', '请选择发送对象', page.failure);

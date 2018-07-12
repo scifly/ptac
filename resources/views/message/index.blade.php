@@ -26,7 +26,6 @@
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="tab01">
-                    {!! Form::hidden('id', null, ['id' => 'id']) !!}
                     @include('message.targets')
                     <div class="upload-overlay overlay">
                         <i class="fa fa-refresh fa-spin"></i>
@@ -44,6 +43,7 @@
                         'icon' => 'fa fa-weixin text-green',
                         'items' => $apps,
                     ])
+                    {!! Form::hidden('id', null, ['id' => 'id']) !!}
                     <!-- 发送对象 -->
                     <div class="form-group">
                         {!! Form::label('targets', '发送对象', [
