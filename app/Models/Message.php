@@ -250,8 +250,10 @@ class Message extends Model {
     
         list($content) = $this->show($id);
         $message = $content[$content['type']];
-        $targetIds = explode('|', $message->{'toparty'});
-        $userids = explode('|', $message->{'touser'});
+        $toparty = $message->{'toparty'};
+        $touser = $message->{'touser'};
+        $targetIds = !empty($toparty) ? explode('|', $toparty) : [];
+        $userids = !empty($touser) ? explode('|', $touser) : [];
         $users = User::whereIn('userid', $userids)->get();
         foreach ($users as $user) {
             foreach ($user->departments as $department) {
