@@ -112,20 +112,19 @@ class MessageRequest extends FormRequest {
         if ($action != 'send') {
             $schoolId = $this->schoolId() ?? session('schoolId');
             $corp = School::find($schoolId)->corp;
-            if ($input['type'] == 'sms') {
-                $input['content'] = $input['sms'];
-            } else {
-                $userids = User::whereIn('id', $input['user_ids'])
-                    ->where('subscribed', 1)# 仅发送消息给已关注的用户
-                    ->pluck('userid')->toArray();
-                $input['content'] = json_encode([
-                    'touser'       => implode('|', $userids),
-                    'toparty'      => implode('|', $input['dept_ids']),
-                    'agentid'      => App::whereCorpId($corp->id)->where('name', '消息中心')->first()->agentid,
-                    'msgtype'      => $input['type'],
-                    $input['type'] => $input[$input['type']],
-                ]);
-            }
+            $userids = User::whereIn('id', $input['user_ids'])
+                // ->where('subscribed', 1) # 仅发送消息给已关注的用户
+                ->pluck('userid')->toArray();
+            $agentid = $input['type'] != 'sms'
+                ? App::whereCorpId($corp->id)->where('name', '消息中心')->first()->agentid
+                : 0; # agentid 对短信类消息不适用
+            $input['content'] = json_encode([
+                'touser'       => implode('|', $userids),
+                'toparty'      => implode('|', $input['dept_ids']),
+                'agentid'      => $agentid,
+                'msgtype'      => $input['type'],
+                $input['type'] => $input[$input['type']],
+            ]);
         }
         $this->replace($input);
         
