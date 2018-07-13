@@ -9,7 +9,7 @@
         $required ?? ''
     ]) !!}
     <a href="#" class="remove-file" style="display: none;">
-        <i class="fa fa-remove text-red"> 删除</i>
+        <i class="fa fa-close text-red"> 删除</i>
     </a><br />
     {!! Form::hidden(null, null, ['class' => 'media_id']) !!}
     @if (isset($note))
