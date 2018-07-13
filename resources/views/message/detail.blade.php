@@ -20,9 +20,14 @@
                             未知
                         @endif
                     </div>
-                    <div>发送时间: {!! $sentAt !!}</div>
-                    <div>发送对象: {!! $recipients !!}</div>
-                    <div>发送者: {!! $sender !!}</div>
+                    <div>
+                        <span class="control-label">发送时间:</span> {!! $sentAt !!}
+                    </div>
+                    <div>
+                        <span class="control-label">发送对象: </span>{!! $recipients !!}</div>
+                    <div>
+                        <span class="control-label">发送者: </span>{!! $sender !!}
+                    </div>
                 </div>
             </div>
         </div>
