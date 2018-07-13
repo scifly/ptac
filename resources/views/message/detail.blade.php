@@ -10,10 +10,10 @@
         </div>
         <div class="modal-body">
             <div class="row">
-                <div class="col-xs-12">
-                    <div>
-                        <label class="control-label">应用: </label>
-                        <span class="pull-right">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-xs-2">应用: </label>
+                        <span>
                             @if ($app)
                                 <img style="height: 16px; vertical-align: sub;" alt="" src="{!! $app['square_logo_url'] !!}"/>
                                 {!! $app['name'] !!}
@@ -22,19 +22,22 @@
                             @endif
                         </span>
                     </div>
-                    <div>
+                    <div class="form-group">
                         <label class="control-label col-xs-2">发送时间: </label>
-                        <span class="pull-right">{!! $sentAt !!}</span>
+                        <span>{!! $sentAt !!}</span>
                     </div>
-                    <div>
-                        <label class="control-label">发送对象: </label>
-                        <span class="pull-right">{!! $recipients !!}</span>
+                    <div class="form-group">
+                        <label class="control-label col-xs-2">发送对象: </label>
+                        <span>{!! $recipients !!}</span>
                     </div>
-                    <div>
-                        <label class="control-label">发送者: </label>
-                        <span class="pull-right">{!! $sender !!}</span>
+                    <div class="form-group">
+                        <label class="control-label col-xs-2">发送者: </label>
+                        <span>{!! $sender !!}</span>
                     </div>
-                    <div>{!! $msgBody !!}</div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-2">消息内容: </label>
+                        {!! $msgBody !!}
+                    </div>
                 </div>
             </div>
         </div>
