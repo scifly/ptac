@@ -426,16 +426,16 @@ class Message extends Model {
             Department::whereIn('id', $deptIds)->pluck('name')->toArray()
         );
         $msgBody = '';
-        $message = $content[$type];
+        $message = $content[$type]->{$type};
         switch ($type) {
             case 'text':
-                $msgBody = $message->{$type}->{'content'};
+                $msgBody = $message->{'content'};
                 break;
             case 'image':
-                $msgBody = '<img src="' . $message->{$type}->{'path'} . '" alt="" style="height: 150px;" />';
+                $msgBody = '<img src="' . $message->{'path'} . '" alt="" style="height: 150px;" />';
                 break;
             case 'voice':
-                $msgBody = '<a href="' . $message->{$type}->{'path'} . '">下载语音</a>';
+                $msgBody = '<a href="' . $message->{'path'} . '">下载语音</a>';
                 break;
             case 'video':
                 $msgBody = '<dl class="dl-horizontal">' .
@@ -446,13 +446,13 @@ class Message extends Model {
                     '<dt>视频: </dt>' .
                     '<dd>' .
                         '<video height="200" controls>' .
-                            '<source src="' . $message->{$type}->{'path'} . '" type="video/mp4">' .
+                            '<source src="' . $message->{'path'} . '" type="video/mp4">' .
                         '</video>' .
                     '</dd>' .
                 '</dl>';
                 break;
             case 'file':
-                $msgBody = '<a href="' . $message->{$type}->{'path'} . '">下载文件</a>';
+                $msgBody = '<a href="' . $message->{'path'} . '">下载文件</a>';
                 break;
             case 'textcard':
                 $msgBody = '';
