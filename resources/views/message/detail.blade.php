@@ -21,12 +21,12 @@
                         @endif
                     </div>
                     <div>
-                        <span class="control-label">发送时间:</span> {!! $sentAt !!}
+                        <span class="help-block">发送时间:</span> {!! $sentAt !!}
                     </div>
                     <div>
-                        <span class="control-label">发送对象: </span>{!! $recipients !!}</div>
+                        <span class="help-block">发送对象: </span>{!! $recipients !!}</div>
                     <div>
-                        <span class="control-label">发送者: </span>{!! $sender !!}
+                        <span class="help-block">发送者: </span>{!! $sender !!}
                     </div>
                 </div>
             </div>
