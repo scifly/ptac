@@ -255,8 +255,7 @@ $(document).on('click', '.fa-edit', function () {
     var id = getMessageId($(this));
 
     $tabSent.parent().removeClass('active');
-    $tabSent.removeClass('active');
-    $('#tab02').hide();
+    $('#tab02').removeClass('active');
     $tabSend.parent().addClass('active');
     $('#tab01').addClass('active');
     $batchBtns.hide();
