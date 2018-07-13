@@ -409,6 +409,75 @@ class Message extends Model {
     }
     
     /**
+     * 返回消息详情
+     *
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws Throwable
+     */
+    function detail($id) {
+    
+        list($content) = $this->show($id);
+        $type = $content['type'];
+        $userids = explode('|', $content[$type]->{'touser'});
+        $deptIds = explode('|', $content[$type]->{'toparty'});
+        $recipients = array_merge(
+            User::whereIn('userid', $userids)->pluck('realname')->toArray(),
+            Department::whereIn('id', $deptIds)->pluck('name')->toArray()
+        );
+        $msgBody = '';
+        $message = $content[$type];
+        switch ($type) {
+            case 'text':
+                $msgBody = $message->{'content'};
+                break;
+            case 'image':
+                $msgBody = '<img src="' . $message->{'path'} . '" alt="" />';
+                break;
+            case 'voice':
+                $msgBody = '<a href="' . $message->{'path'} . '">下载语音</a>';
+                break;
+            case 'video':
+                $msgBody = '<dl class="dl-horizontal">' .
+                    '<dt>' . '标题: ' . '</dt>' .
+                    '<dd>' . $message->{'title'} . '</dd>' .
+                    '<dt>' . '描述: ' . '</dt>' .
+                    '<dd>' . $message->{'description'} . '</dd>' .
+                    '<dt>视频: </dt>' .
+                    '<dd>' .
+                        '<video height="200" controls>' .
+                            '<source src="' . $message->{'path'} . '" type="video/mp4">' .
+                        '</video>' .
+                    '</dd>' .
+                '</dl>';
+                break;
+            case 'file':
+                $msgBody = '<a href="' . $message->{'path'} . '">下载文件</a>';
+                break;
+            case 'textcard':
+                $msgBody = '';
+                break;
+            case 'mpnews':
+                $msgBody = '';
+                break;
+            case 'sms':
+                $msgBody = $message;
+                break;
+            default:
+                break;
+        }
+        
+        return view('message.detail', [
+            'msgTitle' => $content['title'],
+            'msgBody' => $msgBody,
+            'sentAt' => $content['updated_at'],
+            'recipients' => implode('; ', $recipients),
+            'sender' => $content['sender']
+        ])->render();
+    
+    }
+    
+    /**
      * （批量）删除消息
      *
      * @param $id

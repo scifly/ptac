@@ -1,6 +1,7 @@
 //# sourceURL=index.js
 // noinspection JSUnusedGlobalSymbols
 var $batchBtns = $('.box-tools'),
+    $tabSend = $('a[href="#tab01"]'),
     $tabSent = $('a[href="#tab02"]'),
     $targetIds = $('#selected-node-ids'),
     $message = $('#message'),
@@ -251,14 +252,13 @@ $('.action-type').on('click', function () {
 });
 // 编辑草稿
 $(document).on('click', '.fa-edit', function () {
-    var paths = $(this).parents().eq(0).attr('id').split('_'),
-        id = paths[1];
+    var id = getMessageId($(this));
 
-    $('a[href="#tab02"]').parent().removeClass('active');
-    $('#tab02').removeClass('active');
-    $('a[href="#tab01"]').parent().addClass('active');
+    $tabSent.parent().removeClass('active');
+    $tabSent.removeClass('active');
+    $tabSend.parent().addClass('active');
     $('#tab01').addClass('active');
-    $('.box-tools').hide();
+    $batchBtns.hide();
     $('#id').val(id);
     $('.overlay').show();
     $.ajax({
@@ -363,7 +363,19 @@ $(document).on('click', '.fa-edit', function () {
 });
 // 查看已发送消息详情
 $(document).on('click', '.fa-laptop', function () {
-    $('#modal-show').modal({backdrop: true});
+    $.ajax({
+        type: 'GET',
+        dataType: 'html',
+        url: page.siteRoot() + 'messages/show/' + getMessageId($(this)),
+        success: function (result) {
+            var $show = $('#modal-show');
+            $show.find('.modal-body').html(result);
+            $show.modal({backdrop: true});
+        },
+        error: function (e) {
+            page.errorHandler(e);
+        }
+    });
 });
 // 删除消息
 page.remove('messages', options);
@@ -740,6 +752,10 @@ function refreshValidation(anchor) {
 function reloadDatatable(options) {
     $('#data-table').dataTable().fnDestroy();
     page.initDatatable('messages', options);
+}
+function getMessageId($button) {
+    var paths = $button.parents().eq(0).attr('id').split('_');
+    return paths[1];
 }
 // noinspection JSUnusedGlobalSymbols
 function initEditor() {
