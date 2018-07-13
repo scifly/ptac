@@ -23,7 +23,7 @@
                         </span>
                     </div>
                     <div>
-                        <label class="control-label">发送时间: </label>
+                        <label class="control-label col-xs-2">发送时间: </label>
                         <span class="pull-right">{!! $sentAt !!}</span>
                     </div>
                     <div>
