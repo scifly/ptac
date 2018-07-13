@@ -78,7 +78,6 @@ class SendMessage implements ShouldQueue {
         # 发送消息
         if ($this->data['type'] == 'sms') {
             # 发送短信消息
-            \Log::debug(json_encode($this->data));
             $result = $message->sendSms(
                 $mobiles, $this->data['sms']
             );
@@ -94,7 +93,14 @@ class SendMessage implements ShouldQueue {
                 );
             }
             # 创建用户消息发送日志
-            $this->data['content'] = json_encode($this->data['sms']);
+            $userids = User::whereIn('id', $this->data['user_ids'])->pluck('userid')->toArray();
+            $this->data['content'] = json_encode([
+                'touser' => implode('|', $userids),
+                'toparty' => implode('|', $this->data['dept_ids']),
+                'agentid' => 0,
+                'msgtype' => 'sms',
+                'sms' => $this->data['sms']
+            ]);
             $message->log($users, $this->data);
         } else {
             # 发送微信消息
