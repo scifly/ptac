@@ -369,7 +369,7 @@ $(document).on('click', '.fa-laptop', function () {
         url: page.siteRoot() + 'messages/show/' + getMessageId($(this)),
         success: function (result) {
             var $show = $('#modal-show');
-            $show.find('.modal-body').html(result);
+            $show.html(result);
             $show.modal({backdrop: true});
         },
         error: function (e) {

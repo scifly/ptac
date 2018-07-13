@@ -1,1 +1,1 @@
-<div class="modal fade" id="modalc-show"></div>
+<div class="modal fade" id="modal-show"></div>
