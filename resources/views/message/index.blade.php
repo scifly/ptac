@@ -1,4 +1,5 @@
 @include('partials.modal_delete')
+@include('partials.modal_show')
 <div class="box box-default box-solid">
     <div class="box-header with-border">
         @include('partials.list_header')

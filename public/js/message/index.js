@@ -63,86 +63,8 @@ var $batchBtns = $('.box-tools'),
     $schedule = $('#schedule'),
     $draft = $('#draft');
 
-// 加载消息中心css
-page.loadCss('css/message/message.css');
-// 初始化select2控件
-page.initSelect2([{
-    option: {
-        templateResult: page.formatStateImg,
-        templateSelection: page.formatStateImg
-    },
-    id: 'app_ids'
-}]);
-$.getMultiScripts([plugins.select2.js]).done(function () {
-    $.getMultiScripts([plugins.select2.jscn]).done(function () {
-        $messageTypeId.select2();
-    });
-});
-// 隐藏'已发送'消息列表对应的批处理按钮组
-$batchBtns.hide();
-// 初始化消息类型卡片悬停特效、input parsley验证规则
-$('.tab').hover(
-    function () {
-        $(this).removeClass('text-gray').addClass('text-blue');
-    },
-    function () {
-        if (!($(this).parent().hasClass('active'))) {
-            $(this).removeClass('text-blue').addClass('text-gray');
-        }
-    }
-).click(function () {
-    var anchor = $(this).attr('href');
-
-    initUpload();
-    removeValidation();
-    $messageContent.find('.tab-pane').hide();
-    refreshValidation(anchor);
-    $(anchor).show();
-});
-page.refreshTabs();
-// 初始化上传文件的事件
-initUpload();
-// 初始化移除上传文件的事件
-$(document).on('click', '.remove-file', function () {
-    var $container = $messageContent.find('.tab-pane.active'),
-        types = $(this).prev().attr('id').split('-'),
-        type = types[types.length - 1],
-        label = '',
-        $uploadBtn = $container.find('.upload-button'),
-        $label = $uploadBtn.find('label'),
-        $removeFile = $uploadBtn.find('.remove-file'),
-        $mediaId = $uploadBtn.find('.media_id'),
-        $file = $mediaId.next();
-
-    switch (type) {
-        case 'image':
-            label = '上传图片';
-            break;
-        case 'audio':
-            label = '上传语音';
-            break;
-        case 'video':
-            label = '上传视频';
-            $container = $('#video-container');
-            break;
-        case 'file':
-            label = '上传文件';
-            break;
-        case 'mpnews':
-            label = '上传封面图';
-            $container = $('#cover-container');
-            break;
-        default:
-            break;
-    }
-    $label.html('<i class="fa fa-cloud-upload"></i> ' + label);
-    $removeFile.hide();
-    $mediaId.val('');
-    $file.remove();
-    $('#file-' + type).val('');
-});
-// 初始化html5编辑器
-// initEditor();
+// 初始化
+init();
 
 /** 发消息 ----------------------------------------------------------------------------------------------------------- */
 /** 发送对象 */
@@ -441,12 +363,77 @@ $(document).on('click', '.fa-edit', function () {
 });
 // 查看已发送消息详情
 $(document).on('click', '.fa-laptop', function () {
-
+    $('#modal-show').modal({backdrop: true});
 });
 // 删除消息
 page.remove('messages', options);
 
 /** Helper functions ------------------------------------------------------------------------------------------------ */
+function init() {
+    // 加载消息中心css
+    page.loadCss('css/message/message.css');
+    // 初始化应用select2控件
+    page.initSelect2([{
+        option: {
+            templateResult: page.formatStateImg,
+            templateSelection: page.formatStateImg
+        },
+        id: 'app_ids'
+    }]);
+    // 初始化消息类型select2控件
+    $.getMultiScripts([plugins.select2.js]).done(function () {
+        $.getMultiScripts([plugins.select2.jscn]).done(function () {
+            $messageTypeId.select2();
+        });
+    });
+    // 隐藏'已发送'消息列表对应的批处理按钮组
+    $batchBtns.hide();
+    // 初始化消息类型卡片悬停特效、input parsley验证规则
+    initTabs();
+    // 初始化上传文件的事件
+    initUpload();
+    // 初始化移除上传文件的事件
+    $(document).on('click', '.remove-file', function () {
+        var $container = $messageContent.find('.tab-pane.active'),
+            types = $(this).prev().attr('id').split('-'),
+            type = types[types.length - 1],
+            label = '',
+            $uploadBtn = $container.find('.upload-button'),
+            $label = $uploadBtn.find('label'),
+            $removeFile = $uploadBtn.find('.remove-file'),
+            $mediaId = $uploadBtn.find('.media_id'),
+            $file = $mediaId.next();
+
+        switch (type) {
+            case 'image':
+                label = '上传图片';
+                break;
+            case 'audio':
+                label = '上传语音';
+                break;
+            case 'video':
+                label = '上传视频';
+                $container = $('#video-container');
+                break;
+            case 'file':
+                label = '上传文件';
+                break;
+            case 'mpnews':
+                label = '上传封面图';
+                $container = $('#cover-container');
+                break;
+            default:
+                break;
+        }
+        $label.html('<i class="fa fa-cloud-upload"></i> ' + label);
+        $removeFile.hide();
+        $mediaId.val('');
+        $file.remove();
+        $('#file-' + type).val('');
+    });
+    // 初始化html5编辑器
+    // initEditor();
+}
 function message(action) {
     var icon = page.info,
         uri = 'send',
@@ -491,7 +478,7 @@ function message(action) {
 
     return false;
 }
-// 获取表单数据
+// 获取消息表单数据
 function data(preview = false) {
     var appIds = [$('#app_ids').val()],
         targetIds = preview ? 'user-0-' + $('#userId').val() : $('#selected-node-ids').val(),
@@ -584,7 +571,7 @@ function data(preview = false) {
 
     return $.extend(formData, content);
 }
-// 上传文件 (图片、语音、视频、文件、封面图）
+// 初始化上传文件 (图片、语音、视频、文件、封面图）
 function initUpload() {
     $(document).off('change', '.file-upload').on('change', '.file-upload', function () {
         if ($(this).val() !== '') { upload($(this)); }
@@ -661,6 +648,27 @@ function upload($file) {
         }
     });
     return false;
+}
+function initTabs() {
+    $('.tab').hover(
+        function () {
+            $(this).removeClass('text-gray').addClass('text-blue');
+        },
+        function () {
+            if (!($(this).parent().hasClass('active'))) {
+                $(this).removeClass('text-blue').addClass('text-gray');
+            }
+        }
+    ).click(function () {
+        var anchor = $(this).attr('href');
+
+        initUpload();
+        removeValidation();
+        $messageContent.find('.tab-pane').hide();
+        refreshValidation(anchor);
+        $(anchor).show();
+    });
+    page.refreshTabs();
 }
 function displayFile($container, mediaId, src, html) {
     $container.find('.media_id').val(mediaId).attr('data-path', src);
