@@ -4,29 +4,35 @@
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                 &times;
             </button>
-            <h4 class="modal-title" id="detail-title">
+            <h4 class="modal-title">
                 {!! $msgTitle; !!}
             </h4>
         </div>
         <div class="modal-body">
             <div class="row">
-                <div class="col-xs-12" id="detail-body" style="border-bottom: 1px solid #f4f4f4 ">
+                <div class="col-xs-12">
                     <div>
-                        @if ($app)
-                            <img style="height: 16px; vertical-align: sub;" alt="" src="{!! $app['square_logo_url'] !!}"/>
-                            {!! $app['name'] !!}
-                        @else
-                            未知
-                        @endif
+                        <label class="control-label">应用: </label>
+                        <span class="pull-right">
+                            @if ($app)
+                                <img style="height: 16px; vertical-align: sub;" alt="" src="{!! $app['square_logo_url'] !!}"/>
+                                {!! $app['name'] !!}
+                            @else
+                                未知
+                            @endif
+                        </span>
                     </div>
                     <div>
-                        <label class="control-label">发送时间:</label> {!! $sentAt !!}
+                        <label class="control-label">发送时间: </label>
+                        <span class="pull-right">{!! $sentAt !!}</span>
                     </div>
                     <div>
-                        <label class="control-label">发送对象: </label>{!! $recipients !!}
+                        <label class="control-label">发送对象: </label>
+                        <span class="pull-right">{!! $recipients !!}</span>
                     </div>
                     <div>
-                        <label class="control-label">发送者: </label>{!! $sender !!}
+                        <label class="control-label">发送者: </label>
+                        <span class="pull-right">{!! $sender !!}</span>
                     </div>
                     <div>{!! $msgBody !!}</div>
                 </div>
