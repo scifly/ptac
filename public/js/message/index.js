@@ -256,6 +256,7 @@ $(document).on('click', '.fa-edit', function () {
 
     $tabSent.parent().removeClass('active');
     $tabSent.removeClass('active');
+    $('#tab02').hide();
     $tabSend.parent().addClass('active');
     $('#tab01').addClass('active');
     $batchBtns.hide();
