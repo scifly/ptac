@@ -14,7 +14,7 @@
                     <div>{!! $msgBody !!}</div>
                     <div>
                         @if ($app)
-                            <img style="height: 16px;" alt="" src="{!! $app['square_logo_url'] !!}"/>
+                            <img style="height: 16px; vertical-align: sub;" alt="" src="{!! $app['square_logo_url'] !!}"/>
                             {!! $app['name'] !!}
                         @else
                             未知
