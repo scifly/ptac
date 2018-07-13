@@ -444,7 +444,7 @@ $(document).on('click', '.fa-laptop', function () {
 
 });
 // 删除消息
-page.remove('messages');
+page.remove('messages', options);
 
 /** Helper functions ------------------------------------------------------------------------------------------------ */
 function message(action) {
