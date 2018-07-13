@@ -312,11 +312,12 @@ $draft.on('click', function () {
 
 /** 已发送 ----------------------------------------------------------------------------------------------------------- */
 // 初始化"已发送"datatable
-page.initDatatable('messages', [{
+var options = [{
     className: 'text-center', targets: [2, 3, 4, 5, 6]
-}]);
+}];
+page.initDatatable('messages', options);
 // 重新加载datatable
-$tabSent.on('click', function () { reloadDatatable(); });
+$tabSent.on('click', function () { reloadDatatable(options); });
 // 显示/隐藏批处理按钮组
 $('.action-type').on('click', function () {
     if ($(this).find('a').attr('href') === '#tab02') {
@@ -727,7 +728,7 @@ function refreshValidation(anchor) {
             break;
     }
 }
-function reloadDatatable() {
+function reloadDatatable(options) {
     $('#data-table').dataTable().fnDestroy();
     page.initDatatable('messages', options);
 }
