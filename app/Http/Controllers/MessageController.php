@@ -114,7 +114,7 @@ class MessageController extends Controller {
     
     /**
      * 消息详情
-     * 
+     *
      * @param $id
      * @return Factory|View
      * @throws Throwable

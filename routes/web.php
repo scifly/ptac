@@ -251,6 +251,7 @@ Route::group(['prefix' => 'messages'], function () {
     Route::post('store', $c . '@store');
     Route::get('edit/{id}', $c . '@edit');
     Route::put('update/{id?}', $c . '@update');
+    Route::get('show/{id}', $c . '@show');
     Route::post('send', $c . '@send');
     Route::delete('delete/{id?}', $c . '@destroy');
 });
