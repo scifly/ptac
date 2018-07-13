@@ -61,7 +61,7 @@ class SendMessage implements ShouldQueue {
             'userId'     => $this->userId,
             'title'      => __('messages.message.title'),
             'statusCode' => HttpStatusCode::OK,
-            'message'    => __('messages.message.sent'),
+            'message'    => '',
         ];
         list($users, $mobiles) = $message->targets(
             $this->data['user_ids'], $this->data['dept_ids']
@@ -86,6 +86,11 @@ class SendMessage implements ShouldQueue {
             if ($result > 0) {
                 $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
                 $response['message'] = __('messages.message.sms_send_failed');
+            } else {
+                $response['message'] = sprintf(
+                    __('messages.message.sent'),
+                    count($mobiles), count($mobiles), 0
+                );
             }
             # 创建用户消息发送日志
             $this->data['content'] = json_encode($this->data['sms']);
