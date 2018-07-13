@@ -316,7 +316,7 @@ page.initDatatable('messages', [{
     className: 'text-center', targets: [2, 3, 4, 5, 6]
 }]);
 // 重新加载datatable
-$tabSent.on('click', reloadDatatable());
+$tabSent.on('click', function () { reloadDatatable(); });
 // 显示/隐藏批处理按钮组
 $('.action-type').on('click', function () {
     if ($(this).find('a').attr('href') === '#tab02') {
