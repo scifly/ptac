@@ -12,26 +12,27 @@
             <div class="row">
                 <div class="col-xs-12" id="detail-body">
                     <div>{!! $msgBody !!}</div>
-                    <div>
-                        @if ($app)
-                            <img style="height: 16px; vertical-align: sub;" alt="" src="{!! $app['square_logo_url'] !!}"/>
-                            {!! $app['name'] !!}
-                        @else
-                            未知
-                        @endif
-                    </div>
-                    <div>
-                        <label class="control-label">发送时间:</label> {!! $sentAt !!}
-                    </div>
-                    <div>
-                        <label class="control-label">发送对象: </label>{!! $recipients !!}</div>
-                    <div>
-                        <label class="control-label">发送者: </label>{!! $sender !!}
-                    </div>
+
                 </div>
             </div>
         </div>
         <div class="modal-footer">
+            <div>
+                @if ($app)
+                    <img style="height: 16px; vertical-align: sub;" alt="" src="{!! $app['square_logo_url'] !!}"/>
+                    {!! $app['name'] !!}
+                @else
+                    未知
+                @endif
+            </div>
+            <div>
+                <label class="control-label">发送时间:</label> {!! $sentAt !!}
+            </div>
+            <div>
+                <label class="control-label">发送对象: </label>{!! $recipients !!}</div>
+            <div>
+                <label class="control-label">发送者: </label>{!! $sender !!}
+            </div>
             <button type="button" class="btn btn-default" data-dismiss="modal">
                 <i class="fa fa-sign-out"> 关闭</i>
             </button>
