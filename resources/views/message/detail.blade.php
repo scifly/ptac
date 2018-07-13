@@ -31,7 +31,9 @@
                         {!! Form::label('', '发送时间：', [
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
-                        <div class="col-sm-6" style="margin-top: 7px;">{!! $sentAt !!}</div>
+                        <div class="col-sm-6" style="margin-top: 7px;">
+                            <span class="badge bg-blue">{!! $sentAt !!}</span>
+                        </div>
                     </div>
                     <div class="form-group">
                         {!! Form::label('', '发送对象：', [
