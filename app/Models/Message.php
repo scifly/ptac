@@ -467,7 +467,7 @@ class Message extends Model {
                 break;
         }
         $m = $this->find($id);
-        $app = $m ? App::find($m->app_id)->toArray() : null;
+        $app = $m->app_id ? App::find($m->app_id)->toArray() : null;
         return view('message.detail', [
             'msgTitle' => $content['title'],
             'app' => $app,
