@@ -429,7 +429,7 @@ class Message extends Model {
         $message = $content[$type];
         switch ($type) {
             case 'text':
-                $msgBody = $message->{'content'};
+                $msgBody = $message->{$type}->{'content'};
                 break;
             case 'image':
                 $msgBody = '<img src="' . $message->{$type}->{'path'} . '" alt="" />';
