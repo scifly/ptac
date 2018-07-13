@@ -315,6 +315,7 @@ $draft.on('click', function () {
 var options = [{
     className: 'text-center', targets: [2, 3, 4, 5, 6]
 }];
+// 消息列表
 page.initDatatable('messages', options);
 // 重新加载datatable
 $tabSent.on('click', function () { reloadDatatable(options); });
@@ -443,7 +444,7 @@ $(document).on('click', '.fa-laptop', function () {
 
 });
 // 删除消息
-page.delete('messages');
+// page.delete('messages');
 
 /** Helper functions ------------------------------------------------------------------------------------------------ */
 function message(action) {
