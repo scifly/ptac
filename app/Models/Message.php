@@ -426,7 +426,7 @@ class Message extends Model {
             Department::whereIn('id', $deptIds)->pluck('name')->toArray()
         );
         $msgBody = '';
-        $message = $content[$type]->{$type};
+        $message = $type != 'sms' ? $content[$type]->{$type} : $content[$type];
         switch ($type) {
             case 'text':
                 $msgBody = $message->{'content'};
