@@ -15,7 +15,7 @@
                         {!! Form::label('', '应用：', [
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
-                        <div class="col-sm-6">
+                        <div class="col-sm-6" style="margin-top: 5px;">
                             @if ($app)
                                 <img style="height: 16px; vertical-align: sub;" alt="" src="{!! $app['square_logo_url'] !!}"/>
                                 {!! $app['name'] !!}
@@ -25,19 +25,19 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('', '发送时间：：', [
+                        {!! Form::label('', '发送时间：', [
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
                         <div class="col-sm-6">{!! $sentAt !!}</div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('', '发送对象：：', [
+                        {!! Form::label('', '发送对象：', [
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
                         <div class="col-sm-6">{!! $recipients !!}</div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('', '发送者：：', [
+                        {!! Form::label('', '发送者：', [
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
                         <div class="col-sm-6">{!! $sender !!}</div>
