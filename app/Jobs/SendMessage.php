@@ -78,6 +78,7 @@ class SendMessage implements ShouldQueue {
         # 发送消息
         if ($this->data['type'] == 'sms') {
             # 发送短信消息
+            \Log::debug(json_encode($this->data));
             $result = $message->sendSms(
                 $mobiles, $this->data['sms']
             );
