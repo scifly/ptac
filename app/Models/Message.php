@@ -432,7 +432,7 @@ class Message extends Model {
                 $msgBody = $message->{$type}->{'content'};
                 break;
             case 'image':
-                $msgBody = '<img src="' . $message->{$type}->{'path'} . '" alt="" />';
+                $msgBody = '<img src="' . $message->{$type}->{'path'} . '" alt="" style="height: 100px;" />';
                 break;
             case 'voice':
                 $msgBody = '<a href="' . $message->{$type}->{'path'} . '">下载语音</a>';
