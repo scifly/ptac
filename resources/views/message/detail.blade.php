@@ -45,7 +45,9 @@
                         {!! Form::label('', '发送者：', [
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
-                        <div class="col-sm-6" style="margin-top: 7px;">{!! $sender !!}</div>
+                        <div class="col-sm-6" style="margin-top: 7px;">
+                            <span class="badge bg-blue">{!! $sender !!}</span>
+                        </div>
                     </div>
                     <div class="form-group">
                         {!! Form::label('', '消息内容：', [
