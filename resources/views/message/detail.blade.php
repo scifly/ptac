@@ -13,8 +13,12 @@
                 <div class="col-xs-12" id="detail-body">
                     <div>{!! $msgBody !!}</div>
                     <div>
-                        <img style="height: 16px;" alt="" src="{!! $app['square_logo-url'] !!}"/>
-                        {!! $app['name'] !!}
+                        @if ($app)
+                            <img style="height: 16px;" alt="" src="{!! $app['square_logo_url'] !!}"/>
+                            {!! $app['name'] !!}
+                        @else
+                            未知
+                        @endif
                     </div>
                     <div>发送时间: {!! $sentAt !!}</div>
                     <div>发送对象: {!! $recipients !!}</div>

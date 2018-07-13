@@ -466,9 +466,11 @@ class Message extends Model {
             default:
                 break;
         }
-        
+        $m = $this->find($id);
+        $app = $m ? App::find($m->app_id)->toArray() : null;
         return view('message.detail', [
             'msgTitle' => $content['title'],
+            'app' => $app,
             'msgBody' => $msgBody,
             'sentAt' => $content['updated_at'],
             'recipients' => implode('; ', $recipients),
