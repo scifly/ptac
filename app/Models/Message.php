@@ -581,15 +581,6 @@ class Message extends Model {
                 /**  创建原始消息 */
                 $data['sent'] = sizeof($failedUserIds) == sizeof($users) ? 0 : 1;
                 $message = $this->create($data);
-                // if (!isset($data['id'])) {
-                //     # 创建原始消息
-                //     $message = $this->create($data);
-                // } else {
-                //     # 更新原始消息
-                //     $message = $this->find($data['id']);
-                //     unset($data['id']);
-                //     $message->update($data);
-                // }
                 
                 /** 创建指定用户($users)收到的消息(应用内消息） */
                 foreach ($users as $user) {
