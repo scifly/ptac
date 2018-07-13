@@ -438,7 +438,7 @@ class Message extends Model {
                 $msgBody = '<a href="' . $message->{'path'} . '">下载语音</a>';
                 break;
             case 'video':
-                $msgBody = '<dl class="dl-horizontal">' .
+                $msgBody = '<dl>' .
                     '<dt>' . '标题: ' . '</dt>' .
                     '<dd>' . $message->{'title'} . '</dd>' .
                     '<dt>' . '描述: ' . '</dt>' .
