@@ -46,7 +46,7 @@
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
                         <div class="col-sm-6" style="margin-top: 7px;">
-                            <span class="badge bg-blue">{!! $sender !!}</span>
+                            <span class="badge bg-green">{!! $sender !!}</span>
                         </div>
                     </div>
                     <div class="form-group">
