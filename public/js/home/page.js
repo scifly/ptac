@@ -518,7 +518,7 @@ var page = {
         $(document).on('click', '.fa-money', function () { operation(this); });
         $(document).on('click', '.fa-bars', function () { operation(this); });
         // 删除记录
-        this.delete(table);
+        this.remove(table);
     },
     create: function (formId, table, options) {
         page.initForm(table, formId, table + '/store', 'POST', options);
@@ -537,7 +537,7 @@ var page = {
             page.getTabContent($activeTabPane, table + '/' + url);
         });
     },
-    delete: function (table) {
+    remove: function (table) {
         // 删除记录
         var id;
         $(document).on('click', '.fa-remove', function () {
