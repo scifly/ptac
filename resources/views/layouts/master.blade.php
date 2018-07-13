@@ -226,7 +226,7 @@
         <!--content-->
         <section class="content">
             @isset($dialog)
-                @include('partials.modal_dialog')
+                @include('partials.modal_delete')
             @endif
             @yield('content')
         </section>

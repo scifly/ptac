@@ -1,5 +1,8 @@
 //# sourceURL=index.js
-var $targetIds = $('#selected-node-ids'),
+// noinspection JSUnusedGlobalSymbols
+var $batchBtns = $('.box-tools'),
+    $tabSent = $('a[href="#tab02"]'),
+    $targetIds = $('#selected-node-ids'),
     $message = $('#message'),
     $messageTypeId = $('#message_type_id'),
     $messageContent = $('#message-content'),
@@ -57,9 +60,11 @@ var $targetIds = $('#selected-node-ids'),
     // 发送按钮
     $send = $('#send'),
     $preview = $('#preview'),
-    // $schedule = $('#schedule'),
+    $schedule = $('#schedule'),
     $draft = $('#draft');
 
+// 加载消息中心css
+page.loadCss('css/message/message.css');
 // 初始化select2控件
 page.initSelect2([{
     option: {
@@ -73,135 +78,8 @@ $.getMultiScripts([plugins.select2.js]).done(function () {
         $messageTypeId.select2();
     });
 });
-// 初始化"已发送"datatable
-var options = [
-    {className: 'text-center', targets: [2, 3, 4, 5, 6]}
-];
-$('.box-tools').hide();
-page.initDatatable('messages', options);
-$('a[href="#tab02"]').on('click', function () {
-    $('#data-table').dataTable().fnDestroy();
-    page.initDatatable('messages', options);
-});
-$('.action-type').on('click', function () {
-    if ($(this).find('a').attr('href') === '#tab02') {
-        $('.box-tools').slideDown();
-    } else {
-        $('.box-tools').slideUp();
-    }
-});
-$(document).on('click', '.fa-edit', function() {
-    var paths = $(this).parents().eq(0).attr('id').split('_'),
-        id = paths[1];
-
-    $('a[href="#tab02"]').parent().removeClass('active');
-    $('#tab02').removeClass('active');
-    $('a[href="#tab01"]').parent().addClass('active');
-    $('#tab01').addClass('active');
-    $('.box-tools').hide();
-    $('#id').val(id);
-    $('.overlay').show();
-    $.ajax({
-        type: 'GET',
-        dataType: 'json',
-        url: page.siteRoot() + 'messages/edit/' + id,
-        success: function (result) {
-            var $msgTypeId = $('#message_type_id'), $tabTitle,
-                html = '', type = result['message']['msgtype'],
-                $container, mediaId, src,
-                uploadTypes = ['image', 'audio', 'video', 'file'];
-
-            if (type === 'textcard') { type = 'card'; }
-            if (type === 'voice') { type = 'audio'; }
-
-            $container = $('#content_' + type);
-            // 设置消息类型
-            $msgTypeId.val(result['messageTypeId']).trigger('change');
-            // 显示发送对象列表
-            $('#checked-nodes').html(result['targets']);
-            // 设置发送对象id
-            $('#selected-node-ids').val(result['selectedTargetIds'].join(','));
-            // 隐藏所有类型消息内容
-            $messageContent.find('.tab-pane').removeClass('active').hide();
-            $container.addClass('active');
-            $('#message-format li').removeClass('active');
-            $('#message-format a').removeClass('text-blue').addClass('text-gray');
-            $tabTitle = $('a[href="#content_' + type + '"]');
-            $tabTitle.parent().addClass('active');
-            $tabTitle.removeClass('text-gray').addClass('text-blue');
-
-            $container.show();
-            if ($.inArray(type, uploadTypes) > -1) {
-                mediaId = result['message'][type === 'audio' ? 'voice' : type]['media_id'];
-                src = result['message'][type === 'audio' ? 'voice' : type]['path'];
-            }
-            removeValidation();
-            refreshValidation('#content_' + type);
-            switch (type) {
-                case 'text':
-                    $textContent.val(result['message'][type]['content']);
-                    break;
-                case 'image':
-                    var imgAttrs = {
-                        'src':  src,
-                        'style': 'height: 200px;',
-                        'title': '文件名：' + filename(src)
-                    };
-                    html += $('<img' + ' />', imgAttrs).prop('outerHTML');
-                    break;
-                case 'audio':
-                    html += '<i class="fa fa-file-sound-o"> ' + filename(src) + '</i>';
-                    break;
-                case 'video':
-                    var video = result['message']['video'];
-                    $videoTitle.val(video['title']);
-                    $videoDescription.val(video['description']);
-                    html += '<video height="200" controls><source src="' + src + '" type="video/mp4"></video>';
-                    $container = $('#video-container');
-                    break;
-                case 'file':
-                    html += '<i class="fa fa-file-o"> ' + filename(src) + '</i>';
-                    break;
-                case 'card':
-                    var card = result['message']['textcard'];
-                    $cardTitle.val(card['title']);
-                    $cardDescription.val(card['description']);
-                    $cardUrl.val(card['url']);
-                    $cardBtntxt.val(card['btntxt']);
-                    break;
-                case 'mpnews':
-                    var mpnewsList = '';
-                    mpnews = result['message'][type];
-                    mpnewsCount = mpnews['articles'].length;
-                    $addMpnews.siblings().remove();
-                    for (var i = 0; i < mpnewsCount; i++) {
-                        imgAttrs = {
-                            'class': 'mpnews',
-                            'src': mpnews['articles'][i]['image_url'],
-                            'title': mpnews['articles'][i]['title'],
-                            'id': 'mpnews-' + i
-                        };
-                        mpnewsList += $('<img' + ' />', imgAttrs).prop('outerHTML');
-                    }
-                    $addMpnews.after(mpnewsList);
-                    break;
-                case 'sms':
-                    $smsContent.val(result['message'][type]).trigger('change');
-                    break;
-                default:
-                    break;
-            }
-            if ($.inArray(type, uploadTypes) > -1) {
-                displayFile($container, mediaId, src, html);
-            }
-            $('.overlay').hide();
-        },
-        error: function (e) {
-            page.errorHandler(e);
-        }
-    });
-});
-
+// 隐藏'已发送'消息列表对应的批处理按钮组
+$batchBtns.hide();
 // 初始化消息类型卡片悬停特效、input parsley验证规则
 $('.tab').hover(
     function () {
@@ -222,8 +100,6 @@ $('.tab').hover(
     $(anchor).show();
 });
 page.refreshTabs();
-// 加载消息中心css
-page.loadCss('css/message/message.css');
 // 初始化上传文件的事件
 initUpload();
 // 初始化移除上传文件的事件
@@ -268,7 +144,8 @@ $(document).on('click', '.remove-file', function () {
 // 初始化html5编辑器
 // initEditor();
 
-/** 发送对象 ---------------------------------------------------------------------------------------------------------- */
+/** 发消息 ----------------------------------------------------------------------------------------------------------- */
+/** 发送对象 */
 // 选择发送对象
 $choose.on('click', function () {
     $message.hide();
@@ -276,15 +153,18 @@ $choose.on('click', function () {
 });
 // 部门及联系人树加载
 $.getMultiScripts(['js/tree.js']).done(
-    function () { $.tree().list('messages/index', 'contact'); }
+    function () {
+        $.tree().list('messages/index', 'contact');
+    }
 );
 // 关闭发送对象选择窗口
-$(document).on('click', '#cancel .close-targets', function () {
-    $message.show();
-    $targets.hide();
-});
-
-/** 图文 ------------------------------------------------------------------------------------------------------------- */
+$(document).on('click', '#cancel .close-targets',
+    function () {
+        $message.show();
+        $targets.hide();
+    }
+);
+/** 图文 */
 var mpnews = { articles: [] },  // 文章数组
     mpnewsCount = mpnews['articles'].length;    // 文章数量
 // 添加图文
@@ -403,8 +283,7 @@ $(document).on('click', '#remove-mpnews', function () {
     mpnewsCount--;
     page.inform('消息中心', '已将指定图文删除', page.success);
 });
-
-/** 短信 ------------------------------------------------------------------------------------------------------------- */
+/** 短信 */
 // 获取短信输入字符数
 $smsLength.text('已输入0个字符， 还可输入' + smsMaxlength + '个字符');
 $contentSms.attr('maxlength', smsMaxlength);
@@ -418,8 +297,7 @@ $smsContent.on('keyup change', function () {
     }
     $smsLength.text('已输入' + currentLength + '个字符， 还可输入' + availableLength + '个字符');
 });
-
-/** 发送消息 ---------------------------------------------------------------------------------------------------------- */
+/** 发送/预览/定时发送/存为草稿 */
 $send.on('click', function () {
     $targetIds.attr('required', 'true');
     return message('send');
@@ -431,6 +309,140 @@ $preview.on('click', function () {
 $draft.on('click', function () {
     return message('draft');
 });
+
+/** 已发送 ----------------------------------------------------------------------------------------------------------- */
+// 初始化"已发送"datatable
+page.initDatatable('messages', [{
+    className: 'text-center', targets: [2, 3, 4, 5, 6]
+}]);
+// 重新加载datatable
+$tabSent.on('click', reloadDatatable());
+// 显示/隐藏批处理按钮组
+$('.action-type').on('click', function () {
+    if ($(this).find('a').attr('href') === '#tab02') {
+        $batchBtns.slideDown();
+    } else {
+        $batchBtns.slideUp();
+    }
+});
+// 编辑草稿
+$(document).on('click', '.fa-edit', function () {
+    var paths = $(this).parents().eq(0).attr('id').split('_'),
+        id = paths[1];
+
+    $('a[href="#tab02"]').parent().removeClass('active');
+    $('#tab02').removeClass('active');
+    $('a[href="#tab01"]').parent().addClass('active');
+    $('#tab01').addClass('active');
+    $('.box-tools').hide();
+    $('#id').val(id);
+    $('.overlay').show();
+    $.ajax({
+        type: 'GET',
+        dataType: 'json',
+        url: page.siteRoot() + 'messages/edit/' + id,
+        success: function (result) {
+            var $msgTypeId = $('#message_type_id'), $tabTitle,
+                html = '', type = result['message']['msgtype'],
+                $container, mediaId, src,
+                uploadTypes = ['image', 'audio', 'video', 'file'];
+
+            if (type === 'textcard') { type = 'card'; }
+            if (type === 'voice') { type = 'audio'; }
+
+            $container = $('#content_' + type);
+            // 设置消息类型
+            $msgTypeId.val(result['messageTypeId']).trigger('change');
+            // 显示发送对象列表
+            $('#checked-nodes').html(result['targets']);
+            // 设置发送对象id
+            $('#selected-node-ids').val(result['selectedTargetIds'].join(','));
+            // 隐藏所有类型消息内容
+            $messageContent.find('.tab-pane').removeClass('active').hide();
+            $container.addClass('active');
+            $('#message-format li').removeClass('active');
+            $('#message-format a').removeClass('text-blue').addClass('text-gray');
+            $tabTitle = $('a[href="#content_' + type + '"]');
+            $tabTitle.parent().addClass('active');
+            $tabTitle.removeClass('text-gray').addClass('text-blue');
+
+            $container.show();
+            if ($.inArray(type, uploadTypes) > -1) {
+                mediaId = result['message'][type === 'audio' ? 'voice' : type]['media_id'];
+                src = result['message'][type === 'audio' ? 'voice' : type]['path'];
+            }
+            removeValidation();
+            refreshValidation('#content_' + type);
+            switch (type) {
+                case 'text':
+                    $textContent.val(result['message'][type]['content']);
+                    break;
+                case 'image':
+                    var imgAttrs = {
+                        'src':  src,
+                        'style': 'height: 200px;',
+                        'title': '文件名：' + filename(src)
+                    };
+                    html += $('<img' + ' />', imgAttrs).prop('outerHTML');
+                    break;
+                case 'audio':
+                    html += '<i class="fa fa-file-sound-o"> ' + filename(src) + '</i>';
+                    break;
+                case 'video':
+                    var video = result['message']['video'];
+                    $videoTitle.val(video['title']);
+                    $videoDescription.val(video['description']);
+                    html += '<video height="200" controls><source src="' + src + '" type="video/mp4"></video>';
+                    $container = $('#video-container');
+                    break;
+                case 'file':
+                    html += '<i class="fa fa-file-o"> ' + filename(src) + '</i>';
+                    break;
+                case 'card':
+                    var card = result['message']['textcard'];
+                    $cardTitle.val(card['title']);
+                    $cardDescription.val(card['description']);
+                    $cardUrl.val(card['url']);
+                    $cardBtntxt.val(card['btntxt']);
+                    break;
+                case 'mpnews':
+                    var mpnewsList = '';
+                    mpnews = result['message'][type];
+                    mpnewsCount = mpnews['articles'].length;
+                    $addMpnews.siblings().remove();
+                    for (var i = 0; i < mpnewsCount; i++) {
+                        imgAttrs = {
+                            'class': 'mpnews',
+                            'src': mpnews['articles'][i]['image_url'],
+                            'title': mpnews['articles'][i]['title'],
+                            'id': 'mpnews-' + i
+                        };
+                        mpnewsList += $('<img' + ' />', imgAttrs).prop('outerHTML');
+                    }
+                    $addMpnews.after(mpnewsList);
+                    break;
+                case 'sms':
+                    $smsContent.val(result['message'][type]).trigger('change');
+                    break;
+                default:
+                    break;
+            }
+            if ($.inArray(type, uploadTypes) > -1) {
+                displayFile($container, mediaId, src, html);
+            }
+            $('.overlay').hide();
+        },
+        error: function (e) {
+            page.errorHandler(e);
+        }
+    });
+});
+// 查看已发送消息详情
+$(document).on('click', '.fa-laptop', function () {
+
+});
+// 删除消息
+page.delete('messages');
 
 /** Helper functions ------------------------------------------------------------------------------------------------ */
 function message(action) {
@@ -571,6 +583,11 @@ function data(preview = false) {
     return $.extend(formData, content);
 }
 // 上传文件 (图片、语音、视频、文件、封面图）
+function initUpload() {
+    $(document).off('change', '.file-upload').on('change', '.file-upload', function () {
+        if ($(this).val() !== '') { upload($(this)); }
+    });
+}
 function upload($file) {
     var file = $file[0].files[0],
         types = $file.attr('id').split('-'),
@@ -613,8 +630,6 @@ function upload($file) {
                     html += $('<img' + ' />', imgAttrs).prop('outerHTML');
                     break;
                 case 'audio':
-                    // html += $('<i>', {'class': 'fa fa-file-sound-o'}).prop('outerHTML') + ' ' +
-                    //     $('<span>').prop('innerHTML', filename).prop('outerHTML');
                     html += '<i class="fa fa-file-sound-o"> ' + filename + '</i>';
                     break;
                 case 'video':
@@ -622,8 +637,6 @@ function upload($file) {
                     $container = $('#video-container');
                     break;
                 case 'file':
-                    // html += $('<i>', {'class': 'fa fa-file-o'}).prop('outerHTML') + ' ' +
-                    //     $('<span>').prop('innerHTML', filename).prop('outerHTML');
                     html += '<i class="fa fa-file-o"> ' + filename + '</i>';
                     break;
                 case 'mpnews':
@@ -646,11 +659,6 @@ function upload($file) {
         }
     });
     return false;
-}
-function initUpload() {
-    $(document).off('change', '.file-upload').on('change', '.file-upload', function () {
-        if ($(this).val() !== '') { upload($(this)); }
-    });
 }
 function displayFile($container, mediaId, src, html) {
     $container.find('.media_id').val(mediaId).attr('data-path', src);
@@ -719,6 +727,11 @@ function refreshValidation(anchor) {
             break;
     }
 }
+function reloadDatatable() {
+    $('#data-table').dataTable().fnDestroy();
+    page.initDatatable('messages', options);
+}
+// noinspection JSUnusedGlobalSymbols
 function initEditor() {
     page.loadCss(plugins.htmleditor.css);
     $.getMultiScripts([plugins.handlebar.js]).done(function () {

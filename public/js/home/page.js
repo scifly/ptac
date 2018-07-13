@@ -518,19 +518,7 @@ var page = {
         $(document).on('click', '.fa-money', function () { operation(this); });
         $(document).on('click', '.fa-bars', function () { operation(this); });
         // 删除记录
-        var id;
-        $(document).on('click', '.fa-remove', function () {
-            id = $(this).parents().eq(0).attr('id');
-            $('#modal-dialog').modal({backdrop: true});
-        });
-        $('#confirm-delete').on('click', function () {
-            page.ajaxRequest(
-                'DELETE',
-                table + '/delete/' + id,
-                {_token: page.token()},
-                table
-            );
-        });
+        this.delete(table);
     },
     create: function (formId, table, options) {
         page.initForm(table, formId, table + '/store', 'POST', options);
@@ -547,6 +535,22 @@ var page = {
         page.initBackBtn(table);
         $('.btn-bianji').on('click', function () {
             page.getTabContent($activeTabPane, table + '/' + url);
+        });
+    },
+    delete: function (table) {
+        // 删除记录
+        var id;
+        $(document).on('click', '.fa-remove', function () {
+            id = $(this).parents().eq(0).attr('id');
+            $('#modal-delete').modal({backdrop: true});
+        });
+        $('#confirm-delete').on('click', function () {
+            page.ajaxRequest(
+                'DELETE',
+                table + '/delete/' + id,
+                {_token: page.token()},
+                table
+            );
         });
     },
     loadCss: function (css) {

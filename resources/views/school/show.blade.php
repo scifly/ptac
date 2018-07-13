@@ -72,7 +72,7 @@
     }
 </style>
 <section class="content clearfix">
-    @include('partials.modal_dialog')
+    @include('partials.modal_delete')
     <div class="col-lg-12">
         <div class="nav-tabs-custom">
             <div class="box box-default box-solid">

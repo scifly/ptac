@@ -362,7 +362,7 @@
         <!--content-->
         <section class="content">
             @isset($dialog)
-                @include('partials.modal_dialog')
+                @include('partials.modal_delete')
             @endif
             @isset($show)
                 @include('partials.modal_show')

@@ -1,5 +1,5 @@
 <!-- #modal-dialog -->
-<div class="modal fade" id="modal-dialog">
+<div class="modal fade" id="modal-delete">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
