@@ -310,7 +310,7 @@ var page = {
             }
         });
     },
-    ajaxRequest: function (requestType, url, data, obj) {
+    ajaxRequest: function (requestType, url, data, obj, options) {
         $('.overlay').show();
         $.ajax({
             type: requestType,
@@ -328,7 +328,7 @@ var page = {
                         break;
                     case 'DELETE':
                         $('#data-table').dataTable().fnDestroy();
-                        page.initDatatable(obj);
+                        page.initDatatable(obj, options);
                         break;
                     default:
                         break;
@@ -518,7 +518,7 @@ var page = {
         $(document).on('click', '.fa-money', function () { operation(this); });
         $(document).on('click', '.fa-bars', function () { operation(this); });
         // 删除记录
-        this.remove(table);
+        this.remove(table, options);
     },
     create: function (formId, table, options) {
         page.initForm(table, formId, table + '/store', 'POST', options);
@@ -529,15 +529,16 @@ var page = {
         page.initForm(table, formId, table + '/update/' + id, 'PUT', options);
     },
     show: function (table) {
-        var id = $('#id').val();
-        var url = 'edit/' + id;
-        var $activeTabPane = $('#tab_' + page.getActiveTabId());
+        var id = $('#id').val(),
+            url = 'edit/' + id,
+            $activeTabPane = $('#tab_' + page.getActiveTabId());
+
         page.initBackBtn(table);
         $('.btn-bianji').on('click', function () {
             page.getTabContent($activeTabPane, table + '/' + url);
         });
     },
-    remove: function (table) {
+    remove: function (table, options) {
         // 删除记录
         var id;
         $(document).on('click', '.fa-remove', function () {
@@ -549,7 +550,8 @@ var page = {
                 'DELETE',
                 table + '/delete/' + id,
                 {_token: page.token()},
-                table
+                table,
+                options
             );
         });
     },
