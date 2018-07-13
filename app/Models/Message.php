@@ -432,10 +432,10 @@ class Message extends Model {
                 $msgBody = $message->{'content'};
                 break;
             case 'image':
-                $msgBody = '<img src="' . $message->{'path'} . '" alt="" />';
+                $msgBody = '<img src="' . $message->{$type}->{'path'} . '" alt="" />';
                 break;
             case 'voice':
-                $msgBody = '<a href="' . $message->{'path'} . '">下载语音</a>';
+                $msgBody = '<a href="' . $message->{$type}->{'path'} . '">下载语音</a>';
                 break;
             case 'video':
                 $msgBody = '<dl class="dl-horizontal">' .
@@ -446,13 +446,13 @@ class Message extends Model {
                     '<dt>视频: </dt>' .
                     '<dd>' .
                         '<video height="200" controls>' .
-                            '<source src="' . $message->{'path'} . '" type="video/mp4">' .
+                            '<source src="' . $message->{$type}->{'path'} . '" type="video/mp4">' .
                         '</video>' .
                     '</dd>' .
                 '</dl>';
                 break;
             case 'file':
-                $msgBody = '<a href="' . $message->{'path'} . '">下载文件</a>';
+                $msgBody = '<a href="' . $message->{$type}->{'path'} . '">下载文件</a>';
                 break;
             case 'textcard':
                 $msgBody = '';
