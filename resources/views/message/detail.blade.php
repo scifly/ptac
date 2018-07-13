@@ -13,22 +13,23 @@
                 <div class="col-xs-12" id="detail-body" style="border-bottom: 1px solid #f4f4f4 ">
                     <div>{!! $msgBody !!}</div>
                 </div>
-                <p>
+                <div>
                     @if ($app)
                         <img style="height: 16px; vertical-align: sub;" alt="" src="{!! $app['square_logo_url'] !!}"/>
                         {!! $app['name'] !!}
                     @else
                         未知
                     @endif
-                </p>
-                <p>
+                </div>
+                <div>
                     <label class="control-label">发送时间:</label> {!! $sentAt !!}
-                </p>
-                <p>
-                    <label class="control-label">发送对象: </label>{!! $recipients !!}</p>
-                <p>
+                </div>
+                <div>
+                    <label class="control-label">发送对象: </label>{!! $recipients !!}
+                </div>
+                <div>
                     <label class="control-label">发送者: </label>{!! $sender !!}
-                </p>
+                </div>
             </div>
         </div>
         <div class="modal-footer">
