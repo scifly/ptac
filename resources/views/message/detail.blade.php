@@ -23,7 +23,7 @@
                                 />
                                 {!! $app['name'] !!}
                             @else
-                                未知
+                                【短信】
                             @endif
                         </div>
                     </div>
