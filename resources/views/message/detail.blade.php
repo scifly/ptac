@@ -10,14 +10,9 @@
         </div>
         <div class="modal-body">
             <div class="row">
-                <div class="col-xs-12" id="detail-body">
+                <div class="col-xs-12" id="detail-body" style="border-bottom: 1px solid #f4f4f4 ">
                     <div>{!! $msgBody !!}</div>
                 </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <div class="pull-left" style="text-align: left;">
-
                 <p>
                     @if ($app)
                         <img style="height: 16px; vertical-align: sub;" alt="" src="{!! $app['square_logo_url'] !!}"/>
@@ -35,6 +30,8 @@
                     <label class="control-label">发送者: </label>{!! $sender !!}
                 </p>
             </div>
+        </div>
+        <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">
                 <i class="fa fa-sign-out"> 关闭</i>
             </button>
