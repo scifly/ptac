@@ -136,7 +136,7 @@ class Message extends Model {
                     }
                     $type = '(' . Constant::INFO_TYPES[$content->{'msgtype'}] .
                         ($row['sent'] ? '' : sprintf(Snippet::BADGE_GRAY, ' . 草稿')) . ')';
-                    return $d . sprintf(Snippet::BADGE_LIGHT_BLUE, $type);
+                    return $d . sprintf(Snippet::BADGE_GREEN, $type);
                 }
             ],
             [
