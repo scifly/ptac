@@ -142,7 +142,7 @@ class Message extends Model {
             [
                 'db' => 'App.name as appname', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return $d ?? sprintf(Snippet::BADGE_GRAY, '(待定)');
+                    return $d ?? sprintf(Snippet::BADGE_GRAY, '(n/a)');
                 }
             ],
             [
