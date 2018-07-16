@@ -11,7 +11,6 @@ use App\Models\Message;
 use App\Models\MessageReply;
 use App\Models\Student;
 use App\Models\User;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
@@ -203,6 +202,7 @@ class MessageCenterController extends Controller {
     /**
      * 消息回复
      *
+     * @return JsonResponse
      */
     public function reply() {
         
