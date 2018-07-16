@@ -438,27 +438,16 @@ class Message extends Model {
                 $msgBody = '<a href="' . $message->{'path'} . '">下载语音</a>';
                 break;
             case 'video':
-                $msgBody = '<dl>' .
-                    '<dt>' . '标题: ' . '</dt>' .
-                    '<dd>' . $message->{'title'} . '</dd>' .
-                    '<dt>' . '描述: ' . '</dt>' .
-                    '<dd>' . $message->{'description'} . '</dd>' .
-                    '<dt>视频: </dt>' .
-                    '<dd>' .
-                        '<video height="200" controls>' .
-                            '<source src="' . $message->{'path'} . '" type="video/mp4">' .
-                        '</video>' .
-                    '</dd>' .
-                '</dl>';
+                $msgBody = view('message.detail_video', ['message' => $message])->render();
                 break;
             case 'file':
                 $msgBody = '<a href="' . $message->{'path'} . '">下载文件</a>';
                 break;
             case 'textcard':
-                $msgBody = '';
+                $msgBody = view('message.detail_textcard', ['message' => $message])->render();
                 break;
             case 'mpnews':
-                $msgBody = '';
+                $msgBody = view('message.detail_mpnews', ['message' => $message])->render();
                 break;
             case 'sms':
                 $msgBody = $message;
@@ -694,7 +683,7 @@ class Message extends Model {
         $result = json_decode(
             Wechat::uploadMedia(
                 $token['access_token'],
-                $type, // Request::input('type') ,
+                $type,
                 [
                     'file-contents' => curl_file_create(public_path($uploadedFile['path'])),
                     'filename'      => $uploadedFile['filename'],
