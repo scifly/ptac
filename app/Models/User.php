@@ -25,6 +25,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Laravel\Passport\Client;
 use Laravel\Passport\HasApiTokens;
@@ -803,7 +804,7 @@ class User extends Authenticatable {
     function corpIds($id) {
         
         $user = $this->find($id);
-
+        Log::debug($this->head($user));
         return $user->group->name == '运营'
             ? Corp::pluck('id')->toArray()
             : [(new Department)->corpId($this->head($user) ?? 1)];
