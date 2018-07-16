@@ -402,9 +402,10 @@ class Message extends Model {
             'recipients' => $msl ? $msl->recipient_count : 0,
             'msl_id'     => $msl ? $msl->id : 0,
             'type'       => $type,
-            $type        => $type == 'other' ? $message->content : json_decode($object),
+            $type        => $type == 'other' ? $message->content : $object,
         ];
 
+        Log::debug(json_encode($object));
         return [$content, $edit];
         
     }
