@@ -35,7 +35,7 @@ class WapSiteRequest extends FormRequest {
     protected function prepareForValidation() {
         
         $input = $this->all();
-        if (isset($input['media_ids'])) {
+        if (!empty($input['media_ids'])) {
             $input['media_ids'] = implode(',', $input['media_ids']);
         }
         $input['school_id'] = $this->schoolId();
