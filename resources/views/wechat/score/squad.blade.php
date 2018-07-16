@@ -82,7 +82,7 @@
         $('.tongji-item').click(function () {
             var studentId = $(this).attr('data-s'),
                 examId = $(this).attr('data-e');
-            window.location.href = '{!! $acronym !!}/sc/detail?targetId=' + studentId + '&examId=' + examId;
+            window.location.href = 'detail?targetId=' + studentId + '&examId=' + examId;
         });
     </script>
 @endsection
