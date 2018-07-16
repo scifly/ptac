@@ -229,7 +229,7 @@ div.weui_tab_bd {
     position: absolute;
     left: 0;
     bottom: 0;
-    width: 110%;
+    /*width: 110%;*/
     height: 1px;
     border-top: 1px solid #dadada;
     -webkit-transform-origin: 0 0;
