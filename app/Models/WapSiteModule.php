@@ -120,18 +120,7 @@ class WapSiteModule extends Model {
      */
     function store(WapSiteModuleRequest $request) {
         
-        try {
-            //删除原有的图片
-            DB::transaction(function () use ($request) {
-                Request::merge(['ids' => $request->input('del_ids', [])]);
-                (new Media)->remove();
-                $this->create($request->all());
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->create($request->all()) ? true : false;
         
     }
     
@@ -143,21 +132,11 @@ class WapSiteModule extends Model {
      * @throws Throwable
      */
     function modify(WapSiteModuleRequest $request, $id) {
-        
-        try {
-            DB::transaction(function () use ($request, $id) {
-                Request::merge(['ids' => $request->input('del_ids', [])]);
-                (new Media)->remove();
-                $this->find($id)->update(
-                    $request->except('_method', '_token', 'del_id')
-                );
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
+
+        return $this->find($id)->update(
+            $request->all()
+        );
+    
     }
     
     /**

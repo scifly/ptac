@@ -184,20 +184,10 @@ class WapSite extends Model {
      * @throws Throwable
      */
     function modify(WapSiteRequest $request, $id) {
-        
-        try {
-            DB::transaction(function () use ($request, $id) {
-                Request::merge([
-                    'ids' => explode(',', $request->input('media_ids'))
-                ]);
-                (new Media)->remove();
-                $this->find($id)->update($request->all());
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+    
+        return $this->find($id)->update(
+            $request->all()
+        );
         
     }
     

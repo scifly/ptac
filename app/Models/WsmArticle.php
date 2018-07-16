@@ -150,20 +150,11 @@ class WsmArticle extends Model {
      * @throws Throwable
      */
     function store(WsmArticleRequest $request) {
+    
+        $wsma = $this->create($request->all());
         
-        try {
-            //删除原有的图片
-            DB::transaction(function () use ($request) {
-                Request::merge(['ids' => $request->input('del_ids', [])]);
-                (new Media)->remove();
-                return $this->create($request->all());
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
+        return  $wsma ? true : false;
+    
     }
     
     /**
@@ -176,19 +167,11 @@ class WsmArticle extends Model {
      * @throws Throwable
      */
     function modify(WsmArticleRequest $request, $id) {
-        
-        try {
-            DB::transaction(function () use ($request, $id) {
-                Request::merge(['ids' => $request->input('del_ids', [])]);
-                (new Media)->remove();
-                $this->find($id)->update($request->all());
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
+    
+        return $this->find($id)->update(
+            $request->all()
+        );
+    
     }
     
     /**
@@ -216,7 +199,9 @@ class WsmArticle extends Model {
         
         try {
             DB::transaction(function () use ($mediaId) {
-                WsmArticle::whereThumbnailMediaId($mediaId)->update(['thumb_media_id' => 0]);
+                WsmArticle::whereThumbnailMediaId($mediaId)->update([
+                    'thumbnail_media_id' => 0
+                ]);
                 $articles = $this->whereRaw($mediaId . ' IN (media_ids)')->get();
                 foreach ($articles as $article) {
                     $media_ids = implode(
