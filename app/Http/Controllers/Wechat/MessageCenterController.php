@@ -203,6 +203,9 @@ class MessageCenterController extends Controller {
             $messages = MessageReply::where('msl_id', $input['msl_id'])
                 ->where('user_id', $user->id)->get();
         }
+        foreach ($messages as $message) {
+            $message->name = $message->user->realname;
+        }
         
         return response()->json([
             'messages' => $messages,
