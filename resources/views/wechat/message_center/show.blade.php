@@ -30,7 +30,10 @@
                             <div class="artic-detail-module">
                                 <div class="writing-texts bg-fff">
                                     <div class="wwbw js-wwbw mce-item-table article-message">
-                                        <?php $type = $content['type']; $message = $content[$type]->{$type}; ?>
+                                        <?php
+                                        $type = $content['type'];
+                                        $message = $content[$type]->{$type};
+                                        ?>
                                         @switch ($type)
                                             @case ('text')
                                                 <p>{!! $message->{'content'} !!}</p>
