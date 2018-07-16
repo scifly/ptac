@@ -1,6 +1,6 @@
 <div class="box box-widget widget-user-2">
     <div class="widget-user-header bg-yellow">
-        <a href="{!! $message->{'articles'}[0]->{'content_source_url'} !!}">
+        <a href="{!! $message->{'articles'}[0]->{'content_source_url'} !!}" style="color: white;">
             <div class="widget-user-image">
                 <img class="img-circle"
                      src="{!! $message->{'articles'}[0]->{'image_url'} !!}"
