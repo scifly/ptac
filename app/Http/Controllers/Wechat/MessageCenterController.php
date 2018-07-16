@@ -17,6 +17,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 use Throwable;
@@ -156,7 +157,7 @@ class MessageCenterController extends Controller {
     public function show($id) {
         
         list($content, $edit) = $this->message->show($id);
-        
+        Log::debug($content['other']);
         return view('wechat.message_center.show', [
             'content' => $content,
             'edit'    => $edit,
