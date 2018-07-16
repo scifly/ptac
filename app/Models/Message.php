@@ -504,6 +504,38 @@ class Message extends Model {
     }
     
     /**
+     * 获取指定消息的回复列表
+     *
+     * @return JsonResponse
+     */
+    function replies() {
+    
+        $user = Auth::user();
+        $message = $this->find(Request::input('id'));
+        $mslId = Request::input('msl_id');
+        $replies = MessageReply::whereMslId($mslId)->get();
+        if ($user->id != $message->s_user_id) {
+            $replies = MessageReply::whereMslId($mslId)->where('user_id', $user->id)->get();
+        }
+        $replyList = [];
+        Carbon::setLocale('zh');
+        foreach ($replies as $reply) {
+            $replyList[] = [
+                'id' => $reply->id,
+                'content' => $reply->content,
+                'replied_at' => Carbon::createFromFormat('Y-m-d H:i:s', $reply->created_at)->diffForHumans(),
+                'realname' => $reply->user->realname,
+                'avatar_url' => $reply->user->avatar_url
+            ];
+        }
+        
+        return response()->json([
+            'replies' => $replyList
+        ]);
+        
+    }
+    
+    /**
      * 发送消息
      *
      * @param $data

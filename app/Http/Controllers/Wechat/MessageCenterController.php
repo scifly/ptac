@@ -196,27 +196,7 @@ class MessageCenterController extends Controller {
      */
     public function replies() {
         
-        $user = Auth::user();
-        $message = $this->message->find(Request::input('id'));
-        $mslId = Request::input('msl_id');
-        $replies = MessageReply::whereMslId($mslId)->get();
-        if ($user->id != $message->s_user_id) {
-            $replies = MessageReply::whereMslId($mslId)->where('user_id', $user->id)->get();
-        }
-        $replyList = [];
-        foreach ($replies as $reply) {
-            $replyList[] = [
-                'id' => $reply->id,
-                'content' => $reply->content,
-                'replied_at' => Carbon::createFromFormat('Y-m-d H:i:s', $reply->created_at)->diffForHumans(),
-                'realname' => $reply->user->realname,
-                'avatar_url' => $reply->user->avatar_url
-            ];
-        }
-        
-        return response()->json([
-            'replies' => $replyList,
-        ]);
+        return $this->message->replies();
         
     }
     
