@@ -1,6 +1,8 @@
 <div class="box box-widget widget-user-2">
     <div class="widget-user-header bg-yellow">
-        <a href="{!! $message->{'articles'}[0]->{'content_source_url'} !!}" style="color: white;">
+        <a href="{!! $message->{'articles'}[0]->{'content_source_url'} !!}"
+           style="color: white;" target="_blank"
+        >
             <div class="widget-user-image">
                 <img class="img-circle"
                      src="{!! $message->{'articles'}[0]->{'image_url'} !!}"
@@ -19,7 +21,9 @@
         <ul class="nav nav-stacked">
             @for ($i = 1; $i <= sizeof($message->{'articles'}) - 1; $i++)
                 <li>
-                    <a href="{!! $message->{'articles'}[$i]->{'content_source_url'} !!}">
+                    <a href="{!! $message->{'articles'}[$i]->{'content_source_url'} !!}"
+                       target="_blank"
+                    >
                         {!! $message->{'articles'}[$i]->{'title'} !!}
                         <img src="{!! $message->{'articles'}[$i]->{'image_url'} !!}"
                              alt="" class="pull-right"

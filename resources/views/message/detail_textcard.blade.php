@@ -6,7 +6,7 @@
     <div class="icon">
         <i class="fa fa-link"></i>
     </div>
-    <a href="{!! $message->{'url'} !!}" class="small-box-footer">
+    <a href="{!! $message->{'url'} !!}" class="small-box-footer" target="_blank">
         {!! $message->{'btntxt'} !!}
         <i class="fa fa-arrow-circle-right"></i>
     </a>
