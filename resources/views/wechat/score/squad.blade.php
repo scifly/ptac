@@ -80,9 +80,9 @@
 @section('script')
     <script>
         $('.tongji-item').click(function () {
-            var student = $(this).attr('data-s');
-            var exam = $(this).attr('data-e');
-            window.location.href = '{!! $acronym !!}/sc/show?student=' + student + '&exam=' + exam;
+            var studentId = $(this).attr('data-s'),
+                examId = $(this).attr('data-e');
+            window.location.href = '{!! $acronym !!}/sc/detail?targetId=' + studentId + '&examId=' + examId;
         });
     </script>
 @endsection

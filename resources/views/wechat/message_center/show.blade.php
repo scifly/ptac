@@ -109,7 +109,7 @@
                         <!--评论模块结束-->
                     </div>
                 </div>
-                @if(isset($show))
+                @if(isset($show))8
                     <div class="bottom-artic b-top">
                         <div class="bot-edit-wrap" _v-2ee0662a="">
                             <div class="bottom-edit-layout" style="padding:0;height: auto;text-align: center;">
