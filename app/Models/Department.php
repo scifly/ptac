@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
@@ -225,6 +226,7 @@ class Department extends Model {
      */
     function corpId($id) {
         
+        Log::debug($id);
         $department = $this->find($id);
         switch ($department->departmentType->name) {
             case '运营':
