@@ -9,7 +9,9 @@
             <div class="maininfo">
                 <h3 class="profile-username">{{ $ws->site_title }}</h3>
             </div>
-            <a href="#" class="btn btn-primary btn-block btn-bianji" style=""><b>编辑</b></a>
+            <a href="#" class="btn btn-primary btn-block btn-bianji" style="">
+                <i class="fa fa-edit"> 编辑</i>
+            </a>
         </div>
     </div>
     <div class="box box-primary">

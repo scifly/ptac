@@ -2,6 +2,7 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
+use App\Models\WapSite;
 use Illuminate\Contracts\View\View;
 
 /**
@@ -16,7 +17,11 @@ class WapSiteIndexComposer {
      * @param View $view
      */
     public function compose(View $view) {
-        
+    
+        $view->with([
+            'ws' => WapSite::whereSchoolId($this->schoolId())->first()
+        ]);
+    
     }
     
 }
