@@ -15,7 +15,7 @@
     </div>
     <div class="box-footer no-padding">
         <ul class="nav nav-stacked">
-            @for ($i = 1; $i < sizeof($message->{'articles'}) - 1; $i++)
+            @for ($i = 1; $i <= sizeof($message->{'articles'}) - 1; $i++)
                 <li>
                     <a href="{!! $message->{'articles'}[$i]->{'content_source_url'} !!}">
                         {!! $message->{'articles'}[$i]->{'title'} !!}
