@@ -11,6 +11,7 @@ use App\Models\Message;
 use App\Models\MessageReply;
 use App\Models\Student;
 use App\Models\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
@@ -196,19 +197,25 @@ class MessageCenterController extends Controller {
     public function replies() {
         
         $user = Auth::user();
-        $input = Request::all();
-        $reply = $this->message->find($input['id']);
-        $replies = MessageReply::where('msl_id', $input['msl_id'])->get();
-        if ($user->id != $reply->s_user_id) {
-            $replies = MessageReply::where('msl_id', $input['msl_id'])
-                ->where('user_id', $user->id)->get();
+        $message = $this->message->find(Request::input('id'));
+        $mslId = Request::input('msl_id');
+        $replies = MessageReply::whereMslId($mslId)->get();
+        if ($user->id != $message->s_user_id) {
+            $replies = MessageReply::whereMslId($mslId)->where('user_id', $user->id)->get();
         }
+        $replyList = [];
         foreach ($replies as $reply) {
-            $reply->name = $reply->user->realname;
+            $replyList[] = [
+                'id' => $reply->id,
+                'content' => $reply->content,
+                'replied_at' => Carbon::createFromFormat('Y-m-d H:i:s', $reply->created_at)->diffForHumans(),
+                'realname' => $reply->user->realname,
+                'avatar_url' => $reply->user->avatar_url
+            ];
         }
         
         return response()->json([
-            'replies' => $replies,
+            'replies' => $replyList,
         ]);
         
     }

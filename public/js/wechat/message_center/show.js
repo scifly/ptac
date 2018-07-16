@@ -102,18 +102,18 @@ function replies() {
             if (result['replies'].length > 0) {
                 var html = '';
                 for (var i = 0; i < result['replies'].length; i++) {
-                    var message = result['replies'][i];
+                    var reply = result['replies'][i];
                     html += '<li class="discuss_item">' +
                         '<div>' +
                             '<div class="user_info">' +
-                                '<strong class="nickname">' + message['user']['realname'] + '</strong>' +
-                                '<img class="avatar" src="' + message['user']['avatar_url'] + '">' +
-                                '<p class="discuss_extra_info">' + message['created_at'] + '</p>' +
+                                '<strong class="nickname">' + reply['realname'] + '</strong>' +
+                                '<img class="avatar" src="' + reply['avatar_url'] + '">' +
+                                '<p class="discuss_extra_info">' + reply['replied_at'] + '</p>' +
                             '</div>' +
                             '<div class="discuss_message">' +
-                                '<div class="discuss_message_content">' + message['content'] + '</div>' +
+                                '<div class="discuss_message_content">' + reply['content'] + '</div>' +
                                 '<a class="del-icon-btn" href="javascript:">' +
-                                    '<span id="' + message['id'] +
+                                    '<span id="' + reply['id'] +
                                     '" class="del-icon icon iconfont icon-lajixiang delete-replay"></span>' +
                                 '</a>' +
                             '</div>' +
