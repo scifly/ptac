@@ -57,16 +57,8 @@ class CustodianRequest extends FormRequest {
                 unset($input['mobile']['isdefault']);
                 foreach ($input['mobile'] as $index => $mobile) {
                     $input['mobile'][$index]['user_id'] = isset($input['user_id']) ? $input['user_id'] : 0;
-                    if ($index == $defaultIndex) {
-                        $input['mobile'][$index]['isdefault'] = 1;
-                    } else {
-                        $input['mobile'][$index]['isdefault'] = 0;
-                    }
-                    if (!isset($mobile['enabled'])) {
-                        $input['mobile'][$index]['enabled'] = 0;
-                    } else {
-                        $input['mobile'][$index]['enabled'] = 1;
-                    }
+                    $input['mobile'][$index]['isdefault'] = $index == $defaultIndex ? 1 : 0;
+                    $input['mobile'][$index]['enabled'] = isset($mobile['enabled']) ? 1 : 0;
                 }
             }
             $input['user']['group_id'] = Group::whereName('监护人')->first()->id;
