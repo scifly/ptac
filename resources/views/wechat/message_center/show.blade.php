@@ -74,7 +74,7 @@
                                                 <p>{!! $message->{'sms'} !!}</p>
                                                 @break
                                             @default
-                                                <p>{!! $content['other'] !!}</p>
+                                                <p>{!! $message !!}</p>
                                                 @break
                                         @endswitch
                                     </div>
