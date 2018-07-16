@@ -32,49 +32,49 @@
                                     <div class="wwbw js-wwbw mce-item-table article-message">
                                         @switch ($content['type'])
                                             @case ('text')
-                                                <p>{!! $content['text']->{'content'} !!}</p>
-                                                @break
+                                            <p>{!! $content['text']->{'content'} !!}</p>
+                                            @break
                                             @case ('image')
-                                                <p><img alt="" src="/{!! $content['image']->{'path'} !!}" /></p>
-                                                @break
+                                            <p><img alt="" src="/{!! $content['image']->{'path'} !!}" /></p>
+                                            @break
                                             @case ('voice')
-                                                <p><a href="/{!! $content['voice']->{'path'} !!}">点击下载此语音</a></p>
-                                                @break
+                                            <p><a href="/{!! $content['voice']->{'path'} !!}">点击下载此语音</a></p>
+                                            @break
                                             @case ('video')
-                                                <p>标题: {!! $content['video']->{'title'} !!}</p>
-                                                <p>描述: {!! $content['video']->{'description'} !!}</p>
-                                                <video controls>
-                                                    <source src="/{!! $content['video']->{'path'} !!}" type="video/mp4">
-                                                </video>
-                                                @break
+                                            <p>标题: {!! $content['video']->{'title'} !!}</p>
+                                            <p>描述: {!! $content['video']->{'description'} !!}</p>
+                                            <video controls>
+                                                <source src="/{!! $content['video']->{'path'} !!}" type="video/mp4">
+                                            </video>
+                                            @break
                                             @case ('file')
-                                                <p><a href="/{!! $content['file']->{'path'} !!}">点击下载此文件</a></p>
-                                                @break
+                                            <p><a href="/{!! $content['file']->{'path'} !!}">点击下载此文件</a></p>
+                                            @break
                                             @case ('textcard')
-                                                <div class="card-content">
-                                                    <p class="card-title">{!! $content['textcard']->{'title'} !!}</p>
-                                                    <p class="card-detail">{!! $content['textcard']->{'description'} !!}</p>
-                                                    <a class="card-url" href="{!! $content['textcard']->{'url'} !!}">
-                                                        {!! $content['textcard']->{'btntxt'} ? $content['textcard']->{'btntxt'} : '详情' !!}
-                                                    </a>
-                                                </div>
-                                                @break
+                                            <div class="card-content">
+                                                <p class="card-title">{!! $content['textcard']->{'title'} !!}</p>
+                                                <p class="card-detail">{!! $content['textcard']->{'description'} !!}</p>
+                                                <a class="card-url" href="{!! $content['textcard']->{'url'} !!}">
+                                                    {!! $content['textcard']->{'btntxt'} ? $content['textcard']->{'btntxt'} : '详情' !!}
+                                                </a>
+                                            </div>
+                                            @break
                                             @case ('mpnews')
-                                                @foreach ($content['mpnews']->{'articles'} as $article)
-                                                    <div class="mpnews-item">
-                                                        <p class="mpnews-title">{!! $article->{'title'} !!}</p>
-                                                        <img alt="" src="/{!! $article->{'image_url'} !!}" />
-                                                        <p class="mpnews-digest">{!! $article->{'digest'} !!}</p>
-                                                        <a class="mpnews-url" href="{!! $article->{'content_source_url'} !!}">阅读全文</a>
-                                                    </div>
-                                                @endforeach
-                                                @break
+                                            @foreach ($content['mpnews']->{'mpnews'}->{'articles'} as $article)
+                                                <div class="mpnews-item">
+                                                    <p class="mpnews-title">{!! $article->{'title'} !!}</p>
+                                                    <img alt="" src="/{!! $article->{'image_url'} !!}" />
+                                                    <p class="mpnews-digest">{!! $article->{'digest'} !!}</p>
+                                                    <a class="mpnews-url" href="{!! $article->{'content_source_url'} !!}">阅读全文</a>
+                                                </div>
+                                            @endforeach
+                                            @break
                                             @case ('sms')
-                                                <p>{!! $content['sms'] !!}</p>
-                                                @break
+                                            <p>{!! $content['sms'] !!}</p>
+                                            @break
                                             @default
-                                                <p>{!! $content['other'] !!}</p>
-                                                @break
+                                            <p>{!! $content['other'] !!}</p>
+                                            @break
                                         @endswitch
                                     </div>
                                 </div>

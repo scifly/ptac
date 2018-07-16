@@ -405,7 +405,6 @@ class Message extends Model {
             $type        => $type == 'other' ? $message->content : $object,
         ];
 
-        Log::debug(json_encode($object));
         return [$content, $edit];
         
     }
