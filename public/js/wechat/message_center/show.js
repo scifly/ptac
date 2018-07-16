@@ -105,19 +105,19 @@ function replies() {
                     var message = result['messages'][i];
                     html += '<li class="discuss_item">' +
                         '<div>' +
-                        '<div class="user_info">' +
-                        '<strong class="nickname">' + message['name'] + '</strong>' +
-                        '<img class="avatar" src="http://shp.qpic.cn/bizmp/UsXhSsnUkjiaibOb6bME9lIrxH2uClkDicVI1zsqpmBemDywTMo2VWibSA/64">' +
-                        '<p class="discuss_extra_info">' + message['created_at'] + '</p>' +
+                            '<div class="user_info">' +
+                                '<strong class="nickname">' + message['user']['realname'] + '</strong>' +
+                                '<img class="avatar" src="' + message['user']['avatar_url'] + '">' +
+                                '<p class="discuss_extra_info">' + message['created_at'] + '</p>' +
+                            '</div>' +
+                            '<div class="discuss_message">' +
+                                '<div class="discuss_message_content">' + message['content'] + '</div>' +
+                                '<a class="del-icon-btn" href="javascript:">' +
+                                    '<span id=' + message['id'] + ' class="del-icon icon iconfont icon-lajixiang delete-replay"></span>' +
+                                '</a>' +
+                            '</div>' +
                         '</div>' +
-                        '<div class="discuss_message">' +
-                        '<div class="discuss_message_content">' + message['content'] + '</div>' +
-                        '<a class="del-icon-btn" href="javascript:">' +
-                        '<span id=' + message['id'] + ' class="del-icon icon iconfont icon-lajixiang delete-replay"></span>' +
-                        '</a>' +
-                        '</div>' +
-                        '</div>' +
-                        '</li>';
+                    '</li>';
                 }
                 $('.discuss_list').html(html);
             } else {

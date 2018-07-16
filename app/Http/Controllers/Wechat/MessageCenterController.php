@@ -156,7 +156,7 @@ class MessageCenterController extends Controller {
     public function show($id) {
         
         list($content, $edit) = $this->message->show($id);
-        \Log::debug(json_encode($content));
+
         return view('wechat.message_center.show', [
             'content' => $content,
             'edit'    => $edit,
@@ -202,9 +202,6 @@ class MessageCenterController extends Controller {
         if ($user->id != $message->s_user_id) {
             $messages = MessageReply::where('msl_id', $input['msl_id'])
                 ->where('user_id', $user->id)->get();
-        }
-        foreach ($messages as $message) {
-            $messages->name = $message->user->realname;
         }
         
         return response()->json([
