@@ -18,10 +18,6 @@ class WapSiteIndexComposer {
      */
     public function compose(View $view) {
     
-        $view->with([
-            'ws' => WapSite::whereSchoolId($this->schoolId())->first()
-        ]);
-    
     }
     
 }

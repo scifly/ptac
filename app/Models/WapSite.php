@@ -120,7 +120,6 @@ class WapSite extends Model {
         
         $conditions = [
             'school_id' => $this->schoolId(),
-            'enabled'   => Constant::ENABLED,
         ];
         $ws = $this->where($conditions)->first();
         if (!$ws) {
@@ -129,17 +128,11 @@ class WapSite extends Model {
                 'school_id'  => $schoolId,
                 'site_title' => School::find($schoolId)->name,
                 'media_ids'  => '',
-                'enabled'    => Constant::DISABLED,
+                'enabled'    => Constant::ENABLED,
             ]);
         }
         
-        return [
-            'ws'     => $ws,
-            'medias' => (new Media)->medias(
-                explode(",", $ws->media_ids)
-            ),
-            'show'   => true,
-        ];
+        return ['ws' => $ws];
         
     }
     
