@@ -53,7 +53,7 @@ $reply.off('click').on('click', function () {
         dataType: 'json',
         url: '../reply',
         data: {
-            _token: token, content: content, msl_id: $mslId.val() },
+            _token: wap.token(), content: content, msl_id: $mslId.val() },
         success: function () {
             $.alert("回复成功！", function () {
                 $.closePopup();
