@@ -197,18 +197,18 @@ class MessageCenterController extends Controller {
         
         $user = Auth::user();
         $input = Request::all();
-        $message = $this->message->find($input['id']);
-        $messages = MessageReply::where('msl_id', $input['msl_id'])->get();
-        if ($user->id != $message->s_user_id) {
-            $messages = MessageReply::where('msl_id', $input['msl_id'])
+        $reply = $this->message->find($input['id']);
+        $replies = MessageReply::where('msl_id', $input['msl_id'])->get();
+        if ($user->id != $reply->s_user_id) {
+            $replies = MessageReply::where('msl_id', $input['msl_id'])
                 ->where('user_id', $user->id)->get();
         }
-        foreach ($messages as $message) {
-            $message->name = $message->user->realname;
+        foreach ($replies as $reply) {
+            $reply->name = $reply->user->realname;
         }
         
         return response()->json([
-            'messages' => $messages,
+            'replies' => $replies,
         ]);
         
     }

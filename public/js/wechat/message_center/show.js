@@ -99,10 +99,10 @@ function replies() {
             msl_id: $mslId.val()
         },
         success: function (result) {
-            if (result['messages'].length > 0) {
+            if (result['replies'].length > 0) {
                 var html = '';
-                for (var i = 0; i < result['messages'].length; i++) {
-                    var message = result['messages'][i];
+                for (var i = 0; i < result['replies'].length; i++) {
+                    var message = result['replies'][i];
                     html += '<li class="discuss_item">' +
                         '<div>' +
                             '<div class="user_info">' +
