@@ -226,7 +226,6 @@ class Department extends Model {
      */
     function corpId($id) {
         
-        Log::debug($id);
         $department = $this->find($id);
         switch ($department->departmentType->name) {
             case '运营':

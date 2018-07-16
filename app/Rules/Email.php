@@ -44,6 +44,7 @@ class Email implements Rule {
             ? [Request::input('corp_id', (new Corp)->corpId())]
             : (new User)->corpIds($userId);
         $users = User::whereEmail($value)->get();
+        Log::debug(json_encode($users->toArray()));
         foreach ($users as $user) {
             $corpIds = $user->corpIds($user->id);
             if (

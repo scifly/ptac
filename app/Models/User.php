@@ -804,7 +804,6 @@ class User extends Authenticatable {
     function corpIds($id) {
         
         $user = $this->find($id);
-        Log::debug($this->head($user));
         return $user->group->name == '运营'
             ? Corp::pluck('id')->toArray()
             : [(new Department)->corpId($this->head($user) ?? 1)];
