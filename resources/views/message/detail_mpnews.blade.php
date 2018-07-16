@@ -1,17 +1,19 @@
 <div class="box box-widget widget-user-2">
     <div class="widget-user-header bg-yellow">
-        <div class="widget-user-image">
-            <img class="img-circle"
-                 src="{!! $message->{'articles'}[0]->{'image_url'} !!}"
-                 alt=""
-            />
-        </div>
-        <h3 class="widget-user-username">
-            {!! $message->{'articles'}[0]->{'title'} !!}
-        </h3>
-        <h5 class="widget-user-desc">
-            {!! $message->{'articles'}[0]->{'digest'} !!}
-        </h5>
+        <a href="{!! $message->{'articles'}[0]->{'content_source_url'} !!}">
+            <div class="widget-user-image">
+                <img class="img-circle"
+                     src="{!! $message->{'articles'}[0]->{'image_url'} !!}"
+                     alt=""
+                />
+            </div>
+            <h3 class="widget-user-username">
+                {!! $message->{'articles'}[0]->{'title'} !!}
+            </h3>
+            <h5 class="widget-user-desc">
+                {!! $message->{'articles'}[0]->{'digest'} !!}
+            </h5>
+        </a>
     </div>
     <div class="box-footer no-padding">
         <ul class="nav nav-stacked">
