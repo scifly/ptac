@@ -354,7 +354,7 @@ div.weui_tab_bd {
 }
 .mpnews-item img{
     height:300px ;
-    width: auto;
+    width: 100%;
     vertical-align: top;
 }
 .mpnews-url , .mpnews-title , .mpnews-digest{
