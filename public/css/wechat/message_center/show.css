@@ -353,8 +353,8 @@ div.weui_tab_bd {
     color:#ccc;
 }
 .mpnews-item img{
-    /*height:300px ;*/
-    width: 100%;
+    height:300px ;
+    width: auto;
     vertical-align: top;
 }
 .mpnews-url , .mpnews-title , .mpnews-digest{
