@@ -32,7 +32,7 @@
                                     <div class="wwbw js-wwbw mce-item-table article-message">
                                         <?php
                                         $type = $content['type'];
-                                        $message = $content[$type]->{$type};
+                                        $message = $type != 'other' ? $content[$type]->{$type} : $content[$type];
                                         ?>
                                         @switch ($type)
                                             @case ('text')
