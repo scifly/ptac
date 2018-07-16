@@ -113,7 +113,8 @@ function replies() {
                             '<div class="discuss_message">' +
                                 '<div class="discuss_message_content">' + message['content'] + '</div>' +
                                 '<a class="del-icon-btn" href="javascript:">' +
-                                    '<span id=' + message['id'] + ' class="del-icon icon iconfont icon-lajixiang delete-replay"></span>' +
+                                    '<span id="' + message['id'] +
+                                    '" class="del-icon icon iconfont icon-lajixiang delete-replay"></span>' +
                                 '</a>' +
                             '</div>' +
                         '</div>' +
