@@ -187,7 +187,7 @@ class WapSite extends Model {
         
         try {
             DB::transaction(function () use ($request, $id) {
-                Request::merge(['ids' => $request->input('del_ids')]);
+                Request::merge(['ids' => $request->input('media_ids')]);
                 (new Media)->remove();
                 return $this->find($id)->update(
                     $request->all()

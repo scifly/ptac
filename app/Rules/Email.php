@@ -5,7 +5,6 @@ use App\Models\Corp;
 use App\Models\User;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -44,7 +43,6 @@ class Email implements Rule {
             ? [Request::input('corp_id', (new Corp)->corpId())]
             : (new User)->corpIds($userId);
         $users = User::whereEmail($value)->get();
-        Log::debug(json_encode($users->toArray()));
         foreach ($users as $user) {
             $corpIds = $user->corpIds($user->id);
             if (
