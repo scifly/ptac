@@ -1296,8 +1296,8 @@ class Score extends Model {
             : view('wechat.score.student', [
                 'score'     => $score,
                 'stat'      => $stat,
-                'subjects'  => $subjectList,
                 'total'     => $total,
+                'subjects'  => $subjectList,
                 'examId'    => $examId,
                 'studentId' => $studentId,
             ]);
@@ -1314,13 +1314,14 @@ class Score extends Model {
      */
     private function subjectScores($studentId, $subjectId, $examId = null) {
         
-        return $this->where([
+        $conditions = [
             'student_id' => $studentId,
             'subject_id' => $subjectId,
             'enabled'    => 1,
-        ])->get()->when(
-            $examId,
-            function (Collection $scores) use ($examId) {
+        ];
+        
+        return $this->where($conditions)->get()->when(
+            $examId, function (Collection $scores) use ($examId) {
                 return $scores->where('exam_id', $examId);
             }
         );
