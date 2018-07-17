@@ -18,7 +18,7 @@
                 {{ $score ? date('Y-m', strtotime($score->exam->start_date)) : '--' }}
             </div>
             <div class="days">
-                {{ $score ? date('d', strtotime($score->exam->start_date)) : '' }} 日
+                {{ $score ? date('d', strtotime($score->exam->start_date)) . '日' : '--' }}
             </div>
         </div>
         <div class="subject">
@@ -52,11 +52,11 @@
     </div>
     <div class="ranke">
         <div class="byclass">
-            <p>{!! ($score ? $score->class_rank : 'na') . ' / ' . $stat['nClassScores']  !!}</p>
+            <p>{!! ($score ? $score->class_rank : '--') . ' / ' . $stat['nClassScores']  !!}</p>
             <p class="subtitle">班排名</p>
         </div>
         <div class="byschool">
-            <p>{!! ($score ? $score->grade_rank : 'na') . ' / ' . $stat['nGradeScores']  !!}</p>
+            <p>{!! ($score ? $score->grade_rank : '--') . ' / ' . $stat['nGradeScores']  !!}</p>
             <p class="subtitle">年排名</p>
         </div>
     </div>
