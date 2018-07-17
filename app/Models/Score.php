@@ -3,7 +3,6 @@ namespace App\Models;
 
 use App\Facades\Datatable;
 use App\Facades\Wechat;
-use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
@@ -1045,7 +1044,6 @@ class Score extends Model {
     }
     
     /** 微信端 ------------------------------------------------------------------------------------------------------- */
-
     /**
      * 学生成绩分析
      *
@@ -1227,6 +1225,7 @@ class Score extends Model {
             HttpStatusCode::UNAUTHORIZED,
             __('messages.unauthorized')
         );
+        
         return Request::has('student')
             ? $this->studentDetail()
             : $this->classDetail();
@@ -1267,7 +1266,7 @@ class Score extends Model {
             $subjectId = key($subjectList);
         }
         /** @var Score $score */
-        $score = $this->subjectScores($studentId, 2, $examId);
+        $score = $this->subjectScores($studentId, $subjectId, $examId);
         abort_if(!$score, HttpStatusCode::NOT_FOUND, __('messages.score.not_found'));
         $score->{'start_date'} = $exam->start_date;
         $score->{'exam_name'} = $exam->name;
@@ -1314,22 +1313,20 @@ class Score extends Model {
      */
     private function subjectScores($studentId, $subjectId, $examId = null) {
         
-        $scores = $this->where([
+        return $this->where([
             'student_id' => $studentId,
             'subject_id' => $subjectId,
-            'enabled' => 1
-        ])->get();
-        
-        $scores->when($examId, function (Collection $scores) use ($examId) {
-            return $scores->where('exam_id', $examId);
-        });
-        
-        return $scores;
+            'enabled'    => 1,
+        ])->get()->when(
+            $examId,
+            function (Collection $scores) use ($examId) {
+                return $scores->where('exam_id', $examId);
+            }
+        );
         
     }
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
-
     /**
      * 获取学生某次考试在班上的平均分
      *

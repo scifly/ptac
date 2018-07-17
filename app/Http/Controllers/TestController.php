@@ -5,6 +5,7 @@ use App\Helpers\HttpStatusCode;
 use App\Models\ComboType;
 use App\Models\Department;
 use App\Models\Message;
+use App\Models\Score;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
@@ -29,6 +30,8 @@ class TestController extends Controller {
      */
     public function index() {
     
+        $score = new Score;
+        dd($score->toArray());
         $messages = Message::whereCommTypeId(3)->get()
             ->when(true, function (Collection $messages) {
                 return $messages->where('app_id', 0);
