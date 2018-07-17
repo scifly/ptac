@@ -31,7 +31,7 @@ class TestController extends Controller {
     
         $messages = Message::whereCommTypeId(3)->get()
             ->when(true, function (Collection $messages) {
-                return $messages->where('app_id', '=', 0);
+                return $messages->where('app_id', 0);
             });
         
         dd($messages->toArray());
