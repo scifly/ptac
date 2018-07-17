@@ -1266,10 +1266,10 @@ class Score extends Model {
             $subjectId = key($subjectList);
         }
         /** @var Score $score */
-        $score = $this->subjectScores($studentId, $subjectId, $examId);
-        $score = !empty($score) ? $score : null;
-        Log::debug($score);
-        if ($score) {
+        $scores = $this->subjectScores($studentId, $subjectId, $examId);
+        $score = null;
+        if (!empty($scores)) {
+            $score = $scores->first();
             $score->{'start_date'} = $exam->start_date;
             $score->{'exam_name'} = $exam->name;
         }
