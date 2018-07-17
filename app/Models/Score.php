@@ -1299,6 +1299,7 @@ class Score extends Model {
                 'score' => $score,
                 'stat'  => $stat,
                 'total' => $total,
+                'exam'  => $exam->toArray()
             ])
             : view('wechat.score.student', [
                 'score'     => $score,

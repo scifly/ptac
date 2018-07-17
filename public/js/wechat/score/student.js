@@ -26,22 +26,15 @@ $subjectId.on('change', function () {
                 score = result['score'],
                 stat = result['stat'],
                 total = result['total'],
+                exam = result['exam'],
                 names = total['names'],
                 scores = total['scores'],
                 avgs = total['avgs'];
 
-            $('.time .subject-title').html(
-                score ? score['start_date'].substring(0,7) : '--'
-            );
-            $('.time .days').html(
-                score ? score['start_date'].substring(8,10) + '日' : '--'
-            );
-            $('.test .testName').html(
-                score ? score['exam_name'] : '--'
-            );
-            $('.header .score').html(
-                score ? score['score'] : '(成绩未录入)'
-            );
+            $('.time .subject-title').html(exam['start_date'].substring(0, 7));
+            $('.time .days').html(exam['start_date'].substring(8, 10) + '日');
+            $('.test .testName').html(exam['name']);
+            $('.header .score').html(score ? score['score'] : '(成绩未录入)');
             html +=
                 '<div class="average">' +
                     '<div class="byclass">' +
