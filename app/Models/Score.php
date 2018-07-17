@@ -1268,6 +1268,7 @@ class Score extends Model {
         /** @var Score $score */
         $score = $this->subjectScores($studentId, $subjectId, $examId);
         $score = !empty($score) ? $score : null;
+        Log::debug($score);
         if ($score) {
             $score->{'start_date'} = $exam->start_date;
             $score->{'exam_name'} = $exam->name;
