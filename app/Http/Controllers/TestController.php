@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Helpers\HttpStatusCode;
 use App\Models\ComboType;
 use App\Models\Department;
+use App\Models\Message;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
@@ -27,7 +28,12 @@ class TestController extends Controller {
      */
     public function index() {
     
-        dd(Request::has('abc'));
+        $messages = Message::whereCommTypeId(3)->get();
+        $messages->when(true, function ($messages) {
+            return $messages->where('app_id', 0);
+        });
+        
+        dd($messages);
 
     }
     
