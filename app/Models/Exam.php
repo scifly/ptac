@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
@@ -223,7 +224,7 @@ class Exam extends Model {
             HttpStatusCode::NOT_ACCEPTABLE,
             __('messages.score.zero_classes')
         );
-        
+        Log::debug('classId: ' . $classId . ' keyword: ' . $keyword);
         return $this->whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')
             ->get()->when(
                 $keyword, function (Collection $query) use ($keyword) {
