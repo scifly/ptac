@@ -1227,7 +1227,7 @@ class Score extends Model {
             HttpStatusCode::UNAUTHORIZED,
             __('messages.unauthorized')
         );
-        
+        Log::debug('wtf:' . Request::has('student'));
         return Request::has('student')
             ? $this->studentDetail()
             : $this->classDetail();
