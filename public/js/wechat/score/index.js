@@ -7,7 +7,7 @@ var $targetId = $('#target_id'),
 
 FastClick.attach(document.body);
 $targetId.on('change', function () { examList(false); });
-$search.on("input propertychange change", function () { examList(false) });
+$search.on("change", function () { examList(false) });
 $loadMore.click(function () { start++; examList(true); });
 $examLink.on('click', function () {
     window.location = 'sc/detail?examId=' + $(this).data('value') + '&targetId=' + $targetId.val();
