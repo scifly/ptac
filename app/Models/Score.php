@@ -1337,20 +1337,20 @@ class Score extends Model {
      *
      * @param $examId
      * @param $subjectId
-     * @param $studentsIds
+     * @param $studentIds
      * @return mixed
      */
-    private function subjectAvg($examId, $subjectId, array $studentsIds) {
+    private function subjectAvg($examId, $subjectId, array $studentIds) {
         
         $scores = Score::whereExamId($examId)
-            ->whereIn('student_id', $studentsIds)
+            ->whereIn('student_id', $studentIds)
             ->where('subject_id', $subjectId)
             ->where('enabled', 1)
             ->get();
         
         return [
             $scores->avg('score') ?? 0,
-            count($scores),
+            $scores->count(),
         ];
         
     }
