@@ -224,18 +224,13 @@ class Exam extends Model {
             __('messages.score.zero_classes')
         );
 
-        return $this->whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')
-            ->get()->when(
-                $keyword, function (Collection $exams) use ($keyword) {
-                    $result = Collect([]);
-                    foreach ($exams as $exam) {
-                        if (mb_strpos($exam->name, $keyword) >= 0) {
-                            $result->push($exam);
-                        }
-                    }
-                    return $result;
-                }
-            )->toArray();
+        $exams = $this->whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')->get();
+        
+        $filtered = $exams->reject(function ($value, $key) use ($keyword) {
+            return !mb_strpos($value->name, $keyword);
+        });
+        
+        return $filtered;
         
     }
     
