@@ -1287,6 +1287,7 @@ class Score extends Model {
             'nGradeScores' => $nGradeScores,
         ];
     
+        Log::debug($score);
         return Request::method() == 'POST'
             ? response()->json([
                 'score' => $score,
