@@ -34,11 +34,7 @@ function examList(more) {
                             '<div class="weui-cell__ft time">' + exams[i]['start_date'] + '</div>' +
                         '</a>';
                 }
-                if (more) {
-                    $examList.append(html);
-                } else {
-                    $examList.html(html)
-                }
+                more ? $examList.append(html) : $examList.html(html);
             } else {
                 $loadMore.hide();
                 if (!more) { $examList.html('暂无数据'); }
