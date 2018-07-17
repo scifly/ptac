@@ -91,6 +91,7 @@ return [
     ],
     'score'              => [
         'title'                   => '成绩中心',
+        'not_found'               => '找不到指定学生、科目及考试对应的成绩',
         'zero_classes'            => '您尚未绑定任何班级',
         'unauthorized_stat'       => '您无权进行该成绩分析',
         'exam_not_found'          => '找不到需要导入成绩对应的考试',

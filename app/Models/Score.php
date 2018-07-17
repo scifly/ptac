@@ -1259,16 +1259,17 @@ class Score extends Model {
         # 获取该年级所有学生
         $gradeStudentIds = Student::whereIn('class_id', $classIds)->get()->pluck('id')->toArray();
         # 获取该次考试所有科目id
-        $subjects = Subject::whereIn('id', explode(',', $exam->subject_ids))->pluck('name', 'id')->toArray();
+        $subjectList = Subject::whereIn('id', explode(',', $exam->subject_ids))->pluck('name', 'id')->toArray();
+        Log::debug(json_encode($subjectList));
         if (Request::method() == 'POST') {
             $subjectId = Request::get('subject_id');
         } else {
-            reset($subjects);
-            $subjectId = key($subjects);
+            reset($subjectList);
+            $subjectId = key($subjectList);
         }
-        Log::debug($subjectId);
         /** @var Score $score */
         $score = $this->subjectScores($studentId, $subjectId, $examId);
+        abort_if(!$score, HttpStatusCode::NOT_FOUND, __('messages.score.not_found'));
         $score->{'start_date'} = $exam->start_date;
         $score->{'exam_name'} = $exam->name;
         $allScores = $this->subjectScores($studentId, $subjectId);
@@ -1296,7 +1297,7 @@ class Score extends Model {
             : view('wechat.score.student', [
                 'score'     => $score,
                 'stat'      => $stat,
-                'subjects'  => $subjects,
+                'subjects'  => $subjectList,
                 'total'     => $total,
                 'examId'    => $examId,
                 'studentId' => $studentId,
@@ -1406,9 +1407,9 @@ class Score extends Model {
             'squad' => Squad::find($classId)->name,
             'items' => [],
         ];
-        foreach ($students as $s) {
+        foreach ($students as $student) {
             $scores = $this->whereExamId($examId)
-                ->where('student_id', $s->id)->get();
+                ->where('student_id', $student->id)->get();
             $detail = [];
             foreach ($scores as $score) {
                 $detail[] = [
@@ -1417,10 +1418,10 @@ class Score extends Model {
                 ];
             }
             $result['items'][] = [
-                'student_id'     => $s->id,
+                'student_id'     => $student->id,
                 'exam_id'        => $examId,
-                'realname'       => $s->user['realname'],
-                'student_number' => $s->student_number,
+                'realname'       => $student->user['realname'],
+                'student_number' => $student->student_number,
                 'class_rank'     => 3,
                 'grade_rank'     => 5,
                 'total'          => 623,
