@@ -64,9 +64,7 @@ $subjectId.on('change', function () {
                     '</div>' +
                 '</div>';
             $('.otherinfo').html(html);
-
-            
-            showtable(scores, avgs, names);
+            score ? showtable(scores, avgs, names) : $('.main').html('');
         },
         error: function (e) {
             wap.errorHandler(e);
