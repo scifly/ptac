@@ -230,7 +230,7 @@ class Exam extends Model {
             return strpos($value->name, $keyword);
         });
         
-        return $filtered;
+        return $filtered->toArray();
         
     }
     
