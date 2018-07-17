@@ -1267,6 +1267,7 @@ class Score extends Model {
         }
         /** @var Score $score */
         $score = $this->subjectScores($studentId, $subjectId, $examId);
+        $score = !empty($score) ? $score : null;
         if ($score) {
             $score->{'start_date'} = $exam->start_date;
             $score->{'exam_name'} = $exam->name;
@@ -1287,7 +1288,6 @@ class Score extends Model {
             'nGradeScores' => $nGradeScores,
         ];
     
-        Log::debug($score);
         return Request::method() == 'POST'
             ? response()->json([
                 'score' => $score,
