@@ -30,14 +30,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        $score = new Score;
-        dd($score->score);
-        $messages = Message::whereCommTypeId(3)->get()
-            ->when(true, function (Collection $messages) {
-                return $messages->where('app_id', 0);
-            });
-        
-        dd($messages->toArray());
+        dd(mb_strpos('小学一年级', '小学'));
 
     }
     
