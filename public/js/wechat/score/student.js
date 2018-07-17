@@ -7,8 +7,8 @@ var $subjectId = $('#subject_id'),
 
 FastClick.attach(document.body);
 showtable($scores.val(), $avgs.val(), $names.val());
+alert($subjectId.val());
 $(document).on('change', '#subject_id', function () {
-    alert('wtf');
     $.ajax({
         type: 'POST',
         dataType: 'json',
