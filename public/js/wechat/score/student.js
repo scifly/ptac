@@ -30,10 +30,18 @@ $subjectId.on('change', function () {
                 scores = total['scores'],
                 avgs = total['avgs'];
 
-            $('.time .subject-title').html(score['start_date'].substring(0,7));
-            $('.time .days').html(score['start_date'].substring(8,10) + '日');
-            $('.test .testName').html(score['exam_name']);
-            $('.header .score').html(score['score']);
+            $('.time .subject-title').html(
+                score ? score['start_date'].substring(0,7) : '--'
+            );
+            $('.time .days').html(
+                score ? score['start_date'].substring(8,10) + '日' : '--'
+            );
+            $('.test .testName').html(
+                score ? score['exam_name'] : '--'
+            );
+            $('.header .score').html(
+                score ? score['score'] : '(成绩未录入)'
+            );
             html +=
                 '<div class="average">' +
                     '<div class="byclass">' +
