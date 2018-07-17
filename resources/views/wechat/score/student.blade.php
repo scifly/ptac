@@ -66,7 +66,8 @@
 </div>
 <div style="height: 70px;width: 100%;"></div>
 <div class="footerTab" >
-    <a class="btnItem footer-active" href="#">
+    <a class="btnItem footer-active"
+       href="{{ url($acronym . "/sc/detail?examId=" . $exam->id . "&targetId=" . $studentId . '&student=1') }}">
         <i class="icon iconfont icon-document"></i>
         <p>单科</p>
     </a>
