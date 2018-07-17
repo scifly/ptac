@@ -1266,9 +1266,9 @@ class Score extends Model {
             reset($subjects);
             $subjectId = key($subjects);
         }
+        Log::debug($subjectId);
         /** @var Score $score */
         $score = $this->subjectScores($studentId, $subjectId, $examId);
-        Log::debug(json_encode($score));
         $score->{'start_date'} = $exam->start_date;
         $score->{'exam_name'} = $exam->name;
         $allScores = $this->subjectScores($studentId, $subjectId);
