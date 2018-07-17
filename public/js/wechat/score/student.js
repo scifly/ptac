@@ -13,11 +13,11 @@ $subjectId.on("change", function () {
         dataType: 'json',
         url: '../sc/detail',
         data: {
+            _token: wap.token(),
             examId: $examId.val(),
             studentId: $studentId.val(),
             subject_id : $subjectId.val(),
-            student: 1,
-            _token: wap.token()
+            student: 1
         },
         success: function (result) {
             var html= '',
@@ -34,18 +34,24 @@ $subjectId.on("change", function () {
             $('.header .score').html(score['score']);
             html +=
                 '<div class="average">' +
-                '<div class="byclass">' + '<p>'+ stat['classAvg'] + '</p>' + '<p class="subtitle">班平均</p>' + '</div>'+
-                '<div class="byschool">' + '<p>'+ stat['gradeAvg'] + '</p>' + '<p class="subtitle">年平均</p>' + '</div>' +
+                    '<div class="byclass">' +
+                        '<p>'+ stat['classAvg'] + '</p>' +
+                        '<p class="subtitle">班平均</p>' +
+                    '</div>'+
+                    '<div class="byschool">' +
+                        '<p>'+ stat['gradeAvg'] + '</p>' +
+                        '<p class="subtitle">年平均</p>' +
+                    '</div>' +
                 '</div>' +
                 '<div class="ranke">' +
-                '<div class="byclass">' +
-                '<p>'+ score['class_rank'] +'/'+ stat['nClassScores'] + '</p>' +
-                '<p class="subtitle">班排名</p>' +
-                '</div>' +
-                '<div class="byschool">' +
-                '<p>'+ score['grade_rank'] +'/'+ stat['nGradeScores']+'</p>' +
-                '<p class="subtitle">年排名</p>' +
-                '</div>' +
+                    '<div class="byclass">' +
+                        '<p>'+ score['class_rank'] +'/'+ stat['nClassScores'] + '</p>' +
+                        '<p class="subtitle">班排名</p>' +
+                    '</div>' +
+                    '<div class="byschool">' +
+                        '<p>'+ score['grade_rank'] +'/'+ stat['nGradeScores']+'</p>' +
+                        '<p class="subtitle">年排名</p>' +
+                    '</div>' +
                 '</div>';
             $('.otherinfo').html(html);
 
@@ -56,7 +62,7 @@ $subjectId.on("change", function () {
         }
     });
 });
-function showtable(myscore, class_score, test_name){
+function showtable(myscore, class_score, test_name) {
     var myChart = echarts.init($('.main')[0]),
         option = {
             title: {
@@ -67,7 +73,7 @@ function showtable(myscore, class_score, test_name){
             },
             grid: { y:'80', bottom:'80' },
             tooltip: { trigger: 'axis' },
-            legend: { data:['我的成绩','班平均成绩'], x: 'left', left:10, top:45 },
+            legend: { data:['我的成绩', '班平均成绩'], x: 'left', left:10, top:45 },
             xAxis:  { type: 'category', data: test_name, boundaryGap : false },
             yAxis: { type: 'value', axisLabel: { formatter: '{value}' } },
             dataZoom: [
