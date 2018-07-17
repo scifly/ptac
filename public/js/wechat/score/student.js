@@ -16,6 +16,7 @@ $subjectId.on("change", function () {
             examId: $examId.val(),
             studentId: $studentId.val(),
             subject_id : $subjectId.val(),
+            student: 1,
             _token: wap.token()
         },
         success: function (result) {

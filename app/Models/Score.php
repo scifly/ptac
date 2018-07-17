@@ -1260,7 +1260,6 @@ class Score extends Model {
         $gradeStudentIds = Student::whereIn('class_id', $classIds)->get()->pluck('id')->toArray();
         # 获取该次考试所有科目id
         $subjectList = Subject::whereIn('id', explode(',', $exam->subject_ids))->pluck('name', 'id')->toArray();
-        Log::debug(json_encode($subjectList));
         if (Request::method() == 'POST') {
             $subjectId = Request::get('subject_id');
         } else {
@@ -1268,7 +1267,7 @@ class Score extends Model {
             $subjectId = key($subjectList);
         }
         /** @var Score $score */
-        $score = $this->subjectScores($studentId, 2, $examId);
+        $score = $this->subjectScores($studentId, $subjectId, $examId);
         abort_if(!$score, HttpStatusCode::NOT_FOUND, __('messages.score.not_found'));
         $score->{'start_date'} = $exam->start_date;
         $score->{'exam_name'} = $exam->name;
