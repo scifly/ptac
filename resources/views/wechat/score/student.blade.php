@@ -71,7 +71,8 @@
         <i class="icon iconfont icon-document"></i>
         <p>单科</p>
     </a>
-    <a class="btnItem" href='{{ url($acronym . "/sc/stat?examId=" . $exam->id . "&studentId=" . $studentId) }}'>
+    <a class="btnItem"
+       href='{{ url($acronym . "/sc/stat?examId=" . $exam->id . "&studentId=" . $studentId) }}'>
         <i class="icon iconfont icon-renzheng7"></i>
         <p>综合</p>
     </a>
