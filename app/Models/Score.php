@@ -1305,7 +1305,7 @@ class Score extends Model {
                 'stat'      => $stat,
                 'total'     => $total,
                 'subjects'  => $subjectList,
-                'examId'    => $examId,
+                'exam'      => $exam,
                 'studentId' => $studentId,
             ]);
         

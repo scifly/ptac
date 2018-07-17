@@ -8,17 +8,17 @@
 @section('content')
 <div class="header">
     <div class="info">
-        {!! Form::hidden('exam_id', $examId, ['id' => 'exam_id']) !!}
+        {!! Form::hidden('exam_id', $exam->id, ['id' => 'exam_id']) !!}
         {!! Form::hidden('student_id', $studentId, ['id' => 'student_id']) !!}
         {!! Form::hidden('names', implode(',', $total['names']), ['id' => 'names']) !!}
         {!! Form::hidden('scores', implode(',', $total['scores']), ['id' => 'scores']) !!}
         {!! Form::hidden('avgs', implode(',', $total['avgs']), ['id' => 'avgs']) !!}
         <div class="time">
             <div class="subtitle">
-                {{ $score ? date('Y-m', strtotime($score->exam->start_date)) : '--' }}
+                {!! date('Y-m', strtotime($exam->start_date)) !!}
             </div>
             <div class="days">
-                {{ $score ? date('d', strtotime($score->exam->start_date)) . '日' : '--' }}
+                {!! date('d', strtotime($exam->start_date)) . '日' !!}
             </div>
         </div>
         <div class="subject">
@@ -31,7 +31,7 @@
         <div class="test">
             <div class="subtitle">考试名</div>
             <div class="testName">
-                {{ $score ? $score->exam->name : '--' }}
+                {!! $exam->name !!}
             </div>
         </div>
     </div>
@@ -70,7 +70,7 @@
         <i class="icon iconfont icon-document"></i>
         <p>单科</p>
     </a>
-    <a class="btnItem" href='{{ url($acronym . "/sc/stat?examId=" . $examId . "&studentId=" . $studentId) }}'>
+    <a class="btnItem" href='{{ url($acronym . "/sc/stat?examId=" . $exam->id . "&studentId=" . $studentId) }}'>
         <i class="icon iconfont icon-renzheng7"></i>
         <p>综合</p>
     </a>
