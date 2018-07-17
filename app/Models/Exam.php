@@ -224,12 +224,12 @@ class Exam extends Model {
             __('messages.score.zero_classes')
         );
         
-        return $this->when(
-            $keyword,
-            function (Exam $query) use ($keyword) {
-                return $query->where('name', 'like', '%' . $keyword . '%');
-            }
-        )->whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')->get()->toArray();
+        return $this->whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')
+            ->get()->when(
+                $keyword, function (Collection $query) use ($keyword) {
+                    return $query->where('name', 'like', '%' . $keyword . '%');
+                }
+            )->toArray();
         
     }
     
