@@ -1227,7 +1227,6 @@ class Score extends Model {
             HttpStatusCode::UNAUTHORIZED,
             __('messages.unauthorized')
         );
-        Log::debug('wtf:' . Request::has('student'));
         return Request::has('student')
             ? $this->studentDetail()
             : $this->classDetail();
@@ -1244,6 +1243,7 @@ class Score extends Model {
         $total = [];
         $examId = Request::query('examId');
         $studentId = Request::query('targetId');
+        $student = Student::find($studentId);
         # 获取该学生所属班级的所有学生
         $exam = Exam::find($examId);
         abort_if(
@@ -1252,10 +1252,10 @@ class Score extends Model {
             __('messages.not_found')
         );
         # 获取该次考试该学生所在的年级id
-        $gradeId = Student::find($studentId)->squad->grade_id;
+        $gradeId = $student->squad->grade_id;
         $classIds = Grade::find($gradeId)->classes->pluck('id')->toArray();
         # 获取学生所属班级的所有学生ids
-        $classStudentIds = Student::find($studentId)->squad->students->pluck('id')->toArray();
+        $classStudentIds = $student->squad->students->pluck('id')->toArray();
         # 获取该年级所有学生
         $gradeStudentIds = Student::whereIn('class_id', $classIds)->get()->pluck('id')->toArray();
         # 获取该次考试所有科目id
@@ -1268,8 +1268,9 @@ class Score extends Model {
         }
         /** @var Score $score */
         $score = $this->subjectScores($studentId, $subjectId, $examId);
-        $score->{'start_date'} = $score->exam->start_date;
-        $score->{'exam_name'} = $score->exam->name;
+        Log::debug(json_encode($score));
+        $score->{'start_date'} = $exam->start_date;
+        $score->{'exam_name'} = $exam->name;
         $allScores = $this->subjectScores($studentId, $subjectId);
         foreach ($allScores as $score) {
             $total['names'][] = $score->exam->name;
@@ -1314,15 +1315,17 @@ class Score extends Model {
     private function subjectScores($studentId, $subjectId, $examId = null) {
         
         return !$examId
-            ? Score::whereStudentId($studentId)
-                ->where('subject_id', $subjectId)
-                ->where('enabled', Constant::ENABLED)
-                ->get()
-            : Score::whereStudentId($studentId)
-                ->where('exam_id', $examId)
-                ->where('subject_id', $subjectId)
-                ->where('enabled', Constant::ENABLED)
-                ->first();
+            ? $this->where([
+                'student_id' => $studentId,
+                'subject_id' => $subjectId,
+                'enabled' => 1
+            ])->get()
+            : $this->where([
+                'student_id' => $studentId,
+                'subject_id' => $subjectId,
+                'exam_id' => $examId,
+                'enabled' => 1
+            ])->first();
         
     }
     
