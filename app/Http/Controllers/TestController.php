@@ -31,7 +31,7 @@ class TestController extends Controller {
     public function index() {
     
         $score = new Score;
-        dd($score->toArray());
+        dd($score->score);
         $messages = Message::whereCommTypeId(3)->get()
             ->when(true, function (Collection $messages) {
                 return $messages->where('app_id', 0);
