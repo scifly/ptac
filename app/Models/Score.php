@@ -1267,7 +1267,7 @@ class Score extends Model {
             $subjectId = key($subjectList);
         }
         /** @var Score $score */
-        $score = $this->subjectScores($studentId, $subjectId, $examId);
+        $score = $this->subjectScores($studentId, 2, $examId);
         abort_if(!$score, HttpStatusCode::NOT_FOUND, __('messages.score.not_found'));
         $score->{'start_date'} = $exam->start_date;
         $score->{'exam_name'} = $exam->name;
@@ -1305,7 +1305,7 @@ class Score extends Model {
     }
     
     /**
-     * 查询某学生某科目全部的考试分数
+     * 查询指定学生某科目全部的考试分数
      *
      * @param $studentId
      * @param $subjectId
@@ -1314,18 +1314,17 @@ class Score extends Model {
      */
     private function subjectScores($studentId, $subjectId, $examId = null) {
         
-        return !$examId
-            ? $this->where([
-                'student_id' => $studentId,
-                'subject_id' => $subjectId,
-                'enabled' => 1
-            ])->get()
-            : $this->where([
-                'student_id' => $studentId,
-                'subject_id' => $subjectId,
-                'exam_id' => $examId,
-                'enabled' => 1
-            ])->get()->first();
+        $scores = $this->where([
+            'student_id' => $studentId,
+            'subject_id' => $subjectId,
+            'enabled' => 1
+        ])->get();
+        
+        $scores->when($examId, function (Collection $scores) use ($examId) {
+            return $scores->where('exam_id', $examId);
+        });
+        
+        return $scores;
         
     }
     
