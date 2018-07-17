@@ -13,7 +13,6 @@ $examLink.on('click', function () {
     window.location = 'sc/detail?examId=' + $(this).data('value') + '&targetId=' + $targetId.val();
 });
 function examList(more) {
-    $.alert($search.val());
     $loadMore.show();
     $.ajax({
         type: 'POST',
