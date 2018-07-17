@@ -78,6 +78,5 @@
 </div>
 @endsection
 @section('script')
-    <script src="{{ URL::asset('js/plugins/echarts.common.min.js') }}"></script>
     <script src="{{ URL::asset('js/wechat/score/student.js') }}"></script>
 @endsection
