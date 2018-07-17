@@ -55,11 +55,11 @@ $subjectId.on('change', function () {
                 '</div>' +
                 '<div class="ranke">' +
                     '<div class="byclass">' +
-                        '<p>'+ score['class_rank'] +'/'+ stat['nClassScores'] + '</p>' +
+                        '<p>'+ score ? score['class_rank'] : '--' + '/' + stat['nClassScores'] + '</p>' +
                         '<p class="subtitle">班排名</p>' +
                     '</div>' +
                     '<div class="byschool">' +
-                        '<p>'+ score['grade_rank'] +'/'+ stat['nGradeScores']+'</p>' +
+                        '<p>'+ score ? score['grade_rank'] : '--' + '/' + stat['nGradeScores']+'</p>' +
                         '<p class="subtitle">年排名</p>' +
                     '</div>' +
                 '</div>';
