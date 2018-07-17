@@ -1267,9 +1267,10 @@ class Score extends Model {
         }
         /** @var Score $score */
         $score = $this->subjectScores($studentId, $subjectId, $examId);
-        abort_if(!$score, HttpStatusCode::NOT_FOUND, __('messages.score.not_found'));
-        $score->{'start_date'} = $exam->start_date;
-        $score->{'exam_name'} = $exam->name;
+        if ($score) {
+            $score->{'start_date'} = $exam->start_date;
+            $score->{'exam_name'} = $exam->name;
+        }
         $allScores = $this->subjectScores($studentId, $subjectId);
         foreach ($allScores as $score) {
             $total['names'][] = $score->exam->name;
