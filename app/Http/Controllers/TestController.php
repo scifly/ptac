@@ -30,12 +30,12 @@ class TestController extends Controller {
     public function index() {
     
         $messages = Message::whereCommTypeId(3)->get();
-        $filtered = $messages->when(true, function (Collection $messages) {
+        $messages = $messages->when(true, function (Collection $messages) {
             echo 'wtf';
             return $messages->where('app_id', '=', 0);
         });
         
-        dd($filtered->toArray());
+        dd($messages->toArray());
 
     }
     
