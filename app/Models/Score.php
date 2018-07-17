@@ -1188,7 +1188,6 @@ class Score extends Model {
             $targetId = Request::input('target_id');
             $classId = $user->custodian ? Student::find($targetId)->class_id : $targetId;
             $keyword = Request::has('keyword') ? Request::input('keyword') : null;
-            Log::debug(json_encode($exam->examsByClassId($classId, $keyword)));
             $exams = array_slice($exam->examsByClassId($classId, $keyword), $start, $pageSize);
             
             return response()->json([
