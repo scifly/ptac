@@ -6,9 +6,10 @@ var $subjectId = $('#subject_id'),
     $avgs = $('#avgs');
 
 FastClick.attach(document.body);
-showtable($scores.val(), $avgs.val(), $names.val());
-$.alert($subjectId.val());
-$(document).on('change', '#subject_id', function () {
+if ($.trim($('.testName').html()) !== '--') {
+    showtable($scores.val(), $avgs.val(), $names.val());
+}
+$subjectId.on('change', function () {
     $.ajax({
         type: 'POST',
         dataType: 'json',
