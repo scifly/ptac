@@ -1272,10 +1272,10 @@ class Score extends Model {
             $score->{'exam_name'} = $exam->name;
         }
         $allScores = $this->subjectScores($studentId, $subjectId);
-        foreach ($allScores as $score) {
-            $total['names'][] = $score->exam->name;
-            $total['scores'][] = $score->score;
-            list($classAvg) = $this->subjectAvg($score->exam_id, $subjectId, $classStudentIds);
+        foreach ($allScores as $allScore) {
+            $total['names'][] = $allScore->exam->name;
+            $total['scores'][] = $allScore->score;
+            list($classAvg) = $this->subjectAvg($allScore->exam_id, $subjectId, $classStudentIds);
             $total['avgs'][] = $classAvg;
         }
         list($classAvg, $nClassScores) = $this->subjectAvg($examId, $subjectId, $classStudentIds);
@@ -1287,7 +1287,6 @@ class Score extends Model {
             'nGradeScores' => $nGradeScores,
         ];
     
-        Log::debug(json_encode($score));
         return Request::method() == 'POST'
             ? response()->json([
                 'score' => $score,
