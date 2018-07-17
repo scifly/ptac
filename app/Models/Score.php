@@ -1326,7 +1326,7 @@ class Score extends Model {
                 'subject_id' => $subjectId,
                 'exam_id' => $examId,
                 'enabled' => 1
-            ])->first();
+            ])->get()->first();
         
     }
     
