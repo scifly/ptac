@@ -60,11 +60,12 @@
     </div>
     <div style="height: 70px; width: 100%;"></div>
     <div class="footerTab">
-        <a class="btnItem exam-link" href='{{ url($acronym . "/sc/detail?examId=". $examId ."&targetId=". $studentId) }}'>
+        <a class="btnItem exam-link"
+           href='{{ url($acronym . "/sc/detail?examId=". $examId ."&targetId=". $studentId . '&student=1') }}'>
             <i class="icon iconfont icon-document"></i>
             <p>单科</p>
         </a>
-        <a class="btnItem footer-active">
+        <a class="btnItem footer-active" href="#">
             <i class="icon iconfont icon-renzheng7"></i>
             <p>综合</p>
         </a>
