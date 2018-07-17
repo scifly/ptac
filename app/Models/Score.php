@@ -1268,7 +1268,7 @@ class Score extends Model {
             $subjectId = key($subjectList);
         }
         /** @var Score $score */
-        $score = $this->subjectScores($studentId, $subjectId, $examId);
+        $score = $this->subjectScores($studentId, 2, $examId);
         abort_if(!$score, HttpStatusCode::NOT_FOUND, __('messages.score.not_found'));
         $score->{'start_date'} = $exam->start_date;
         $score->{'exam_name'} = $exam->name;
