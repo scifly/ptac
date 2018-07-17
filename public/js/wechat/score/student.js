@@ -7,7 +7,11 @@ var $subjectId = $('#subject_id'),
 
 FastClick.attach(document.body);
 if ($.trim($('.score').html()) !== '(成绩未录入)') {
-    showtable($scores.val(), $avgs.val(), $names.val());
+    showtable(
+        $scores.val().split(','),
+        $avgs.val().split(','),
+        $names.val().split(',')
+    );
 }
 $subjectId.on('change', function () {
     $.ajax({
@@ -64,7 +68,7 @@ $subjectId.on('change', function () {
         }
     });
 });
-function showtable(myscore, class_score, test_name) {
+function showtable(scores, classAvgs, examNames) {
     var myChart = echarts.init($('.main')[0]),
         option = {
             title: {
@@ -76,14 +80,14 @@ function showtable(myscore, class_score, test_name) {
             grid: { y:'80', bottom:'80' },
             tooltip: { trigger: 'axis' },
             legend: { data: ['我的成绩', '班平均成绩'], x: 'left', left: 10, top: 45 },
-            xAxis:  { type: 'category', data: test_name, boundaryGap: false },
+            xAxis:  { type: 'category', data: examNames, boundaryGap: false },
             yAxis: { type: 'value', axisLabel: { formatter: '{value}' } },
             dataZoom: [
                 { type: 'slider', show: true, xAxisIndex: [0], start: 0, end: 50 }
             ],
             series: [
-                { name:'我的成绩', type:'line', data: myscore },
-                { name:'班平均成绩', type:'line', data: class_score },
+                { name:'我的成绩', type:'line', data: scores },
+                { name:'班平均成绩', type:'line', data: classAvgs },
             ]
         };
 

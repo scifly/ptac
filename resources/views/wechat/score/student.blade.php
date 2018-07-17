@@ -64,7 +64,7 @@
 <div class="tablemain">
     <div class="main" style="width: 100%;height: 350px;"></div>
 </div>
-<div style="height: 70px;width: 100%;"></div>
+<div style="height: 70px; width: 100%;"></div>
 <div class="footerTab" >
     <a class="btnItem footer-active" href="#">
         <i class="icon iconfont icon-document"></i>
