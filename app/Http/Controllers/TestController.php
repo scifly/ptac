@@ -8,6 +8,7 @@ use App\Models\Message;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Request;
 use ReflectionClass;
 use ReflectionMethod;
@@ -29,11 +30,11 @@ class TestController extends Controller {
     public function index() {
     
         $messages = Message::whereCommTypeId(3)->get();
-        $messages->when(true, function ($messages) {
+        $messages->when(true, function (Collection $messages) {
             return $messages->where('app_id', 0);
         });
         
-        dd($messages);
+        dd($messages->toArray());
 
     }
     
