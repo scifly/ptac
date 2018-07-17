@@ -1240,8 +1240,13 @@ class Score extends Model {
     function studentDetail() {
         
         $total = [];
-        $examId = Request::query('examId');
-        $studentId = Request::query('targetId');
+        if (Request::method() == 'GET') {
+            $examId = Request::query('examId');
+            $studentId = Request::query('targetId');
+        } else {
+            $examId = Request::input('examId');
+            $studentId = Request::input('studentId');
+        }
         $student = Student::find($studentId);
         # 获取该学生所属班级的所有学生
         $exam = Exam::find($examId);
