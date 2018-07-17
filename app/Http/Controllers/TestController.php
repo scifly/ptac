@@ -7,6 +7,7 @@ use App\Models\Department;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
+use Illuminate\Support\Facades\Request;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -26,15 +27,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        ComboType::create([
-            'name' => 'abc',
-            'amount' => 12,
-            'discount' => 12,
-            'school_id' => 1,
-            'months' => 5,
-            'enabled' => 1,
-            'a' => 1,
-        ]);
+        dd(Request::has('abc'));
 
     }
     

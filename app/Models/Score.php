@@ -1228,7 +1228,7 @@ class Score extends Model {
             __('messages.unauthorized')
         );
         
-        return $user->custodian
+        return Request::has('student')
             ? $this->studentDetail()
             : $this->classDetail();
         

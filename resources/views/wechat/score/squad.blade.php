@@ -39,28 +39,24 @@
             </tr>
             </thead>
             <tbody>
-            @if($data['items'])
-                @foreach($data['items'] as $d)
-                    <tr class="tongji-item" data-s="{{$d['student_id']}}" data-e="{{$d['exam_id']}}">
-                        <td>{{$d['realname']}}</td>
-                        <td>{{$d['student_number']}}</td>
-                        <td>{{$d['class_rank']}}</td>
-                        <td>{{$d['grade_rank']}}</td>
-                        <td>{{$d['total']}}</td>
+                @foreach($data['items'] as $item)
+                    <tr class="tongji-item" data-s="{!! $item['student_id'] !!} " data-e="{!! $item['exam_id'] !!}">
+                        <td>{!! $item['realname'] !!}</td>
+                        <td>{!! $item['student_number'] !!}</td>
+                        <td>{!! $item['class_rank'] !!}</td>
+                        <td>{!! $item['grade_rank'] !!}</td>
+                        <td>{!! $item['total'] !!}</td>
                         <td>
-                            @if($d['detail'])
-                                @foreach($d['detail'] as $t)
-                                    <div>
-                                        <span class="subj">{{$t['subject']}}</span>
-                                        <span class="score">{{$t['score']}}</span>
-                                        <div style="clear: both;"></div>
-                                    </div>
-                                @endforeach
-                            @endif
+                            @foreach($item['detail'] as $detail)
+                                <div>
+                                    <span class="subj">{!! $detail['subject'] !!}</span>
+                                    <span class="score">{!! $detail['score'] !!}</span>
+                                    <div style="clear: both;"></div>
+                                </div>
+                            @endforeach
                         </td>
                     </tr>
                 @endforeach
-            @endif
             </tbody>
         </table>
     </div>

@@ -30,8 +30,8 @@ function examList(more) {
                 for (var i = 0; i < exams.length; i++) {
                     html +=
                         '<a class="weui-cell weui-cell_access" href="#">' +
-                        '<div class="weui-cell__bd"><p>' + exams[i]['name'] + '</p></div>' +
-                        '<div class="weui-cell__ft time">' + exams[i]['start_date'] + '</div>' +
+                            '<div class="weui-cell__bd"><p>' + exams[i]['name'] + '</p></div>' +
+                            '<div class="weui-cell__ft time">' + exams[i]['start_date'] + '</div>' +
                         '</a>';
                 }
                 if (more) {
