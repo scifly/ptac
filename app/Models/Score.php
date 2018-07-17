@@ -1267,6 +1267,7 @@ class Score extends Model {
         }
         /** @var Score $score */
         $scores = $this->subjectScores($studentId, $subjectId, $examId);
+        Log::debug(json_encode($scores));
         $score = null;
         if (!empty($scores)) {
             $score = $scores->first();
