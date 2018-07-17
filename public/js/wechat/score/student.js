@@ -6,7 +6,7 @@ var $subjectId = $('#subject_id'),
     $avgs = $('#avgs');
 
 FastClick.attach(document.body);
-if ($.trim($('.testName').html()) !== '--') {
+if ($.trim($('.score').html()) !== '(成绩未录入)') {
     showtable($scores.val(), $avgs.val(), $names.val());
 }
 $subjectId.on('change', function () {
