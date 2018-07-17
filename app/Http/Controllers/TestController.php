@@ -29,11 +29,10 @@ class TestController extends Controller {
      */
     public function index() {
     
-        $messages = Message::whereCommTypeId(3)->get();
-        $messages = $messages->when(true, function (Collection $messages) {
-            echo 'wtf';
-            return $messages->where('app_id', '=', 0);
-        });
+        $messages = Message::whereCommTypeId(3)->get()
+            ->when(true, function (Collection $messages) {
+                return $messages->where('app_id', '=', 0);
+            });
         
         dd($messages->toArray());
 
