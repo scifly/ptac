@@ -1272,12 +1272,7 @@ class Score extends Model {
         }
         /** @var Score $score */
         $scores = $this->subjectScores($studentId, $subjectId, $examId);
-        $score = null;
-        if (!$scores->isEmpty()) {
-            $score = $scores->first();
-            $score->{'start_date'} = $exam->start_date;
-            $score->{'exam_name'} = $exam->name;
-        }
+        $score = !$scores->isEmpty() ? $scores->first() : null;
         $allScores = $this->subjectScores($studentId, $subjectId);
         foreach ($allScores as $allScore) {
             $total['names'][] = $allScore->exam->name;
