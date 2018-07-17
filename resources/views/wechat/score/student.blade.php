@@ -36,7 +36,7 @@
         </div>
     </div>
     <div class="score">
-        {{ $score ? $score->score : '--' }}
+        {{ $score ? $score->score : '(成绩未录入)' }}
     </div>
 </div>
 <div class="otherinfo">
