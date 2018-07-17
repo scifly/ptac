@@ -224,13 +224,17 @@ class Exam extends Model {
             HttpStatusCode::NOT_ACCEPTABLE,
             __('messages.score.zero_classes')
         );
-        Log::debug('classId: ' . $classId . ' keyword: ' . $keyword);
-        return $this->whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')
+
+        $exams = $this->whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')
             ->get()->when(
-                $keyword, function (Collection $query) use ($keyword) {
-                    return $query->where('name', 'like', '%' . $keyword . '%');
+                $keyword, function (Collection $exams) use ($keyword) {
+                    return $exams->where('name', 'like', '%' . $keyword . '%');
                 }
             )->toArray();
+        
+        Log::debug(count($exams));
+        
+        return $exams;
         
     }
     
