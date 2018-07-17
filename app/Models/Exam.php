@@ -14,7 +14,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
@@ -225,16 +224,18 @@ class Exam extends Model {
             __('messages.score.zero_classes')
         );
 
-        $exams = $this->whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')
+        return $this->whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')
             ->get()->when(
                 $keyword, function (Collection $exams) use ($keyword) {
-                    return $exams->where('name', 'like', '%' . $keyword . '%');
+                    $result = Collect([]);
+                    foreach ($exams as $exam) {
+                        if (mb_strpos($exam->name, $keyword) >= 0) {
+                            $result->push($exam);
+                        }
+                    }
+                    return $result;
                 }
             )->toArray();
-        
-        Log::debug(count($exams));
-        
-        return $exams;
         
     }
     
