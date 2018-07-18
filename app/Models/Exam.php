@@ -226,8 +226,10 @@ class Exam extends Model {
 
         $exams = $this->whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')->get();
         
-        $filtered = $exams->reject(function ($value, $key) use ($keyword) {
-            return strpos($value->name, $keyword);
+        $filtered = $exams->reject(function ($value) use ($keyword) {
+            return $keyword ? strpos($value->name, $keyword) : false;
+            
+
         });
         
         return $filtered->toArray();
