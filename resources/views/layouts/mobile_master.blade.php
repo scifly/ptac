@@ -8,7 +8,7 @@
     <title>{!! config('app.name') !!}</title>
     <!-- jquery weui -->
     <link rel="stylesheet" href="{{ URL::asset('css/weui.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('jquery-weui.min.css.1.0.1') }}">
+    <link rel="stylesheet" href="{{ URL::asset('jquery-weui.min.css') }}">
     <!-- swiper -->
     <link rel="stylesheet" href="{{ URL::asset('Scripts') }}">
     <!-- 自定义样式 -->
@@ -21,7 +21,7 @@
 <!-- jQuery 3 -->
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
 <!-- jquery weui -->
-<script src="{{ URL::asset('jquery-weui.min.js.1.0.1') }}"></script>
+<script src="{{ URL::asset('jquery-weui.min.js') }}"></script>
 <!-- swiper -->
 <script src="{{ URL::asset('js/plugins/swiper/js/swiper.jquery.min.js') }}"></script>
 <script src="{{ URL::asset('js/mobile.js') }}"></script>
