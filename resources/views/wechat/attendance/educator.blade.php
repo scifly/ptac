@@ -21,7 +21,7 @@
                 </div>
             </div>
         </div>
-        <div id="main" style="width: 100%; height: 300px;"></div>
+        <div id="main" style="width: 100%; height: 300px;">(暂无图表)</div>
         <table class="kaoqin-tongji">
             <tr>
                 <td>
