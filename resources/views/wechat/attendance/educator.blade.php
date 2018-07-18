@@ -79,7 +79,7 @@
                     <div class="weui-cell__hd">
                         <label for="class_id" class="weui-label">考勤班级</label>
                     </div>
-                    <div class="weui-cell__bd">
+                    <div class="weui-cell__bd weui-cell_select weui-cell_select-after">
                         {!! Form::select('class_id', $classes, null, [
                             'id' => 'class_id',
                             'class' => 'weui-select',
@@ -87,7 +87,7 @@
                         ]) !!}
                     </div>
                 </div>
-                <div class="weui-cell">
+                <div class="weui-cell weui-cell_select weui-cell_select-after">
                     <div class="weui-cell__hd">
                         <label for="sas_id" class="weui-label">考勤规则</label>
                     </div>
