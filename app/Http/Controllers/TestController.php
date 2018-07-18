@@ -6,6 +6,7 @@ use App\Models\ComboType;
 use App\Models\Department;
 use App\Models\Message;
 use App\Models\Score;
+use App\Models\Student;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
@@ -29,8 +30,10 @@ class TestController extends Controller {
      * @throws \Exception
      */
     public function index() {
-    
-        dd(mb_strpos('小学一年级', '大学') >= 0);
+
+        $student = new Student();
+        
+        dd(class_basename($student));
 
     }
     

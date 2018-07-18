@@ -55,11 +55,11 @@ function attendances(data) {
         data: data,
         url: 'at/chart',
         success: function (result) {
-            showPie(result['data']['charts'], ['打卡', '异常', '未打卡']);
+            showPie(result['chart'], ['打卡', '异常', '未打卡']);
             $('.status-value').each(function (i) {
-                $(this).html(result['data']['charts'][i]['value']);
+                $(this).html(result['chart'][i]['value']);
             });
-            $('.modal-content').html(result.data.view);
+            $('.modal-content').html(result['view']);
         },
         error: function (e) {
             wap.errorHandler(e);
