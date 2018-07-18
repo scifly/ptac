@@ -22,7 +22,7 @@
             </div>
         </div>
         <div id="main" style="width: 100%; height: 300px;">
-            <span style="color: lightgray; margin: 5px auto;">(暂无图表，请点击右上角【+】按钮选择班级/规则/日期查看打卡详情)</span>
+            <span style="color: lightgray; margin: 5px auto; display:block;">(暂无图表，请点击右上角【+】按钮选择班级/规则/日期查看打卡详情)</span>
         </div>
         <table class="kaoqin-tongji">
             <tr>
