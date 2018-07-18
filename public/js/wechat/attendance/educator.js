@@ -65,6 +65,7 @@ function attendances(data) {
         },
         error: function (e) {
             wap.errorHandler(e);
+
         }
     });
 }

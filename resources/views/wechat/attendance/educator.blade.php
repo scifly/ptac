@@ -28,21 +28,21 @@
                     <a href="javascript:" class="open-popup" data-target="#studentlist" data-type="normal">
                         <div class="kaoqin-date-circle okstatus"></div>
                         <span class="pl10">正常:</span>
-                        <span class="status-value">14</span>
+                        <span class="status-value">(n/a)</span>
                     </a>
                 </td>
                 <td>
                     <a href="javascript:" class="open-popup" data-target="#studentlist" data-type="abnormal">
                         <div class="kaoqin-date-circle notstatus"></div>
                         <span class="pl10">异常:</span>
-                        <span class="status-value">0</span>
+                        <span class="status-value">(n/a)</span>
                     </a>
                 </td>
                 <td>
                     <a href="javascript:" class="open-popup" data-target="#studentlist" data-type="norecords">
                         <div class="kaoqin-date-circle reststatus"></div>
                         <span class="pl10">未打卡:</span>
-                        <span class="status-value">0</span>
+                        <span class="status-value">(n/a)</span>
                     </a>
                 </td>
             </tr>
@@ -58,16 +58,7 @@
                 </div>
             </div>
             <div class="modal-content">
-                {{--<div class="list">--}}
-                {{--<div class="list-item">--}}
-                {{--<div class="list-item-info">--}}
-                {{--<div class="username">姓名 : <span>张三</span></div>--}}
-                {{--<div class="parent">监护人 : <span>张三他爸</span></div>--}}
-                {{--<div class="mobile">手机 : <span>13111111111</span></div>--}}
-                {{--<div class="otherinfo">其他信息（打卡时间、请假理由等）</div>--}}
-                {{--</div>--}}
-                {{--</div>--}}
-                {{--</div>--}}
+                (暂无数据)
             </div>
         </div>
     </div>
@@ -109,7 +100,7 @@
                     </div>
                 </div>
                 <div class="choose-footer js-choose-footer" style="position: fixed; bottom: 0; width: 100%;">
-                    <a href="javascript:;" class="weui-btn weui-btn_primary close-popup">确定</a>
+                    <a href="javascript:" class="weui-btn weui-btn_primary close-popup">确定</a>
                 </div>
             </div>
         </div>
