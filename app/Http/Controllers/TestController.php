@@ -31,9 +31,7 @@ class TestController extends Controller {
      */
     public function index() {
 
-        $student = new Student();
-        
-        dd(class_basename($student));
+        dd(date('w', time()));
 
     }
     
