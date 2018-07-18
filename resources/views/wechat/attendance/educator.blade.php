@@ -83,7 +83,6 @@
                         {!! Form::select('class_id', $classes, null, [
                             'id' => 'class_id',
                             'class' => 'weui-select',
-                            'style' => 'text-align: center;',
                         ]) !!}
                     </div>
                 </div>
@@ -95,7 +94,6 @@
                         {!! Form::select('sas_id', $sases, null, [
                             'id' => 'sas_id',
                             'class' => 'weui-select',
-                            'style' => 'text-align: center;',
                         ]) !!}
                     </div>
                 </div>
@@ -107,8 +105,6 @@
                         {!! Form::text('start_date', null, [
                             'id' => 'start_date',
                             'class' => 'weui-input',
-                            'style' => 'text-align: center;',
-                            'data-value' => ''
                         ]) !!}
                     </div>
                 </div>

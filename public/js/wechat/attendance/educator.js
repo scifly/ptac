@@ -51,23 +51,18 @@ function attendances(data) {
     });
 }
 // 班级列表
-function onClassChange(squads) {
-    $class.select({
-        title: "选择班级",
-        items: squads
-    });
-    $class.on('change', function () {
-        var classId = $(this).attr('data-value');
+function onClassChange() {
+    $classId.on('change', function () {
         $.ajax({
             type: 'POST',
             dataType: 'json',
             data: {
                 _token: wap.token(),
-                classId: classId,
+                classId: $classId.val(),
             },
             url: 'at/chart',
             success: function (result) {
-                $rule.select("update", {items: result.data});
+                $sasId.html(result['options']);
             },
             error: function (e) {
                 wap.errorHandler(e);
@@ -76,23 +71,14 @@ function onClassChange(squads) {
     });
 }
 // 规则列表
-function onRuleChange(rules) {
-    $rule.select({
-        title: "选择规则",
-        items: rules
-    });
-    $rule.on('change', function () {
-        var grade = $squad.attr('data-value');
-        if (!grade) {
-            $.alert('请先选择班级');
-            $(this).val('');
-        }
+function onRuleChange() {
+    $sasId.on('change', function () {
         checkRule();
     });
 }
 // 日期
 function onDateChange() {
-    $('#start-date').change(function () {
+    $startDate.change(function () {
         checkRule();
     });
 }
@@ -134,7 +120,7 @@ function checkRule() {
         data: {
             _token: wap.token(),
             date: $startDate.val(),
-            rule: $rule.attr('data-value'),
+            rule: $sasId.val(),
             check: true
         },
         url: 'at/chart',

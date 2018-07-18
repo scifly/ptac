@@ -747,11 +747,11 @@ class StudentAttendance extends Model {
     function wChart() {
         
         $input = Request::all();
-        if (isset($input['check'])) {
+        if (Request::has('check')) {
             return $this->wCheck();
         }
-        if (isset($input['classId'])) {
-            return $this->wRule($input['classId']);
+        if (Request::has('classId')) {
+            return $this->wRule();
         }
         # 角色判断
         $user = Auth::user();
@@ -812,51 +812,40 @@ class StudentAttendance extends Model {
      */
     private function wCheck() {
         
-        $input = Request::all();
-        $result = [
-            'statusCode' => HttpStatusCode::OK,
-            'message'    => '',
-        ];
-        if (isset($input['date'], $input['rule'])) {
-            # 获取规则的星期
-            $ruleDay = StudentAttendanceSetting::find($input['rule'])->day;
-            $weekDay = self::WEEK_DAYS[date("w", strtotime($input['date']))];
-            if ($ruleDay != $weekDay) {
-                $result['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-                $result['message'] = '请选择和规则对应的星期！';
-            }
-        }
+        # 获取规则的星期
+        $ruleDay = StudentAttendanceSetting::find(Request::input('sasId'))->day;
+        $weekDay = self::WEEK_DAYS[date('w', strtotime(Request::input('startDate')))];
+        abort_if(
+            $ruleDay != $weekDay,
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            '请选择和规则对应的星期！'
+        );
         
-        return response()->json($result);
+        return response()->json(['message' => '验证成功']);
         
     }
     
     /**
      * 返回指定班级对应的年级考勤规则
      *
-     * @param $classId
      * @return JsonResponse
      */
-    private function wRule($classId) {
+    private function wRule() {
         
         # 当前年级所有考勤规则，不分学期
-        $gradeId = Squad::find($classId)->grade_id;
-        $rules = StudentAttendanceSetting::whereGradeId($gradeId)->get();
-        $data = [];
-        foreach ($rules as $r) {
-            $data[] = [
-                'title' => $r->name,
-                'value' => $r->id,
-            ];
-        }
+        $gradeId = Squad::find(Request::input('classId'))->grade_id;
+        $sases = StudentAttendanceSetting::whereGradeId($gradeId)->pluck('name', 'id');
         abort_if(
-            empty($data),
+            empty($sases),
             HttpStatusCode::INTERNAL_SERVER_ERROR,
-            '该年级未设置考勤规则！'
+            '该班级所属年级未设置考勤规则！'
         );
-        
+        $options = '';
+        foreach ($sases as $key => $value) {
+            $options .= '<option value="' . $key . '">' . $value . '</option>';
+        }
         return response()->json([
-            'data' => $data,
+            'options' => $options,
         ]);
         
     }
