@@ -111,7 +111,10 @@ return [
     ],
     'student_attendance' => [
         'title' => '学生考勤',
-        'rule_',
+        'not_found' => '',
+        'not_available' => '指定班级所属年级未设置考勤规则！',
+        'authenticated' => '验证成功',
+        'weekday_mismatched' => '请选择和规则对应的星期！'
     ],
     'user'               => [
         'not_found' => '没有这个用户',

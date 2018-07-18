@@ -7,11 +7,12 @@ $classId.on('change', function () {
     $.ajax({
         type: 'POST',
         dataType: 'json',
+        url: 'at/chart',
         data: {
             _token: wap.token(),
             classId: $classId.val(),
+            action: true
         },
-        url: 'at/chart',
         success: function (result) {
             $sasId.html(result['options']);
         },
@@ -52,6 +53,7 @@ attendances({'_token': wap.token()});
 function attendances(data) {
     $.ajax({
         type: 'POST',
+        dataType: 'json',
         data: data,
         url: 'at/chart',
         success: function (result) {
@@ -103,9 +105,9 @@ function checkRule() {
         type: 'POST',
         data: {
             _token: wap.token(),
-            date: $startDate.val(),
-            rule: $sasId.val(),
-            check: true
+            startDate: $startDate.val(),
+            sasId: $sasId.val(),
+            action: true
         },
         url: 'at/chart',
         success: function (result) {

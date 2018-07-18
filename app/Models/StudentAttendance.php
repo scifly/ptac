@@ -751,11 +751,10 @@ class StudentAttendance extends Model {
      */
     function wChart() {
         
-        if (Request::has('check')) {
-            return $this->wCheck();
-        }
-        if (Request::has('classId')) {
-            return $this->wRule();
+        if (Request::has('action')) {
+            return Request::has('classId')
+                ? $this->wRule()
+                : $this->wCheck();
         }
         # 角色判断
         $user = Auth::user();
@@ -772,31 +771,8 @@ class StudentAttendance extends Model {
             HttpStatusCode::INTERNAL_SERVER_ERROR,
             __('messages.class.no_related_classes')
         );
-        $classes = Squad::whereIn('id', $classIds)->get();
-        $data['classNames'] = [];
-        foreach ($classes as $class) {
-            $data['classNames'][] = [
-                'title' => $class->name,
-                'value' => $class->id,
-            ];
-        }
-        $data['classNames'] = array_unique(
-            $data['classNames'], SORT_REGULAR
-        );
-        # 根据年级分组规则
-        $gradeIds = $this->gradeIds($schoolId);
-        $rules = StudentAttendanceSetting::whereIn('grade_id', $gradeIds)->get();
-        $data['ruleNames'] = [];
-        foreach ($rules as $rule) {
-            $data['ruleNames'][] = [
-                'title' => $rule->name,
-                'value' => $rule->id,
-            ];
-        }
-        # 获取饼图数据
-        $data = array_merge($data, $this->chart());
         
-        return response()->json($data);
+        return response()->json($this->chart());
         
     }
     
@@ -812,11 +788,13 @@ class StudentAttendance extends Model {
         $weekDay = self::WEEK_DAYS[date('w', strtotime(Request::input('startDate')))];
         abort_if(
             $ruleDay != $weekDay,
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            '请选择和规则对应的星期！'
+            HttpStatusCode::NOT_ACCEPTABLE,
+            __('messages.student_attendance.weekday_mismatched')
         );
         
-        return response()->json(['message' => '验证成功']);
+        return response()->json([
+            'message' => __('messages.student_attendance.authenticated')
+        ]);
         
     }
     
@@ -829,11 +807,11 @@ class StudentAttendance extends Model {
         
         # 当前年级所有考勤规则，不分学期
         $gradeId = Squad::find(Request::input('classId'))->grade_id;
-        $sases = StudentAttendanceSetting::whereGradeId($gradeId)->pluck('name', 'id');
+        $sases = StudentAttendanceSetting::whereGradeId($gradeId)->pluck('name', 'id')->toArray();
         abort_if(
             empty($sases),
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            '该班级所属年级未设置考勤规则！'
+            HttpStatusCode::NOT_ACCEPTABLE,
+            __('messages.student_attendance.not_available')
         );
         $options = '';
         foreach ($sases as $key => $value) {
@@ -855,14 +833,16 @@ class StudentAttendance extends Model {
     private function chart() {
         
         if (!Request::has('classId')) {
-            #如果条件为空 默认当天 该老师对应的第一个班级，第一个规则
             $schoolId = session('schoolId');
             $class = Squad::find(head($this->classIds($schoolId)));
             $date = date('Y-m-d', time());
             $semesters = Semester::whereSchoolId($schoolId)->where('enabled', 1)
                 ->get()->reject(
                     function (Semester $semester) use ($date) {
-                        return !($semester->start_date <= $date && $semester->end_date >= $date);
+                        return !(
+                            $semester->start_date <= $date &&
+                            $semester->end_date >= $date
+                        );
                     }
                 );
             $semester = $semesters->isNotEmpty() ? $semesters->first() : null;
@@ -877,11 +857,12 @@ class StudentAttendance extends Model {
             $date = Request::input('startDate');
         }
         abort_if(
-            !$sas, HttpStatusCode::INTERNAL_SERVER_ERROR,
-            '请加入相应的考勤规则！'
+            !$sas, HttpStatusCode::NOT_ACCEPTABLE,
+            __('messages.student_attendance.not_available')
         );
-        # 如果同一个学生在指定考勤时段内多次打卡，则取该时段内最晚的一条记录
+        # 指定班级所有学生id
         $studentIds = $class->students->pluck('id')->toArray();
+        # 如果同一个学生在指定考勤时段内多次打卡，则取该时段内最晚的一条记录
         $attendances = StudentAttendance::whereSasId($sas->id)
             ->whereIn('student_id', $studentIds)
             ->whereNotNull('sas_id')
@@ -891,15 +872,15 @@ class StudentAttendance extends Model {
         $normals = $attendances->where('status', 1)->count();
         $abnormals = $attendances->where('status', 0)->count();
         $missed = count($studentIds) - $normals - $abnormals;
-        $data['chart'] = [
-            ['name' => '打卡', 'value' => $normals],
-            ['name' => '异常', 'value' => $abnormals],
-            ['name' => '未打卡', 'value' => $missed],
-        ];
-        #处理列表页
-        $data['view'] = $this->attendList($studentIds, $attendances);
         
-        return $data;
+        return [
+            'chart' => [
+                ['name' => '打卡', 'value' => $normals],
+                ['name' => '异常', 'value' => $abnormals],
+                ['name' => '未打卡', 'value' => $missed],
+            ],
+            'view' => $this->attendLists($studentIds, $attendances)
+        ];
         
     }
     
@@ -911,19 +892,19 @@ class StudentAttendance extends Model {
      * @return mixed
      * @throws Throwable
      */
-    private function attendList($studentIds, $attendances) {
+    private function attendLists($studentIds, $attendances) {
     
-        //未打卡的学生列表
+        // 未打卡的学生
         $ids = $attendances->pluck('student_id')->toArray();
         $studentIds = array_diff($studentIds, $ids);
         $students = Student::whereIn('id', $studentIds)->get();
     
-        list($normalList, $abnormalList, $missedList) = array_map(
-            function ($objects) {
+        list($normals, $abnormals, $missed) = array_map(
+            function (Collection $objects) {
                 $list = [];
                 foreach ($objects as $object) {
-                    $class = get_class($object);
-                    $student = get_class($o) ? $object->student;
+                    $class = class_basename($object);
+                    $student = $class == 'Student' ? $object : $object->student;
                     $custodians = [];
                     $mobiles = [];
                     foreach ($student->custodians as $custodian) {
@@ -932,12 +913,14 @@ class StudentAttendance extends Model {
                             $mobiles, $custodian->user->mobiles->pluck('mobile')->toArray()
                         );
                     }
-                    $list[] = [
+                    $item = [
                         'student'    => $student->user->realname,
                         'custodians' => $custodians,
                         'mobiles'    => $mobiles,
-                        'punch_time' => $object->punch_time,
                     ];
+                    $list[] = $class == 'Student'
+                        ? $item
+                        : array_merge($item, ['punch_time' => $object->punch_time]);
                 }
                 
                 return $list;
@@ -948,28 +931,13 @@ class StudentAttendance extends Model {
                 $students
             ]
         );
-        foreach ($students as $student) {
-            $custodians = [];
-            $mobiles = [];
-            foreach ($student->custodians as $custodian) {
-                $custodians[] = $custodian->user->realname;
-                $mobiles = array_merge(
-                    $mobiles, $custodian->user->mobiles->pluck('mobile')->toArray()
-                );
-            }
-            $missedList[] = [
-                'student'    => $student->user->realname,
-                'custodians' => $custodians,
-                'mobiles'    => $mobiles,
-            ];
-        }
-        $data = view(self::VIEW_NS . 'list', [
-            'normals'   => $normalList,
-            'abnormals' => $abnormalList,
-            'missed'    => $missedList,
+        
+        return view(self::VIEW_NS . 'list', [
+            'normals'   => $normals,
+            'abnormals' => $abnormals,
+            'missed'    => $missed,
         ])->render();
         
-        return $data;
     }
     
 }
