@@ -6,7 +6,7 @@
 	<meta name="csrf_token" content="{{ csrf_token() }}" id="csrf_token">
     @yield('title')
     <link rel="stylesheet" href="{{ asset('/css/weui.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('/css/jquery-weui.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('jquery-weui.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/css/wechat/icon/iconfont.css') }}">
     @yield('css')
 </head>
@@ -17,7 +17,7 @@
 @yield('search')
 <script src="{{ asset('/js/jquery.min.js') }}"></script>
 <script src="{{ asset('/js/fastclick.js') }}"></script>
-<script src="{{ asset('/js/jquery-weui.min.js') }}"></script>
+<script src="{{ asset('jquery-weui.min.js') }}"></script>
 <script src="{{ asset('/js/swiper.js') }}"></script>
 <script src="{{ asset('/js/wechat/wap.js') }}"></script>
 <script src="{{ asset('/js/plugins/echarts/echarts.common.min.js') }}"></script>

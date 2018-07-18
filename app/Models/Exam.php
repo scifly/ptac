@@ -224,9 +224,7 @@ class Exam extends Model {
             HttpStatusCode::NOT_ACCEPTABLE,
             __('messages.score.zero_classes')
         );
-
         $exams = $this->whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')->get();
-        
         $filtered = $exams->reject(function (Exam $exam) use ($keyword) {
             return $keyword
                 ? mb_strpos($exam->name, $keyword) === false ? true : false

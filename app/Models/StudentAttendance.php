@@ -116,13 +116,10 @@ class StudentAttendance extends Model {
             [
                 'db'        => 'StudentAttendance.inorout', 'dt' => 6,
                 'formatter' => function ($d) {
-                    if ($d == 2) {
-                        return '';
-                    } else {
-                        return $d
-                            ? sprintf(Snippet::BADGE_GREEN, '进')
-                            : sprintf(Snippet::BADGE_RED, '出');
-                    }
+                    if ($d == 2) { return ''; }
+                    return $d
+                        ? sprintf(Snippet::BADGE_GREEN, '进')
+                        : sprintf(Snippet::BADGE_RED, '出');
                 },
             ],
             ['db' => 'StudentAttendance.status', 'dt' => 7],
