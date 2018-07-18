@@ -228,11 +228,8 @@ class Exam extends Model {
         $exams = $this->whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')->get();
         
         $filtered = $exams->reject(function (Exam $exam) use ($keyword) {
-            Log::debug('name: ' . $exam->name);
-            Log::debug('key: ' . $keyword);
-            Log::debug(mb_strpos($exam->name, $keyword ?? '小学') >= 0);
             return $keyword
-                ? mb_strpos($exam->name, $keyword) >= 0 ? false : true
+                ? mb_strpos($exam->name, $keyword) === false ? true : false
                 : false;
         });
         
