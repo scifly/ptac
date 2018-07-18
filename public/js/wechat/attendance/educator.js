@@ -1,27 +1,27 @@
-var $squad = $('#squad'),
-    $rule = $('#rule'),
-    $startDate = $('#start-date');
+var $classId = $('#class_id'),
+    $sasId = $('#sas_id'),
+    $startDate = $('#start_date');
 
 $startDate.calendar({value: []});
 // 默认显示当天饼图数据
-attendances({'_token': token});
+attendances({'_token': wap.token()});
 // 初始化日期change事件
 onDateChange();
 // 获取考勤数据
 $('#choose .close-popup').on('click', function () {
-    var squad = $squad.attr('data-value'),
-        rule = $rule.attr('data-value'),
-        date = $startDate.val();
+    var classId = $classId.val(),
+        sasId = $sasId.val(),
+        startDate = $startDate.val();
 
-    if (!squad || !rule || !date) {
+    if (!classId || !sasId || !startDate) {
         $.alert('请选择班级/规则/日期！');
         return false;
     }
     attendances({
         _token: wap.token(),
-        squad: squad,
-        rule: rule,
-        date: date
+        classId: classId,
+        sasId: sasId,
+        startDate: startDate
     });
 });
 $('.kaoqin-tongji .open-popup').click(function () {
@@ -52,8 +52,6 @@ function attendances(data) {
 }
 // 班级列表
 function onClassChange(squads) {
-    var $class = $("#squad");
-    
     $class.select({
         title: "选择班级",
         items: squads
