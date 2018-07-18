@@ -109,7 +109,7 @@
                     </div>
                 </div>
                 <div class="choose-footer js-choose-footer" style="position: fixed; bottom: 0; width: 100%;">
-                    <a href="javascript:" class="weui-btn weui-btn_primary close-popup">确定</a>
+                    <a href="javascript:;" class="weui-btn weui-btn_primary close-popup">确定</a>
                 </div>
             </div>
         </div>

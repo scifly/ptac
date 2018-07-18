@@ -3,10 +3,25 @@ var $classId = $('#class_id'),
     $startDate = $('#start_date');
 
 $startDate.calendar({value: []});
-// 默认显示当天饼图数据
-attendances({'_token': wap.token()});
-// 初始化日期change事件
-onDateChange();
+$classId.on('change', function () {
+    $.ajax({
+        type: 'POST',
+        dataType: 'json',
+        data: {
+            _token: wap.token(),
+            classId: $classId.val(),
+        },
+        url: 'at/chart',
+        success: function (result) {
+            $sasId.html(result['options']);
+        },
+        error: function (e) {
+            wap.errorHandler(e);
+        }
+    });
+});
+$sasId.on('change', function () { checkRule(); });
+$startDate.change(function () { checkRule(); });
 // 获取考勤数据
 $('#choose .close-popup').on('click', function () {
     var classId = $classId.val(),
@@ -25,20 +40,21 @@ $('#choose .close-popup').on('click', function () {
     });
 });
 $('.kaoqin-tongji .open-popup').click(function () {
-    var type = $(this).attr('data-type');
+    var type = $(this).data('type');
 
     $('.modal-content .list').hide();
     $('.modal-content .list-' + type).show();
 });
+// 默认显示当天饼图数据
+attendances({'_token': wap.token()});
 
+/** Helper functions ------------------------------------------------------------------------------------------------ */
 function attendances(data) {
     $.ajax({
         type: 'POST',
         data: data,
         url: 'at/chart',
         success: function (result) {
-            onClassChange(result['data']['classNames']);
-            onRuleChange(result['data']['ruleNames']);
             showPie(result['data']['charts'], ['打卡', '异常', '未打卡']);
             $('.status-value').each(function (i) {
                 $(this).html(result['data']['charts'][i]['value']);
@@ -48,38 +64,6 @@ function attendances(data) {
         error: function (e) {
             wap.errorHandler(e);
         }
-    });
-}
-// 班级列表
-function onClassChange() {
-    $classId.on('change', function () {
-        $.ajax({
-            type: 'POST',
-            dataType: 'json',
-            data: {
-                _token: wap.token(),
-                classId: $classId.val(),
-            },
-            url: 'at/chart',
-            success: function (result) {
-                $sasId.html(result['options']);
-            },
-            error: function (e) {
-                wap.errorHandler(e);
-            }
-        });
-    });
-}
-// 规则列表
-function onRuleChange() {
-    $sasId.on('change', function () {
-        checkRule();
-    });
-}
-// 日期
-function onDateChange() {
-    $startDate.change(function () {
-        checkRule();
     });
 }
 // 显示饼图
