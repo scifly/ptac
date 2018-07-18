@@ -14,7 +14,7 @@
                         <div style="text-align: center;">打卡详情</div>
                         <span class="icons-choose choose-icon js-choose-icon">
                         <a class="icon iconfont icon-add c-green open-popup"
-                           href="javascript:;" data-target="#choose">
+                           href="javascript:" data-target="#choose">
                         </a>
                     </span>
                     </div>

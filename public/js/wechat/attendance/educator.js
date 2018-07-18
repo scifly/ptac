@@ -72,9 +72,7 @@ function attendances(data) {
 // 显示饼图
 function showPie(data, legend) {
     echarts.init(document.getElementById('main')).setOption({
-        title: {
-            text: '打卡详情'
-        },
+        title: { text: '' },
         legend: {
             show: true,
             bottom: 10,
