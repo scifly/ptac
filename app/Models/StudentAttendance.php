@@ -765,9 +765,8 @@ class StudentAttendance extends Model {
         );
         $schoolId = $user->educator ? $user->educator->school_id : session('schoolId');
         # 对当前用户可见的所有班级id
-        $classIds = $this->classIds($schoolId);
         abort_if(
-            empty(array_diff($classIds, [0])),
+            empty(array_diff($this->classIds($schoolId), [0])),
             HttpStatusCode::INTERNAL_SERVER_ERROR,
             __('messages.class.no_related_classes')
         );
