@@ -21,28 +21,30 @@
                 </div>
             </div>
         </div>
-        <div id="main" style="width: 100%; height: 300px;">(暂无图表)</div>
+        <div id="main" style="width: 100%; height: 300px;">
+            <span class="text-gray">(暂无图表，请点击右上角【+】按钮选择班级/规则/日期查看打卡详情)</span>
+        </div>
         <table class="kaoqin-tongji">
             <tr>
                 <td>
                     <a href="javascript:" class="open-popup" data-target="#studentlist" data-type="normal">
                         <div class="kaoqin-date-circle okstatus"></div>
                         <span class="pl10">正常:</span>
-                        <span class="status-value">(n/a)</span>
+                        <span class="status-value">-</span>
                     </a>
                 </td>
                 <td>
                     <a href="javascript:" class="open-popup" data-target="#studentlist" data-type="abnormal">
                         <div class="kaoqin-date-circle notstatus"></div>
                         <span class="pl10">异常:</span>
-                        <span class="status-value">(n/a)</span>
+                        <span class="status-value">-</span>
                     </a>
                 </td>
                 <td>
                     <a href="javascript:" class="open-popup" data-target="#studentlist" data-type="norecords">
                         <div class="kaoqin-date-circle reststatus"></div>
                         <span class="pl10">未打卡:</span>
-                        <span class="status-value">(n/a)</span>
+                        <span class="status-value">-</span>
                     </a>
                 </td>
             </tr>
@@ -58,7 +60,7 @@
                 </div>
             </div>
             <div class="modal-content">
-                (暂无数据)
+                <span class="text-gray">(暂无数据)</span>
             </div>
         </div>
     </div>
