@@ -77,37 +77,35 @@
             <div class="weui-cells weui-cells_form">
                 <div class="weui-cell">
                     <div class="weui-cell__hd">
-                        <label for="squad" class="weui-label">选择班级</label>
+                        <label for="class_id" class="weui-label">考勤班级</label>
                     </div>
                     <div class="weui-cell__bd">
-                        {!! Form::text('squad', null, [
-                            'id' => 'squad',
-                            'class' => 'weui-input',
+                        {!! Form::select('class_id', $classes, null, [
+                            'id' => 'class_id',
+                            'class' => 'weui-select',
                             'style' => 'text-align: center;',
-                            'data-value' => ''
                         ]) !!}
                     </div>
                 </div>
                 <div class="weui-cell">
                     <div class="weui-cell__hd">
-                        <label for="rule" class="weui-label">选择规则</label>
+                        <label for="sas_id" class="weui-label">考勤规则</label>
                     </div>
                     <div class="weui-cell__bd">
-                        {!! Form::text('rule', null, [
-                            'id' => 'rule',
-                            'class' => 'weui-input',
+                        {!! Form::select('sas_id', $sases, null, [
+                            'id' => 'sas_id',
+                            'class' => 'weui-select',
                             'style' => 'text-align: center;',
-                            'data-value' => ''
                         ]) !!}
                     </div>
                 </div>
                 <div class="weui-cell">
                     <div class="weui-cell__hd">
-                        <label for="start-date" class="weui-label">开始日期</label>
+                        <label for="start_date" class="weui-label">开始日期</label>
                     </div>
                     <div class="weui-cell__bd">
-                        {!! Form::text('start-date', null, [
-                            'id' => 'start-date',
+                        {!! Form::text('start_date', null, [
+                            'id' => 'start_date',
                             'class' => 'weui-input',
                             'style' => 'text-align: center;',
                             'data-value' => ''
