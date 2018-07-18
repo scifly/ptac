@@ -30,7 +30,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        dd(strpos('小学一年级', '学'));
+        dd(mb_strpos('小学一年级', '学'));
 
     }
     
