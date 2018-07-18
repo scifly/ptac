@@ -75,11 +75,11 @@
         <div class="weui-popup__overlay"></div>
         <div class="weui-popup__modal">
             <div class="weui-cells weui-cells_form">
-                <div class="weui-cell">
+                <div class="weui-cell weui-cell_select weui-cell_select-after">
                     <div class="weui-cell__hd">
                         <label for="class_id" class="weui-label">考勤班级</label>
                     </div>
-                    <div class="weui-cell__bd weui-cell_select weui-cell_select-after">
+                    <div class="weui-cell__bd">
                         {!! Form::select('class_id', $classes, null, [
                             'id' => 'class_id',
                             'class' => 'weui-select',
