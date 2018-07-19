@@ -27,7 +27,9 @@
                     @endif
                     <a class="weui-navbar__item" href="#tab2" data-type="received">
                         收件箱
-                        <span class="received">{{ $count }}</span>
+                        @if ($count)
+                            <span class="received">{!! $count <= 99 ? $count : '99+' !!}</span>
+                        @endif
                     </a>
                 </div>
                 <div class="weui-tab__bd ">
