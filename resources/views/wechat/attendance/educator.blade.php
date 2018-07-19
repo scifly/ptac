@@ -74,7 +74,7 @@
             <div class="weui-cells weui-cells_form">
                 <div class="weui-cell weui-cell_select weui-cell_select-after">
                     <div class="weui-cell__hd">
-                        <label for="class_id" class="weui-label">考勤班级</label>
+                        <label for="class_id" class="weui-label">班级</label>
                     </div>
                     <div class="weui-cell__bd">
                         {!! Form::select('class_id', $classes, null, [
@@ -85,7 +85,7 @@
                 </div>
                 <div class="weui-cell weui-cell_select weui-cell_select-after">
                     <div class="weui-cell__hd">
-                        <label for="sas_id" class="weui-label">考勤规则</label>
+                        <label for="sas_id" class="weui-label">规则</label>
                     </div>
                     <div class="weui-cell__bd">
                         {!! Form::select('sas_id', $sases, null, [
@@ -96,7 +96,7 @@
                 </div>
                 <div class="weui-cell">
                     <div class="weui-cell__hd">
-                        <label for="start_date" class="weui-label">开始日期</label>
+                        <label for="start_date" class="weui-label">日期</label>
                     </div>
                     <div class="weui-cell__bd">
                         {!! Form::text('start_date', date('Y-m-d'), [
