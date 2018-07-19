@@ -4,7 +4,6 @@ var $classId = $('#class_id'),
     today = wap.today();
 
 $startDate.calendar({value: [today]});
-$startDate.calendar("setValue", ["'" + today + "'"]);
 $classId.on('change', function () {
     $.ajax({
         type: 'POST',
@@ -24,7 +23,7 @@ $classId.on('change', function () {
     });
 });
 $sasId.on('change', function () { checkRule(); });
-$startDate.change(function () { checkRule(); });
+$startDate.on('change', function () { checkRule(); });
 // 获取考勤数据
 $('#choose .close-popup').on('click', function () {
     var classId = $classId.val(),
