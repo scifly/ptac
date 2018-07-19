@@ -195,7 +195,7 @@ $(document).on('click', '.targets', function () {
             $('#back').show();
             $('#deptId').val(id);
             for (var i = 0; i < result['targets'].length; i++) {
-                html += targetHtml(result['targets'][i], type);
+                html += targetHtml(result['targets'][i], 'user');
             }
             $targetsContainer.html(html);
         },
