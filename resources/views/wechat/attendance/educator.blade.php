@@ -99,7 +99,7 @@
                         <label for="start_date" class="weui-label">开始日期</label>
                     </div>
                     <div class="weui-cell__bd">
-                        {!! Form::text('start_date', null, [
+                        {!! Form::text('start_date', date('Y-m-d'), [
                             'id' => 'start_date',
                             'class' => 'weui-input',
                         ]) !!}
