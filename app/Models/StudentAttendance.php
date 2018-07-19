@@ -666,6 +666,7 @@ class StudentAttendance extends Model {
             $studentId = Request::input('id');
             $type = Request::input('type');
             $date = Request::input('date');
+            Log::debug('wtf');
             Request::validate([
                 'id'   => 'required|integer',
                 'type' => ['required', 'string', Rule::in(['month', 'day']),],
