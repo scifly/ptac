@@ -18,6 +18,7 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
@@ -670,6 +671,8 @@ class StudentAttendance extends Model {
                 'type' => ['required', 'string', Rule::in(['month', 'day']),],
                 'date' => 'required|date',
             ]);
+            Log::debug('studentId: ' . $studentId);
+            Log::debug('studentIds: ' . json_encode($this->contactIds('student', $user)));
             abort_if(
                 !in_array($studentId, $this->contactIds('student', $user)),
                 HttpStatusCode::NOT_ACCEPTABLE,
