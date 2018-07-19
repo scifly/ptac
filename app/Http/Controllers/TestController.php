@@ -31,7 +31,7 @@ class TestController extends Controller {
      */
     public function index() {
 
-        dd(date('w', strtotime('2018-07-15')));
+        dd(date('y-m-d');
 
     }
     
