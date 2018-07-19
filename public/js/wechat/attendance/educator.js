@@ -86,7 +86,13 @@ function attendances(data) {
 // 显示饼图
 function showPie(data, legend, title) {
     echarts.init(document.getElementById('main')).setOption({
-        title: { text: title || '' },
+        title: {
+            text: title || '',
+            textStyle: {
+                fontSize: 12,
+                color: 'lightgray'
+            }
+        },
         legend: {
             show: true,
             bottom: 10,
