@@ -4,7 +4,7 @@ var $classId = $('#class_id'),
     today = wap.today();
 
 $startDate.calendar({value: [today]});
-$startDate.calendar('setValue', [today]);
+$startDate.calendar("setValue", [today]);
 $classId.on('change', function () {
     $.ajax({
         type: 'POST',
