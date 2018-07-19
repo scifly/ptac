@@ -2,18 +2,13 @@ var $targetId = $('#target_id'),
     $loadMore = $('.loadmore'),
     $search = $('#search'),
     $examList = $('.weui-cells'),
-    $examLink = $('.exam-link'),
+    // $examLink = $('.exam-link'),
     start = 0;
-$.alert('hi there');
 FastClick.attach(document.body);
 $targetId.on('change', function () { examList(false); });
 $search.on('input', function () { examList(false) });
 $loadMore.click(function () { start++; examList(true); });
 $(document).on('click', '.exam-link', function () {
-    $.alert('wtf');
-    return false;
-    alert($(this).data('type'));
-    $.alert($(this).attr('data-type'));
     window.location = 'sc/detail?examId=' + $(this).data('value') +
         '&targetId=' + $targetId.val() +
         ($(this).data('type') === 'student' ? '&student=1' : '');
