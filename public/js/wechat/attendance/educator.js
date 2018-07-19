@@ -3,6 +3,7 @@ var $classId = $('#class_id'),
     $startDate = $('#start_date');
 
 $startDate.calendar({value: [wap.today()]});
+$startDate.calendar('setValue', [wap.today()]);
 $classId.on('change', function () {
     $.ajax({
         type: 'POST',
