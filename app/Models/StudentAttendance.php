@@ -605,7 +605,7 @@ class StudentAttendance extends Model {
             $data = $this->wStat($student->id);
             $student->abnormal = count($data['aDays']);
             $student->normal = count($data['nDays']);
-            $student->schoolname = $student->class->grade->school->name;
+            $student->schoolname = $student->squad->grade->school->name;
             $student->studentname = $student->user->realname;
             $student->class_id = $student->squad->name;;
         }
