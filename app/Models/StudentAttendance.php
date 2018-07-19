@@ -722,9 +722,11 @@ class StudentAttendance extends Model {
         $attendances = $this->whereStudentId($studentId)
             ->whereDate('punch_time', $date)
             ->orderBy('punch_time', 'ASC')
-            ->get()->groupBy('inorout');
+            ->get()->groupBy('inorout')->toArray();
         
-        return [$attendances[1], head($attendances)];
+        return !empty($attendances)
+            ? [$attendances[1], head($attendances)]
+            : [[], []];
         
     }
     
