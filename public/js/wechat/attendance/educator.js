@@ -88,11 +88,11 @@ function showPie(data, legend, title) {
     echarts.init(document.getElementById('main')).setOption({
         title: {
             text: title || '',
+            x: 'center',
+            marginBottom: '5px',
             textStyle: {
-                x: 'center',
                 fontSize: 12,
                 color: 'lightgray',
-                marginBottom: '5px'
             }
         },
         legend: {
