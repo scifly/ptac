@@ -14,7 +14,7 @@
         </div>
         <div class="kaoqin-history-calender">
             <div id="inline-calendar"></div>
-            {{ Form::hidden('id', $id, ['id' => $id]) }}
+            {{ Form::hidden('id', $id, ['id' => 'id']) }}
             <table class="kaoqin-tongji js-kaoqin-tongji">
                 <tbody>
                 <tr>

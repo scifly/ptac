@@ -671,12 +671,8 @@ class StudentAttendance extends Model {
                 'type' => ['required', 'string', Rule::in(['month', 'day']),],
                 'date' => 'required|date',
             ]);
-            
-            // $errors = Request::validate();
-            Log::debug($studentId);
-            Log::debug(json_encode($result->errors()));
             abort_if(
-                !in_array($studentId, $this->contactIds('student', $user)),
+                $result->failed() || !in_array($studentId, $this->contactIds('student', $user)),
                 HttpStatusCode::NOT_ACCEPTABLE,
                 __('messages.invalid_argument')
             );
