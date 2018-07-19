@@ -69,8 +69,9 @@ class MessageCenterIndexComposer {
                         $title = $messageTypeName . '(未知)';
                     }
                     Message::find($message['id'])->update(['title' => $title]);
-                    $message['title'] = $message['read'] ? $title : '<b>' . $title . '</b>';
+                    $message['title'] = $title;
                 }
+                $message['title'] = $message['read'] ? $message['title'] : '<b>' . $message['title'] . '</b>';
                 if ($direction == 'sent') {
                     $recipient = User::find($message['r_user_id']);
                     $message['recipient'] = $recipient ? $recipient->realname : '(未知)';
