@@ -65,9 +65,9 @@ function attendances(data) {
         data: data,
         url: 'at/chart',
         success: function (result) {
-            var chartTitle = $classId.find(':selected').text() + '/' +
+            var chartTitle = '[' + $classId.find(':selected').text() + '/' +
                 $sasId.find(':selected').text() + '/' +
-                $startDate.val();
+                $startDate.val() + ']';
             showPie(
                 result['chart'],
                 ['打卡', '异常', '未打卡'],
@@ -90,7 +90,9 @@ function showPie(data, legend, title) {
             text: title || '',
             textStyle: {
                 fontSize: 12,
-                color: 'lightgray'
+                color: 'lightgray',
+                textAlign: 'center',
+                marginBottom: '5px'
             }
         },
         legend: {
