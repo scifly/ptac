@@ -93,6 +93,7 @@ function showPie(data, legend, title) {
             textStyle: {
                 fontSize: 12,
                 color: 'lightgray',
+                fontWeight: 'normal'
             }
         },
         legend: {
