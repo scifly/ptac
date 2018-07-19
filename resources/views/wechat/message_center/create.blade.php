@@ -14,7 +14,7 @@
             </span>
         </div>
         <!-- 信息类型 -->
-        <div class="weui-cell" style="background-color: #fff;">
+        <div class="weui-cell weui-cell_select weui-cell_select-after" style="background-color: #fff;">
             <div class="weui-cell__hd">
                 {!! Form::label('msg-type', '信息类型', ['class' => 'weui-label']) !!}
             </div>
@@ -27,7 +27,7 @@
             </div>
         </div>
         <!-- 消息类型 -->
-        <div class="weui-cell" style="background-color: #fff;">
+        <div class="weui-cell weui-cell_select weui-cell_select-after" style="background-color: #fff;">
             <div class="weui-cell__hd">
                 {!! Form::label('message_type_id', '消息类型', ['class' => 'weui-label']) !!}
             </div>
