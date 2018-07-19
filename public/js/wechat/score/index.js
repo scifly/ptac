@@ -11,6 +11,7 @@ $search.on('input', function () { examList(false) });
 $loadMore.click(function () { start++; examList(true); });
 $examLink.on('click', function () {
     $.alert($(this).data('type'));
+    $.alert($(this).attr('data-type'));
     window.location = 'sc/detail?examId=' + $(this).data('value') +
         '&targetId=' + $targetId.val() +
         ($(this).data('type') === 'student' ? '&student=1' : '');

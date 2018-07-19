@@ -45,7 +45,7 @@
             @if (!empty($exams))
                 @foreach ($exams as $exam)
                     <a class="weui-cell weui-cell_access exam-link"
-                       href='#' data-type="{!! $type !!}"
+                       href="#" data-type="{!! $type !!}"
                        data-value="{!! $exam['id'] !!}"
                     >
                         <div class="weui-cell__bd"><p>{{ $exam['name'] }}</p></div>
