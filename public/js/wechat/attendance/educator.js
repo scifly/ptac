@@ -65,8 +65,8 @@ function attendances(data) {
         data: data,
         url: 'at/chart',
         success: function (result) {
-            var chartTitle = '[' + $classId.find(':selected').text() + '/' +
-                $sasId.find(':selected').text() + '/' +
+            var chartTitle = '[' + $classId.find(':selected').text() + '<br />' +
+                $sasId.find(':selected').text() + '<br />' +
                 $startDate.val() + ']';
             showPie(
                 result['chart'],
@@ -92,7 +92,7 @@ function showPie(data, legend, title) {
             marginBottom: '5px',
             textStyle: {
                 fontSize: 12,
-                color: 'lightgray',
+                color: 'gray',
                 fontWeight: 'normal'
             }
         },
