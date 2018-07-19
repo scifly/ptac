@@ -5,7 +5,7 @@ var wap = {
             message = result['message'];
         $('#notification').hide();
 
-        $.toptip(message, statusCode === 200 ? 'success' : 'error');
+        $.toptip(message, statusCode <= 300 ? 'warning' : 'error');
     },
     token: function () {
         return $('#csrf_token').attr('content');

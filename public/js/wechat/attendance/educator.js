@@ -34,7 +34,7 @@ $('#choose .close-popup').on('click', function () {
         startDate = $startDate.val();
 
     if (!classId || !sasId || !startDate) {
-        $.alert('请选择班级/规则/日期！');
+        $.toptip('请选择班级/规则/日期！', 'error');
         return false;
     }
     attendances({
@@ -114,7 +114,7 @@ function checkRule() {
         },
         url: 'at/chart',
         success: function (result) {
-            $.alert(result['message']);
+            $.toptip(result['message'], 'success');
         },
         error: function (e) {
             wap.errorHandler(e);
