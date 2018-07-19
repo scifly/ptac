@@ -9,7 +9,7 @@ FastClick.attach(document.body);
 $targetId.on('change', function () { examList(false); });
 $search.on('input', function () { examList(false) });
 $loadMore.click(function () { start++; examList(true); });
-$examLink.on('click', function () {
+$(document).on('click', '.exam-link', function () {
     $.alert('wtf');
     return false;
     alert($(this).data('type'));
