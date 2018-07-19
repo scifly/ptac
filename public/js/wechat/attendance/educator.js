@@ -45,6 +45,8 @@ $('#choose .close-popup').on('click', function () {
             sasId: sasId,
             startDate: startDate
         });
+    } else {
+        $.toptip('指定日期与规则对应的星期不匹配', 'warning');
     }
     return true;
 });
