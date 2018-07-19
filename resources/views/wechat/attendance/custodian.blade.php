@@ -11,9 +11,9 @@
             @foreach ($students as $student)
                 <div class="list-item">
                     <div class="list-item-info">
-                        <div class="username">姓名 : <span>{{ $student->studentname }}</span></div>
-                        <div class="school">学校 : <span>{{ $student->schoolname }}</span></div>
-                        <div class="grade">班级 : <span>{{ $student->class_id }}</span></div>
+                        <div class="username">姓名 : <span>{!! $student->studentname !!}</span></div>
+                        <div class="school">学校 : <span>{!! $student->schoolname !!}</span></div>
+                        <div class="grade">班级 : <span>{!! $student->classname !!}</span></div>
                     </div>
                     <div class="line"></div>
                     <table class="kaoqin-tongji">
@@ -36,7 +36,7 @@
                         </tr>
                     </table>
                     <div class="list-item-icon">
-                        <a href="{{ url('attendance/' . $student->id) }}">
+                        <a href="{{ url('detail/' . $student->id) }}">
                             <i class="icon iconfont icon-jiantouyou"></i>
                         </a>
                     </div>

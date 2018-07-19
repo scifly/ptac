@@ -607,7 +607,7 @@ class StudentAttendance extends Model {
             $student->normal = count($data['nDays']);
             $student->schoolname = $student->squad->grade->school->name;
             $student->studentname = $student->user->realname;
-            $student->class_id = $student->squad->name;;
+            $student->classname = $student->squad->name;;
         }
         
         return view(self::VIEW_NS . 'custodian', [
