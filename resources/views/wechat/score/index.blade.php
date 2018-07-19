@@ -10,7 +10,7 @@
         <div class="header">
             <div class="switchclass-item clearfix">
                 <div class="switchclass-head">
-                    <div class="weui-cell">
+                    <div class="weui-cell weui-cell_select weui-cell_select-after">
                         <div class="weui-cell__bd title-name">
                             {!! Form::select('target_id', $targets, null, [
                                 'id' => 'target_id',
@@ -44,7 +44,10 @@
         <div class="weui-cells" style="margin-top: 0;">
             @if (!empty($exams))
                 @foreach ($exams as $exam)
-                    <a class="weui-cell weui-cell_access exam-link" href='#' data-value="{!! $exam['id'] !!}">
+                    <a class="weui-cell weui-cell_access exam-link"
+                       href='#' data-type="{!! $type !!}"
+                       data-value="{!! $exam['id'] !!}"
+                    >
                         <div class="weui-cell__bd"><p>{{ $exam['name'] }}</p></div>
                         <div class="weui-cell__ft time">{{ $exam['start_date'] }}</div>
                     </a>

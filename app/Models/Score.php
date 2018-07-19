@@ -1198,16 +1198,19 @@ class Score extends Model {
             $targets = $user->custodian->myStudents();
             reset($targets);
             $exams = array_slice((new Student)->exams(key($targets)), $start, $pageSize);
+            $type = 'student';
         } else {
             $targets = Squad::whereIn('id', $this->classIds($schoolId))
                 ->where('enabled', 1)->pluck('name', 'id')->toArray();
             reset($targets);
             $exams = array_slice($exam->examsByClassId(key($targets)), $start, $pageSize);
+            $type = 'class';
         }
         
         return view('wechat.score.index', [
             'targets' => $targets,
             'exams'   => $exams,
+            'type' => $type
         ]);
         
     }

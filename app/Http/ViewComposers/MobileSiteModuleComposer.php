@@ -18,9 +18,8 @@ class MobileSiteModuleComposer {
      */
     public function compose(View $view) {
         
-        $school = School::find(session('schoolId'));
         $view->with([
-            'acronym' => $school->corp->acronym,
+            'acronym' => session('acronym')
         ]);
         
     }

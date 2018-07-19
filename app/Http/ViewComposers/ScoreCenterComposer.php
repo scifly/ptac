@@ -19,7 +19,7 @@ class ScoreCenterComposer {
     public function compose(View $view) {
         
         $view->with([
-            'acronym' => School::find(session('schoolId'))->corp->acronym,
+            'acronym' => session('acronym')
         ]);
         
     }

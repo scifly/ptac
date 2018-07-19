@@ -3,7 +3,7 @@
     <title>考勤中心</title>
 @endsection
 @section('css')
-    <link rel="stylesheet" href="{{ asset('/css/wechat/attendance/custodian.css') }}">
+    <link rel="stylesheet" href="{!! asset('/css/wechat/attendance/custodian.css') !!}">
 @endsection
 @section('content')
     <div class="main">
@@ -21,22 +21,22 @@
                             <td>
                                 <div class="kaoqin-date-circle okstatus"></div>
                                 <span class="pl10">正常:</span>
-                                <span>{{ $student->normal }}天</span>
+                                <span>{!! $student->normal ? $student->normal : '-' !!} 天</span>
                             </td>
                             <td>
                                 <div class="kaoqin-date-circle notstatus"></div>
                                 <span class="pl10">异常:</span>
-                                <span>{{ $student->abnormal }}天</span>
+                                <span>{!! $student->abnormal ? $student->abnormal : '-' !!} 天</span>
                             </td>
                             <td>
                                 <div class="kaoqin-date-circle reststatus"></div>
                                 <span class="pl10">请假:</span>
-                                <span>0天</span>
+                                <span>- 天</span>
                             </td>
                         </tr>
                     </table>
                     <div class="list-item-icon">
-                        <a href="{{ url(session('acronym') . '/at/detail/' . $student->id) }}">
+                        <a href="{!! url(session('acronym') . '/at/detail/' . $student->id) !!}">
                             <i class="icon iconfont icon-jiantouyou"></i>
                         </a>
                     </div>
