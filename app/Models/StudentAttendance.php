@@ -666,14 +666,14 @@ class StudentAttendance extends Model {
             $studentId = Request::input('id');
             $type = Request::input('type');
             $date = Request::input('date');
-            Log::debug('wtf');
-            Request::validate([
+            $result = Validator::make(Request::all(), [
                 'id'   => 'required|integer',
                 'type' => ['required', 'string', Rule::in(['month', 'day']),],
                 'date' => 'required|date',
             ]);
-            Log::debug('studentId: ' . $studentId);
-            Log::debug('studentIds: ' . json_encode($this->contactIds('student', $user)));
+            
+            // $errors = Request::validate();
+            Log::debug(json_encode($result->errors()));
             abort_if(
                 !in_array($studentId, $this->contactIds('student', $user)),
                 HttpStatusCode::NOT_ACCEPTABLE,
