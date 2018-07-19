@@ -603,8 +603,8 @@ class StudentAttendance extends Model {
         $students = $user->custodian->students;
         foreach ($students as $student) {
             $data = $this->wStat($student->id);
-            $student->abnormal = count($data['adays']);
-            $student->normal = count($data['ndays']);
+            $student->abnormal = count($data['aDays']);
+            $student->normal = count($data['nDays']);
             $student->schoolname = $student->class->grade->school->name;
             $student->studentname = $student->user->realname;
             $student->class_id = $student->squad->name;;
@@ -706,7 +706,7 @@ class StudentAttendance extends Model {
             
             return response()->json($response);
         }
-        $today = date('Y-m-d', time());
+        $today = date('Y-m-d');
         list($ins, $outs) = $this->attendances($studentId, $today);
         $data = $this->wStat($studentId);
         if (Request::ajax() && Request::method() == 'GET') {
