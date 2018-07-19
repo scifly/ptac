@@ -896,7 +896,7 @@ class Message extends Model {
         
         $user = Auth::user();
         $department = Department::find($departmentId);
-        if ($department->department_type->name == '学校') {
+        if ($department->departmentType->name == '学校') {
             $response = view('wechat.message_center.select', [
                 'gradeDepts' => (new Grade)->departments($user->id),
                 'classDepts' => (new Squad)->departments($user->id),

@@ -186,6 +186,7 @@ $(document).on('click', '.targets', function () {
         dataType: 'json',
         url: 'create',
         data: {
+            target: 'user',
             departmentId: id,
             _token: wap.token()
         },
