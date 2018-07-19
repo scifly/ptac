@@ -1,11 +1,11 @@
 var wap = {
     errorHandler: function (e) {
-        var result = JSON.parse(e.responseText);
+        var result = JSON.parse(e.responseText),
+            statusCode = result['statusCode'],
+            message = result['message'];
         $('#notification').hide();
-        $.alert({
-            title: result['statusCode'],
-            text: result['message']
-        });
+
+        $.tooltip(message, statusCode === 200 ? 'success' : 'error');
     },
     token: function () {
         return $('#csrf_token').attr('content');
