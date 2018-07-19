@@ -225,6 +225,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('student_attendance.index', $ns . 'StudentAttendanceIndexComposer');
         View::composer('student_attendance.stat', $ns . 'StudentAttendanceStatComposer');
         View::composer('wechat.attendance.educator', $ns . 'AttendanceEducatorComposer');
+        View::composer('wechat.attendance.custodian', $ns . 'AttendanceCustodianComposer');
     
         # 学生考勤设置 - StudentAttendanceSetting
         View::composer('student_attendance_setting.create_edit', $ns . 'StudentAttendanceSettingComposer');

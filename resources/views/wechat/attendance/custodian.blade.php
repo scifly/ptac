@@ -36,7 +36,7 @@
                         </tr>
                     </table>
                     <div class="list-item-icon">
-                        <a href="{{ url('detail/' . $student->id) }}">
+                        <a href="{{ url(session('acronym') . '/at/detail/' . $student->id) }}">
                             <i class="icon iconfont icon-jiantouyou"></i>
                         </a>
                     </div>

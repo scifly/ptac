@@ -596,23 +596,10 @@ class StudentAttendance extends Model {
             HttpStatusCode::UNAUTHORIZED,
             __('messages.unauthorized')
         );
-        # 如果不是监护人，则返回教职员工页面
-        if (!$user->custodian) {
-            return view(self::VIEW_NS . 'educator');
-        }
-        $students = $user->custodian->students;
-        foreach ($students as $student) {
-            $data = $this->wStat($student->id);
-            $student->abnormal = count($data['aDays']);
-            $student->normal = count($data['nDays']);
-            $student->schoolname = $student->squad->grade->school->name;
-            $student->studentname = $student->user->realname;
-            $student->classname = $student->squad->name;;
-        }
         
-        return view(self::VIEW_NS . 'custodian', [
-            'students' => $students,
-        ]);
+        return view(
+            self::VIEW_NS . ($user->custodian ? 'custodian' : 'educator')
+        );
         
     }
     
@@ -624,7 +611,7 @@ class StudentAttendance extends Model {
      * @param $end
      * @return array
      */
-    private function wStat($studentId, $start = null, $end = null) {
+    function wStat($studentId, $start = null, $end = null) {
         
         # 当月第一天
         $start = $start ?? date('Y-m-01 00:00:00', strtotime(date('Y-m-d')));
@@ -878,7 +865,7 @@ class StudentAttendance extends Model {
                 ['name' => '异常', 'value' => $abnormals],
                 ['name' => '未打卡', 'value' => $missed],
             ],
-            'view' => $this->attendLists($studentIds, $attendances)
+            'view' => $this->lists($studentIds, $attendances)
         ];
         
     }
@@ -891,7 +878,7 @@ class StudentAttendance extends Model {
      * @return mixed
      * @throws Throwable
      */
-    private function attendLists($studentIds, $attendances) {
+    private function lists($studentIds, $attendances) {
     
         // 未打卡的学生
         $ids = $attendances->pluck('student_id')->toArray();
