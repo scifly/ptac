@@ -407,6 +407,8 @@ class User extends Authenticatable {
                     'isleader'     => 0,
                     'subscribed'   => 0,
                 ]);
+                Log::debug($this->schoolId());
+                Log::debug(json_encode($data));
                 # 创建教职员工
                 Educator::create([
                     'user_id'   => $user->id,
