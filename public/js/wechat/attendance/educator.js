@@ -100,7 +100,8 @@ function showPie(data, legend, title) {
             show: true,
             bottom: 10,
             left: 'center',
-            data: legend
+            data: legend,
+            y: 'center'
         },
         color: ['#83db74', '#fdde52', '#fc7f4e'],
         series: [
