@@ -89,7 +89,7 @@ function showPie(data, legend, title) {
         title: {
             text: title || '',
             x: 'center',
-            marginBottom: 40,
+            padding: 10,
             textStyle: {
                 fontSize: 12,
                 color: 'gray',
@@ -101,7 +101,6 @@ function showPie(data, legend, title) {
             bottom: 10,
             left: 'center',
             data: legend,
-            y: 'center'
         },
         color: ['#83db74', '#fdde52', '#fc7f4e'],
         series: [
