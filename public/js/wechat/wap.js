@@ -21,6 +21,6 @@ var wap = {
             mm = '0' + mm
         }
 
-        return yyyy + '/' + mm + '/' + dd ;
+        return yyyy + '-' + mm + '-' + dd ;
     }
 };
