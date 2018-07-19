@@ -132,7 +132,9 @@
                                                         <div class="titleinfo">
                                                             <div class="titleinfo-head">
                                                                 <div class="titleinfo-head-left fl">
-                                                                    <div class="title ml12">{{ $message['title'] }}</div>
+                                                                    <div class="title ml12">
+                                                                        {!! $message['title'] !!}
+                                                                    </div>
                                                                     <div class="title-info ml12">
                                                                         发送者：{{ $message['sender'] }}
                                                                     </div>
