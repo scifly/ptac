@@ -3,11 +3,11 @@ var $classId = $('#class_id'),
     $startDate = $('#start_date'),
     today = wap.today();
 
-$('#start_date').calendar('setValue', '2018-08-28');
+
 $startDate.calendar({
     value: [today],
     dateFormat: 'yyyy-mm-dd'
-});
+}).calendar('setValue', ['2018-08-28']);
 $classId.on('change', function () {
     $.ajax({
         type: 'POST',
