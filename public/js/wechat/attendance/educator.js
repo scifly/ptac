@@ -1,6 +1,7 @@
 var $classId = $('#class_id'),
     $sasId = $('#sas_id'),
     $startDate = $('#start_date'),
+    $passed = $('#passed'),
     today = wap.today();
 
 $startDate.calendar({
@@ -37,12 +38,15 @@ $('#choose .close-popup').on('click', function () {
         $.toptip('请选择班级/规则/日期！', 'error');
         return false;
     }
-    attendances({
-        _token: wap.token(),
-        classId: classId,
-        sasId: sasId,
-        startDate: startDate
-    });
+    if ($passed.val() === 1) {
+        attendances({
+            _token: wap.token(),
+            classId: classId,
+            sasId: sasId,
+            startDate: startDate
+        });
+    }
+    return true;
 });
 $('.kaoqin-tongji .open-popup').click(function () {
     var type = $(this).data('type');
@@ -61,7 +65,14 @@ function attendances(data) {
         data: data,
         url: 'at/chart',
         success: function (result) {
-            showPie(result['chart'], ['打卡', '异常', '未打卡']);
+            var chartTitle = $classId.find(':selected').text() + '/' +
+                $sasId.find(':selected').text() + '/' +
+                $startDate.val();
+            showPie(
+                result['chart'],
+                ['打卡', '异常', '未打卡'],
+                chartTitle
+            );
             $('.status-value').each(function (i) {
                 $(this).html(result['chart'][i]['value']);
             });
@@ -69,14 +80,13 @@ function attendances(data) {
         },
         error: function (e) {
             wap.errorHandler(e);
-
         }
     });
 }
 // 显示饼图
-function showPie(data, legend) {
+function showPie(data, legend, title) {
     echarts.init(document.getElementById('main')).setOption({
-        title: { text: '' },
+        title: { text: title || '' },
         legend: {
             show: true,
             bottom: 10,
@@ -115,9 +125,11 @@ function checkRule() {
         url: 'at/chart',
         success: function (result) {
             $.toptip(result['message'], 'success');
+            $passed.val(1);
         },
         error: function (e) {
             wap.errorHandler(e);
+            $passed.val(0);
         }
     });
 }

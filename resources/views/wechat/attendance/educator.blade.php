@@ -72,6 +72,7 @@
         <div class="weui-popup__overlay"></div>
         <div class="weui-popup__modal">
             <div class="weui-cells weui-cells_form">
+                {!! Form::hidden('passed', 0, ['id' => 'passed']) !!}
                 <div class="weui-cell weui-cell_select weui-cell_select-after">
                     <div class="weui-cell__hd">
                         <label for="class_id" class="weui-label">班级</label>
