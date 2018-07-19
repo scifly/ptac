@@ -840,7 +840,7 @@ class Message extends Model {
         if (Request::has('departmentId')) {
             $users = Department::find(Request::input('departmentId'))->users;
             foreach ($users as $user) {
-                if ($user->custodian) {
+                if ($user->student) {
                     $targets[] = [
                         'id'   => $user->id,
                         'name' => $user->realname,
