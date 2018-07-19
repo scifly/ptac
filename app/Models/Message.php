@@ -847,6 +847,7 @@ class Message extends Model {
                     ];
                 }
             }
+            Log::debug(json_encode($users));
         } else {
             $keyword = Request::input('keyword');
             $target = Request::input('target');
