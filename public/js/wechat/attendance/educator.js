@@ -38,7 +38,7 @@ $('#choose .close-popup').on('click', function () {
         $.toptip('请选择班级/规则/日期！', 'error');
         return false;
     }
-    if ($passed.val() === 1) {
+    if ($passed.val() === '1') {
         attendances({
             _token: wap.token(),
             classId: classId,
