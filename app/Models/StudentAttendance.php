@@ -673,6 +673,7 @@ class StudentAttendance extends Model {
             ]);
             
             // $errors = Request::validate();
+            Log::debug($studentId);
             Log::debug(json_encode($result->errors()));
             abort_if(
                 !in_array($studentId, $this->contactIds('student', $user)),
