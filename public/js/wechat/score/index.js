@@ -4,7 +4,7 @@ var $targetId = $('#target_id'),
     $examList = $('.weui-cells'),
     $examLink = $('.exam-link'),
     start = 0;
-
+$.alert('hi there');
 FastClick.attach(document.body);
 $targetId.on('change', function () { examList(false); });
 $search.on('input', function () { examList(false) });
