@@ -7,6 +7,7 @@ $startDate.calendar({
     value: [today],
     dateFormat: 'yyyy-mm-dd'
 });
+$startDate.calendar('setValue', ['2018-08-28']);
 $classId.on('change', function () {
     $.ajax({
         type: 'POST',
