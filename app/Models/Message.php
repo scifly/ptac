@@ -841,7 +841,7 @@ class Message extends Model {
             $users = Department::find(Request::input('departmentId'))->users;
             foreach ($users as $user) {
                 if ($user->custodian) {
-                    $targets = [
+                    $targets[] = [
                         'id'   => $user->id,
                         'name' => $user->realname,
                     ];
@@ -870,7 +870,7 @@ class Message extends Model {
                     $targets = [];
                     foreach ($users as $user) {
                         if ($user->custodian) {
-                            $targets = [
+                            $targets[] = [
                                 'id'   => $user->id,
                                 'name' => $user->realname,
                             ];
