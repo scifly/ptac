@@ -10,6 +10,8 @@ $targetId.on('change', function () { examList(false); });
 $search.on('input', function () { examList(false) });
 $loadMore.click(function () { start++; examList(true); });
 $examLink.on('click', function () {
+    $.alert('wtf');
+    return false;
     alert($(this).data('type'));
     $.alert($(this).attr('data-type'));
     window.location = 'sc/detail?examId=' + $(this).data('value') +
