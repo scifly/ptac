@@ -1,9 +1,10 @@
 var $classId = $('#class_id'),
     $sasId = $('#sas_id'),
-    $startDate = $('#start_date');
+    $startDate = $('#start_date'),
+    today = wap.today();
 
-$startDate.calendar({value: [wap.today()]});
-$startDate.calendar('setValue', [wap.today()]);
+$startDate.calendar({value: [today]});
+$startDate.calendar('setValue', [today]);
 $classId.on('change', function () {
     $.ajax({
         type: 'POST',
