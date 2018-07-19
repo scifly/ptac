@@ -671,7 +671,7 @@ class StudentAttendance extends Model {
                 'date' => 'required|date',
             ]);
             abort_if(
-                !in_array($studentId, $this->contactIds('student', $user, $user->educator->school_id)),
+                !in_array($studentId, $this->contactIds('student', $user)),
                 HttpStatusCode::NOT_ACCEPTABLE,
                 __('messages.invalid_argument')
             );
@@ -706,6 +706,7 @@ class StudentAttendance extends Model {
             'date' => $today,
             'ins'  => $ins,
             'outs' => $outs,
+            'schoolname' => School::find(session('schoolId'))->name
         ]);
         
     }

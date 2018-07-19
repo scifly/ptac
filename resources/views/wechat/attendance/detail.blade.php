@@ -9,7 +9,7 @@
     <div class="multi-role">
         <div class="switchschool-item clearfix">
             <div class="switchschool-head">
-                <div class="title-name"> 校园大学</div>
+                <div class="title-name"> {!! $schoolname !!}</div>
             </div>
         </div>
         <div class="kaoqin-history-calender">
