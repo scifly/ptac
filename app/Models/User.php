@@ -410,7 +410,7 @@ class User extends Authenticatable {
                 # 创建教职员工
                 Educator::create([
                     'user_id'   => $user->id,
-                    'school_id' => $this->schoolId(),
+                    'school_id' => $this->schoolId() ?? $data['school_id'],
                     'sms_quote' => 0,
                     'enabled'   => 1,
                 ]);
