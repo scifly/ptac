@@ -31,8 +31,7 @@ class TestController extends Controller {
      */
     public function index() {
 
-        dd(date('y-m-d'));
-
+        dd(Request::has('abc'));
     }
     
     public function apiCall() {
