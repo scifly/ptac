@@ -2,9 +2,7 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
-use App\Models\Squad;
 use App\Models\StudentAttendance;
-use App\Models\StudentAttendanceSetting;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 

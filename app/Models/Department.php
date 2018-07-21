@@ -787,8 +787,8 @@ class Department extends Model {
     /**
      * 获取联系人树
      *
-     * @param bool $contact - 联系人树是否包含部门中的联系人
-     * @return array|\Illuminate\Http\JsonResponse
+     * @param bool $contact - 部门树是否包含部门中的联系人
+     * @return array|JsonResponse
      */
     function contacts($contact = true) {
         
@@ -821,21 +821,23 @@ class Department extends Model {
                 }
             }
         }
-        # 获取可见部门下的所有联系人
         if ($contact) {
+            # 获取可见部门下的所有联系人（学生、教职员工）
             foreach ($visibleNodes as $node) {
                 if ($node['selectable']) {
-                    # 读取当前部门下的所有用户
-                    $users = $this->find($node['id'])->users;
-                    foreach ($users as $u) {
-                        $contacts[] = [
-                            'id'         => 'user-' . $node['id'] . '-' . $u->id,
-                            'parent'     => $node['id'],
-                            'text'       => $u->realname,
-                            'selectable' => 1,
-                            'type'       => 'user',
-                        ];
-                    }
+                    $this->find($node['id'])->users->each(
+                        function (User $user) use ($node) {
+                            if ($user->student || $user->educator) {
+                                $contacts[] = [
+                                    'id'         => 'user-' . $node['id'] . '-' . $user->id,
+                                    'parent'     => $node['id'],
+                                    'text'       => $user->realname,
+                                    'selectable' => 1,
+                                    'type'       => 'user',
+                                ];
+                            }
+                        }
+                    );
                 }
             }
         }

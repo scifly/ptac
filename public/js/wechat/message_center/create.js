@@ -110,6 +110,7 @@ $(document).on('change', '.target-check', function () {
 
     if ($(this).is(':checked')) {
         var imgSrc = $this.find('img').attr('src');
+
         html += chosenHtml(id, type, imgSrc);
         $chosenResults.prepend(html);
     } else {
@@ -355,7 +356,7 @@ $(document).on('click', '.weui-uploader__file', function () {
 // 添加图文消息
 $addMpnews.on('click', function () {
     if (mpnewsCount >= 8) {
-        $.alert('一条图文消息最多包含8个图文');
+        $.toptip('一条图文消息最多包含8个图文', 'warning');
         return false;
     }
     $mpnewsId.val('');
@@ -384,7 +385,7 @@ $delete.on('click', function () {
         i++;
     });
     mpnewsCount--;
-    $.alert('已将指定图文删除');
+    $.toptip('已将指定图文删除', 'success');
     $.closePopup();
 });
 // 保存/更新图文
@@ -406,13 +407,16 @@ $add.on('click', function () {
         };
 
     if (title === '' || description === '' || thumb_media_id === '') {
-        $.alert('标题/内容/封面图不得为空');
+        $.toptip('标题/内容/封面图不得为空', 'error');
         return false;
     }
     if (id === '') {
         mpnews['articles'].push(article);
         $mpnewsList.append(
-            '<li id="mpnews-' + mpnewsCount + '" class=weui-uploader__file style="background-image:url(' + image_url + ')"></li>'
+            '<li id="mpnews-' + mpnewsCount + '" ' +
+                'class=weui-uploader__file ' +
+                'style="background-image: url(' + image_url + ')">' +
+            '</li>'
         );
         mpnewsCount += 1;
     } else {
@@ -455,7 +459,7 @@ $send.on('click', function () {
             break;
         case 'voice':
             mediaId = $mediaId.val();
-            if (mediaId === '') { $.alert('请上传语音'); return false; }
+            if (mediaId === '') { $.toptip('请上传语音', 'error'); return false; }
             content = {
                 voice: {
                     media_id: mediaId,
@@ -467,7 +471,7 @@ $send.on('click', function () {
             title = $title.val();
             text = $content.html();
             mediaId = $mediaId.val();
-            if (mediaId === '') { $.alert('请上传视频'); return false; }
+            if (mediaId === '') { $.toptip('请上传视频', 'error'); return false; }
             content = {
                 video: {
                     media_id: mediaId,
@@ -479,7 +483,7 @@ $send.on('click', function () {
             break;
         case 'file':
             mediaId = $mediaId.val();
-            if (mediaId === '') { $.alert('请上传文件'); return false; }
+            if (mediaId === '') { $.toptip('请上传文件', 'error'); return false; }
             content = {
                 file: {
                     media_id: mediaId,
@@ -493,7 +497,7 @@ $send.on('click', function () {
             cardUrl = $cardUrl.val();
             btnTxt = $btnTxt.val();
             if (title === '' || text === '' || cardUrl === '') {
-                $.alert('标题/描述/链接地址不得为空');
+                $.toptip('标题/描述/链接地址不得为空', 'error');
                 return false;
             }
             content = {
@@ -507,7 +511,7 @@ $send.on('click', function () {
             break;
         case 'mpnews':
             if (mpnews['articles'].length === 0) {
-                $.alert('请添加图文');
+                $.toptip('请添加图文', 'error');
                 return false;
             }
             content = {
@@ -519,14 +523,14 @@ $send.on('click', function () {
         case 'sms':
             text = $content.html();
             if (text.length === 0) {
-                $.alert('请输入短信内容');
+                $.toptip('请输入短信内容', 'error');
             }
             break;
         default:
             break;
     }
     if (userIds.length === 0 && departmentIds.length === 0) {
-        $.alert('请选择发送对象');
+        $.toptip('请选择发送对象', 'error');
         return false;
     }
     formData = {
@@ -581,7 +585,7 @@ function upload(uploader, mpnews) {
             if (mpnews) {
                 $mpFilePath.val(path);
             }
-            $.alert(result['message']);
+            $.toptip(result['message'], 'success');
         },
         error: function (e) { wap.errorHandler(e); }
     });

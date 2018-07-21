@@ -9,10 +9,13 @@ use App\Models\App;
 use App\Models\Corp;
 use App\Models\Message;
 use App\Models\MessageSendingLog;
+use App\Models\Mobile;
+use App\Models\Student;
 use App\Models\User;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -26,7 +29,7 @@ class SendMessage implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait, JobTrait;
     
-    protected $data, $userId, $corp, $apps;
+    protected $data, $userId, $corp, $apps, $schoolId;
     
     /**
      * SendMessage constructor.
@@ -51,6 +54,8 @@ class SendMessage implements ShouldQueue {
     }
     
     /**
+     * 消息发送任务
+     *
      * @throws Exception
      * @throws Throwable
      */
@@ -63,109 +68,201 @@ class SendMessage implements ShouldQueue {
             'statusCode' => HttpStatusCode::OK,
             'message'    => '',
         ];
-        list($users, $mobiles) = $message->targets(
+        /** @var Collection|User[] $users - 需要记录消息发送日志的用户（学生、教职员工） */
+        /** @var array $targets - 监护人、教职员工列表 */
+        /** @var array $mobiles - 监护人、教职员工手机号码列表 */
+        list($users, $targets, $mobiles) = $message->targets(
             $this->data['user_ids'], $this->data['dept_ids']
         );
-    
         $this->data['s_user_id'] = $this->userId ?? 0;
+        # 学校id
+        $this->schoolId = $this->school_id($users->first());
         # 创建发送日志
         $msl = [
             'read_count'      => 0,
             'received_count'  => 0,
-            'recipient_count' => count($users),
+            'recipient_count' => count($mobiles),
         ];
         $this->data['msl_id'] = MessageSendingLog::create($msl)->id;
-        # 发送消息
-        if ($this->data['type'] == 'sms') {
-            # 发送短信消息
-            $result = $message->sendSms(
-                $mobiles, $this->data['sms']
+        # 需记录消息发送日志的userid列表
+        $touser = implode(
+            '|', User::whereIn('id', $this->data['user_ids'])->pluck('userid')->toArray()
+        );
+        $msgType = $this->data['type'];
+        /** @var array $content - 消息内容 */
+        $content = [
+            'toparty' => implode('|', $this->data['dept_ids']),
+            'msgtype' => $msgType,
+            $msgType => $this->data[$msgType]
+        ];
+        if ($msgType == 'sms') {
+            $this->sendSms(
+                $content, $mobiles, $touser, $users,$response
             );
-            $this->data['sent'] = $this->data['read'] = $result <= 0;
-            # 创建广播消息
-            if ($result > 0) {
-                $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-                $response['message'] = __('messages.message.sms_send_failed');
-            } else {
-                $response['message'] = sprintf(
-                    __('messages.message.sent'),
-                    count($mobiles), count($mobiles), 0
-                );
-            }
-            # 创建用户消息发送日志
-            $userids = User::whereIn('id', $this->data['user_ids'])->pluck('userid')->toArray();
-            $this->data['content'] = json_encode([
-                'touser' => implode('|', $userids),
-                'toparty' => implode('|', $this->data['dept_ids']),
-                'agentid' => 0,
-                'msgtype' => 'sms',
-                'sms' => $this->data['sms']
-            ]);
-            $message->log($users, $this->data);
         } else {
-            # 发送微信消息
-            $results = [];
-            foreach ($this->apps as $app) {
-                $userids = User::whereIn('id', $this->data['user_ids'])
-                    ->where('subscribed', 1)    # 仅发送消息给已关注的用户
-                    ->pluck('userid')->toArray();
-                $content = [
-                    'touser'            => implode('|', $userids),
-                    'toparty'           => implode('|', $this->data['dept_ids']),
-                    'agentid'           => $app['agentid'],
-                    'msgtype'           => $this->data['type'],
-                    $this->data['type'] => $this->data[$this->data['type']],
-                ];
-                # 发送消息 & 创建用户消息发送日志
-                $this->data['sent'] = $results[$app['id']] = $this->sendMessage(
-                    $this->corp, $app, $content
+            # step 1: 向未关注用户（监护人、教职员工）发送短信
+            if ($targets[0]->isNotEmpty()) {
+                $users = $targets[0];
+                $mobiles = Mobile::whereIn('user_id', $users->pluck('id')->toArray())
+                    ->where(['isdefault' => 1, 'enabled' => 1])->pluck('mobile')->toArray();
+                $this->data['type'] = 'sms';
+                $this->data['sms'] = 'url_to_wechat_message'; # todo: 生成微信消息详情url
+                $this->sendSms(
+                    $content, $mobiles, $touser, $this->logUsers($users), $response
                 );
-                $this->data['content'] = json_encode($content);
-                $this->data['app_id'] = $app['id'];
-                $message->log($users, $this->data);
             }
-            # 创建广播消息
-            if (sizeof($results) == 1) {
-                $result = $results[key($results)];
-                if ($result['errcode']) {
-                    $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-                    $response['message'] = $result['errmsg'];
-                } else {
-                    $total = count($users);
-                    $failed = count($message->failedUserIds($result['invaliduser'], $result['invalidparty']));
-                    $succeeded = $total - $failed;
-                    if (!$succeeded) {
-                        $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-                    }
-                    if ($succeeded > 0 && $succeeded < $total) {
-                        $response['statusCode'] = HttpStatusCode::ACCEPTED;
-                    }
-                    $response['message'] = sprintf(
-                        __('messages.message.sent'),
-                        $total, $succeeded, $failed
+            # step 2: 向已关注的用户（监护人、教职员工）发送微信
+            if ($targets[1]->isNotEmpty()) {
+                # 发送微信消息 & 创建用户消息发送日志
+                $results = [];
+                $users = $targets[1];
+                foreach ($this->apps as $app) {
+                    $content = array_merge($content, ['agentid' => $app['agentid']]);
+                    # 实际接收微信消息的用户（监护人、教职员工）列表
+                    $userids = $users->pluck('userid')->toArray();
+                    $this->data['sent'] = $results[$app['id']] = $this->sendMessage(
+                        $this->corp, $app, array_merge($content, [
+                            'touser' => implode('|', $userids)
+                        ])
                     );
+                    $this->data['content'] = json_encode(
+                        array_merge($content, ['touser' => $touser])
+                    );
+                    $this->data['app_id'] = $app['id'];
+                    $message->log($this->logUsers($users), $this->data);
                 }
-            } else {
-                $errors = 0;
-                foreach ($results as $appId => $result) {
-                    $errors += $result['errcode'] ? 1 : 0;
-                }
-                if ($errors > 0) {
-                    $content = '';
-                    $response['statusCode'] = $errors < sizeof($results)
-                        ? HttpStatusCode::ACCEPTED
-                        : HttpStatusCode::INTERNAL_SERVER_ERROR;
-                    foreach ($results as $appId => $result) {
-                        $content .= App::find($appId)->name . ': '
-                            . (!$result['errcode'] ? __('messages.message.sent') : $result['errmsg']) . "\n";
-                    }
-                    $response['message'] = $content;
-                }
+    
+                # 创建广播消息
+                $this->wxResponse($results, $users->count(),$response);
             }
         }
         # 发送广播消息
         if ($this->userId) {
             event(new JobResponse($response));
+        }
+        
+    }
+    
+    /**
+     * 返回指定用户所属的学校id
+     *
+     * @param User $user
+     * @return int
+     */
+    private function school_id(User $user) {
+        
+        return $user->educator
+            ? $user->educator->school_id
+            : $user->student->squad->grade->school_id;
+        
+    }
+    
+    /**
+     * 获取需要记录消息发送日志的用户（学生、教职员工）
+     *
+     * @param Collection|User[] $targets - 需要发送消息的用户对象（监护人、教职员工）
+     * @return Collection
+     */
+    private function logUsers(Collection $targets): Collection {
+    
+        $users = Collect([]);
+        foreach ($targets as $target) {
+            if ($target->custodian) {
+                /** @var Collection $students */
+                $students = $target->students->filter(
+                    function(Student $student) {
+                        return $student->squad->grade->school_id == $this->schoolId;
+                    }
+                );
+                $users->push(
+                    User::whereIn('id', $students->pluck('user_id')->toArray())->get()
+                );
+            } else {
+                $users->push($target);
+            }
+        }
+        
+        return $users;
+        
+    }
+    
+    /**
+     * @param $content
+     * @param $mobiles
+     * @param $touser
+     * @param $users
+     * @param $response
+     * @throws Exception
+     */
+    private function sendSms($content, $mobiles, $touser, $users, &$response) {
+    
+        $message = new Message;
+        # 发送短信消息 & 创建用户消息发送日志
+        $result = $message->sendSms($mobiles, $this->data['sms']);
+        $this->data['sent'] = $this->data['read'] = $result <= 0;
+        $this->data['content'] = json_encode(
+            array_merge($content, ['touser' => $touser, 'agentid' => 0])
+        );
+        $message->log($users, $this->data);
+        # 创建广播消息
+        if ($result > 0) {
+            $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+            $response['message'] = __('messages.message.sms_send_failed');
+        } else {
+            $response['message'] = sprintf(
+                __('messages.message.sent'),
+                count($mobiles), count($mobiles), 0
+            );
+        }
+        
+    }
+    
+    /**
+     * 生成微信发送结果
+     *
+     * @param array $results
+     * @param $total
+     * @param $response
+     */
+    private function wxResponse(array $results, $total, &$response) {
+    
+        if (sizeof($results) == 1) {
+            $result = $results[key($results)];
+            if ($result['errcode']) {
+                $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+                $response['message'] = $result['errmsg'];
+            } else {
+                $failed = count((new Message)->failedUserIds(
+                    $result['invaliduser'], $result['invalidparty'])
+                );
+                $succeeded = $total - $failed;
+                if (!$succeeded) {
+                    $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+                }
+                if ($succeeded > 0 && $succeeded < $total) {
+                    $response['statusCode'] = HttpStatusCode::ACCEPTED;
+                }
+                $response['message'] = sprintf(
+                    __('messages.message.sent'),
+                    $total, $succeeded, $failed
+                );
+            }
+        } else {
+            $errors = 0;
+            foreach ($results as $appId => $result) {
+                $errors += $result['errcode'] ? 1 : 0;
+            }
+            if ($errors > 0) {
+                $content = '';
+                $response['statusCode'] = $errors < sizeof($results)
+                    ? HttpStatusCode::ACCEPTED
+                    : HttpStatusCode::INTERNAL_SERVER_ERROR;
+                foreach ($results as $appId => $result) {
+                    $content .= App::find($appId)->name . ': '
+                        . (!$result['errcode'] ? __('messages.message.sent') : $result['errmsg']) . "\n";
+                }
+                $response['message'] = $content;
+            }
         }
         
     }

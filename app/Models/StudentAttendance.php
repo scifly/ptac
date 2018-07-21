@@ -255,6 +255,7 @@ class StudentAttendance extends Model {
                         'media_id'              => $datum['media_id'],
                     ]);
                     $userIds = $student->custodians->pluck('user_id')->toArray();
+                    # todo -
                     list($smsUserIds, $wechatUserIds) = array_pluck(
                         User::get(['id', 'subscribed'])
                             ->whereIn('id', $userIds)
