@@ -157,7 +157,6 @@ class MessageCenterController extends Controller {
     public function show($id) {
         
         list($content, $edit) = $this->message->show($id);
-        Log::debug(json_encode($content));
 
         return view('wechat.message_center.show', [
             'content' => $content,

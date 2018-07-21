@@ -304,7 +304,7 @@ class Message extends Model {
         $user = Auth::user();
         $message = $this->find($id);
         $edit = ($user->id == $message->s_user_id ? true : false);
-        $object = json_decode($message->content);
+        $object = json_decode(json_decode($message->content));
         $title = $message->title;
         $type = array_search(mb_substr($message->title, -3, 2), Constant::INFO_TYPES);
         if (!$type) {
