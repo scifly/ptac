@@ -3,7 +3,7 @@ $('.selectlist-layout').on('click', function () {
     $('.select-ul').slideToggle('fast');
 });
 $('.select-ul li').on('click', function () {
-    var html = '' + ($(this).text()) + '<i class="icon iconfont icon-arrLeft-fill"></i>',
+    var html = '' + ($(this).text()) + ' <i class="icon iconfont icon-arrLeft-fill"></i>',
         typeId = $(this).attr('data-id');
 
     $('.select-container').toggle();
