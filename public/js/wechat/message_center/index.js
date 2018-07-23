@@ -45,55 +45,32 @@ $("#searchInput").on("input propertychange change", function() {
             _token: wap.token()
         },
         success: function (result) {
-            var str = '', i, message;
-            if (result['type'] === 'sent'){
-                for (i = 0 ; i < result['sent'].length; i++){
-                    message = result['sent'][i];
-                    str +=
-                        '<div class="table-list ">'+
-                            '<div class="line"></div>'+
-                            '<div class="teacher-list-box grayline">'+
-                                '<div class="teacher-work-box">'+
-                                    '<a class="teacher-work-head" style="color:#000" href="show/' + message['id']+'">'+
-                                        '<div class="titleinfo">'+
-                                            '<div class="titleinfo-head">'+
-                                                '<div class="titleinfo-head-left fl">'+
-                                                    '<div class="title ml12">'+ message['title'] +'</div>'+
-                                                    '<div class="title-info ml12">'+ message['user'] + '</div>' +
-                                                '</div>'+
-                                                '<span class="worktime">'+ message['created_at'].substr(0, 10) +
-                                                    '<span class="info-status green">' + (message['sent'] ? '已发送' : '未发送') + '</span>' +
-                                                '</span>' +
-                                            '</div>' +
-                                        '</div>' +
-                                    '</a>' +
-                                '</div>' +
-                            '</div>' +
-                        '</div>';
+            var str = '', i, message, sent = '';
+            for (i = 0 ; i < result['messages'].length; i++) {
+                message = result['messages'][i];
+                if (result['type'] === 'sent') {
+                    sent ='<span class="info-status green">' +
+                        (message['sent'] ? '已发送' : '未发送') +
+                    '</span>';
                 }
-            } else {
-                for (i = 0 ; i < result['received'].length; i++) {
-                    message = result['received'][i];
-                    str +=
-                        '<div class="table-list ">'+
-                            '<div class="line"></div>'+
-                            '<div class="teacher-list-box grayline">'+
-                                '<div class="teacher-work-box">'+
-                                    '<a class="teacher-work-head" style="color:#000" href="show/' + message.id + '">' +
-                                        '<div class="titleinfo">'+
-                                            '<div class="titleinfo-head">'+
-                                                '<div class="titleinfo-head-left fl">'+
-                                                    '<div class="title ml12">'+ message['title'] +'</div>'+
-                                                    '<div class="title-info ml12">'+ message['user']+'</div>'+
-                                                '</div>'+
-                                                '<span class="worktime">' + message['created_at'].substr(0, 10) + '</span>' +
-                                            '</div>' +
-                                        '</div>' +
-                                    '</a>' +
+                str += '<div class="table-list ">'+
+                    '<div class="line"></div>'+
+                    '<div class="teacher-list-box grayline">'+
+                        '<div class="teacher-work-box">'+
+                            '<a class="teacher-work-head" style="color: #000;" href="show/' + message['id']+'">'+
+                                '<div class="titleinfo">'+
+                                    '<div class="titleinfo-head">'+
+                                        '<div class="titleinfo-head-left fl">'+
+                                            '<div class="title ml12">'+ message['title'] +'</div>'+
+                                            '<div class="title-info ml12">'+ message['user'] + '</div>' +
+                                        '</div>'+
+                                        '<span class="worktime">'+ message['created'] + sent + '</span>' +
+                                    '</div>' +
                                 '</div>' +
-                            '</div>' +
-                        '</div>';
-                }
+                            '</a>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
             }
             $messageList.html(str);
         },

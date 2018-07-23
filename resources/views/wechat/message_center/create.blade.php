@@ -147,6 +147,14 @@
                 </div>
             </div>
         </div>
+        <!-- 存为草稿 -->
+        <div class="weui-flex mt5px">
+            <div class="weui-flex__item">
+                <div class="placeholder msg-send-btn" style="padding: 15px;">
+                    <a id="draft" href="#" class="weui-btn weui-btn_primary">存为草稿</a>
+                </div>
+            </div>
+        </div>
     </div>
     <div id="targets" class='weui-popup__container'>
         <div class="weui-popup__overlay"></div>
