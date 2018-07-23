@@ -92,10 +92,11 @@ function showPie(data, legend, title) {
             text: title || '',
             x: 'center',
             textStyle: {
-                fontSize: 14,
+                fontSize: 16,
                 color: 'gray',
                 fontWeight: 'normal',
-                lineHeight: 100
+                lineHeight: 56,
+
                 // rich: { a: {  }}
             }
         },
