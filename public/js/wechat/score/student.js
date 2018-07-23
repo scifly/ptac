@@ -79,7 +79,7 @@ function showtable(scores, classAvgs, examNames) {
             },
             grid: {
                 x:0,
-                y:'80', 
+                y: 120,
                 x2: 0,
                 y2: 0,
                 // bottom:'80'
