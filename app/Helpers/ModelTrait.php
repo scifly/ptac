@@ -178,7 +178,7 @@ trait ModelTrait {
      *
      * @return array
      */
-    static function uris() {
+    function uris() {
         
         if (!Request::route()) { return null; }
         $controller = class_basename(Request::route()->controller);
