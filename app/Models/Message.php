@@ -242,6 +242,61 @@ class Message extends Model {
     }
     
     /**
+     * 保存消息（草稿）
+     *
+     * @param array $data
+     * @return bool
+     */
+    function store(array $data) {
+        
+        return $this->create($data) ? true : false;
+        
+    }
+    
+    /**
+     * 显示指定消息的内容
+     *
+     * @param $id
+     * @return array
+     */
+    function detail($id) {
+        
+        $user = Auth::user();
+        $message = $this->find($id);
+        $edit = ($user->id == $message->s_user_id ? true : false);
+        $object = json_decode(json_decode($message->content));
+        $title = $message->title;
+        $type = array_search(mb_substr($message->title, -3, 2), Constant::INFO_TYPES);
+        if (!$type) {
+            $messageType = MessageType::find($message->message_type_id);
+            $messageTypeName = $messageType ? $messageType->name : '未知消息';
+            if (is_object($object) && property_exists(get_class($object), 'msgtype')) {
+                $type = $object->{'msgtype'};
+                $title = $messageTypeName . '(' . Constant::INFO_TYPES[$type] . ')';
+            } else {
+                $title = $messageTypeName . '(未知)';
+            }
+            $message->update(['title' => $title]);
+        }
+        $type = $type ? $type : 'other';
+        Carbon::setLocale('zh');
+        $msl = $message->messageSendinglog;
+        $content = [
+            'id'         => $message->id,
+            'title'      => $title,
+            'updated_at' => Carbon::createFromFormat('Y-m-d H:i:s', $message->updated_at)->diffForHumans(),
+            'sender'     => User::find($message->s_user_id)->realname,
+            'recipients' => $msl ? $msl->recipient_count : 0,
+            'msl_id'     => $msl ? $msl->id : 0,
+            'type'       => $type,
+            $type        => $type == 'other' ? $message->content : $object,
+        ];
+        
+        return [$content, $edit];
+        
+    }
+    
+    /**
      * 编辑消息
      *
      * @param $id
@@ -290,61 +345,6 @@ class Message extends Model {
             'messageFormat'     => $content['type'],
             'message'           => $message,
         ];
-        
-    }
-    
-    /**
-     * 显示指定消息的内容
-     *
-     * @param $id
-     * @return array
-     */
-    function detail($id) {
-        
-        $user = Auth::user();
-        $message = $this->find($id);
-        $edit = ($user->id == $message->s_user_id ? true : false);
-        $object = json_decode(json_decode($message->content));
-        $title = $message->title;
-        $type = array_search(mb_substr($message->title, -3, 2), Constant::INFO_TYPES);
-        if (!$type) {
-            $messageType = MessageType::find($message->message_type_id);
-            $messageTypeName = $messageType ? $messageType->name : '未知消息';
-            if (is_object($object) && property_exists(get_class($object), 'msgtype')) {
-                $type = $object->{'msgtype'};
-                $title = $messageTypeName . '(' . Constant::INFO_TYPES[$type] . ')';
-            } else {
-                $title = $messageTypeName . '(未知)';
-            }
-            $message->update(['title' => $title]);
-        }
-        $type = $type ? $type : 'other';
-        Carbon::setLocale('zh');
-        $msl = $message->messageSendinglog;
-        $content = [
-            'id'         => $message->id,
-            'title'      => $title,
-            'updated_at' => Carbon::createFromFormat('Y-m-d H:i:s', $message->updated_at)->diffForHumans(),
-            'sender'     => User::find($message->s_user_id)->realname,
-            'recipients' => $msl ? $msl->recipient_count : 0,
-            'msl_id'     => $msl ? $msl->id : 0,
-            'type'       => $type,
-            $type        => $type == 'other' ? $message->content : $object,
-        ];
-        
-        return [$content, $edit];
-        
-    }
-    
-    /**
-     * 保存消息（草稿）
-     *
-     * @param array $data
-     * @return bool
-     */
-    function store(array $data) {
-        
-        return $this->create($data) ? true : false;
         
     }
     
@@ -676,31 +676,6 @@ class Message extends Model {
     }
     
     /**
-     * 返回指定学生和教职员工对应的发送对象（监护人、教职员工）
-     *
-     * @param $users - 需记录消息发送日志的用户（学生、教职员工）
-     * @return Collection
-     */
-    private function getTargets(Collection $users) {
-        
-        $targets = Collect([]);
-        foreach ($users as $user) {
-            if ($user->student) {
-                $user->student->custodians->each(
-                    function (Custodian $custodian) use (&$targets) {
-                        $targets->push($custodian->user);
-                    }
-                );
-            } else {
-                $targets->push($user);
-            }
-        }
-        
-        return $targets;
-        
-    }
-    
-    /**
      * 上传媒体文件
      *
      * @return JsonResponse
@@ -795,12 +770,6 @@ class Message extends Model {
     /**
      * 搜索已发或收到的消息
      *
-     * @return array
-     */
-
-    /**
-     * 搜索（消息或发送对象）
-     *
      * @param null $departmentId
      * @return array
      * @throws Throwable
@@ -822,6 +791,11 @@ class Message extends Model {
     }
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
+    /**
+     * 搜索（消息或发送对象）
+     *
+     * @return array
+     */
     private function searchMessage() {
         
         # 搜索已发或收到的消息
@@ -950,6 +924,31 @@ class Message extends Model {
         }
         
         return $response;
+        
+    }
+    
+    /**
+     * 返回指定学生和教职员工对应的发送对象（监护人、教职员工）
+     *
+     * @param $users - 需记录消息发送日志的用户（学生、教职员工）
+     * @return Collection
+     */
+    private function getTargets(Collection $users) {
+        
+        $targets = Collect([]);
+        foreach ($users as $user) {
+            if ($user->student) {
+                $user->student->custodians->each(
+                    function (Custodian $custodian) use (&$targets) {
+                        $targets->push($custodian->user);
+                    }
+                );
+            } else {
+                $targets->push($user);
+            }
+        }
+        
+        return $targets;
         
     }
     
