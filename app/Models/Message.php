@@ -811,7 +811,7 @@ class Message extends Model {
             ->get()->filter(function (Message &$message) use ($userIds, $type) {
                 $userId = $type == 'sent' ? $message->sender->id : $message->receiver->id;
                 $message->{'realname'} = User::find($userId)->realname;
-                $message->created_at = $this->humanDate($message->created_at);
+                $message->{'created'} = $this->humanDate($message->created_at);
                 
                 return in_array($userId, $userIds);
             });
