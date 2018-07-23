@@ -78,11 +78,7 @@ function showtable(scores, classAvgs, examNames) {
                 top: 15,
             },
             grid: {
-                x:0,
-                y: 120,
-                x2: 0,
-                y2: 0,
-                // bottom:'80'
+                y:'80', bottom:'80'
             },
             tooltip: { trigger: 'axis' },
             legend: { data: ['我的成绩', '班平均成绩'], x: 'left', left: 10, top: 45 },
@@ -92,8 +88,7 @@ function showtable(scores, classAvgs, examNames) {
                 { type: 'slider', show: true, xAxisIndex: [0], start: 0, end: 50 }
             ],
             series: [
-                { name:'我的成绩', type:'line', data: scores,  },
-                {radius: '30%'},
+                { name:'我的成绩', type:'line', data: scores },
                 { name:'班平均成绩', type:'line', data: classAvgs },
             ]
         };
