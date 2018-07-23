@@ -112,7 +112,7 @@ function showPie(data, legend, title) {
                 name: '',
                 type: 'pie',
                 radius: '50%',
-                center: ['50%', '50%'],
+                center: ['50%', '75%'],
                 data: data,
                 itemStyle: {
                     emphasis: {
