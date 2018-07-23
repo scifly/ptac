@@ -95,9 +95,10 @@ class MessageCenterIndexComposer {
                     Message::find($message['id'])->update(['title' => $title]);
                     $message['title'] = $title;
                 }
-                $message['title'] = ($message['read'] || $direction == 'sent')
-                    ? $message['title']
-                    : '<b>' . $message['title'] . '</b>';
+                if (!$message['read'] || $direction == 'received') {
+                    $message['title'] = '<b>' . $message['title'] . '</b>';
+                    $message['created_at'] = '<b>' . $message['created_at'] . '</b>';
+                }
                 if ($direction == 'sent') {
                     $recipient = User::find($message['r_user_id']);
                     $message['recipient'] = $recipient ? $recipient->realname : '(未知)';
