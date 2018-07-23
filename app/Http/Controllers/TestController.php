@@ -23,6 +23,7 @@ use ReflectionMethod;
 class TestController extends Controller {
     
     use DetectsApplicationNamespace, ModelTrait;
+    
     protected $keyId = 'LTAIk1710IrzHBg4';
     protected $keySecret = 'xxO5XaXx3O7kB3YR14XSdFulw1x56k';
     protected $callerShowNumber = '02388373982';
