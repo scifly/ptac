@@ -95,7 +95,7 @@ class MessageCenterIndexComposer {
                     Message::find($message['id'])->update(['title' => $title]);
                     $message['title'] = $title;
                 }
-                if (!$message['read'] || $direction == 'received') {
+                if (!$message['read'] && $direction == 'received') {
                     $message['title'] = '<b>' . $message['title'] . '</b>';
                     $message['created_at'] = '<b>' . $message['created_at'] . '</b>';
                 }
