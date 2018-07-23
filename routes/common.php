@@ -55,6 +55,7 @@ function app_routes($acronym) {
     Route::post($p, $c . '@index');
     Route::get($p . 'create/{departmentId?}', $c . '@create');
     Route::post($p . 'create/{departmentId?}', $c . '@create');
+    Route::post($p . 'send', $c . '@send');
     Route::post($p . 'store', $c . '@store');
     Route::get($p . 'show/{id}', $c . '@show');
     Route::get($p . 'read/{id}', $c . '@read');

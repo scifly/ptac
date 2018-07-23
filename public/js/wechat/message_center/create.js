@@ -544,7 +544,7 @@ $send.on('click', function () {
         type: 'POST',
         dataType: 'json',
         data: $.extend(formData, content),
-        url: 'store',
+        url: 'send',
         success: function (result) {
             $.alert(result.message, function () {
                 window.location.href = '../mc';

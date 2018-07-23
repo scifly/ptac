@@ -77,7 +77,13 @@ function showtable(scores, classAvgs, examNames) {
                 textStyle: { fontWeight: '100', fontSize: '16' },
                 top: 15,
             },
-            grid: { y:'80', bottom:'80' },
+            grid: {
+                x:0,
+                y:'80', 
+                x2: 0,
+                y2: 0,
+                // bottom:'80'
+            },
             tooltip: { trigger: 'axis' },
             legend: { data: ['我的成绩', '班平均成绩'], x: 'left', left: 10, top: 45 },
             xAxis:  { type: 'category', data: examNames, boundaryGap: false },

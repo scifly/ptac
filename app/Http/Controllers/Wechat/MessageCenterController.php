@@ -17,7 +17,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 use Throwable;
@@ -91,21 +90,35 @@ class MessageCenterController extends Controller {
     }
     
     /**
+     * 保存消息（草稿）
+     *
+     * @param MessageRequest $request
+     * @return JsonResponse
+     */
+    public function store(MessageRequest $request) {
+        
+        return $this->result(
+            $this->message->store(
+                $request->all()
+            )
+        );
+        
+    }
+    
+    /**
      * 保存并发送消息
      *
      * @param MessageRequest $request
      * @return bool|JsonResponse|RedirectResponse|Redirector
      * @throws Throwable
      */
-    public function store(MessageRequest $request) {
+    public function send(MessageRequest $request) {
         
-        $sent = $this->message->send(
-            $request->all()
+        return $this->result(
+            $this->message->send(
+                $request->all()
+            )
         );
-        
-        return response()->json([
-            'message' => $sent ? __('messages.ok') : __('messages.message.failed'),
-        ], $sent ? HttpStatusCode::OK : HttpStatusCode::INTERNAL_SERVER_ERROR);
         
     }
     
@@ -140,11 +153,9 @@ class MessageCenterController extends Controller {
      */
     public function read($id) {
         
-        $this->message->read($id);
-        
-        return response()->json([
-            'message' => __('messages.ok'),
-        ]);
+        return $this->result(
+            $this->message->read($id)
+        );
         
     }
     
@@ -153,16 +164,13 @@ class MessageCenterController extends Controller {
      *
      * @param $id
      * @return Factory|View
+     * @throws Throwable
      */
     public function show($id) {
         
-        list($content, $edit) = $this->message->show($id);
-
-        return view('wechat.message_center.show', [
-            'content' => $content,
-            'edit'    => $edit,
-            'show'    => true,
-        ]);
+        return $this->message->show(
+            $id, true
+        );
         
     }
     
@@ -181,11 +189,10 @@ class MessageCenterController extends Controller {
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        $deleted = $message->delete();
         
-        return response()->json([
-            'message' => $deleted ? __('messages.ok') : __('messages.fail'),
-        ], $deleted ? HttpStatusCode::OK : HttpStatusCode::INTERNAL_SERVER_ERROR);
+        return $this->result(
+            $message->delete()
+        );
         
     }
     
@@ -209,11 +216,10 @@ class MessageCenterController extends Controller {
         
         $input = Request::all();
         $input['user_id'] = Auth::id();
-        $replied = $this->mr->store($input);
         
-        return response()->json([
-            'message' => $replied ? __('messages.ok') : __('messages.fail'),
-        ], $replied ? HttpStatusCode::OK : HttpStatusCode::INTERNAL_SERVER_ERROR);
+        return $this->result(
+            $this->mr->store($input)
+        );
         
     }
     
@@ -231,11 +237,10 @@ class MessageCenterController extends Controller {
             !$mr, HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        $removed = $mr->delete();
         
-        return response()->json([
-            'message' => $removed ? __('messages.del_ok') : __('messages.del_fail'),
-        ], $removed ? HttpStatusCode::OK : HttpStatusCode::INTERNAL_SERVER_ERROR);
+        return $this->result(
+            $mr->delete()
+        );
         
     }
     

@@ -172,9 +172,9 @@ class Controller extends BaseController {
         $path = explode('\\', get_called_class());
         $controller = $path[sizeof($path) - 1];
         unset($e);
-        $title = Action::whereMethod($method)
+        $action = Action::whereMethod($method)
             ->where('controller', $controller)
-            ->first()->name;
+            ->first();
         # 获取Http状态码
         $statusCode = $result
             ? HttpStatusCode::OK
@@ -189,7 +189,7 @@ class Controller extends BaseController {
                 ? response()->json([
                     'statusCode' => $statusCode,
                     'message'    => $message,
-                    'title'      => $title,
+                    'title'      => $action ? $action->name : '',
                 ])
                 : abort($statusCode, $message);
         }

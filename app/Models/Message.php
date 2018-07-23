@@ -249,7 +249,7 @@ class Message extends Model {
      */
     function edit($id) {
         
-        list($content) = $this->show($id);
+        list($content) = $this->detail($id);
         $message = $content[$content['type']];
         $toparty = $message->{'toparty'};
         $touser = $message->{'touser'};
@@ -299,7 +299,7 @@ class Message extends Model {
      * @param $id
      * @return array
      */
-    function show($id) {
+    function detail($id) {
         
         $user = Auth::user();
         $message = $this->find($id);
@@ -414,12 +414,22 @@ class Message extends Model {
      * 返回消息详情
      *
      * @param $id
+     * @param bool $wechat
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      * @throws Throwable
      */
-    function detail($id) {
+    function show($id, $wechat = false) {
         
-        list($content) = $this->show($id);
+        if ($wechat) {
+            list($content, $edit) = $this->detail($id);
+            
+            return view('wechat.message_center.show', [
+                'content' => $content,
+                'edit'    => $edit,
+                'show'    => true,
+            ]);
+        }
+        list($content) = $this->detail($id);
         $type = $content['type'];
         $userids = explode('|', $content[$type]->{'touser'});
         $deptIds = explode('|', $content[$type]->{'toparty'});
@@ -648,7 +658,7 @@ class Message extends Model {
      * @return array
      */
     function targets($userIds = [], $deptIds = []) {
-    
+        
         # 需发送微信（或短信）消息的用户（监护人、教职员工）
         $targets = $this->getTargets(User::whereIn('id', $userIds)->get())->groupBy('subscribed');
         # $users - 需记录消息发送日志的的用户（学生、教职员工）
@@ -662,6 +672,31 @@ class Message extends Model {
             ->where(['enabled' => 1, 'isdefault' => 1])->pluck('mobile')->toArray();
         
         return [$users, $targets, $mobiles];
+        
+    }
+    
+    /**
+     * 返回指定学生和教职员工对应的发送对象（监护人、教职员工）
+     *
+     * @param $users - 需记录消息发送日志的用户（学生、教职员工）
+     * @return Collection
+     */
+    private function getTargets(Collection $users) {
+        
+        $targets = Collect([]);
+        foreach ($users as $user) {
+            if ($user->student) {
+                $user->student->custodians->each(
+                    function (Custodian $custodian) use (&$targets) {
+                        $targets->push($custodian->user);
+                    }
+                );
+            } else {
+                $targets->push($user);
+            }
+        }
+        
+        return $targets;
         
     }
     
@@ -758,6 +793,12 @@ class Message extends Model {
     }
     
     /**
+     * 搜索已发或收到的消息
+     *
+     * @return array
+     */
+
+    /**
      * 搜索（消息或发送对象）
      *
      * @param null $departmentId
@@ -779,12 +820,6 @@ class Message extends Model {
         return $response;
         
     }
-    
-    /**
-     * 搜索已发或收到的消息
-     *
-     * @return array
-     */
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
     private function searchMessage() {
@@ -824,31 +859,6 @@ class Message extends Model {
         }
         
         return $response;
-        
-    }
-    
-    /**
-     * 返回指定学生和教职员工对应的发送对象（监护人、教职员工）
-     *
-     * @param $users - 需记录消息发送日志的用户（学生、教职员工）
-     * @return Collection
-     */
-    private function getTargets(Collection $users) {
-        
-        $targets = Collect([]);
-        foreach ($users as $user) {
-            if ($user->student) {
-                $user->student->custodians->each(
-                    function (Custodian $custodian) use (&$targets) {
-                        $targets->push($custodian->user);
-                    }
-                );
-            } else {
-                $targets->push($user);
-            }
-        }
-        
-        return $targets;
         
     }
     
