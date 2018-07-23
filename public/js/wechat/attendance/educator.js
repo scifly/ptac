@@ -95,7 +95,7 @@ function showPie(data, legend, title) {
                 fontSize: 14,
                 color: 'gray',
                 fontWeight: 'normal',
-                rich: { a: { lineHeight: 16 }}
+                rich: { a: { lineHeight: 32 }}
             }
         },
         legend: {
