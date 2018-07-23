@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\HttpStatusCode;
+use App\Helpers\ModelTrait;
 use App\Models\ComboType;
 use App\Models\Department;
 use App\Models\Message;
@@ -21,7 +22,7 @@ use ReflectionMethod;
  */
 class TestController extends Controller {
     
-    use DetectsApplicationNamespace;
+    use DetectsApplicationNamespace, ModelTrait;
     protected $keyId = 'LTAIk1710IrzHBg4';
     protected $keySecret = 'xxO5XaXx3O7kB3YR14XSdFulw1x56k';
     protected $callerShowNumber = '02388373982';
@@ -31,7 +32,12 @@ class TestController extends Controller {
      */
     public function index() {
 
-        dd(Request::has('abc'));
+        $messages = Message::all()->filter(function (Message $message) {
+            $message->created_at = $this->humanDate($message->created_at);
+            return true;
+        });
+        
+        dd($messages);
     }
     
     public function apiCall() {
