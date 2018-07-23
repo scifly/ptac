@@ -103,7 +103,7 @@ function showPie(data, legend, title) {
         legend: {
             show: true,
             bottom: 5,
-            // left: 'left',
+            left: '5%',
             data: legend,
             orient: 'vertical'
         },
