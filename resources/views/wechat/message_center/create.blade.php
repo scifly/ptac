@@ -145,13 +145,8 @@
                 <div class="placeholder msg-send-btn" style="padding: 15px;">
                     <a id="send" href="#" class="weui-btn weui-btn_primary">发送</a>
                 </div>
-            </div>
-        </div>
-        <!-- 存为草稿 -->
-        <div class="weui-flex mt5px">
-            <div class="weui-flex__item">
                 <div class="placeholder msg-send-btn" style="padding: 15px;">
-                    <a id="draft" href="#" class="weui-btn weui-btn_primary">存为草稿</a>
+                    <a id="draft" href="#" class="weui-btn weui-btn_default">存为草稿</a>
                 </div>
             </div>
         </div>
