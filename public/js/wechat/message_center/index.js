@@ -52,7 +52,7 @@ $("#searchInput").on("input propertychange change", function() {
                     str +=
                         '<div class="table-list ">'+
                             '<div class="line"></div>'+
-                            '<div class="teacher-list-box glayline">'+
+                            '<div class="teacher-list-box grayline">'+
                                 '<div class="teacher-work-box">'+
                                     '<a class="teacher-work-head" style="color:#000" href="show/' + message['id']+'">'+
                                         '<div class="titleinfo">'+
@@ -77,7 +77,7 @@ $("#searchInput").on("input propertychange change", function() {
                     str +=
                         '<div class="table-list ">'+
                             '<div class="line"></div>'+
-                            '<div class="teacher-list-box glayline">'+
+                            '<div class="teacher-list-box grayline">'+
                                 '<div class="teacher-work-box">'+
                                     '<a class="teacher-work-head" style="color:#000" href="show/' + message.id + '">' +
                                         '<div class="titleinfo">'+
