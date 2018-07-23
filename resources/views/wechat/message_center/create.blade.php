@@ -144,8 +144,6 @@
             <div class="weui-flex__item">
                 <div class="placeholder msg-send-btn" style="padding: 15px;">
                     <a id="send" href="#" class="weui-btn weui-btn_primary">发送</a>
-                </div>
-                <div class="placeholder msg-send-btn" style="padding: 15px;">
                     <a id="draft" href="#" class="weui-btn weui-btn_default">存为草稿</a>
                 </div>
             </div>
