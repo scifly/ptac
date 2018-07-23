@@ -209,10 +209,11 @@ class Datatable {
             $_data = (array)$data[$i];
             $j = 0;
             foreach ($_data as $name => $value) {
-                if (isset($value) && $this->validateDate($value) && $name != 'birthday' && $name != 'punch_time') {
-                    Carbon::setLocale('zh');
-                    $dt = Carbon::createFromFormat('Y-m-d H:i:s', $value);
-                    $value = $dt->diffForhumans();
+                if (
+                    isset($value) && $this->validateDate($value) &&
+                    !in_array($name, ['birthday', 'punch_time'])
+                ) {
+                    $value = $this->humanDate($value);
                 }
                 $column = $columns[$j];
                 if (isset($column['formatter'])) {

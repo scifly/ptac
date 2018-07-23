@@ -2,6 +2,7 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\Constant;
+use App\Helpers\ModelTrait;
 use App\Models\Message;
 use App\Models\MessageType;
 use App\Models\School;
@@ -16,6 +17,8 @@ use Illuminate\Support\Facades\Auth;
  * @package App\Http\ViewComposers
  */
 class MessageCenterIndexComposer {
+    
+    use ModelTrait;
     
     /**
      * @param View $view
@@ -78,9 +81,7 @@ class MessageCenterIndexComposer {
         
         foreach ($data as $type => &$messages) {
             foreach ($messages as &$message) {
-                Carbon::setLocale('zh');
-                $dt = Carbon::createFromFormat('Y-m-d H:i:s', $message['created_at']);
-                $message['created_at'] = $dt->diffForHumans();
+                $message['created_at'] = $this->humanDate($message['created_at']);
                 $object = json_decode($message['content']);
                 $type = array_search(mb_substr($message['title'], -3, 2), Constant::INFO_TYPES);
                 if (!$type) {

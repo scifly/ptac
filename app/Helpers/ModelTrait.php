@@ -4,6 +4,7 @@ namespace App\Helpers;
 use App\Models\Corp;
 use App\Models\Menu;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use ReflectionClass;
 use App\Models\Squad;
@@ -662,6 +663,22 @@ trait ModelTrait {
         }
         
         return $ids;
+        
+    }
+    
+    /**
+     * 返回Carbon格式日期
+     *
+     * @param $date
+     * @return string
+     */
+    function humanDate($date) {
+    
+        Carbon::setLocale('zh');
+        
+        return isset($date)
+            ? Carbon::createFromFormat('Y-m-d H:i:s', $date)->diffForHumans()
+            : '(n/a)';
         
     }
     

@@ -4,6 +4,7 @@ namespace App\Models;
 use App\Facades\Wechat;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
+use App\Helpers\ModelTrait;
 use App\Http\Requests\AppRequest;
 use App\Jobs\SyncApp;
 use Carbon\Carbon;
@@ -66,6 +67,8 @@ use Illuminate\Support\Facades\DB;
  */
 class App extends Model {
     
+    use ModelTrait;
+    
     protected $fillable = [
         'corp_id', 'name', 'description', 'agentid',
         'token', 'secret', 'report_location_flag',
@@ -124,7 +127,6 @@ class App extends Model {
             </tr>';
         $html = '';
         foreach ($apps as $app) {
-            $this->formatDateTime($app);
             $html .= sprintf(
                 $tr,
                 $app['agentid'],
@@ -133,8 +135,8 @@ class App extends Model {
                 $app['name'],
                 $app['square_logo_url'],
                 $app['secret'],
-                $app['created_at'],
-                $app['updated_at'],
+                $this->humanDate($app['created_at']),
+                $this->humanDate($app['updated_at']),
                 $app['enabled']
                     ? '<i class="fa fa-circle text-green" title="已启用"></i>'
                     : '<i class="fa fa-circle text-gray" title="未启用"></i>'
@@ -144,25 +146,6 @@ class App extends Model {
         return response()->json([
             'apps' => $html,
         ]);
-        
-    }
-    
-    /**
-     * 将日期时间转换为人类友好的格式
-     *
-     * @param $app
-     */
-    private function formatDateTime(&$app) {
-        
-        Carbon::setLocale('zh');
-        if ($app['created_at']) {
-            $dt = Carbon::createFromFormat('Y-m-d H:i:s', $app['created_at']);
-            $app['created_at'] = $dt->diffForHumans();
-        }
-        if ($app['updated_at']) {
-            $dt = Carbon::createFromFormat('Y-m-d H:i:s', $app['updated_at']);
-            $app['updated_at'] = $dt->diffForHumans();
-        }
         
     }
     
@@ -217,7 +200,8 @@ class App extends Model {
         $app = $app
             ? $this->modify($data, $app->id)->toArray()
             : $this->store($data)->toArray();
-        $this->formatDateTime($app);
+        $app['created_at'] = $this->humanDate($app['created_at']);
+        $app['updated_at'] = $this->humanDate($app['updated_at']);
         
         return response()->json([
             'app'    => $app,

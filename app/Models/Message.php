@@ -44,8 +44,8 @@ use Throwable;
  * @property-read CommType $commType
  * @property-read MessageSendingLog $messageSendinglogs
  * @property-read MessageType $messageType
- * @property-read User $receiveUser
- * @property-read User $user
+ * @property-read User $receiver
+ * @property-read User $sender
  * @method static Builder|Message whereAppId($value)
  * @method static Builder|Message whereCommTypeId($value)
  * @method static Builder|Message whereContent($value)
@@ -92,14 +92,14 @@ class Message extends Model {
      *
      * @return BelongsTo
      */
-    function user() { return $this->belongsTo('App\Models\User', 's_user_id', 'id'); }
+    function sender() { return $this->belongsTo('App\Models\User', 's_user_id', 'id'); }
     
     /**
      * 返回指定消息接收的用户对象
      *
      * @return BelongsTo
      */
-    function receiveUser() { return $this->belongsTo('App\Models\User', 'r_user_id', 'id'); }
+    function receiver() { return $this->belongsTo('App\Models\User', 'r_user_id', 'id'); }
     
     /**
      * 返回对应的消息发送日志对象
@@ -279,12 +279,11 @@ class Message extends Model {
             $message->update(['title' => $title]);
         }
         $type = $type ? $type : 'other';
-        Carbon::setLocale('zh');
         $msl = $message->messageSendinglog;
         $content = [
             'id'         => $message->id,
             'title'      => $title,
-            'updated_at' => Carbon::createFromFormat('Y-m-d H:i:s', $message->updated_at)->diffForHumans(),
+            'updated_at' => $this->humanDate($message->updated_at),
             'sender'     => User::find($message->s_user_id)->realname,
             'recipients' => $msl ? $msl->recipient_count : 0,
             'msl_id'     => $msl ? $msl->id : 0,
@@ -530,12 +529,11 @@ class Message extends Model {
             $replies = MessageReply::whereMslId($mslId)->where('user_id', $user->id)->get();
         }
         $replyList = [];
-        Carbon::setLocale('zh');
         foreach ($replies as $reply) {
             $replyList[] = [
                 'id'         => $reply->id,
                 'content'    => $reply->content,
-                'replied_at' => Carbon::createFromFormat('Y-m-d H:i:s', $reply->created_at)->diffForHumans(),
+                'replied_at' => $this->humanDate($reply->created_at),
                 'realname'   => $reply->user->realname,
                 'avatar_url' => $reply->user->avatar_url,
             ];
@@ -792,50 +790,38 @@ class Message extends Model {
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
-     * 搜索（消息或发送对象）
+     * 搜索消息
      *
      * @return array
      */
     private function searchMessage() {
-        
+    
         # 搜索已发或收到的消息
         $user = Auth::user();
-        $keyword = Request::input('keyword');
-        $type = Request::input('type');
-        $response = ['type' => $type];
-        switch ($type) {
-            case 'sent':
-                $sent = Message::whereSUserId($user->id)
-                    ->where('content', 'like', '%' . $keyword . '%')
-                    ->orWhere('title', 'like', '%' . $keyword . '%')
-                    ->get();
-                if (sizeof($sent)) {
-                    foreach ($sent as $s) {
-                        $s['user'] = User::find($s['r_user_id'])->realname;
-                    }
-                }
-                $response['messages'] = $sent;
-                break;
-            case 'received':
-                $received = Message::whereRUserId($user->id)
-                    ->where('content', 'like', '%' . $keyword . '%')
-                    ->orWhere('title', 'like', '%' . $keyword . '%')
-                    ->get();
-                if (sizeof($received)) {
-                    foreach ($received as $r) {
-                        $r['user'] = User::find($r['user'])->realname;
-                    }
-                }
-                $response['messages'] = $received;
-                break;
-            default:
-                break;
+        $userIds = [$user->id];
+        if ($user->custodian) {
+            $userIds = array_merge(
+                $userIds, $user->custodian->students->pluck('user_id')->toArray()
+            );
         }
-        
-        return $response;
+        $keyword = '%' . Request::input('keyword') . '%';
+        $type = Request::input('type');
+        $messages = $this->where('content', 'like', $keyword)
+            ->orWhere('title', 'like', $keyword)
+            ->get()->filter(function (Message &$message) use ($userIds, $type) {
+                $userId = $type == 'sent' ? $message->sender->id : $message->receiver->id;
+                $message->{'realname'} = User::find($userId)->realname;
+                $message->created_at = $this->humanDate($message->created_at);
+                
+                return in_array($userId, $userIds);
+            });
+    
+        return [
+            'type' => $type,
+            'messages' => $messages
+        ];
         
     }
-    
     /**
      * 搜索发送对象
      *

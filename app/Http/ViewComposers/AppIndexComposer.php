@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\ViewComposers;
 
+use App\Helpers\ModelTrait;
 use App\Models\App;
 use App\Models\Corp;
 use App\Models\Menu;
@@ -12,6 +13,8 @@ use Illuminate\Contracts\View\View;
  * @package App\Http\ViewComposers
  */
 class AppIndexComposer {
+    
+    use ModelTrait;
     
     protected $corp, $menu;
     
@@ -54,15 +57,12 @@ class AppIndexComposer {
      */
     private function formatDateTime(&$apps) {
         
-        Carbon::setLocale('zh');
         for ($i = 0; $i < sizeof($apps); $i++) {
             if ($apps[$i]['created_at']) {
-                $dt = Carbon::createFromFormat('Y-m-d H:i:s', $apps[$i]['created_at']);
-                $apps[$i]['created_at'] = $dt->diffForhumans();
+                $apps[$i]['created_at'] = $this->humanDate($apps[$i]['created_at']);
             }
             if ($apps[$i]['updated_at']) {
-                $dt = Carbon::createFromFormat('Y-m-d H:i:s', $apps[$i]['updated_at']);
-                $apps[$i]['updated_at'] = $dt->diffForhumans();
+                $apps[$i]['updated_at'] = $this->humanDate($apps[$i]['updated_at']);
             }
             
         }
