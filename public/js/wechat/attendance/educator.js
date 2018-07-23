@@ -67,8 +67,8 @@ function attendances(data) {
         data: data,
         url: 'at/chart',
         success: function (result) {
-            var chartTitle = $classId.find(':selected').text() + "\n" +
-                $sasId.find(':selected').text() + "\n" +
+            var chartTitle = $classId.find(':selected').text() + "\n\n" +
+                $sasId.find(':selected').text() + "\n\n" +
                 $startDate.val();
             showPie(
                 result['chart'],
