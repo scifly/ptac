@@ -92,7 +92,8 @@ function showtable(scores, classAvgs, examNames) {
                 { type: 'slider', show: true, xAxisIndex: [0], start: 0, end: 50 }
             ],
             series: [
-                { name:'我的成绩', type:'line', data: scores, radius: '30%' },
+                { name:'我的成绩', type:'line', data: scores,  },
+                {radius: '30%'},
                 { name:'班平均成绩', type:'line', data: classAvgs },
             ]
         };
