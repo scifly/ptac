@@ -33,7 +33,7 @@ class TestController extends Controller {
      */
     public function index() {
 
-        $messages = Message::all()->filter(function (Message &$message) {
+        $messages = Message::all()->filter(function (Message $message) {
             $message->created_at = $this->humanDate($message->created_at);
             return true;
         });
