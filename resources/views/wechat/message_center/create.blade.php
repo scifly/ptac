@@ -5,7 +5,7 @@
 @endsection
 @section('content')
     <div class="msg-send-wrap">
-        {!! Form::hidden('id', $message ? $message->id : null, ['id' => 'id']) !!}
+        {!! Form::hidden('id', isset($message) ? $message->id : null, ['id' => 'id']) !!}
         <!-- 发送对象 -->
         <div id="chosen-container" class="scui-chosen js-scui-chosen-container3 js-scui-chosen scui-form-group">
             {!! Form::label(null, '发送对象', ['class' => 'scui-control-label mr4']) !!}
