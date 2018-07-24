@@ -14,16 +14,23 @@ $('.select-ul li').on('click', function () {
     message(typeId)
 });
 $('.teacher-list-box').on('click', function () {
-    var id = $(this).attr('id');
-    $.ajax({
-        type: 'GET',
-        dataType: 'json',
-        url: 'mc/read/' + id,
-        success: function () {
-            window.location = 'mc/show/' + id;
-        },
-        error: function (e) { wap.errorHandler(e); }
-    });
+    var $this = $(this),
+        id = $this.attr('id'),
+        type = $this.data('type');
+
+    if (type === 'sent') {
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            url: 'mc/read/' + id,
+            success: function () {
+                window.location = 'mc/show/' + id;
+            },
+            error: function (e) { wap.errorHandler(e); }
+        });
+    } else {
+        window.location = 'mc/create'
+    }
 });
 $('.weui-navbar__item').click(function(){
     $('.select-ul').hide();

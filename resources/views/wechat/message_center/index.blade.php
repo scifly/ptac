@@ -67,13 +67,18 @@
                                         @foreach($messages as $message)
                                             <div class="table-list list-{{ $type }}">
                                                 <div class="line"></div>
-                                                <div class="teacher-list-box grayline" id="{{ $message['id'] }}">
+                                                <div id="{{ $message['id'] }}"
+                                                     class="teacher-list-box grayline"
+                                                     data-type="{!! $message['sent'] ? 'sent' : 'draft' !!}"
+                                                >
                                                     <div class="teacher-work-box">
                                                         <a class="teacher-work-head" style="color:#000" href="#">
                                                             <div class="titleinfo">
                                                                 <div class="titleinfo-head">
                                                                     <div class="titleinfo-head-left fl">
-                                                                        <div class="title ml12">{!! $message['title'] !!}</div>
+                                                                        <div class="title ml12">
+                                                                            {!! $message['title'] !!}
+                                                                        </div>
                                                                         <div class="title-info ml12">
                                                                             接收者：{!! $message['recipient'] !!} ...
                                                                         </div>
