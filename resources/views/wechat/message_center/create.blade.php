@@ -3,7 +3,7 @@
     <title>消息中心</title>
 @endsection
 @section('css')
-    <link rel="stylesheet" href="{!! asset('message.css') !!}">
+    <link rel="stylesheet" href="{!! asset('/css/wechat/message_center/message.css') !!}">
 @endsection
 @section('content')
     {!! Form::open(['method' => 'post', 'id' => 'formMessage']) !!}
