@@ -1,7 +1,9 @@
 @extends('wechat.layouts.master')
-@section('title') <title>消息中心</title> @endsection
+@section('title')
+    <title>消息中心</title>
+@endsection
 @section('css')
-    <link rel="stylesheet" href="{{ asset('/css/wechat/message_center/create.css') }}">
+    <link rel="stylesheet" href="{!! asset('message.css') !!}">
 @endsection
 @section('content')
     {!! Form::open(['method' => 'post', 'id' => 'formMessage']) !!}
@@ -9,5 +11,5 @@
     {!! Form::close() !!}
 @endsection
 @section('script')
-    <script src="{{ asset('/js/wechat/message_center/create.js') }}"></script>
+    <script src="{!! asset('/js/wechat/message_center/create.js') !!}"></script>
 @endsection
