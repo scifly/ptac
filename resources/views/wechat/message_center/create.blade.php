@@ -45,7 +45,7 @@
         <div id="title-container" class="mt5px msg-send-bg b-bottom hw-title" style="display: none;">
             <div class="weui-cell">
                 <div class="weui-cell__bd js-title">
-                    {!! Form::text('title', $message ? $message->title : '', [
+                    {!! Form::text('title', isset($message) ? $message->title : '', [
                         'id' => 'title',
                         'class' => 'weui-input fs18 one-line title',
                         'placeholder' => '标题',
