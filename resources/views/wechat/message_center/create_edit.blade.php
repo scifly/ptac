@@ -14,11 +14,16 @@
             {!! Form::label('msg-type', '信息类型', ['class' => 'weui-label']) !!}
         </div>
         <div class="weui-cell__bd">
-            {!! Form::select('msg-type', $msgTypes, null, [
-                'id' => 'msg-type',
-                'class' => 'weui-input',
-                'disabled' => sizeof($msgTypes) <= 1
-            ]) !!}
+            {!! Form::select(
+                'msg-type',
+                $msgTypes,
+                isset($selectedMsgTypeId) ? $selectedMsgTypeId : null,
+                [
+                    'id' => 'msg-type',
+                    'class' => 'weui-input',
+                    'disabled' => sizeof($msgTypes) <= 1
+                ]
+           ) !!}
         </div>
     </div>
     <!-- 消息类型 -->
@@ -27,11 +32,13 @@
             {!! Form::label('message_type_id', '消息类型', ['class' => 'weui-label']) !!}
         </div>
         <div class="weui-cell__bd">
-            {!! Form::select('message_type_id', $messageTypes, null, [
-                'id' => 'message_type_id',
-                'class' => 'weui-input',
-                'disabled' => sizeof($messageTypes) <= 1
-            ]) !!}
+            {!! Form::select(
+                'message_type_id', $messageTypes, null, [
+                    'id' => 'message_type_id',
+                    'class' => 'weui-input',
+                    'disabled' => sizeof($messageTypes) <= 1
+                ]
+            ) !!}
         </div>
     </div>
     <div style="height: 5px;"></div>
@@ -39,7 +46,7 @@
     <div id="title-container" class="mt5px msg-send-bg b-bottom hw-title" style="display: none;">
         <div class="weui-cell">
             <div class="weui-cell__bd js-title">
-                {!! Form::text('title', isset($message) ? $message->title : '', [
+                {!! Form::text('title', null, [
                     'id' => 'title',
                     'class' => 'weui-input fs18 one-line title',
                     'placeholder' => '标题',
@@ -215,7 +222,7 @@
     <div class="weui-popup__overlay"></div>
     <div class="weui-popup__modal" style="background-color: #fff;">
     {!! Form::hidden('mpnews-id', null, ['id' => 'mpnews-id']) !!}
-        <!-- 图文标题 -->
+    <!-- 图文标题 -->
         <div class="weui-cell">
             <div class="weui-uploader__hd">
                 {!! Form::label('mpnews-title', '标题', ['class' => 'weui-label']) !!}
