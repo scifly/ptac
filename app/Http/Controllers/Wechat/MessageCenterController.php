@@ -144,6 +144,24 @@ class MessageCenterController extends Controller {
     }
     
     /**
+     * 更新消息草稿
+     *
+     * @param MessageRequest $request
+     * @param null $id
+     * @return JsonResponse|string
+     * @throws Exception
+     */
+    public function update(MessageRequest $request, $id = null) {
+        
+        return $this->result(
+            $this->message->modify(
+                $request->all(), $id
+            )
+        );
+        
+    }
+    
+    /**
      * 更新已读状态
      *
      * @param $id

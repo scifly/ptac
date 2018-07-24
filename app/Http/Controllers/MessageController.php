@@ -81,7 +81,7 @@ class MessageController extends Controller {
     }
     
     /**
-     * 编辑消息
+     * 编辑消息（草稿）
      *
      * @param $id
      * @return JsonResponse
@@ -95,7 +95,7 @@ class MessageController extends Controller {
     }
     
     /**
-     * 更新消息
+     * 更新消息（草稿）
      *
      * @param MessageRequest $request
      * @param null $id
@@ -121,7 +121,7 @@ class MessageController extends Controller {
      */
     public function show($id) {
     
-        return $this->message->detail($id);
+        return $this->message->show($id);
         
     }
     

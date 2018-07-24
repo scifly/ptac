@@ -62,7 +62,7 @@ $("#searchInput").on("input propertychange change", function() {
                                     '<div class="titleinfo-head">'+
                                         '<div class="titleinfo-head-left fl">'+
                                             '<div class="title ml12">'+ message['title'] +'</div>'+
-                                            '<div class="title-info ml12">'+ message['user'] + '</div>' +
+                                            '<div class="title-info ml12">'+ message['realname'] + '</div>' +
                                         '</div>'+
                                         '<span class="worktime">'+ message['created'] + sent + '</span>' +
                                     '</div>' +

@@ -15,6 +15,7 @@ var message = {
     },
     $search = $('#search'),
     $send = $('#send'),
+    $draft = $('#draft'),
     $notification = $('#notification'),
 
     // 发送对象
@@ -429,8 +430,45 @@ $add.on('click', function () {
 });
 
 /** 发送消息 */
-// 初始化提交消息发送请求的事件
-$send.on('click', function () {
+$send.on('click', function () { action('send'); });
+$draft.on('click', function () { action('draft'); });
+
+/** Helper functions */
+function action(type) {
+    var uri = 'send',
+        requestType = 'POST',
+        formData = data();
+
+    switch (type) {
+        case 'send':
+            break;
+        case 'draft':
+            var $id = $('#id');
+            uri = $id.val() !== '' ? 'update/' + $id.val() : 'store';
+            requestType = $id.val() !== '' ? 'PUT' : 'POST';
+            break;
+        case 'schedule':
+            break;
+        default:
+            break;
+    }
+
+    if (formData !== false) {
+        $.ajax({
+            type: requestType,
+            dataType: 'json',
+            data: formData,
+            url: uri,
+            success: function (result) {
+                $.toptip(result['message'], 'success');
+            },
+            error: function (e) {
+                wap.errorHandler(e);
+            }
+        });
+    }
+}
+function data() {
     var departmentIds = [],
         userIds = [], mediaId,
         title, text, cardUrl, btnTxt,
@@ -438,10 +476,10 @@ $send.on('click', function () {
         type = $msgType.val();
 
     $chosenResults.find('a.department').each(function () {
-        departmentIds.push($(this).attr('data-uid'));
+        departmentIds.push($(this).data('uid'));
     });
     $chosenResults.find('a.user').each(function () {
-        userIds.push($(this).attr('data-uid'));
+        userIds.push($(this).data('uid'));
     });
     switch (type) {
         case 'text':
@@ -525,6 +563,7 @@ $send.on('click', function () {
             if (text.length === 0) {
                 $.toptip('请输入短信内容', 'error');
             }
+            content = { sms: text };
             break;
         default:
             break;
@@ -540,23 +579,9 @@ $send.on('click', function () {
         dept_ids: departmentIds,
         message_type_id: $messageTypeId.val()
     };
-    $.ajax({
-        type: 'POST',
-        dataType: 'json',
-        data: $.extend(formData, content),
-        url: 'send',
-        success: function (result) {
-            $.alert(result.message, function () {
-                window.location.href = '../mc';
-            });
-        },
-        error: function (e) {
-            wap.errorHandler(e);
-        }
-    });
-});
 
-/** Helper functions */
+    return $.extend(formData, content);
+}
 function upload(uploader, mpnews) {
     var formData = new FormData(),
         type = $msgType.val();

@@ -5,6 +5,7 @@
 @endsection
 @section('content')
     <div class="msg-send-wrap">
+        {!! Form::hidden('id', $message ? $message->id : null, ['id' => 'id']) !!}
         <!-- 发送对象 -->
         <div id="chosen-container" class="scui-chosen js-scui-chosen-container3 js-scui-chosen scui-form-group">
             {!! Form::label(null, '发送对象', ['class' => 'scui-control-label mr4']) !!}
@@ -44,7 +45,7 @@
         <div id="title-container" class="mt5px msg-send-bg b-bottom hw-title" style="display: none;">
             <div class="weui-cell">
                 <div class="weui-cell__bd js-title">
-                    {!! Form::text('title', isset($message) ? $message->title : '', [
+                    {!! Form::text('title', $message ? $message->title : '', [
                         'id' => 'title',
                         'class' => 'weui-input fs18 one-line title',
                         'placeholder' => '标题',
