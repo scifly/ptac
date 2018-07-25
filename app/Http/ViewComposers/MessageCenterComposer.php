@@ -8,7 +8,6 @@ use App\Models\MessageType;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -45,36 +44,37 @@ class MessageCenterComposer {
                 Request::route('id')
             );
             $type = $content['type'];
+            $msg = $content[$type]->{$type};
             switch ($type) {
                 case 'text':
-                    $text = $content[$type]->{$type}->{'content'} ?? '';
+                    $text = $msg->{'content'} ?? '';
                     break;
                 case 'image':
-                    list($mediaId, $filename) = $this->fileAttrs($content, $type);
+                    list($mediaId, $filename) = $this->fileAttrs($msg);
                     $accept = 'image/*';
                     break;
                 case 'voice':
-                    list($mediaId, $filename) = $this->fileAttrs($content, $type);
+                    list($mediaId, $filename) = $this->fileAttrs($msg);
                     $accept = 'audio/*';
                     break;
                 case 'video':
-                    $title = $content[$type]->{'title'};
-                    $text = $content[$type]->{'description'} ?? '';
-                    list($mediaId, $filename) = $this->fileAttrs($content, $type);
+                    $title = $msg->{'title'};
+                    $text = $msg->{'description'} ?? '';
+                    list($mediaId, $filename) = $this->fileAttrs($msg);
                     $accept = 'video/mp4';
                     break;
                 case 'file':
-                    list($mediaId, $filename) = $this->fileAttrs($content, $type);
+                    list($mediaId, $filename) = $this->fileAttrs($msg);
                     $accept = '*';
                     break;
                 case 'textcard':
-                    $title = $content[$type]->{'title'};
-                    $text = $content[$type]->{'description'} ?? '';
-                    $url = $content['textcard']->{'url'};
-                    $btntxt = $content['textcard']->{'btntxt'};
+                    $title = $msg->{'title'};
+                    $text = $msg->{'description'} ?? '';
+                    $url = $msg->{'url'};
+                    $btntxt = $msg->{'btntxt'};
                     break;
                 case 'mpnews':
-                    $articles = $content['mpnews']->{'articles'};
+                    $articles = $msg->{'articles'};
                     $tpl = <<<HTML
                         <li id="mpnews-%s" class="weui-uploader__file" style="background-image: (%s)"
                             data-media-id="%s" data-author="%s" data-content="%s" data-digest="%s"
@@ -97,7 +97,7 @@ HTML;
                     }
                     break;
                 case 'sms':
-                    $text = $content[$type];
+                    $text = $msg;
                     break;
                 default:
                     break;
@@ -170,14 +170,13 @@ HTML;
     /**
      * 获取文件类消息的mediaId及filename属性值
      *
-     * @param $content
-     * @param $type
+     * @param $msg
      * @return array
      */
-    private function fileAttrs($content, $type) {
+    private function fileAttrs($msg) {
     
-        $mediaId = $content[$type]->{'media_id'};
-        $paths = explode('/', $content[$type]->{'path'});
+        $mediaId = $msg->{'media_id'};
+        $paths = explode('/', $msg->{'path'});
         $filename = $paths[sizeof($paths) - 1];
         
         return [$mediaId, $filename];
