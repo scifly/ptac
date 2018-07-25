@@ -49,7 +49,7 @@ class MessageCenterComposer {
                 $title = $content[$type]->{'title'};
             }
             if ($type == 'text') {
-                $text = $content[$type]->{'content'};
+                $text = $content[$type]->{'content'} ?? '';
             }
             if ($type == 'sms') {
                 $text = $content[$type];
