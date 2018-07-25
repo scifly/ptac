@@ -662,7 +662,7 @@
                     case 'send':
                         break;
                     case 'draft':
-                        uri = $id.length > 0 ? 'update/' + $id.val() : 'store';
+                        uri = $id.length > 0 ? '../update/' + $id.val() : '../store';
                         requestType = $id.length > 0 ? 'PUT' : 'POST';
                         break;
                     case 'schedule':
