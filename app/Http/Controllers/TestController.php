@@ -33,7 +33,7 @@ class TestController extends Controller {
      */
     public function index() {
 
-        dd(explode('|', ''));
+        dd(explode('|', null));
     }
     
     public function apiCall() {
