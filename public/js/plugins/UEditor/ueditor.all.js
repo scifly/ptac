@@ -27685,7 +27685,7 @@ UE.ui = baidu.editor.ui = {};
 })();
 
 
-// ui/message.js
+// ui/mc.js
 ///import core
 ///import uicore
 (function () {
@@ -29482,7 +29482,7 @@ UE.ui = baidu.editor.ui = {};
 
 })();
 
-// adapter/message.js
+// adapter/mc.js
 UE.registerUI('message', function(editor) {
 
     var editorui = baidu.editor.ui;

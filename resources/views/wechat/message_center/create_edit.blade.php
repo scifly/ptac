@@ -1,12 +1,18 @@
 <div class="msg-send-wrap">
-{!! Form::hidden('id', isset($message) ? $message->id : null, ['id' => 'id']) !!}
-<!-- 发送对象 -->
+    @if (isset($message))
+        {!! Form::hidden('id', $message->id, ['id' => 'id']) !!}
+    @endif
+    <!-- 发送对象 -->
     <div id="chosen-container" class="scui-chosen js-scui-chosen-container3 js-scui-chosen scui-form-group">
         {!! Form::label(null, '发送对象', ['class' => 'scui-control-label mr4']) !!}
-        <div id="chosen-results"></div>
+        <div id="chosen-results">
+            @if (isset($message))
+                {!! $chosenTargetsHtml !!}
+            @endif
+        </div>
         <span class="icons-chosen chosen-icon js-chosen-icon">
-                <a class="icon iconfont icon-add c-green open-popup" href="#" data-target="#targets"></a>
-            </span>
+            <a class="icon iconfont icon-add c-green open-popup" href="#" data-target="#targets"></a>
+        </span>
     </div>
     <!-- 信息类型 -->
     <div class="weui-cell weui-cell_select weui-cell_select-after" style="background-color: #fff;">
@@ -43,7 +49,8 @@
     </div>
     <div style="height: 5px;"></div>
     <!-- 标题(视频、卡片) -->
-    <div id="title-container" class="mt5px msg-send-bg b-bottom hw-title" style="display: none;">
+    <div id="title-container" class="mt5px msg-send-bg b-bottom hw-title"
+         style="display: {!! isset($title) ? 'block' : 'none';  !!};">
         <div class="weui-cell">
             <div class="weui-cell__bd js-title">
                 {!! Form::text('title', null, [
@@ -62,7 +69,8 @@
         </div>
     </div>
     <!-- 点击后跳转的链接(卡片) -->
-    <div id="card-url-container" class="msg-send-bg b-bottom hw-title extra" style="display: none;">
+    <div id="card-url-container" class="msg-send-bg b-bottom hw-title extra"
+         style="display: {!! isset($url) ? 'block' : 'none' !!};">
         <div class="weui-cell">
             <div class="weui-cell__bd">
                 {!! Form::text('card-url', null, [
@@ -75,7 +83,8 @@
         </div>
     </div>
     <!-- 按钮文字(卡片) -->
-    <div id="btn-txt-container" class="msg-send-bg b-bottom hw-title extra" style="display: none;">
+    <div id="btn-txt-container" class="msg-send-bg b-bottom hw-title extra"
+         style="display: {!! isset($btntxt) ? 'block' : 'none' !!};">
         <div class="weui-cell">
             <div class="weui-cell__bd">
                 {!! Form::text('btn-txt', null, [
@@ -89,18 +98,25 @@
     </div>
     <div style="height: 5px;"></div>
     <!-- 上传素材(图片、语音、视频、文件) -->
-    <div id="upload-container" class="msg-send-conicon msg-send-bg b-top extra" style="display: none;">
+    <div id="upload-container" class="msg-send-conicon msg-send-bg b-top extra"
+         style="display: {!! isset($mediaId) ? 'block' : 'none' !!};">
         <div class="weui-cell">
             <div class="weui-uploader">
                 <div class="weui-uploader__hd">
-                    <p id="upload-title" class="weui-uploader__title"></p>
+                    <p id="upload-title" class="weui-uploader__title">
+                        {!! isset($filename) ? $filename : '' !!}
+                    </p>
                 </div>
                 <div class="weui-uploader__bd">
                     <div class="weui-uploader__input-box">
-                        {!! Form::hidden('media_id', null, ['id' => 'media_id']) !!}
+                        {!! Form::hidden(
+                            'media_id',
+                            isset($mediaId) ? $mediaId : null,
+                            ['id' => 'media_id']
+                        ) !!}
                         {!! Form::file('upload', [
                             'id' => 'upload',
-                            'accept' => '',
+                            'accept' => isset($accept) ? $accept : '',
                             'class' => 'weui-uploader__input'
                         ]) !!}
                     </div>
@@ -109,7 +125,8 @@
         </div>
     </div>
     <!-- 图文消息 -->
-    <div id="mpnews-container" class="msg-send-conicon msg-send-bg b-top" style="display: none;">
+    <div id="mpnews-container" class="msg-send-conicon msg-send-bg b-top"
+         style="display: {!! isset($mpnewsList) ? 'block' : 'none' !!};">
         <div class="weui-cell">
             <div class="weui-uploader">
                 <div class="weui-uploader__hd">
@@ -117,7 +134,7 @@
                 </div>
                 <div class="weui-uploader__bd">
                     <ul class="weui-uploader__files" id="mpnews-list">
-
+                        {!! isset($mpnewsList) ? $mpnewsList : '' !!}
                     </ul>
                     <a id="add-mpnews" href="#" class="open-popup weui-uploader__input-box"></a>
                 </div>
@@ -168,26 +185,20 @@
                     </div>
                 </div>
                 <div class="back">
-                    <a href="#" class="weui-btn weui-btn_plain-default" id="back" style="display: none;">返回部门列表</a>
+                    <a href="#" class="weui-btn weui-btn_plain-default" id="back" style="display: none;">
+                        返回部门列表
+                    </a>
                     {!! Form::hidden('deptId', null, ['id' => 'deptId']) !!}
                 </div>
                 <div class="chosen-items js-chosen-items">
                     <div class="weui-cells weui-cells_checkbox" style="padding-bottom: 60px;">
                         <div id="targets-container">
-                            {{--年级列表--}}
-                            @foreach ($departments as $department)
-                                @include('wechat.message_center.target', [
-                                    'type' => 'department',
-                                    'target' => $department
-                                ])
-                            @endforeach
-                            {{--用户列表--}}
-                            @foreach ($users as $user)
-                                @include('wechat.message_center.target', [
-                                    'type' => 'user',
-                                    'target' => $user
-                                ])
-                            @endforeach
+                            <!-- 部门列表 -->
+                            @include('wechat.message_center.targets', [
+                                'type' => 'department',
+                                'targets' => $departments,
+                                'selectedTargetIds' => isset($selectedDepartmentIds) ? $selectedDepartmentIds : null,
+                            ])
                         </div>
                     </div>
                     <div style="height: 40px;"></div>
@@ -208,12 +219,13 @@
                         </div>
                     </label>
                 </div>
-                <a id="confirm" href="#"
-                   class="scui-pull-right weui-btn weui-btn_mini weui-btn_primary close-popup"
-                >
+                <a id="confirm" href="#" class="scui-pull-right weui-btn weui-btn_mini weui-btn_primary close-popup">
                     确定
                 </a>
-                <span id="count">已选0个部门, 0名用户</span>
+                <span id="count">
+                    已选{!! isset($selectedDepartmentIds) ? count($selectedDepartmentIds) : 0 !!}个部门,
+                    {!! isset($selectedUserIds) ? count($selectedUserIds) : 0 !!}名用户
+                </span>
             </div>
         </div>
     </div>

@@ -55,16 +55,15 @@ function app_routes($acronym) {
     Route::post($p, $c . '@index');
     Route::get($p . 'create', $c . '@create');
     Route::post($p . 'create', $c . '@create');
-    Route::post($p . 'send', $c . '@send');
     Route::post($p . 'store', $c . '@store');
+    Route::get($p . 'edit/{id?}', $c . '@edit');
+    Route::post($p . 'edit/{id?}', $c . '@edit');
     Route::put($p . 'update/{id?}', $c . '@update');
     Route::get($p . 'show/{id}', $c . '@show');
-    Route::get($p . 'read/{id}', $c . '@read');
+    Route::post($p . 'show/{id?}', $c . '@show');
+    Route::delete($p . 'show/{id?}', $c . '@show');
     Route::delete($p . 'delete/{id}', $c . '@destroy');
-    Route::post($p . 'upload', $c . '@upload');
-    Route::post($p . 'reply', $c . '@reply');
-    Route::post($p . 'replies', $c . '@replies');
-    Route::delete($p . 'remove/{id}', $c . '@remove');
+    Route::post($p . 'send', $c . '@send');
     
     /** 考勤中心 */
     $c = 'Wechat\AttendanceController';

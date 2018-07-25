@@ -52,6 +52,7 @@ return [
         'title'           => '部门管理',
         'department_sync' => '%s企业微信部门',
         'has_children'    => '请先删除自部门',
+        'not_found'       => '没有这个部门'
     ],
     'educator'           => [
         'title'             => '教职员工',
@@ -73,6 +74,7 @@ return [
     ],
     'message'            => [
         'title'            => '消息中心',
+        'not_found'        => '没有这条消息',
         'sent'             => '已发消息数量：%s<br />发送成功：%s<br />发送失败：%s<br />请点击已发送卡片查看详情。',
         'failed'           => '消息发送失败',
         'uploaded'         => '文件上传成功',

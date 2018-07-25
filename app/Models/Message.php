@@ -11,6 +11,7 @@ use App\Jobs\SendMessage;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -19,6 +20,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use Illuminate\View\View;
 use Throwable;
 
 /**
@@ -106,7 +108,11 @@ class Message extends Model {
      *
      * @return BelongsTo
      */
-    function messageSendinglog() { return $this->belongsTo('App\Models\MessageSendingLog', 'msl_id', 'id'); }
+    function messageSendinglog() {
+        
+        return $this->belongsTo('App\Models\MessageSendingLog', 'msl_id', 'id');
+    
+    }
     
     /**
      * 返回对应的通信类型对象
@@ -254,48 +260,6 @@ class Message extends Model {
     }
     
     /**
-     * 显示指定消息的内容
-     *
-     * @param $id
-     * @return array
-     */
-    function detail($id) {
-        
-        $user = Auth::user();
-        $message = $this->find($id);
-        $edit = ($user->id == $message->s_user_id ? true : false);
-        $object = json_decode(json_decode($message->content));
-        $title = $message->title;
-        $type = array_search(mb_substr($message->title, -3, 2), Constant::INFO_TYPES);
-        if (!$type) {
-            $messageType = MessageType::find($message->message_type_id);
-            $messageTypeName = $messageType ? $messageType->name : '未知消息';
-            if (is_object($object) && property_exists(get_class($object), 'msgtype')) {
-                $type = $object->{'msgtype'};
-                $title = $messageTypeName . '(' . Constant::INFO_TYPES[$type] . ')';
-            } else {
-                $title = $messageTypeName . '(未知)';
-            }
-            $message->update(['title' => $title]);
-        }
-        $type = $type ? $type : 'other';
-        $msl = $message->messageSendinglog;
-        $content = [
-            'id'         => $message->id,
-            'title'      => $title,
-            'updated_at' => $this->humanDate($message->updated_at),
-            'sender'     => User::find($message->s_user_id)->realname,
-            'recipients' => $msl ? $msl->recipient_count : 0,
-            'msl_id'     => $msl ? $msl->id : 0,
-            'type'       => $type,
-            $type        => $type == 'other' ? $message->content : $object,
-        ];
-        
-        return [$content, $edit];
-        
-    }
-    
-    /**
      * 编辑消息
      *
      * @param $id
@@ -303,7 +267,7 @@ class Message extends Model {
      */
     function edit($id) {
         
-        list($content) = $this->detail($id);
+        $content = $this->detail($id);
         $message = $content[$content['type']];
         $toparty = $message->{'toparty'};
         $touser = $message->{'touser'};
@@ -343,6 +307,46 @@ class Message extends Model {
             'messageTypeId'     => $this->find($id)->message_type_id,
             'messageFormat'     => $content['type'],
             'message'           => $message,
+        ];
+        
+    }
+    
+    /**
+     * 显示指定消息的内容
+     *
+     * @param $id
+     * @return array
+     */
+    function detail($id) {
+        
+        $message = $this->find($id);
+        // $edit = ($user->id == $message->s_user_id ? true : false);
+        $object = json_decode(json_decode($message->content));
+        $title = $message->title;
+        $type = array_search(mb_substr($message->title, -3, 2), Constant::INFO_TYPES);
+        if (!$type) {
+            $messageType = MessageType::find($message->message_type_id);
+            $messageTypeName = $messageType ? $messageType->name : '未知消息';
+            if (is_object($object) && property_exists(get_class($object), 'msgtype')) {
+                $type = $object->{'msgtype'};
+                $title = $messageTypeName . '(' . Constant::INFO_TYPES[$type] . ')';
+            } else {
+                $title = $messageTypeName . '(未知)';
+            }
+            $message->update(['title' => $title]);
+        }
+        $type = $type ? $type : 'other';
+        $msl = $message->messageSendinglog;
+        
+        return [
+            'id'         => $message->id,
+            'title'      => $title,
+            'updated_at' => $this->humanDate($message->updated_at),
+            'sender'     => User::find($message->s_user_id)->realname,
+            'recipients' => $msl ? $msl->recipient_count : 0,
+            'msl_id'     => $msl ? $msl->id : 0,
+            'type'       => $type,
+            $type        => $type == 'other' ? $message->content : $object,
         ];
         
     }
@@ -413,22 +417,12 @@ class Message extends Model {
      * 返回消息详情
      *
      * @param $id
-     * @param bool $wechat
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      * @throws Throwable
      */
-    function show($id, $wechat = false) {
+    function show($id) {
         
-        if ($wechat) {
-            list($content, $edit) = $this->detail($id);
-            
-            return view('wechat.message_center.show', [
-                'content' => $content,
-                'edit'    => $edit,
-                'show'    => true,
-            ]);
-        }
-        list($content) = $this->detail($id);
+        $content = $this->detail($id);
         $type = $content['type'];
         $userids = explode('|', $content[$type]->{'touser'});
         $deptIds = explode('|', $content[$type]->{'toparty'});
@@ -511,37 +505,6 @@ class Message extends Model {
         } catch (Exception $e) {
             throw $e;
         }
-        
-    }
-    
-    /**
-     * 获取指定消息的回复列表
-     *
-     * @return JsonResponse
-     */
-    function replies() {
-        
-        $user = Auth::user();
-        $message = $this->find(Request::input('id'));
-        $mslId = Request::input('msl_id');
-        $replies = MessageReply::whereMslId($mslId)->get();
-        if ($user->id != $message->s_user_id) {
-            $replies = MessageReply::whereMslId($mslId)->where('user_id', $user->id)->get();
-        }
-        $replyList = [];
-        foreach ($replies as $reply) {
-            $replyList[] = [
-                'id'         => $reply->id,
-                'content'    => $reply->content,
-                'replied_at' => $this->humanDate($reply->created_at),
-                'realname'   => $reply->user->realname,
-                'avatar_url' => $reply->user->avatar_url,
-            ];
-        }
-        
-        return response()->json([
-            'replies' => $replyList,
-        ]);
         
     }
     
@@ -649,6 +612,36 @@ class Message extends Model {
     }
     
     /**
+     * 获取指定消息的回复列表
+     *
+     * @param $id
+     * @param $mslId
+     * @return array
+     */
+    function replies($id, $mslId) {
+        
+        $user = Auth::user();
+        $message = $this->find($id);
+        $replies = MessageReply::whereMslId($mslId)->get();
+        if ($user->id != $message->s_user_id) {
+            $replies = MessageReply::whereMslId($mslId)->where('user_id', $user->id)->get();
+        }
+        $replyList = [];
+        foreach ($replies as $reply) {
+            $replyList[] = [
+                'id'         => $reply->id,
+                'content'    => $reply->content,
+                'replied_at' => $this->humanDate($reply->created_at),
+                'realname'   => $reply->user->realname,
+                'avatar_url' => $reply->user->avatar_url,
+            ];
+        }
+        
+        return $replyList;
+        
+    }
+    
+    /**
      * 返回指定学生、教职员工及部门对应的消息发送对象（监护人、教职员工）
      *
      * @param $userIds
@@ -673,6 +666,144 @@ class Message extends Model {
         
     }
     
+    /**
+     * 微信端消息中心首页
+     *
+     * @return bool|Factory|View|string
+     * @throws Throwable
+     */
+    function wIndex() {
+        
+        $response = response()->json([
+            'message' => __('messages.ok')
+        ]);
+        switch (Request::method()) {
+            case 'GET':
+                $response = Request::has('id')
+                    ? $this->read(Request::input('id')) ? response()->json() : false
+                    : view('wechat.message_center.index');
+                break;
+            case 'POST':
+                $response = $this->search();
+                break;
+            default:
+                break;
+        }
+        
+        return $response;
+    
+    }
+    
+    /**
+     * 微信端创建消息
+     *
+     * @return Factory|JsonResponse|View|string
+     * @throws Throwable
+     */
+    function wCreate() {
+        
+        if (Request::method() == 'POST') {
+            return Request::has('file')
+                ? $this->upload()
+                : $this->search();
+        }
+        
+        return view('wechat.message_center.create');
+        
+    }
+    
+    /**
+     * @param $id
+     * @return Factory|JsonResponse|View|string
+     * @throws Throwable
+     */
+    function wEdit($id) {
+        
+        $message = $this->find($id);
+        abort_if(
+            !$message,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
+        if (Request::has('keyword')) {
+            return $this->search();
+        }
+        if (Request::has('file')) {
+            return $this->upload();
+        }
+        
+        return view('wechat.message_center.edit', [
+            'message' => $message,
+        ]);
+        
+    }
+    
+    /**
+     * 微信端消息详情
+     *
+     * @param $id
+     * @return Factory|JsonResponse|View|string
+     * @throws Throwable
+     */
+    function wShow($id) {
+        
+        $response = response()->json([
+            'message' => __('messages.ok'),
+        ]);
+        switch (Request::method()) {
+            case 'GET':
+                $message = $this->find($id);
+                abort_if(
+                    !$message,
+                    HttpStatusCode::NOT_FOUND,
+                    __('messages.message.not_found')
+                );
+                $response = view('wechat.message_center.show', [
+                    'message' => $message,
+                ]);
+                break;
+            case 'POST':
+                if (Request::has('content')) {
+                    # 保存消息回复
+                    Request::merge(['user_id' => Auth::id()]);
+                    $replied = (new MessageReply)->store(Request::all());
+                    abort_if(
+                        !$replied,
+                        HttpStatusCode::BAD_REQUEST,
+                        __('messages.fail')
+                    );
+                } else {
+                    # 获取指定消息的所有回复
+                    $response = view('wechat.message_center.replies', [
+                        'replies' => $this->replies(
+                            Request::input('id'),
+                            Request::input('msl_id')
+                        ),
+                    ])->render();
+                }
+                break;
+            case 'DELETE':
+                $mr = MessageReply::find(Request::input('id'));
+                abort_if(
+                    !$mr, HttpStatusCode::NOT_FOUND,
+                    __('messages.not_found')
+                );
+                $deleted = $mr->delete();
+                abort_if(
+                    !$deleted,
+                    HttpStatusCode::BAD_REQUEST,
+                    __('messages.del_fail')
+                );
+                break;
+            default:
+                break;
+        }
+        
+        return $response;
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
      * 上传媒体文件
      *
@@ -750,52 +881,27 @@ class Message extends Model {
     }
     
     /**
-     * 微信端消息中心首页
-     *
-     * @return array
-     * @throws Throwable
-     */
-    function wIndex() {
-        
-        if (Request::method() == 'POST') {
-            return $this->search();
-        }
-        
-        return view('wechat.message_center.index');
-        
-    }
-    
-    /**
      * 搜索已发或收到的消息
      *
-     * @param null $departmentId
-     * @return array
+     * @return string
      * @throws Throwable
      */
-    function search($departmentId = null) {
+    private function search() {
         
-        if (!isset($departmentId)) {
-            if (Request::has('type')) {
-                $response = $this->searchMessage();
-            } else {
-                $response = $this->searchTarget();
-            }
-        } else {
-            $response = $this->subTargets($departmentId);
-        }
-        
-        return $response;
+        return Request::has('type')
+            ? $this->searchMessage()
+            : $this->searchTarget();
         
     }
     
-    /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
      * 搜索消息
      *
-     * @return array
+     * @return string
+     * @throws Throwable
      */
     private function searchMessage() {
-    
+        
         # 搜索已发或收到的消息
         $user = Auth::user();
         $userIds = [$user->id];
@@ -808,70 +914,62 @@ class Message extends Model {
         $type = Request::input('type');
         $messages = $this->where('content', 'like', $keyword)
             ->orWhere('title', 'like', $keyword)
-            ->get()->filter(function (Message &$message) use ($userIds, $type) {
-                $userId = $type == 'sent' ? $message->sender->id : $message->receiver->id;
-                $message->{'realname'} = User::find($userId)->realname;
-                $message->{'created'} = $this->humanDate($message->created_at);
-                
-                return in_array($userId, $userIds);
-            });
-    
-        return [
-            'type' => $type,
-            'messages' => $messages
-        ];
+            ->get()->filter(
+                function (Message &$message) use ($userIds, $type) {
+                    $userId = $type == 'sent' ? $message->sender->id : $message->receiver->id;
+                    $message->{'realname'} = User::find($userId)->realname;
+                    $message->{'created'} = $this->humanDate($message->created_at);
+                    
+                    return in_array($userId, $userIds);
+                }
+            );
+        
+        return view('wechat.message_center.messages', [
+            'type'     => $type,
+            'messages' => $messages,
+        ])->render();
         
     }
+    
     /**
-     * 搜索发送对象
+     * 搜索发送对象（部门、用户）
      *
-     * @return array
+     * @return string
+     * @throws Throwable
      */
     private function searchTarget() {
         
         # 搜索发送对象
         $user = Auth::user();
         $schoolId = $user->educator ? $user->educator->school_id : session('schoolId');
-        $targets = [];
+        $targets = Collect([]);
         if (Request::has('departmentId')) {
             # 返回指定部门下的所有学生及教职员工
-            $users = Department::find(Request::input('departmentId'))->users;
-            foreach ($users as $user) {
-                if ($user->student || $user->educator) {
-                    $targets[] = [
-                        'id'   => $user->id,
-                        'name' => $user->realname,
-                    ];
-                }
-            }
+            $targets = Department::find(Request::input('departmentId'))->users->filter(
+                function (User $user) { return !$user->custodian; }
+            );
+            $type = 'user';
         } else {
             $keyword = Request::input('keyword');
-            $target = Request::input('target');
-            switch ($target) {
+            $type = Request::input('target');
+            switch ($type) {
                 case 'list':        # 返回所有可见部门
                 case 'department':  # 搜索部门
                     $targets = Department::whereIn('id', $this->departmentIds($user->id, $schoolId))
-                        ->get(['id', 'name'])->reject(
-                            function (Department $department) use ($target, $keyword) {
-                                return $target == 'department'
-                                    ? mb_strpos($department->name, $keyword) === false ? true : false
-                                    : false;
-                            }
-                        )->toArray();
+                        ->get()->reject(
+                        function (Department $department) use ($type, $keyword) {
+                            return $type == 'department'
+                                ? mb_strpos($department->name, $keyword) === false ? true : false
+                                : false;
+                        }
+                    );
+                    $type = 'department';
                     break;
                 case 'user':        # 搜索用户（学生、教职员工）
-                    $deptId = Request::input('deptId');
-                    $deptUserIds = Department::find($deptId)->users->pluck('id')->toArray();
-                    User::whereIn('id', $deptUserIds)->where('realname', 'like', '%' . $keyword . '%')
-                        ->get()->each(
-                            function (User $user) {
-                                if ($user->student || $user->educator) {
-                                    $targets[] = [
-                                        'id'   => $user->id,
-                                        'name' => $user->realname,
-                                    ];
-                                }
-                            }
+                    $userIds = Department::find(Request::input('deptId'))->users->pluck('id')->toArray();
+                    $targets = User::whereIn('id', $userIds)
+                        ->where('realname', 'like', '%' . $keyword . '%')->get()->filter(
+                            function (User $user) { return !$user->custodian; }
                         );
                     break;
                 default:
@@ -879,37 +977,10 @@ class Message extends Model {
             }
         }
         
-        return ['targets' => $targets];
-        
-    }
-    
-    /**
-     * 搜索指定部门包含的发送对象（部门或用户）
-     *
-     * @param $departmentId
-     * @return string
-     * @throws Throwable
-     */
-    private function subTargets($departmentId) {
-        
-        $user = Auth::user();
-        $department = Department::find($departmentId);
-        if ($department->departmentType->name == '学校') {
-            $response = view('wechat.message_center.select', [
-                'gradeDepts' => (new Grade)->departments($user->id),
-                'classDepts' => (new Squad)->departments($user->id),
-                'users'      => Collect([]),
-            ])->render();
-        } else {
-            $users = $department->users;
-            $nextDepts = Department::where('parent_id', $departmentId)->get();
-            $response = view('wechat.message_center.select', [
-                'departments' => $nextDepts,
-                'users'       => $users,
-            ])->render();
-        }
-        
-        return $response;
+        return view('wechat.message_center.targets', [
+            'targets' => $targets,
+            'type'    => $type,
+        ])->render();
         
     }
     

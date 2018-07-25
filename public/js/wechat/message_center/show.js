@@ -45,7 +45,7 @@ $('.weui_textarea').bind("input propertychange", function () {
 $reply.off('click').on('click', function () {
     var content = $('.weui_textarea').val();
     if (!content){
-        $.alert('回复内容不能为空！');
+        $.toptip('回复内容不能为空！');
         return false;
     }
     $.ajax({
@@ -80,7 +80,9 @@ $(document).on('click', '.delete-replay', function () {
                         replies();
                     });
                 },
-                error: function (e) { wap.errorHandler(e); }
+                error: function (e) {
+                    wap.errorHandler(e);
+                }
             });
         }
     });
@@ -125,6 +127,8 @@ function replies() {
                 $('.discuss_list').html('');
             }
         },
-        error: function (e) { wap.errorHandler(e); }
+        error: function (e) {
+            wap.errorHandler(e);
+        }
     });
 }

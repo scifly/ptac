@@ -11,5 +11,5 @@
     {!! Form::close() !!}
 @endsection
 @section('script')
-    <script src="{!! asset('/js/wechat/message_center/create.js') !!}"></script>
+    <script src="{!! asset('/js/wechat/message_center/edit.js') !!}"></script>
 @endsection
