@@ -95,7 +95,7 @@
                                         <div class="js-show-comment">
                                             <div class="comment-selfEdit-con">
                                                 <div class="edit-input">我来说点什么</div>
-                                                <img class="head avatar" src="img/0.png" alt="">
+                                                <img class="head avatar" src="/img/0.png" alt="">
                                             </div>
                                         </div>
                                         <ul class="discuss_list">
