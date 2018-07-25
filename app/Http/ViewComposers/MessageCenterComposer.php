@@ -39,7 +39,7 @@ class MessageCenterComposer {
         $user = Auth::user();
         $chosenTargetsHtml = '';
         $content = $selectedDepartmentIds = $selectedUserIds = [];
-        $title = $url = $btntxt = $mediaId = $accept = $filename = $mpnewsList = null;
+        $title = $text = $url = $btntxt = $mediaId = $accept = $filename = $mpnewsList = null;
         if (Request::route('id')) {
             $content = $this->message->detail(
                 Request::route('id')
@@ -47,6 +47,12 @@ class MessageCenterComposer {
             $type = $content['type'];
             if (in_array($type, ['video', 'textcard'])) {
                 $title = $content[$type]->{'title'};
+            }
+            if ($type == 'text') {
+                $text = $content[$type]->{'content'};
+            }
+            if ($type == 'sms') {
+                $text = $content[$type];
             }
             if ($type == 'textcard') {
                 $url = $content['textcard']->{'url'};
@@ -138,6 +144,7 @@ HTML;
                 'selectedUserIds' => $selectedUserIds,
                 'chosenTargetsHtml' => $chosenTargetsHtml,
                 'title' => $title,
+                'content' => $text,
                 'url' => $url,
                 'btntxt' => $btntxt,
                 'mediaId' => $mediaId,
