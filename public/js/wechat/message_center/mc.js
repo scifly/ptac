@@ -56,7 +56,7 @@
                         $.ajax({
                             type: 'GET',
                             dataType: 'json',
-                            url: 'mc/index',
+                            url: 'mc',
                             data: { _token: wap.token(), id: id},
                             success: function () {
                                 window.location = 'mc/show/' + id;
