@@ -670,7 +670,6 @@
                     default:
                         break;
                 }
-                console.log(formData);
                 if (formData !== false) {
                     $.ajax({
                         type: requestType,
