@@ -886,9 +886,9 @@
         };
 
         return {
-            index: mc.index(),
-            ce: mc.ce(),
-            show: mc.show()
+            index: mc.index,
+            ce: mc.ce,
+            show: mc.show
         }
     }
 })(jQuery);
