@@ -33,12 +33,7 @@ class TestController extends Controller {
      */
     public function index() {
 
-        $messages = Message::all()->filter(function (Message $message) {
-            $message->{'cretaed'} = $this->humanDate($message->created_at);
-            return true;
-        });
-        
-        dd($messages);
+        dd(explode('|', ''));
     }
     
     public function apiCall() {
