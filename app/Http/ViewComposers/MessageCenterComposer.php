@@ -47,6 +47,7 @@ class MessageCenterComposer {
             $type = $content['type'];
             switch ($type) {
                 case 'text':
+                    Log::debug(json_encode($content));
                     $text = $content[$type]->{'content'} ?? '';
                     Log::debug('wtf');
                     break;
