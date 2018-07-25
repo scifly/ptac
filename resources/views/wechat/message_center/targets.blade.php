@@ -22,7 +22,7 @@
                 {!!
                     $type == 'department'
                         ? $target->name
-                        : $target->realname . ' - '. $target->mobiles->where('isdefault', 1)->mobile
+                        : $target->realname . ' - '. $target->mobiles->where('isdefault', 1)->first()->mobile
                 !!}
             </span>
             </div>
