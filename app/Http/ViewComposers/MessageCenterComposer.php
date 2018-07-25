@@ -103,8 +103,10 @@ HTML;
                     break;
             }
             $message = $content[$type];
-            $selectedDepartmentIds = explode('|', $message->{'toparty'});
-            $touser = explode('|', $message->{'touser'});
+            $selectedDepartmentIds = !empty($message->{'toparty'})
+                ? explode('|', $message->{'toparty'}) : [];
+            $touser = !empty($message->{'touser'})
+                ? explode('|', $message->{'touser'}) : [];
             $selectedUserIds = User::whereIn('userid', $touser)->pluck('id')->toArray();
             list($departmentHtml, $userHtml) = array_map(
                 function ($ids, $type) {
