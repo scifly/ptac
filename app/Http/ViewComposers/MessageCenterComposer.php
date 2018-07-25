@@ -45,53 +45,61 @@ class MessageCenterComposer {
                 Request::route('id')
             );
             $type = $content['type'];
-            if (in_array($type, ['video', 'textcard'])) {
-                $title = $content[$type]->{'title'};
-            }
-            if ($type == 'text') {
-                $text = $content[$type]->{'content'} ?? '';
-            }
-            if ($type == 'sms') {
-                $text = $content[$type];
-            }
-            if ($type == 'textcard') {
-                $url = $content['textcard']->{'url'};
-                $btntxt = $content['textcard']->{'btntxt'};
-            }
-            if (in_array($type, ['image', 'voice', 'video', 'file'])) {
-                $mediaId = $content[$type]->{'media_id'};
-                $paths = explode('/', $content[$type]->{'path'});
-                $filename = $paths[sizeof($paths) - 1];
-                switch ($type) {
-                    case 'image': $accept = 'image/*'; break;
-                    case 'voice': $accept = 'audio/*'; break;
-                    case 'video': $accept = 'video/mp4'; break;
-                    case 'file': $accept = '*'; break;
-                    default: break;
-                }
-            }
-            if ($type == 'mpnews') {
-                $articles = $content['mpnews']->{'articles'};
-                $tpl = <<<HTML
-                    <li id="mpnews-%s" class="weui-uploader__file" style="background-image: (%s)"
-                        data-media-id="%s" data-author="%s" data-content="%s" data-digest="%s"
-                        data-filename="%s" data-url="%s" data-image="%s" data-title="%s"></li>
+            switch ($type) {
+                case 'text':
+                    $text = $content[$type]->{'content'} ?? '';
+                    break;
+                case 'image':
+                    list($mediaId, $filename) = $this->fileAttrs($content, $type);
+                    $accept = 'image/*';
+                    break;
+                case 'voice':
+                    list($mediaId, $filename) = $this->fileAttrs($content, $type);
+                    $accept = 'audio/*';
+                    break;
+                case 'video':
+                    $title = $content[$type]->{'title'};
+                    $text = $content[$type]->{'description'} ?? '';
+                    list($mediaId, $filename) = $this->fileAttrs($content, $type);
+                    $accept = 'video/mp4';
+                    break;
+                case 'file':
+                    list($mediaId, $filename) = $this->fileAttrs($content, $type);
+                    $accept = '*';
+                    break;
+                case 'textcard':
+                    $title = $content[$type]->{'title'};
+                    $text = $content[$type]->{'description'} ?? '';
+                    $url = $content['textcard']->{'url'};
+                    $btntxt = $content['textcard']->{'btntxt'};
+                    break;
+                case 'mpnews':
+                    $articles = $content['mpnews']->{'articles'};
+                    $tpl = <<<HTML
+                        <li id="mpnews-%s" class="weui-uploader__file" style="background-image: (%s)"
+                            data-media-id="%s" data-author="%s" data-content="%s" data-digest="%s"
+                            data-filename="%s" data-url="%s" data-image="%s" data-title="%s"></li>
 HTML;
-                for ($i = 0; $i < sizeof($articles); $i++) {
-                    $article = $articles[$i];
-                    $mpnewsList .= sprintf(
-                        $tpl, $i,
-                        $article->{'image_url'},
-                        $article->{'thumb_media_id'},
-                        $article->{'author'},
-                        $article->{'content'},
-                        $article->{'digest'},
-                        $article->{'filename'},
-                        $article->{'content_source_url'},
-                        $article->{'image_url'},
-                        $article->{'title'}
-                    );
-                }
+                    for ($i = 0; $i < sizeof($articles); $i++) {
+                        $article = $articles[$i];
+                        $mpnewsList .= sprintf(
+                            $tpl, $i,
+                            $article->{'image_url'},
+                            $article->{'thumb_media_id'},
+                            $article->{'author'},
+                            $article->{'content'},
+                            $article->{'digest'},
+                            $article->{'filename'},
+                            $article->{'content_source_url'},
+                            $article->{'image_url'},
+                            $article->{'title'}
+                        );
+                    }
+                    break;
+                case 'sms':
+                    $text = $content[$type];
+                    break;
+                
             }
             $message = $content[$type];
             $selectedDepartmentIds = explode('|', $message->{'toparty'});
@@ -155,6 +163,23 @@ HTML;
         } else {
             $view->with($data);
         }
+        
+    }
+    
+    /**
+     * 获取文件类消息的mediaId及filename属性值
+     *
+     * @param $content
+     * @param $type
+     * @return array
+     */
+    private function fileAttrs($content, $type) {
+    
+        $mediaId = $content[$type]->{'media_id'};
+        $paths = explode('/', $content[$type]->{'path'});
+        $filename = $paths[sizeof($paths) - 1];
+        
+        return [$mediaId, $filename];
         
     }
     
