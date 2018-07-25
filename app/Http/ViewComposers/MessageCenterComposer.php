@@ -48,6 +48,7 @@ class MessageCenterComposer {
             switch ($type) {
                 case 'text':
                     $text = $content[$type]->{'content'} ?? '';
+                    Log::debug('wtf');
                     break;
                 case 'image':
                     list($mediaId, $filename) = $this->fileAttrs($content, $type);
