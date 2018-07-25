@@ -8,6 +8,7 @@ use App\Models\MessageType;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -131,6 +132,7 @@ HTML;
             ]
         ];
         if (Request::route('id')) {
+            Log::debug('wtf');
             $view->with(array_merge($data, [
                 'selectedMsgTypeId' => $content['type'],
                 'selectedDepartmentIds' => $selectedDepartmentIds,
