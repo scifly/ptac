@@ -47,9 +47,7 @@ class MessageCenterComposer {
             $type = $content['type'];
             switch ($type) {
                 case 'text':
-                    Log::debug(json_encode($content));
-                    $text = $content[$type]->{'content'} ?? '';
-                    Log::debug('wtf');
+                    $text = $content[$type]->{$type}->{'content'} ?? '';
                     break;
                 case 'image':
                     list($mediaId, $filename) = $this->fileAttrs($content, $type);
@@ -149,7 +147,6 @@ HTML;
             ]
         ];
         if (Request::route('id')) {
-            Log::debug($text);
             $view->with(array_merge($data, [
                 'selectedMsgTypeId' => $content['type'],
                 'selectedDepartmentIds' => $selectedDepartmentIds,
