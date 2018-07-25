@@ -728,11 +728,10 @@ class Message extends Model {
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        if (Request::has('keyword')) {
-            return $this->search();
-        }
-        if (Request::has('file')) {
-            return $this->upload();
+        if (Request::method() == 'POST') {
+            return Request::has('file')
+                ? $this->upload()
+                : $this->search();
         }
         
         return view('wechat.message_center.edit', [
