@@ -981,7 +981,11 @@ class Message extends Model {
         $selectedTargetIds = null;
         if (Request::route('id')) {
             $targetIds = json_decode($this->find(Request::route('id'))->content)->{$type == 'user' ? 'touser' : 'toparty'};
-            $selectedTargetIds = !empty($targetIds) ? explode('|', $targetIds) : null;
+            if (!empty($targetIds)) {
+                $selectedTargetIds = $type == 'user'
+                    ? User::whereIn('userid', explode('|', $targetIds))->pluck('id')->toArray()
+                    : explode('|', $targetIds);
+            }
         }
         return view('wechat.message_center.targets', [
             'targets' => $targets,
