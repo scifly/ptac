@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="{!! asset('/css/wechat/message_center/message.css') !!}">
 @endsection
 @section('content')
-    {!! Form::model($message, ['method' => 'put', 'id' => 'formMessage']) !!}
+    {!! Form::open(['method' => 'put', 'id' => 'formMessage']) !!}
     @include('wechat.message_center.create_edit')
     {!! Form::close() !!}
 @endsection

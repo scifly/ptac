@@ -177,11 +177,11 @@
                     <div class="chosen-header-result js-chosen-header-result"></div>
                     <div class="common-left-search">
                         <i class="icon iconfont icon-search3 search-logo icons2x-search"></i>
-                        {{--{!! Form::text('search', null, [--}}
-                            {{--'id' => 'search',--}}
-                            {{--'class' => 'js-search-input',--}}
-                            {{--'placeholder' => '搜索'--}}
-                        {{--]) !!}--}}
+                        {!! Form::text('search', null, [
+                            'id' => 'search',
+                            'class' => 'js-search-input',
+                            'placeholder' => '搜索'
+                        ]) !!}
                     </div>
                 </div>
                 <div class="back">
