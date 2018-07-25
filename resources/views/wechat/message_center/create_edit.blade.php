@@ -65,7 +65,7 @@
     <!-- 内容(文本、视频、卡片、短信) -->
     <div id="content-container" class="msg-send-conwrap msg-send-bg">
         <div contenteditable="true" id="content" class="wangEditor-mobile-txt">
-            {!! isset($content) ? $content : ''!!}
+            {!! isset($content) ? $content : '' !!}
         </div>
     </div>
     <!-- 点击后跳转的链接(卡片) -->

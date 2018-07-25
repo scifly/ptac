@@ -99,7 +99,8 @@ HTML;
                 case 'sms':
                     $text = $content[$type];
                     break;
-                
+                default:
+                    break;
             }
             $message = $content[$type];
             $selectedDepartmentIds = explode('|', $message->{'toparty'});
