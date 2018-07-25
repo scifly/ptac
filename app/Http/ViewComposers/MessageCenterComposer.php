@@ -104,6 +104,7 @@ HTML;
             }
             $message = $content[$type];
             $selectedDepartmentIds = explode('|', $message->{'toparty'});
+            \Log::debug(json_encode($selectedDepartmentIds));
             $touser = explode('|', $message->{'touser'});
             $selectedUserIds = User::whereIn('userid', $touser)->pluck('id')->toArray();
             list($departmentHtml, $userHtml) = array_map(
