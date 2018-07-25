@@ -147,6 +147,7 @@ HTML;
             ]
         ];
         if (Request::route('id')) {
+            Log::debug($text);
             $view->with(array_merge($data, [
                 'selectedMsgTypeId' => $content['type'],
                 'selectedDepartmentIds' => $selectedDepartmentIds,
