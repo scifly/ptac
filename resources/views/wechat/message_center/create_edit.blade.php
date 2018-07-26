@@ -5,7 +5,7 @@
     <!-- 发送对象 -->
     <div class="weui-cells weui-cells_form">
         <!-- 发送对象 -->
-        <div id="chosen-container" class="weui-cell scui-chosen js-scui-chosen-container3 js-scui-chosen scui-form-group">
+        <div id="chosen-container" class="weui-cell{{-- scui-chosen js-scui-chosen-container3 js-scui-chosen scui-form-group--}}">
             <div class="weui-cell__hd">
                 {!! Form::label(null, '发送对象', ['class' => 'weui-label']) !!}
             </div>
