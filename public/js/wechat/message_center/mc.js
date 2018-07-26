@@ -852,7 +852,9 @@
                         $notification.hide();
                         $(mpnews ? '#mp-upload-title' : '#upload-title').html(filename);
                         $(mpnews ? '#thumb_media_id' : '#media_id').val(mediaId).attr('data-path', path);
-                        $display.find('li:first-child').attr('style', 'backgroud-image:url(' + (type === 'image' ? path : '"/img/0.png"') + ')').show();
+                        $display.show()
+                            .find('li:first-child')
+                            .attr('style', 'backgroud-image:url(' + (type === 'image' ? path : '"/img/0.png"') + ')');
                         if (mpnews) {
                             $mpFilePath.val(path);
                         }
