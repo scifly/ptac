@@ -70,13 +70,13 @@
         </div>
     </div>
     <!-- 内容(文本、视频、卡片、短信) -->
-    <div id="content-container" class="msg-send-conwrap msg-send-bg"
+    <div id="content-container" class="{{--msg-send-conwrap msg-send-bg--}}"
          style="display: {!! $selectedMsgTypeId ? (in_array($selectedMsgTypeId, ['text', 'video', 'textcard', 'sms']) ? 'block' : 'none') : 'block' !!}">
         <div class="weui-cell">
             <div class="weui-cell__bd">
                 {!! Form::textarea('content', $content ?? null, [
                     'id' => 'content',
-                    'placeholder' => '视频描述',
+                    'placeholder' => '',
                     'rows' => 3
                 ]) !!}
             </div>
