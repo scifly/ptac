@@ -165,7 +165,7 @@
     </div>
     <div class="weui-cells weui-cells_form">
         <!-- 定时发送 -->
-        <div class="weui-cell weui-cell_switch b-top weui-cells_form mt5px msg-send-bg">
+        <div class="weui-cell">
             <div class="weui-cell__bd">定时发送</div>
             <div class="weui-cell__ft">
                 <input type="checkbox" title="开启评论" name="openCom" class="weui-switch"></div>
