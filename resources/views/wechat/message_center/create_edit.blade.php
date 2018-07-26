@@ -56,6 +56,9 @@
                 ) !!}
             </div>
         </div>
+    </div>
+    <div class="weui-cells__title">消息内容</div>
+    <div class="weui-cells weui-cells_form">
         <!-- 标题(视频、卡片) -->
         <div id="title-container" class="weui-cell"
              style="display: {!! $title ? 'block' : 'none' !!}; ">
@@ -159,6 +162,8 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="weui-cells weui-cells_form">
         <!-- 定时发送 -->
         <div class="weui-cell weui-cell_switch b-top weui-cells_form mt5px msg-send-bg">
             <div class="weui-cell__bd">定时发送</div>
