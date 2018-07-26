@@ -357,9 +357,7 @@
         </div>
     </div>
 </div>
-<div id="notification">
-    <div class="weui-loadmore" style="margin-top: 50%;">
-        <i class="weui-loading"></i>
-        <span class="weui-loadmore__tips">正在上传</span>
-    </div>
+<div id="notification" class="weui-loadmore" style="margin-top: 50%;">
+    <i class="weui-loading"></i>
+    <span class="weui-loadmore__tips">正在上传</span>
 </div>

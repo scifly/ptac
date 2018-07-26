@@ -630,6 +630,7 @@
             },
             targetFilter: function (data, type) {
                 var $id = $('#id'),
+                    $notification = $('#notification'),
                     $back = $('#back'),
                     $targetsContainer = $('#targets-container'),
                     uri = $id.length === 0 ? 'create' : '../edit/' + $id.val(),
@@ -638,12 +639,14 @@
                         target: type,
                     }, data);
 
+                $notification.show();
                 $.ajax({
                     type: 'POST',
                     dataType: 'html',
                     url: uri,
                     data: formData,
                     success: function (result) {
+                        $notification.hide();
                         if (type === 'user') {
                             $back.show();
                             $('#deptId').val(formData['departmentId']);
