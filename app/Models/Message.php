@@ -978,9 +978,11 @@ class Message extends Model {
                     break;
             }
         }
+        # 已选定的发送对象（用户、部门）id
         $selectedTargetIds = null;
         if (Request::route('id')) {
-            $targetIds = json_decode($this->find(Request::route('id'))->content)->{$type == 'user' ? 'touser' : 'toparty'};
+            $targetIds = json_decode($this->find(Request::route('id'))->content)
+                ->{$type == 'user' ? 'touser' : 'toparty'};
             if (!empty($targetIds)) {
                 $selectedTargetIds = $type == 'user'
                     ? User::whereIn('userid', explode('|', $targetIds))->pluck('id')->toArray()
