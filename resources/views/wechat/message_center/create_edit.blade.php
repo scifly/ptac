@@ -123,6 +123,9 @@
                     </p>
                 </div>
                 <div class="weui-uploader__bd">
+                    <ul class="weui-uploader__files">
+                        <li class="weui-uploader__file" style="background-image: url({!! $filepath !!})"></li>
+                    </ul>
                     <div class="weui-uploader__input-box">
                         {!! Form::hidden(
                             'media_id',
