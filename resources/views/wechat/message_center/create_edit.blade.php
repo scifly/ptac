@@ -41,7 +41,7 @@
             {!! Form::select(
                 'message_type_id',
                 $messageTypes,
-                isset($message) ? $message->message_type_id : null,
+                $message ? $message->message_type_id : null,
                 [
                     'id' => 'message_type_id',
                     'class' => 'weui-input',
@@ -58,7 +58,7 @@
             <div class="weui-cell__bd js-title">
                 {!! Form::text(
                     'title',
-                    isset($title) ? $title : null,
+                    $title ?? null,
                     [
                         'id' => 'title',
                         'class' => 'weui-input fs18 one-line title',
