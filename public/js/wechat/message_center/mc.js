@@ -850,7 +850,7 @@
 
                         $notification.hide();
                         $(mpnews ? '#mp-upload-title' : '#upload-title').html(filename);
-                        $(mpnews ? '#thumb_media_id' : '#media_id').val(mediaId).data('path', result['data']['path']);
+                        $(mpnews ? '#thumb_media_id' : '#media_id').val(mediaId).attr('data-path', path);
                         if (mpnews) {
                             $mpFilePath.val(path);
                         }

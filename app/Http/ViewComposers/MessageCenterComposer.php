@@ -38,7 +38,7 @@ class MessageCenterComposer {
         $user = Auth::user();
         $chosenTargetsHtml = '';
         $content = $selectedDepartmentIds = $selectedUserIds = null;
-        $title = $text = $url = $btntxt = $mediaId = $accept = $filename = $mpnewsList = null;
+        $title = $text = $url = $btntxt = $mediaId = $accept = $filename = $filepath = $mpnewsList = null;
         if (Request::route('id')) {
             $content = $this->message->detail(
                 Request::route('id')
@@ -50,21 +50,21 @@ class MessageCenterComposer {
                     $text = $msg->{'content'};
                     break;
                 case 'image':
-                    list($mediaId, $filename) = $this->fileAttrs($msg);
+                    list($mediaId, $filename, $filepath) = $this->fileAttrs($msg);
                     $accept = 'image/*';
                     break;
                 case 'voice':
-                    list($mediaId, $filename) = $this->fileAttrs($msg);
+                    list($mediaId, $filename, $filepath) = $this->fileAttrs($msg);
                     $accept = 'audio/*';
                     break;
                 case 'video':
                     $title = $msg->{'title'};
                     $text = $msg->{'description'};
-                    list($mediaId, $filename) = $this->fileAttrs($msg);
+                    list($mediaId, $filename, $filepath) = $this->fileAttrs($msg);
                     $accept = 'video/mp4';
                     break;
                 case 'file':
-                    list($mediaId, $filename) = $this->fileAttrs($msg);
+                    list($mediaId, $filename, $filepath) = $this->fileAttrs($msg);
                     $accept = '*';
                     break;
                 case 'textcard':
@@ -157,6 +157,7 @@ HTML;
             'url' => $url,
             'btntxt' => $btntxt,
             'mediaId' => $mediaId,
+            'filepath' => $filepath,
             'accept' => $accept,
             'filename' => $filename,
             'mpnewsList' => $mpnewsList
@@ -173,10 +174,11 @@ HTML;
     private function fileAttrs($msg) {
     
         $mediaId = $msg->{'media_id'};
+        $filepath = $msg->{'path'};
         $paths = explode('/', $msg->{'path'});
         $filename = $paths[sizeof($paths) - 1];
         
-        return [$mediaId, $filename];
+        return [$mediaId, $filename, $filepath];
         
     }
     

@@ -106,7 +106,8 @@
                         'class' => 'weui-input one-line title',
                         'placeholder' => '按钮文字。默认为“详情”',
                         'maxlength' => 30
-                    ]) !!}
+                    ]
+                ) !!}
             </div>
         </div>
     </div>
@@ -126,7 +127,10 @@
                         {!! Form::hidden(
                             'media_id',
                             $mediaId ?? null,
-                            ['id' => 'media_id']
+                            [
+                                'id' => 'media_id',
+                                'data-path' => $filepath ?? null
+                            ]
                         ) !!}
                         {!! Form::file('upload', [
                             'id' => 'upload',
@@ -247,8 +251,8 @@
 <div id="mpnews" class="weui-popup__container">
     <div class="weui-popup__overlay"></div>
     <div class="weui-popup__modal" style="background-color: #fff;">
-    {!! Form::hidden('mpnews-id', null, ['id' => 'mpnews-id']) !!}
-    <!-- 图文标题 -->
+        {!! Form::hidden('mpnews-id', null, ['id' => 'mpnews-id']) !!}
+        <!-- 图文标题 -->
         <div class="weui-cell">
             <div class="weui-uploader__hd">
                 {!! Form::label('mpnews-title', '标题', ['class' => 'weui-label']) !!}
