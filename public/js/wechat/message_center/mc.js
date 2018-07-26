@@ -630,7 +630,7 @@
                 var $id = $('#id'),
                     $back = $('#back'),
                     $targetsContainer = $('#targets-container'),
-                    uri = $id.length === 0 ? '../create' : '../edit/' + $id.val(),
+                    uri = $id.length === 0 ? 'create' : '../edit/' + $id.val(),
                     formData = $.extend({
                         _token: wap.token(),
                         target: type,
