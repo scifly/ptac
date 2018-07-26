@@ -650,7 +650,11 @@
                         } else {
                             $back.hide();
                         }
-                        $targetsContainer.html(result !== '' ? result : '<div style="margin: 0 auto;">暂无数据</div>');
+                        if (result !== '') {
+                            $targetsContainer.html(result);
+                        } else {
+                            $targetsContainer.attr('style', 'text-align: center;').html('暂无数据');
+                        }
                     },
                     error: function (e) {
                         wap.errorHandler(e);
