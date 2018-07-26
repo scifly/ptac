@@ -301,7 +301,7 @@
                     $.closePopup();
                 });
                 // 选择所有发送对象
-                $checkAll.on('change', function () {
+                $checkAll.on('click', function () {
                     if ($(this).is(':checked')) {
                         var html = '';
 
