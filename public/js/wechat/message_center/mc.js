@@ -854,7 +854,7 @@
                         $(mpnews ? '#thumb_media_id' : '#media_id').val(mediaId).attr('data-path', path);
                         $display.show()
                             .find('li:first-child')
-                            .attr('style', 'backgroud-image:url(' + (type === 'image' ? path : '"/img/0.png"') + ')');
+                            .attr('style', 'backgroud-image:url(/' + (type === 'image' ? path : 'img/0.png') + ')');
                         if (mpnews) {
                             $mpFilePath.val(path);
                         }
