@@ -65,6 +65,7 @@
                     $title ?? null,
                     [
                         'id' => 'title',
+                        'class' => 'weui-input',
                         'placeholder' => '标题',
                         'maxlength' => 30
                     ]
