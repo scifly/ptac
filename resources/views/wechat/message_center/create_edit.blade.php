@@ -5,7 +5,7 @@
     <!-- 发送对象 -->
     <div class="weui-cells weui-cells_form">
         <!-- 发送对象 -->
-        <div id="chosen-container" class="weui-cell" style="background-color: #fff;">
+        <div id="chosen-container" class="weui-cell">
             <div class="weui-cell__hd">
                 {!! Form::label(null, '发送对象', ['class' => 'weui-label']) !!}
             </div>
@@ -56,16 +56,16 @@
                 ) !!}
             </div>
         </div>
-        {{--<div style="height: 5px;"></div>--}}
         <!-- 标题(视频、卡片) -->
-        <div id="title-container" class="weui-cell" style="display: {!! $title ? 'block' : 'none';  !!};">
+        <div id="title-container" class="weui-cell"
+             style="display: {!! $title ? 'block' : 'none';  !!};">
             <div class="weui-cell__bd">
                 {!! Form::text(
                     'title',
                     $title ?? null,
                     [
                         'id' => 'title',
-                        'class' => 'weui-input',
+                        'class' => 'weui-input fs18 one-line title',
                         'placeholder' => '标题',
                         'maxlength' => 30
                     ]
@@ -85,7 +85,7 @@
             </div>
         </div>
         <!-- 点击后跳转的链接(卡片) -->
-        <div id="card-url-container" class="weui-cell"
+        <div id="card-url-container" class="weui-cell extra"
              style="display: {!! isset($url) ? 'block' : 'none' !!};">
             <div class="weui-cell__bd">
                 {!! Form::text(
@@ -100,7 +100,8 @@
             </div>
         </div>
         <!-- 按钮文字(卡片) -->
-        <div id="btn-txt-container" class="weui-cell" style="display: {!! isset($btntxt) ? 'block' : 'none' !!};">
+        <div id="btn-txt-container" class="weui-cell extra"
+             style="display: {!! isset($btntxt) ? 'block' : 'none' !!};">
             <div class="weui-cell__bd">
                 {!! Form::text(
                     'btn-txt',
@@ -115,7 +116,7 @@
             </div>
         </div>
         <!-- 上传素材(图片、语音、视频、文件) -->
-        <div id="upload-container" class="weui-cell"
+        <div id="upload-container" class="weui-cell extra"
              style="display: {!! isset($mediaId) ? 'block' : 'none' !!};">
             <div class="weui-uploader">
                 <div class="weui-uploader__hd">
@@ -149,19 +150,17 @@
         </div>
     </div>
     <!-- 图文消息 -->
-    <div id="mpnews-container" class="msg-send-conicon msg-send-bg b-top"
+    <div id="mpnews-container" class="weui-cell"
          style="display: {!! isset($mpnewsList) ? 'block' : 'none' !!};">
-        <div class="weui-cell">
-            <div class="weui-uploader">
-                <div class="weui-uploader__hd">
-                    <p class="weui-uploader__title">添加图文</p>
-                </div>
-                <div class="weui-uploader__bd">
-                    <ul class="weui-uploader__files" id="mpnews-list">
-                        {!! $mpnewsList ?? '' !!}
-                    </ul>
-                    <a id="add-mpnews" href="#" class="open-popup weui-uploader__input-box"></a>
-                </div>
+        <div class="weui-uploader">
+            <div class="weui-uploader__hd">
+                <p class="weui-uploader__title">添加图文</p>
+            </div>
+            <div class="weui-uploader__bd">
+                <ul class="weui-uploader__files" id="mpnews-list">
+                    {!! $mpnewsList ?? '' !!}
+                </ul>
+                <a id="add-mpnews" href="#" class="open-popup weui-uploader__input-box"></a>
             </div>
         </div>
     </div>
