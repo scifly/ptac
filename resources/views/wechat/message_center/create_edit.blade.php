@@ -70,15 +70,17 @@
         </div>
     </div>
     <!-- 内容(文本、视频、卡片、短信) -->
-    <div id="content-container" class="weui-cell"
+    <div id="content-container" class="weui-cells weui-cells_form"
          style="display: {!! $selectedMsgTypeId ? (in_array($selectedMsgTypeId, ['text', 'video', 'textcard', 'sms']) ? 'block' : 'none') : 'block' !!}">
-        <div class="weui-cell__bd">
-            {!! Form::textarea('content', $content ?? null, [
-                'id' => 'content',
-                'placeholder' => '',
-                'class' => 'weui-textarea',
-                'rows' => 3
-            ]) !!}
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                {!! Form::textarea('content', $content ?? null, [
+                    'id' => 'content',
+                    'placeholder' => '',
+                    'class' => 'weui-textarea',
+                    'rows' => 3
+                ]) !!}
+            </div>
         </div>
     </div>
     <!-- 点击后跳转的链接(卡片) -->
