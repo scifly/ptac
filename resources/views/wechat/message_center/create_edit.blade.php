@@ -1,12 +1,12 @@
 <div class="msg-send-wrap">
-    @if ($message)
+    @if (isset($message))
         {!! Form::hidden('id', $message->id, ['id' => 'id']) !!}
     @endif
     <!-- 发送对象 -->
     <div id="chosen-container" class="scui-chosen js-scui-chosen-container3 js-scui-chosen scui-form-group">
         {!! Form::label(null, '发送对象', ['class' => 'scui-control-label mr4']) !!}
         <div id="chosen-results">
-            @if ($message)
+            @if (isset($message))
                 {!! $chosenTargetsHtml !!}
             @endif
         </div>
@@ -41,7 +41,7 @@
             {!! Form::select(
                 'message_type_id',
                 $messageTypes,
-                $message ? $message->message_type_id : null,
+                isset($message) ? $message->message_type_id : null,
                 [
                     'id' => 'message_type_id',
                     'class' => 'weui-input',
@@ -147,7 +147,7 @@
                 </div>
                 <div class="weui-uploader__bd">
                     <ul class="weui-uploader__files" id="mpnews-list">
-                        {!! isset($mpnewsList) ? $mpnewsList : '' !!}
+                        {!! $mpnewsList ?? '' !!}
                     </ul>
                     <a id="add-mpnews" href="#" class="open-popup weui-uploader__input-box"></a>
                 </div>
@@ -210,7 +210,7 @@
                             @include('wechat.message_center.targets', [
                                 'type' => 'department',
                                 'targets' => $departments,
-                                'selectedTargetIds' => isset($selectedDepartmentIds) ? $selectedDepartmentIds : null,
+                                'selectedTargetIds' => $selectedDepartmentIds ?? null,
                             ])
                         </div>
                     </div>
