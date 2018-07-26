@@ -6,11 +6,16 @@
     <div class="weui-cells weui-cells_form">
         <!-- 发送对象 -->
         <div id="chosen-container" class="weui-cell scui-chosen js-scui-chosen-container3 js-scui-chosen scui-form-group">
-            {!! Form::label(null, '发送对象', ['class' => '']) !!}
-            <div id="chosen-results">
-                @if (isset($message))
-                    {!! $chosenTargetsHtml !!}
-                @endif
+            <div class="weui-cell__hd">
+                {!! Form::label(null, '发送对象', ['class' => '']) !!}
+            </div>
+            <div class="weui-cell__bd">
+
+                <div id="chosen-results">
+                    @if (isset($message))
+                        {!! $chosenTargetsHtml !!}
+                    @endif
+                </div>
             </div>
             <span class="icons-chosen chosen-icon js-chosen-icon">
                 <a class="icon iconfont icon-add c-green open-popup" href="#" data-target="#targets"></a>
