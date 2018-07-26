@@ -2,7 +2,7 @@
     @if (isset($message))
         {!! Form::hidden('id', $message->id, ['id' => 'id']) !!}
     @endif
-    <div class="weui-cells__title">消息中心</div>
+    <div class="weui-cells__title">请选择</div>
     <div class="weui-cells weui-cells_form">
         <!-- 发送对象 -->
         <div id="chosen-container" class="weui-cell">

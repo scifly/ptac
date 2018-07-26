@@ -256,7 +256,10 @@
                 });
             },
             messageReplies: function () {
-                var $replies = $('.discuss_list');
+                var $replies = $('.discuss_list'),
+                    $id = $('#id'),
+                    $mslId = $('#msl_id');
+
                 $.ajax({
                     type: 'POST',
                     dataType: 'html',
