@@ -1,8 +1,8 @@
 <div class="msg-send-wrap">
-    @if (isset($message))
-        {!! Form::hidden('id', $message->id, ['id' => 'id']) !!}
-    @endif
-    <!-- 发送对象 -->
+@if (isset($message))
+    {!! Form::hidden('id', $message->id, ['id' => 'id']) !!}
+@endif
+<!-- 发送对象 -->
     <div id="chosen-container" class="scui-chosen js-scui-chosen-container3 js-scui-chosen scui-form-group">
         {!! Form::label(null, '发送对象', ['class' => 'scui-control-label mr4']) !!}
         <div id="chosen-results">
@@ -123,8 +123,8 @@
                     </p>
                 </div>
                 <div class="weui-uploader__bd">
-                    <ul class="weui-uploader__files">
-                        <li class="weui-uploader__file" style="background-image: url({!! $filepath !!})"></li>
+                    <ul class="weui-uploader__files" style="display: {!! $filepath ? 'block' : 'none' !!}">
+                        <li class="weui-uploader__file" style="background-image: url({!! '/' . ($filepath ?? '') !!})"></li>
                     </ul>
                     <div class="weui-uploader__input-box">
                         {!! Form::hidden(
@@ -254,8 +254,8 @@
 <div id="mpnews" class="weui-popup__container">
     <div class="weui-popup__overlay"></div>
     <div class="weui-popup__modal" style="background-color: #fff;">
-        {!! Form::hidden('mpnews-id', null, ['id' => 'mpnews-id']) !!}
-        <!-- 图文标题 -->
+    {!! Form::hidden('mpnews-id', null, ['id' => 'mpnews-id']) !!}
+    <!-- 图文标题 -->
         <div class="weui-cell">
             <div class="weui-uploader__hd">
                 {!! Form::label('mpnews-title', '标题', ['class' => 'weui-label']) !!}
