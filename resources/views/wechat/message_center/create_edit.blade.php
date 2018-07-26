@@ -1,12 +1,12 @@
 <div class="msg-send-wrap">
-    @if (isset($message))
+    @if ($message)
         {!! Form::hidden('id', $message->id, ['id' => 'id']) !!}
     @endif
     <!-- 发送对象 -->
     <div id="chosen-container" class="scui-chosen js-scui-chosen-container3 js-scui-chosen scui-form-group">
         {!! Form::label(null, '发送对象', ['class' => 'scui-control-label mr4']) !!}
         <div id="chosen-results">
-            @if (isset($message))
+            @if ($message)
                 {!! $chosenTargetsHtml !!}
             @endif
         </div>
@@ -23,7 +23,7 @@
             {!! Form::select(
                 'msg-type',
                 $msgTypes,
-                isset($selectedMsgTypeId) ? $selectedMsgTypeId : null,
+                $selectedMsgTypeId ?? null,
                 [
                     'id' => 'msg-type',
                     'class' => 'weui-input',
@@ -82,7 +82,7 @@
             <div class="weui-cell__bd">
                 {!! Form::text(
                     'card-url',
-                    null,
+                    $url ?? null,
                     [
                         'id' => 'card-url',
                         'class' => 'weui-input one-line title',
@@ -99,7 +99,7 @@
             <div class="weui-cell__bd">
                 {!! Form::text(
                     'btn-txt',
-                    null,
+                    $btntxt ?? null,
                     [
                         'id' => 'btn-txt',
                         'class' => 'weui-input one-line title',
@@ -117,19 +117,19 @@
             <div class="weui-uploader">
                 <div class="weui-uploader__hd">
                     <p id="upload-title" class="weui-uploader__title">
-                        {!! isset($filename) ? $filename : '' !!}
+                        {!! $filename ?? '' !!}
                     </p>
                 </div>
                 <div class="weui-uploader__bd">
                     <div class="weui-uploader__input-box">
                         {!! Form::hidden(
                             'media_id',
-                            isset($mediaId) ? $mediaId : null,
+                            $mediaId ?? null,
                             ['id' => 'media_id']
                         ) !!}
                         {!! Form::file('upload', [
                             'id' => 'upload',
-                            'accept' => isset($accept) ? $accept : '',
+                            'accept' => $accept ?? '',
                             'class' => 'weui-uploader__input'
                         ]) !!}
                     </div>
