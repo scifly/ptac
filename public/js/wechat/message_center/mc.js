@@ -106,14 +106,18 @@
             ce: function () {
                 var $id = $('#id'),
                     $mpnewsList = $('#mpnews-list'),
-                    $choseTargets = $('#chosen-results'),
+                    $chosenTargets = $('#chosen-results'),
                     $title = $('#title'),
                     $content = $('#content'),
                     $mediaId = $('#media_id'),
+                    $checkAll = $('#check-all'),
+                    checkAll = true,
                     type = $('#msg-type').val();
 
                 mc.selectedDepartmentIds = [];
                 mc.selectedUserIds = [];
+                $checkAll.prop('checked', false);
+
                 if ($id.length !== 0) {
                     switch (type) {
                         case 'text':
@@ -160,7 +164,7 @@
                         default:
                             break;
                     }
-                    $choseTargets.find('a').each(
+                    $chosenTargets.find('a').each(
                         function (i, target) {
                             var $target = $(target),
                                 id = $target.data('uid'),
@@ -168,6 +172,14 @@
                             type === 'user' ? mc.selectedUserIds.push(id) : mc.selectedDepartmentIds.push('id');
                         }
                     );
+                    $('#targets-container').find('label').each(
+                        function (i, target) {
+                            if ($(target).find('input').prop('checked') === false) {
+                                checkAll = false;
+                            }
+                        }
+                    );
+                    $checkAll.prop('checked', checkAll);
                 }
                 mc.targets();
                 mc.msgType();
@@ -876,6 +888,8 @@
                     '</a>';
             },
             addTarget: function (id, type) {
+                var $targetsContainer = $('#targets-container'),
+                    checkAll = true;
                 if (type === 'user') {
                     if ($.inArray(id, mc.selectedUserIds) === -1) {
                         mc.selectedUserIds.push(id);
@@ -885,6 +899,14 @@
                         mc.selectedDepartmentIds.push(id);
                     }
                 }
+                $targetsContainer.find('label').each(
+                    function (i, target) {
+                        if ($(target).find('input').prop('checked') === false) {
+                            checkAll = false;
+                        }
+                    }
+                );
+                $('#check-all').prop('checked', checkAll);
                 mc.refreshTargets();
             },
             removeTarget: function (id, type) {
@@ -897,12 +919,14 @@
                         mc.selectedDepartmentIds.splice($.inArray(id, mc.selectedDepartmentIds), 1);
                     }
                 }
+                $('#check-all').prop('checked', false);
                 mc.refreshTargets();
             },
             checkAll: function (checked) {
                 var $targetsContainer = $('#targets-container');
 
                 $('.target-check').prop('checked', checked);
+                $('#check-all').prop('checked', checked);
                 $targetsContainer.find('label').each(
                     function (i, target) {
                         var $target = $(target),
