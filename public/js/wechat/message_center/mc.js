@@ -287,7 +287,6 @@
             },
             targets: function () {
                 var $targetsContainer = $('#targets-container'),
-                    $targetCheck = $('.target-check'),
                     $checkAll = $('#check-all'),
                     $confirm = $('#confirm'),
                     $chosenTargets = $('#chosen-results'),
@@ -645,9 +644,11 @@
                     url: uri,
                     data: formData,
                     success: function (result) {
-                        if (typeof formData['departmentId'] !== 'undefined') {
+                        if (type === 'user') {
                             $back.show();
                             $('#deptId').val(formData['departmentId']);
+                        } else {
+                            $back.hide();
                         }
                         $targetsContainer.html(result);
                     },
