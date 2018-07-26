@@ -7,10 +7,9 @@
         <!-- 发送对象 -->
         <div id="chosen-container" class="weui-cell scui-chosen js-scui-chosen-container3 js-scui-chosen scui-form-group">
             <div class="weui-cell__hd">
-                {!! Form::label(null, '发送对象', ['class' => '']) !!}
+                {!! Form::label(null, '发送对象', ['class' => 'weui-label']) !!}
             </div>
             <div class="weui-cell__bd">
-
                 <div id="chosen-results">
                     @if (isset($message))
                         {!! $chosenTargetsHtml !!}
