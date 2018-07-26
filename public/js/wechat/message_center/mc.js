@@ -650,6 +650,7 @@
                         } else {
                             $back.hide();
                         }
+                        console.log(result);
                         $targetsContainer.html(result);
                     },
                     error: function (e) {
