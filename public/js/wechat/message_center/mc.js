@@ -20,6 +20,8 @@
             },
             mpnews: { articles: [] },
             mpnewsCount: 0,
+            selectedDepartmentIds: [],
+            selectedUserIds: [],
             index: function () {
                 var $types = $('.weui-navbar__item'),
                     $messages = $('.teacher-list-box'),
@@ -104,11 +106,14 @@
             ce: function () {
                 var $id = $('#id'),
                     $mpnewsList = $('#mpnews-list'),
+                    $choseTargets = $('#chosen-results'),
                     $title = $('#title'),
                     $content = $('#content'),
                     $mediaId = $('#media_id'),
                     type = $('#msg-type').val();
 
+                mc.selectedDepartmentIds = [];
+                mc.selectedUserIds = [];
                 if ($id.length !== 0) {
                     switch (type) {
                         case 'text':
@@ -155,7 +160,14 @@
                         default:
                             break;
                     }
-
+                    $choseTargets.find('a').each(
+                        function (i, target) {
+                            var $target = $(target),
+                                id = $target.data('uid'),
+                                type = $target.data('type');
+                            type === 'user' ? mc.selectedUserIds.push(id) : mc.selectedDepartmentIds.push('id');
+                        }
+                    );
                 }
                 mc.targets();
                 mc.msgType();
@@ -286,8 +298,7 @@
                 }
             },
             targets: function () {
-                var $targetsContainer = $('#targets-container'),
-                    $checkAll = $('#check-all'),
+                var $checkAll = $('#check-all'),
                     $confirm = $('#confirm'),
                     $chosenTargets = $('#chosen-results'),
                     $search = $('#search'),
@@ -301,56 +312,16 @@
                 });
                 // 选择所有发送对象
                 $checkAll.on('click', function () {
-                    if ($(this).is(':checked')) {
-                        var html = '';
-
-                        $('.target-check').prop('checked', true);
-                        $('.js-chosen-items .weui-check__label').each(
-                            function (i, target) {
-                                var $target = $(target),
-                                    type = $target.data('type'),
-                                    id = $target.data('item'),
-                                    imgSrc = $target.find('img').attr('src');
-
-                                html += mc.chosenHtml(id, type, imgSrc);
-                            }
-                        );
-                        $chosenTargets.html(html);
-                        mc.removeTarget();
-                        $targetsContainer.addClass('air-checkall');
-                        mc.countTargets();
-                    } else {
-                        $('.target-check').prop('checked', false);
-                        $chosenTargets.html('');
-                        $targetsContainer.removeClass('air-checkall');
-                        mc.countTargets();
-                    }
+                    $(this).is(':checked') ? mc.checkAll(true) : mc.checkAll(false);
                 });
                 // 选择单个发送对象
                 $(document).on('change', '.target-check',
                     function () {
                         var $this = $(this).parents('.weui-check__label'),
-                            id = $this.attr('data-item'),
-                            type = $this.attr('data-type'),
-                            html = '';
-
-                        if ($(this).is(':checked')) {
-                            var imgSrc = $this.find('img').attr('src');
-
-                            html += mc.chosenHtml(id, type, imgSrc);
-                            $chosenTargets.prepend(html);
-                        } else {
-                            $chosenTargets.find('#' + type + '-' + id).remove();
-                            $targetsContainer.removeClass('air-checkall');
-                            $checkAll.prop('checked', false);
-                            mc.removeTarget();
-                        }
-                        mc.countTargets();
+                            id = $this.data('item'),
+                            type = $this.data('type');
+                        $(this).is(':checked') ? mc.addTarget(id, type) : mc.removeTarget(id, type);
                     }
-                );
-                // 移除发送对象
-                $(document).on('click', '.js-chosen-results-item',
-                    function () { mc.removeTarget(); }
                 );
                 // 搜索发送对象
                 $search.on("input propertychange change", function () {
@@ -363,7 +334,9 @@
                     mc.targetFilter(data, type);
                 });
                 // 返回部门列表
-                $back.on('click', function () { mc.targetFilter({}, 'list'); });
+                $back.on('click', function () {
+                    mc.targetFilter({}, 'list');
+                });
                 // 显示指定部门的用户(学生、教职员工)列表
                 $(document).on('click', '.targets', function () {
                     var ids = $(this).prev().attr('id').split('-');
@@ -653,10 +626,22 @@
                         } else {
                             $back.hide();
                         }
+                        $targetsContainer
+                            .attr('style', result !== '' ? '' : 'text-align: center;')
+                            .html(result !== '' ? result : '暂无数据');
                         if (result !== '') {
-                            $targetsContainer.attr('style', '').html(result);
-                        } else {
-                            $targetsContainer.attr('style', 'text-align: center;').html('暂无数据');
+                            $targetsContainer.find('label').each(
+                                function (i, target) {
+                                    var $target = $(target),
+                                        id = $target.data('item');
+                                    if (
+                                        $.inArray(id, mc.selectedDepartmentIds) !== -1 ||
+                                        $.inArray(id, mc.selectedUserIds) !== -1
+                                    ) {
+                                        $target.find('input').prop('checked', true);
+                                    }
+                                }
+                            );
                         }
                     },
                     error: function (e) {
@@ -874,22 +859,15 @@
                     error: function (e) { wap.errorHandler(e); }
                 });
             },
-            removeTarget: function () {
-                var id = $(this).attr('data-list'),
-                    type = $(this).attr('data-type');
-                $(this).remove();
-                $('#' + type + '-' + id).find('.target-check').prop('checked', false);
-                mc.countTargets();
-            },
             countTargets: function () {
-                var departments = $('#chosen-results .js-chosen-results-item.department').length,
-                    users = $('#chosen-results .js-chosen-results-item.user').length;
-
-                $('#count').text('已选' + departments + '个部门,' + users + '名用户');
+                $('#count').text(
+                    '已选' + mc.selectedDepartmentIds.length + '个部门,' + mc.selectedUserIds.length + '名用户'
+                );
             },
-            chosenHtml: function (id, type, imgSrc) {
-                var targetId = (type === 'department' ? 'id="department-' : 'id="user-') + id,
-                    imgStyle = (type === 'department' ? '' : '" style="border-radius: 50%;');
+            chosenHtml: function (id, type) {
+                var targetId = (type === 'department' ? 'id="user-' : 'id="department-') + id + '"',
+                    imgStyle = (type === 'user' ? '" style="border-radius: 50%;' : ''),
+                    imgSrc = '/img/' + (type === 'user' ? 'personal.png' : 'department.png');
 
                 return '<a class="chosen-results-item js-chosen-results-item ' + type + '" ' +
                     targetId + '" data-list="' + id + '" data-uid="' + id + '" ' +
@@ -897,6 +875,60 @@
                     '<img src="' + imgSrc + imgStyle + '">' +
                     '</a>';
             },
+            addTarget: function (id, type) {
+                if (type === 'user') {
+                    if ($.inArray(id, mc.selectedUserIds) === -1) {
+                        mc.selectedUserIds.push(id);
+                    }
+                } else {
+                    if ($.inArray(id, mc.selectedDepartmentIds) === -1) {
+                        mc.selectedDepartmentIds.push(id);
+                    }
+                }
+                mc.refreshTargets();
+            },
+            removeTarget: function (id, type) {
+                if (type === 'user') {
+                    if ($.inArray(id, mc.selectedUserIds) !== -1) {
+                        mc.selectedUserIds.splice($.inArray(id, mc.selectedUserIds), 1);
+                    }
+                } else {
+                    if ($.inArray(id, mc.selectedDepartmentIds) !== -1) {
+                        mc.selectedDepartmentIds.splice($.inArray(id, mc.selectedDepartmentIds), 1);
+                    }
+                }
+                mc.refreshTargets();
+            },
+            checkAll: function (checked) {
+                var $targetsContainer = $('#targets-container');
+
+                $('.target-check').prop('checked', checked);
+                $targetsContainer.find('label').each(
+                    function (i, target) {
+                        var $target = $(target),
+                            id = $target.data('item'),
+                            type = $target.data('type');
+
+                        checked ? mc.addTarget(id, type) : mc.removeTarget(id, type)
+                    }
+                );
+            },
+            refreshTargets: function () {
+                var targets = [
+                    { ids: mc.selectedDepartmentIds, type: 'department'},
+                    { ids: mc.selectedUserIds, type: 'user' }
+                ];
+                $('#chosen-results').html(
+                    targets.map(function (target) {
+                        var html = '', type = target['type'];
+                        $.each(target['ids'], function () {
+                            html += mc.chosenHtml(this, type);
+                        });
+                        return html;
+                    }).join('')
+                );
+                mc.countTargets();
+            }
         };
 
         return {
