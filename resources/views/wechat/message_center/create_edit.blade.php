@@ -53,15 +53,19 @@
     <div style="height: 5px;"></div>
     <!-- 标题(视频、卡片) -->
     <div id="title-container" class="mt5px msg-send-bg b-bottom hw-title"
-         style="display: {!! isset($title) ? 'block' : 'none';  !!};">
+         style="display: {!! $title ? 'block' : 'none';  !!};">
         <div class="weui-cell">
             <div class="weui-cell__bd js-title">
-                {!! Form::text('title', null, [
-                    'id' => 'title',
-                    'class' => 'weui-input fs18 one-line title',
-                    'placeholder' => '标题',
-                    'maxlength' => 30
-                ]) !!}
+                {!! Form::text(
+                    'title',
+                    isset($title) ? $title : null,
+                    [
+                        'id' => 'title',
+                        'class' => 'weui-input fs18 one-line title',
+                        'placeholder' => '标题',
+                        'maxlength' => 30
+                    ]
+                ) !!}
             </div>
         </div>
     </div>
@@ -76,11 +80,14 @@
          style="display: {!! isset($url) ? 'block' : 'none' !!};">
         <div class="weui-cell">
             <div class="weui-cell__bd">
-                {!! Form::text('card-url', null, [
-                    'id' => 'card-url',
-                    'class' => 'weui-input one-line title',
-                    'placeholder' => '点击后跳转的地址',
-                    'maxlength' => 30
+                {!! Form::text(
+                    'card-url',
+                    null,
+                    [
+                        'id' => 'card-url',
+                        'class' => 'weui-input one-line title',
+                        'placeholder' => '点击后跳转的地址',
+                        'maxlength' => 30
                 ]) !!}
             </div>
         </div>
@@ -90,12 +97,15 @@
          style="display: {!! isset($btntxt) ? 'block' : 'none' !!};">
         <div class="weui-cell">
             <div class="weui-cell__bd">
-                {!! Form::text('btn-txt', null, [
-                    'id' => 'btn-txt',
-                    'class' => 'weui-input one-line title',
-                    'placeholder' => '按钮文字。默认为“详情”',
-                    'maxlength' => 30
-                ]) !!}
+                {!! Form::text(
+                    'btn-txt',
+                    null,
+                    [
+                        'id' => 'btn-txt',
+                        'class' => 'weui-input one-line title',
+                        'placeholder' => '按钮文字。默认为“详情”',
+                        'maxlength' => 30
+                    ]) !!}
             </div>
         </div>
     </div>
