@@ -58,18 +58,14 @@
         </div>
         <!-- 标题(视频、卡片) -->
         <div id="title-container" class="weui-cell"
-             style="display: {!! $title ? 'block' : 'none';  !!};">
+             style="display: {!! $title ? 'block' : 'none' !!}; ">
             <div class="weui-cell__bd">
-                {!! Form::text(
-                    'title',
-                    $title ?? null,
-                    [
-                        'id' => 'title',
-                        'class' => 'weui-input',
-                        'placeholder' => '标题',
-                        'maxlength' => 30
-                    ]
-                ) !!}
+                {!! Form::text('title', $title ?? null, [
+                    'id' => 'title',
+                    'class' => 'weui-input',
+                    'placeholder' => '标题',
+                    'maxlength' => 30
+                ]) !!}
             </div>
         </div>
         <!-- 内容(文本、视频、卡片、短信) -->
@@ -148,45 +144,46 @@
                 </div>
             </div>
         </div>
-    </div>
-    <!-- 图文消息 -->
-    <div id="mpnews-container" class="weui-cell"
-         style="display: {!! isset($mpnewsList) ? 'block' : 'none' !!};">
-        <div class="weui-uploader">
-            <div class="weui-uploader__hd">
-                <p class="weui-uploader__title">添加图文</p>
-            </div>
-            <div class="weui-uploader__bd">
-                <ul class="weui-uploader__files" id="mpnews-list">
-                    {!! $mpnewsList ?? '' !!}
-                </ul>
-                <a id="add-mpnews" href="#" class="open-popup weui-uploader__input-box"></a>
-            </div>
-        </div>
-    </div>
-    <!-- 定时发送 -->
-    <div class="weui-cell weui-cell_switch b-top weui-cells_form mt5px msg-send-bg">
-        <div class="weui-cell__bd">定时发送</div>
-        <div class="weui-cell__ft">
-            <input type="checkbox" title="开启评论" name="openCom" class="weui-switch"></div>
-    </div>
-    <div class="hw-time b-top" style="display: none;">
-        <div class="weui-cell msg-send-bg">
-            <div class="weui-cell__hd">
-                <label for="" class="weui-label">发送日期</label>
-            </div>
-            <div class="weui-cell__bd">
-                <input id="time" name="time" readonly="readonly" type="text" placeholder="请选择日期"
-                       class="weui-input ma_expect_date" data-toggle='datetime-picker'>
+        <!-- 图文消息 -->
+        <div id="mpnews-container" class="weui-cell"
+             style="display: {!! isset($mpnewsList) ? 'block' : 'none' !!};">
+            <div class="weui-uploader">
+                <div class="weui-uploader__hd">
+                    <p class="weui-uploader__title">添加图文</p>
+                </div>
+                <div class="weui-uploader__bd">
+                    <ul class="weui-uploader__files" id="mpnews-list">
+                        {!! $mpnewsList ?? '' !!}
+                    </ul>
+                    <a id="add-mpnews" href="#" class="open-popup weui-uploader__input-box"></a>
+                </div>
             </div>
         </div>
-    </div>
-    <!-- 发送按钮 -->
-    <div class="weui-flex mt5px">
-        <div class="weui-flex__item">
-            <div class="placeholder msg-send-btn" style="padding: 15px;">
-                <a id="send" href="#" class="weui-btn weui-btn_primary">发送</a>
-                <a id="draft" href="#" class="weui-btn weui-btn_default">存为草稿</a>
+        <!-- 定时发送 -->
+        <div class="weui-cell weui-cell_switch b-top weui-cells_form mt5px msg-send-bg">
+            <div class="weui-cell__bd">定时发送</div>
+            <div class="weui-cell__ft">
+                <input type="checkbox" title="开启评论" name="openCom" class="weui-switch"></div>
+        </div>
+        <!-- 发送时间 -->
+        <div class="hw-time b-top" style="display: none;">
+            <div class="weui-cell msg-send-bg">
+                <div class="weui-cell__hd">
+                    <label for="" class="weui-label">发送日期</label>
+                </div>
+                <div class="weui-cell__bd">
+                    <input id="time" name="time" readonly="readonly" type="text" placeholder="请选择日期"
+                           class="weui-input ma_expect_date" data-toggle='datetime-picker'>
+                </div>
+            </div>
+        </div>
+        <!-- 发送按钮 -->
+        <div class="weui-flex mt5px">
+            <div class="weui-flex__item">
+                <div class="placeholder msg-send-btn" style="padding: 15px;">
+                    <a id="send" href="#" class="weui-btn weui-btn_primary">发送</a>
+                    <a id="draft" href="#" class="weui-btn weui-btn_default">存为草稿</a>
+                </div>
             </div>
         </div>
     </div>
