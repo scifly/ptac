@@ -47,7 +47,7 @@ class MessageCenterComposer {
             $msg = $content[$type]->{$type};
             switch ($type) {
                 case 'text':
-                    $text = $msg->{'content'} ?? '';
+                    $text = $msg->{'content'};
                     break;
                 case 'image':
                     list($mediaId, $filename) = $this->fileAttrs($msg);
@@ -59,7 +59,7 @@ class MessageCenterComposer {
                     break;
                 case 'video':
                     $title = $msg->{'title'};
-                    $text = $msg->{'description'} ?? '';
+                    $text = $msg->{'description'};
                     list($mediaId, $filename) = $this->fileAttrs($msg);
                     $accept = 'video/mp4';
                     break;
@@ -69,7 +69,7 @@ class MessageCenterComposer {
                     break;
                 case 'textcard':
                     $title = $msg->{'title'};
-                    $text = $msg->{'description'} ?? '';
+                    $text = $msg->{'description'};
                     $url = $msg->{'url'};
                     $btntxt = $msg->{'btntxt'};
                     break;
