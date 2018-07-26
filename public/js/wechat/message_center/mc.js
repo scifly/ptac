@@ -631,6 +631,7 @@
                     url: uri,
                     data: formData,
                     success: function (result) {
+                        var checkAll = true;
                         $notification.hide();
                         if (type === 'user') {
                             $back.show();
@@ -651,9 +652,12 @@
                                         $.inArray(id, mc.selectedUserIds) !== -1
                                     ) {
                                         $target.find('input').prop('checked', true);
+                                    } else {
+                                        checkAll = false;
                                     }
                                 }
                             );
+                            $('#check-all').prop('checked', checkAll);
                         }
                     },
                     error: function (e) {
