@@ -5,7 +5,7 @@
     <!-- 发送对象 -->
     <div class="weui-cells weui-cells_form">
         <!-- 发送对象 -->
-        <div id="chosen-container" class="weui-cell{{-- scui-chosen js-scui-chosen-container3 js-scui-chosen scui-form-group--}}">
+        <div id="chosen-container" class="weui-cell" style="background-color: #fff;">
             <div class="weui-cell__hd">
                 {!! Form::label(null, '发送对象', ['class' => 'weui-label']) !!}
             </div>
@@ -56,7 +56,7 @@
                 ) !!}
             </div>
         </div>
-        <div style="height: 5px;"></div>
+        {{--<div style="height: 5px;"></div>--}}
         <!-- 标题(视频、卡片) -->
         <div id="title-container" class="mt5px msg-send-bg b-bottom hw-title"
              style="display: {!! $title ? 'block' : 'none';  !!};">
