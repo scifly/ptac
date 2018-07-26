@@ -37,7 +37,7 @@ class MessageCenterComposer {
         
         $user = Auth::user();
         $chosenTargetsHtml = '';
-        $content = $selectedDepartmentIds = $selectedUserIds = [];
+        $content = $selectedDepartmentIds = $selectedUserIds = null;
         $title = $text = $url = $btntxt = $mediaId = $accept = $filename = $mpnewsList = null;
         if (Request::route('id')) {
             $content = $this->message->detail(
@@ -134,7 +134,8 @@ HTML;
         }
         # 对当前用户可见的所有部门id
         $departmentIds = $this->departmentIds($user->id, session('schoolId'));
-        $data = [
+
+        $view->with([
             'departments'  => Department::whereIn('id', $departmentIds)->get(),
             'messageTypes' => MessageType::pluck('name', 'id'),
             'msgTypes'     => [
@@ -146,26 +147,20 @@ HTML;
                 'textcard' => '卡片',
                 'mpnews'   => '图文',
                 'sms'      => '短信',
-            ]
-        ];
-        if (Request::route('id')) {
-            $view->with(array_merge($data, [
-                'selectedMsgTypeId' => $content['type'],
-                'selectedDepartmentIds' => $selectedDepartmentIds,
-                'selectedUserIds' => $selectedUserIds,
-                'chosenTargetsHtml' => $chosenTargetsHtml,
-                'title' => $title,
-                'content' => $text,
-                'url' => $url,
-                'btntxt' => $btntxt,
-                'mediaId' => $mediaId,
-                'accept' => $accept,
-                'filename' => $filename,
-                'mpnewsList' => $mpnewsList
-            ]));
-        } else {
-            $view->with($data);
-        }
+            ],
+            'selectedMsgTypeId' => $content ? $content['type'] : null,
+            'selectedDepartmentIds' => $selectedDepartmentIds,
+            'selectedUserIds' => $selectedUserIds,
+            'chosenTargetsHtml' => $chosenTargetsHtml,
+            'title' => $title,
+            'content' => $text,
+            'url' => $url,
+            'btntxt' => $btntxt,
+            'mediaId' => $mediaId,
+            'accept' => $accept,
+            'filename' => $filename,
+            'mpnewsList' => $mpnewsList
+        ]);
         
     }
     
