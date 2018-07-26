@@ -70,7 +70,7 @@
         </div>
     </div>
     <!-- 内容(文本、视频、卡片、短信) -->
-    <div id="content-container"
+    <div id="content-container" class="weui-cell"
          style="display: {!! $selectedMsgTypeId ? (in_array($selectedMsgTypeId, ['text', 'video', 'textcard', 'sms']) ? 'block' : 'none') : 'block' !!}">
         <div class="weui-cell__bd">
             {!! Form::textarea('content', $content ?? null, [
