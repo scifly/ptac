@@ -394,7 +394,7 @@
                             $titleContainer.hide();
                             $mpContainer.hide();
                             $contentContainer.show();
-                            $content.html(mc.message[type]['content']);
+                            $content.attr('placeholder', '请输入内容').val(mc.message[type]['content']);
                             break;
                         case 'image':
                             $extra.hide();
@@ -421,7 +421,7 @@
                             $mpContainer.hide();
                             $uploadTitle.text('上传视频');
                             $title.attr('placeholder', '视频标题').val(mc.message[type]['title']);
-                            $content.attr('placeholder', '视频描述').html(mc.message[type]['description']);
+                            $content.attr('placeholder', '视频描述').val(mc.message[type]['description']);
                             $upload.attr('accept', mc.message[type]['type']);
                             $mediaId.val(mc.message[type]['media_id']);
                             $titleContainer.show();     // title
@@ -444,7 +444,7 @@
                             $title.attr('placeholder', '标题');
                             $cardUrl.attr('placeholder', '链接地址');
                             $title.val(mc.message[type]['title']);
-                            $content.html(mc.message[type]['description']);
+                            $content.attr('placeholder', '描述').val(mc.message[type]['description']);
                             $titleContainer.show();     // title
                             $contentContainer.show();   // description
                             $cardUrlContainer.show();   // url
@@ -459,7 +459,7 @@
                         case 'sms':
                             $extra.hide();
                             $mpContainer.hide();
-                            $content.html(mc.message[type]);
+                            $content.attr('placeholder', '短信内容').val(mc.message[type]);
                             $titleContainer.hide();
                             $contentContainer.show();
                             break;
