@@ -58,21 +58,18 @@
         </div>
         {{--<div style="height: 5px;"></div>--}}
         <!-- 标题(视频、卡片) -->
-        <div id="title-container" class="mt5px msg-send-bg b-bottom hw-title"
-             style="display: {!! $title ? 'block' : 'none';  !!};">
-            <div class="weui-cell">
-                <div class="weui-cell__bd js-title">
-                    {!! Form::text(
-                        'title',
-                        $title ?? null,
-                        [
-                            'id' => 'title',
-                            'class' => 'weui-input fs18 one-line title',
-                            'placeholder' => '标题',
-                            'maxlength' => 30
-                        ]
-                    ) !!}
-                </div>
+        <div id="title-container" class="weui-cell" style="display: {!! $title ? 'block' : 'none';  !!};">
+            <div class="weui-cell__bd">
+                {!! Form::text(
+                    'title',
+                    $title ?? null,
+                    [
+                        'id' => 'title',
+                        'class' => 'weui-input fs18 one-line title',
+                        'placeholder' => '标题',
+                        'maxlength' => 30
+                    ]
+                ) !!}
             </div>
         </div>
         <!-- 内容(文本、视频、卡片、短信) -->
@@ -88,72 +85,64 @@
             </div>
         </div>
         <!-- 点击后跳转的链接(卡片) -->
-        <div id="card-url-container" class="msg-send-bg b-bottom hw-title extra"
+        <div id="card-url-container" class="weui-cell"
              style="display: {!! isset($url) ? 'block' : 'none' !!};">
-            <div class="weui-cell">
-                <div class="weui-cell__bd">
-                    {!! Form::text(
-                        'card-url',
-                        $url ?? null,
-                        [
-                            'id' => 'card-url',
-                            'class' => 'weui-input one-line title',
-                            'placeholder' => '点击后跳转的地址',
-                            'maxlength' => 30
-                    ]) !!}
-                </div>
+            <div class="weui-cell__bd">
+                {!! Form::text(
+                    'card-url',
+                    $url ?? null,
+                    [
+                        'id' => 'card-url',
+                        'class' => 'weui-input one-line title',
+                        'placeholder' => '点击后跳转的地址',
+                        'maxlength' => 30
+                ]) !!}
             </div>
         </div>
         <!-- 按钮文字(卡片) -->
-        <div id="btn-txt-container" class="msg-send-bg b-bottom hw-title extra"
-             style="display: {!! isset($btntxt) ? 'block' : 'none' !!};">
-            <div class="weui-cell">
-                <div class="weui-cell__bd">
-                    {!! Form::text(
-                        'btn-txt',
-                        $btntxt ?? null,
-                        [
-                            'id' => 'btn-txt',
-                            'class' => 'weui-input one-line title',
-                            'placeholder' => '按钮文字。默认为“详情”',
-                            'maxlength' => 30
-                        ]
-                    ) !!}
-                </div>
+        <div id="btn-txt-container" class="weui-cell" style="display: {!! isset($btntxt) ? 'block' : 'none' !!};">
+            <div class="weui-cell__bd">
+                {!! Form::text(
+                    'btn-txt',
+                    $btntxt ?? null,
+                    [
+                        'id' => 'btn-txt',
+                        'class' => 'weui-input one-line title',
+                        'placeholder' => '按钮文字。默认为“详情”',
+                        'maxlength' => 30
+                    ]
+                ) !!}
             </div>
         </div>
-        <div style="height: 5px;"></div>
         <!-- 上传素材(图片、语音、视频、文件) -->
-        <div id="upload-container" class="msg-send-conicon msg-send-bg b-top extra"
+        <div id="upload-container" class="weui-cell"
              style="display: {!! isset($mediaId) ? 'block' : 'none' !!};">
-            <div class="weui-cell">
-                <div class="weui-uploader">
-                    <div class="weui-uploader__hd">
-                        <p id="upload-title" class="weui-uploader__title">
-                            {!! $filename ?? '' !!}
-                        </p>
-                    </div>
-                    <div class="weui-uploader__bd">
-                        <ul class="weui-uploader__files" style="display: {!! $filepath ? 'block' : 'none' !!}"
-                            id="file-display">
-                            <li class="weui-uploader__file"
-                                style="background-image: url({!! '/' . ($filepath ?? '') !!})"></li>
-                        </ul>
-                        <div class="weui-uploader__input-box">
-                            {!! Form::hidden(
-                                'media_id',
-                                $mediaId ?? null,
-                                [
-                                    'id' => 'media_id',
-                                    'data-path' => $filepath ?? null
-                                ]
-                            ) !!}
-                            {!! Form::file('upload', [
-                                'id' => 'upload',
-                                'accept' => $accept ?? '',
-                                'class' => 'weui-uploader__input'
-                            ]) !!}
-                        </div>
+            <div class="weui-uploader">
+                <div class="weui-uploader__hd">
+                    <p id="upload-title" class="weui-uploader__title">
+                        {!! $filename ?? '' !!}
+                    </p>
+                </div>
+                <div class="weui-uploader__bd">
+                    <ul class="weui-uploader__files" style="display: {!! $filepath ? 'block' : 'none' !!}"
+                        id="file-display">
+                        <li class="weui-uploader__file"
+                            style="background-image: url({!! '/' . ($filepath ?? '') !!})"></li>
+                    </ul>
+                    <div class="weui-uploader__input-box">
+                        {!! Form::hidden(
+                            'media_id',
+                            $mediaId ?? null,
+                            [
+                                'id' => 'media_id',
+                                'data-path' => $filepath ?? null
+                            ]
+                        ) !!}
+                        {!! Form::file('upload', [
+                            'id' => 'upload',
+                            'accept' => $accept ?? '',
+                            'class' => 'weui-uploader__input'
+                        ]) !!}
                     </div>
                 </div>
             </div>
