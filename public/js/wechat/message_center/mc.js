@@ -651,7 +651,7 @@
                             $back.hide();
                         }
                         if (result !== '') {
-                            $targetsContainer.removeAttribute('style').html(result);
+                            $targetsContainer.attr('style', '').html(result);
                         } else {
                             $targetsContainer.attr('style', 'text-align: center;').html('暂无数据');
                         }
