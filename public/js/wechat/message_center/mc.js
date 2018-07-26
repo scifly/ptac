@@ -321,7 +321,7 @@
                         $targetsContainer.addClass('air-checkall');
                         mc.countTargets();
                     } else {
-                        $targetCheck.prop('checked', false);
+                        $('.target-check').prop('checked', false);
                         $chosenTargets.html('');
                         $targetsContainer.removeClass('air-checkall');
                         mc.countTargets();
