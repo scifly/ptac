@@ -304,7 +304,7 @@
                 $checkAll.on('click', function () {
                     if ($(this).is(':checked')) {
                         var html = '';
-
+                        console.log($targetCheck);
                         $targetCheck.prop('checked', true);
                         $('.js-chosen-items .weui-check__label').each(
                             function (i, target) {
