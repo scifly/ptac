@@ -39,7 +39,10 @@
         </div>
         <div class="weui-cell__bd">
             {!! Form::select(
-                'message_type_id', $messageTypes, null, [
+                'message_type_id',
+                $messageTypes,
+                isset($message) ? $message->message_type_id : null,
+                [
                     'id' => 'message_type_id',
                     'class' => 'weui-input',
                     'disabled' => sizeof($messageTypes) <= 1
