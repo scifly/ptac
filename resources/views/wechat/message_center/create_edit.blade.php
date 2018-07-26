@@ -65,7 +65,6 @@
                     $title ?? null,
                     [
                         'id' => 'title',
-                        'class' => 'weui-input fs18 one-line title',
                         'placeholder' => '标题',
                         'maxlength' => 30
                     ]
