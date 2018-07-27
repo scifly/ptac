@@ -84,7 +84,7 @@
             </div>
         </div>
         <!-- 点击后跳转的链接(卡片) -->
-        <div id="card-url-container" class="weui-cell extra"
+        <div id="card-url-container" class="weui-cell"
              style="display: {!! isset($url) ? 'block' : 'none' !!};">
             <div class="weui-cell__bd">
                 {!! Form::text(
@@ -99,7 +99,7 @@
             </div>
         </div>
         <!-- 按钮文字(卡片) -->
-        <div id="btn-txt-container" class="weui-cell extra"
+        <div id="btn-txt-container" class="weui-cell"
              style="display: {!! isset($btntxt) ? 'block' : 'none' !!};">
             <div class="weui-cell__bd">
                 {!! Form::text(
@@ -115,7 +115,7 @@
             </div>
         </div>
         <!-- 上传素材(图片、语音、视频、文件) -->
-        <div id="upload-container" class="weui-cell extra"
+        <div id="upload-container" class="weui-cell"
              style="display: {!! isset($mediaId) ? 'block' : 'none' !!};">
             <div class="weui-uploader">
                 <div class="weui-uploader__hd">

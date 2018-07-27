@@ -306,19 +306,19 @@
                 });
             },
             msgType: function () {
-                var $title = $('#title'),
-                    $content = $('#content'),
-                    $extra = $('.extra'),   // 消息的附加属性(文件、url、图片、语音等)
-                    $titleContainer = $('#title-container'),
-                    $mpContainer = $('#mpnews-container'),
+                var $titleContainer = $('#title-container'),
                     $contentContainer = $('#content-container'),
                     $uploadContainer = $('#upload-container'),
+                    $cardUrlContainer = $('#card-url-container'),
+                    $btnTxtContainer = $('#btn-txt-container'),
+                    $mpContainer = $('#mpnews-container'),
+
+                    $title = $('#title'),
+                    $content = $('#content'),
                     $mediaId = $('#media_id'),
                     $upload = $('#upload'),
                     $uploadTitle = $('#upload-title'),
-                    $cardUrl = $('#card-url'),
-                    $cardUrlContainer = $('#card-url-container'),
-                    $btnTxtContainer = $('#btn-txt-container');
+                    $cardUrl = $('#card-url');
 
                 $('#msg-type').on('change', function () {
                     var type = $(this).val(),
@@ -326,10 +326,9 @@
 
                     $titleContainer.toggle($.inArray(type, ['video', 'textcard']) !== -1);
                     $contentContainer.toggle($.inArray(type, ['text', 'video', 'textcard', 'sms']) !== -1);
+                    $uploadContainer.toggle($.inArray(type, ['image', 'voice', 'video', 'file']) !== -1);
                     $cardUrlContainer.toggle(type === 'textcard');
                     $btnTxtContainer.toggle(type === 'textcard');
-                    $uploadContainer.toggle($.inArray(type, ['image', 'voice', 'video', 'file']) !== -1);
-                    $extra.toggle($.inArray(type, ['image', 'voice', 'video', 'file']) !== -1);
                     $mpContainer.toggle(type === 'mpnews');
                     switch (type) {
                         case 'text':
@@ -338,29 +337,24 @@
                         case 'image':
                         case 'voice':
                         case 'file':
+                        case 'video':
                             $mediaId.val(message['media_id']).attr('data-path', message['path']);
                             $uploadTitle.text(
                                 message['media_id'] === '' ? message['uploadTitle'] : message['filename']
                             );
-                            $('#file-display').toggle(message['media_id'] !== '');
                             $upload.attr('accept', message['accept']);
-                            break;
-                        case 'video':
-                            $mediaId.val(message['media_id']);
-                            $uploadTitle.text(
-                                message['media_id'] === '' ? message['uploadTitle'] : message['filename']
-                            );
-                            $title.attr('placeholder', '视频标题').val(message['title']);
-                            $content.attr('placeholder', '视频描述').val(message['description']);
-                            $upload.attr('accept', message['accept']);
+                            if (type === 'video') {
+                                $title.attr('placeholder', '视频标题').val(message['title']);
+                                $content.attr('placeholder', '视频描述').val(message['description']);
+                            } else {
+                                $('#file-display').toggle(message['media_id'] !== '');
+                            }
                             break;
                         case 'textcard':
                             $title.attr('placeholder', '标题').val(message['title']);
                             $cardUrl.attr('placeholder', '链接地址').val(message['url']);
                             $content.attr('placeholder', '描述').val(message['description']);
                             $cardBtntxt.attr('placeholder', '按钮文字').val(message['btntxt']);
-                            break;
-                        case 'mpnews':
                             break;
                         case 'sms':
                             $content.attr('placeholder', '短信内容').val(message);
