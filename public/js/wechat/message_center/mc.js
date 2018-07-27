@@ -312,6 +312,7 @@
                     $upload = $('#upload'),
                     $uploadTitle = $('#upload-title'),
                     $cardUrl = $('#card-url'),
+                    $btnTxt = $('#btn-txt'),
                     $mpnewsList = $('#mpnews-list');
 
                 $('#msg-type').on('change', function () {
@@ -330,7 +331,7 @@
                     $cardUrl.parents('.weui-cell').toggle(
                         type === 'textcard'
                     );
-                    $cardBtntxt.parents('.weui-cell').toggle(
+                    $btnTxt.parents('.weui-cell').toggle(
                         type === 'textcard'
                     );
                     $mpnewsList.parents('.weui-cell').toggle(
