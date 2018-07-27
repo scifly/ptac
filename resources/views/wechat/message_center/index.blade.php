@@ -85,7 +85,7 @@
                                                                     </div>
                                                                     <span class="worktime">
                                                                         {!! $message['created_at'] !!}
-                                                                        <span class="info-status green">
+                                                                        <span class="info-status {!! $message['sent'] ? 'green' : 'red' !!}">
                                                                             {{ $message['sent'] ? '已发送' : '草稿' }}
                                                                         </span>
 													                </span>
