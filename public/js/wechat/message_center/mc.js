@@ -864,16 +864,14 @@
                     case 'image':
                     case 'voice':
                     case 'file':
-                        mc.message[type]['media_id'] = $mediaId.val();
-                        mc.message[type]['filename'] = $uploadTitle.text();
-                        mc.message[type]['path'] = $mediaId.data('path');
-                        break;
                     case 'video':
                         mc.message[type]['media_id'] = $mediaId.val();
                         mc.message[type]['filename'] = $uploadTitle.text();
                         mc.message[type]['path'] = $mediaId.data('path');
-                        mc.message[type]['title'] = $title.val();
-                        mc.message[type]['description'] = $content.val();
+                        if (type === 'video') {
+                            mc.message[type]['title'] = $title.val();
+                            mc.message[type]['description'] = $content.val();
+                        }
                         break;
                     case 'textcard':
                         mc.message[type]['title'] = $title.val();
