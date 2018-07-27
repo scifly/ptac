@@ -306,30 +306,36 @@
                 });
             },
             msgType: function () {
-                var $titleContainer = $('#title-container'),
-                    $contentContainer = $('#content-container'),
-                    $uploadContainer = $('#upload-container'),
-                    $cardUrlContainer = $('#card-url-container'),
-                    $btnTxtContainer = $('#btn-txt-container'),
-                    $mpContainer = $('#mpnews-container'),
-
-                    $title = $('#title'),
+                var $title = $('#title'),
                     $content = $('#content'),
                     $mediaId = $('#media_id'),
                     $upload = $('#upload'),
                     $uploadTitle = $('#upload-title'),
-                    $cardUrl = $('#card-url');
+                    $cardUrl = $('#card-url'),
+                    $mpnewsList = $('#mpnews-list');
 
                 $('#msg-type').on('change', function () {
                     var type = $(this).val(),
                         message = mc.message[type];
 
-                    $titleContainer.toggle($.inArray(type, ['video', 'textcard']) !== -1);
-                    $contentContainer.toggle($.inArray(type, ['text', 'video', 'textcard', 'sms']) !== -1);
-                    $uploadContainer.toggle($.inArray(type, ['image', 'voice', 'video', 'file']) !== -1);
-                    $cardUrlContainer.toggle(type === 'textcard');
-                    $btnTxtContainer.toggle(type === 'textcard');
-                    $mpContainer.toggle(type === 'mpnews');
+                    $title.parents('.weui-cell').toggle(
+                        $.inArray(type, ['video', 'textcard']) !== -1
+                    );
+                    $content.parents('.weui-cell').toggle(
+                        $.inArray(type, ['text', 'video', 'textcard', 'sms']) !== -1
+                    );
+                    $upload.parents('.weui-cell').toggle(
+                        $.inArray(type, ['image', 'voice', 'video', 'file']) !== -1
+                    );
+                    $cardUrl.parents('.weui-cell').toggle(
+                        type === 'textcard'
+                    );
+                    $cardBtntxt.parents('.weui-cell').toggle(
+                        type === 'textcard'
+                    );
+                    $mpnewsList.parents('.weui-cell').toggle(
+                        type === 'mpnews'
+                    );
                     switch (type) {
                         case 'text':
                             $content.attr('placeholder', '请输入内容').val(message['content']);
@@ -439,16 +445,16 @@
                         mc.mpnews['articles'].push(article);
                         $mpnewsList.append(
                             '<li id="mpnews-' + mc.mpnewsCount + '" ' +
-                                'class="weui-uploader__file" ' +
-                                'style="background-image: url(' + article['image_url'] + ')">' +
-                                'data-media-id="' + article['thumb_media_id'] + '" ' +
-                                'data-author="' + article['author'] + '" ' +
-                                'data-content="' + article['content'] + '" ' +
-                                'data-digest="' + article['digest'] + '" ' +
-                                'data-filename="' + article['filename'] + '" ' +
-                                'data-url="' + article['content_source_url'] + '" ' +
-                                'data-image="' + article['image_url'] + '" ' +
-                                'data-title="' + article['title'] + '" ' +
+                            'class="weui-uploader__file" ' +
+                            'style="background-image: url(' + article['image_url'] + ')">' +
+                            'data-media-id="' + article['thumb_media_id'] + '" ' +
+                            'data-author="' + article['author'] + '" ' +
+                            'data-content="' + article['content'] + '" ' +
+                            'data-digest="' + article['digest'] + '" ' +
+                            'data-filename="' + article['filename'] + '" ' +
+                            'data-url="' + article['content_source_url'] + '" ' +
+                            'data-image="' + article['image_url'] + '" ' +
+                            'data-title="' + article['title'] + '" ' +
                             '</li>'
                         );
                         mc.mpnewsCount += 1;
@@ -781,11 +787,11 @@
                     imgStyle = (type === 'user' ? '" style="border-radius: 50%;' : ''),
                     imgSrc = '/img/' + (type === 'user' ? 'personal.png' : 'department.png');
 
-                return '<a class="chosen-results-item js-chosen-results-item ' + type + '" ' +
+                return '<a class="' + type + '" ' +
                     targetId + '" data-list="' + id + '" data-uid="' + id + '" ' +
                     'data-type="' + type + '">' +
                     '<img src="' + imgSrc + imgStyle + '">' +
-                    '</a>';
+                '</a>';
             },
             addTarget: function (id, type) {
                 if (type === 'user') {

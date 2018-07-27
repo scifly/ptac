@@ -5,7 +5,7 @@
     <div class="weui-cells__title">请选择</div>
     <div class="weui-cells weui-cells_form">
         <!-- 发送对象 -->
-        <div id="chosen-container" class="weui-cell">
+        <div class="weui-cell">
             <div class="weui-cell__hd">
                 {!! Form::label(null, '发送对象', ['class' => 'weui-label']) !!}
             </div>
@@ -16,7 +16,7 @@
                     @endif
                 </div>
             </div>
-            <span class="icons-chosen chosen-icon js-chosen-icon">
+            <span class="icons-chosen chosen-icon">
                 <a class="icon iconfont icon-add c-green open-popup" href="#" data-target="#targets"></a>
             </span>
         </div>
@@ -60,8 +60,7 @@
     <div class="weui-cells__title">消息内容</div>
     <div class="weui-cells weui-cells_form">
         <!-- 标题(视频、卡片) -->
-        <div id="title-container" class="weui-cell"
-             style="display: {!! $title ? 'block' : 'none' !!}; ">
+        <div class="weui-cell" style="display: {!! $title ? 'block' : 'none' !!}; ">
             <div class="weui-cell__bd">
                 {!! Form::text('title', $title ?? null, [
                     'id' => 'title',
@@ -72,8 +71,7 @@
             </div>
         </div>
         <!-- 内容(文本、视频、卡片、短信) -->
-        <div id="content-container" class="weui-cell"
-             style="display: {!! $selectedMsgTypeId ? (in_array($selectedMsgTypeId, ['text', 'video', 'textcard', 'sms']) ? 'block' : 'none') : 'block' !!}">
+        <div class="weui-cell" style="display: {!! $selectedMsgTypeId ? (in_array($selectedMsgTypeId, ['text', 'video', 'textcard', 'sms']) ? 'block' : 'none') : 'block' !!}">
             <div class="weui-cell__bd">
                 {!! Form::textarea('content', $content ?? null, [
                     'id' => 'content',
@@ -84,7 +82,7 @@
             </div>
         </div>
         <!-- 点击后跳转的链接(卡片) -->
-        <div id="card-url-container" class="weui-cell"
+        <div class="weui-cell"
              style="display: {!! isset($url) ? 'block' : 'none' !!};">
             <div class="weui-cell__bd">
                 {!! Form::text(
@@ -99,8 +97,7 @@
             </div>
         </div>
         <!-- 按钮文字(卡片) -->
-        <div id="btn-txt-container" class="weui-cell"
-             style="display: {!! isset($btntxt) ? 'block' : 'none' !!};">
+        <div class="weui-cell" style="display: {!! isset($btntxt) ? 'block' : 'none' !!};">
             <div class="weui-cell__bd">
                 {!! Form::text(
                     'btn-txt',
@@ -115,8 +112,7 @@
             </div>
         </div>
         <!-- 上传素材(图片、语音、视频、文件) -->
-        <div id="upload-container" class="weui-cell"
-             style="display: {!! isset($mediaId) ? 'block' : 'none' !!};">
+        <div class="weui-cell" style="display: {!! isset($mediaId) ? 'block' : 'none' !!};">
             <div class="weui-uploader">
                 <div class="weui-uploader__hd">
                     <p id="upload-title" class="weui-uploader__title">
@@ -149,8 +145,7 @@
             </div>
         </div>
         <!-- 图文消息 -->
-        <div id="mpnews-container" class="weui-cell"
-             style="display: {!! isset($mpnewsList) ? 'block' : 'none' !!};">
+        <div class="weui-cell" style="display: {!! isset($mpnewsList) ? 'block' : 'none' !!};">
             <div class="weui-uploader">
                 <div class="weui-uploader__hd">
                     <p class="weui-uploader__title">添加图文</p>
@@ -197,15 +192,14 @@
 <div id="targets" class='weui-popup__container'>
     <div class="weui-popup__overlay"></div>
     <div class="weui-popup__modal">
-        <div class="chosen-container js-scui-chosen-layer">
+        <div class="chosen-container">
             <div class="chosen-container-fixed">
-                <div class="chosen-header js-chosen-header weui-cell">
-                    <div class="chosen-header-result js-chosen-header-result"></div>
+                <div class="chosen-header weui-cell">
+                    <div class="chosen-header-result"></div>
                     <div class="common-left-search">
                         <i class="icon iconfont icon-search3 search-logo icons2x-search"></i>
                         {!! Form::text('search', null, [
                             'id' => 'search',
-                            'class' => 'js-search-input',
                             'placeholder' => '搜索'
                         ]) !!}
                     </div>
@@ -216,7 +210,7 @@
                     </a>
                     {!! Form::hidden('deptId', null, ['id' => 'deptId']) !!}
                 </div>
-                <div class="chosen-items js-chosen-items">
+                <div class="chosen-items">
                     <div class="weui-cells weui-cells_checkbox" style="padding-bottom: 60px;">
                         <div id="targets-container">
                             <!-- 部门列表 -->
@@ -230,7 +224,7 @@
                     <div style="height: 40px;"></div>
                 </div>
             </div>
-            <div class="chosen-footer js-chosen-footer">
+            <div class="chosen-footer">
                 <div class="weui-cells weui-cells_checkbox">
                     <label class="weui-cell weui-check__label">
                         <div class="weui-cell__hd">
@@ -265,7 +259,7 @@
             <div class="weui-uploader__hd">
                 {!! Form::label('mpnews-title', '标题', ['class' => 'weui-label']) !!}
             </div>
-            <div class="weui-cell__bd js-title">
+            <div class="weui-cell__bd">
                 {!! Form::text('mpnews-title', null, [
                     'id' => 'mpnews-title',
                     'class' => 'weui-input fs18 one-line title',
