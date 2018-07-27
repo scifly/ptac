@@ -76,7 +76,7 @@ class MessageCenterComposer {
                 case 'mpnews':
                     $articles = $msg->{'articles'};
                     $tpl = <<<HTML
-                        <li id="mpnews-%s" class="weui-uploader__file" style="background-image: (%s)"
+                        <li id="mpnews-%s" class="weui-uploader__file" style="background-image: %s"
                             data-media-id="%s" data-author="%s" data-content="%s" data-digest="%s"
                             data-filename="%s" data-url="%s" data-image="%s" data-title="%s"></li>
 HTML;
@@ -84,7 +84,7 @@ HTML;
                         $article = $articles[$i];
                         $mpnewsList .= sprintf(
                             $tpl, $i,
-                            $article->{'image_url'},
+                            'url(/' . $article->{'image_url'} . ')',
                             $article->{'thumb_media_id'},
                             $article->{'author'},
                             $article->{'content'},
