@@ -324,22 +324,20 @@
                     var type = $(this).val(),
                         message = mc.message[type];
 
+                    $titleContainer.toggle($.inArray(type, ['video', 'textcard']) !== -1);
+                    $contentContainer.toggle($.inArray(type, ['text', 'video', 'textcard', 'sms']) !== -1);
+                    $cardUrlContainer.toggle(type === 'textcard');
+                    $btnTxtContainer.toggle(type === 'textcard');
+                    $uploadContainer.toggle($.inArray(type, ['image', 'voice', 'video', 'file']) !== -1);
+                    $extra.toggle($.inArray(type, ['image', 'voice', 'video', 'file']) !== -1);
+                    $mpContainer.toggle(type === 'mpnews');
                     switch (type) {
                         case 'text':
-                            $extra.hide();
-                            $titleContainer.hide();
-                            $mpContainer.hide();
-                            $contentContainer.show();
                             $content.attr('placeholder', '请输入内容').val(message['content']);
                             break;
                         case 'image':
                         case 'voice':
                         case 'file':
-                            $extra.hide();
-                            $titleContainer.hide();
-                            $contentContainer.hide();
-                            $mpContainer.hide();
-                            $uploadContainer.show();
                             $mediaId.val(message['media_id']).attr('data-path', message['path']);
                             $uploadTitle.text(
                                 message['media_id'] === '' ? message['uploadTitle'] : message['filename']
@@ -348,8 +346,6 @@
                             $upload.attr('accept', message['accept']);
                             break;
                         case 'video':
-                            $extra.hide();
-                            $mpContainer.hide();
                             $mediaId.val(message['media_id']);
                             $uploadTitle.text(
                                 message['media_id'] === '' ? message['uploadTitle'] : message['filename']
@@ -357,34 +353,17 @@
                             $title.attr('placeholder', '视频标题').val(message['title']);
                             $content.attr('placeholder', '视频描述').val(message['description']);
                             $upload.attr('accept', message['accept']);
-                            $titleContainer.show();     // title
-                            $contentContainer.show();   // description
-                            $uploadContainer.show();    // media_id
                             break;
                         case 'textcard':
-                            $extra.hide();
-                            $mpContainer.hide();
                             $title.attr('placeholder', '标题').val(message['title']);
                             $cardUrl.attr('placeholder', '链接地址').val(message['url']);
                             $content.attr('placeholder', '描述').val(message['description']);
-                            $content.attr('placeholder', '按钮文字').val(message['btntxt']);
-                            $titleContainer.show();     // title
-                            $contentContainer.show();   // description
-                            $cardUrlContainer.show();   // url
-                            $btnTxtContainer.show();    // btnTxt
+                            $cardBtntxt.attr('placeholder', '按钮文字').val(message['btntxt']);
                             break;
                         case 'mpnews':
-                            $extra.hide();
-                            $titleContainer.hide();
-                            $contentContainer.hide();
-                            $mpContainer.show();
                             break;
                         case 'sms':
-                            $extra.hide();
-                            $titleContainer.hide();
-                            $mpContainer.hide();
                             $content.attr('placeholder', '短信内容').val(message);
-                            $contentContainer.show();
                             break;
                         default:
                             break;
