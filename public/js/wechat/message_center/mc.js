@@ -483,7 +483,7 @@
                         $mpAuthor.val(news['author']);
                         $mpDigest.val(news['digest']);
                         $mpMediaId.val(news['thumb_media_id']);
-                        $mpUploadTitle.val(news['filename']);
+                        $mpUploadTitle.html(news['filename']);
                         $mpFilePath.val(news['image_url']);
                         $delete.show();
                         $('#cover-image').show().find('li:first-child')
