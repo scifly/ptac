@@ -435,7 +435,7 @@
                             content_source_url: $mpUrl.val(),
                             content: description,
                             digest: $mpDigest.val(),
-                            filename: $mpUploadTitle.val(),
+                            filename: $mpUploadTitle.html(),
                             image_url: $mpFilePath.val()
                         };
 
@@ -445,10 +445,11 @@
                     }
                     if (id === '') {
                         mc.mpnews['articles'].push(article);
+                        var url = '/' + article['image_url'];
                         $mpnewsList.append(
                             '<li id="mpnews-' + mc.mpnewsCount + '" ' +
                             'class="weui-uploader__file" ' +
-                            'style="background-image: url(/' + article['image_url'] + ')" ' +
+                            'style="background-image: url(' + url + ')" ' +
                             'data-media-id="' + article['thumb_media_id'] + '" ' +
                             'data-author="' + article['author'] + '" ' +
                             'data-content="' + article['content'] + '" ' +
