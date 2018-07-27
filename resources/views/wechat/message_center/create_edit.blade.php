@@ -146,15 +146,17 @@
         </div>
         <!-- 图文消息 -->
         <div class="weui-cell" style="display: {!! isset($mpnewsList) ? 'block' : 'none' !!};">
-            <div class="weui-uploader">
-                <div class="weui-uploader__hd">
-                    <p class="weui-uploader__title">添加图文</p>
-                </div>
-                <div class="weui-uploader__bd">
-                    <ul class="weui-uploader__files" id="mpnews-list">
-                        {!! $mpnewsList ?? '' !!}
-                    </ul>
-                    <a id="add-mpnews" href="#" class="open-popup weui-uploader__input-box"></a>
+            <div class="weui-cell__bd">
+                <div class="weui-uploader">
+                    <div class="weui-uploader__hd">
+                        <p class="weui-uploader__title">添加图文</p>
+                    </div>
+                    <div class="weui-uploader__bd">
+                        <ul class="weui-uploader__files" id="mpnews-list">
+                            {!! $mpnewsList ?? '' !!}
+                        </ul>
+                        <a id="add-mpnews" href="#" class="open-popup weui-uploader__input-box"></a>
+                    </div>
                 </div>
             </div>
         </div>
