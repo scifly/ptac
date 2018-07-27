@@ -111,18 +111,16 @@ HTML;
             list($departmentHtml, $userHtml) = array_map(
                 function ($ids, $type) {
                     /** @noinspection HtmlUnknownTarget */
-                    $tpl = <<<HTML
-                        <a id="%s" class="chosen-results-item" data-uid="%s" data-type="%s">
-                            <img src="%s" style="%s" />
-                        </a>
-HTML;
+                    $tpl ='<a id="%s" class="chosen-results-item" data-uid="%s" data-type="%s"><img src="%s" style="%s" /></a>';
                     $html = '';
                     $imgName = $type == 'department' ? 'department.png' : 'personal.png';
                     $imgStyle = $type == 'department' ? '' : 'border-radius: 50%;';
                     foreach ($ids as $id) {
-                        $html .= trim(sprintf(
-                            $tpl, $type . '-' . $id, $id, $type, '/img/' . $imgName, $imgStyle
-                        ));
+                        $html .= sprintf(
+                                $tpl, $type . '-' . $id,
+                                $id, $type, '/img/' . $imgName,
+                                $imgStyle
+                            );
                     }
                     return $html;
                 },
