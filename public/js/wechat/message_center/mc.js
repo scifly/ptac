@@ -898,7 +898,7 @@
                                 content_source_url: $article.data('url'),
                                 content: $article.data('content'),
                                 digest: $article.data('digest'),
-                                filname: $article.data('filename'),
+                                filename: $article.data('filename'),
                                 image_url: $article.data('image')
                             });
                             mc.mpnewsCount += 1;

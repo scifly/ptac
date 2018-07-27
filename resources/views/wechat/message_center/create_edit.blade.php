@@ -264,7 +264,7 @@
             <div class="weui-cell__bd">
                 {!! Form::text('mpnews-title', null, [
                     'id' => 'mpnews-title',
-                    'class' => 'weui-input fs18 one-line title',
+                    'class' => 'weui-input',
                     'maxlength' => 30
                 ]) !!}
             </div>
