@@ -465,7 +465,7 @@
                         var $mpnews = $('#mpnews-' + id);
 
                         mc.mpnews['articles'][id] = article;
-                        $mpnews.attr('style', '"background-image:url(/' + image_url + ')"');
+                        $mpnews.attr('style', 'background-image:url(/' + image_url + ')');
                     }
                     $.closePopup();
                 });
