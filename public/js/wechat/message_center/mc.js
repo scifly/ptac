@@ -361,7 +361,7 @@
                             $title.attr('placeholder', '标题').val(message['title']);
                             $cardUrl.attr('placeholder', '链接地址').val(message['url']);
                             $content.attr('placeholder', '描述').val(message['description']);
-                            $cardBtntxt.attr('placeholder', '按钮文字').val(message['btntxt']);
+                            $btnTxt.attr('placeholder', '按钮文字').val(message['btntxt']);
                             break;
                         case 'sms':
                             $content.attr('placeholder', '短信内容').val(message);
