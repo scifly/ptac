@@ -112,8 +112,8 @@ HTML;
                 function ($ids, $type) {
                     /** @noinspection HtmlUnknownTarget */
                     $tpl = <<<HTML
-                        <a id="%s" class="chosen-results-item %s"
-                           data-list="%s" data-uid="%s" data-type="%s">
+                        <a id="%s" class="chosen-results-item"
+                           data-uid="%s" data-type="%s">
                             <img src="%s" style="%s" />
                         </a>
 HTML;
@@ -122,8 +122,7 @@ HTML;
                     $imgStyle = $type == 'department' ? '' : 'border-radius: 50%;';
                     foreach ($ids as $id) {
                         $html .= sprintf(
-                            $tpl, $type . '-' . $id, $type, $id, $id,
-                            $type, '/img/' . $imgName, $imgStyle
+                            $tpl, $type . '-' . $id, $id, $type, '/img/' . $imgName, $imgStyle
                         );
                     }
                     return $html;

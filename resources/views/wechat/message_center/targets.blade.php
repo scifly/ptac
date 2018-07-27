@@ -1,8 +1,7 @@
 @foreach($targets as $target)
     <div style="position: relative;">
         <label class="weui-cell weui-check__label" id="{!! $type !!}-{!! $target->id !!}"
-               data-item="{!! $target->id !!}" data-uid="{!! $target->id !!}"
-               data-type="{!! $type !!}">
+               data-uid="{!! $target->id !!}" data-type="{!! $type !!}">
             <div class="weui-cell__hd">
                 {!! Form::checkbox(
                     'targets[]', 0,
@@ -17,7 +16,7 @@
             <div class="weui-cell__bd clearfix">
                 <img src="{!! $type == 'department' ? asset('img/department.png') : asset('img/personal.png') !!}"
                      @if ($type == 'department') style="border-radius: 0;" @endif
-                     class="js-go-detail lazy target-image" width="25" height="25">
+                     class="target-image" width="25" height="25">
                 <span class="contacts-text">
                 {!!
                     $type == 'department'

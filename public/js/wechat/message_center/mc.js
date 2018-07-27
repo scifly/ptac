@@ -279,7 +279,7 @@
                 $(document).on('change', '.target-check',
                     function () {
                         var $this = $(this).parents('.weui-check__label'),
-                            id = $this.data('item'),
+                            id = $this.data('uid'),
                             type = $this.data('type');
                         $(this).is(':checked') ? mc.addTarget(id, type) : mc.removeTarget(id, type);
                     }
@@ -548,7 +548,7 @@
                             $targetsContainer.find('label').each(
                                 function (i, target) {
                                     var $target = $(target),
-                                        id = $target.data('item');
+                                        id = $target.data('uid');
                                     if (
                                         $.inArray(id, mc.selectedDepartmentIds) !== -1 ||
                                         $.inArray(id, mc.selectedUserIds) !== -1
@@ -788,8 +788,8 @@
                     imgStyle = (type === 'user' ? '" style="border-radius: 50%;' : ''),
                     imgSrc = '/img/' + (type === 'user' ? 'personal.png' : 'department.png');
 
-                return '<a class="chosen-results-item ' + type + '" ' +
-                    targetId + '" data-list="' + id + '" data-uid="' + id + '" ' +
+                return '<a class="chosen-results-item" ' + targetId +
+                    '" data-uid="' + id + '" ' +
                     'data-type="' + type + '">' +
                     '<img src="' + imgSrc + imgStyle + '">' +
                 '</a>';
@@ -833,7 +833,7 @@
                 $targetsContainer.find('label').each(
                     function (i, target) {
                         var $target = $(target),
-                            id = $target.data('item'),
+                            id = $target.data('uid'),
                             type = $target.data('type');
 
                         checked ? mc.addTarget(id, type) : mc.removeTarget(id, type)
