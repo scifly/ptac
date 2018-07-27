@@ -331,6 +331,9 @@
                         <p id="mp-upload-title" class="weui-uploader__title">封面图</p>
                     </div>
                     <div class="weui-uploader__bd">
+                        <ul class="weui-uploader__files" id="cover-display">
+                            <li class="weui-uploader__file"></li>
+                        </ul>
                         <div class="weui-uploader__input-box">
                             {!! Form::hidden('thumb_media_id', null, ['id' => 'thumb_media_id']) !!}
                             {!! Form::hidden('mp-file-path', null, ['id' => 'mp-file-path']) !!}

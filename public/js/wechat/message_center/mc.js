@@ -739,7 +739,6 @@
                     formData = new FormData(),
                     type = $('#msg-type').val();
 
-
                 formData.append('file', $(uploader)[0].files[0]);
                 formData.append('_token', wap.token());
                 formData.append('type', type === 'mpnews' ? 'image' : type);
@@ -762,11 +761,16 @@
                         $notification.hide();
                         $(mpnews ? '#mp-upload-title' : '#upload-title').html(filename);
                         $(mpnews ? '#thumb_media_id' : '#media_id').val(mediaId).attr('data-path', path);
-                        mc.message[type]['filename'] = filename;
-                        mc.message[type]['path'] = path;
-                        $display.show().find('li:first-child')
-                            .attr('style', 'background-image:url(/' + (type === 'image' ? path : 'img/0.png') + ')');
-                        if (mpnews) { $mpFilePath.val(path); }
+                        if (!mpnews) {
+                            mc.message[type]['filename'] = filename;
+                            mc.message[type]['path'] = path;
+                            $display.show().find('li:first-child')
+                                .attr('style', 'background-image:url(/' + (type === 'image' ? path : 'img/0.png') + ')');
+                        } else {
+                            $('#cover-display').find('li:first-child')
+                                .attr('style', 'background-image:url(/' + path + ')');
+                            $mpFilePath.val(path);
+                        }
                         $.toptip(result['message'], 'success');
                     },
                     error: function (e) { wap.errorHandler(e); }
