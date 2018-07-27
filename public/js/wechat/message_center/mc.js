@@ -485,7 +485,8 @@
                         $mpUploadTitle.val(news['filename']);
                         $mpFilePath.val(news['image_url']);
                         $delete.show();
-                        $('#cover-image').show().attr('style', 'background-image:url(/' + news['image_url'] + ')');
+                        $('#cover-image').show().find('li:first-child')
+                            .attr('style', 'background-image:url(/' + news['image_url'] + ')');
                         $mpnews.popup();
                     }
                 );
