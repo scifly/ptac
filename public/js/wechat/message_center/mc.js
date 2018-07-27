@@ -418,6 +418,7 @@
                     $mpUploadTitle.html('封面图');
                     $mpUpload.val('');
                     $delete.hide();
+                    $('#cover-image').html('');
                     $mpnews.popup();
                 });
                 // 保存/更新图文
