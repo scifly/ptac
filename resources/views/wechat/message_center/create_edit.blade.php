@@ -324,8 +324,8 @@
             </div>
         </div>
         <!-- 封面图 -->
-        <div class="msg-send-conicon msg-send-bg b-top weui-cell">
-            <div class="weui-cell">
+        <div class="weui-cell{{-- msg-send-conicon msg-send-bg b-top--}}">
+            <div class="weui-cell__bd">
                 <div class="weui-uploader">
                     <div class="weui-uploader__hd">
                         <p id="mp-upload-title" class="weui-uploader__title">封面图</p>
