@@ -131,7 +131,7 @@
                             var $target = $(target),
                                 id = $target.data('uid'),
                                 type = $target.data('type');
-                            type === 'user' ? mc.selectedUserIds.push(id) : mc.selectedDepartmentIds.push('id');
+                            type === 'user' ? mc.selectedUserIds.push(id) : mc.selectedDepartmentIds.push(id);
                         }
                     );
 
