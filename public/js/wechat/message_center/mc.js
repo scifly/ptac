@@ -778,15 +778,14 @@
                 );
             },
             chosenHtml: function (id, type) {
-                var targetId = (type === 'user' ? 'id="user-' : 'id="department-') + id + '"',
-                    imgStyle = (type === 'user' ? '" style="border-radius: 50%;' : ''),
-                    imgSrc = '/img/' + (type === 'user' ? 'personal.png' : 'department.png');
+                var targetId = (type === 'user' ? 'user-' : 'department-') + id,
+                    style = (type === 'user' ? 'border-radius: 50%;' : ''),
+                    src = '/img/' + (type === 'user' ? 'personal.png' : 'department.png');
 
-                return '<a class="chosen-results-item" ' + targetId +
-                    '" data-uid="' + id + '" ' +
-                    'data-type="' + type + '">' +
-                    '<img src="' + imgSrc + imgStyle + '">' +
-                '</a>';
+                return '<a id="' + targetId + '" class="chosen-results-item" ' +  + '" data-uid="' + id +
+                    '" data-type="' + type + '">' +
+                    '<img src="' + src + '" style="' + style + '" />' +
+                    '</a>';
             },
             addTarget: function (id, type) {
                 if (type === 'user') {
