@@ -111,17 +111,19 @@ HTML;
             list($departmentHtml, $userHtml) = array_map(
                 function ($ids, $type) {
                     /** @noinspection HtmlUnknownTarget */
-                    $tpl ='<a id="%s" class="chosen-results-item" data-uid="%s" data-type="%s"><img src="%s" style="%s" /></a>';
+                    $tpl = '<a id="%s" class="chosen-results-item" data-uid="%s" data-type="%s">' .
+                        '<img src="%s" style="%s" /></a>';
                     $html = '';
                     $imgName = $type == 'department' ? 'department.png' : 'personal.png';
                     $imgStyle = $type == 'department' ? '' : 'border-radius: 50%;';
                     foreach ($ids as $id) {
                         $html .= sprintf(
-                                $tpl, $type . '-' . $id,
-                                $id, $type, '/img/' . $imgName,
-                                $imgStyle
-                            );
+                            $tpl, $type . '-' . $id,
+                            $id, $type, '/img/' . $imgName,
+                            $imgStyle
+                        );
                     }
+                    
                     return $html;
                 },
                 [$selectedDepartmentIds, $selectedUserIds], ['department', 'user']
@@ -130,11 +132,10 @@ HTML;
         }
         # 对当前用户可见的所有部门id
         $departmentIds = $this->departmentIds($user->id, session('schoolId'));
-
         $view->with([
-            'departments'  => Department::whereIn('id', $departmentIds)->get(),
-            'messageTypes' => MessageType::pluck('name', 'id'),
-            'msgTypes'     => [
+            'departments'           => Department::whereIn('id', $departmentIds)->get(),
+            'messageTypes'          => MessageType::pluck('name', 'id'),
+            'msgTypes'              => [
                 'text'     => '文本',
                 'image'    => '图片',
                 'voice'    => '语音',
@@ -144,19 +145,19 @@ HTML;
                 'mpnews'   => '图文',
                 'sms'      => '短信',
             ],
-            'selectedMsgTypeId' => $content ? $content['type'] : null,
+            'selectedMsgTypeId'     => $content ? $content['type'] : null,
             'selectedDepartmentIds' => $selectedDepartmentIds,
-            'selectedUserIds' => $selectedUserIds,
-            'chosenTargetsHtml' => $chosenTargetsHtml,
-            'title' => $title,
-            'content' => $text,
-            'url' => $url,
-            'btntxt' => $btntxt,
-            'mediaId' => $mediaId,
-            'filepath' => $filepath,
-            'accept' => $accept,
-            'filename' => $filename,
-            'mpnewsList' => $mpnewsList
+            'selectedUserIds'       => $selectedUserIds,
+            'chosenTargetsHtml'     => $chosenTargetsHtml,
+            'title'                 => $title,
+            'content'               => $text,
+            'url'                   => $url,
+            'btntxt'                => $btntxt,
+            'mediaId'               => $mediaId,
+            'filepath'              => $filepath,
+            'accept'                => $accept,
+            'filename'              => $filename,
+            'mpnewsList'            => $mpnewsList,
         ]);
         
     }
@@ -168,7 +169,7 @@ HTML;
      * @return array
      */
     private function fileAttrs($msg) {
-    
+        
         $mediaId = $msg->{'media_id'};
         $filepath = $msg->{'path'};
         $paths = explode('/', $msg->{'path'});
