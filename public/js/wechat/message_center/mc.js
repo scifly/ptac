@@ -602,24 +602,15 @@
             data: function () {
                 var $title = $('#title'),
                     $msgType = $('#msg-type'),
-                    $chosenTargets = $('#chosen-results'),
                     $content = $('#content'),
                     $mediaId = $('#media_id'),
                     $cardUrl = $('#card-url'),
                     $btnTxt = $('#btn-txt'),
                     $messageTypeId = $('#message_type_id'),
-                    departmentIds = [],
-                    userIds = [], mediaId,
-                    title, text, cardUrl, btnTxt,
+                    mediaId, title, text, cardUrl, btnTxt,
                     formData, content = null,
                     type = $msgType.val();
 
-                $chosenTargets.find('a.department').each(function () {
-                    departmentIds.push($(this).data('uid'));
-                });
-                $chosenTargets.find('a.user').each(function () {
-                    userIds.push($(this).data('uid'));
-                });
                 switch (type) {
                     case 'text':
                         if ($content.val() === '') {
@@ -723,15 +714,18 @@
                     default:
                         break;
                 }
-                if (userIds.length === 0 && departmentIds.length === 0) {
+                if (
+                    mc.selectedDepartmentIds.length === 0 &&
+                    mc.selectedUserIds.length === 0
+                ) {
                     $.toptip('请选择发送对象', 'error');
                     return false;
                 }
                 formData = {
                     _token: wap.token(),
                     type: type,
-                    user_ids: userIds,
-                    dept_ids: departmentIds,
+                    user_ids: mc.selectedUserIds,
+                    dept_ids: mc.selectedDepartmentIds,
                     message_type_id: $messageTypeId.val()
                 };
 
