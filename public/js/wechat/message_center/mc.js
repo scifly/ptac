@@ -309,7 +309,6 @@
                 var $title = $('#title'),
                     $content = $('#content'),
                     $extra = $('.extra'),   // 消息的附加属性(文件、url、图片、语音等)
-                    $display = $('#file-display'),
                     $titleContainer = $('#title-container'),
                     $mpContainer = $('#mpnews-container'),
                     $contentContainer = $('#content-container'),
@@ -345,7 +344,7 @@
                             $uploadTitle.text(
                                 message['media_id'] === '' ? message['uploadTitle'] : message['filename']
                             );
-                            $display.toggle(message['media_id'] !== '');
+                            $('#file-display').toggle(message['media_id'] !== '');
                             $upload.attr('accept', message['accept']);
                             break;
                         case 'video':

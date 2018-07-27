@@ -211,7 +211,7 @@
                     </div>
                 </div>
                 <div class="back">
-                    <a href="#" class="weui-btn weui-btn_plain-default" id="back" style="display: none;">
+                    <a href="#" class="weui-btn weui-btn_default" id="back" style="display: none;">
                         返回部门列表
                     </a>
                     {!! Form::hidden('deptId', null, ['id' => 'deptId']) !!}
