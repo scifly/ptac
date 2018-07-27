@@ -447,7 +447,7 @@
                         $mpnewsList.append(
                             '<li id="mpnews-' + mc.mpnewsCount + '" ' +
                             'class="weui-uploader__file" ' +
-                            'style="background-image: url(/' + article['image_url'] + ')" ' +
+                            'style="background-image: url(//' + article['image_url'] + ')" ' +
                             'data-media-id="' + article['thumb_media_id'] + '" ' +
                             'data-author="' + article['author'] + '" ' +
                             'data-content="' + article['content'] + '" ' +
@@ -455,7 +455,7 @@
                             'data-filename="' + article['filename'] + '" ' +
                             'data-url="' + article['content_source_url'] + '" ' +
                             'data-image="' + article['image_url'] + '" ' +
-                            'data-title="' + article['title'] + '" ' +
+                            'data-title="' + article['title'] + '">' +
                             '</li>'
                         );
                         mc.mpnewsCount += 1;
