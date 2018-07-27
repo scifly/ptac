@@ -767,7 +767,7 @@
                             $display.show().find('li:first-child')
                                 .attr('style', 'background-image:url(/' + (type === 'image' ? path : 'img/0.png') + ')');
                         } else {
-                            $('#cover-display').find('li:first-child')
+                            $('#cover-image').show().find('li:first-child')
                                 .attr('style', 'background-image:url(/' + path + ')');
                             $mpFilePath.val(path);
                         }

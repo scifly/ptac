@@ -331,7 +331,7 @@
                         <p id="mp-upload-title" class="weui-uploader__title">封面图</p>
                     </div>
                     <div class="weui-uploader__bd">
-                        <ul class="weui-uploader__files" id="cover-display">
+                        <ul class="weui-uploader__files" id="cover-image" style="display: none;">
                             <li class="weui-uploader__file"></li>
                         </ul>
                         <div class="weui-uploader__input-box">
