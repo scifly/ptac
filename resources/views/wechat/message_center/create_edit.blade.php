@@ -154,7 +154,9 @@
                     <ul class="weui-uploader__files" id="mpnews-list">
                         {!! $mpnewsList ?? '' !!}
                     </ul>
-                    <a id="add-mpnews" href="#" class="open-popup weui-uploader__input-box"></a>
+                    <div class="weui-uploader__input-box">
+                        <a id="add-mpnews" href="#" class="open-popup{{-- weui-uploader__input-box--}}"></a>
+                    </div>
                 </div>
             </div>
         </div>
