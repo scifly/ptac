@@ -110,10 +110,11 @@ class MessageRequest extends FormRequest {
         }
         $action = explode('/', Request::path())[1];
         if ($action != 'send') {
+            # 保存草稿
             $schoolId = $this->schoolId() ?? session('schoolId');
             $corp = School::find($schoolId)->corp;
+            # 消息草稿的用户类发送对象只须保存学生和教职员工的userid
             $userids = User::whereIn('id', $input['user_ids'])
-                // ->where('subscribed', 1) # 仅发送消息给已关注的用户
                 ->pluck('userid')->toArray();
             $agentid = $input['type'] != 'sms'
                 ? App::whereCorpId($corp->id)->where('name', '消息中心')->first()->agentid
@@ -126,6 +127,9 @@ class MessageRequest extends FormRequest {
                 $input['type'] => $input[$input['type']],
             ]);
         }
+        # 需要立即或定时发送的消息中对应的用户类发送对象，
+        # 需在Message表中保存学生对应的监护人userid及教职员工的userid，
+        # 学生userid转换成监护人userid的过程将在SendMessage队列任务中进行
         $this->replace($input);
         
     }

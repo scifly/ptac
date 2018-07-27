@@ -127,7 +127,8 @@
                     <ul class="weui-uploader__files" style="display: {!! $filepath ? 'block' : 'none' !!}"
                         id="file-display">
                         <li class="weui-uploader__file"
-                            style="background-image: url({!! '/' . ($filepath ?? '') !!})"></li>
+                            style="background-image: url({!! '/' . ($filepath ?? '') !!})"
+                        ></li>
                     </ul>
                     <div class="weui-uploader__input-box">
                         {!! Form::hidden(
@@ -258,8 +259,8 @@
 <div id="mpnews" class="weui-popup__container">
     <div class="weui-popup__overlay"></div>
     <div class="weui-popup__modal" style="background-color: #fff;">
-    {!! Form::hidden('mpnews-id', null, ['id' => 'mpnews-id']) !!}
-    <!-- 图文标题 -->
+        {!! Form::hidden('mpnews-id', null, ['id' => 'mpnews-id']) !!}
+        <!-- 图文标题 -->
         <div class="weui-cell">
             <div class="weui-uploader__hd">
                 {!! Form::label('mpnews-title', '标题', ['class' => 'weui-label']) !!}

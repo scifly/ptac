@@ -5,16 +5,24 @@
             options: $.extend({}, options),
             message: {
                 text: { content: '' },
-                image: { media_id: '', media_name: '', type: 'image/*' },
-                voice: { media_id: '', media_name: '', type: 'audio/*' },
-                video: {
-                    media_id: '', media_name: '', type: 'video/*',
-                    title: '', description: '',
+                image: {
+                    media_id: '', filename: '', path: '',
+                    accept: 'image/*', uploadTitle: '上传图片'
                 },
-                file: { media_id: '', media_name: '', type: '' },
+                voice: {
+                    media_id: '', filename: '', path: '',
+                    accept: 'audio/*', uploadTitle: '上传语音'
+                },
+                file: {
+                    media_id: '', filename: '', path: '',
+                    accept: '*',  uploadTitle: '上传文件'
+                },
+                video: {
+                    media_id: '', filename: '', path: '', uploadTitle: '上传视频',
+                    accept: 'video/mp4', title: '', description: '',
+                },
                 textcard: {
-                    title: '',
-                    description: '',
+                    title: '', description: '', url: '', btntxt: ''
                 },
                 sms: ''
             },
@@ -104,14 +112,10 @@
                 );
             },
             ce: function () {
+                // 创建或编辑消息（草稿）
                 var $id = $('#id'),
-                    $mpnewsList = $('#mpnews-list'),
                     $chosenTargets = $('#chosen-results'),
-                    $title = $('#title'),
-                    $content = $('#content'),
-                    $mediaId = $('#media_id'),
                     $checkAll = $('#check-all'),
-                    checkAll = true,
                     type = $('#msg-type').val();
 
                 mc.selectedDepartmentIds = [];
@@ -119,51 +123,9 @@
                 $checkAll.prop('checked', false);
 
                 if ($id.length !== 0) {
-                    switch (type) {
-                        case 'text':
-                            mc.message[type]['content'] = $content.html();
-                            break;
-                        case 'image':
-                        case 'voice':
-                        case 'file':
-                            mc.message[type]['media_id'] = $mediaId.val();
-                            break;
-                        case 'video':
-                            mc.message[type] = {
-                                media_id: $mediaId.val(),
-                                title: $title.val(),
-                                description: $content.html()
-                            };
-                            break;
-                        case 'textcard':
-                            mc.message[type] = {
-                                title: $title.val(),
-                                description: $content.html(),
-                            };
-                            break;
-                        case 'mpnews':
-                            $mpnewsList.find('li').each(function() {
-                                var $article = $(this);
-
-                                mc.mpnews['articles'].push({
-                                    title: $article.data('title'),
-                                    thumb_media_id: $article.data('media-id'),
-                                    author: $article.data('author'),
-                                    content_source_url: $article.data('url'),
-                                    content: $article.data('content'),
-                                    digest: $article.data('digest'),
-                                    filname: $article.data('filename'),
-                                    image_url: $article.data('image')
-                                });
-                                mc.mpnewsCount += 1;
-                            });
-                            break;
-                        case 'sms':
-                            mc.message[type] = $content.html();
-                            break;
-                        default:
-                            break;
-                    }
+                    // 将需要编辑的消息放入内存
+                    mc.store(type);
+                    // 将需要编辑的消息对应的发送对象放入内存
                     $chosenTargets.find('a').each(
                         function (i, target) {
                             var $target = $(target),
@@ -172,14 +134,8 @@
                             type === 'user' ? mc.selectedUserIds.push(id) : mc.selectedDepartmentIds.push('id');
                         }
                     );
-                    $('#targets-container').find('label').each(
-                        function (i, target) {
-                            if ($(target).find('input').prop('checked') === false) {
-                                checkAll = false;
-                            }
-                        }
-                    );
-                    $checkAll.prop('checked', checkAll);
+
+                    $checkAll.prop('checked', mc.allChecked());
                 }
                 mc.targets();
                 mc.msgType();
@@ -312,20 +268,13 @@
             targets: function () {
                 var $checkAll = $('#check-all'),
                     $confirm = $('#confirm'),
-                    $chosenTargets = $('#chosen-results'),
                     $search = $('#search'),
                     $back = $('#back');
 
                 // 初始化确认选定发送对象的事件
-                $confirm.on('click', function () {
-                    var html = $chosenTargets.html();
-                    $chosenTargets.html(html);
-                    $.closePopup();
-                });
+                $confirm.on('click', function () { $.closePopup(); });
                 // 选择所有发送对象
-                $checkAll.on('click', function () {
-                    $(this).is(':checked') ? mc.checkAll(true) : mc.checkAll(false);
-                });
+                $checkAll.on('click', function () { mc.checkAll(!!$(this).is(':checked')); });
                 // 选择单个发送对象
                 $(document).on('change', '.target-check',
                     function () {
@@ -372,66 +321,52 @@
                     $btnTxtContainer = $('#btn-txt-container');
 
                 $('#msg-type').on('change', function () {
-                    var type = $(this).val();
-                    $('.js-content-item input').val('');
-                    $content.html('');
+                    var type = $(this).val(),
+                        message = mc.message[type];
+
                     switch (type) {
                         case 'text':
                             $extra.hide();
                             $titleContainer.hide();
                             $mpContainer.hide();
                             $contentContainer.show();
-                            $content.attr('placeholder', '请输入内容').val(mc.message[type]['content']);
+                            $content.attr('placeholder', '请输入内容').val(message['content']);
                             break;
                         case 'image':
-                            $extra.hide();
-                            $titleContainer.hide();
-                            $contentContainer.hide();
-                            $mpContainer.hide();
-                            $uploadContainer.show();
-                            $mediaId.val(mc.message[type]['media_id']);
-                            $upload.attr('accept', 'image/*');
-                            $uploadTitle.text('上传图片');
-                            break;
                         case 'voice':
-                            $extra.hide();
-                            $titleContainer.hide();
-                            $contentContainer.hide();
-                            $mpContainer.hide();
-                            $uploadContainer.show();
-                            $mediaId.val(mc.message[type]['media_id']);
-                            $upload.attr('accept', 'audio/*');
-                            $uploadTitle.text('上传语音');
-                            break;
-                        case 'video':
-                            $extra.hide();
-                            $mpContainer.hide();
-                            $uploadTitle.text('上传视频');
-                            $title.attr('placeholder', '视频标题').val(mc.message[type]['title']);
-                            $content.attr('placeholder', '视频描述').val(mc.message[type]['description']);
-                            $upload.attr('accept', mc.message[type]['type']);
-                            $mediaId.val(mc.message[type]['media_id']);
-                            $titleContainer.show();     // title
-                            $contentContainer.show();   // description
-                            $uploadContainer.show();    // media_id
-                            break;
                         case 'file':
                             $extra.hide();
                             $titleContainer.hide();
                             $contentContainer.hide();
                             $mpContainer.hide();
                             $uploadContainer.show();
-                            $mediaId.val(mc.message[type]['media_id']);
-                            $upload.attr('accept', mc.message[type]['type']);
-                            $uploadTitle.text('上传文件');
+                            $mediaId.val(message['media_id']).attr('data-path', message['path']);
+                            $uploadTitle.text(
+                                message['media_id'] === '' ? message['uploadTitle'] : message['filename']
+                            );
+                            $upload.attr('accept', message['accept']);
+                            break;
+                        case 'video':
+                            $extra.hide();
+                            $mpContainer.hide();
+                            $mediaId.val(message['media_id']);
+                            $uploadTitle.text(
+                                message['media_id'] === '' ? message['uploadTitle'] : message['filename']
+                            );
+                            $title.attr('placeholder', '视频标题').val(message['title']);
+                            $content.attr('placeholder', '视频描述').val(message['description']);
+                            $upload.attr('accept', message['accept']);
+                            $titleContainer.show();     // title
+                            $contentContainer.show();   // description
+                            $uploadContainer.show();    // media_id
                             break;
                         case 'textcard':
                             $extra.hide();
                             $mpContainer.hide();
-                            $title.attr('placeholder', '标题');
-                            $cardUrl.attr('placeholder', '链接地址');
-                            $title.val(mc.message[type]['title']);
-                            $content.attr('placeholder', '描述').val(mc.message[type]['description']);
+                            $title.attr('placeholder', '标题').val(message['title']);
+                            $cardUrl.attr('placeholder', '链接地址').val(message['url']);
+                            $content.attr('placeholder', '描述').val(message['description']);
+                            $content.attr('placeholder', '按钮文字').val(message['btntxt']);
                             $titleContainer.show();     // title
                             $contentContainer.show();   // description
                             $cardUrlContainer.show();   // url
@@ -445,42 +380,16 @@
                             break;
                         case 'sms':
                             $extra.hide();
-                            $mpContainer.hide();
-                            $content.attr('placeholder', '短信内容').val(mc.message[type]);
                             $titleContainer.hide();
+                            $mpContainer.hide();
+                            $content.attr('placeholder', '短信内容').val(message);
                             $contentContainer.show();
                             break;
                         default:
                             break;
                     }
                 }).on('focus', function () {
-                    var type = $(this).val();
-                    switch (type) {
-                        case 'text':
-                            mc.message[type]['content'] = $content.html();
-                            break;
-                        case 'image':
-                        case 'voice':
-                        case 'file':
-                            mc.message[type]['media_id'] = $mediaId.val();
-                            break;
-                        case 'video':
-                            mc.message[type] = {
-                                media_id: $mediaId.val(),
-                                title: $title.val(),
-                                description: $content.html()
-                            };
-                            break;
-                        case 'textcard':
-                            mc.message[type] = {
-                                title: $title.val(),
-                                description: $content.html(),
-                            };
-                            break;
-                        case 'sms':
-                            mc.message[type] = $content.html();
-                            break;
-                    }
+                    mc.store($(this).val());
                 });
 
             },
@@ -488,13 +397,14 @@
                 var $upload = $('#upload');
 
                 // 初始化上传文件的事件
-                $upload.on('focus change', '#upload #mpnews-upload', function () {
-                    mc.upload(this);
-                });
+                $upload.on('focus change', '#upload #mpnews-upload',
+                    function () { mc.upload(this); }
+                );
                 // 上传文件
                 $upload.on('change', function() { mc.upload(this, false); });
             },
             initMpnews: function () {
+                // 初始化图文消息相关事件与功能
                 var $mpnews = $('#mpnews'),
                     $addMpnews = $('#add-mpnews'),
                     $mpUpload = $('#mpnews-upload'),
@@ -511,27 +421,7 @@
                     $delete = $('#delete'),
                     $mpnewsList = $('#mpnews-list');
 
-                // 上传封面图
-                $mpUpload.on('change', function() { mc.upload(this, true); });
-                // 编辑图文
-                $(document).on('click', '.weui-uploader__file', function () {
-                    var ids = $(this).attr('id').split('-'),
-                        id = ids[ids.length - 1],
-                        news = mc.mpnews['articles'][id];
-
-                    $mpnewsId.val(id);
-                    $mpTitle.val(news['title']);
-                    $mpContent.val(news['content']);
-                    $mpUrl.val(news['content_source_url']);
-                    $mpAuthor.val(news['author']);
-                    $mpDigest.val(news['digest']);
-                    $mpMediaId.val(news['thumb_media_id']);
-                    $mpUploadTitle.val(news['filename']);
-                    $mpFilePath.val(news['image_url']);
-                    $delete.show();
-                    $mpnews.popup();
-                });
-                // 添加图文消息
+                // 打开新增图文消息的弹窗
                 $addMpnews.on('click', function () {
                     if (mc.mpnewsCount >= 8) {
                         $.toptip('一条图文消息最多包含8个图文', 'warning');
@@ -548,23 +438,6 @@
                     $mpUpload.val('');
                     $delete.hide();
                     $mpnews.popup();
-                });
-                // 删除图文
-                $delete.on('click', function () {
-                    var id = $mpnewsId.val(), i = 0;
-
-                    // 从数组中移除图文
-                    mc.mpnews['articles'].splice(id, 1);
-                    // 从图文列表中移除
-                    $('#mpnews-' + id).remove();
-                    // 重建图文索引
-                    $mpnewsList.find('li').each(function () {
-                        $(this).attr('id', '#mpnews-' + i);
-                        i++;
-                    });
-                    mc.mpnewsCount--;
-                    $.toptip('已将指定图文删除', 'success');
-                    $.closePopup();
                 });
                 // 保存/更新图文
                 $add.on('click', function () {
@@ -592,8 +465,16 @@
                         mc.mpnews['articles'].push(article);
                         $mpnewsList.append(
                             '<li id="mpnews-' + mc.mpnewsCount + '" ' +
-                            'class=weui-uploader__file ' +
-                            'style="background-image: url(' + image_url + ')">' +
+                                'class="weui-uploader__file" ' +
+                                'style="background-image: url(' + article['image_url'] + ')">' +
+                                'data-media-id="' + article['thumb_media_id'] + '" ' +
+                                'data-author="' + article['author'] + '" ' +
+                                'data-content="' + article['content'] + '" ' +
+                                'data-digest="' + article['digest'] + '" ' +
+                                'data-filename="' + article['filename'] + '" ' +
+                                'data-url="' + article['content_source_url'] + '" ' +
+                                'data-image="' + article['image_url'] + '" ' +
+                                'data-title="' + article['title'] + '" ' +
                             '</li>'
                         );
                         mc.mpnewsCount += 1;
@@ -605,6 +486,45 @@
                     }
                     $.closePopup();
                 });
+                // 编辑图文
+                $(document).on('click', '.weui-uploader__file',
+                    function () {
+                        var ids = $(this).attr('id').split('-'),
+                            id = ids[ids.length - 1],
+                            news = mc.mpnews['articles'][id];
+
+                        $mpnewsId.val(id);
+                        $mpTitle.val(news['title']);
+                        $mpContent.val(news['content']);
+                        $mpUrl.val(news['content_source_url']);
+                        $mpAuthor.val(news['author']);
+                        $mpDigest.val(news['digest']);
+                        $mpMediaId.val(news['thumb_media_id']);
+                        $mpUploadTitle.val(news['filename']);
+                        $mpFilePath.val(news['image_url']);
+                        $delete.show();
+                        $mpnews.popup();
+                    }
+                );
+                // 删除图文
+                $delete.on('click', function () {
+                    var id = $mpnewsId.val(), i = 0;
+
+                    // 从数组中移除图文
+                    mc.mpnews['articles'].splice(id, 1);
+                    // 从图文列表中移除
+                    $('#mpnews-' + id).remove();
+                    // 重建图文索引
+                    $mpnewsList.find('li').each(function () {
+                        $(this).attr('id', '#mpnews-' + i);
+                        i++;
+                    });
+                    mc.mpnewsCount--;
+                    $.toptip('已将指定图文删除', 'success');
+                    $.closePopup();
+                });
+                // 上传封面图
+                $mpUpload.on('change', function() { mc.upload(this, true); });
             },
             initAction: function () {
                 var $send = $('#send'),
@@ -632,6 +552,7 @@
                     data: formData,
                     success: function (result) {
                         var checkAll = true;
+
                         $notification.hide();
                         if (type === 'user') {
                             $back.show();
@@ -720,11 +641,11 @@
                 });
                 switch (type) {
                     case 'text':
-                        if ($content.html() === '') {
+                        if ($content.val() === '') {
                             $.toptip('请输入消息内容');
                             return false;
                         }
-                        content = { text: { content: $content.html() }};
+                        content = { text: { content: $content.val() }};
                         break;
                     case 'image':
                         mediaId = $mediaId.val();
@@ -754,7 +675,7 @@
                         break;
                     case 'video':
                         title = $title.val();
-                        text = $content.html();
+                        text = $content.val();
                         mediaId = $mediaId.val();
                         if (mediaId === '') {
                             $.toptip('请上传视频', 'error');
@@ -784,7 +705,7 @@
                         break;
                     case 'textcard':
                         title = $title.val();
-                        text = $content.html();
+                        text = $content.val();
                         cardUrl = $cardUrl.val();
                         btnTxt = $btnTxt.val();
                         if (title === '' || text === '' || cardUrl === '') {
@@ -812,7 +733,7 @@
                         };
                         break;
                     case 'sms':
-                        text = $content.html();
+                        text = $content.val();
                         if (text.length === 0) {
                             $.toptip('请输入短信内容', 'error');
                         }
@@ -836,11 +757,13 @@
                 return $.extend(formData, content);
             },
             upload: function (uploader, mpnews) {
-                var $notification = $('#notification'),
-                    $msgType = $('#msg-type'),
+                var $id = $('#id'),
+                    uri = $id.length === 0 ? 'create' : 'edit/' + $id.val(),
+                    $notification = $('#notification'),
                     $mpFilePath = $('#mp-file-path'),
                     formData = new FormData(),
-                    type = $msgType.val();
+                    type = $('#msg-type').val();
+
 
                 formData.append('file', $(uploader)[0].files[0]);
                 formData.append('_token', wap.token());
@@ -848,7 +771,7 @@
                 $notification.show();
 
                 $.ajax({
-                    url: "create",
+                    url: uri,
                     data: formData,
                     type: 'POST',
                     dataType: 'json',
@@ -864,12 +787,11 @@
                         $notification.hide();
                         $(mpnews ? '#mp-upload-title' : '#upload-title').html(filename);
                         $(mpnews ? '#thumb_media_id' : '#media_id').val(mediaId).attr('data-path', path);
-                        $display.show()
-                            .find('li:first-child')
+                        mc.message[type]['filename'] = filename;
+                        mc.message[type]['path'] = path;
+                        $display.show().find('li:first-child')
                             .attr('style', 'background-image:url(/' + (type === 'image' ? path : 'img/0.png') + ')');
-                        if (mpnews) {
-                            $mpFilePath.val(path);
-                        }
+                        if (mpnews) { $mpFilePath.val(path); }
                         $.toptip(result['message'], 'success');
                     },
                     error: function (e) { wap.errorHandler(e); }
@@ -892,8 +814,6 @@
                     '</a>';
             },
             addTarget: function (id, type) {
-                var $targetsContainer = $('#targets-container'),
-                    checkAll = true;
                 if (type === 'user') {
                     if ($.inArray(id, mc.selectedUserIds) === -1) {
                         mc.selectedUserIds.push(id);
@@ -903,30 +823,28 @@
                         mc.selectedDepartmentIds.push(id);
                     }
                 }
-                $targetsContainer.find('label').each(
-                    function (i, target) {
-                        if ($(target).find('input').prop('checked') === false) {
-                            checkAll = false;
-                        }
-                    }
-                );
-                $('#check-all').prop('checked', checkAll);
+                $('#check-all').prop('checked', mc.allChecked());
                 mc.refreshTargets();
             },
             removeTarget: function (id, type) {
                 if (type === 'user') {
                     if ($.inArray(id, mc.selectedUserIds) !== -1) {
-                        mc.selectedUserIds.splice($.inArray(id, mc.selectedUserIds), 1);
+                        mc.selectedUserIds.splice(
+                            $.inArray(id, mc.selectedUserIds), 1
+                        );
                     }
                 } else {
                     if ($.inArray(id, mc.selectedDepartmentIds) !== -1) {
-                        mc.selectedDepartmentIds.splice($.inArray(id, mc.selectedDepartmentIds), 1);
+                        mc.selectedDepartmentIds.splice(
+                            $.inArray(id, mc.selectedDepartmentIds), 1
+                        );
                     }
                 }
                 $('#check-all').prop('checked', false);
                 mc.refreshTargets();
             },
             checkAll: function (checked) {
+                // 全选/取消全选当前发送对象列表中的所有部门/用户
                 var $targetsContainer = $('#targets-container');
 
                 $('.target-check').prop('checked', checked);
@@ -956,13 +874,82 @@
                     }).join('')
                 );
                 mc.countTargets();
+            },
+            store: function (type) {
+                // 将当前需要发送或编辑的消息放入内存
+                var $title = $('#title'),
+                    $content = $('#content'),
+                    $mpnewsList = $('#mpnews-list'),
+                    $mediaId = $('#media_id'),
+                    $uploadTitle = $('#upload-title');
+
+                switch (type) {
+                    case 'text':
+                        mc.message[type]['content'] = $content.val();
+                        break;
+                    case 'image':
+                    case 'voice':
+                    case 'file':
+                        mc.message[type]['media_id'] = $mediaId.val();
+                        mc.message[type]['filename'] = $uploadTitle.text();
+                        mc.message[type]['path'] = $mediaId.data('path');
+                        break;
+                    case 'video':
+                        mc.message[type]['media_id'] = $mediaId.val();
+                        mc.message[type]['filename'] = $uploadTitle.text();
+                        mc.message[type]['path'] = $mediaId.data('path');
+                        mc.message[type]['title'] = $title.val();
+                        mc.message[type]['description'] = $content.val();
+                        break;
+                    case 'textcard':
+                        mc.message[type]['title'] = $title.val();
+                        mc.message[type]['description'] = $content.val();
+                        mc.message[type]['url'] = $contentSourceUrl.val();
+                        mc.message[type]['btntxt'] = $cardBtntxt.val();
+                        break;
+                    case 'mpnews':
+                        mc.mpnewsCount = 0;
+                        $mpnewsList.find('li').each(function() {
+                            var $article = $(this);
+
+                            mc.mpnews['articles'].push({
+                                title: $article.data('title'),
+                                thumb_media_id: $article.data('media-id'),
+                                author: $article.data('author'),
+                                content_source_url: $article.data('url'),
+                                content: $article.data('content'),
+                                digest: $article.data('digest'),
+                                filname: $article.data('filename'),
+                                image_url: $article.data('image')
+                            });
+                            mc.mpnewsCount += 1;
+                        });
+                        break;
+                    case 'sms':
+                        mc.message[type] = $content.val();
+                        break;
+                }
+            },
+            allChecked: function () {
+                // 判断当前发送对象列表中的所有部门/用户是否已被全部选定
+                var allChecked = true;
+
+                $('#targets-container').find('label').each(
+                    function (i, target) {
+                        if ($(target).find('input').prop('checked') === false) {
+                            allChecked = false;
+                        }
+                    }
+                );
+
+                return allChecked;
             }
         };
 
         return {
-            index: mc.index,
-            ce: mc.ce,
-            show: mc.show
+            index: mc.index,    // 消息中心首页
+            ce: mc.ce,          // 创建或编辑消息（草稿）
+            show: mc.show       // 查看已发送的消息
         }
     }
 })(jQuery);
