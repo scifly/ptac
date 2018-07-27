@@ -733,7 +733,7 @@
             },
             upload: function (uploader, mpnews) {
                 var $id = $('#id'),
-                    uri = $id.length === 0 ? 'create' : 'edit/' + $id.val(),
+                    uri = $id.length === 0 ? 'create' : '../edit/' + $id.val(),
                     $notification = $('#notification'),
                     $mpFilePath = $('#mp-file-path'),
                     formData = new FormData(),
