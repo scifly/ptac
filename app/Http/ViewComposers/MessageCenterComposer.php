@@ -112,7 +112,7 @@ HTML;
                 function ($ids, $type) {
                     /** @noinspection HtmlUnknownTarget */
                     $tpl = <<<HTML
-                        <a id="%s" class="chosen-results-item js-chosen-results-item %s"
+                        <a id="%s" class="chosen-results-item %s"
                            data-list="%s" data-uid="%s" data-type="%s">
                             <img src="%s" style="%s" />
                         </a>

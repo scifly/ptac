@@ -788,7 +788,7 @@
                     imgStyle = (type === 'user' ? '" style="border-radius: 50%;' : ''),
                     imgSrc = '/img/' + (type === 'user' ? 'personal.png' : 'department.png');
 
-                return '<a class="' + type + '" ' +
+                return '<a class="chosen-results-item ' + type + '" ' +
                     targetId + '" data-list="' + id + '" data-uid="' + id + '" ' +
                     'data-type="' + type + '">' +
                     '<img src="' + imgSrc + imgStyle + '">' +
