@@ -784,7 +784,7 @@
                 );
             },
             chosenHtml: function (id, type) {
-                var targetId = (type === 'department' ? 'id="user-' : 'id="department-') + id + '"',
+                var targetId = (type === 'user' ? 'id="user-' : 'id="department-') + id + '"',
                     imgStyle = (type === 'user' ? '" style="border-radius: 50%;' : ''),
                     imgSrc = '/img/' + (type === 'user' ? 'personal.png' : 'department.png');
 
