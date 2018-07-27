@@ -120,9 +120,9 @@ HTML;
                     $imgName = $type == 'department' ? 'department.png' : 'personal.png';
                     $imgStyle = $type == 'department' ? '' : 'border-radius: 50%;';
                     foreach ($ids as $id) {
-                        $html .= sprintf(
+                        $html .= trim(sprintf(
                             $tpl, $type . '-' . $id, $id, $type, '/img/' . $imgName, $imgStyle
-                        );
+                        ));
                     }
                     return $html;
                 },
