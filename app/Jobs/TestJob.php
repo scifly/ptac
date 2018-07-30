@@ -36,7 +36,7 @@ class TestJob implements ShouldQueue {
             'title' => '37289',
             'remark' => 'remark',
             'location' => '437289',
-            'contact' => '888',
+            'contact' => '777',
             'url' => 'http://',
             'start' => '2018-03-20 12:35:40',
             'end' => '2018-03-21 12:35:40',
