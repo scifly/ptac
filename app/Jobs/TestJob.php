@@ -54,6 +54,7 @@ class TestJob implements ShouldQueue {
             User::whereIn('userid', explode('|', $content->{'touser'}))->pluck('id')->toArray(),
             explode('|', $content->{'toparty'})
         );
+        $msgType = $content->{'msgType'};
         
         
     }
