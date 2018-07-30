@@ -929,7 +929,7 @@
                 var $timing = $('#timing');
 
                 $timing.on('click', function () {
-                    console.log()
+                    console.log($timing.val());
                 });
             }
         };
