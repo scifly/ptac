@@ -175,7 +175,7 @@
                 <label for="time" class="weui-label">发送时间</label>
             </div>
             <div class="weui-cell__bd">
-                <input id="time" name="time" readonly="readonly" type="text" placeholder="请选择时间"
+                <input id="time" name="time" type="text" placeholder="请选择时间"
                        class="weui-input" data-toggle='datetime-picker'>
             </div>
         </div>
