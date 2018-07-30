@@ -932,10 +932,10 @@
                 $timing.on('click', function () {
                     if ($timing.val() === '0') {
                         $timing.val('1');
-                        $time.slideDown();
+                        $time.parents('.weui-cell').slideDown();
                     } else {
                         $timing.val('0');
-                        $time.slideUp();
+                        $time.parents('.weui-cell').slideUp();
                     }
                 });
             }
