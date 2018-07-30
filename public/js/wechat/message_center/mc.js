@@ -940,10 +940,7 @@
                         $time.parents('.weui-cell').slideUp();
                     }
                 });
-                $time.datetimePicker({
-                    input: now,
-                    min: now
-                });
+                $time.val(now).datetimePicker({ min: now });
             }
         };
 
