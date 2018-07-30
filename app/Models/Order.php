@@ -63,7 +63,7 @@ class Order extends Model {
      *
      * @return BelongsTo
      */
-    function comboType() { return $this->belongsTo('App\models\ComboType'); }
+    function comboType() { return $this->belongsTo('App\Models\ComboType'); }
     
     /**
      * 订单列表

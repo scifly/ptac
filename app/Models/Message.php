@@ -57,6 +57,7 @@ use Throwable;
  * @method static Builder|Message whereMessageId($value)
  * @method static Builder|Message whereMessageTypeId($value)
  * @method static Builder|Message whereMslId($value)
+ * @method static Builder|Message whereEventId($value)
  * @method static Builder|Message whereRUserId($value)
  * @method static Builder|Message whereRead($value)
  * @method static Builder|Message whereSUserId($value)
@@ -67,6 +68,8 @@ use Throwable;
  * @method static Builder|Message whereUrl($value)
  * @mixin Eloquent
  * @property-read \App\Models\MessageSendingLog $messageSendinglog
+ * @property int|null $event_id
+ * @property-read \App\Models\Event|null $event
  */
 class Message extends Model {
     
@@ -79,7 +82,7 @@ class Message extends Model {
         'comm_type_id', 'app_id', 'msl_id', 'content',
         'serviceid', 'message_id', 'url', 'media_ids',
         's_user_id', 'r_user_id', 'message_type_id',
-        'read', 'sent', 'title',
+        'read', 'sent', 'title', 'event_id'
     ];
     
     /**
@@ -120,6 +123,13 @@ class Message extends Model {
      * @return BelongsTo
      */
     function commType() { return $this->belongsTo('App\Models\CommType'); }
+    
+    /**
+     * 返回对应的事件对象
+     *
+     * @return BelongsTo
+     */
+    function event() { return $this->belongsTo('App\Models\Event'); }
     
     /**
      * 消息列表

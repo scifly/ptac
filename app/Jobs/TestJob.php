@@ -1,6 +1,8 @@
 <?php
 namespace App\Jobs;
 
+use App\Models\Event;
+use App\Models\Message;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -31,6 +33,9 @@ class TestJob implements ShouldQueue {
      */
     public function handle() {
         
+        $events = Event::whereEnabled(1)->get();
+        foreach ($events as $event) {
+        }
     
     }
 }

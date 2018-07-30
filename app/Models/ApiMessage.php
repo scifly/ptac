@@ -34,6 +34,8 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|ApiMessage whereSent($value)
  * @method static Builder|ApiMessage whereUpdatedAt($value)
  * @mixin Eloquent
+ * @property int $s_user_id 发送者用户id
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ApiMessage whereSUserId($value)
  */
 class ApiMessage extends Model {
 

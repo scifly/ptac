@@ -55,6 +55,7 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|Event whereUrl($value)
  * @method static Builder|Event whereUserId($value)
  * @mixin Eloquent
+ * @property-read \App\Models\Message $message
  */
 class Event extends Model {
     
@@ -89,6 +90,13 @@ class Event extends Model {
      * @return BelongsTo
      */
     function subject() { return $this->belongsTo('App\Models\Subject'); }
+    
+    /**
+     * 返回事件对应的消息对象
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    function message() { return $this->hasOne('App\Models\Message'); }
     
     /**
      * 待办事项列表

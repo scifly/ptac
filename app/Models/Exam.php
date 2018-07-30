@@ -69,7 +69,7 @@ class Exam extends Model {
      *
      * @return BelongsTo
      */
-    function examType() { return $this->belongsTo('App\models\ExamType'); }
+    function examType() { return $this->belongsTo('App\Models\ExamType'); }
     
     /**
      * 返回考试
