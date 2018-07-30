@@ -938,6 +938,7 @@
                         $time.parents('.weui-cell').slideUp();
                     }
                 });
+                $time.datetimePicker();
             }
         };
 
