@@ -3,7 +3,7 @@
     <title>消息中心</title>
 @endsection
 @section('css')
-    <link rel="stylesheet" href="{{ asset('/css/wechat/message_center/index.css') }}">
+    <link rel="stylesheet" href="{!! asset('/css/wechat/message_center/index.css') !!}">
 @endsection
 @section('content')
     <div class="content home">
@@ -56,7 +56,7 @@
                                 <ul class="select-ul" style="display: none;">
                                     <li class="c-green" data-id="0">全部</li>
                                     @foreach ($messageTypes as $key => $vaule)
-                                        <li class="c-green" data-id="{{ $key }}"> {{ $vaule }} </li>
+                                        <li class="c-green" data-id="{!! $key !!}"> {!! $vaule !!} </li>
                                     @endforeach
                                 </ul>
                                 <div class="select-container" style="display: none;"></div>
@@ -65,9 +65,9 @@
                                 @if (sizeof($sent) > 0)
                                     @foreach($sent as $type => $messages)
                                         @foreach($messages as $message)
-                                            <div class="table-list list-{{ $type }}">
+                                            <div class="table-list list-{!! $type !!}">
                                                 <div class="line"></div>
-                                                <div id="{{ $message['id'] }}"
+                                                <div id="{!! $message['id'] !!}"
                                                      class="teacher-list-box grayline"
                                                      data-type="{!! $message['sent'] ? 'sent' : 'draft' !!}"
                                                 >
@@ -86,7 +86,7 @@
                                                                     <span class="worktime">
                                                                         {!! $message['created_at'] !!}
                                                                         <span class="info-status {!! $message['sent'] ? 'green' : 'red' !!}">
-                                                                            {{ $message['sent'] ? '已发送' : '草稿' }}
+                                                                            {!! $message['sent'] ? '已发送' : '草稿' !!}
                                                                         </span>
 													                </span>
                                                                 </div>
@@ -104,8 +104,8 @@
                                 @endif
                             </div>
                         </div>
-                    @endif
-                    <!-- 收件箱 -->
+                @endif
+                <!-- 收件箱 -->
                     <div id="tab2" class="weui-tab__bd-item @if (!$canSend) weui-tab__bd-item--active @endif">
                         <div class="tea-head">
                             <span class="tea-select-list-icon">
@@ -125,7 +125,7 @@
                             <ul class="select-ul" style="display: none;">
                                 <li class="c-green" data-id="0">全部</li>
                                 @foreach ($messageTypes as $key => $vaule)
-                                    <li class="c-green" data-id="{{ $key }}"> {{ $vaule }}</li>
+                                    <li class="c-green" data-id="{!! $key !!}"> {!! $vaule !!}</li>
                                 @endforeach
                             </ul>
                             <div class="select-container" style="display: none;"></div>
@@ -134,9 +134,9 @@
                             @if (sizeof($received) > 0)
                                 @foreach($received as $type => $messages)
                                     @foreach($messages as $message)
-                                        <div class="table-list list-{{ $type }}">
+                                        <div class="table-list list-{!! $type !!}">
                                             <div class="line"></div>
-                                            <div class="teacher-list-box grayline" id="{{ $message['id'] }}">
+                                            <div class="teacher-list-box grayline" id="{!! $message['id'] !!}">
                                                 <div class="teacher-work-box">
                                                     <a class="teacher-work-head" style="color:#000" href="#">
                                                         <div class="titleinfo">
@@ -200,5 +200,5 @@
     </div>
 @endsection
 @section('script')
-    <script src="{{ asset('/js/wechat/message_center/index.js') }}"></script>
+    <script src="{!! asset('/js/wechat/message_center/index.js') !!}"></script>
 @endsection
