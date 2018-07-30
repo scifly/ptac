@@ -33,7 +33,17 @@ class TestController extends Controller {
      */
     public function index() {
 
-        dd(explode('|', null));
+        $data = [
+            [
+                'student_number' => '1',
+                'location' => '2'
+            ]
+        ];
+        
+        foreach ($data as &$datum) {
+            echo $datum['student_number'] . $datum['location'];
+        }
+        
     }
     
     public function apiCall() {
