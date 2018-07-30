@@ -929,12 +929,12 @@
                 var $timing = $('#timing');
 
                 $timing.on('click', function () {
-                    console.log($timing.val());
                     if ($timing.val() === 'off') {
                         $timing.val('on');
                     } else {
                         $timing.val('off');
                     }
+                    console.log($timing.val());
                 });
             }
         };
