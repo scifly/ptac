@@ -573,7 +573,7 @@
                 });
             },
             action: function (type) {
-                var uri = 'send', $id = $('#id'),
+                var uri = '../send', $id = $('#id'),
                     requestType = 'POST',
                     formData = mc.data();
 
