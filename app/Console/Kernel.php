@@ -35,7 +35,7 @@ class Kernel extends ConsoleKernel {
         // $schedule->command('inspire')
         //          ->hourly();
         // $schedule->command('test:create')->everyMinute();
-        $schedule->job(new TestJob())->everyMinute();
+        // $schedule->job(new TestJob())->everyMinute();
     }
     
     /**
