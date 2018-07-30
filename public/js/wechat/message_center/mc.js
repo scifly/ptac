@@ -929,10 +929,10 @@
                 var $timing = $('#timing');
 
                 $timing.on('click', function () {
-                    if ($timing.val() === 'off') {
-                        $timing.val('on');
+                    if ($timing.val() === '0') {
+                        $timing.val('1');
                     } else {
-                        $timing.val('off');
+                        $timing.val('0');
                     }
                     console.log($timing.val());
                 });

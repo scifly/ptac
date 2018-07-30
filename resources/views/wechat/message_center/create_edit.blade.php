@@ -166,7 +166,7 @@
         <div class="weui-cell">
             <div class="weui-cell__bd">定时发送</div>
             <div class="weui-cell__ft">
-                <input id="timing" type="checkbox" title="定时发送" name="timing" class="weui-switch" value="off">
+                <input id="timing" type="checkbox" title="定时发送" name="timing" class="weui-switch" value="0">
             </div>
         </div>
         <!-- 发送时间 -->
