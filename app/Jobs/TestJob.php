@@ -1,7 +1,6 @@
 <?php
 namespace App\Jobs;
 
-use App\Models\Event;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
