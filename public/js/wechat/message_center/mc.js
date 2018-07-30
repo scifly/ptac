@@ -928,7 +928,8 @@
             timing: function () {
                 var $timing = $('#timing'),
                     $time = $('#time'),
-                    now = new Date();
+                    date = new Date(),
+                    now = wap.today() + " " + date.getHours() + ":" + date.getMinutes();
 
                 $timing.on('click', function () {
                     if ($timing.val() === '0') {
@@ -940,7 +941,8 @@
                     }
                 });
                 $time.datetimePicker({
-                    min: wap.today() + " " + now.getHours() + ":" + now.getMinutes()
+                    input: now,
+                    min: now
                 });
             }
         };
