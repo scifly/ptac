@@ -927,7 +927,10 @@
             },
             timing: function () {
                 var $timing = $('#timing'),
-                    $time = $('#time');
+                    $time = $('#time'),
+                    nTime = new Date(),
+                    format = nTime.getFullYear() + "-" + (nTime.getMonth()+1) + "-" + nTime.getDate() + " " +
+                        (nTime.getHours()) + ":" + nTime.getMinutes();
 
                 $timing.on('click', function () {
                     if ($timing.val() === '0') {
@@ -938,7 +941,7 @@
                         $time.parents('.weui-cell').slideUp();
                     }
                 });
-                $time.datetimePicker();
+                $time.datetimePicker({min: format});
             }
         };
 
