@@ -166,13 +166,14 @@
         <div class="weui-cell">
             <div class="weui-cell__bd">定时发送</div>
             <div class="weui-cell__ft">
-                <input type="checkbox" title="开启评论" name="openCom" class="weui-switch"></div>
+                <input id="timing" type="checkbox" title="定时发送" name="timing" class="weui-switch">
+            </div>
         </div>
         <!-- 发送时间 -->
-        <div class="hw-time b-top" style="display: none;">
+        <div class="weui-cell b-top" style="display: none;">
             <div class="weui-cell msg-send-bg">
                 <div class="weui-cell__hd">
-                    <label for="" class="weui-label">发送日期</label>
+                    <label for="time" class="weui-label">发送日期</label>
                 </div>
                 <div class="weui-cell__bd">
                     <input id="time" name="time" readonly="readonly" type="text" placeholder="请选择日期"

@@ -923,6 +923,13 @@
                 );
 
                 return allChecked;
+            },
+            timing: function () {
+                var $timing = $('#timing');
+
+                $timing.on('click', function () {
+                    console.log()
+                });
             }
         };
 
