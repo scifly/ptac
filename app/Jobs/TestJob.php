@@ -32,23 +32,6 @@ class TestJob implements ShouldQueue {
      */
     public function handle() {
         
-        Event::create([
-            'title' => '37289',
-            'remark' => 'remark',
-            'location' => '437289',
-            'contact' => '777',
-            'url' => 'http://',
-            'start' => '2018-03-20 12:35:40',
-            'end' => '2018-03-21 12:35:40',
-            'ispublic' => 0,
-            'iscourse' => 0,
-            'educator_id' => 1,
-            'subject_id' => 2,
-            'alertable' => 1,
-            'alert_mins' => 10,
-            'user_id' => 1,
-            'enabled' => 1
-        ]);
-        
+    
     }
 }
