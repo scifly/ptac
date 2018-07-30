@@ -41,8 +41,10 @@ class TestController extends Controller {
         ];
         
         foreach ($data as &$datum) {
-            echo $datum['student_number'] . $datum['location'];
+            echo $datum['student_number'] = $datum['student_number'] . 'abc';
         }
+        
+        dd($data);
         
     }
     
