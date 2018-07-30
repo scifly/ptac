@@ -113,7 +113,7 @@ class MessageRequest extends FormRequest {
             # 保存草稿
             $schoolId = $this->schoolId() ?? session('schoolId');
             $corp = School::find($schoolId)->corp;
-            # 消息草稿的用户类发送对象只须保存学生和教职员工的userid
+            # 消息草稿的用户类发送对象只需保存学生和教职员工的userid
             $userids = User::whereIn('id', $input['user_ids'])
                 ->pluck('userid')->toArray();
             $agentid = $input['type'] != 'sms'

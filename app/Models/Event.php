@@ -36,6 +36,7 @@ use Illuminate\Support\Facades\DB;
  * @property-read Educator $educator
  * @property-read Subject $subject
  * @property-read User $user
+ * @property-read Message $message
  * @method static Builder|Event whereAlertMins($value)
  * @method static Builder|Event whereAlertable($value)
  * @method static Builder|Event whereContact($value)
@@ -55,7 +56,6 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|Event whereUrl($value)
  * @method static Builder|Event whereUserId($value)
  * @mixin Eloquent
- * @property-read \App\Models\Message $message
  */
 class Event extends Model {
     

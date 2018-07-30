@@ -3,9 +3,11 @@ namespace App\Helpers;
 
 use App\Events\JobResponse;
 use App\Models\Corp;
+use App\Models\Student;
 use App\Models\User;
 use App\Facades\Wechat;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -169,6 +171,52 @@ trait JobTrait {
         ];
         
         return $response;
+        
+    }
+    
+    /**
+     * 返回指定用户对象所属的学校id
+     *
+     * @param User $user
+     * @return int
+     */
+    function school_id(User $user) {
+    
+        return $user->educator
+            ? $user->educator->school_id
+            : $user->student->squad->grade->school_id;
+        
+    }
+    
+    /**
+     * 获取需要记录消息发送日志的用户（学生、教职员工）
+     *
+     * @param Collection|User[] $targets - 需要发送消息的用户对象（监护人、教职员工）
+     * @return Collection
+     */
+    function logUsers(Collection $targets): Collection {
+        
+        $users = Collect([]);
+        foreach ($targets as $target) {
+            if ($target->custodian) {
+                /** @var Collection $students */
+                $students = $target->students->filter(
+                    function(Student $student) {
+                        return $student->squad->grade->school_id == $this->schoolId;
+                    }
+                );
+                $studentUserIds = array_unique(
+                    $students->pluck('user_id')->toArray()
+                );
+                $users->push(
+                    User::whereIn('id', $studentUserIds)->get()
+                );
+            } else {
+                $users->push($target);
+            }
+        }
+        
+        return $users;
         
     }
     

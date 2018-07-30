@@ -10,7 +10,6 @@ use App\Models\Corp;
 use App\Models\Message;
 use App\Models\MessageSendingLog;
 use App\Models\Mobile;
-use App\Models\Student;
 use App\Models\User;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -140,49 +139,6 @@ class SendMessage implements ShouldQueue {
         if ($this->userId) {
             event(new JobResponse($response));
         }
-        
-    }
-    
-    /**
-     * 返回指定用户所属的学校id
-     *
-     * @param User $user
-     * @return int
-     */
-    private function school_id(User $user) {
-        
-        return $user->educator
-            ? $user->educator->school_id
-            : $user->student->squad->grade->school_id;
-        
-    }
-    
-    /**
-     * 获取需要记录消息发送日志的用户（学生、教职员工）
-     *
-     * @param Collection|User[] $targets - 需要发送消息的用户对象（监护人、教职员工）
-     * @return Collection
-     */
-    private function logUsers(Collection $targets): Collection {
-    
-        $users = Collect([]);
-        foreach ($targets as $target) {
-            if ($target->custodian) {
-                /** @var Collection $students */
-                $students = $target->students->filter(
-                    function(Student $student) {
-                        return $student->squad->grade->school_id == $this->schoolId;
-                    }
-                );
-                $users->push(
-                    User::whereIn('id', $students->pluck('user_id')->toArray())->get()
-                );
-            } else {
-                $users->push($target);
-            }
-        }
-        
-        return $users;
         
     }
     
