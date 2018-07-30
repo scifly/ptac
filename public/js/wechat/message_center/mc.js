@@ -926,15 +926,17 @@
                 return allChecked;
             },
             timing: function () {
-                var $timing = $('#timing');
+                var $timing = $('#timing'),
+                    $time = $('#time');
 
                 $timing.on('click', function () {
                     if ($timing.val() === '0') {
                         $timing.val('1');
+                        $time.slideDown();
                     } else {
                         $timing.val('0');
+                        $time.slideUp();
                     }
-                    console.log($timing.val());
                 });
             }
         };

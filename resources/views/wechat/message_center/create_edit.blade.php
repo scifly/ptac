@@ -173,7 +173,7 @@
         <div class="weui-cell b-top" style="display: none;">
             <div class="weui-cell msg-send-bg">
                 <div class="weui-cell__hd">
-                    <label for="time" class="weui-label">发送日期</label>
+                    <label for="time" class="weui-label">发送事件</label>
                 </div>
                 <div class="weui-cell__bd">
                     <input id="time" name="time" readonly="readonly" type="text" placeholder="请选择日期"
