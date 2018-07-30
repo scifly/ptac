@@ -928,9 +928,7 @@
             timing: function () {
                 var $timing = $('#timing'),
                     $time = $('#time'),
-                    nTime = new Date(),
-                    format = nTime.getFullYear() + "-" + (nTime.getMonth()+1) + "-" + nTime.getDate() + " " +
-                        (nTime.getHours()) + ":" + nTime.getMinutes();
+                    now = new Date();
 
                 $timing.on('click', function () {
                     if ($timing.val() === '0') {
@@ -941,7 +939,9 @@
                         $time.parents('.weui-cell').slideUp();
                     }
                 });
-                $time.datetimePicker({min: format});
+                $time.datetimePicker({
+                    min: wap.today() + " " + now.getHours() + ":" + now.getMinutes()
+                });
             }
         };
 
