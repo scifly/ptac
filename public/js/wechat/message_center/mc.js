@@ -142,6 +142,7 @@
                 mc.content();
                 mc.initMpnews();
                 mc.initAction();
+                mc.timing();
             },
             show: function () {
                 var $mslId = $('#msl_id'),
