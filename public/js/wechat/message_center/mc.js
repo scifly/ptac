@@ -934,7 +934,8 @@
                 return allChecked;
             },
             timing: function () {
-                var $timing = $('#timing'),
+                var $id = $('#id'),
+                    $timing = $('#timing'),
                     $time = $('#time'),
                     date = new Date(),
                     hours = date.getHours(),
@@ -954,7 +955,10 @@
                         $time.parents('.weui-cell').slideUp();
                     }
                 });
-                $time.val(now).datetimePicker({ min: wap.today() });
+                if ($id.length === 0) {
+                    $time.val(now);
+                }
+                $time.datetimePicker({ min: wap.today() });
             }
         };
 
