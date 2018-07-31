@@ -192,8 +192,6 @@ class StudentAttendance extends Model {
                     __('messages.school.not_found')
                 );
                 foreach ($data as &$datum) {
-                    Log::debug(json_encode($data));
-                    Log::debug(sizeof($data));
                     $datum['inorout'] = $datum['inorout'] ?? 2;
                     $datum['longitude'] = $datum['longitude'] ?? 0;
                     $datum['latitude'] = $datum['latitude'] ?? 0;
@@ -276,7 +274,7 @@ class StudentAttendance extends Model {
                     } else {
                         list($smsUserIds, $wechatUserIds) = $userIdGroups;
                     }
-                    $data = [
+                    $message = [
                         'dept_ids'        => [],
                         'message_type_id' => MessageType::whereName('考勤消息')->first()->id,
                     ];
@@ -293,7 +291,7 @@ class StudentAttendance extends Model {
                     $apps = [App::whereCorpId($school->corp_id)->whereName('考勤中心')->first()->toArray()];
                     # 需要接收微信消息的用户
                     if (!empty($wechatUserIds)) {
-                        SendMessage::dispatch(array_merge($data, [
+                        SendMessage::dispatch(array_merge($message, [
                             'user_ids' => $wechatUserIds,
                             'type'     => 'text',
                             'text'     => ['content' => $content],
@@ -301,7 +299,7 @@ class StudentAttendance extends Model {
                     }
                     # 需要接收短信消息的用户
                     if (!empty($smsUserIds)) {
-                        SendMessage::dispatch(array_merge($data, [
+                        SendMessage::dispatch(array_merge($message, [
                             'user_ids' => $smsUserIds,
                             'type'     => 'sms',
                             'sms'      => $content,
