@@ -43,10 +43,10 @@ class SyncController extends Controller {
         $content = '';
         $errcode = $wxcpt->DecryptMsg(
             $msgSignature,
-            $timestamp,
             $nonce,
             Request::getContent(),
-            $content
+            $content,
+            $timestamp
         );
         if ($errcode) { return $errcode; }
         $event = simplexml_load_string($content, 'SimpleXMLElement', LIBXML_NOCDATA);

@@ -138,13 +138,13 @@ class PollQuestionnaireParticipantController extends Controller {
             ->where('pq_id', $id)
             ->orderBy('id', 'asc')
             ->each(
-                function ($subject) {
+                function (PollQuestionnaireSubject $subject) {
                     #清空tempchoice
                     unset($this->tempChoice);
                     #获取当前选项题
                     $temp = [];
                     $this->count = 0;
-                    $subject->pollquestionnairechoice()
+                    $subject->pqsChoices()
                         #对序号排序
                         ->orderBy('seq_no', 'asc')->each(
                             function ($choice) {
