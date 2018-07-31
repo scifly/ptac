@@ -178,7 +178,7 @@
             </div>
         </div>
         <!-- 发送时间 -->
-        <div class="weui-cell" style="display: {!! $timing ? 'block' : 'none' !!};">
+        <div class="weui-cell" @if (!$timing) style="display: none;" @endif>
             <div class="weui-cell__hd">
                 <label for="time" class="weui-label">发送时间</label>
             </div>
