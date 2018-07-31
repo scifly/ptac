@@ -38,11 +38,12 @@ class MessageCenterComposer {
         $user = Auth::user();
         $chosenTargetsHtml = '';
         $content = $selectedDepartmentIds = $selectedUserIds = null;
-        $title = $text = $url = $btntxt = $mediaId = $accept = $filename = $filepath = $mpnewsList = null;
+        $title = $text = $url = $btntxt = $mediaId = $accept = null;
+        $filename = $filepath = $mpnewsList = $timing = null;
         if (Request::route('id')) {
-            $content = $this->message->detail(
-                Request::route('id')
-            );
+            $messageId = Request::route('id');
+            $content = $this->message->detail($messageId);
+            $timing = $this->message->find($messageId)->event_id;
             $type = $content['type'];
             $msg = $content[$type]->{$type};
             switch ($type) {
@@ -158,6 +159,7 @@ HTML;
             'accept'                => $accept,
             'filename'              => $filename,
             'mpnewsList'            => $mpnewsList,
+            'timing'                => $timing
         ]);
         
     }

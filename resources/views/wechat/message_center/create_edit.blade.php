@@ -166,17 +166,32 @@
         <div class="weui-cell">
             <div class="weui-cell__bd">定时发送</div>
             <div class="weui-cell__ft">
-                <input id="timing" type="checkbox" title="定时发送" name="timing" class="weui-switch" value="0">
+                {!! Form::checkbox(
+                    'timing', $timing ? 1 : 0,
+                    $timing ? 'checked' : null,
+                    [
+                        'id' => 'timing',
+                        'class' => 'weui-switch',
+                        'title' => '定时发送'
+                    ]
+                ) !!}
             </div>
         </div>
         <!-- 发送时间 -->
-        <div class="weui-cell" style="display: none;">
+        <div class="weui-cell" style="display: {!! $timing ? 'block' : 'none' !!};">
             <div class="weui-cell__hd">
                 <label for="time" class="weui-label">发送时间</label>
             </div>
             <div class="weui-cell__bd">
-                <input id="time" name="time" type="text" placeholder="请选择时间"
-                       class="weui-input" data-toggle='datetime-picker'>
+                {!! Form::text(
+                    'time', $timing ? date('Y-m-d H:i', strtotime($message->event->start)) : null,
+                    [
+                        'id' => 'time',
+                        'placeholder' => '请选择时间',
+                        'class' => 'weui-input',
+                        'data-toggle' => 'datetime-picker'
+                    ]
+                ) !!}
             </div>
         </div>
         <!-- 发送按钮 -->
