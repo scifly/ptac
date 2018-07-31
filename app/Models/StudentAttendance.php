@@ -747,7 +747,7 @@ class StudentAttendance extends Model {
         
         return !empty($attendances)
             ? [$attendances[1], head($attendances)]
-            : [[], []];
+            : array_fill(0, 2, []);
         
     }
     
