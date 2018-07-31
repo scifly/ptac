@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * App\Models\Icon 图标
@@ -163,7 +164,7 @@ class Icon extends Model {
      * 删除指定图标的所有相关数据
      *
      * @param $id
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id) {
         

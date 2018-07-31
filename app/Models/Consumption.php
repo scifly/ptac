@@ -13,8 +13,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 use Validator;
 
 /**
@@ -130,7 +130,7 @@ class Consumption extends Model {
      * 保存消费记录
      *
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function store() {
         

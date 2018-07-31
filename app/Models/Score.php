@@ -244,7 +244,7 @@ class Score extends Model {
      * 删除指定分数记录的所有数据
      *
      * @param $id
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id) {
         
@@ -269,7 +269,7 @@ class Score extends Model {
      * 更新对应的总分记录
      *
      * @param $subjectId
-     * @throws Exception
+     * @throws Throwable
      */
     function removeSubject($subjectId) {
         

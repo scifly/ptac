@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * App\Models\CommType 通信方式
@@ -111,7 +112,7 @@ class CommType extends Model {
      * 删除指定通信类型的所有数据
      *
      * @param $id
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id) {
         

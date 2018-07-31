@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * App\Models\ProcedureLog 审批流程日志
@@ -226,7 +227,7 @@ class ProcedureLog extends Model {
      * 从审批流程日志中删除用户数据
      *
      * @param $userId
-     * @throws Exception
+     * @throws Throwable
      */
     function removeUser($userId) {
         

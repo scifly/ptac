@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 use ReflectionClass;
 use ReflectionException;
+use Throwable;
 
 /**
  * App\Models\MenuType 菜单类型
@@ -115,7 +116,7 @@ class MenuType extends Model {
      * 删除指定菜单类型的所有相关数据
      *
      * @param $id
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id) {
         

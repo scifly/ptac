@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * App\Models\ProcedureStep 审批流程步骤
@@ -192,7 +193,7 @@ class ProcedureStep extends Model {
      * 从审批流程步骤中删除指定的用户
      *
      * @param $userId
-     * @throws Exception
+     * @throws Throwable
      */
     function removeUser($userId) {
         

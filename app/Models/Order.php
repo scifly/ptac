@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * App\Models\Order 订单
@@ -166,7 +167,7 @@ class Order extends Model {
      * 从订单记录中删除指定用户数据
      *
      * @param $userId
-     * @throws Exception
+     * @throws Throwable
      */
     function removeUser($userId) {
         

@@ -187,7 +187,7 @@ class Grade extends Model {
      *
      * @param GradeRequest $request
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function store(GradeRequest $request) {
         
@@ -214,7 +214,7 @@ class Grade extends Model {
      * @param GradeRequest $request
      * @param $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function modify(GradeRequest $request, $id) {
         
@@ -251,7 +251,7 @@ class Grade extends Model {
      *
      * @param $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id) {
         
@@ -279,7 +279,7 @@ class Grade extends Model {
      *
      * @param $educatorId
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function removeEducator($educatorId) {
         

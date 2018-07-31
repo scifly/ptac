@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * App\Models\EducatorAppeal 教职员工申诉
@@ -145,7 +146,7 @@ class EducatorAppeal extends Model {
      *
      * @param $educatorId
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function removeEducator($educatorId) {
         
@@ -175,7 +176,7 @@ class EducatorAppeal extends Model {
      * 从教职员工申诉记录中删除教职员工考勤记录
      *
      * @param $eaId
-     * @throws Exception
+     * @throws Throwable
      */
     function removeEducatorAttendance($eaId) {
         

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * App\Models\Event 事件(日程)
@@ -205,7 +206,7 @@ class Event extends Model {
      *
      * @param $userId
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function removeUser($userId) {
         

@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use ReflectionException;
 use Throwable;
 
 /**
@@ -505,7 +506,8 @@ class Educator extends Model {
      *
      * @param $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
+     * @throws ReflectionException
      */
     function remove($id = null) {
         
@@ -519,7 +521,7 @@ class Educator extends Model {
      * @param $id
      * @param bool $broadcast
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id, $broadcast = true) {
         

@@ -183,7 +183,7 @@ class Squad extends Model {
      *
      * @param SquadRequest $request
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function store(SquadRequest $request) {
         
@@ -212,7 +212,7 @@ class Squad extends Model {
      * @param SquadRequest $request
      * @param $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function modify(SquadRequest $request, $id = null) {
         
@@ -252,7 +252,7 @@ class Squad extends Model {
      *
      * @param $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id) {
         
@@ -276,7 +276,7 @@ class Squad extends Model {
      *
      * @param $educatorId
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function removeEducator($educatorId) {
         

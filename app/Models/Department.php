@@ -19,7 +19,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
@@ -133,7 +132,7 @@ class Department extends Model {
      * @param Model $model
      * @param null $belongsTo
      * @return Department|bool|Model
-     * @throws Exception
+     * @throws Throwable
      */
     function storeDepartment(Model $model, $belongsTo = null) {
         
@@ -274,7 +273,7 @@ class Department extends Model {
      * @param Model $model
      * @param null $beLongsTo
      * @return void
-     * @throws Exception
+     * @throws Throwable
      */
     function modifyDepartment(Model $model, $beLongsTo = null) {
         
@@ -424,7 +423,7 @@ class Department extends Model {
      * 部门列表/排序/移动
      *
      * @return bool|JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     function index() {
         
@@ -673,7 +672,7 @@ class Department extends Model {
      * @param $id
      * @param $parentId
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     private function move($id, $parentId) {
         

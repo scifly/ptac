@@ -186,7 +186,7 @@ class Corp extends Model {
      *
      * @param CorpRequest $request
      * @return mixed|bool|null
-     * @throws Exception
+     * @throws Throwable
      */
     function store(CorpRequest $request) {
         
@@ -221,7 +221,7 @@ class Corp extends Model {
      * @param CorpRequest $request
      * @param $id
      * @return mixed|bool|null
-     * @throws Exception
+     * @throws Throwable
      */
     function modify(CorpRequest $request, $id) {
         
@@ -259,7 +259,7 @@ class Corp extends Model {
      *
      * @param $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id) {
         

@@ -286,7 +286,7 @@ class Subject extends Model {
      * 从科目中移除已删除的年级
      *
      * @param $gradeId
-     * @throws Exception
+     * @throws Throwable
      */
     function removeGrade($gradeId) {
         
@@ -311,7 +311,7 @@ class Subject extends Model {
      *
      * @param $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id) {
         

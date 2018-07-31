@@ -200,7 +200,7 @@ class WapSite extends Model {
      * 从微网站中删除指定的媒体数据
      *
      * @param $mediaId
-     * @throws Exception
+     * @throws Throwable
      */
     function removeMedia($mediaId) {
         
@@ -225,7 +225,7 @@ class WapSite extends Model {
      *
      * @param $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id) {
         

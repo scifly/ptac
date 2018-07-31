@@ -371,7 +371,7 @@ class Student extends Model {
      * @param $id
      * @param bool $broadcast
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id, $broadcast = true) {
         

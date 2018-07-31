@@ -121,7 +121,7 @@ class Company extends Model {
      *
      * @param CompanyRequest $request
      * @return mixed|bool|null
-     * @throws Exception
+     * @throws Throwable
      */
     function store(CompanyRequest $request) {
         
@@ -152,7 +152,7 @@ class Company extends Model {
      * @param CompanyRequest $request
      * @param $id
      * @return mixed|bool|null
-     * @throws Exception
+     * @throws Throwable
      */
     function modify(CompanyRequest $request, $id) {
         
@@ -191,7 +191,7 @@ class Company extends Model {
      *
      * @param $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id) {
         

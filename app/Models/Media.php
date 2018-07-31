@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 /**
  * App\Models\Media 媒体
@@ -140,7 +141,7 @@ class Media extends Model {
      * 删除指定媒体的所有相关数据
      *
      * @param $id
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id) {
         

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * App\Models\ComboType 套餐类型
@@ -138,7 +139,7 @@ class ComboType extends Model {
      * 删除指定套餐类型的所有数据
      *
      * @param $id
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id) {
         

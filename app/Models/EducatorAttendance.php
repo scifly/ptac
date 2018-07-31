@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
+use Throwable;
 use Validator;
 
 /**
@@ -144,7 +145,7 @@ class EducatorAttendance extends Model {
      * 保存教职员工考勤记录
      *
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function store() {
         
@@ -223,7 +224,7 @@ class EducatorAttendance extends Model {
      * 删除指定教职员工考勤记录的所有相关数据
      *
      * @param $id
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id) {
         

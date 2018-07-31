@@ -14,7 +14,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
@@ -169,7 +168,7 @@ class Exam extends Model {
      * 从所有考试中删除指定的科目
      *
      * @param $subjectId
-     * @throws Exception
+     * @throws Throwable
      */
     function removeSubject($subjectId) {
         
@@ -192,7 +191,7 @@ class Exam extends Model {
      *
      * @param $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id) {
         

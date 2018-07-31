@@ -25,7 +25,6 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Laravel\Passport\Client;
 use Laravel\Passport\HasApiTokens;
@@ -565,7 +564,7 @@ class User extends Authenticatable {
      * @param $id
      * @param bool $broadcast
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function remove($id = null, $broadcast = true) {
         
@@ -596,7 +595,7 @@ class User extends Authenticatable {
      * @param $id
      * @param bool $broadcast - 是否发送广播消息，默认情况下发送，如果是批量操作则不发送
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id, $broadcast = true): bool {
         
@@ -631,7 +630,7 @@ class User extends Authenticatable {
      * @param null $id
      * @return bool
      * @throws ReflectionException
-     * @throws Exception
+     * @throws Throwable
      */
     function removeContact(Model $contact, $id = null) {
         
@@ -716,6 +715,27 @@ class User extends Authenticatable {
     }
     
     /**
+     * @return array
+     */
+    private function corps() {
+        
+        $user = Auth::user();
+        switch ($user->group->name) {
+            case '运营':
+                return Corp::whereEnabled(1)->pluck('name', 'id')->toArray();
+            case '企业':
+                $departmentId = $this->head($user);
+                $corp = Corp::whereDepartmentId($departmentId)->first();
+                
+                return [$corp->id => $corp->name];
+            default:
+                return [];
+        }
+        
+    }
+    
+    
+    /**
      * 返回指定角色对应的企业/学校列表HTML
      * 或返回指定企业对应的学校列表HTML
      *
@@ -723,25 +743,6 @@ class User extends Authenticatable {
      */
     function csList() {
     
-        /**
-         * @return array
-         */
-        function corps() {
-            
-            $user = Auth::user();
-            switch ($user->group->name) {
-                case '运营':
-                    return Corp::whereEnabled(1)->pluck('name', 'id')->toArray();
-                case '企业':
-                    $departmentId = $this->head($user);
-                    $corp = Corp::whereDepartmentId($departmentId)->first();
-                    
-                    return [$corp->id => $corp->name];
-                default:
-                    return [];
-            }
-            
-        }
         
         $field = Request::input('field');
         $value = Request::input('value');
@@ -757,7 +758,7 @@ class User extends Authenticatable {
         $corpId = 0;
         if ($field == 'group_id') {
             $role = Group::find($value)->name;
-            $corps = corps();
+            $corps = $this->corps();
             $result['corpList'] = $this->selectList($corps, 'corp_id');
             if ($role == '学校') {
                 reset($corps);

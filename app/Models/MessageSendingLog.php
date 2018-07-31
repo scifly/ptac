@@ -99,7 +99,7 @@ class MessageSendingLog extends Model {
      * 删除指定消息批次相关的所有数据
      *
      * @param $id
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id) {
         

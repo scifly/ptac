@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * App\Models\ConferenceQueue 会议队列
@@ -203,7 +204,7 @@ class ConferenceQueue extends Model {
      * 删除指定会议的所有数据
      *
      * @param $id
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id) {
         
@@ -223,7 +224,7 @@ class ConferenceQueue extends Model {
      *
      * @param $educatorId
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function removeEducator($educatorId) {
         

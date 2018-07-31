@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 use ReflectionClass;
+use Throwable;
 
 /**
  * App\Models\DepartmentType 部门类型
@@ -115,7 +116,7 @@ class DepartmentType extends Model {
      *
      * @param $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id) {
         

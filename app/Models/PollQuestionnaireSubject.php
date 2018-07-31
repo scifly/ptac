@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * App\Models\PollQuestionnaireSubject 调查问卷题目
@@ -118,8 +119,8 @@ class PollQuestionnaireSubject extends Model {
                     $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $d);
                     $delLink = sprintf(Snippet::DT_LINK_DEL, $d);
                     
-                    return ($this::uris()['edit'] ? $editLink : '')
-                        . ($this::uris()['destroy'] ? $delLink : '');
+                    return (self::uris()['edit'] ? $editLink : '')
+                        . (self::uris()['destroy'] ? $delLink : '');
                 },
             ],
         ];
@@ -196,7 +197,7 @@ class PollQuestionnaireSubject extends Model {
      *
      * @param $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id) {
         

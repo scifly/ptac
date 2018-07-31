@@ -321,7 +321,7 @@ class Menu extends Model {
      * 菜单列表(菜单移动、排序)
      *
      * @return bool|JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     function index() {
         
@@ -375,7 +375,7 @@ class Menu extends Model {
      * 获取用于显示jstree的菜单数据
      *
      * @param null $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     private function tree($id) {
         
@@ -601,7 +601,7 @@ class Menu extends Model {
      * @param $id
      * @param $parentId
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     private function move($id, $parentId) {
         

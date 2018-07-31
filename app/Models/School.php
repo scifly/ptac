@@ -329,7 +329,7 @@ class School extends Model {
      *
      * @param SchoolRequest $request
      * @return mixed|bool|null
-     * @throws Exception
+     * @throws Throwable
      */
     function store(SchoolRequest $request) {
         
@@ -362,7 +362,7 @@ class School extends Model {
      * @param SchoolRequest $request
      * @param $id
      * @return mixed|bool|null
-     * @throws Exception
+     * @throws Throwable
      */
     function modify(SchoolRequest $request, $id = null) {
         
@@ -415,7 +415,7 @@ class School extends Model {
      *
      * @param $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id) {
         

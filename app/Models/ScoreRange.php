@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * App\Models\ScoreRange 分数统计范围
@@ -129,7 +130,7 @@ class ScoreRange extends Model {
      * 从分数统计范围中删除指定科目
      *
      * @param $subjectId
-     * @throws Exception
+     * @throws Throwable
      */
     function removeSubject($subjectId) {
         

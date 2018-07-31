@@ -193,7 +193,7 @@ class WsmArticle extends Model {
      * 从微网站栏目文章中删除指定的媒体数据
      *
      * @param $mediaId
-     * @throws Exception
+     * @throws Throwable
      */
     function removeMedia($mediaId) {
         
