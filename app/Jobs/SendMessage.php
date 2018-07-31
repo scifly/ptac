@@ -8,7 +8,6 @@ use App\Helpers\ModelTrait;
 use App\Models\App;
 use App\Models\Corp;
 use App\Models\Message;
-use App\Models\MessageSendingLog;
 use App\Models\Mobile;
 use App\Models\User;
 use Exception;
@@ -77,12 +76,7 @@ class SendMessage implements ShouldQueue {
         # 学校id
         $this->schoolId = $this->school_id($users->first());
         # 创建发送日志
-        $msl = [
-            'read_count'      => 0,
-            'received_count'  => 0,
-            'recipient_count' => count($mobiles),
-        ];
-        $this->data['msl_id'] = MessageSendingLog::create($msl)->id;
+        $this->data['msl_id'] = $this->mslId(count($mobiles));
         # 需记录消息发送日志的userid列表
         $touser = implode(
             '|', User::whereIn('id', $this->data['user_ids'])->pluck('userid')->toArray()
@@ -143,6 +137,7 @@ class SendMessage implements ShouldQueue {
     }
     
     /**
+     *
      * @param $content
      * @param $mobiles
      * @param $touser

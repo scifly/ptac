@@ -177,6 +177,7 @@ class StudentAttendance extends Model {
      *
      * @return JsonResponse
      * @throws Exception
+     * @throws Throwable
      */
     function store() {
         
@@ -184,7 +185,7 @@ class StudentAttendance extends Model {
             DB::transaction(function () {
                 $data = Request::input('data');
                 abort_if(
-                    !($school = School::find($data['school_id'])),
+                    !($school = School::find(Request::input('school_id'))),
                     HttpStatusCode::NOT_FOUND,
                     __('messages.school.not_found')
                 );

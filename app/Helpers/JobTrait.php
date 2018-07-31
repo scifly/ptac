@@ -3,6 +3,7 @@ namespace App\Helpers;
 
 use App\Events\JobResponse;
 use App\Models\Corp;
+use App\Models\MessageSendingLog;
 use App\Models\Student;
 use App\Models\User;
 use App\Facades\Wechat;
@@ -10,6 +11,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 /**
  * Trait JobTrait
@@ -71,6 +73,7 @@ trait JobTrait {
      * @param $job
      * @param $title
      * @return bool
+     * @throws Throwable
      */
     function import($job, $title) {
     
@@ -217,6 +220,23 @@ trait JobTrait {
         }
         
         return $users;
+        
+    }
+    
+    /**
+     * 创建消息发送日志并返回批次id
+     *
+     * @param $recipients
+     * @return int|mixed
+     */
+    function mslId($recipients) {
+    
+        $msl = [
+            'read_count'      => 0,
+            'received_count'  => 0,
+            'recipient_count' => $recipients,
+        ];
+        return MessageSendingLog::create($msl)->id;
         
     }
     
