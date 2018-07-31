@@ -11,6 +11,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * Class ApiController
@@ -83,7 +84,7 @@ class ApiController extends Controller {
      * 学生考勤记录
      *
      * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     public function studentAttendance() {
 

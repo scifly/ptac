@@ -21,18 +21,15 @@ use Throwable;
  */
 class MessageController extends Controller {
     
-    protected $message, $department, $user, $media;
+    protected $message, $department;
     
     /**
      * MessageController constructor.
      * @param Message $message
      * @param Department $departement
-     * @param User $user
-     * @param Media $media
      */
     public function __construct(
-        Message $message, Department $departement,
-        User $user, Media $media
+        Message $message, Department $departement
     ) {
         
         $this->middleware(['auth', 'checkrole']);

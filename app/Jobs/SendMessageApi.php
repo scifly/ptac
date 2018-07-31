@@ -73,12 +73,7 @@ class SendMessageApi implements ShouldQueue {
                     ->toArray();
                 
                 # 创建发送日志
-                $msl = [
-                    'read_count'      => 0,
-                    'received_count'  => 0,
-                    'recipient_count' => count($targets),
-                ];
-                $mslId = MessageSendingLog::create($msl)->id;
+                $mslId = $this->mslId(count($targets));
                 
                 $message = new Message;
                 $apiMessage = new ApiMessage;
