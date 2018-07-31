@@ -602,7 +602,7 @@ class Message extends Model {
         $corp = School::find($this->schoolId() ?? session('schoolId'))->corp;
         abort_if(!$corp, HttpStatusCode::NOT_FOUND, __('messages.message.invalid_corp'));
         Log::debug(json_encode($data));
-        if (isset($data['time']) && $data['time'] < date(now())) {
+        if (isset($data['time']) && $data['time'] > date(now())) {
             if (!isset($data['id'])) {
                 $this->store($data, false);
             } else {
