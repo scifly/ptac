@@ -88,6 +88,7 @@ class MessageSendingLog extends Model {
      *
      * @param null $id
      * @return bool
+     * @throws Throwable
      */
     function remove($id = null) {
         

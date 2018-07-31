@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\IconTypeRequest;
 use App\Models\IconType;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request as Request;
 use Throwable;
@@ -111,7 +110,7 @@ class IconTypeController extends Controller {
      *
      * @param $id
      * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     public function destroy($id) {
         

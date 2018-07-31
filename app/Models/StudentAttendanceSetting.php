@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
@@ -46,7 +47,7 @@ use Throwable;
  * @property-read Grade $grade
  * @property-read Semester $semester
  * @property-read StudentAttendance $studentAttendance
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\StudentAttendance[] $studentAttendances
+ * @property-read Collection|StudentAttendance[] $studentAttendances
  */
 class StudentAttendanceSetting extends Model {
     
@@ -190,7 +191,7 @@ class StudentAttendanceSetting extends Model {
      *
      * @param $id
      * @return bool|null
-     * @throws Exception
+     * @throws Throwable
      */
     function remove($id = null) {
         

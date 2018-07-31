@@ -65,7 +65,7 @@ class CorpController extends Controller {
      *
      * @param CorpRequest $request
      * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     public function store(CorpRequest $request) {
         
@@ -96,7 +96,7 @@ class CorpController extends Controller {
      * @param CorpRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     public function update(CorpRequest $request, $id) {
         

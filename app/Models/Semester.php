@@ -125,7 +125,7 @@ class Semester extends Model {
      *
      * @param $id
      * @return bool|null
-     * @throws Exception
+     * @throws Throwable
      */
     function remove($id = null) {
         

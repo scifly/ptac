@@ -430,7 +430,7 @@ class Action extends Model {
      *
      * @param null|integer $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function remove($id = null) {
         

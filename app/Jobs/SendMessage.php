@@ -143,7 +143,7 @@ class SendMessage implements ShouldQueue {
      * @param $touser
      * @param $users
      * @param $response
-     * @throws Exception
+     * @throws Throwable
      */
     private function sendSms($content, $mobiles, $touser, $users, &$response) {
     

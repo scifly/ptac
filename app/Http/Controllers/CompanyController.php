@@ -61,7 +61,7 @@ class CompanyController extends Controller {
      *
      * @param CompanyRequest $request
      * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     public function store(CompanyRequest $request) {
         
@@ -92,7 +92,7 @@ class CompanyController extends Controller {
      * @param CompanyRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     public function update(CompanyRequest $request, $id) {
         

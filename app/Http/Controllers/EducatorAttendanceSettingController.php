@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\EducatorAttendanceSettingRequest;
 use App\Models\EducatorAttendanceSetting;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -109,7 +108,7 @@ class EducatorAttendanceSettingController extends Controller {
      *
      * @param $id
      * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     public function destroy($id) {
         

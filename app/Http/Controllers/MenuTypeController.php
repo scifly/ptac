@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\MenuTypeRequest;
 use App\Models\MenuType;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -113,7 +112,7 @@ class MenuTypeController extends Controller {
      *
      * @param $id
      * @return JsonResponse|string
-     * @throws Exception
+     * @throws Throwable
      */
     public function destroy($id) {
         

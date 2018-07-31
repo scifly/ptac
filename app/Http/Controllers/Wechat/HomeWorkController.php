@@ -17,12 +17,9 @@ class HomeWorkController extends Controller {
         
     }
     
-    /**
-     * @return mixed
-     */
     public function index() {
         
-        return $this->hw->wIndex();
+        // return $this->hw->wIndex();
         
     }
     

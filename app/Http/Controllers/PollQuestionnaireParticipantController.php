@@ -7,7 +7,6 @@ use App\Models\PollQuestionnaireAnswer;
 use App\Models\PollQuestionnaireParticipant;
 use App\Models\PollQuestionnaireSubject;
 use App\Models\PollQuestionnaireSubjectChoice;
-use App\Models\User;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
@@ -31,15 +30,13 @@ class PollQuestionnaireParticipantController extends Controller {
      * @param PollQuestionnaireSubjectChoice $pqc
      * @param PollQuestionnaireSubject $pqs
      * @param PollQuestionnaireParticipant $pqp
-     * @param User $user
      */
     function __construct(
         PollQuestionnaire $pq,
         PollQuestionnaireAnswer $pqa,
         PollQuestionnaireSubjectChoice $pqc,
         pollQuestionnaireSubject $pqs,
-        PollQuestionnaireParticipant $pqp,
-        User $user
+        PollQuestionnaireParticipant $pqp
     ) {
         
         $this->middleware(['auth', 'checkrole']);

@@ -119,7 +119,7 @@ class ImportScore implements ShouldQueue {
      *
      * @param array $inserts
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function insert(array $inserts) {
         
@@ -151,7 +151,7 @@ class ImportScore implements ShouldQueue {
      *
      * @param array $updates
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function update(array $updates) {
         

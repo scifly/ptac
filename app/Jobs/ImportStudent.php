@@ -23,6 +23,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Throwable;
 use Validator;
 
 /**
@@ -152,7 +153,7 @@ class ImportStudent implements ShouldQueue {
      *
      * @param array $inserts
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function insert(array $inserts) {
         
@@ -318,7 +319,7 @@ class ImportStudent implements ShouldQueue {
      *
      * @param array $updates
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function update(array $updates) {
         

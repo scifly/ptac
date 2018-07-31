@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Requests\EducatorRequest;
 use App\Models\Department;
 use App\Models\Educator;

@@ -72,7 +72,7 @@ class ApiController extends Controller {
      * 消费记录
      *
      * @return JsonResponse|string
-     * @throws Exception
+     * @throws Throwable
      */
     public function studentConsumption() {
 
@@ -96,7 +96,7 @@ class ApiController extends Controller {
      * 教职员工考勤记录
      *
      * @return JsonResponse|string
-     * @throws Exception
+     * @throws Throwable
      */
     public function educatorAttendance() {
         

@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AppRequest;
 use App\Models\App;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -85,7 +84,7 @@ class AppController extends Controller {
      *
      * @param $id
      * @return JsonResponse|string
-     * @throws Exception
+     * @throws Throwable
      */
     public function destroy($id) {
         

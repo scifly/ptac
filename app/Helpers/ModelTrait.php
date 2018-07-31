@@ -5,7 +5,6 @@ use App\Models\Corp;
 use App\Models\Menu;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 use ReflectionClass;
 use App\Models\Squad;
 use App\Models\Action;
@@ -21,6 +20,7 @@ use Illuminate\Support\Facades\Request;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use Throwable;
 
 /**
  * Trait ModelTrait
@@ -69,6 +69,7 @@ trait ModelTrait {
      * @param Model $model
      * @param $id
      * @return bool
+     * @throws Throwable
      */
     function del(Model $model, $id) {
         

@@ -20,6 +20,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Throwable;
 
 /**
  * Class CreateSchoolMenu
@@ -272,7 +273,7 @@ class CreateSchool implements ShouldQueue {
     /**
      * Exeute the job.
      *
-     * @throws Exception
+     * @throws Throwable
      */
     public function handle() {
     

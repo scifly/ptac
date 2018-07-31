@@ -98,7 +98,7 @@ class SchoolType extends Model {
      *
      * @param $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function remove($id = null) {
         

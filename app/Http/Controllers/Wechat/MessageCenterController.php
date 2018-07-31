@@ -107,7 +107,7 @@ class MessageCenterController extends Controller {
      * @param MessageRequest $request
      * @param null $id
      * @return JsonResponse|string
-     * @throws Exception
+     * @throws Throwable
      */
     public function update(MessageRequest $request, $id = null) {
         

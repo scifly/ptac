@@ -103,7 +103,7 @@ class ProcedureType extends Model {
      *
      * @param $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function remove($id) {
         

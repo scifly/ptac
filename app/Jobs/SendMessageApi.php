@@ -9,7 +9,6 @@ use App\Models\CommType;
 use App\Models\Department;
 use App\Models\DepartmentUser;
 use App\Models\Message;
-use App\Models\MessageSendingLog;
 use App\Models\MessageType;
 use App\Models\Mobile;
 use App\Models\School;

@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SchoolTypeRequest;
 use App\Models\SchoolType;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -111,7 +110,7 @@ class SchoolTypeController extends Controller {
      *
      * @param $id
      * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     public function destroy($id = null) {
         

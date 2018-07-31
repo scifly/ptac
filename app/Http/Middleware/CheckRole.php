@@ -14,7 +14,6 @@ use App\Models\Tab;
 use App\Models\WapSite;
 use Closure;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Class CheckRole

@@ -2,7 +2,6 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
-use App\Models\WapSite;
 use Illuminate\Contracts\View\View;
 
 /**

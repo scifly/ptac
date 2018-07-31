@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DepartmentTypeRequest;
 use App\Models\DepartmentType;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -111,7 +110,7 @@ class DepartmentTypeController extends Controller {
      *
      * @param $id
      * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     public function destroy($id) {
         

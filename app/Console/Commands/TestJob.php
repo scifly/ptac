@@ -1,7 +1,6 @@
 <?php
 namespace App\Console\Commands;
 
-use App\Models\Event;
 use Illuminate\Console\Command;
 
 /**

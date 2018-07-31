@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PqRequest;
 use App\Models\PollQuestionnaire;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -123,7 +122,7 @@ class PollQuestionnaireController extends Controller {
      *
      * @param $id
      * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     public function destroy($id) {
         

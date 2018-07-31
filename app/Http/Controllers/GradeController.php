@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\GradeRequest;
 use App\Models\Educator;
 use App\Models\Grade;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -68,7 +67,7 @@ class GradeController extends Controller {
      *
      * @param GradeRequest $request
      * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     public function store(GradeRequest $request) {
         
@@ -99,7 +98,7 @@ class GradeController extends Controller {
      * @param GradeRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     public function update(GradeRequest $request, $id) {
         

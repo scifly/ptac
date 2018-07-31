@@ -1,18 +1,11 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
-use App\Models\ComboType;
 use App\Models\Department;
-use App\Models\Message;
-use App\Models\Score;
-use App\Models\Student;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Request;
 use ReflectionClass;
 use ReflectionMethod;
 

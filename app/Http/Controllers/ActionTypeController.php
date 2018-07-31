@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ActionTypeRequest;
 use App\Models\ActionType;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
@@ -111,7 +110,7 @@ class ActionTypeController extends Controller {
      *
      * @param $id
      * @return JsonResponse|string
-     * @throws Exception
+     * @throws Throwable
      */
     public function destroy($id) {
         

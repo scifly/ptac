@@ -11,13 +11,13 @@ use App\Models\MessageType;
 use App\Models\Mobile;
 use App\Models\School;
 use App\Models\User;
-use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Throwable;
 
 /**
  * Class TestJob
@@ -40,7 +40,7 @@ class TestJob implements ShouldQueue {
      * Execute the job.
      *
      * @return void
-     * @throws Exception
+     * @throws Throwable
      */
     public function handle() {
         
@@ -58,7 +58,7 @@ class TestJob implements ShouldQueue {
      * 发送需定时发送的消息
      *
      * @param $eventId
-     * @throws Exception
+     * @throws Throwable
      */
     private function message($eventId) {
     
@@ -135,7 +135,7 @@ class TestJob implements ShouldQueue {
      * @param array $content
      * @param $msgContent
      * @param $data
-     * @throws Exception
+     * @throws Throwable
      */
     private function sendSms($users, $mobiles, $content, $msgContent, $data) {
         

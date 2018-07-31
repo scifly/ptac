@@ -7,6 +7,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Throwable;
 
 /**
  * App\Models\Attachment 附件
@@ -71,6 +72,7 @@ class Attachment extends Model {
      *
      * @param null $id
      * @return bool
+     * @throws Throwable
      */
     function remove($id = null) {
         

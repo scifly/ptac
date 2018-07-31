@@ -110,7 +110,7 @@ class ExamTypeController extends Controller {
      *
      * @param $id
      * @return JsonResponse
-     * @throws \Exception
+     * @throws Throwable
      */
     public function destroy($id) {
         

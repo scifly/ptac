@@ -25,6 +25,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Throwable;
 use Validator;
 
 /**
@@ -299,7 +300,7 @@ class ImportEducator implements ShouldQueue {
      *
      * @param array $inserts
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function insert(array $inserts) {
         
@@ -472,7 +473,7 @@ class ImportEducator implements ShouldQueue {
      *
      * @param array $updates
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function update(array $updates) {
         

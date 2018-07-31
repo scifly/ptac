@@ -6,6 +6,7 @@ use App\Models\AttendanceMachine;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 考勤机
@@ -115,7 +116,7 @@ class AttendanceMachineController extends Controller {
      *
      * @param $id
      * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     public function destroy($id = null) {
         

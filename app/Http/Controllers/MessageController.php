@@ -3,9 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\MessageRequest;
 use App\Models\Department;
-use App\Models\Media;
 use App\Models\Message;
-use App\Models\User;
 use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
@@ -97,7 +95,7 @@ class MessageController extends Controller {
      * @param MessageRequest $request
      * @param null $id
      * @return JsonResponse|string
-     * @throws Exception
+     * @throws Throwable
      */
     public function update(MessageRequest $request, $id = null) {
         

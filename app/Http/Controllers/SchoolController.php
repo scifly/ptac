@@ -67,7 +67,7 @@ class SchoolController extends Controller {
      *
      * @param SchoolRequest $request
      * @return JsonResponse|string
-     * @throws Exception
+     * @throws Throwable
      */
     public function store(SchoolRequest $request) {
         
@@ -113,7 +113,7 @@ class SchoolController extends Controller {
      * @param SchoolRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     public function update(SchoolRequest $request, $id = null) {
         

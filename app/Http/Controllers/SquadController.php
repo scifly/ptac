@@ -68,7 +68,7 @@ class SquadController extends Controller {
      *
      * @param SquadRequest $request
      * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     public function store(SquadRequest $request) {
         
@@ -99,7 +99,7 @@ class SquadController extends Controller {
      * @param SquadRequest $request
      * @param $id
      * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     public function update(SquadRequest $request, $id) {
         
