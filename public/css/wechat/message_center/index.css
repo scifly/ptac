@@ -236,6 +236,9 @@ div.weui_tab_bd {
 .worktime .info-status.red {
     color: red;
 }
+.worktime .info-status.yellow {
+    color: yellow;
+}
 
 .titleinfo .titleinfo-head-left .title, .titleinfo .titleinfo-head-left .title-info {
     vertical-align: top;
