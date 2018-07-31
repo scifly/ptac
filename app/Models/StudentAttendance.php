@@ -14,6 +14,7 @@ use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -77,22 +78,22 @@ class StudentAttendance extends Model {
     ];
     
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     function attendanceMachine() { return $this->belongsTo('App\Models\AttendanceMachine'); }
     
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     function student() { return $this->belongsTo('App\Models\Student'); }
     
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     function media() { return $this->belongsTo('App\Models\Media'); }
     
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     function studentAttendanceSetting() {
         
@@ -183,8 +184,9 @@ class StudentAttendance extends Model {
         try {
             DB::transaction(function () {
                 $data = Request::input('data');
+                $school = School::find(Request::input('school_id'));
                 abort_if(
-                    !($school = School::find(Request::input('school_id'))),
+                    !$school,
                     HttpStatusCode::NOT_FOUND,
                     __('messages.school.not_found')
                 );
