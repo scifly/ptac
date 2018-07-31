@@ -183,19 +183,15 @@
                 <label for="time" class="weui-label">发送时间</label>
             </div>
             <div class="weui-cell__bd">
-                @if ($timing)
-                    {!! Form::hidden(
-                        'sendtime',
-                        date('Y-m-d H:i', strtotime($message->event->start)),
-                        ['id' => 'sendtime']
-                    ) !!}
-                @endif
-                {!! Form::text( 'time', null, [
-                    'id' => 'time',
-                    'placeholder' => '请选择时间',
-                    'class' => 'weui-input',
-                    'data-toggle' => 'datetime-picker'
-                ]) !!}
+                {!! Form::text(
+                    'time', $timing ? date('Y-m-d H:i', strtotime($message->event->start)) : null,
+                    [
+                        'id' => 'time',
+                        'placeholder' => '请选择时间',
+                        'class' => 'weui-input',
+                        'data-toggle' => 'datetime-picker'
+                    ]
+                ) !!}
             </div>
         </div>
         <!-- 发送按钮 -->
