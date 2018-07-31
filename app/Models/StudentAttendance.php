@@ -213,6 +213,7 @@ class StudentAttendance extends Model {
                     $strDateTime = date('Y-m-d', $dateTime);
                     $semester = Semester::where('start_date', '<=', $strDateTime)
                         ->where('end_date', '>=', $strDateTime)
+                        ->where('school_id', $school->id)
                         ->where('enabled', 1)
                         ->first();
                     abort_if(
