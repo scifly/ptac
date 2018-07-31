@@ -192,7 +192,8 @@ class StudentAttendance extends Model {
                     __('messages.school.not_found')
                 );
                 foreach ($data as &$datum) {
-                    Log::debug(json_encode($datum));
+                    Log::debug(json_encode($data));
+                    Log::debug(sizeof($data));
                     $datum['inorout'] = $datum['inorout'] ?? 2;
                     $datum['longitude'] = $datum['longitude'] ?? 0;
                     $datum['latitude'] = $datum['latitude'] ?? 0;
