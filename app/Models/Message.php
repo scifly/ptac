@@ -155,7 +155,7 @@ class Message extends Model {
                     } else {
                         $type = '(' . $msgType . (!$row['event_id']
                                 ? sprintf(Snippet::BADGE_RED, ' . 草稿')
-                                : sprintf(Snippet::BADGE_YELLOW, ' . 定时')
+                                : sprintf(Snippet::BADGE_ORANGE, ' . 定时')
                             ) . ')';
                     }
 

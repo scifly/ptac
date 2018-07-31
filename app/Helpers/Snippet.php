@@ -12,6 +12,7 @@ class Snippet {
     const BADGE_GREEN = '<span class="text-green">%s</span>';
     const BADGE_YELLOW = '<span class="text-yellow">%s</span>';
     const BADGE_RED = '<span class="text-red">%s</span>';
+    const BADGE_ORANGE = '<span class="text-orange">%s</span>';
     const BADGE_LIGHT_BLUE = '<span class="text-light-blue">%s</span>';
     const BADGE_MAROON = '<span class="text-maroon">%s</span>';
     const BADGE_AQUA = '<span class="text-aqua">%s</span>';
