@@ -258,14 +258,21 @@ class StudentAttendance extends Model {
                         'media_id'              => $datum['media_id'],
                     ]);
                     $userIds = $student->custodians->pluck('user_id')->toArray();
-                    # todo -
-                    list($smsUserIds, $wechatUserIds) = array_pluck(
-                        User::get(['id', 'subscribed'])
-                            ->whereIn('id', $userIds)
-                            ->groupBy('subscribed')
-                            ->toArray(),
-                        '*.id'
-                    );
+                    $userGroups = User::get(['id', 'subscribed'])
+                        ->whereIn('id', $userIds)
+                        ->groupBy('subscribed')
+                        ->toArray();
+                    if (empty($userGroups)) { continue; }
+                    $userIdGroups = array_pluck($userGroups, '*.id');
+                    if (sizeof($userIdGroups) < 2) {
+                        if ($userGroups[0][0]['subscribed']) {
+                            $wechatUserIds = $userIdGroups[0];
+                        } else {
+                            $smsUserIds = $userIdGroups[0];
+                        }
+                    } else {
+                        list($smsUserIds, $wechatUserIds) = $userIdGroups;
+                    }
                     $data = [
                         'dept_ids'        => [],
                         'message_type_id' => MessageType::whereName('考勤消息')->first()->id,
