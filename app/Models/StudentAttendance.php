@@ -19,6 +19,7 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
@@ -191,6 +192,7 @@ class StudentAttendance extends Model {
                     __('messages.school.not_found')
                 );
                 foreach ($data as &$datum) {
+                    Log::debug(json_encode($datum));
                     $datum['inorout'] = $datum['inorout'] ?? 2;
                     $datum['longitude'] = $datum['longitude'] ?? 0;
                     $datum['latitude'] = $datum['latitude'] ?? 0;
