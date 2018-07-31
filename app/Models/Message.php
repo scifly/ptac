@@ -268,11 +268,48 @@ class Message extends Model {
      * 保存消息（草稿）
      *
      * @param array $data
+     * @param bool $draft - 是否保存为草稿
      * @return bool
+     * @throws Throwable
      */
-    function store(array $data) {
+    function store(array $data, $draft = true) {
         
-        return $this->create($data) ? true : false;
+        try {
+            DB::transaction(function () use ($data, $draft) {
+                $time = null;
+                if ($data['time']) {
+                    $time = $data['time'];
+                    unset($data['time']);
+                }
+                $message = $this->create($data);
+                if ($time) {
+                    $user = Auth::user();
+                    $event = Event::create([
+                        'title' => '定时消息',
+                        'remark' => '定时消息',
+                        'location' => 'n/a',
+                        'contact' => 'n/a',
+                        'url' => 'n/a',
+                        'start' => $time,
+                        'end' => $time,
+                        'ispublic' => 0,
+                        'iscourse' => 0,
+                        'educator_id' => $user->educator ? $user->educator->id : 0,
+                        'subject_id' => 0,
+                        'alertable' => 0,
+                        'alert_mins' => 0,
+                        'user_id' => $user->id,
+                        'enabled' => $draft ? 0 : 1
+                    ]);
+                    $message->update(['event_id' => $event->id]);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
         
     }
     
@@ -396,8 +433,25 @@ class Message extends Model {
             
             return true;
         }
+        try {
+            DB::transaction(function () use ($data, $id) {
+                $message = $this->find($id);
+                if (isset($data['time'])) {
+                    Event::find($message->event_id)->update([
+                        'start' => $data['time'],
+                        'end' => $data['time'],
+                        'enabled' => isset($data['draft']) ? 1 : 0
+                    ]);
+                    unset($data['draft']);
+                    unset($data['time']);
+                }
+                $message->update($data);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
         
-        return $this->find($id)->update($data);
+        return true;
         
     }
     
@@ -533,6 +587,7 @@ class Message extends Model {
      *
      * @param $data
      * @return bool
+     * @throws Throwable
      */
     function send($data) {
         
@@ -544,7 +599,18 @@ class Message extends Model {
         $apps = App::whereIn('id', $data['app_ids'])->get()->toArray();
         $corp = School::find($this->schoolId() ?? session('schoolId'))->corp;
         abort_if(!$corp, HttpStatusCode::NOT_FOUND, __('messages.message.invalid_corp'));
-        SendMessage::dispatch($data, Auth::id(), $corp, $apps);
+        if (isset($data['time']) && $data['time'] < date(now())) {
+            if (!isset($data['id'])) {
+                $this->store($data, false);
+            } else {
+                $id = $data['id'];
+                unset($data['id']);
+                $data['draft'] = false;
+                $this->modify($data, $id);
+            }
+        } else {
+            SendMessage::dispatch($data, Auth::id(), $corp, $apps);
+        }
         
         return true;
         

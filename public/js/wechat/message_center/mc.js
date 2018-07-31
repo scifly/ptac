@@ -605,13 +605,15 @@
                 }
             },
             data: function () {
-                var $title = $('#title'),
+                var $id = $('#id'),
+                    $title = $('#title'),
                     $msgType = $('#msg-type'),
                     $content = $('#content'),
                     $mediaId = $('#media_id'),
                     $cardUrl = $('#card-url'),
                     $btnTxt = $('#btn-txt'),
                     $messageTypeId = $('#message_type_id'),
+                    $timing = $('#timing'), $time = $('#time'),
                     mediaId, title, text, cardUrl, btnTxt,
                     formData, content = null,
                     type = $msgType.val();
@@ -733,6 +735,12 @@
                     dept_ids: mc.selectedDepartmentIds,
                     message_type_id: $messageTypeId.val()
                 };
+                if ($timing.val()) {
+                    $.extend(formData, { time: $time.val() });
+                }
+                if ($id.length > 0) {
+                    $.extend(formData, { id: $id.val() });
+                }
 
                 return $.extend(formData, content);
             },
@@ -929,7 +937,13 @@
                 var $timing = $('#timing'),
                     $time = $('#time'),
                     date = new Date(),
-                    now = wap.today() + " " + date.getHours() + ":" + date.getMinutes();
+                    hours = date.getHours(),
+                    now = wap.today(),
+                    minutes = date.getMinutes();
+
+                if (hours < 10) { hours = '0' + hours; }
+                if (minutes < 10) { minutes = '0' + minutes; }
+                now += " " + hours + ":" + minutes;
 
                 $timing.on('click', function () {
                     if ($timing.val() === '0') {

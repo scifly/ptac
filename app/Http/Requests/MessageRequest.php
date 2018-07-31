@@ -95,6 +95,10 @@ class MessageRequest extends FormRequest {
             $input['user_ids'] = array_unique($userIds);
             $input['dept_ids'] = array_unique($deptIds);
         }
+        # 定时发送的日期时间
+        if (isset($input['time'])) {
+            $input['time'] = $input['time'] . ':00';
+        }
         if (!isset($input['app_ids'])) {
             $schoolId = $this->schoolId() ?? session('schoolId');
             $corp = School::find($schoolId)->corp;

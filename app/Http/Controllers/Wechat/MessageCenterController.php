@@ -60,6 +60,7 @@ class MessageCenterController extends Controller {
      *
      * @param MessageRequest $request
      * @return JsonResponse
+     * @throws Throwable
      */
     public function store(MessageRequest $request) {
         
