@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 use Throwable;
@@ -437,6 +438,7 @@ class Message extends Model {
             DB::transaction(function () use ($data, $id) {
                 $message = $this->find($id);
                 if (isset($data['time'])) {
+                    Log::debug(json_encode($data));
                     Event::find($message->event_id)->update([
                         'start' => $data['time'],
                         'end' => $data['time'],
