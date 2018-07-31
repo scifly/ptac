@@ -118,6 +118,10 @@ return [
         'authenticated' => '验证成功',
         'weekday_mismatched' => '请选择和规则对应的星期！'
     ],
+    'sas' => [
+        'title' => '学生考勤规则',
+        'not_found' => '没有找到相关的考勤规则'
+    ],
     'user'               => [
         'not_found' => '没有这个用户',
     ],
