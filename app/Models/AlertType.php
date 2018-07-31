@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * App\Models\AlertType 警告类型
@@ -101,7 +102,7 @@ class AlertType extends Model {
      *
      * @param $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id) {
         

@@ -98,7 +98,7 @@ class Constant {
         'TestController',
     ];
     
-    const INFO_TYPES = [
+    const INFO_TYPE = [
         'text'     => '文本',
         'image'    => '图片',
         'voice'    => '语音',
@@ -108,6 +108,13 @@ class Constant {
         'mpnews'   => '图文',
         'sms'      => '短信',
         'other'    => '未知',
+    ];
+    
+    const CONTENT_TYPE = [
+        'image' => 'image/*',
+        'audio' => 'audio/*',
+        'video' => 'video/*',
+        'file'  => '*'
     ];
     
     const APPS = [

@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * Class ApiMessage 接口消息发送记录
@@ -35,7 +36,7 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|ApiMessage whereUpdatedAt($value)
  * @mixin Eloquent
  * @property int $s_user_id 发送者用户id
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ApiMessage whereSUserId($value)
+ * @method static Builder|ApiMessage whereSUserId($value)
  */
 class ApiMessage extends Model {
 
@@ -76,7 +77,7 @@ class ApiMessage extends Model {
      * @param array $mobiles
      * @param array $data
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function log(array $mobiles, array $data) {
     

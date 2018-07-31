@@ -183,8 +183,9 @@ class StudentAttendance extends Model {
         try {
             DB::transaction(function () {
                 $data = Request::input('data');
+                $school = School::find(Request::input('school_id'));
                 abort_if(
-                    !($school = School::find(Request::input('school_id'))),
+                    !$school,
                     HttpStatusCode::NOT_FOUND,
                     __('messages.school.not_found')
                 );

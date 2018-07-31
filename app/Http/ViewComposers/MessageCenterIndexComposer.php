@@ -83,13 +83,13 @@ class MessageCenterIndexComposer {
             foreach ($messages as &$message) {
                 $message['created_at'] = $this->humanDate($message['created_at']);
                 $object = json_decode($message['content']);
-                $type = array_search(mb_substr($message['title'], -3, 2), Constant::INFO_TYPES);
+                $type = array_search(mb_substr($message['title'], -3, 2), Constant::INFO_TYPE);
                 if (!$type) {
                     $messageType = MessageType::find($message['message_type_id']);
                     $messageTypeName = $messageType ? $messageType->name : '未知消息';
                     if (is_object($object) && property_exists(get_class($object), 'msgtype')) {
                         $type = $object->{'msgtype'};
-                        $title = $messageTypeName . '(' . Constant::INFO_TYPES[$type] . ')';
+                        $title = $messageTypeName . '(' . Constant::INFO_TYPE[$type] . ')';
                     } else {
                         $title = $messageTypeName . '(未知)';
                     }

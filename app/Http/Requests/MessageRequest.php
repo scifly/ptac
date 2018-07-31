@@ -71,7 +71,7 @@ class MessageRequest extends FormRequest {
         $input['app_id'] = 0;
         $input['msl_id'] = 0;
         $input['title'] = MessageType::find($input['message_type_id'])->name
-            . '(' . Constant::INFO_TYPES[$input['type']] . ')';
+            . '(' . Constant::INFO_TYPE[$input['type']] . ')';
         $input['serviceid'] = '0';
         $input['message_id'] = 0;
         $input['url'] = "http://";

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * App\Models\AttendanceMachine 考勤机
@@ -135,7 +136,7 @@ class AttendanceMachine extends Model {
      *
      * @param $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id) {
         

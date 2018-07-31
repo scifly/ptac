@@ -149,7 +149,7 @@ class Message extends Model {
                             return $d;
                         }
                     }
-                    $type = '(' . Constant::INFO_TYPES[$content->{'msgtype'}] .
+                    $type = '(' . Constant::INFO_TYPE[$content->{'msgtype'}] .
                         ($row['sent'] ? '' : sprintf(Snippet::BADGE_GRAY, ' . 草稿')) . ')';
                     
                     return $d . sprintf(Snippet::BADGE_GREEN, $type);
@@ -335,13 +335,13 @@ class Message extends Model {
             $object = json_decode($object);
         }
         $title = $message->title;
-        $type = array_search(mb_substr($message->title, -3, 2), Constant::INFO_TYPES);
+        $type = array_search(mb_substr($message->title, -3, 2), Constant::INFO_TYPE);
         if (!$type) {
             $messageType = MessageType::find($message->message_type_id);
             $messageTypeName = $messageType ? $messageType->name : '未知消息';
             if (is_object($object) && property_exists(get_class($object), 'msgtype')) {
                 $type = $object->{'msgtype'};
-                $title = $messageTypeName . '(' . Constant::INFO_TYPES[$type] . ')';
+                $title = $messageTypeName . '(' . Constant::INFO_TYPE[$type] . ')';
             } else {
                 $title = $messageTypeName . '(未知)';
             }
@@ -369,7 +369,7 @@ class Message extends Model {
      * @param array $data
      * @param null $id
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function modify(array $data, $id = null) {
         
@@ -399,7 +399,7 @@ class Message extends Model {
      * @param $id
      * @param bool $read - 1:已读，0:未读
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function read($id, $read = true) {
         
@@ -505,7 +505,7 @@ class Message extends Model {
      * 从消息中删除指定用户
      *
      * @param $userId
-     * @throws Exception
+     * @throws Throwable
      */
     function removeUser($userId) {
         
@@ -569,7 +569,7 @@ class Message extends Model {
      * @param Collection|User[] $users - 发送对象
      * @param array $data - 消息数据
      * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function log($users, array $data) {
         
@@ -868,24 +868,6 @@ class Message extends Model {
                 $token['errmsg']
             );
         }
-        $contentType = '';
-        switch ($type) {
-            case 'image':
-                $contentType = 'image/*';
-                break;
-            case 'audio':
-                $contentType = 'audio/*';
-                $type = 'voice';
-                break;
-            case 'video':
-                $contentType = 'video/*';
-                break;
-            case 'file':
-                $contentType = '*';
-                break;
-            default:
-                break;
-        }
         $result = json_decode(
             Wechat::uploadMedia(
                 $token['access_token'],
@@ -893,7 +875,7 @@ class Message extends Model {
                 [
                     'file-contents' => curl_file_create(public_path($uploadedFile['path'])),
                     'filename'      => $uploadedFile['filename'],
-                    'content-type'  => $contentType,
+                    'content-type'  => Constant::CONTENT_TYPE[$type],
                     'filelength'    => $file->getSize(),
                 ]
             )

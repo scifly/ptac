@@ -79,7 +79,7 @@ class TestJob implements ShouldQueue {
                 : CommType::whereName('应用')->first()->id,
             'msl_id' => $this->mslId(count($mobiles)),
             'title' => MessageType::find($message->message_type_id)->name
-                . '(' . Constant::INFO_TYPES[$msgType] . ')',
+                . '(' . Constant::INFO_TYPE[$msgType] . ')',
             'serviceid' => 0,
             'message_id' => $message->id,
             'url' => 'http://',

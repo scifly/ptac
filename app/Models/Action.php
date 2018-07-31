@@ -117,7 +117,7 @@ class Action extends Model {
      * 删除指定功能的所有相关数据
      *
      * @param integer $id
-     * @throws Exception
+     * @throws Throwable
      */
     function purge($id) {
         
@@ -137,7 +137,7 @@ class Action extends Model {
      * 从所有功能中移除指定的功能请求类型
      *
      * @param integer $actionTypeId
-     * @throws Exception
+     * @throws Throwable
      */
     function removeActionType($actionTypeId) {
         
