@@ -19,7 +19,6 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
@@ -79,21 +78,29 @@ class StudentAttendance extends Model {
     ];
     
     /**
+     * 返回对应的考勤机对象
+     *
      * @return BelongsTo
      */
     function attendanceMachine() { return $this->belongsTo('App\Models\AttendanceMachine'); }
     
     /**
+     * 返回对应的学生对象
+     *
      * @return BelongsTo
      */
     function student() { return $this->belongsTo('App\Models\Student'); }
     
     /**
+     * 返回对应的媒体对象
+     *
      * @return BelongsTo
      */
     function media() { return $this->belongsTo('App\Models\Media'); }
     
     /**
+     * 返回对应的学生考勤设置对象
+     *
      * @return BelongsTo
      */
     function studentAttendanceSetting() {
@@ -174,7 +181,7 @@ class StudentAttendance extends Model {
     }
     
     /**
-     * 批量保存学生考勤记录
+     * 批量保存学生考勤记录（接口）
      *
      * @return JsonResponse
      * @throws Exception
