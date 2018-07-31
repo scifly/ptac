@@ -149,9 +149,16 @@ class Message extends Model {
                             return $d;
                         }
                     }
-                    $type = '(' . Constant::INFO_TYPE[$content->{'msgtype'}] .
-                        ($row['sent'] ? '' : sprintf(Snippet::BADGE_GRAY, ' . 草稿')) . ')';
-                    
+                    $msgType = Constant::INFO_TYPE[$content->{'msgtype'}];
+                    if ($row['sent']) {
+                        $type = '(' . $msgType . ')';
+                    } else {
+                        $type = '(' . $msgType . ($row['event_id']
+                                ? sprintf(Snippet::BADGE_RED, ' . 草稿')
+                                : sprintf(Snippet::BADGE_FUCHSIA, '. 定时')
+                            ) . ')';
+                    }
+
                     return $d . sprintf(Snippet::BADGE_GREEN, $type);
                 },
             ],
@@ -199,6 +206,7 @@ class Message extends Model {
             ['db' => 'Message.read', 'dt' => 8],
             ['db' => 'Message.content', 'dt' => 9],
             ['db' => 'Message.app_id', 'dt' => 10],
+            ['db' => 'Message.event_id', 'dt' => 11],
         ];
         $joins = [
             [
