@@ -153,9 +153,9 @@ class Message extends Model {
                     if ($row['sent']) {
                         $type = '(' . $msgType . ')';
                     } else {
-                        $type = '(' . $msgType . ($row['event_id']
+                        $type = '(' . $msgType . (!$row['event_id']
                                 ? sprintf(Snippet::BADGE_RED, ' . 草稿')
-                                : sprintf(Snippet::BADGE_FUCHSIA, '. 定时')
+                                : sprintf(Snippet::BADGE_FUCHSIA, ' . 定时')
                             ) . ')';
                     }
 
