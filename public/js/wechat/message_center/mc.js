@@ -957,6 +957,8 @@
                 });
                 if ($id.length === 0) {
                     $time.val(now);
+                } else {
+                    $time.val($('#sendtime').val());
                 }
                 $time.datetimePicker({ min: wap.today() });
             }
