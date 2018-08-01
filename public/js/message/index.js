@@ -448,6 +448,7 @@ function init() {
         $('#file-' + type).val('');
     });
     // 初始化发送时间daterangepicker
+    page.loadCss(plugins.daterangepicker.css);
     $.getScript(
         page.siteRoot() + plugins.daterangepicker.moment,
         function () {
