@@ -475,7 +475,7 @@ function init() {
                         singleDatePicker: true,
                         timePicker: true,
                         showDropdowns: true,
-                        minYear: today.getFullYear(),
+                        minYear: 2018, // today.getFullYear(),
                         maxYear: parseInt(moment().format('YYYY'), 10)
                     }, function(start, end, label) {
                         var years = moment().diff(start, 'years');
