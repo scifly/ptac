@@ -230,8 +230,8 @@ $preview.on('click', function () {
 });
 page.initICheck();
 $schedule.on('ifChecked', function () {
-    console.log($schedule.val());
     $('#timing').toggle('slow');
+
 });
 $draft.on('click', function () {
     return message('draft');
@@ -447,6 +447,26 @@ function init() {
         $file.remove();
         $('#file-' + type).val('');
     });
+    // 初始化发送时间daterangepicker
+    $.getScript(
+        page.siteRoot() + plugins.daterangepicker.moment,
+        function () {
+            $.getScript(
+                page.siteRoot() + plugins.daterangepicker.js,
+                function () {
+                    $('#time').daterangepicker({
+                        singleDatePicker: true,
+                        showDropdowns: true,
+                        minYear: 1901,
+                        maxYear: parseInt(moment().format('YYYY'),10)
+                    }, function(start, end, label) {
+                        var years = moment().diff(start, 'years');
+                        alert("You are " + years + " years old!");
+                    });
+                }
+            )
+        }
+    )
     // 初始化html5编辑器
     // initEditor();
 }

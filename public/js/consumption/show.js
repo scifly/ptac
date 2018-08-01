@@ -10,26 +10,11 @@ page.initForm(
     'POST'
 );
 $rangeId.on('change', function () {
-    console.log($rangeId.val());
-    switch (parseInt($rangeId.val())) {
-        case 1:
-            $students.show();
-            $classes.hide();
-            $grades.hide();
-            break;
-        case 2:
-            $students.hide();
-            $classes.show();
-            $grades.hide();
-            break;
-        case 3:
-            $students.hide();
-            $classes.hide();
-            $grades.show();
-            break;
-        default:
-            break;
-    }
+    var rangeId = parseInt($rangeId.val());
+
+    $students.toggle(rangeId === 1);
+    $classes.toggle(rangeId === 2);
+    $grades.toggle(rangeId === 3);
 });
 page.initDateRangePicker();
 var $stat = $('#stat'),
@@ -41,6 +26,7 @@ var $stat = $('#stat'),
     $consume = $('#consume'),
     $charge = $('#charge'),
     $aCharge = $('#a_charge');
+
 $stat.on('click', function () {
     if ($range.html().indexOf('fa-calendar') !== -1) {
         page.inform('学生消费记录', '请选择日期范围', page.failure);
@@ -63,16 +49,8 @@ $stat.on('click', function () {
             $('.overlay').hide();
             $aConsume.html(result['consumption']);
             $aCharge.html(result['charge']);
-            if (result['consumption'] !== '&yen; 0.00') {
-                $consume.show();
-            } else {
-                $consume.hide();
-            }
-            if (result['charge'] !== '&yen; 0.00') {
-                $charge.show();
-            } else {
-                $charge.hide();
-            }
+            $consume.toggle(result['consumption'] !== '&yen; 0.00');
+            $charge.toggle(result['charge'] !== '&yen; 0.00');
             page.inform(result['title'], result['message'], page.success);
         },
         error: function(e) {
