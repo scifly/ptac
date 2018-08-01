@@ -357,7 +357,7 @@ $(document).on('click', '.fa-edit', function () {
             if ($.inArray(type, uploadTypes) > -1) {
                 displayFile($container, mediaId, src, html);
             }
-            $('#schedule' + result['timing'] ? 1 : 2).iCheck('check');
+            $('#schedule' + (result['timing'] ? 1 : 2)).iCheck('check');
             $('#time').val(result['time']);
 
             $('.overlay').hide();
