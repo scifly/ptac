@@ -765,7 +765,7 @@ class Message extends Model {
         
         # 需发送微信（或短信）消息的用户（监护人、教职员工）
         $targets = $this->realTargets(User::whereIn('id', $userIds)->get())->groupBy('subscribed');
-        $targets = !empty($targets) ? $targets : array_fill(0, 2, Collect([]));
+        $targets = $targets->isNotEmpty() ? $targets : array_fill(0, 2, Collect([]));
         # $users - 需记录消息发送日志的的用户（学生、教职员工）
         $users = User::whereIn(
             'id', array_unique(
