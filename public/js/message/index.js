@@ -479,8 +479,6 @@ function init() {
                         timePicker24Hour: true,
                         minYear: 2018, // today.getFullYear(),
                         maxYear: parseInt(moment().format('YYYY'), 10)
-                    }, function(start) {
-                        alert(start);
                     });
                 }
             )
