@@ -228,6 +228,7 @@ $preview.on('click', function () {
     $targetIds.removeAttr('required');
     return message('preview');
 });
+page.initICheck();
 $schedule.on('click', function () {
     console.log($schedule.val());
     $('#timing').toggle();

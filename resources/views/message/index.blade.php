@@ -231,6 +231,7 @@
                         </div>
                         @include('partials.enabled', [
                             'id' => 'schedule',
+                            'label' => '定时发送',
                             'value' => 0,
                             'options' => ['是', '否']
                         ])
