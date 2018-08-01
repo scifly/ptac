@@ -229,6 +229,11 @@
                                 </div>
                             </div>
                         </div>
+                        @include('partials.enabled', [
+                            'id' => 'schedule',
+                            'value' => 0,
+                            'options' => ['是', '否']
+                        ])
                         <!-- 定时发送 -->
                         <div class="form-group" id="timing" style="display: none;">
                             {!! Form::label('content', '发送时间', [
@@ -252,9 +257,6 @@
                                 </button>
                                 <button class="btn btn-success btn-sm" id="preview">
                                     <i class="fa fa-play-circle"> 预览</i>
-                                </button>
-                                <button class="btn btn-warning btn-sm" id="schedule">
-                                    <i class="fa fa-clock-o"> 定时发送</i>
                                 </button>
                                 <button class="btn btn-default btn-sm" id="draft">
                                     <i class="fa fa-save"> 存为草稿</i>

@@ -228,7 +228,10 @@ $preview.on('click', function () {
     $targetIds.removeAttr('required');
     return message('preview');
 });
-$schedule.on('click', function () { $('#timing').toggle(); });
+$schedule.on('click', function () {
+    console.log($schedule.val());
+    $('#timing').toggle();
+});
 $draft.on('click', function () {
     return message('draft');
 });
