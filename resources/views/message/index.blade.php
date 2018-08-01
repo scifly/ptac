@@ -209,10 +209,10 @@
                                         </div>
                                         <!-- 图文 -->
                                         <div class="tab-pane" id="content_mpnews">
-                                            <button id="add-mpnews" class="btn btn-box-tool" type="button"
-                                                    style="margin-top: 3px;">
+                                            <a id="add-mpnews" class="btn btn-box-tool" type="button"
+                                               style="margin-top: 3px;">
                                                 <i class="fa fa-plus text-blue">&nbsp;添加图文</i>
-                                            </button>
+                                            </a>
                                         </div>
                                         <!-- 短信 -->
                                         <div class="tab-pane" id="content_sms">
