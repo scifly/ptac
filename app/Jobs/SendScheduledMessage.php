@@ -86,7 +86,7 @@ class SendScheduledMessage implements ShouldQueue {
                     User::whereIn('userid', $userids)->pluck('id')->toArray(),
                     explode('|', $msgContent->{'toparty'})
                 );
-                $msgType = $msgContent->{'msgType'};
+                $msgType = $msgContent->{'msgtype'};
                 $data = [
                     'comm_type_id' => $msgType == 'sms'
                         ? CommType::whereName('短信')->first()->id
