@@ -269,8 +269,7 @@ $(document).on('click', '.fa-edit', function () {
         dataType: 'json',
         url: page.siteRoot() + 'messages/edit/' + id,
         success: function (result) {
-            var today = new Date(),
-                $msgTypeId = $('#message_type_id'), $tabTitle,
+            var $msgTypeId = $('#message_type_id'), $tabTitle,
                 html = '', type = result['message']['msgtype'],
                 $container, mediaId, src, $time = $('#time'),
                 uploadTypes = ['image', 'audio', 'video', 'file'];

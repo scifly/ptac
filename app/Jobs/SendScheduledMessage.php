@@ -20,10 +20,10 @@ use Illuminate\Queue\SerializesModels;
 use Throwable;
 
 /**
- * Class TestJob
+ * Class SendScheduledMessage
  * @package App\Jobs
  */
-class TestJob implements ShouldQueue {
+class SendScheduledMessage implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, JobTrait;
     
@@ -48,7 +48,7 @@ class TestJob implements ShouldQueue {
         foreach ($events as $event) {
             if (date(now()) >= $event->start) {
                 # send message immediately
-                $this->message($event->id);
+                $this->send($event->id);
             }
         }
     
@@ -60,7 +60,7 @@ class TestJob implements ShouldQueue {
      * @param $eventId
      * @throws Throwable
      */
-    private function message($eventId) {
+    private function send($eventId) {
     
         $message = Message::whereEventId($eventId)->first();
         $msgContent = json_decode($message->content);

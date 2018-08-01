@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 
 /**
- * Class TestJob
+ * Class SendScheduledMessage
  * @package App\Console\Commands
  */
 class TestJob extends Command {
