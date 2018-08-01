@@ -460,10 +460,8 @@ function init() {
                     $('#time').daterangepicker({
                         locale: {
                             format: "YYYY-MM-DD hh:mm",
-                            separator: " 至 ",
-                            // applyLabel: "确定",
-                            // cancelLabel: "取消",
-                            fromLabel: "从",
+                            applyLabel: "确定",
+                            cancelLabel: "取消",
                             weekLabel: "W",
                             daysOfWeek: ["日", "一", "二", "三", "四", "五", "六"],
                             monthNames: [
@@ -480,8 +478,7 @@ function init() {
                         timePicker24Hour: true,
                         minYear: today.getFullYear(),
                         autoUpdateInput: true,
-                        maxYear: parseInt(moment().format('YYYY'), 10),
-                        autoApply: true,
+                        maxYear: parseInt(moment().format('YYYY'), 10)
                     });
                 }
             )
