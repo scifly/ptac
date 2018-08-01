@@ -484,7 +484,7 @@ function init() {
             )
         }
     );
-    $('#message-content').find('input').css('background-color', 'beige');
+    $('#message-content').find(':input').css('background-color', 'beige');
     // 初始化html5编辑器
     // initEditor();
 }
