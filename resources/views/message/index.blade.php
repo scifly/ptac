@@ -151,13 +151,13 @@
                                         <div class="tab-pane" id="content_video">
                                             {!! Form::text('video-title', null, [
                                                 'id' => 'video-title',
-                                                'class' => 'form-control',
+                                                'class' => 'form-control text-blue',
                                                 'placeholder' => '请在此输入视频标题',
                                                 'style' => 'margin-bottom: 5px;'
                                             ]) !!}
                                             {!! Form::textarea('video-description', null, [
                                                 'id' => 'video-description',
-                                                'class' => 'form-control',
+                                                'class' => 'form-control text-blue',
                                                 'placeholder' => '请在此添加视频描述(选填)',
                                                 'style' => 'margin-bottom: 5px;'
                                             ]) !!}
@@ -182,28 +182,28 @@
                                         <div class="tab-pane" id="content_card">
                                             {!! Form::text('card-title', null, [
                                                 'id' => 'card-title',
-                                                'class' => 'form-control',
+                                                'class' => 'form-control text-blue',
                                                 'placeholder' => '请在此输入卡片标题',
                                                 'title' => '卡片标题',
                                                 'style' => 'margin-bottom: 5px;'
                                             ]) !!}
                                             {!! Form::textarea('card-description', null, [
                                                 'id' => 'card-description',
-                                                'class' => 'form-control',
+                                                'class' => 'form-control text-blue',
                                                 'placeholder' => '请在此添加卡片描述',
                                                 'title' => '卡片描述',
                                                 'style' => 'margin-bottom: 5px;'
                                             ]) !!}
                                             {!! Form::text('card-url', null, [
                                                 'id' => 'card-url',
-                                                'class' => 'form-control',
+                                                'class' => 'form-control text-blue',
                                                 'placeholder' => '请在此输入卡片链接地址',
                                                 'title' => '链接地址',
                                                 'style' => 'margin-bottom: 5px;'
                                             ]) !!}
                                             {!! Form::text('card-btntxt', '详情', [
                                                 'id' => 'card-btntxt',
-                                                'class' => 'form-control',
+                                                'class' => 'form-control text-blue',
                                                 'title' => '卡片按钮名称'
                                             ]) !!}
                                         </div>
