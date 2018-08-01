@@ -457,7 +457,20 @@ function init() {
                     var today = new Date();
 
                     $('#time').daterangepicker({
-                        locale: page.dateRangeLocale(),
+                        locale: {
+                            format: "YYYY年MM月DD日 hh:mm A",
+                            separator: " 至 ",
+                            applyLabel: "确定",
+                            cancelLabel: "取消",
+                            fromLabel: "从",
+                            weekLabel: "W",
+                            daysOfWeek: ["日", "一", "二", "三", "四", "五", "六"],
+                            monthNames: [
+                                "一月", "二月", "三月", "四月", "五月", "六月",
+                                "七月", "八月", "九月", "十月", "十一月", "十二月"
+                            ],
+                            firstDay: 1
+                        },
                         singleDatePicker: true,
                         timePicker: true,
                         showDropdowns: true,
