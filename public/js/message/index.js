@@ -576,7 +576,7 @@ function data(preview = false) {
             break;
     }
     if ($timer.is(':visible')) {
-        $.extend(formData, $time.val());
+        $.extend(formData, { time: $time.val() });
     }
     if (messageId !== '') {
         $.extend(formData, { id: messageId });
