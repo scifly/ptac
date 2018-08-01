@@ -480,7 +480,8 @@ function init() {
                         timePicker24Hour: true,
                         minYear: today.getFullYear(),
                         autoUpdateInput: true,
-                        maxYear: parseInt(moment().format('YYYY'), 10)
+                        maxYear: parseInt(moment().format('YYYY'), 10),
+                        autoApply: true,
                     });
                 }
             )
