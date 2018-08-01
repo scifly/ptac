@@ -2,6 +2,7 @@
 namespace App\Console;
 
 use App\Jobs\SendScheduledMessage;
+use App\Models\Event;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -31,7 +32,11 @@ class Kernel extends ConsoleKernel {
      */
     protected function schedule(Schedule $schedule) {
         
-        $schedule->job(new SendScheduledMessage())->everyMinute();
+        $schedule->job(new SendScheduledMessage())->everyMinute()->when(
+            function () {
+                return Event::whereEnabled(1)->get()->count() > 0;
+            }
+        );
         
     }
     
