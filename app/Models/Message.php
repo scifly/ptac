@@ -273,7 +273,7 @@ class Message extends Model {
      * @return bool
      * @throws Throwable
      */
-    function store(array $data, $draft = true) {
+    function store(array $data, $draft = null) {
         
         try {
             DB::transaction(function () use ($data, $draft) {
@@ -300,7 +300,7 @@ class Message extends Model {
                         'alertable' => 0,
                         'alert_mins' => 0,
                         'user_id' => $user->id,
-                        'enabled' => $draft ? 0 : 1
+                        'enabled' => isset($draft) ? 1 : 0
                     ]);
                     $message->update(['event_id' => $event->id]);
                 }
