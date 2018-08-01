@@ -236,7 +236,7 @@
                             ]) !!}
                             <div class="col-sm-6">
                                 <div class="input-group">
-                                    @include('partials.icon_addon', ['class' => 'fa-clock text-blue'])
+                                    @include('partials.icon_addon', ['class' => 'fa-clock-o text-blue'])
                                     {!! Form::text('time', null, [
                                         'id' => 'time',
                                         'class' => 'form-control'
