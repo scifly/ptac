@@ -472,6 +472,7 @@ function init() {
                             ],
                             firstDay: 1
                         },
+                        minDate: today,
                         singleDatePicker: true,
                         timePicker: true,
                         showDropdowns: true,
