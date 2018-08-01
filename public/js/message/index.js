@@ -478,7 +478,8 @@ function init() {
                         timePicker: true,
                         showDropdowns: true,
                         timePicker24Hour: true,
-                        minYear: 2018, // today.getFullYear(),
+                        minYear: today.getFullYear(),
+                        autoUpdateInput: true,
                         maxYear: parseInt(moment().format('YYYY'), 10)
                     });
                 }
