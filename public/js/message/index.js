@@ -474,6 +474,7 @@ function init() {
                         },
                         minDate: today,
                         singleDatePicker: true,
+                        drops: 'up',
                         timePicker: true,
                         showDropdowns: true,
                         timePicker24Hour: true,
