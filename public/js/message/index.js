@@ -229,7 +229,7 @@ $preview.on('click', function () {
     return message('preview');
 });
 page.initICheck();
-$schedule.on('click', function () {
+$schedule.on('ifChecked', function () {
     console.log($schedule.val());
     $('#timing').toggle();
 });
