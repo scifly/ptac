@@ -459,7 +459,7 @@ function init() {
 
                     $('#time').daterangepicker({
                         locale: {
-
+                            format: "YYYY-MM-DD hh:mm",
                             applyLabel: "确定",
                             cancelLabel: "取消",
                             weekLabel: "W",
@@ -470,7 +470,6 @@ function init() {
                             ],
                             firstDay: 1
                         },
-                        format: "YYYY-MM-DD hh:mm",
                         minDate: today,
                         singleDatePicker: true,
                         drops: 'up',
