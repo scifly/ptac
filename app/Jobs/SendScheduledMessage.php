@@ -107,10 +107,10 @@ class SendScheduledMessage implements ShouldQueue {
                     'msgtype' => $msgType,
                     $msgType => $msgContent->{$msgType}
                 ];
-                Log::debug(json_encode($targets));
                 if ($msgType == 'sms') {
                     $this->sendSms($users, $mobiles, $content, $msgContent, $data);
                 } else {
+                    
                     # 需要发送短信的用户
                     if ($targets[0]->isNotEmpty()) {
                         $users = $targets[0];
