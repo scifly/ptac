@@ -231,7 +231,7 @@ $preview.on('click', function () {
 page.initICheck();
 $schedule.on('ifChecked', function () {
     console.log($schedule.val());
-    $('#timing').toggle();
+    $('#timing').toggle('slow');
 });
 $draft.on('click', function () {
     return message('draft');
