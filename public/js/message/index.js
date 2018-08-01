@@ -359,7 +359,7 @@ $(document).on('click', '.fa-edit', function () {
             }
             $('#schedule' + result['timing'] ? 1 : 2).iCheck('check');
             $('#time').val(result['time']);
-            
+
             $('.overlay').hide();
         },
         error: function (e) {
