@@ -253,7 +253,7 @@
                                 <button class="btn btn-success btn-sm" id="preview">
                                     <i class="fa fa-play-circle"> 预览</i>
                                 </button>
-                                <button class="btn btn-warning btn-sm" id="schedule" disabled="disabled">
+                                <button class="btn btn-warning btn-sm" id="schedule">
                                     <i class="fa fa-clock-o"> 定时发送</i>
                                 </button>
                                 <button class="btn btn-default btn-sm" id="draft">
