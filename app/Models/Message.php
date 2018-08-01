@@ -442,13 +442,43 @@ class Message extends Model {
             DB::transaction(function () use ($data, $id) {
                 $message = $this->find($id);
                 if (isset($data['time'])) {
-                    Event::find($message->event_id)->update([
-                        'start' => $data['time'],
-                        'end' => $data['time'],
-                        'enabled' => isset($data['draft']) ? 1 : 0
-                    ]);
+                    if ($message->event_id) {
+                        Event::find($message->event_id)->update([
+                            'start' => $data['time'],
+                            'end' => $data['time'],
+                            'enabled' => isset($data['draft']) ? 1 : 0
+                        ]);
+                    } else {
+                        $user = Auth::user();
+                        $time = $data['time'];
+                        $draft = $data['draft'];
+                        $event = Event::create([
+                            'title' => '定时消息',
+                            'remark' => '定时消息',
+                            'location' => 'n/a',
+                            'contact' => 'n/a',
+                            'url' => 'n/a',
+                            'start' => $time,
+                            'end' => $time,
+                            'ispublic' => 0,
+                            'iscourse' => 0,
+                            'educator_id' => $user->educator ? $user->educator->id : 0,
+                            'subject_id' => 0,
+                            'alertable' => 0,
+                            'alert_mins' => 0,
+                            'user_id' => $user->id,
+                            'enabled' => $draft ? 0 : 1
+                        ]);
+                        $data['event_id'] = $event->id;
+                    }
                     unset($data['draft']);
                     unset($data['time']);
+                } else {
+                    $eventId = $message->event_id;
+                    if ($eventId) {
+                        Event::find($eventId)->delete();
+                        $data['event_id'] = null;
+                    }
                 }
                 $message->update($data);
             });
