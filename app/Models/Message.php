@@ -19,7 +19,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 use Throwable;
@@ -283,6 +282,7 @@ class Message extends Model {
                     unset($data['time']);
                 }
                 $message = $this->create($data);
+                # 如果设置了发送时间，则创建消息对应的事件
                 if ($time) {
                     $user = Auth::user();
                     $event = Event::create([
@@ -442,13 +442,16 @@ class Message extends Model {
             DB::transaction(function () use ($data, $id) {
                 $message = $this->find($id);
                 if (isset($data['time'])) {
+                    # 如果设置了发送时间
                     if ($message->event_id) {
+                        # 如果指定消息已有对应事件，则更新对应事件
                         Event::find($message->event_id)->update([
                             'start' => $data['time'],
                             'end' => $data['time'],
                             'enabled' => isset($data['draft']) ? 1 : 0
                         ]);
                     } else {
+                        # 如果指定消息没有对应事件，则创建对应事件
                         $user = Auth::user();
                         $time = $data['time'];
                         $draft = $data['draft'] ?? null;
@@ -467,19 +470,22 @@ class Message extends Model {
                             'alertable' => 0,
                             'alert_mins' => 0,
                             'user_id' => $user->id,
-                            'enabled' => $draft ? 0 : 1
+                            'enabled' => isset($draft) ? 1 : 0
                         ]);
                         $data['event_id'] = $event->id;
                     }
                     unset($data['draft']);
                     unset($data['time']);
                 } else {
+                    # 如果没有设置发送时间
                     $eventId = $message->event_id;
                     if ($eventId) {
+                        # 如果指定消息已有对应事件，则删除该事件
                         Event::find($eventId)->delete();
                         $data['event_id'] = null;
                     }
                 }
+                # 更新消息草稿
                 $message->update($data);
             });
         } catch (Exception $e) {
@@ -626,25 +632,41 @@ class Message extends Model {
      */
     function send($data) {
         
-        abort_if(
-            empty($data['user_ids']) && empty($data['dept_ids']) && empty($data['app_ids']),
-            HttpStatusCode::NOT_ACCEPTABLE,
-            __('messages.message.empty_targets')
-        );
-        $apps = App::whereIn('id', $data['app_ids'])->get()->toArray();
-        $corp = School::find($this->schoolId() ?? session('schoolId'))->corp;
-        abort_if(!$corp, HttpStatusCode::NOT_FOUND, __('messages.message.invalid_corp'));
-        if (isset($data['time']) && $data['time'] > date(now())) {
-            if (!isset($data['id'])) {
-                $this->store($data, false);
-            } else {
-                $id = $data['id'];
-                unset($data['id']);
-                $data['draft'] = false;
-                $this->modify($data, $id);
-            }
-        } else {
-            SendMessage::dispatch($data, Auth::id(), $corp, $apps);
+        try {
+            DB::transaction(function () use ($data) {
+                throw_if(
+                    empty($data['user_ids']) &&
+                    empty($data['dept_ids']) &&
+                    empty($data['app_ids']),
+                    HttpStatusCode::NOT_ACCEPTABLE
+                );
+                $apps = App::whereIn('id', $data['app_ids'])->get()->toArray();
+                $corp = School::find($this->schoolId() ?? session('schoolId'))->corp;
+                throw_if(!$corp, HttpStatusCode::NOT_FOUND);
+                
+                if (
+                    !isset($data['time']) ||
+                    (isset($data['time']) && $data['time'] < date('now'))
+                ) {
+                    # 如果没有设置发送时间，或者设置了发送时间，但发送时间早于当前时间
+                    # 则立即发送消息
+                    SendMessage::dispatch($data, Auth::id(), $corp, $apps);
+                } else {
+                    # 如果发送时间晚于当前时间，则创建/更新消息
+                    if (!isset($data['id'])) {
+                        # 创建消息草稿
+                        $this->store($data, false);
+                    } else {
+                        # 更新消息草稿
+                        $id = $data['id'];
+                        unset($data['id']);
+                        $data['draft'] = false;
+                        $this->modify($data, $id);
+                    }
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
         
         return true;
