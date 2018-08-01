@@ -459,7 +459,7 @@ function init() {
 
                     $('#time').daterangepicker({
                         locale: {
-                            format: "YYYY年MM月DD日 hh:mm A",
+                            format: "YYYY-MM-DD hh:mm",
                             separator: " 至 ",
                             applyLabel: "确定",
                             cancelLabel: "取消",
