@@ -269,9 +269,10 @@ $(document).on('click', '.fa-edit', function () {
         dataType: 'json',
         url: page.siteRoot() + 'messages/edit/' + id,
         success: function (result) {
-            var $msgTypeId = $('#message_type_id'), $tabTitle,
+            var today = new Date(),
+                $msgTypeId = $('#message_type_id'), $tabTitle,
                 html = '', type = result['message']['msgtype'],
-                $container, mediaId, src,
+                $container, mediaId, src, $time = $('#time'),
                 uploadTypes = ['image', 'audio', 'video', 'file'];
 
             if (type === 'textcard') { type = 'card'; }
@@ -358,8 +359,7 @@ $(document).on('click', '.fa-edit', function () {
                 displayFile($container, mediaId, src, html);
             }
             $('#schedule' + (result['timing'] ? 1 : 2)).iCheck('check');
-            $('#time').val(result['time']);
-
+            $time.val(result['time'] ? result['time'] : currentTime());
             $('.overlay').hide();
         },
         error: function (e) {
@@ -761,6 +761,21 @@ function removeValidation() {
     $messageContent.find(':input').removeAttr(
         'required data-parsley-length maxlength'
     );
+}
+function currentTime() {
+    var date = new Date(),
+        year = date.getFullYear(),
+        month = date.getMonth() + 1,
+        day = date.getDate(),
+        hour = date.getHours(),
+        minute = date.getMinutes();
+
+    if (month < 10) { month = '0' + month;}
+    if (day < 10) { day = '0' + day; }
+    if (hour < 10) { hour = '0' + hour; }
+    if (minute < 10) { minute = '0' + minute; }
+
+    return year + '-' + month + '-' + day + ' ' + hour + ':' + minute;
 }
 function refreshValidation(anchor) {
     // $targetIds.attr('required', 'true');
