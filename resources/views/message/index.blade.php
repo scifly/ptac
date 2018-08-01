@@ -231,13 +231,13 @@
                         </div>
                         @include('partials.enabled', [
                             'id' => 'schedule',
-                            'label' => '定时发送',
+                            'label' => '发送时间',
                             'value' => 0,
-                            'options' => ['是', '否']
+                            'options' => ['定时', '立即']
                         ])
                         <!-- 定时发送 -->
                         <div class="form-group" id="timing" style="display: none;">
-                            {!! Form::label('content', '发送时间', [
+                            {!! Form::label('time', '', [
                                 'class' => 'col-sm-3 control-label'
                             ]) !!}
                             <div class="col-sm-6">
