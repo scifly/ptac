@@ -60,7 +60,7 @@ var $batchBtns = $('.box-tools'),
     // 发送按钮
     $send = $('#send'),
     $preview = $('#preview'),
-    $schedule = $('#schedule'),
+    $schedule = $('input[name="schedule"]'),
     $draft = $('#draft');
 
 // 初始化
