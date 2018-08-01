@@ -236,7 +236,6 @@ $schedule.on('ifChecked', function () {
 $draft.on('click', function () {
     return message('draft');
 });
-
 /** 已发送 ----------------------------------------------------------------------------------------------------------- */
 // 初始化"已发送"datatable
 var options = [{
@@ -358,6 +357,9 @@ $(document).on('click', '.fa-edit', function () {
             if ($.inArray(type, uploadTypes) > -1) {
                 displayFile($container, mediaId, src, html);
             }
+            $('#schedule' + result['timing'] ? 1 : 2).iCheck('check');
+            $('#time').val(result['time']);
+            
             $('.overlay').hide();
         },
         error: function (e) {
@@ -388,20 +390,8 @@ page.remove('messages', options);
 function init() {
     // 加载消息中心css
     page.loadCss('css/message/message.css');
-    // 初始化应用select2控件
-    page.initSelect2([{
-        option: {
-            templateResult: page.formatStateImg,
-            templateSelection: page.formatStateImg
-        },
-        id: 'app_ids'
-    }]);
-    // 初始化消息类型select2控件
-    $.getMultiScripts([plugins.select2.js]).done(function () {
-        $.getMultiScripts([plugins.select2.jscn]).done(function () {
-            $messageTypeId.select2();
-        });
-    });
+    // 初始化下拉列表
+    initSelect2();
     // 隐藏'已发送'消息列表对应的批处理按钮组
     $batchBtns.hide();
     // 初始化消息类型卡片悬停特效、input parsley验证规则
@@ -448,42 +438,7 @@ function init() {
         $('#file-' + type).val('');
     });
     // 初始化发送时间daterangepicker
-    page.loadCss(plugins.daterangepicker.css);
-    $.getScript(
-        page.siteRoot() + plugins.daterangepicker.moment,
-        function () {
-            $.getScript(
-                page.siteRoot() + plugins.daterangepicker.js,
-                function () {
-                    var today = new Date();
-
-                    $('#time').daterangepicker({
-                        locale: {
-                            format: "YYYY-MM-DD hh:mm",
-                            applyLabel: "确定",
-                            cancelLabel: "取消",
-                            weekLabel: "W",
-                            daysOfWeek: ["日", "一", "二", "三", "四", "五", "六"],
-                            monthNames: [
-                                "一月", "二月", "三月", "四月", "五月", "六月",
-                                "七月", "八月", "九月", "十月", "十一月", "十二月"
-                            ],
-                            firstDay: 1
-                        },
-                        minDate: today,
-                        singleDatePicker: true,
-                        drops: 'up',
-                        timePicker: true,
-                        showDropdowns: true,
-                        timePicker24Hour: true,
-                        minYear: today.getFullYear(),
-                        autoUpdateInput: true,
-                        maxYear: parseInt(moment().format('YYYY'), 10)
-                    });
-                }
-            )
-        }
-    );
+    initTimer();
     $('#message-content').find(':input').css('background-color', 'beige');
     // 初始化html5编辑器
     // initEditor();
@@ -505,8 +460,6 @@ function message(action) {
             uri = $id.val() !== '' ? 'update/' + $id.val() : 'store';
             requestType = $id.val() !== '' ? 'PUT' : 'POST';
             icon = page.success;
-            break;
-        case 'schedule':
             break;
         default:
             break;
@@ -541,6 +494,8 @@ function data(preview = false) {
         $container = $('#content_' + type),
         messageId = $('#id').val(),
         content = null, formData,
+        $timer = $('#timing'),
+        $time = $('#time'),
         mediaId, path, uploadTypes = ['image', 'audio', 'video', 'file'];
 
     formData = {
@@ -551,8 +506,6 @@ function data(preview = false) {
         message_type_id: $messageTypeId.val(),
     };
     if (preview) { $.extend(formData, { preview: 1 }); }
-    if (messageId !== '') { $.extend(formData, { id: messageId }); }
-
     if ($.inArray(type, uploadTypes) > -1) {
         mediaId = $container.find('.media_id').val();
         path = $container.find('.media_id').attr('data-path');
@@ -622,6 +575,12 @@ function data(preview = false) {
         default:
             break;
     }
+    if ($timer.is(':visible')) {
+        $.extend(formData, $time.val());
+    }
+    if (messageId !== '') {
+        $.extend(formData, { id: messageId });
+    }
 
     return $.extend(formData, content);
 }
@@ -629,6 +588,60 @@ function data(preview = false) {
 function initUpload() {
     $(document).off('change', '.file-upload').on('change', '.file-upload', function () {
         if ($(this).val() !== '') { upload($(this)); }
+    });
+}
+function initTimer() {
+    page.loadCss(plugins.daterangepicker.css);
+    $.getScript(
+        page.siteRoot() + plugins.daterangepicker.moment,
+        function () {
+            $.getScript(
+                page.siteRoot() + plugins.daterangepicker.js,
+                function () {
+                    var today = new Date();
+
+                    $('#time').daterangepicker({
+                        locale: {
+                            format: "YYYY-MM-DD hh:mm",
+                            applyLabel: "确定",
+                            cancelLabel: "取消",
+                            weekLabel: "W",
+                            daysOfWeek: ["日", "一", "二", "三", "四", "五", "六"],
+                            monthNames: [
+                                "一月", "二月", "三月", "四月", "五月", "六月",
+                                "七月", "八月", "九月", "十月", "十一月", "十二月"
+                            ],
+                            firstDay: 1
+                        },
+                        minDate: today,
+                        singleDatePicker: true,
+                        drops: 'up',
+                        timePicker: true,
+                        showDropdowns: true,
+                        timePicker24Hour: true,
+                        minYear: today.getFullYear(),
+                        autoUpdateInput: true,
+                        maxYear: parseInt(moment().format('YYYY'), 10)
+                    });
+                }
+            )
+        }
+    );
+}
+function initSelect2() {
+    // 初始化应用select2控件
+    page.initSelect2([{
+        option: {
+            templateResult: page.formatStateImg,
+            templateSelection: page.formatStateImg
+        },
+        id: 'app_ids'
+    }]);
+    // 初始化消息类型select2控件
+    $.getMultiScripts([plugins.select2.js]).done(function () {
+        $.getMultiScripts([plugins.select2.jscn]).done(function () {
+            $messageTypeId.select2();
+        });
     });
 }
 function upload($file) {

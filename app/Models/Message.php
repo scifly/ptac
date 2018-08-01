@@ -355,6 +355,8 @@ class Message extends Model {
                 );
             }
         }
+        $timing = $this->find($id)->event_id ? true : false;
+        $time = $timing ? date('Y-m-d H:i', strtotime($this->find($id)->event->start)) : null;
         
         return [
             'selectedTargetIds' => $targetIds,
@@ -362,6 +364,8 @@ class Message extends Model {
             'messageTypeId'     => $this->find($id)->message_type_id,
             'messageFormat'     => $content['type'],
             'message'           => $message,
+            'timing'            => $timing,
+            'time'              => $time
         ];
         
     }

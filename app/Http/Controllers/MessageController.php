@@ -64,6 +64,7 @@ class MessageController extends Controller {
      *
      * @param MessageRequest $request
      * @return JsonResponse|string
+     * @throws Throwable
      */
     public function store(MessageRequest $request) {
         
