@@ -461,8 +461,8 @@ function init() {
                         locale: {
                             format: "YYYY-MM-DD hh:mm",
                             separator: " 至 ",
-                            applyLabel: "确定",
-                            cancelLabel: "取消",
+                            // applyLabel: "确定",
+                            // cancelLabel: "取消",
                             fromLabel: "从",
                             weekLabel: "W",
                             daysOfWeek: ["日", "一", "二", "三", "四", "五", "六"],
