@@ -451,7 +451,7 @@ class Message extends Model {
                     } else {
                         $user = Auth::user();
                         $time = $data['time'];
-                        $draft = $data['draft'];
+                        $draft = $data['draft'] ?? null;
                         $event = Event::create([
                             'title' => '定时消息',
                             'remark' => '定时消息',
