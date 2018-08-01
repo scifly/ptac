@@ -454,11 +454,15 @@ function init() {
             $.getScript(
                 page.siteRoot() + plugins.daterangepicker.js,
                 function () {
+                    var today = new Date();
+
                     $('#time').daterangepicker({
+                        locale: page.dateRangeLocale(),
                         singleDatePicker: true,
+                        timePicker: true,
                         showDropdowns: true,
-                        minYear: 1901,
-                        maxYear: parseInt(moment().format('YYYY'),10)
+                        minYear: today.getFullYear(),
+                        maxYear: parseInt(moment().format('YYYY'), 10)
                     }, function(start, end, label) {
                         var years = moment().diff(start, 'years');
                         alert("You are " + years + " years old!");
