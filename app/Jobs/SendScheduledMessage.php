@@ -112,34 +112,31 @@ class SendScheduledMessage implements ShouldQueue {
                 } else {
                     
                     # 需要发送短信的用户
-                    if ($targets[0]->isNotEmpty()) {
-                        $users = $targets[0];
-                        $mobiles = Mobile::whereIn('user_id', $users->pluck('id')->toArray())
-                            ->where(['isdefault' => 1, 'enabled' => 1])->pluck('mobile')->toArray();
-                        $data['type'] = 'sms';
-                        $data['app_id'] = 0;
-                        $data['sms'] = 'url_to_wechat_message'; # todo:
-                        $this->sendSms($users, $mobiles, $content, $msgContent, $data);
-                    }
+                    $users = $targets[0];
+                    $mobiles = Mobile::whereIn('user_id', $users->pluck('id')->toArray())
+                        ->where(['isdefault' => 1, 'enabled' => 1])->pluck('mobile')->toArray();
+                    $data['type'] = 'sms';
+                    $data['app_id'] = 0;
+                    $data['sms'] = 'url_to_wechat_message'; # todo:
+                    $this->sendSms($users, $mobiles, $content, $msgContent, $data);
+
                     # 需要发送微信的用户
-                    if ($targets[1]->isNotEmpty()) {
-                        $users = $targets[1];
-                        $app = App::whereName('消息中心')
-                            ->where('corp_id', School::find($this->school_id($users->first()))->corp_id)
-                            ->first();
-                        $data['app_id'] = $app->id;
-                        $content = array_merge($content, ['agentid' => $app->agentid]);
-                        $userids = $users->pluck('userid')->toArray();
-                        $data['sent'] = $this->sendMessage(
-                            $app->corp, $app->toArray(), array_merge($content, [
-                                'touser' => implode('|', $userids)
-                            ])
-                        );
-                        $data['content'] = json_encode(
-                            array_merge($content, ['touser' => $msgContent->{'touser'}])
-                        );
-                        $message->log($this->logUsers($users), $data);
-                    }
+                    $users = $targets[1];
+                    $app = App::whereName('消息中心')
+                        ->where('corp_id', School::find($this->school_id($users->first()))->corp_id)
+                        ->first();
+                    $data['app_id'] = $app->id;
+                    $content = array_merge($content, ['agentid' => $app->agentid]);
+                    $userids = $users->pluck('userid')->toArray();
+                    $data['sent'] = $this->sendMessage(
+                        $app->corp, $app->toArray(), array_merge($content, [
+                            'touser' => implode('|', $userids)
+                        ])
+                    );
+                    $data['content'] = json_encode(
+                        array_merge($content, ['touser' => $msgContent->{'touser'}])
+                    );
+                    $message->log($this->logUsers($users), $data);
                 }
             });
         } catch (Exception $e) {
