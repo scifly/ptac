@@ -237,12 +237,12 @@
                         ])
                         <!-- 定时发送 -->
                         <div class="form-group" id="timing" style="display: none;">
-                            {!! Form::label('time', '', [
+                            {!! Form::label('time', null, [
                                 'class' => 'col-sm-3 control-label'
                             ]) !!}
                             <div class="col-sm-6">
                                 <div class="input-group">
-                                    @include('partials.icon_addon', ['class' => 'fa-clock-o text-blue'])
+                                    @include('partials.icon_addon', ['class' => 'fa-clock-o'])
                                     {!! Form::text('time', null, [
                                         'id' => 'time',
                                         'class' => 'form-control'
