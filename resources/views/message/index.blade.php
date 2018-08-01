@@ -75,7 +75,6 @@
                                 'class' => 'col-sm-3 control-label'
                             ]) !!}
                             <div class="col-sm-6">
-                                <div class="nav-tabs-custom">
                                     <ul class="nav nav-tabs" id="message-format">
                                         <li class="active">
                                             <a href="#content_text" data-toggle="tab" class="tab">
@@ -226,7 +225,6 @@
                                             <p id="sms-length" class="help-block"></p>
                                         </div>
                                     </div>
-                                </div>
                             </div>
                         </div>
                         @include('partials.enabled', [
@@ -237,9 +235,6 @@
                         ])
                         <!-- 定时发送 -->
                         <div class="form-group" id="timing" style="display: none;">
-                            {{--{!! Form::label('time', null, [--}}
-                                {{--'class' => 'col-sm-3 control-label'--}}
-                            {{--]) !!}--}}
                             <div class="col-sm-3"></div>
                             <div class="col-sm-6">
                                 <div class="input-group">
