@@ -94,40 +94,35 @@ class SendMessage implements ShouldQueue {
             );
         } else {
             # step 1: 向未关注用户（监护人、教职员工）发送短信
-            if ($targets[0]->isNotEmpty()) {
-                $users = $targets[0];
-                $mobiles = Mobile::whereIn('user_id', $users->pluck('id')->toArray())
-                    ->where(['isdefault' => 1, 'enabled' => 1])->pluck('mobile')->toArray();
-                $this->data['type'] = 'sms';
-                $this->data['sms'] = 'url_to_wechat_message'; # todo: 生成微信消息详情url
-                $this->sendSms(
-                    $content, $mobiles, $touser, $this->logUsers($users), $response
-                );
-            }
+            $users = $targets[0];
+            $mobiles = Mobile::whereIn('user_id', $users->pluck('id')->toArray())
+                ->where(['isdefault' => 1, 'enabled' => 1])->pluck('mobile')->toArray();
+            $this->data['type'] = 'sms';
+            $this->data['sms'] = 'url_to_wechat_message'; # todo: 生成微信消息详情url
+            $this->sendSms(
+                $content, $mobiles, $touser, $this->logUsers($users), $response
+            );
+
             # step 2: 向已关注的用户（监护人、教职员工）发送微信
-            if ($targets[1]->isNotEmpty()) {
-                # 发送微信消息 & 创建用户消息发送日志
-                $results = [];
-                $users = $targets[1];
-                foreach ($this->apps as $app) {
-                    $content = array_merge($content, ['agentid' => $app['agentid']]);
-                    # 实际接收微信消息的用户（监护人、教职员工）列表
-                    $userids = $users->pluck('userid')->toArray();
-                    $this->data['sent'] = $results[$app['id']] = $this->sendMessage(
-                        $this->corp, $app, array_merge($content, [
-                            'touser' => implode('|', $userids)
-                        ])
-                    );
-                    $this->data['content'] = json_encode(
-                        array_merge($content, ['touser' => $touser])
-                    );
-                    $this->data['app_id'] = $app['id'];
-                    $message->log($this->logUsers($users), $this->data);
-                }
-    
-                # 创建广播消息
-                $this->wxResponse($results, $users->count(),$response);
+            $results = [];
+            $users = $targets[1];
+            foreach ($this->apps as $app) {
+                $content = array_merge($content, ['agentid' => $app['agentid']]);
+                # 实际接收微信消息的用户（监护人、教职员工）列表
+                $userids = $users->pluck('userid')->toArray();
+                $this->data['sent'] = $results[$app['id']] = $this->sendMessage(
+                    $this->corp, $app, array_merge($content, [
+                        'touser' => implode('|', $userids)
+                    ])
+                );
+                $this->data['content'] = json_encode(
+                    array_merge($content, ['touser' => $touser])
+                );
+                $this->data['app_id'] = $app['id'];
+                $message->log($this->logUsers($users), $this->data);
             }
+            # 创建广播消息
+            $this->wxResponse($results, $users->count(),$response);
         }
         # 发送广播消息
         if ($this->userId) {

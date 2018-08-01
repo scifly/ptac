@@ -110,7 +110,6 @@ class SendScheduledMessage implements ShouldQueue {
                 if ($msgType == 'sms') {
                     $this->sendSms($users, $mobiles, $content, $msgContent, $data);
                 } else {
-                    
                     # 需要发送短信的用户
                     $users = $targets[0];
                     $mobiles = Mobile::whereIn('user_id', $users->pluck('id')->toArray())
