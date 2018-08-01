@@ -33,43 +33,43 @@
                         <i class="fa fa-refresh fa-spin"></i>
                     </div>
                     <div class="form-horizontal form-main" id="message">
-                    {!! Form::open([
-                        'method' => 'post',
-                        'id' => 'formMessage',
-                        'data-parsley-validate' => 'true'
-                    ]) !!}
-                    <!-- 选择应用 -->
-                    @include('partials.single_select', [
-                        'label' => '应用',
-                        'id' => 'app_ids',
-                        'icon' => 'fa fa-weixin text-green',
-                        'items' => $apps,
-                    ])
-                    {!! Form::hidden('id', null, ['id' => 'id']) !!}
-                    <!-- 发送对象 -->
-                    <div class="form-group">
-                        {!! Form::label('targets', '发送对象', [
-                            'class' => 'col-sm-3 control-label'
+                        {!! Form::open([
+                            'method' => 'post',
+                            'id' => 'formMessage',
+                            'data-parsley-validate' => 'true'
                         ]) !!}
-                        <div class="col-sm-6">
-                            <div id="checked-nodes"></div>
-                            {!! Form::hidden('selected-node-ids', null, [
-                                'id' => 'selected-node-ids',
+                        <!-- 选择应用 -->
+                        @include('partials.single_select', [
+                            'label' => '应用',
+                            'id' => 'app_ids',
+                            'icon' => 'fa fa-weixin text-green',
+                            'items' => $apps,
+                        ])
+                        {!! Form::hidden('id', null, ['id' => 'id']) !!}
+                        <!-- 发送对象 -->
+                        <div class="form-group">
+                            {!! Form::label('targets', '发送对象', [
+                                'class' => 'col-sm-3 control-label'
                             ]) !!}
-                            {!! Form::button('<i class="fa fa-user-plus text-blue">&nbsp;选择</i>', [
-                                'id' => 'choose',
-                                'class' => 'btn btn-box-tool',
-                                'style' => 'margin-top: 3px;'
-                            ]) !!}
+                            <div class="col-sm-6">
+                                <div id="checked-nodes"></div>
+                                {!! Form::hidden('selected-node-ids', null, [
+                                    'id' => 'selected-node-ids',
+                                ]) !!}
+                                {!! Form::button('<i class="fa fa-user-plus text-blue">&nbsp;选择</i>', [
+                                    'id' => 'choose',
+                                    'class' => 'btn btn-box-tool',
+                                    'style' => 'margin-top: 3px;'
+                                ]) !!}
+                            </div>
                         </div>
-                    </div>
-                    <!-- 消息类型 -->
-                    @include('partials.single_select', [
-                        'label' => '消息类型',
-                        'id' => 'message_type_id',
-                        'items' => $messageTypes
-                    ])
-                    <!-- 消息内容 -->
+                        <!-- 消息类型 -->
+                        @include('partials.single_select', [
+                            'label' => '消息类型',
+                            'id' => 'message_type_id',
+                            'items' => $messageTypes
+                        ])
+                        <!-- 消息内容 -->
                         <div class="form-group">
                             {!! Form::label('content', '消息内容', [
                                 'class' => 'col-sm-3 control-label'
@@ -226,6 +226,21 @@
                                             <p id="sms-length" class="help-block"></p>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 定时发送 -->
+                        <div class="form-group" id="timing" style="display: none;">
+                            {!! Form::label('content', '发送时间', [
+                                'class' => 'col-sm-3 control-label'
+                            ]) !!}
+                            <div class="col-sm-6">
+                                <div class="input-group">
+                                    @include('partials.icon_addon', ['class' => 'fa-clock text-blue'])
+                                    {!! Form::text('time', null, [
+                                        'id' => 'time',
+                                        'class' => 'form-control'
+                                    ]) !!}
                                 </div>
                             </div>
                         </div>

@@ -1,7 +1,7 @@
 page.create('formMessage', 'messages');
 
-var $pre = $('.preview');
-var $uploadFile = $('#uploadFile');
+var $pre = $('.preview'),
+    $uploadFile = $('#uploadFile');
 // 初始化
 $uploadFile.fileinput({
     language: 'zh',

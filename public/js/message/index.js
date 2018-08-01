@@ -1,5 +1,4 @@
 //# sourceURL=index.js
-// noinspection JSUnusedGlobalSymbols
 var $batchBtns = $('.box-tools'),
     $tabSend = $('a[href="#tab01"]'),
     $tabSent = $('a[href="#tab02"]'),
@@ -229,6 +228,7 @@ $preview.on('click', function () {
     $targetIds.removeAttr('required');
     return message('preview');
 });
+$schedule.on('click', function () { $('#timing').toggle(); });
 $draft.on('click', function () {
     return message('draft');
 });
