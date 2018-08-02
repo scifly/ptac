@@ -1052,31 +1052,6 @@ class Message extends Model {
         
     }
     
-    /** Helper functions -------------------------------------------------------------------------------------------- */
-    /**
-     * 获取指定发送对象（监护人、教职员工）对应的
-     * 需要记录消息发送日志的用户列表
-     *
-     * @param $targets
-     * @param $allLogUserIds
-     * @return User[]|Collection|\Illuminate\Support\Collection
-     */
-    private function logUsers($targets, $allLogUserIds) {
-        
-        $logUserIds = [];
-        foreach ($targets as $user) {
-            if ($user->custodian) {
-                $studentUserIds = $user->custodian->students->pluck('user_id')->toArray();
-                $logUserIds[] = array_intersect($studentUserIds, $allLogUserIds)[0];
-            } else {
-                $logUserIds[] = $user->id;
-            }
-        }
-        
-        return User::whereIn('id', $logUserIds)->get();
-        
-    }
-    
     /**
      * 获取指定用户（学生、教职员工）及部门对应的消息发送对象用户（监护人、教职员工）列表
      *
@@ -1103,6 +1078,31 @@ class Message extends Model {
         }
         
         return [$targets, $logUsers];
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+    /**
+     * 获取指定发送对象（监护人、教职员工）对应的
+     * 需要记录消息发送日志的用户列表
+     *
+     * @param $targets
+     * @param $allLogUserIds
+     * @return User[]|Collection|\Illuminate\Support\Collection
+     */
+    private function logUsers($targets, $allLogUserIds) {
+        
+        $logUserIds = [];
+        foreach ($targets as $user) {
+            if ($user->custodian) {
+                $studentUserIds = $user->custodian->students->pluck('user_id')->toArray();
+                $logUserIds[] = array_intersect($studentUserIds, $allLogUserIds)[0];
+            } else {
+                $logUserIds[] = $user->id;
+            }
+        }
+        
+        return User::whereIn('id', $logUserIds)->get();
         
     }
     

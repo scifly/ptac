@@ -9,7 +9,6 @@ use App\Models\App;
 use App\Models\Corp;
 use App\Models\Message;
 use App\Models\MessageType;
-use App\Models\Mobile;
 use App\Models\User;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -81,7 +80,7 @@ class SendMessage implements ShouldQueue {
                     $msgType => $this->data[$msgType]
                 ];
                 if ($msgType == 'sms') {
-                    list($logUsers, $mobiles) = $message->smsTargets($touser, $toparty);
+                    list($logUsers, $mobiles) = $message->smsTargets($this->data['user_ids'], $toparty);
                     $this->data['msl_id'] = $this->mslId(count($mobiles));
                     $this->sendSms(
                         $content, $mobiles, $touser, $logUsers,$response
@@ -97,7 +96,7 @@ class SendMessage implements ShouldQueue {
                      * @var Collection|User[] $realTargetUsers
                      */
                     list($smsMobiles, $smsLogUsers, $wxTargets, $wxLogUsers, $realTargetUsers) = $message->wxTargets(
-                        $touser, $toparty
+                        $this->data['user_ids'], $toparty
                     );
                     $this->data['msl_id'] = $this->mslId($smsLogUsers->count() + $wxLogUsers->count());
         
