@@ -300,7 +300,7 @@ class Message extends Model {
                         'alertable' => 0,
                         'alert_mins' => 0,
                         'user_id' => $user->id,
-                        'enabled' => isset($draft) ? 1 : 0
+                        'enabled' => isset($draft) ? 1 : 0,
                     ]);
                     $message->update(['event_id' => $event->id]);
                 }
@@ -365,7 +365,7 @@ class Message extends Model {
             'messageFormat'     => $content['type'],
             'message'           => $message,
             'timing'            => $timing,
-            'time'              => $time
+            'time'              => $time,
         ];
         
     }
@@ -448,7 +448,7 @@ class Message extends Model {
                         Event::find($message->event_id)->update([
                             'start' => $data['time'],
                             'end' => $data['time'],
-                            'enabled' => isset($data['draft']) ? 1 : 0
+                            'enabled' => isset($data['draft']) ? 1 : 0,
                         ]);
                     } else {
                         # 如果指定消息没有对应事件，则创建对应事件
@@ -470,7 +470,7 @@ class Message extends Model {
                             'alertable' => 0,
                             'alert_mins' => 0,
                             'user_id' => $user->id,
-                            'enabled' => isset($draft) ? 1 : 0
+                            'enabled' => isset($draft) ? 1 : 0,
                         ]);
                         $data['event_id'] = $event->id;
                     }
@@ -714,7 +714,7 @@ class Message extends Model {
                         $data['sent']['invaliduser'], $data['sent']['invalidparty']
                     );
                 }
-                /**  创建原始消息 */
+                /** 创建原始消息 */
                 $data['sent'] = sizeof($failedUserIds) == sizeof($users) ? 0 : 1;
                 $message = $this->create($data);
                 /** 创建指定用户($users)收到的消息(应用内消息） */
@@ -723,7 +723,14 @@ class Message extends Model {
                     # 设置相关消息id
                     $data['message_id'] = $message->id;
                     if ($commType === '微信') {
-                        $data['sent'] = !in_array($user->id, $failedUserIds);
+                        if (!$user->student) {
+                            $data['sent'] = !in_array($user->id, $failedUserIds);
+                        } else {
+                            $custodianUserIds = $user->student->custodians->pluck('user_id')->toArray();
+                            $data['sent'] = empty(
+                                array_intersect($custodianUserIds, $failedUserIds)
+                            );
+                        }
                     }
                     $this->create($data);
                 }
@@ -737,7 +744,7 @@ class Message extends Model {
     }
     
     /**
-     * 获取发送失败的接收者用户id
+     * 获取未收到微信消息会员(监护人、教职员工）的用户id
      *
      * @param $userids
      * @param $deptIds
@@ -745,65 +752,82 @@ class Message extends Model {
      */
     function failedUserIds($userids, $deptIds) {
         
-        $userIds = User::whereIn('userid', explode('|', $userids))->pluck('id')->toArray();
-        $deptIds = explode('|', $deptIds);
-        # todo: 需将消息发送失败者（监护人）对应的学生用户id找出来
-        list($failedUsers) = $this->targets($userIds, $deptIds);
+        $userIds = User::whereIn('userid', explode('|', $userids))
+            ->pluck('id')->toArray();
+        $departmentUserIds = DepartmentUser::whereIn('department_id', explode('|', $deptIds))
+            ->pluck('user_id')->toArray();
         
-        return $failedUsers->pluck('id')->toArray();
+        return array_unique(array_merge($userIds, $departmentUserIds));
         
     }
     
     /**
-     * 返回指定学生、教职员工及部门对应的消息发送对象（监护人、教职员工）
+     * 返回指定用户(学生、教职员工)及部门对应的：
      *
-     * @param $userIds
-     * @param $deptIds
+     * @param array $userIds - 学生及教职员工用户id列表
+     * @param array $deptIds - 包含学生及教职员工的部门id列表
+     *
      * @return array
+     *      1. 需要发送短信的用户（监护人、教职员工）手机号码列表；
+     *      2. 需要记录短信发送日志的用户列表。
      */
-    function targets($userIds = [], $deptIds = []) {
+    function smsTargets($userIds = [], $deptIds = []) {
         
-        # 需发送微信（或短信）消息的用户（监护人、教职员工）
-        $targets = $this->realTargets(User::whereIn('id', $userIds)->get())->groupBy('subscribed');
-        $targets = $targets->isNotEmpty() ? $targets : array_fill(0, 2, Collect([]));
-        # $users - 需记录消息发送日志的的用户（学生、教职员工）
-        $users = User::whereIn(
-            'id', array_unique(
-            array_merge(DepartmentUser::whereIn('department_id', $deptIds)->pluck('user_id')->toArray(), $userIds)
-        ))->get();
-        # $mobiles - 需发送短信消息的用户（监护人、教职员工）手机号码
-        $mobiles = Mobile::whereIn('user_id', $this->realTargets($users)->pluck('id')->toArray())
-            ->where(['enabled' => 1, 'isdefault' => 1])->pluck('mobile')->toArray();
+        list($realTargetUsers, $logUsers) = $this->realTargets($userIds, $deptIds);
+        $mobiles = Mobile::whereIn('user_id', $realTargetUsers->pluck('id')->toArray())
+            ->where(['enabled' => 1, 'isdefault' => 1])
+            ->pluck('mobile')->toArray();
         
-        return [$users, $targets, $mobiles];
+        return [$mobiles, $logUsers];
         
     }
     
     /**
-     * 返回指定学生和教职员工对应的发送对象（监护人、教职员工）
+     * 返回指定用户（学生、教职员工）及部门对应的:
      *
-     * @param $users - 需记录消息发送日志的用户（学生、教职员工）
-     * @return Collection
+     * @param $userIds - 学生及教职员工用户id列表
+     * @param $deptIds - 学生
+     *
+     * @return array
+     *      1. 需要发送短信的用户（监护人、教职员工）手机号码列表；
+     *      2. 需要记录短信发送日志的用户（学生、教职员工）列表；
+     *      3. 需要发送微信的用户（监护人、教职员工，不含隶属于指定部门的用户）列表；
+     *      4. 需要记录微信发送日志的用户（监护人、教职员工，包含隶属于指定部门的用户）列表
      */
-    private function realTargets(Collection $users) {
+    function wxTargets($userIds = [], $deptIds = []) {
+    
+        /**
+         * @var Collection|User[] $realTargetUsers - 实际接收消息的用户(
+         * @var Collection|User[] $realTargets
+         */
+        list($realTargetUsers, $logUsers) = $this->realTargets($userIds, $deptIds);
+        $realTargets = $realTargetUsers->groupBy('subscribed');
+        $wxTargets = $smsTargets = $smsLogUsers = $wxLogUsers = Collect([]);
+        $logUserIds = $logUsers->pluck('id')->toArray();
         
-        $targets = Collect([]);
-        foreach ($users as $user) {
-            if ($user->student) {
-                $user->student->custodians->each(
-                    function (Custodian $custodian) use (&$targets) {
-                        $targets->push($custodian->user);
-                    }
-                );
+        if ($realTargets->count() < 2) {
+            if ($realTargets->toArray()[0][0]['subscribed']) {
+                # 如果发送对象仅包含已关注的用户
+                $wxTargets = $realTargets[1];
             } else {
-                $targets->push($user);
+                # 如果发送对象仅包含未关注的用户
+                $smsTargets = $realTargets[0];
             }
+        } else {
+            list($smsTargets, $wxTargets) = $realTargets;
         }
-        
-        return $targets;
+        $smsMobiles = Mobile::whereIn('user_id', $smsTargets->pluck('id')->toArray())
+            ->where(['enabled' => 1, 'isdefault' => 1])->pluck('mobile')->toArray();
+        list($smsLogUsers, $wxLogUsers) = array_map(
+            function ($targets, $userIds) { return $this->logUsers($targets, $userIds); },
+            [$smsTargets, $wxTargets], [$logUserIds, $logUserIds]
+        );
+    
+        return [$smsMobiles, $smsLogUsers, $wxTargets, $wxLogUsers, $realTargetUsers];
         
     }
-    
+
+    /** 微信端 ------------------------------------------------------------------------------------------------------- */
     /**
      * 微信端消息中心首页
      *
@@ -829,6 +853,256 @@ class Message extends Model {
         }
         
         return $response;
+        
+    }
+    
+    /**
+     * 微信端创建消息
+     *
+     * @return Factory|JsonResponse|View|string
+     * @throws Throwable
+     */
+    function wCreate() {
+        
+        if (Request::method() == 'POST') {
+            return Request::has('file')
+                ? $this->upload()
+                : $this->search();
+        }
+        
+        return view('wechat.message_center.create');
+        
+    }
+    
+    /**
+     * 上传媒体文件
+     *
+     * @return JsonResponse
+     * @throws Exception
+     */
+    function upload() {
+        
+        # 上传到本地后台
+        $media = new Media();
+        $file = Request::file('file');
+        $type = Request::input('type');
+        abort_if(
+            empty($file),
+            HttpStatusCode::NOT_ACCEPTABLE,
+            __('messages.empty_file')
+        );
+        $uploadedFile = $media->upload($file, __('messages.message.title'));
+        abort_if(
+            !$uploadedFile,
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            __('messages.file_upload_failed')
+        );
+        # 上传到企业号后台
+        list($corpid, $secret) = $this->tokenParams();
+        $token = Wechat::getAccessToken($corpid, $secret);
+        if ($token['errcode']) {
+            abort(
+                HttpStatusCode::INTERNAL_SERVER_ERROR,
+                $token['errmsg']
+            );
+        }
+        $result = json_decode(
+            Wechat::uploadMedia(
+                $token['access_token'],
+                $type,
+                [
+                    'file-contents' => curl_file_create(public_path($uploadedFile['path'])),
+                    'filename'      => $uploadedFile['filename'],
+                    'content-type'  => Constant::CONTENT_TYPE[$type],
+                    'filelength'    => $file->getSize(),
+                ]
+            )
+        );
+        abort_if(
+            $result->{'errcode'},
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            Constant::WXERR[$result->{'errcode'}]
+        );
+        $uploadedFile['media_id'] = $result->{'media_id'};
+        
+        return response()->json([
+            'message' => __('messages.message.uploaded'),
+            'data'    => $uploadedFile,
+        ]);
+        
+    }
+    
+    /**
+     * @param $id
+     * @return Factory|JsonResponse|View|string
+     * @throws Throwable
+     */
+    function wEdit($id) {
+        
+        $message = $this->find($id);
+        abort_if(
+            !$message,
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
+        if (Request::method() == 'POST') {
+            return Request::has('file')
+                ? $this->upload()
+                : $this->search();
+        }
+        
+        return view('wechat.message_center.edit', [
+            'message' => $message,
+        ]);
+        
+    }
+
+    /**
+     * 微信端消息详情
+     *
+     * @param $id
+     * @return Factory|JsonResponse|View|string
+     * @throws Throwable
+     */
+    function wShow($id) {
+        
+        $response = response()->json([
+            'message' => __('messages.ok'),
+        ]);
+        switch (Request::method()) {
+            case 'GET':
+                $message = $this->find($id);
+                abort_if(
+                    !$message,
+                    HttpStatusCode::NOT_FOUND,
+                    __('messages.message.not_found')
+                );
+                $response = view('wechat.message_center.show', [
+                    'message' => $message,
+                ]);
+                break;
+            case 'POST':
+                if (Request::has('content')) {
+                    # 保存消息回复
+                    Request::merge(['user_id' => Auth::id()]);
+                    $replied = (new MessageReply)->store(Request::all());
+                    abort_if(
+                        !$replied,
+                        HttpStatusCode::BAD_REQUEST,
+                        __('messages.fail')
+                    );
+                } else {
+                    # 获取指定消息的所有回复
+                    $response = view('wechat.message_center.replies', [
+                        'replies' => $this->replies(
+                            Request::input('id'),
+                            Request::input('msl_id')
+                        ),
+                    ])->render();
+                }
+                break;
+            case 'DELETE':
+                $mr = MessageReply::find(Request::input('id'));
+                abort_if(
+                    !$mr, HttpStatusCode::NOT_FOUND,
+                    __('messages.not_found')
+                );
+                $deleted = $mr->delete();
+                abort_if(
+                    !$deleted,
+                    HttpStatusCode::BAD_REQUEST,
+                    __('messages.del_fail')
+                );
+                break;
+            default:
+                break;
+        }
+        
+        return $response;
+        
+    }
+    
+    /**
+     * 获取指定消息的回复列表
+     *
+     * @param $id
+     * @param $mslId
+     * @return array
+     */
+    function replies($id, $mslId) {
+        
+        $user = Auth::user();
+        $message = $this->find($id);
+        $replies = MessageReply::whereMslId($mslId)->get();
+        if ($user->id != $message->s_user_id) {
+            $replies = MessageReply::whereMslId($mslId)->where('user_id', $user->id)->get();
+        }
+        $replyList = [];
+        foreach ($replies as $reply) {
+            $replyList[] = [
+                'id'         => $reply->id,
+                'content'    => $reply->content,
+                'replied_at' => $this->humanDate($reply->created_at),
+                'realname'   => $reply->user->realname,
+                'avatar_url' => $reply->user->avatar_url,
+            ];
+        }
+        
+        return $replyList;
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+    /**
+     * 获取指定发送对象（监护人、教职员工）对应的
+     * 需要记录消息发送日志的用户列表
+     *
+     * @param $targets
+     * @param $allLogUserIds
+     * @return User[]|Collection|\Illuminate\Support\Collection
+     */
+    private function logUsers($targets, $allLogUserIds) {
+        
+        $logUserIds = [];
+        foreach ($targets as $user) {
+            if ($user->custodian) {
+                $studentUserIds = $user->custodian->students->pluck('user_id')->toArray();
+                $logUserIds[] = array_intersect($studentUserIds, $allLogUserIds)[0];
+            } else {
+                $logUserIds[] = $user->id;
+            }
+        }
+        
+        return User::whereIn('id', $logUserIds)->get();
+        
+    }
+    
+    /**
+     * 获取指定用户（学生、教职员工）及部门对应的消息发送对象用户（监护人、教职员工）列表
+     *
+     * @param array $userIds - 学生、教职员工的用户id列表
+     * @param array $deptIds - 部门id列表
+     * @return array
+     */
+    function realTargets(array $userIds, array $deptIds) {
+        
+        $departmentUserIds = DepartmentUser::whereIn('department_id', $deptIds)->pluck('user_id')->toArray();
+        $logUserIds = array_unique(array_merge($userIds, $departmentUserIds));
+        $logUsers = User::whereIn('id', $logUserIds)->get();
+        $targets = Collect([]);
+        foreach ($logUsers as $user) {
+            if ($user->student) {
+                $user->student->custodians->each(
+                    function (Custodian $custodian) use (&$targets) {
+                        $targets->push($custodian->user);
+                    }
+                );
+            } else {
+                $targets->push($user);
+            }
+        }
+        
+        return [$targets, $logUsers];
         
     }
     
@@ -945,204 +1219,6 @@ class Message extends Model {
             'selectedTargetIds' => $selectedTargetIds,
             'type'              => $type,
         ])->render();
-        
-    }
-    
-    /** Helper functions -------------------------------------------------------------------------------------------- */
-
-    /**
-     * 微信端创建消息
-     *
-     * @return Factory|JsonResponse|View|string
-     * @throws Throwable
-     */
-    function wCreate() {
-        
-        if (Request::method() == 'POST') {
-            return Request::has('file')
-                ? $this->upload()
-                : $this->search();
-        }
-        
-        return view('wechat.message_center.create');
-        
-    }
-    
-    /**
-     * 上传媒体文件
-     *
-     * @return JsonResponse
-     * @throws Exception
-     */
-    function upload() {
-        
-        # 上传到本地后台
-        $media = new Media();
-        $file = Request::file('file');
-        $type = Request::input('type');
-        abort_if(
-            empty($file),
-            HttpStatusCode::NOT_ACCEPTABLE,
-            __('messages.empty_file')
-        );
-        $uploadedFile = $media->upload($file, __('messages.message.title'));
-        abort_if(
-            !$uploadedFile,
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            __('messages.file_upload_failed')
-        );
-        # 上传到企业号后台
-        list($corpid, $secret) = $this->tokenParams();
-        $token = Wechat::getAccessToken($corpid, $secret);
-        if ($token['errcode']) {
-            abort(
-                HttpStatusCode::INTERNAL_SERVER_ERROR,
-                $token['errmsg']
-            );
-        }
-        $result = json_decode(
-            Wechat::uploadMedia(
-                $token['access_token'],
-                $type,
-                [
-                    'file-contents' => curl_file_create(public_path($uploadedFile['path'])),
-                    'filename'      => $uploadedFile['filename'],
-                    'content-type'  => Constant::CONTENT_TYPE[$type],
-                    'filelength'    => $file->getSize(),
-                ]
-            )
-        );
-        abort_if(
-            $result->{'errcode'},
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            Constant::WXERR[$result->{'errcode'}]
-        );
-        $uploadedFile['media_id'] = $result->{'media_id'};
-        
-        return response()->json([
-            'message' => __('messages.message.uploaded'),
-            'data'    => $uploadedFile,
-        ]);
-        
-    }
-    
-    /**
-     * @param $id
-     * @return Factory|JsonResponse|View|string
-     * @throws Throwable
-     */
-    function wEdit($id) {
-        
-        $message = $this->find($id);
-        abort_if(
-            !$message,
-            HttpStatusCode::NOT_FOUND,
-            __('messages.not_found')
-        );
-        if (Request::method() == 'POST') {
-            return Request::has('file')
-                ? $this->upload()
-                : $this->search();
-        }
-        
-        return view('wechat.message_center.edit', [
-            'message' => $message,
-        ]);
-        
-    }
-    
-    /**
-     * 微信端消息详情
-     *
-     * @param $id
-     * @return Factory|JsonResponse|View|string
-     * @throws Throwable
-     */
-    function wShow($id) {
-        
-        $response = response()->json([
-            'message' => __('messages.ok'),
-        ]);
-        switch (Request::method()) {
-            case 'GET':
-                $message = $this->find($id);
-                abort_if(
-                    !$message,
-                    HttpStatusCode::NOT_FOUND,
-                    __('messages.message.not_found')
-                );
-                $response = view('wechat.message_center.show', [
-                    'message' => $message,
-                ]);
-                break;
-            case 'POST':
-                if (Request::has('content')) {
-                    # 保存消息回复
-                    Request::merge(['user_id' => Auth::id()]);
-                    $replied = (new MessageReply)->store(Request::all());
-                    abort_if(
-                        !$replied,
-                        HttpStatusCode::BAD_REQUEST,
-                        __('messages.fail')
-                    );
-                } else {
-                    # 获取指定消息的所有回复
-                    $response = view('wechat.message_center.replies', [
-                        'replies' => $this->replies(
-                            Request::input('id'),
-                            Request::input('msl_id')
-                        ),
-                    ])->render();
-                }
-                break;
-            case 'DELETE':
-                $mr = MessageReply::find(Request::input('id'));
-                abort_if(
-                    !$mr, HttpStatusCode::NOT_FOUND,
-                    __('messages.not_found')
-                );
-                $deleted = $mr->delete();
-                abort_if(
-                    !$deleted,
-                    HttpStatusCode::BAD_REQUEST,
-                    __('messages.del_fail')
-                );
-                break;
-            default:
-                break;
-        }
-        
-        return $response;
-        
-    }
-    
-    /**
-     * 获取指定消息的回复列表
-     *
-     * @param $id
-     * @param $mslId
-     * @return array
-     */
-    function replies($id, $mslId) {
-        
-        $user = Auth::user();
-        $message = $this->find($id);
-        $replies = MessageReply::whereMslId($mslId)->get();
-        if ($user->id != $message->s_user_id) {
-            $replies = MessageReply::whereMslId($mslId)->where('user_id', $user->id)->get();
-        }
-        $replyList = [];
-        foreach ($replies as $reply) {
-            $replyList[] = [
-                'id'         => $reply->id,
-                'content'    => $reply->content,
-                'replied_at' => $this->humanDate($reply->created_at),
-                'realname'   => $reply->user->realname,
-                'avatar_url' => $reply->user->avatar_url,
-            ];
-        }
-        
-        return $replyList;
         
     }
     

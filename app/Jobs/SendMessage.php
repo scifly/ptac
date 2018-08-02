@@ -8,6 +8,7 @@ use App\Helpers\ModelTrait;
 use App\Models\App;
 use App\Models\Corp;
 use App\Models\Message;
+use App\Models\MessageType;
 use App\Models\Mobile;
 use App\Models\User;
 use Exception;
@@ -17,6 +18,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Throwable;
 
 /**
@@ -59,75 +61,96 @@ class SendMessage implements ShouldQueue {
      */
     public function handle() {
         
-        $message = new Message();
-        $response = [
-            'userId'     => $this->userId,
-            'title'      => __('messages.message.title'),
-            'statusCode' => HttpStatusCode::OK,
-            'message'    => '',
-        ];
-        /** @var Collection|User[] $users - 需要记录消息发送日志的用户（学生、教职员工） */
-        /** @var array $targets - 监护人、教职员工列表 */
-        /** @var array $mobiles - 监护人、教职员工手机号码列表 */
-        list($users, $targets, $mobiles) = $message->targets(
-            $this->data['user_ids'], $this->data['dept_ids']
-        );
-        $this->data['s_user_id'] = $this->userId ?? 0;
-        # 学校id
-        $this->schoolId = $this->school_id($users->first());
-        # 创建发送日志
-        $this->data['msl_id'] = $this->mslId(count($mobiles));
-        # 需记录消息发送日志的userid列表
-        $touser = implode(
-            '|', User::whereIn('id', $this->data['user_ids'])->pluck('userid')->toArray()
-        );
-        $msgType = $this->data['type'];
-        /** @var array $content - 消息内容 */
-        $content = [
-            'toparty' => implode('|', $this->data['dept_ids']),
-            'msgtype' => $msgType,
-            $msgType => $this->data[$msgType]
-        ];
-        if ($msgType == 'sms') {
-            $this->sendSms(
-                $content, $mobiles, $touser, $users,$response
-            );
-        } else {
-            # step 1: 向未关注用户（监护人、教职员工）发送短信
-            $users = $targets[0];
-            $mobiles = Mobile::whereIn('user_id', $users->pluck('id')->toArray())
-                ->where(['isdefault' => 1, 'enabled' => 1])->pluck('mobile')->toArray();
-            $this->data['type'] = 'sms';
-            $this->data['sms'] = 'url_to_wechat_message'; # todo: 生成微信消息详情url
-            $this->sendSms(
-                $content, $mobiles, $touser, $this->logUsers($users), $response
-            );
-
-            # step 2: 向已关注的用户（监护人、教职员工）发送微信
-            $results = [];
-            $users = $targets[1];
-            foreach ($this->apps as $app) {
-                $content = array_merge($content, ['agentid' => $app['agentid']]);
-                # 实际接收微信消息的用户（监护人、教职员工）列表
-                $userids = $users->pluck('userid')->toArray();
-                $this->data['sent'] = $results[$app['id']] = $this->sendMessage(
-                    $this->corp, $app, array_merge($content, [
-                        'touser' => implode('|', $userids)
-                    ])
-                );
-                $this->data['content'] = json_encode(
-                    array_merge($content, ['touser' => $touser])
-                );
-                $this->data['app_id'] = $app['id'];
-                $message->log($this->logUsers($users), $this->data);
-            }
-            # 创建广播消息
-            $this->wxResponse($results, $users->count(),$response);
+        try {
+            DB::transaction(function () {
+                $message = new Message;
+                $response = [
+                    'userId'     => $this->userId,
+                    'title'      => __('messages.message.title'),
+                    'statusCode' => HttpStatusCode::OK,
+                    'message'    => '',
+                ];
+                $touser = implode('|', User::whereIn('id', $this->data['user_ids'])->pluck('userid')->toArray());
+                $toparty = $this->data['dept_ids'];
+                $this->data['s_user_id'] = $this->userId ?? 0;
+                $msgType = $this->data['type'];
+                /** @var array $content - 消息内容 */
+                $content = [
+                    'toparty' => implode('|', $this->data['dept_ids']),
+                    'msgtype' => $msgType,
+                    $msgType => $this->data[$msgType]
+                ];
+                if ($msgType == 'sms') {
+                    list($logUsers, $mobiles) = $message->smsTargets($touser, $toparty);
+                    $this->data['msl_id'] = $this->mslId(count($mobiles));
+                    $this->sendSms(
+                        $content, $mobiles, $touser, $logUsers,$response
+                    );
+                    if ($this->userId) {
+                        event(new JobResponse($response));
+                    }
+                } else {
+                    /**
+                     * @var Collection|User[] $wxTargets
+                     * @var Collection|User[] $smsLogUsers
+                     * @var Collection|User[] $wxLogUsers
+                     * @var Collection|User[] $realTargetUsers
+                     */
+                    list($smsMobiles, $smsLogUsers, $wxTargets, $wxLogUsers, $realTargetUsers) = $message->wxTargets(
+                        $touser, $toparty
+                    );
+                    $this->data['msl_id'] = $this->mslId($smsLogUsers->count() + $wxLogUsers->count());
+        
+                    # step 1: 向已关注的用户（监护人、教职员工）发送微信
+                    if ($realTargetUsers->where('subscribed', 1)->count()) {
+                        $results = [];
+                        foreach ($this->apps as $app) {
+                            # 发送微信消息
+                            $content = array_merge($content, ['agentid' => $app['agentid']]);
+                            $this->data['sent'] = $results[$app['id']] = $this->sendMessage(
+                                $this->corp, $app,
+                                array_merge(
+                                    $content,
+                                    ['touser' => implode('|', $wxTargets->pluck('userid')->toArray())]
+                                )
+                            );
+                            # 创建消息发送日志
+                            $this->data['content'] = json_encode(array_merge($content, ['touser' => $touser]));
+                            $this->data['app_id'] = $app['id'];
+                            $message->log($wxLogUsers, $this->data);
+                        }
+                        # 创建并发送广播消息
+                        $this->wxResponse(
+                            $results, $realTargetUsers->count() - count($smsMobiles),$response
+                        );
+                        if ($this->userId) {
+                            event(new JobResponse($response));
+                        }
+                    }
+        
+                    # step 2: 向未关注用户（监护人、教职员工）发送短信
+                    if (!empty($smsMobiles)) {
+                        $content['msgtype'] = 'sms';
+                        # todo: 生成微信消息详情url
+                        $content['sms'] = 'url_to_wechat_message';
+                        $this->data['app_id'] = 0;
+                        $this->data['title'] = MessageType::find($this->data['message_type_id'])->name . '(短信)';
+                        # 发送短信并创建广播消息
+                        $this->sendSms(
+                            $content, $smsMobiles, $touser, $smsLogUsers, $response
+                        );
+                        # 发送广播消息
+                        if ($this->userId) {
+                            event(new JobResponse($response));
+                        }
+                    }
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
-        # 发送广播消息
-        if ($this->userId) {
-            event(new JobResponse($response));
-        }
+        
+        return true;
         
     }
     
@@ -144,7 +167,7 @@ class SendMessage implements ShouldQueue {
     
         $message = new Message;
         # 发送短信消息 & 创建用户消息发送日志
-        $result = $message->sendSms($mobiles, $this->data['sms']);
+        $result = $message->sendSms($mobiles, $content['sms']);
         $this->data['sent'] = $this->data['read'] = $result <= 0;
         $this->data['content'] = json_encode(
             array_merge($content, ['touser' => $touser, 'agentid' => 0])

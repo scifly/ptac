@@ -192,38 +192,6 @@ trait JobTrait {
     }
     
     /**
-     * 获取需要记录消息发送日志的用户（学生、教职员工）
-     *
-     * @param Collection|User[] $targets - 需要发送消息的用户对象（监护人、教职员工）
-     * @return Collection
-     */
-    function logUsers(Collection $targets): Collection {
-        
-        $users = Collect([]);
-        foreach ($targets as $target) {
-            if ($target->custodian) {
-                /** @var Collection $students */
-                $students = $target->students->filter(
-                    function(Student $student) {
-                        return $student->squad->grade->school_id == $this->schoolId;
-                    }
-                );
-                $studentUserIds = array_unique(
-                    $students->pluck('user_id')->toArray()
-                );
-                $users->push(
-                    User::whereIn('id', $studentUserIds)->get()
-                );
-            } else {
-                $users->push($target);
-            }
-        }
-        
-        return $users;
-        
-    }
-    
-    /**
      * 创建消息发送日志并返回批次id
      *
      * @param $recipients
