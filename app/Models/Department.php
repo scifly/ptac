@@ -825,7 +825,7 @@ class Department extends Model {
             foreach ($visibleNodes as $node) {
                 if ($node['selectable']) {
                     $this->find($node['id'])->users->each(
-                        function (User $user) use ($node) {
+                        function (User $user) use ($node, &$contacts) {
                             if ($user->student || $user->educator) {
                                 $contacts[] = [
                                     'id'         => 'user-' . $node['id'] . '-' . $user->id,

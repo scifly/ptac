@@ -154,6 +154,7 @@ class SendMessage implements ShouldQueue {
     }
     
     /**
+     * 发送短信消息
      *
      * @param $content
      * @param $mobiles
