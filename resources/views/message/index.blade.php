@@ -160,6 +160,7 @@
                                                 'id' => 'video-description',
                                                 'class' => 'form-control text-blue',
                                                 'placeholder' => '请在此添加视频描述(选填)',
+                                                'rows' => 5,
                                                 'style' => 'margin-bottom: 5px;'
                                             ]) !!}
                                             <div id="video-container">
@@ -193,6 +194,7 @@
                                                 'class' => 'form-control text-blue',
                                                 'placeholder' => '请在此添加卡片描述',
                                                 'title' => '卡片描述',
+                                                'rows' => 5,
                                                 'style' => 'margin-bottom: 5px;'
                                             ]) !!}
                                             {!! Form::text('card-url', null, [
@@ -222,6 +224,7 @@
                                             ]) !!}
                                             {!! Form::textarea('sms-content', null, [
                                                 'id' => 'sms-content',
+                                                'rows' => 5,
                                                 'class' => 'form-control text-blue',
                                             ]) !!}
                                             <p id="sms-length" class="help-block"></p>
