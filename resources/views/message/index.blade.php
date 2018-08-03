@@ -252,13 +252,13 @@
                         <div class="form-group">
                             <label for="" class="col-sm-3"></label>
                             <div class="col-sm-6">
-                                <button class="btn btn-primary btn-sm" id="send">
+                                <button class="btn btn-primary btn-sm margin" id="send">
                                     <i class="fa fa-send-o"> 发送</i>
                                 </button>
-                                <button class="btn btn-success btn-sm" id="preview">
+                                <button class="btn btn-success btn-sm margin" id="preview">
                                     <i class="fa fa-play-circle"> 预览</i>
                                 </button>
-                                <button class="btn btn-default btn-sm" id="draft">
+                                <button class="btn btn-default btn-sm margin" id="draft">
                                     <i class="fa fa-save"> 存为草稿</i>
                                 </button>
                             </div>
