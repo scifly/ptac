@@ -362,6 +362,10 @@ page.remove('messages', options);
 
 /** Helper functions ------------------------------------------------------------------------------------------------ */
 function init() {
+    window.ParsleyConfig = {
+        excluded: 'input[type=button], input[type=submit], input[type=reset]',
+        inputs: 'input, textarea, select, input[type=hidden], :hidden',
+    };
     // 加载消息中心css
     page.loadCss('css/message/message.css');
     // 初始化下拉列表
@@ -439,7 +443,7 @@ function message(action) {
             break;
     }
     if (!$('#formMessage').parsley().validate()) { return false; }
-    if ($targetIds.val() === '') {
+    if ($targetIds.val() === '' && action !== 'preview') {
         page.inform('消息中心', '请选择发送对象', page.failure);
         return false;
     }
