@@ -25,10 +25,10 @@
     </div>
     <div class="box-footer">
         <div class="form-group">
-            <button type="reset" class="btn btn-default pull-right margin btn-sm" id="revoke">
+            <button id="revoke" type="reset" class="btn btn-default pull-right margin btn-sm">
                 <i class="fa fa-reply"> 取消</i>
             </button>
-            <button type="button" class="btn btn-primary pull-right margin btn-sm" id="retain">
+            <button id="retain" type="button" class="btn btn-primary pull-right margin btn-sm">
                 <i class="fa fa-save"> 确定</i>
             </button>
         </div>
