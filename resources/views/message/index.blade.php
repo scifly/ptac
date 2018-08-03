@@ -29,7 +29,6 @@
             <div class="tab-content">
                 <div class="tab-pane active" id="tab01">
                     @include('partials.tree', [
-                        'id' => 'targets',
                         'title' => '发送对象',
                         'selectedTitle' => '已选择的发送对象'
                     ])

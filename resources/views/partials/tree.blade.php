@@ -1,4 +1,4 @@
-<div class="box box-default" style="display: none" {!! isset($id) ? ('id="' . $id . '"') : '' !!}>
+<div class="box box-default" style="display: none" id="contacts">
     <div class="box-header with-border">
         <h3 class="box-title">
             <i class="fa fa-globe"> {!! isset($title) ? $title : '所在部门' !!}</i>

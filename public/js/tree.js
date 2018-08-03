@@ -393,7 +393,7 @@
                     selectedDepartmentIds = typeof selectedNodes !== 'undefined' ? selectedNodes.split(',') : [];
 
                 $('#message').hide();
-                $('#targets').show();
+                $('#contacts').show();
                 $('#tree').data('jstree', false).empty().jstree({
                     selectedNodes: selectedNodes,
                     core: {
@@ -543,7 +543,7 @@
                     $('.todo-list').empty();
                     $tree.empty().jstree('destroy');
                     $('#message').show();
-                    $('#targets').hide();
+                    $('#contacts').hide();
                 });
             },
             closeTree: function () {
@@ -559,7 +559,7 @@
             close: function () {
                 $('#tree').jstree('destroy');
                 $('.todo-list').empty();
-                $('#targets').hide();
+                $('#contacts').hide();
                 $('#message').show();
             },
             remove: function () {
