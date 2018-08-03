@@ -504,7 +504,7 @@
             },
             choose: function (uri, type) {
                 $('#choose').on('click', function () {
-                    $('.close-targets').show();
+                    $('.close-targets').parent().show();
                     tree.contact(uri, type);
                 });
             },
