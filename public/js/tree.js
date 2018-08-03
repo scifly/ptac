@@ -565,9 +565,9 @@
             remove: function () {
                 $(document).on('click', '.remove-node', function () {
                     var nodeId = $(this).next().val();
-                    console.log(nodeId);
+
                     $(this).parents('li').remove();
-                    $('#tree').jstree().deselect_node([nodeId]);
+                    $('#tree').jstree().uncheck_node([nodeId]);
                 });
             },
             list: function (uri, type) {
