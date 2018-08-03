@@ -547,7 +547,7 @@
                 });
             },
             closeTree: function () {
-                $(document).off('click', '.close-targets').on('click', '.close-targets',
+                $(document).on('click', '.close-targets, #revoke',
                     function () { tree.close(); }
                 )
             },
@@ -566,7 +566,7 @@
                 $(document).on('click', '.remove-node', function () {
                     var nodeId = $(this).next().val();
 
-                    $(this).parents('li').slideUp();
+                    $(this).parents('li').remove();
                     $('#tree').jstree().uncheck_node([nodeId]);
                 });
             },
@@ -574,7 +574,7 @@
                 // 取消所有事件绑定
                 tree.unbindEvents();
                 // 部门树页面 的取消按钮
-                tree.cancel();
+                // tree.cancel();
                 tree.closeTree();
                 // 点击教职员工编辑表单中的删除部门按钮
                 tree.purge();
