@@ -23,7 +23,7 @@
                         {!! Form::label('mpnews-title', '标题', [
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
-                        <div class="col-sm-6">
+                        <div class="col-sm-7">
                             {!! Form::text('mpnews-title', null, [
                                 'id' => 'mpnews-title',
                                 'class' => 'form-control',
@@ -39,7 +39,7 @@
                         {!! Form::label('mpnews-content', '正文', [
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
-                        <div class="col-sm-6">
+                        <div class="col-sm-7">
                             {!! Form::textarea('mpnews-content', null, [
                                 'id' => 'mpnews-content',
                                 'class' => 'form-control',
@@ -54,7 +54,7 @@
                         {!! Form::label('content-source-url', '原文链接', [
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
-                        <div class="col-sm-6">
+                        <div class="col-sm-7">
                             {!! Form::text('content-source-url', null, [
                                 'id' => 'content-source-url',
                                 'class' => 'form-control',
@@ -68,7 +68,7 @@
                         {!! Form::label('mpnews-digest', '摘要', [
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
-                        <div class="col-sm-6">
+                        <div class="col-sm-7">
                             {!! Form::text('mpnews-digest', null, [
                                 'id' => 'mpnews-digest',
                                 'class' => 'form-control',
@@ -80,7 +80,7 @@
                         {!! Form::label('mpnews-author', '作者', [
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
-                        <div class="col-sm-6">
+                        <div class="col-sm-7">
                             {!! Form::text('mpnews-author', null, [
                                 'id' => 'mpnews-author',
                                 'class' => 'form-control',
@@ -92,7 +92,7 @@
                         {!! Form::label('file-mpnews', '封面图', [
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
-                        <div id="cover-container" class="col-sm-6">
+                        <div id="cover-container" class="col-sm-7">
                             @include('message.file_upload', [
                                 'id' => 'file-mpnews',
                                 'label' => '上传封面图',
