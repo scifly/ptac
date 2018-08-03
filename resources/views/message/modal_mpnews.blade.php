@@ -104,17 +104,17 @@
                 </div>
             </div>
             <div class="modal-footer">
-                {!! Form::submit('确定', [
-                    'id' => 'save-mpnews',
-                    'class' => 'btn btn-sm btn-success',
-                ]) !!}
-                {{--<a id="save-mpnews" href="#" class="">确定</a>--}}
+                <button type="submit" class="btn btn-success pull-right margin btn-sm" id="save-mpnews">
+                    <i class="fa fa-save"> 确定</i>
+                </button>
                 <a id="remove-mpnews" href="#" class="btn btn-sm btn-danger"
                    data-dismiss="modal" style="display: none;"
                 >
-                    移除当前图文
+                    <i class="fa fa-times"> 移除当前图文</i>
                 </a>
-                <a href="#" class="btn btn-sm btn-white" data-dismiss="modal">取消</a>
+                <a href="#" class="btn btn-sm btn-white" data-dismiss="modal">
+                    <i class="fa fa-reply"> 取消</i>
+                </a>
             </div>
         </div>
     </div>
