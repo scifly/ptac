@@ -545,11 +545,8 @@
                     //保存后清空右侧 选中的节点列表
                     $('.todo-list').empty();
                     $tree.empty().jstree('destroy');
-                    $('.box-footer').show();
-                    $('.form-main').show();
-                    $('.tree-box').hide();
-                    //部门树形图中的保存取消按钮
-                    $('.tree-box .box-footer').hide();
+                    $('#message').show();
+                    $('#targets').hide();
                 });
             },
             closeTree: function () {
