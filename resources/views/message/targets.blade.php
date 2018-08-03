@@ -14,7 +14,7 @@
             {{--searchBox--}}
             <div class="input-group">
                 @include('partials.icon_addon', ['class' => 'fa-search'])
-                {!! Form::text('search', null, ['id' => 'search']) !!}
+                {!! Form::text('search', null, ['id' => 'search', 'class' => 'form-control']) !!}
             </div>
             <div id="tree"></div>
         </div>
