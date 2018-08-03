@@ -516,7 +516,7 @@
                 });
             },
             save: function () {
-                $(document).on('click', '#save', function () {
+                $(document).on('click', '#retain', function () {
                     var nodeArray = [],
                         $tree = $('#tree'),
                         $selectedDepartmentIds = $('#selected-node-ids'),

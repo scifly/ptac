@@ -28,7 +28,11 @@
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="tab01">
-                    @include('message.targets')
+                    @include('partials.tree', [
+                        'id' => 'targets',
+                        'title' => '发送对象',
+                        'selectedTitle' => '已选择的发送对象'
+                    ])
                     <div class="upload-overlay overlay">
                         <i class="fa fa-refresh fa-spin"></i>
                     </div>
