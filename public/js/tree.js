@@ -392,11 +392,11 @@
                     selectedNodes = $selectedDepartmentIds.val(),
                     selectedDepartmentIds = typeof selectedNodes !== 'undefined' ? selectedNodes.split(',') : [];
 
-                $('.box-footer').hide();
-                $('.form-main').hide();
-                $('.tree-box').show();
+                // $('.box-footer').hide();
+                $('#message').hide();
+                $('#targets').show();
                 // 部门树形图中的保存取消按钮
-                $('.tree-box .box-footer').show();
+                // $('.tree-box .box-footer').show();
                 $('#tree').data('jstree', false).empty().jstree({
                     selectedNodes: selectedNodes,
                     core: {

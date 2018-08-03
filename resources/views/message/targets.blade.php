@@ -1,4 +1,4 @@
-<div class="tree-box box box-default" style="display: none;" id="targets">
+<div class="box box-default" style="display: none;" id="targets">
     <div class="box-header with-border">
         <h3 class="box-title">
             <i class="fa fa-globe"> 发送对象</i>
