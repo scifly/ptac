@@ -442,7 +442,7 @@ function message(action) {
         default:
             break;
     }
-    if (!$('#formMessage').parsley()/*.validate()*/) { return false; }
+    if (!$('#formMessage').parsley().validate()) { return false; }
     if ($targetIds.val() === '' && action !== 'preview') {
         page.inform('消息中心', '请选择发送对象', page.failure);
         return false;
