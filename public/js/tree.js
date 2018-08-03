@@ -392,7 +392,7 @@
                     selectedNodes = $selectedDepartmentIds.val(),
                     selectedDepartmentIds = typeof selectedNodes !== 'undefined' ? selectedNodes.split(',') : [];
 
-                $('#message').hide();
+                $('.main-form').hide();
                 $('#contacts').show();
                 $('#tree').data('jstree', false).empty().jstree({
                     selectedNodes: selectedNodes,
@@ -542,7 +542,7 @@
                     //保存后清空右侧 选中的节点列表
                     $('.todo-list').empty();
                     $tree.empty().jstree('destroy');
-                    $('#message').show();
+                    $('.main-form').show();
                     $('#contacts').hide();
                 });
             },
@@ -560,7 +560,7 @@
                 $('#tree').jstree('destroy');
                 $('.todo-list').empty();
                 $('#contacts').hide();
-                $('#message').show();
+                $('.main-form').show();
             },
             remove: function () {
                 $(document).on('click', '.remove-node', function () {
