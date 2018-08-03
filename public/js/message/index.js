@@ -72,6 +72,7 @@ init();
 $choose.on('click', function () {
     $message.hide();
     $targets.show();
+    $('.close-targets').show();
 });
 // 部门及联系人树加载
 $.getMultiScripts(['js/tree.js']).done(
