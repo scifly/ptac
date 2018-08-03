@@ -44,6 +44,7 @@
                                 'id' => 'mpnews-content',
                                 'class' => 'form-control',
                                 'required' => 'true',
+                                'rows' => 5,
                                 'maxlength' => '666',
                             ]) !!}
                         </div>

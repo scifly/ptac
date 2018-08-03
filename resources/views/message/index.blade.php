@@ -126,6 +126,7 @@
                                                 'placeholder' => '（请在此输入文本消息内容）',
                                                 'class' => 'form-control text-blue',
                                                 'title' => '消息内容',
+                                                'rows' => 5,
                                                 'required' => 'true'
                                             ]) !!}
                                         </div>
