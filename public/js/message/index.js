@@ -767,7 +767,10 @@ function refreshValidation(anchor) {
             $(anchor).find('.media_id').attr('required', 'true');
             break;
         case '#content_video':
-            $videoTitle.attr('maxlength', 128);
+            $videoTitle.attr({
+                'required': 'true',
+                'maxlength': 128
+            });
             $videoDescription.attr('maxlength', 512);
             $(anchor).find('.media_id').attr('required', 'true');
             break;
