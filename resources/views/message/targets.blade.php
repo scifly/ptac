@@ -24,15 +24,12 @@
     </div>
     <div class="box-footer">
         <div class="form-group">
-            {!! Form::button('取消', [
-                'id' => 'revoke',
-                'type' => 'reset',
-                'class' => 'btn btn-default pull-right margin'
-            ]) !!}
-            {!! Form::button('确认', [
-                'id' => 'save',
-                'class' => 'btn btn-primary pull-right margin'
-            ]) !!}
+            <button type="reset" class="btn btn-default pull-right margin" id="revoke">
+                <i class="fa fa-reply"> 取消</i>
+            </button>
+            <button type="button" class="btn btn-primary pull-right margin" id="save">
+                <i class="fa fa-save"> 确认</i>
+            </button>
         </div>
     </div>
 </div>
