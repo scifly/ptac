@@ -10,7 +10,7 @@
         </div>
     </div>
     <div class="box-body row">
-        <div class="col-xs-6">
+        <div class="col-xs-8">
             {{--searchBox--}}
             <div class="input-group">
                 @include('partials.icon_addon', ['class' => 'fa-search'])
@@ -18,7 +18,7 @@
             </div>
             <div id="tree"></div>
         </div>
-        <div class="col-xs-6">
+        <div class="col-xs-4">
             <i class="fa fa-check">
                 &nbsp;{!! isset($selectedTitle) ? $selectedTitle : '已选择的部门' !!}
             </i>
