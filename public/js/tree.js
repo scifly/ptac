@@ -564,7 +564,7 @@
             },
             remove: function () {
                 $(document).on('click', '.remove-node', function () {
-                    var nodeId = $(this).parents('li').find('input').val();
+                    var nodeId = $(this).next().val();
                     console.log(nodeId);
                     $(this).parents('li').remove();
                     $('#tree').jstree().deselect_node([nodeId]);
