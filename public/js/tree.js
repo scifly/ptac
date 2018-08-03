@@ -563,12 +563,10 @@
                 );
             },
             close: function () {
-                $('.box-footer').show();
-                $('.form-main').show();
-                $('.tree-box').hide();
-                $('.tree-box .box-footer').hide();
                 $('#tree').jstree('destroy');
                 $('.todo-list').empty();
+                $('#targets').hide();
+                $('#message').show();
             },
             remove: function () {
                 $(document).on('click', '.remove-node', function () {
