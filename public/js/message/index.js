@@ -450,7 +450,7 @@ function message(action) {
         return false;
     }
     if (
-        $.inArray(type, ['video', 'audio', 'video', 'file']) !== -1 &&
+        $.inArray(type, ['image', 'audio', 'video', 'file']) !== -1 &&
         $('#content_' + type).find('.media_id').val() === ''
     ) {
         page.inform('消息中心', '请上传文件', page.failure);
