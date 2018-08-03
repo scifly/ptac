@@ -425,7 +425,9 @@ function message(action) {
     var icon = page.info,
         uri = 'send',
         requestType = 'POST',
-        formData = data();
+        formData = data(),
+        paths = $('#message-content').find('.tab-pane.active').attr('id').split('_'),
+        type = paths[1];
 
     switch (action) {
         case 'send':
@@ -445,6 +447,13 @@ function message(action) {
     if (!$('#formMessage').parsley().validate()) { return false; }
     if ($targetIds.val() === '' && action !== 'preview') {
         page.inform('消息中心', '请选择发送对象', page.failure);
+        return false;
+    }
+    if (
+        $.inArray(type, ['video', 'audio', 'video', 'file']) !== -1 &&
+        $('#content_' + type).find('.media_id').val() === ''
+    ) {
+        page.inform('消息中心', '请上传文件', page.failure);
         return false;
     }
 
