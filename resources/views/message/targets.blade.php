@@ -13,6 +13,7 @@
         <div class="col-xs-6">
             {{--searchBox--}}
             <div class="input-group">
+                @include('partials.icon_addon', ['class' => 'fa-search'])
                 {!! Form::text('search', null, ['id' => 'search']) !!}
             </div>
             <div id="tree"></div>
