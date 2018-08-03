@@ -565,6 +565,7 @@
             remove: function () {
                 $(document).on('click', '.remove-node', function () {
                     var nodeId = $(this).parents('li').find('input').val();
+                    console.log(nodeId);
                     $(this).parents('li').remove();
                     $('#tree').jstree().deselect_node([nodeId]);
                 });
@@ -585,7 +586,7 @@
                     tree.choose(uri, type);
                     // 初始化节点搜索功能
                     tree.search();
-                    // 右侧选中节点中的 删除图标 点击后移除本身并且将左侧取消选中
+                    // 点击右侧选中节点中的删除图标
                     tree.remove();
                     // 初始化保存选中节点的功能
                     tree.save();
