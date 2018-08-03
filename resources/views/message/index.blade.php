@@ -32,7 +32,7 @@
                     <div class="upload-overlay overlay">
                         <i class="fa fa-refresh fa-spin"></i>
                     </div>
-                    <div class="form-horizontal form-main" id="message">
+                    <div class="form-horizontal" id="message">
                         {!! Form::open([
                             'method' => 'post',
                             'id' => 'formMessage',

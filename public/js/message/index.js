@@ -1,32 +1,17 @@
 //# sourceURL=index.js
-var $batchBtns = $('.box-tools'),
+var $batchBtns = $('.btn-group'),
     $tabSend = $('a[href="#tab01"]'),
     $tabSent = $('a[href="#tab02"]'),
     $targetIds = $('#selected-node-ids'),
-    $message = $('#message'),
     $messageTypeId = $('#message_type_id'),
     $messageContent = $('#message-content'),
-
-    // 发送对象
-    $targets = $('#targets'),
-    $choose = $('#choose'),
 
     // 文本
     $textContent = $('#text-content'),
 
-    // 图片
-    $fileImage = $('#file-image'),
-
-    // 语音
-    $fileAudio = $('#file-audio'),
-
     // 视频
     $videoTitle = $('#video-title'),
     $videoDescription = $('#video-description'),
-    $fileVideo = $('#file-video'),
-
-    // 文件
-    $fileFile = $('#file-file'),
 
     // 卡片
     $cardTitle = $('#card-title'),
