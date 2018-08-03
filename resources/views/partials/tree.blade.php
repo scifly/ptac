@@ -23,7 +23,7 @@
             <div id="tree"></div>
         </div>
         <div class="col-xs-4">
-            <i class="fa fa-check">
+            <i class="fa fa-check-circle">
                 &nbsp;{!! isset($selectedTitle) ? $selectedTitle : '已选择的部门' !!}
             </i>
             <ul class="todo-list ui-sortable"></ul>
