@@ -1,9 +1,9 @@
-<div class="box box-default box-solid">
+<div class="box box-default box-solid main-form">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
     <div class="box-body">
-        <div class="form-horizontal main-form">
+        <div class="form-horizontal">
             @if (isset($educator['id']))
                 {{ Form::hidden('id', $educator['id'], ['id' => 'id']) }}
                 {{ Form::hidden('user_id', $educator['user_id'], ['id' => 'user_id']) }}
