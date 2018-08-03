@@ -19,7 +19,9 @@
             <div id="tree"></div>
         </div>
         <div class="col-xs-6">
-            <h4>{!! isset($selectedTitle) ? $selectedTitle : '已选择的部门' !!}</h4>
+            <i class="fa fa-check">
+                &nbsp;{!! isset($selectedTitle) ? $selectedTitle : '已选择的部门' !!}
+            </i>
             <ul class="todo-list ui-sortable"></ul>
         </div>
     </div>
