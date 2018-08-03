@@ -4,7 +4,7 @@
             <i class="fa fa-sitemap"> {!! isset($title) ? $title : '所属部门' !!}</i>
         </h3>
         <div class="box-tools pull-right">
-            <button type="button" data-widget="remove" class="btn btn-box-tool close-targets">
+            <button type="button" data-widget="remove" class="btn btn-box-tool{{-- close-targets--}}">
                 <i class="fa fa-times"></i>
             </button>
         </div>
