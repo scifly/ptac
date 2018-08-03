@@ -1,7 +1,7 @@
 <div class="box box-default" style="display: none" id="contacts">
     <div class="box-header with-border">
         <h3 class="box-title">
-            <i class="fa fa-globe"> {!! isset($title) ? $title : '所属部门' !!}</i>
+            <i class="fa fa-sitemap"> {!! isset($title) ? $title : '所属部门' !!}</i>
         </h3>
         <div class="box-tools pull-right">
             <button type="button" data-widget="remove" class="btn btn-box-tool close-targets">
@@ -14,7 +14,11 @@
             {{--searchBox--}}
             <div class="input-group">
                 @include('partials.icon_addon', ['class' => 'fa-search'])
-                {!! Form::text('search', null, ['id' => 'search', 'class' => 'form-control']) !!}
+                {!! Form::text('search', null, [
+                    'id' => 'search',
+                    'class' => 'form-control',
+                    'placeholder' => '（请在此输入关键词搜索部门或联系人）'
+                ]) !!}
             </div>
             <div id="tree"></div>
         </div>
