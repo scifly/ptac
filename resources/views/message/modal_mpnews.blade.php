@@ -107,7 +107,8 @@
                 <button id="save-mpnews" type="submit" class="btn btn-success margin btn-sm">
                     <i class="fa fa-save"> 确定</i>
                 </button>
-                <button id="remove-mpnews" class="btn btn-sm btn-danger margin" data-dismiss="modal" style="display: none;">
+                <button id="remove-mpnews" class="btn btn-sm btn-danger margin pull-right"
+                        data-dismiss="modal" style="display: none;">
                     <i class="fa fa-times"> 移除当前图文</i>
                 </button>
                 <button class="btn btn-sm btn-default pull-right margin" data-dismiss="modal">
