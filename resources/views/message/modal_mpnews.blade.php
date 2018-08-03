@@ -104,13 +104,13 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button id="save-mpnews" type="submit" class="btn btn-success pull-right margin btn-sm">
+                <button id="save-mpnews" type="submit" class="btn btn-success margin btn-sm">
                     <i class="fa fa-save"> 确定</i>
                 </button>
                 <button id="remove-mpnews" class="btn btn-sm btn-danger margin" data-dismiss="modal" style="display: none;">
                     <i class="fa fa-times"> 移除当前图文</i>
                 </button>
-                <button class="btn btn-sm btn-white margin" data-dismiss="modal">
+                <button class="btn btn-sm btn-default pull-right margin" data-dismiss="modal">
                     <i class="fa fa-reply"> 取消</i>
                 </button>
             </div>
