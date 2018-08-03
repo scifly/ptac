@@ -546,21 +546,15 @@
                     $('#contacts').hide();
                 });
             },
-            closeTree: function () {
+            hideTree: function () {
                 $(document).on('click', '.close-targets, #revoke',
-                    function () { tree.close(); }
-                )
-            },
-            cancel: function () {
-                $(document).off('click', '#revoke').on('click', '#revoke',
-                    function () { tree.close(); }
+                    function () {
+                        $('#tree').jstree('destroy');
+                        $('.todo-list').empty();
+                        $('#contacts').hide();
+                        $('.main-form').show();
+                    }
                 );
-            },
-            close: function () {
-                $('#tree').jstree('destroy');
-                $('.todo-list').empty();
-                $('#contacts').hide();
-                $('.main-form').show();
             },
             remove: function () {
                 $(document).on('click', '.remove-node', function () {
@@ -573,9 +567,8 @@
             list: function (uri, type) {
                 // 取消所有事件绑定
                 tree.unbindEvents();
-                // 部门树页面 的取消按钮
-                // tree.cancel();
-                tree.closeTree();
+                // 隐藏部门 & 联系人树
+                tree.hideTree();
                 // 点击教职员工编辑表单中的删除部门按钮
                 tree.purge();
                 // 点击表单中的部门修改按钮
