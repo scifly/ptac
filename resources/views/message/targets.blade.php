@@ -4,7 +4,13 @@
             <i class="fa fa-globe"> 发送对象</i>
         </h3>
         <div class="box-tools pull-right">
-            <i class="fa fa-close close-targets" style="cursor: pointer;"></i>
+            <i class="fa fa-times close-targets" style="cursor: pointer;"></i>
+            <button type="button" class="btn btn-box-tool" data-widget="remove">
+                <i class="fa fa-times"></i>
+            </button>
+            {{--{!! Form::button(null, [--}}
+                {{--'class' => 'btn btn-box-tool close-targets'--}}
+            {{--]) !!}--}}
         </div>
     </div>
     <div class="box-body row">
