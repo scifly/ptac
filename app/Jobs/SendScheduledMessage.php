@@ -119,13 +119,11 @@ class SendScheduledMessage implements ShouldQueue {
                         $touser, $toparty
                     );
                     $data['msl_id'] = $this->mslId($smsLogUsers->count() + $wxLogUsers->count());
-    
                     # step 1: 向已关注的用户发送微信
                     if ($realTargetUsers->where('subscribed', 1)->count()) {
                         if ($wxTargets->isEmpty()) {
-                            $users = User::whereIn(
-                                'id', DepartmentUser::whereIn('department_id', $toparty)->pluck('user_id')
-                            )->get();
+                            $departmentUerIds = DepartmentUser::whereIn('department_id', $toparty)->pluck('user_id');
+                            $users = User::whereIn('id', $departmentUerIds)->get();
                             $schoolId = $this->school_id($users->first());
                         } else {
                             $schoolId = $this->school_id($wxTargets->first());
