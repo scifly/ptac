@@ -88,7 +88,9 @@ $addMpnews.on('click', function () {
         $file.remove();
     }
     $fileMpnews.val('');
-    $modalMpnews.modal({ backdrop: true });
+    $modalMpnews.find('input, textarea')
+        .css('background-color', 'beige')
+        .modal({ backdrop: true });
 });
 // 编辑图文
 $(document).on('click', '.mpnews', function () {
@@ -113,7 +115,9 @@ $(document).on('click', '.mpnews', function () {
     if ($file.attr('class') !== 'help-block') { $file.remove(); }
     $mediaId.after($('<img' + ' />', {'src': news['image_url'], 'style': 'height: 200px;'}).prop('outerHTML'));
     $removeMpnews.show();
-    $modalMpnews.modal({ backdrop: true });
+    $modalMpnews.find('input, textarea')
+        .css('background-color', 'beige')
+        .modal({ backdrop: true });
 });
 // 保存/更新图文
 $formMpnews.parsley().on('form:validated', function () {
