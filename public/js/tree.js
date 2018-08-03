@@ -566,7 +566,7 @@
                 $(document).on('click', '.remove-node', function () {
                     var nodeId = $(this).next().val();
 
-                    $(this).parents('li').toggle('slow');
+                    $(this).parents('li').slideUp();
                     $('#tree').jstree().uncheck_node([nodeId]);
                 });
             },
