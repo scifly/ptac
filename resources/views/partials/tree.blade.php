@@ -1,7 +1,7 @@
 <div class="box box-default" style="display: none" id="contacts">
     <div class="box-header with-border">
         <h3 class="box-title">
-            <i class="fa fa-globe"> {!! isset($title) ? $title : '所在部门' !!}</i>
+            <i class="fa fa-globe"> {!! isset($title) ? $title : '所属部门' !!}</i>
         </h3>
         <div class="box-tools pull-right">
             <button type="button" data-widget="remove" class="btn btn-box-tool close-targets">
