@@ -69,11 +69,11 @@ init();
 /** 发消息 ----------------------------------------------------------------------------------------------------------- */
 /** 发送对象 */
 // 选择发送对象
-$choose.on('click', function () {
-    $message.hide();
-    $targets.show();
-    $('.close-targets').parent().show();
-});
+// $choose.on('click', function () {
+//     $message.hide();
+//     $targets.show();
+//     $('.close-targets').parent().show();
+// });
 // 部门及联系人树加载
 $.getMultiScripts(['js/tree.js']).done(
     function () {
@@ -81,12 +81,12 @@ $.getMultiScripts(['js/tree.js']).done(
     }
 );
 // 关闭发送对象选择窗口
-$(document).on('click', '#cancel .close-targets',
-    function () {
-        $message.show();
-        $targets.hide();
-    }
-);
+// $(document).on('click', '#cancel .close-targets',
+//     function () {
+//         $message.show();
+//         $targets.hide();
+//     }
+// );
 /** 图文 */
 var mpnews = { articles: [] },  // 文章数组
     mpnewsCount = mpnews['articles'].length;    // 文章数量
