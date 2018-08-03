@@ -277,7 +277,7 @@ class Message extends Model {
         try {
             DB::transaction(function () use ($data, $draft) {
                 $time = null;
-                if ($data['time']) {
+                if (isset($data['time'])) {
                     $time = $data['time'];
                     unset($data['time']);
                 }
