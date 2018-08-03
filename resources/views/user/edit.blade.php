@@ -5,9 +5,9 @@
 ]) !!}
 <div class="box box-default box-solid">
     @if (isset($breadcrumb))
-    <div class="box-header with-border">
-        @include('partials.form_header')
-    </div>
+        <div class="box-header with-border">
+            @include('partials.form_header')
+        </div>
     @endif
     <div class="box-body">
         <div class="form-horizontal">
@@ -117,6 +117,6 @@
             ])
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('partials.form_buttons', ['id' => 'store'])
 </div>
 {!! Form::close() !!}
