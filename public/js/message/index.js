@@ -453,7 +453,17 @@ function message(action) {
         $.inArray(type, ['image', 'audio', 'video', 'file']) !== -1 &&
         $('#content_' + type).find('.media_id').val() === ''
     ) {
-        page.inform('消息中心', '请上传需要发送的文件', page.failure);
+        var fileTypes = {
+            image: '图片',
+            audio: '语音',
+            video: '视频',
+            file: '文件'
+        };
+        page.inform('消息中心', '请上传需要发送的' + fileTypes[type], page.failure);
+        return false;
+    }
+    if (!$contentMpnews.find('img').length) {
+        page.inform('消息中心', '请添加至少1个图文内容', page.failure);
         return false;
     }
 
