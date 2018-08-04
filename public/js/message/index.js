@@ -453,7 +453,7 @@ function message(action) {
         $.inArray(type, ['image', 'audio', 'video', 'file']) !== -1 &&
         $('#content_' + type).find('.media_id').val() === ''
     ) {
-        page.inform('消息中心', '请上传文件', page.failure);
+        page.inform('消息中心', '请上传需要发送的文件', page.failure);
         return false;
     }
 
@@ -770,18 +770,12 @@ function refreshValidation(anchor) {
         case '#content_text':
             $textContent.attr('required', 'true');
             break;
-        case '#content_image':
-        case '#content_audio':
-        case '#content_file':
-            $(anchor).find('.media_id').attr('required', 'true');
-            break;
         case '#content_video':
             $videoTitle.attr({
                 'required': 'true',
                 'maxlength': 128
             });
             $videoDescription.attr('maxlength', 512);
-            $(anchor).find('.media_id').attr('required', 'true');
             break;
         case '#content_card':
             $cardTitle.attr({
@@ -796,8 +790,6 @@ function refreshValidation(anchor) {
                 'required': 'true',
                 'type': 'url'
             });
-            break;
-        case '#content_mpnews':
             break;
         case '#content_sms':
             $smsContent.attr({
