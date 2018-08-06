@@ -88,6 +88,7 @@ class ApiController extends Controller {
      */
     public function studentAttendance() {
 
+        return response()->json();
         return $this->sa->store();
         
     }
