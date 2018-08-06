@@ -540,11 +540,9 @@
                         var checkAll = true;
 
                         $notification.hide();
+                        $back.toggle(type === 'user');
                         if (type === 'user') {
-                            $back.show();
                             $('#deptId').val(formData['departmentId']);
-                        } else {
-                            $back.hide();
                         }
                         $targetsContainer
                             .attr('style', result !== '' ? '' : 'text-align: center;')
