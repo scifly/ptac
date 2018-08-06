@@ -27,7 +27,7 @@ class TestController extends Controller {
      */
     public function index() {
 
-        echo url('/abc/');
+        echo url('/abc/') . uniqid();
         exit;
         
     }
