@@ -27,7 +27,7 @@ class TestController extends Controller {
      */
     public function index() {
 
-        echo URL::to('/');
+        echo uniqid();
         exit;
         
     }
