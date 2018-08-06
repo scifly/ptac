@@ -27,7 +27,7 @@ class TestController extends Controller {
      */
     public function index() {
 
-        echo url('/');
+        echo url('/abc/');
         exit;
         
     }
