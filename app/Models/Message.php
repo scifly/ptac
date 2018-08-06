@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 use Throwable;
@@ -845,6 +846,7 @@ class Message extends Model {
         $logUserIds = $logUsers->pluck('id')->toArray();
         
         if ($realTargets->count() < 2) {
+            Log::debug(json_encode($realTargets->toArray()));
             if ($realTargets->toArray()[0][0]['subscribed']) {
                 # 如果发送对象仅包含已关注的用户
                 $wxTargets = $realTargets[1];
