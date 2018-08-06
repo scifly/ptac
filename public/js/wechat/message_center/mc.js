@@ -612,75 +612,52 @@
                     $mediaId = $('#media_id'),
                     $cardUrl = $('#card-url'),
                     $btnTxt = $('#btn-txt'),
-                    $messageTypeId = $('#message_type_id'),
                     $timing = $('#timing'), $time = $('#time'),
-                    mediaId, title, text, cardUrl, btnTxt,
-                    formData, content = null,
-                    type = $msgType.val();
+                    title, text, cardUrl, btnTxt,
+                    formData, content = {},
+                    type = $msgType.val(),
+                    fileTypes = {
+                        image: '图片',
+                        voice: '语音',
+                        video: '视频',
+                        file: '文件'
+                    };
 
+                // 判断是否选择了发送对象（部门、会员）
+                if (
+                    mc.selectedDepartmentIds.length === 0 &&
+                    mc.selectedUserIds.length === 0
+                ) {
+                    $.toptip('请选择发送对象', 'error');
+                    return false;
+                }
                 switch (type) {
                     case 'text':
                         if ($content.val() === '') {
-                            $.toptip('请输入消息内容');
+                            $.toptip('请输入文本内容');
                             return false;
                         }
                         content = { text: { content: $content.val() }};
                         break;
                     case 'image':
-                        mediaId = $mediaId.val();
-                        if (mediaId === '') {
-                            $.toptip('请上传图片');
-                            return false;
-                        }
-                        content = {
-                            image: {
-                                media_id: mediaId,
-                                path: $mediaId.data('path')
-                            }
-                        };
-                        break;
                     case 'voice':
-                        mediaId = $mediaId.val();
-                        if (mediaId === '') {
-                            $.toptip('请上传语音', 'error');
-                            return false;
-                        }
-                        content = {
-                            voice: {
-                                media_id: mediaId,
-                                path: $mediaId.data('path')
-                            }
-                        };
-                        break;
                     case 'video':
-                        title = $title.val();
-                        text = $content.val();
-                        mediaId = $mediaId.val();
-                        if (mediaId === '') {
-                            $.toptip('请上传视频', 'error');
-                            return false;
-                        }
-                        content = {
-                            video: {
-                                media_id: mediaId,
-                                title: title,
-                                description: text,
-                                path: $mediaId.data('path')
-                            }
-                        };
-                        break;
                     case 'file':
-                        mediaId = $mediaId.val();
-                        if (mediaId === '') {
-                            $.toptip('请上传文件', 'error');
-                            return false;
-                        }
-                        content = {
-                            file: {
-                                media_id: mediaId,
-                                path: $mediaId.data('path')
-                            }
+                        content[type] = {
+                            media_id: $mediaId.val(),
+                            path: $mediaId.data('path')
                         };
+                        if (type === 'video') {
+                            content[type]['title'] = $title.val();
+                            content[type]['description'] = $content.val();
+                            if ($title.val() === '') {
+                                $.toptip('请输入视频标题', 'error');
+                                return false;
+                            }
+                        }
+                        if ($mediaId.val() === '') {
+                            $.toptip('请上传需要发送的' + fileTypes[type]);
+                        }
                         break;
                     case 'textcard':
                         title = $title.val();
@@ -702,7 +679,7 @@
                         break;
                     case 'mpnews':
                         if (mc.mpnews['articles'].length === 0) {
-                            $.toptip('请添加图文', 'error');
+                            $.toptip('请添加至少一个图文', 'error');
                             return false;
                         }
                         content = {
@@ -715,25 +692,19 @@
                         text = $content.val();
                         if (text.length === 0) {
                             $.toptip('请输入短信内容', 'error');
+                            return false;
                         }
                         content = { sms: text };
                         break;
                     default:
                         break;
                 }
-                if (
-                    mc.selectedDepartmentIds.length === 0 &&
-                    mc.selectedUserIds.length === 0
-                ) {
-                    $.toptip('请选择发送对象', 'error');
-                    return false;
-                }
                 formData = {
                     _token: wap.token(),
                     type: type,
                     user_ids: mc.selectedUserIds,
                     dept_ids: mc.selectedDepartmentIds,
-                    message_type_id: $messageTypeId.val()
+                    message_type_id: $('#message_type_id').val()
                 };
                 if ($timing.val()) {
                     $.extend(formData, { time: $time.val() });
