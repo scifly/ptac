@@ -462,7 +462,7 @@ function message(action) {
         page.inform('消息中心', '请上传需要发送的' + fileTypes[type], page.failure);
         return false;
     }
-    if (!$contentMpnews.find('img').length) {
+    if (type === 'mpnews' && !$contentMpnews.find('img').length) {
         page.inform('消息中心', '请添加至少1个图文内容', page.failure);
         return false;
     }
