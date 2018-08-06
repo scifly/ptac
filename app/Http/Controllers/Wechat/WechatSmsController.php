@@ -1,6 +1,7 @@
 <?php
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Wechat;
 
+use App\Http\Controllers\Controller;
 use App\Models\WechatSms;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\View\View;
@@ -9,7 +10,7 @@ use Illuminate\View\View;
  * 微信企业应用
  *
  * Class AppController
- * @package App\Http\Controllers
+ * @package App\Http\Controllers\Wechat
  */
 class WechatSmsController extends Controller {
     
