@@ -750,6 +750,7 @@ class Message extends Model {
                 /** 创建指定用户($users)收到的消息(应用内消息） */
                 if (isset($data['urlcode'])) {
                     $content = json_decode($data['content']);
+                    unset($content->{$data['type']});
                     $content->{'msgtype'} = 'sms';
                     $data['content'] = json_encode($content);
                     WechatSms::create([
