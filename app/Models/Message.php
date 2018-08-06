@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -50,6 +51,7 @@ use Throwable;
  * @property-read User $sender
  * @property-read Event|null $event
  * @property-read MessageSendingLog $messageSendinglog
+ * @property-read Collection|WechatSms[] $wechatSmses
  * @method static Builder|Message whereAppId($value)
  * @method static Builder|Message whereCommTypeId($value)
  * @method static Builder|Message whereContent($value)
@@ -129,6 +131,13 @@ class Message extends Model {
      * @return BelongsTo
      */
     function event() { return $this->belongsTo('App\Models\Event'); }
+    
+    /**
+     * 返回所有对应的微信消息详情url
+     *
+     * @return HasMany
+     */
+    function wechatSmses() { return $this->hasMany('App\Models\WechatSms'); }
     
     /**
      * 消息列表

@@ -50,8 +50,7 @@ class WapSite extends Model {
     
     protected $fillable = [
         'id', 'school_id', 'site_title',
-        'media_ids', 'created_at', 'updated_at',
-        'enabled',
+        'media_ids', 'enabled',
     ];
     
     /**

@@ -41,7 +41,7 @@
                         @include('partials.icon_addon', ['class' => 'fa-language'])
                         {{ Form::text('user[english_name]', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '请填写英文名(可选)',
+                            'placeholder' => '(可选)',
                             'type' => 'string',
                             'data-parsley-length' => '[2, 255]',
                             'data-parsley-type' => 'alphanum',
@@ -68,7 +68,7 @@
                         @include('partials.icon_addon', ['class' => 'fa-phone'])
                         {{ Form::text('user[telephone]', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '请输入座机号码（可选）',
+                            'placeholder' => '(可选)',
                         ]) }}
                     </div>
                 </div>
@@ -117,7 +117,7 @@
                         </div>
                         {!! Form::text('student_number', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '小写字母与阿拉伯数字',
+                            'placeholder' => '(小写字母与阿拉伯数字)',
                             'data-parsley-type' => 'alphanum',
                             'required' => 'true',
                             'data-parsley-length' => '[2, 32]'
@@ -137,7 +137,7 @@
                         </div>
                         {!! Form::text('card_number', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '小写字母与阿拉伯数字',
+                            'placeholder' => '(小写字母与阿拉伯数字)',
                             'required' => 'true',
                             'data-parsley-type' => 'alphanum',
                             'data-parsley-length' => '[2, 32]'

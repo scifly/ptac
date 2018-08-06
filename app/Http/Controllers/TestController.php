@@ -6,6 +6,7 @@ use App\Models\Department;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
+use Illuminate\Support\Facades\URL;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -26,18 +27,8 @@ class TestController extends Controller {
      */
     public function index() {
 
-        $data = [
-            [
-                'student_number' => '1',
-                'location' => '2'
-            ]
-        ];
-        
-        foreach ($data as &$datum) {
-            echo $datum['student_number'] = $datum['student_number'] . 'abc';
-        }
-        
-        dd($data);
+        echo URL::to('/');
+        exit;
         
     }
     
