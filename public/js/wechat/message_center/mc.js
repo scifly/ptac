@@ -853,19 +853,23 @@
                     case 'voice':
                     case 'file':
                     case 'video':
-                        mc.message[type]['media_id'] = $mediaId.val();
-                        mc.message[type]['filename'] = $uploadTitle.text();
-                        mc.message[type]['path'] = $mediaId.data('path');
+                        mc.message[type] = {
+                            media_id: $mediaId.val(),
+                            filename: $uploadTitle.val(),
+                            path: $mediaId.data('path')
+                        };
                         if (type === 'video') {
                             mc.message[type]['title'] = $title.val();
                             mc.message[type]['description'] = $content.val();
                         }
                         break;
                     case 'textcard':
-                        mc.message[type]['title'] = $title.val();
-                        mc.message[type]['description'] = $content.val();
-                        mc.message[type]['url'] = $contentSourceUrl.val();
-                        mc.message[type]['btntxt'] = $cardBtntxt.val();
+                        mc.message[type] = {
+                            title: $title.val(),
+                            description: $content.val(),
+                            url: $contentSourceUrl.val(),
+                            btntxt: $cardBtntxt.val()
+                        };
                         break;
                     case 'mpnews':
                         mc.mpnewsCount = 0;
