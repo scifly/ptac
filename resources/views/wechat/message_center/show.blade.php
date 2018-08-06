@@ -84,77 +84,85 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="artic-head comment-head">
-                            <span class="artic-title white-over">回复区</span>
-                            <div style="clear: both;"></div>
-                        </div>
-                        <div class="out-layout comment-wrap">
-                            <div class="course-comment">
-                                <div class="comment-content">
-                                    <div class="comment-content-container">
-                                        <div class="js-show-comment">
-                                            <div class="comment-selfEdit-con">
-                                                <div class="edit-input">我来说点什么</div>
-                                                <img class="head avatar" src="/img/0.png" alt="">
+                        @if (isset($replies))
+                            <div class="artic-head comment-head">
+                                <span class="artic-title white-over">回复区</span>
+                                <div style="clear: both;"></div>
+                            </div>
+                            <div class="out-layout comment-wrap">
+                                <div class="course-comment">
+                                    <div class="comment-content">
+                                        <div class="comment-content-container">
+                                            <div class="js-show-comment">
+                                                <div class="comment-selfEdit-con">
+                                                    <div class="edit-input">我来说点什么</div>
+                                                    <img class="head avatar" src="/img/0.png" alt="">
+                                                </div>
                                             </div>
+                                            <ul class="discuss_list">
+                                                @include('wechat.message_center.replies', [
+                                                    'replies' => $replies
+                                                ])
+                                            </ul>
                                         </div>
-                                        <ul class="discuss_list">
-                                            @include('wechat.message_center.replies', [
-                                                'replies' => $replies
-                                            ])
-                                        </ul>
                                     </div>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+                @if (isset($replies))
+                    <div class="bottom-artic b-top">
+                        <div class="bot-edit-wrap">
+                            <div class="bottom-edit-layout">
+                                <span class="bottom-icon-box">
+                                <span class="icon iconfont icon-lajixiang c-green delete-message"></span>
+                            </span>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+    @if (isset($replies))
+        <div id="mycomment" class="weui-popup__container popup-bottom">
+            <div class="weui-popup__overlay"></div>
+            <div class="weui-popup__modal comment-content">
+                {!! Form::hidden('msl_id', $message->msl_id, ['id' => 'msl_id']) !!}
+                <div style="background-color: #fff;height: 100%;">
+                    <div class="comment-edit-con">
+                        <p class="close-btn close-popup">
+                            <i class="icon iconfont icon-guanbi"></i>
+                        </p>
+                        <p class="reply-content">回复内容</p>
+                        <p class="send-btn">发送</p>
+                    </div>
+                    <div class="weui_cells vux-no-group-title">
+                        <div class="weui_cell js-textarea-val" style="font-size: 16px">
+                            <div class="weui_cell_bd weui_cell_primary">
+                                {!! Form::textarea('comment', null, [
+                                    'class' => 'weui_textarea',
+                                    'spellcheck' => 'false',
+                                    'placeholder' => '请输入评论...',
+                                    'rows' => 3,
+                                    'cols' => 30,
+                                    'maxlength' => 100,
+                                    'style' => 'height: 150px;'
+                                ]) !!}
+                                <div class="weui_textarea_counter">
+                                    <span>0</span>/100
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="bottom-artic b-top">
-                    <div class="bot-edit-wrap">
-                        <div class="bottom-edit-layout">
-                            <span class="bottom-icon-box">
-                            <span class="icon iconfont icon-lajixiang c-green delete-message"></span>
-                        </span>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
-    </div>
-    <div id="mycomment" class="weui-popup__container popup-bottom">
-        <div class="weui-popup__overlay"></div>
-        <div class="weui-popup__modal comment-content">
-            {!! Form::hidden('msl_id', $message->msl_id, ['id' => 'msl_id']) !!}
-            <div style="background-color: #fff;height: 100%;">
-                <div class="comment-edit-con">
-                    <p class="close-btn close-popup">
-                        <i class="icon iconfont icon-guanbi"></i>
-                    </p>
-                    <p class="reply-content">回复内容</p>
-                    <p class="send-btn">发送</p>
-                </div>
-                <div class="weui_cells vux-no-group-title">
-                    <div class="weui_cell js-textarea-val" style="font-size: 16px">
-                        <div class="weui_cell_bd weui_cell_primary">
-                            {!! Form::textarea('comment', null, [
-                                'class' => 'weui_textarea',
-                                'spellcheck' => 'false',
-                                'placeholder' => '请输入评论...',
-                                'rows' => 3,
-                                'cols' => 30,
-                                'maxlength' => 100,
-                                'style' => 'height: 150px;'
-                            ]) !!}
-                            <div class="weui_textarea_counter">
-                                <span>0</span>/100
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    @endif
 @endsection
 @section('script')
-    <script src="{!! asset('/js/wechat/message_center/show.js') !!}"></script>
+    @if (isset($replies))
+        <script src="{!! asset('/js/wechat/message_center/show.js') !!}"></script>
+    @endif
 @endsection

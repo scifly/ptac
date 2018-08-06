@@ -360,6 +360,7 @@ Route::group(['prefix' => 'attachment_types'], routes('AttachmentTypeController'
 Route::group(['prefix' => 'school_types'], routes('SchoolTypeController'));
 
 /** 微信端路由 -------------------------------------------------------------------------------------------------------- */
+Route::get('sms/{urlcode}', 'WechatSmsController@show');    # 未关注的用户查看微信消息详情的链接
 $acronyms = Corp::pluck('acronym')->toArray();
 foreach ($acronyms as $acronym) {
     app_routes($acronym);

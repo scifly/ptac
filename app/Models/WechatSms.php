@@ -3,11 +3,11 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Eloquent;
-use Exception;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Request;
+use Illuminate\View\View;
 
 /**
  * App\Models\WechatSms 微信消息详情url
@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Request;
  * @property Carbon|null $created_at 创建于
  * @property Carbon|null $updated_at 更新于
  * @property int $enabled
- * @property-read \App\Models\Message $message
+ * @property-read Message $message
  * @method static Builder|WechatSms whereCreatedAt($value)
  * @method static Builder|WechatSms whereEnabled($value)
  * @method static Builder|WechatSms whereId($value)
@@ -43,30 +43,20 @@ class WechatSms extends Model {
     function message() { return $this->belongsTo('App\Models\Message'); }
     
     /**
-     * 保存微信消息详情url
+     * 返回对应的消息对象
      *
-     * @param array $data
-     * @return bool
+     * @param $urlcode
+     * @return Factory|View
      */
-    function store(array $data) {
-        
-        return $this->create($data) ? true : false;
-        
-    }
+    function show($urlcode) {
     
-    /**
-     * （批量）删除微信消息详情url
-     *
-     * @param null $id
-     * @return bool|null
-     * @throws Exception
-     */
-    function remove($id = null) {
+        $message = WechatSms::whereUrlcode($urlcode)->first()->message;
     
-        return $id
-            ? $this->find($id)->delete()
-            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
-            
+        return view('wechat.message_center.show', [
+            'message' => $message,
+            'content' => $message->detail($message->id)
+        ]);
+        
     }
     
 }

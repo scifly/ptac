@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -51,7 +51,7 @@ use Throwable;
  * @property-read User $sender
  * @property-read Event|null $event
  * @property-read MessageSendingLog $messageSendinglog
- * @property-read Collection|WechatSms[] $wechatSmses
+ * @property-read WechatSms $wechatSms
  * @method static Builder|Message whereAppId($value)
  * @method static Builder|Message whereCommTypeId($value)
  * @method static Builder|Message whereContent($value)
@@ -128,16 +128,16 @@ class Message extends Model {
     /**
      * 返回对应的事件对象
      *
-     * @return BelongsTo
+     * @return BelongsTo`
      */
     function event() { return $this->belongsTo('App\Models\Event'); }
     
     /**
      * 返回所有对应的微信消息详情url
      *
-     * @return HasMany
+     * @return HasOne
      */
-    function wechatSmses() { return $this->hasMany('App\Models\WechatSms'); }
+    function wechatSms() { return $this->hasOne('App\Models\WechatSms'); }
     
     /**
      * 消息列表
@@ -603,13 +603,33 @@ class Message extends Model {
      *
      * @param $id
      * @return bool|null
-     * @throws Exception
+     * @throws Throwable
      */
     function remove($id = null) {
         
-        return $id
-            ? $this->find($id)->delete()
-            : $this->whereIn('id', array_values(Request::input('ids')))->delete();
+        return $this->del($this, $id);
+        
+    }
+    
+    /**
+     * 删除指定消息的所有数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Throwable
+     */
+    function purge($id) {
+        
+        try {
+            DB::transaction(function () use ($id) {
+                WechatSms::whereMessageId($id)->first()->delete();
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
         
     }
     
@@ -727,6 +747,16 @@ class Message extends Model {
                 $data['sent'] = sizeof($failedUserIds) == sizeof($users) ? 0 : 1;
                 $message = $this->create($data);
                 /** 创建指定用户($users)收到的消息(应用内消息） */
+                if (isset($data['urlcode'])) {
+                    $content = json_decode($data['content']);
+                    $content->{'msgtype'} = 'sms';
+                    $data['content'] = json_encode($content);
+                    WechatSms::create([
+                        'urlcode' => $data['urlcode'],
+                        'message_id' => $message->id,
+                        'enabled' => 1
+                    ]);
+                }
                 foreach ($users as $user) {
                     $data['r_user_id'] = $user->id;
                     # 设置相关消息id

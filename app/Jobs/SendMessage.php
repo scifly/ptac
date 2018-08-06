@@ -129,9 +129,8 @@ class SendMessage implements ShouldQueue {
         
                     # step 2: 向未关注用户（监护人、教职员工）发送短信
                     if (!empty($smsMobiles)) {
-                        $content['msgtype'] = 'sms';
-                        # todo: 生成微信消息详情url
-                        $content['sms'] = url('/') . uniqid();
+                        $this->data['urlcode'] = uniqid();
+                        $this->data['sms'] = url('/sms') . '/' . $this->data['urlcode'];
                         $this->data['app_id'] = 0;
                         $this->data['title'] = MessageType::find($this->data['message_type_id'])->name . '(短信)';
                         # 发送短信并创建广播消息

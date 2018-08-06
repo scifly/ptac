@@ -50,7 +50,7 @@ trait ModelTrait {
      *
      * @param Model $model
      * @return bool
-     * @throws \Throwable
+     * @throws Throwable
      */
     function batchUpdateContact(Model $model) {
     

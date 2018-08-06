@@ -96,6 +96,7 @@ class Constant {
         'ScoreCenterController',
         'SyncController',
         'TestController',
+        'WechatSmsController',
     ];
     
     const INFO_TYPE = [
