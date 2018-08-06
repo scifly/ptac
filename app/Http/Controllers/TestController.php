@@ -1,12 +1,13 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Facades\Wechat;
 use App\Helpers\ModelTrait;
 use App\Models\Department;
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
-use Illuminate\Support\Facades\URL;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -27,8 +28,42 @@ class TestController extends Controller {
      */
     public function index() {
 
-        echo url('/abc') . uniqid('/');
-        exit;
+        $appid = '5100000025';
+        $appsecret = 'B4C6F3A34F5936CEBA92C008F12B0396';
+        $nonce = '15';
+        $method = '10';
+        $url = 'http://eccard.eicp.net:8078/Dispatch.aspx';
+        
+        $data = urlencode(
+            base64_encode(
+                json_encode([
+                    'dname' => '小学一年级',
+                    'dfather' => '成都外国语学校',
+                    'dexpiration' => '2020-08-05 23:59:59',
+                    'dnumber' => '2000',
+                    'dtel' => '18030718323'
+                ])
+            )
+        );
+        ;
+        $hash = substr(
+            strtoupper(
+                base64_encode(
+                    md5($appid . '|' . $appsecret . '|' . $data . '|' . $nonce)
+                )
+            ),
+            0, 24
+        );
+        
+        $formData = json_encode([
+            'appid' => $appid,
+            'hash' => $hash,
+            'method' => $method,
+            'data' => $data,
+            'nonce' => $nonce
+        ]);
+        
+        dd($this->curlPost($url, $formData));
         
     }
     
@@ -134,6 +169,42 @@ class TestController extends Controller {
         }
         
         return $level;
+        
+    }
+    
+    /**
+     * 发送POST请求
+     *
+     * @param $url
+     * @param mixed $formData
+     * @return mixed|null
+     * @throws Exception
+     */
+    private function curlPost($url, $formData) {
+        
+        $result = null;
+        try {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+            curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 5.01; Windows NT 5.0)');
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+            curl_setopt($ch, CURLOPT_AUTOREFERER, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $formData);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $result = curl_exec($ch);
+            // Check the return value of curl_exec(), too
+            if (!$result) {
+                throw new Exception(curl_error($ch), curl_errno($ch));
+            }
+            curl_close($ch);
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return $result;
         
     }
     
