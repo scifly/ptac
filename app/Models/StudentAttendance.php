@@ -193,6 +193,7 @@ class StudentAttendance extends Model {
         try {
             DB::transaction(function () {
                 $data = Request::input('data');
+                Log::debug(json_encode(Request::all()));
                 Log::debug(Request::input('school_id'));
                 $school = School::find(Request::input('school_id'));
                 abort_if(
