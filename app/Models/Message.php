@@ -847,7 +847,7 @@ class Message extends Model {
         $realTargets = $realTargetUsers->groupBy('subscribed');
         $wxTargets = $smsTargets = $smsLogUsers = $wxLogUsers = Collect([]);
         $logUserIds = $logUsers->pluck('id')->toArray();
-        Log::debug(json_encode($realTargets));
+        Log::debug(json_encode($realTargets->toArray()));
         if ($realTargets->count() < 2) {
             if ($realTargets->toArray()[0]['subscribed']) {
                 # 如果发送对象仅包含已关注的用户
