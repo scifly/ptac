@@ -538,7 +538,7 @@ class Message extends Model {
                             'app_id'       => $appId,
                             'msl_id'       => $data['msl_id'],
                             'title'        => $data['title'],
-                            'content'      => $content,
+                            'content'      => json_encode($content),
                             'serviceid'    => $data['serviceid'],
                             'message_id'   => $data['message_id'],
                             'url'          => $data['url'],
