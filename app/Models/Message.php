@@ -745,7 +745,9 @@ class Message extends Model {
                     );
                 }
                 /** 创建原始消息 */
-                $data['sent'] = sizeof($failedUserIds) == sizeof($users) ? 0 : 1;
+                if (!isset($data['urlcode'])) {
+                    $data['sent'] = sizeof($failedUserIds) == sizeof($users) ? 0 : 1;
+                }
                 $message = $this->create($data);
                 
                 if (isset($data['urlcode'])) {

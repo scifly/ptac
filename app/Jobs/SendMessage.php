@@ -8,7 +8,6 @@ use App\Helpers\ModelTrait;
 use App\Models\App;
 use App\Models\Corp;
 use App\Models\Message;
-use App\Models\MessageType;
 use App\Models\User;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -130,9 +129,9 @@ class SendMessage implements ShouldQueue {
                     # step 2: 向未关注用户（监护人、教职员工）发送短信
                     if (!empty($smsMobiles)) {
                         $this->data['urlcode'] = uniqid();
-                        $content['sms'] = url('/sms') . '/' . $this->data['urlcode'];
-                        $this->data['app_id'] = 0;
-                        $this->data['title'] = MessageType::find($this->data['message_type_id'])->name . '(短信)';
+                        // $content['sms'] = url('/sms') . '/' . $this->data['urlcode'];
+                        // $this->data['app_id'] = 0;
+                        // $this->data['title'] = MessageType::find($this->data['message_type_id'])->name . '(短信)';
                         # 发送短信并创建广播消息
                         $this->sendSms(
                             $content, $smsMobiles, $touser, $smsLogUsers, $response
@@ -166,6 +165,9 @@ class SendMessage implements ShouldQueue {
     
         $message = new Message;
         # 发送短信消息 & 创建用户消息发送日志
+        if (isset($this->data['urlcode'])) {
+            $content['sms'] = url('/sms') . '/' . $this->data['urlcode'];
+        }
         $result = $message->sendSms($mobiles, $content['sms']);
         $this->data['sent'] = $this->data['read'] = $result <= 0;
         $this->data['content'] = json_encode(
