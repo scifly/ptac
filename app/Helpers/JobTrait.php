@@ -274,14 +274,18 @@ trait JobTrait {
                     if ($succeeded > 0 && $succeeded < $total) {
                         $response['statusCode'] = HttpStatusCode::ACCEPTED;
                     }
-                    $response['message'] = __($msgTpl, [$total, $succeeded, $failed]);
+                    $response['message'] = sprintf(
+                        __($msgTpl), $total, $succeeded, $failed);
                 }
             } else {
                 if ($result > 0) {
                     $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-                    $response['message'] = __($msgTpl, [count($targets), 0, count($targets)]);
+                    $response['message'] = sprintf(
+                        __($msgTpl), count($targets), 0, count($targets)
+                    );
                 } else {
-                    $response['message'] = __($msgTpl, [count($targets), count($targets), 0]);
+                    $response['message'] = sprintf(
+                        __($msgTpl), count($targets), count($targets), 0);
                 }
             }
             event(new JobResponse($response));

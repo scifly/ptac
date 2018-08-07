@@ -830,6 +830,7 @@ class Message extends Model {
                         } else {
                             unset($content[$content['msgtype']]);
                             $content['msgtype'] = 'sms';
+                            $content['agentid'] = '0';
                             $content['sms'] = url('/sms') . '/' . $urlcode;
                             $data['content'] = json_encode($content);
                             $data['sent'] = $result > 0 ? 0 : 1;
