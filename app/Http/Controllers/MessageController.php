@@ -145,7 +145,7 @@ class MessageController extends Controller {
      * 删除消息
      * @param null $id
      * @return JsonResponse|string
-     * @throws Exception
+     * @throws Throwable
      */
     public function destroy($id = null) {
     

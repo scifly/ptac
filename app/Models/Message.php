@@ -678,8 +678,8 @@ class Message extends Model {
                     !isset($data['time']) ||
                     (isset($data['time']) && $data['time'] < date('now'))
                 ) {
-                    # 如果没有设置发送时间，或者设置了发送时间，但发送时间早于当前时间
-                    # 则立即发送消息
+                    # 如果没有设置发送时间，或者设置了发送时间，
+                    # 但发送时间早于当前时间, 则立即发送消息
                     SendMessage::dispatch($data, Auth::id(), $corp, $apps);
                 } else {
                     # 如果发送时间晚于当前时间，则创建/更新消息
