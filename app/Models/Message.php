@@ -747,7 +747,7 @@ class Message extends Model {
                 /** 创建原始消息 */
                 $data['sent'] = sizeof($failedUserIds) == sizeof($users) ? 0 : 1;
                 $message = $this->create($data);
-                /** 创建指定用户($users)收到的消息(应用内消息） */
+                
                 if (isset($data['urlcode'])) {
                     $content = json_decode($data['content']);
                     unset($content->{$data['type']});
@@ -759,6 +759,7 @@ class Message extends Model {
                         'enabled' => 1
                     ]);
                 }
+                /** 创建指定用户($users)收到的消息(应用内消息） */
                 foreach ($users as $user) {
                     $data['r_user_id'] = $user->id;
                     # 设置相关消息id
@@ -767,7 +768,8 @@ class Message extends Model {
                         if (!$user->student) {
                             $data['sent'] = !in_array($user->id, $failedUserIds);
                         } else {
-                            $custodianUserIds = $user->student->custodians->pluck('user_id')->toArray();
+                            $custodianUserIds = $user->student->custodians
+                                ->pluck('user_id')->toArray();
                             $data['sent'] = empty(
                                 array_intersect($custodianUserIds, $failedUserIds)
                             );
