@@ -541,6 +541,7 @@ class Message extends Model {
                             'content'      => json_encode($content),
                             'serviceid'    => $data['serviceid'],
                             'message_id'   => $data['message_id'],
+                            'message_type_id' => $data['message_type_id'],
                             'url'          => $data['url'],
                             'media_ids'    => $data['media_ids'],
                             's_user_id'    => Auth::id(),
