@@ -848,7 +848,7 @@ class Message extends Model {
         $wxTargets = $smsTargets = $smsLogUsers = $wxLogUsers = Collect([]);
         $logUserIds = $logUsers->pluck('id')->toArray();
         if ($realTargets->count() < 2) {
-            if ($realTargets->toArray()[0][0]['subscribed']) {
+            if (array_key_exists(1, $realTargets->toArray())) {
                 # 如果发送对象仅包含已关注的用户
                 $wxTargets = $realTargets[1];
             } else {
