@@ -261,6 +261,7 @@ trait JobTrait {
             ];
             $msgTpl = 'messages.message.sent';
             if (isset($result['errcode'])) {
+                $response['title'] = $response['title'] . '(微信)';
                 if ($result['errcode']) {
                     $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
                     $response['message'] = $result['errmsg'];
@@ -278,6 +279,7 @@ trait JobTrait {
                         __($msgTpl), $total, $succeeded, $failed);
                 }
             } else {
+                $response['title'] = $response['title'] . '(短信)';
                 if ($result > 0) {
                     $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
                     $response['message'] = sprintf(

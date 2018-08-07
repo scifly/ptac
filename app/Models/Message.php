@@ -546,7 +546,7 @@ class Message extends Model {
                             'media_ids'    => $data['media_ids'],
                             's_user_id'    => Auth::id(),
                             'r_user_id'    => $data['r_user_id'],
-                            'read'         => 0,
+                            'read'         => 1,
                             'sent'         => 1,
                         ]);
                         SendMessage::dispatch($message);
@@ -815,6 +815,7 @@ class Message extends Model {
                 unset($data['id']);
                 foreach ($users as $user) {
                     $data['r_user_id'] = $user->id;
+                    $data['read'] = 0;
                     if ($content['msgtype'] != 'sms') {
                         if (!$urlcode) {
                             $failedUserIds = $this->failedUserIds(
