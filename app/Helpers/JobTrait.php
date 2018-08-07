@@ -260,16 +260,7 @@ trait JobTrait {
                 'statusCode' => HttpStatusCode::OK,
             ];
             $msgTpl = 'messages.message.sent';
-            $content = json_decode($message->content, true);
-            $msgType = $content['msgtype'];
-            if ($msgType == 'sms') {
-                if ($result > 0) {
-                    $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-                    $response['message'] = __($msgTpl, [count($targets), 0, count($targets)]);
-                } else {
-                    $response['message'] = __($msgTpl, [count($targets), count($targets), 0]);
-                }
-            } else {
+            if (isset($result['errcode'])) {
                 if ($result['errcode']) {
                     $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
                     $response['message'] = $result['errmsg'];
@@ -284,6 +275,13 @@ trait JobTrait {
                         $response['statusCode'] = HttpStatusCode::ACCEPTED;
                     }
                     $response['message'] = __($msgTpl, [$total, $succeeded, $failed]);
+                }
+            } else {
+                if ($result > 0) {
+                    $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+                    $response['message'] = __($msgTpl, [count($targets), 0, count($targets)]);
+                } else {
+                    $response['message'] = __($msgTpl, [count($targets), count($targets), 0]);
                 }
             }
             event(new JobResponse($response));
