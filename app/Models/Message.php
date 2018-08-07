@@ -518,9 +518,9 @@ class Message extends Model {
                 ) {
                     # 创建原始消息（被发送）记录
                     $msl = MessageSendingLog::create([
-                        'read_count'     => 0,
-                        'received_count' => 0,
-                        'recipients'     => 0,
+                        'read_count'      => 0,
+                        'received_count'  => 0,
+                        'recipient_count' => 0,
                     ]);
                     $data['msl_id'] = $msl->id;
                     foreach ($data['app_ids'] as $appId) {
@@ -843,7 +843,7 @@ class Message extends Model {
                 $msl = $message->messageSendinglog;
                 $msl->update([
                     'recipient_count' => $msl->recipient_count + $users->count(),
-                    'received_count' => $msl->received_count + $received
+                    'received_count'  => $msl->received_count + $received,
                 ]);
             });
         } catch (Exception $e) {
