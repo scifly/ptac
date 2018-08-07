@@ -19,7 +19,6 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
@@ -255,6 +254,7 @@ class StudentAttendance extends Model {
                             break;
                         }
                     }
+                    # 保存考勤记录
                     $sa = $this->create([
                         'student_id'            => $student->id,
                         'sas_id'                => $sasId,
@@ -266,53 +266,45 @@ class StudentAttendance extends Model {
                         'latitude'              => $datum['latitude'],
                         'media_id'              => $datum['media_id'],
                     ]);
+                    # 创建并发送消息
+                    $msl = (new MessageSendingLog)->store([
+                        'read_count'     => 0,
+                        'received_count' => 0,
+                        'recipients'     => 0,
+                    ]);
+                    $app = App::whereCorpId($school->corp_id)->whereName('考勤中心')->first();
                     $userIds = $student->custodians->pluck('user_id')->toArray();
-                    $userGroups = User::get(['id', 'subscribed'])
-                        ->whereIn('id', $userIds)
-                        ->groupBy('subscribed')
-                        ->toArray();
-                    if (empty($userGroups)) { continue; }
-                    $userIdGroups = array_pluck($userGroups, '*.id');
-                    if (sizeof($userIdGroups) < 2) {
-                        if ($userGroups[0][0]['subscribed']) {
-                            $wechatUserIds = $userIdGroups[0];
-                        } else {
-                            $smsUserIds = $userIdGroups[0];
-                        }
-                    } else {
-                        list($smsUserIds, $wechatUserIds) = $userIdGroups;
-                    }
-                    $message = [
-                        'dept_ids'        => [],
-                        'message_type_id' => MessageType::whereName('考勤消息')->first()->id,
+                    $content = [
+                        'touser'  => implode('|', User::whereIn('id', $userIds)->pluck('userid')->toArray()),
+                        'toparty' => '',
+                        'agentid' => $app->agentid,
+                        'msgtype' => 'text',
+                        'text'    => strtr(
+                            $sa->studentAttendanceSetting->msg_template,
+                            [
+                                '{name}'   => $student->user->realname,
+                                '{time}'   => $sa->punch_time,
+                                '{rule}'   => $sa->studentAttendanceSetting->name,
+                                '{status}' => $sa->status == 1 ? '正常' : '异常',
+                            ]
+                        ),
                     ];
-                    $content = strtr(
-                        $sa->studentAttendanceSetting->msg_template,
-                        [
-                            '{name}'   => $student->user->realname,
-                            '{time}'   => $sa->punch_time,
-                            '{rule}'   => $sa->studentAttendanceSetting->name,
-                            '{status}' => $sa->status == 1 ? '正常' : '异常',
-                        ]
-                    );
-                    $corp = $school->corp;
-                    $apps = [App::whereCorpId($school->corp_id)->whereName('考勤中心')->first()->toArray()];
-                    # 需要接收微信消息的用户
-                    if (!empty($wechatUserIds)) {
-                        SendMessage::dispatch(array_merge($message, [
-                            'user_ids' => $wechatUserIds,
-                            'type'     => 'text',
-                            'text'     => ['content' => $content],
-                        ]), null, $corp, $apps);
-                    }
-                    # 需要接收短信消息的用户
-                    if (!empty($smsUserIds)) {
-                        SendMessage::dispatch(array_merge($message, [
-                            'user_ids' => $smsUserIds,
-                            'type'     => 'sms',
-                            'sms'      => $content,
-                        ]), null, $corp, $apps);
-                    }
+                    $message = (new Message)->create([
+                        'comm_type_id' => CommType::whereName('微信')->first()->id,
+                        'app_id'       => App::whereCorpId($school->corp_id)->whereName('考勤中心')->first()->id,
+                        'msl_id'       => $msl->id,
+                        'title'        => '考勤消息(文本)',
+                        'content'      => json_encode($content),
+                        'serviceid'    => 0,
+                        'message_id'   => 0,
+                        'url'          => 'http://',
+                        'media_ids'    => 0,
+                        's_user_id'    => 0,
+                        'r_user_id'    => 0,
+                        'read'         => 0,
+                        'sent'         => 1,
+                    ]);
+                    SendMessage::dispatch($message);
                 }
             });
         } catch (Exception $e) {
@@ -625,6 +617,65 @@ class StudentAttendance extends Model {
     }
     
     /**
+     * 返回指定学生的考勤记录
+     *
+     * @param null $studentId
+     * @return JsonResponse|View
+     */
+    function wDetail($studentId = null) {
+        
+        $user = Auth::user();
+        if (Request::method() == 'POST') {
+            $studentId = Request::input('id');
+            $type = Request::input('type');
+            $date = Request::input('date');
+            $result = Validator::make(Request::all(), [
+                'id'   => 'required|integer',
+                'type' => ['required', 'string', Rule::in(['month', 'day']),],
+                'date' => 'required|date',
+            ]);
+            abort_if(
+                $result->failed() || !in_array($studentId, $this->contactIds('student', $user)),
+                HttpStatusCode::NOT_ACCEPTABLE,
+                __('messages.invalid_argument')
+            );
+            if ($type == 'month') {
+                $response = [
+                    'data' => $this->wStat(
+                        Request::get('id'),
+                        $date, date('Y-m-t', strtotime($date))
+                    ),
+                ];
+            } else {
+                list($ins, $outs) = $this->attendances($studentId, $date);
+                $response = [
+                    'date' => $date,
+                    'ins'  => $ins,
+                    'outs' => $outs,
+                ];
+            }
+            
+            return response()->json($response);
+        }
+        $today = date('Y-m-d');
+        list($ins, $outs) = $this->attendances($studentId, $today);
+        $data = $this->wStat($studentId);
+        if (Request::ajax() && Request::method() == 'GET') {
+            return response()->json(['days' => $data]);
+        }
+        
+        return view(self::VIEW_NS . 'detail', [
+            'id'         => $studentId,
+            'data'       => $data,
+            'date'       => $today,
+            'ins'        => $ins,
+            'outs'       => $outs,
+            'schoolname' => School::find(session('schoolId'))->name,
+        ]);
+        
+    }
+    
+    /**
      * 获取指定学生的考勤数据（异常和正常）
      *
      * @param $studentId
@@ -674,65 +725,6 @@ class StudentAttendance extends Model {
     }
     
     /**
-     * 返回指定学生的考勤记录
-     *
-     * @param null $studentId
-     * @return JsonResponse|View
-     */
-    function wDetail($studentId = null) {
-        
-        $user = Auth::user();
-        if (Request::method() == 'POST') {
-            $studentId = Request::input('id');
-            $type = Request::input('type');
-            $date = Request::input('date');
-            $result = Validator::make(Request::all(), [
-                'id'   => 'required|integer',
-                'type' => ['required', 'string', Rule::in(['month', 'day']),],
-                'date' => 'required|date',
-            ]);
-            abort_if(
-                $result->failed() || !in_array($studentId, $this->contactIds('student', $user)),
-                HttpStatusCode::NOT_ACCEPTABLE,
-                __('messages.invalid_argument')
-            );
-            if ($type == 'month') {
-                $response = [
-                    'data' => $this->wStat(
-                        Request::get('id'),
-                        $date, date('Y-m-t', strtotime($date))
-                    ),
-                ];
-            } else {
-                list($ins, $outs) = $this->attendances($studentId, $date);
-                $response = [
-                    'date' => $date,
-                    'ins'  => $ins,
-                    'outs' => $outs,
-                ];
-            }
-            
-            return response()->json($response);
-        }
-        $today = date('Y-m-d');
-        list($ins, $outs) = $this->attendances($studentId, $today);
-        $data = $this->wStat($studentId);
-        if (Request::ajax() && Request::method() == 'GET') {
-            return response()->json(['days' => $data]);
-        }
-        
-        return view(self::VIEW_NS . 'detail', [
-            'id'   => $studentId,
-            'data' => $data,
-            'date' => $today,
-            'ins'  => $ins,
-            'outs' => $outs,
-            'schoolname' => School::find(session('schoolId'))->name
-        ]);
-        
-    }
-    
-    /**
      * 获取指定学生指定日期的所有考勤记录
      *
      * @param $studentId
@@ -753,7 +745,6 @@ class StudentAttendance extends Model {
     }
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
-
     /**
      * 学生考勤饼图
      *
@@ -787,28 +778,6 @@ class StudentAttendance extends Model {
     }
     
     /**
-     * 验证考勤规则
-     *
-     * @return JsonResponse
-     */
-    private function wCheck() {
-        
-        # 获取规则的星期
-        $ruleDay = StudentAttendanceSetting::find(Request::input('sasId'))->day;
-        $weekDay = self::WEEK_DAYS[date('w', strtotime(Request::input('startDate')))];
-        abort_if(
-            $ruleDay != $weekDay,
-            HttpStatusCode::NOT_ACCEPTABLE,
-            __('messages.student_attendance.weekday_mismatched')
-        );
-        
-        return response()->json([
-            'message' => __('messages.student_attendance.authenticated')
-        ]);
-        
-    }
-    
-    /**
      * 返回指定班级对应的年级考勤规则
      *
      * @return JsonResponse
@@ -830,6 +799,28 @@ class StudentAttendance extends Model {
         
         return response()->json([
             'options' => $options,
+        ]);
+        
+    }
+    
+    /**
+     * 验证考勤规则
+     *
+     * @return JsonResponse
+     */
+    private function wCheck() {
+        
+        # 获取规则的星期
+        $ruleDay = StudentAttendanceSetting::find(Request::input('sasId'))->day;
+        $weekDay = self::WEEK_DAYS[date('w', strtotime(Request::input('startDate')))];
+        abort_if(
+            $ruleDay != $weekDay,
+            HttpStatusCode::NOT_ACCEPTABLE,
+            __('messages.student_attendance.weekday_mismatched')
+        );
+        
+        return response()->json([
+            'message' => __('messages.student_attendance.authenticated'),
         ]);
         
     }
@@ -889,7 +880,7 @@ class StudentAttendance extends Model {
                 ['name' => '异常', 'value' => $abnormals],
                 ['name' => '未打卡', 'value' => $missed],
             ],
-            'view' => $this->lists($studentIds, $attendances)
+            'view'  => $this->lists($studentIds, $attendances),
         ];
         
     }
@@ -903,12 +894,11 @@ class StudentAttendance extends Model {
      * @throws Throwable
      */
     private function lists($studentIds, $attendances) {
-    
+        
         // 未打卡的学生
         $ids = $attendances->pluck('student_id')->toArray();
         $studentIds = array_diff($studentIds, $ids);
         $students = Student::whereIn('id', $studentIds)->get();
-    
         list($normals, $abnormals, $missed) = array_map(
             function (Collection $objects) {
                 $list = [];
@@ -938,7 +928,7 @@ class StudentAttendance extends Model {
             [
                 $attendances->where('status', 1),
                 $attendances->where('status', 0),
-                $students
+                $students,
             ]
         );
         

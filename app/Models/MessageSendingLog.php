@@ -58,28 +58,12 @@ class MessageSendingLog extends Model {
     /**
      * 保存消息发送记录
      *
-     * @param $recipientCount
-     * @return bool
-     * @throws Exception
-     * @throws Throwable
+     * @param array $data
+     * @return MessageSendingLog|Model|null
      */
-    function store($recipientCount) {
+    function store(array $data) {
         
-        try {
-            DB::transaction(function () use ($recipientCount) {
-                $log = self::create([
-                    'read_count'      => 0,
-                    'received_count'  => 0,
-                    'recipient_count' => $recipientCount,
-                ]);
-                
-                return $log->id;
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
+        return $this->create($data);
         
     }
     

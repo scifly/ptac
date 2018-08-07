@@ -9,7 +9,7 @@ use App\Models\CommType;
 use App\Models\Department;
 use App\Models\DepartmentUser;
 use App\Models\Message;
-use App\Models\MessageType;
+use App\Models\MessageSendingLog;
 use App\Models\Mobile;
 use App\Models\School;
 use App\Models\User;
@@ -30,7 +30,7 @@ class SendMessageApi implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait, JobTrait;
     
-    protected $targets, $schoolId, $content;
+    protected $mobiles, $schoolId, $content;
     
     /**
      * SendMessage constructor.
@@ -41,7 +41,7 @@ class SendMessageApi implements ShouldQueue {
      */
     public function __construct($mobiles, $schoolId, $content) {
     
-        $this->targets = $mobiles;
+        $this->mobiles = $mobiles;
         $this->schoolId = $schoolId;
         $this->content = $content;
     
@@ -55,32 +55,41 @@ class SendMessageApi implements ShouldQueue {
     
         try {
             DB::transaction(function () {
+                $message = new Message;
+                $apiMessage = new ApiMessage;
+                $department = new Department;
+                
                 $school = School::find($this->schoolId);
                 $departmentIds = array_merge(
                     [$school->department_id],
-                    (new Department)->subDepartmentIds($school->department_id)
+                    $department->subDepartmentIds($school->department_id)
                 );
                 $userIds = array_unique(
                     DepartmentUser::whereIn('department_id', $departmentIds)->pluck('user_id')->toArray()
                 );
                 # 所有手机号码
-                $targets = array_unique(explode(',', $this->targets));
+                $targets = array_unique(explode(',', $this->mobiles));
                 # 在指定学校通讯录内的手机号码
                 $contacts = Mobile::whereIn('mobile', $targets)
                     ->whereIn('user_id', $userIds)
                     ->pluck('user_id', 'mobile')
                     ->toArray();
-                
+    
                 # 创建发送日志
-                $mslId = $this->mslId(count($targets));
-                
-                $message = new Message;
-                $apiMessage = new ApiMessage;
+                $msl = (new MessageSendingLog)->store([
+                    'read_count'     => 0,
+                    'received_count' => 0,
+                    'recipients'     => 0,
+                ]);
+    
+    
                 # 发送短信
                 $mobiles = array_diff($targets, array_keys($contacts));
-                $result = $message->sendSms($mobiles, $this->content . $school->signature);
+                $result = $message->sendSms(
+                    $mobiles, $this->content . $school->signature
+                );
                 $data = [
-                    'msl_id' => $mslId,
+                    'msl_id' => $msl->id,
                     # todo: 此处需更换为接口访问用户对应的message_type_id
                     'message_type_id' => 1,
                     's_user_id' => 0,
@@ -91,7 +100,7 @@ class SendMessageApi implements ShouldQueue {
                 $apiMessage->log($mobiles, $data);
                 
                 # 发送微信
-                $app = App::whereName('消息中心')->where('corp_id', $school->corp_id)->first()->toArray();
+                $app = App::whereName('消息中心')->where('corp_id', $school->corp_id)->first();
                 $users = User::whereIn('id', array_values($contacts))->get();
                 $userids = $users->pluck('userid')->toArray();
                 $content = [
@@ -101,13 +110,12 @@ class SendMessageApi implements ShouldQueue {
                     'msgtype' => 'text',
                     'text' => ['content' => $this->content]
                 ];
-                $result = $this->sendMessage($school->corp, $app, $content);
                 $data = [
                     'comm_type_id'    => CommType::whereName('微信')->first()->id,
-                    'app_id'          => $app['id'],
-                    'msl_id'          => $mslId,
+                    'app_id'          => $app->id,
+                    'msl_id'          => $msl->id,
                     # todo: 此处需更换为接口访问用户的realname . (文本)
-                    'title'           => '[接口应用名称]消息(文本)',
+                    'title'           => '接口消息(文本)',
                     'content'         => json_encode($content),
                     'serviceid'       => 0,
                     'message_id'      => 0,
@@ -117,15 +125,17 @@ class SendMessageApi implements ShouldQueue {
                     's_user_id'       => 0,
                     'r_user_id'       => 0,
                     # todo: 此处需更换为接口访问用户对应的message_type_id
-                    'message_type_id' => MessageType::whereName('[接口应用名称]消息')->first()->id,
+                    'message_type_id' => 1,
                     'read'            => 0,
                     'sent'            => $result,
                 ];
-                $message->log($users, $data);
+                $this->sendMessage($message->create($data));
             });
         } catch (Exception $e) {
             throw $e;
         }
+        
+        return true;
     
     }
     

@@ -3,8 +3,8 @@ namespace App\Helpers;
 
 use App\Events\JobResponse;
 use App\Models\Corp;
+use App\Models\Message;
 use App\Models\MessageSendingLog;
-use App\Models\Student;
 use App\Models\User;
 use App\Facades\Wechat;
 use Exception;
@@ -44,26 +44,61 @@ trait JobTrait {
     }
     
     /**
-     * 发送微信消息
+     * 发送消息（微信、短信）
      *
-     * @param Corp $corp - 用于发送消息的企业对象
-     * @param array $app - 应用详情
-     * @param array $message - 消息详情
-     * @return array|bool|mixed
-     * @throws Exception
+     * @param Message $message
+     * @return bool
+     * @throws Throwable
      */
-    function sendMessage(Corp $corp, array $app, array $message) {
+    function sendMessage(Message $message) {
+    
+        try {
+            DB::transaction(function () use ($message) {
+                $content = json_decode($message->content, true);
+                $userIds = User::whereIn('userid', explode('|', $content['touser']))
+                    ->pluck('id')->toArray();
+                $departmentIds = explode('|', $content['toparty']);
+                $msgType = $content['msgtype'];
+    
+                if ($msgType == 'sms') {
+                    list($logUsers, $mobiles) = $message->smsTargets($userIds, $departmentIds);
+                    $result = $message->sendSms($mobiles, $content['sms']);
+                    $message->log($logUsers, $message, $result);
+                    $this->inform($message, $result, $mobiles);
+                } else {
+                    /**
+                     * @var Collection|User[] $wxTargets
+                     * @var Collection|User[] $smsLogUsers
+                     * @var Collection|User[] $wxLogUsers
+                     * @var Collection|User[] $realTargetUsers
+                     */
+                    list($smsMobiles, $smsLogUsers, $wxTargets, $wxLogUsers, $realTargetUsers) =
+                        $message->wxTargets($userIds, $departmentIds);
         
-        $token = Wechat::getAccessToken($corp->corpid, $app['secret']);
-        if ($token['errcode']) { return $token; }
-        $result = json_decode(Wechat::sendMessage($token['access_token'], $message));
+                    # step 1: 向已关注的用户（监护人、教职员工）发送微信
+                    $subscribedTargets = $realTargetUsers->where('subscribed', 1);
+                    if ($subscribedTargets->count()) {
+                        $userids = $wxTargets->where('subscribed', 1)
+                            ->pluck('userid')->toArray();
+                        $content['touser'] = implode('|', $userids);
+                        $result = $message->sendWx($message->app, $content);
+                        $message->log($wxLogUsers, $message, $result);
+                        $this->inform($message, $result, $subscribedTargets);
+                    }
+                    # step 2: 向未关注的用户（监护人、教职员工）发送短信
+                    if (!empty($smsMobiles)) {
+                        $urlcode = uniqid();
+                        $result = $message->sendSms($smsMobiles, url('/sms') . '/' . $urlcode);
+                        $message->log($smsLogUsers, $message, $result, $urlcode);
+                        $this->inform($message, $result, $smsMobiles);
+                    }
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
         
-        return [
-            'errcode' => $result->{'errcode'},
-            'errmsg' => Constant::WXERR[$result->{'errcode'}],
-            'invaliduser' => isset($result->{'invaliduser'}) ? $result->{'invaliduser'} : '',
-            'invalidparty' => isset($result->{'invalidparty'}) ? $result->{'invalidparty'} : '',
-        ];
+        return true;
         
     }
     
@@ -205,6 +240,54 @@ trait JobTrait {
             'recipient_count' => $recipients,
         ];
         return MessageSendingLog::create($msl)->id;
+        
+    }
+    
+    /**
+     * 生成并发送广播消息
+     *
+     * @param Message $message
+     * @param mixed $result
+     * @param mixed $targets - 发送对象数量
+     */
+    private function inform(Message $message, $result, $targets) {
+        
+        $userId = $message->s_user_id;
+        if ($userId) {
+            $response = [
+                'userId'     => $userId,
+                'title'      => __('messages.message.title'),
+                'statusCode' => HttpStatusCode::OK,
+            ];
+            $msgTpl = 'messages.message.sent';
+            $content = json_decode($message->content, true);
+            $msgType = $content['msgtype'];
+            if ($msgType == 'sms') {
+                if ($result > 0) {
+                    $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+                    $response['message'] = __($msgTpl, [count($targets), 0, count($targets)]);
+                } else {
+                    $response['message'] = __($msgTpl, [count($targets), count($targets), 0]);
+                }
+            } else {
+                if ($result['errcode']) {
+                    $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+                    $response['message'] = $result['errmsg'];
+                } else {
+                    $total = $targets->count();
+                    $failed = $message->failedUserIds($result['invaliduser'], $result['invalidparty']);
+                    $succeeded = $total - $failed;
+                    if (!$succeeded) {
+                        $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+                    }
+                    if ($succeeded > 0 && $succeeded < $total) {
+                        $response['statusCode'] = HttpStatusCode::ACCEPTED;
+                    }
+                    $response['message'] = __($msgTpl, [$total, $succeeded, $failed]);
+                }
+            }
+            event(new JobResponse($response));
+        }
         
     }
     
