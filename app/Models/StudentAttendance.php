@@ -19,6 +19,7 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
@@ -191,6 +192,7 @@ class StudentAttendance extends Model {
         
         try {
             DB::transaction(function () {
+                Log::debug(json_encode(Request::getContent()));
                 $data = json_decode(Request::input('data'));
                 $school = School::find(Request::input('school_id'));
                 abort_if(
