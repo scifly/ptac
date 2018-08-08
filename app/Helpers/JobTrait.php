@@ -88,7 +88,7 @@ trait JobTrait {
                     # step 2: 向未关注的用户（监护人、教职员工）发送短信
                     if (!empty($smsMobiles)) {
                         $urlcode = uniqid();
-                        $result = $message->sendSms($smsMobiles, url('/sms') . '/' . $urlcode);
+                        $result = $message->sendSms($smsMobiles, config('app.url') . '/sms/' . $urlcode);
                         $message->log($smsLogUsers, $message, $result, $urlcode);
                         $this->inform($message, $result, $smsMobiles);
                     }
