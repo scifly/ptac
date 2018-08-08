@@ -271,9 +271,9 @@ class StudentAttendance extends Model {
                     ]);
                     # 创建并发送消息
                     $msl = (new MessageSendingLog)->store([
-                        'read_count'     => 0,
-                        'received_count' => 0,
-                        'recipients'     => 0,
+                        'read_count'      => 0,
+                        'received_count'  => 0,
+                        'recipient_count' => 0,
                     ]);
                     $app = App::whereCorpId($school->corp_id)->whereName('考勤中心')->first();
                     $userIds = $student->custodians->pluck('user_id')->toArray();
