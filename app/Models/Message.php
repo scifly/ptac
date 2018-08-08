@@ -1072,7 +1072,6 @@ class Message extends Model {
             ->orWhere('title', 'like', $keyword)
             ->get()->filter(
                 function (Message &$message) use ($userIds, $type) {
-                    Log::debug(json_encode($message));
                     $userId = $type == 'sent' ? $message->sender->id : $message->receiver->id;
                     $message->{'realname'} = User::find($userId)->realname;
                     $message->{'created'} = $this->humanDate($message->created_at);
