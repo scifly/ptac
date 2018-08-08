@@ -1066,7 +1066,8 @@ class Message extends Model {
                 $userIds, $user->custodian->students->pluck('user_id')->toArray()
             );
         }
-        Log::debug(Request::input('keyword'));
+        $k = Request::input('keyword');
+        Log::debug(isset($k));
         $keyword = '%' . Request::input('keyword') . '%';
         $type = Request::input('type');
         $messages = $this->where('content', 'like', $keyword)
