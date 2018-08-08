@@ -16,7 +16,7 @@
                                 {!! $message->created !!}
                                 @if ($type == 'sent')
                                     <span class="info-status {!! $message['sent'] ? 'green' : ($message['event_id'] ? 'orange' : 'red') !!}">
-                                        {!! $message['sent'] ? '已发送' : ($message['event_id'] ? '定时' : '草稿') !!}
+                                        {!! $message->sent ? '已发送' : ($message->event_id ? '定时' : '草稿') !!}
                                     </span>
                                 @endif
                             </span>
