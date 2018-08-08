@@ -969,8 +969,6 @@ class Message extends Model {
         } else {
             list($smsTargets, $wxTargets) = $realTargets;
         }
-        Log::debug('sms: '. json_encode($smsTargets));
-        Log::debug('wx: ' . json_encode($wxTargets));
         $smsMobiles = Mobile::whereIn('user_id', $smsTargets->pluck('id')->toArray())
             ->where(['enabled' => 1, 'isdefault' => 1])->pluck('mobile')->toArray();
         list($smsLogUsers, $wxLogUsers) = array_map(
@@ -988,7 +986,7 @@ class Message extends Model {
      *
      * @param $targets
      * @param $allLogUserIds
-     * @return User[]|Collection|\Illuminate\Support\Collection
+     * @return User[]|Collection
      */
     private function logUsers($targets, $allLogUserIds) {
         
@@ -996,7 +994,9 @@ class Message extends Model {
         foreach ($targets as $user) {
             if ($user->custodian) {
                 $studentUserIds = $user->custodian->students->pluck('user_id')->toArray();
-                $logUserIds[] = array_intersect($studentUserIds, $allLogUserIds)[0];
+                if (!empty(array_intersect($studentUserIds, $allLogUserIds))) {
+                    $logUserIds[] = array_intersect($studentUserIds, $allLogUserIds)[0];
+                }
             } else {
                 $logUserIds[] = $user->id;
             }
