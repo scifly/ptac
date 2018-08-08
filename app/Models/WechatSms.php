@@ -52,7 +52,7 @@ class WechatSms extends Model {
     
         $message = WechatSms::whereUrlcode($urlcode)->first()->message;
     
-        return view('wechat.message_center.show', [
+        return view('wechat.message_center.show_sms', [
             'message' => $message,
             'content' => $message->detail($message->id)
         ]);
