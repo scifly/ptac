@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 use Throwable;
@@ -1071,6 +1072,7 @@ class Message extends Model {
             ->orWhere('title', 'like', $keyword)
             ->get()->filter(
                 function (Message &$message) use ($userIds, $type) {
+                    Log::debug(json_encode($message));
                     $userId = $type == 'sent' ? $message->sender->id : $message->receiver->id;
                     $message->{'realname'} = User::find($userId)->realname;
                     $message->{'created'} = $this->humanDate($message->created_at);
