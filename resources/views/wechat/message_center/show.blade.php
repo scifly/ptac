@@ -33,7 +33,6 @@
                                         <?php
                                         $type = $content['type'];
                                         $msg = $type != 'other' ? $content[$type]->{$type} : $content[$type];
-                                        Log::debug(json_encode($msg));
                                         ?>
                                         @switch ($type)
                                             @case ('text')
@@ -75,7 +74,7 @@
                                                 @endforeach
                                                 @break
                                             @case ('sms')
-                                                <p>{!! $msg->{'sms'} !!}</p>
+                                                <p>{!! $msg !!}</p>
                                                 @break
                                             @default
                                                 <p>{!! $msg !!}</p>
