@@ -192,9 +192,10 @@ class StudentAttendance extends Model {
         
         try {
             DB::transaction(function () {
-                Log::debug(json_encode(Request::getContent()));
-                $data = json_decode(Request::input('data'));
-                $school = School::find(Request::input('school_id'));
+                $post = json_decode(Request::getContent(), true);
+                Log::debug($post['school_id']);
+                $data = $post['data'];
+                $school = School::find($post['school_id']);
                 abort_if(
                     !$school,
                     HttpStatusCode::NOT_FOUND,
