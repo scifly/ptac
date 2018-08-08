@@ -1068,9 +1068,12 @@ class Message extends Model {
         }
         $keyword = '%' . Request::input('keyword') . '%';
         $type = Request::input('type');
+        
         $messages = $this->where('content', 'like', $keyword)
             ->orWhere('title', 'like', $keyword)
-            ->get()->filter(
+            ->get();
+        Log::debug(json_encode($messages));
+        $messages = $messages->filter(
                 function (Message &$message) use ($userIds, $type) {
                     Log::debug(json_encode($message->sender));
                     $userId = $type == 'sent' ? $message->sender->id : $message->receiver->id;
