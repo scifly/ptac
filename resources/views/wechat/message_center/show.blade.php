@@ -21,19 +21,19 @@
                                 <span>发送者：{!! $content['sender'] !!}</span>
                             </div>
                         </div>
-                        {{--<div class="model-name-layout d-inline">--}}
-                            {{--<div class="model-name-left d-inline white-over">--}}
-                                {{--<span>接收者数量：{!! $content['recipients'] !!}</span>--}}
-                            {{--</div>--}}
-                        {{--</div>--}}
-                        {{--<div class="detail-content">--}}
-                            {{--<div class="artic-detail-module">--}}
-                                {{--<div class="writing-texts bg-fff">--}}
-                                    {{--<div class="wwbw js-wwbw mce-item-table article-message">--}}
-                                        {{--<?php--}}
-                                        {{--$type = $content['type'];--}}
-                                        {{--$msg = $type != 'other' ? $content[$type]->{$type} : $content[$type];--}}
-                                        {{--?>--}}
+                        <div class="model-name-layout d-inline">
+                            <div class="model-name-left d-inline white-over">
+                                <span>接收者数量：{!! $content['recipients'] !!}</span>
+                            </div>
+                        </div>
+                        <div class="detail-content">
+                            <div class="artic-detail-module">
+                                <div class="writing-texts bg-fff">
+                                    <div class="wwbw js-wwbw mce-item-table article-message">
+                                        <?php
+                                        $type = $content['type'];
+                                        $msg = $type != 'other' ? $content[$type]->{$type} : $content[$type];
+                                        ?>
                                         {{--@switch ($type)--}}
                                             {{--@case ('text')--}}
                                                 {{--<p>{!! $msg->{'content'} !!}</p>--}}
@@ -80,35 +80,35 @@
                                                 {{--<p>{!! $msg !!}</p>--}}
                                                 {{--@break--}}
                                         {{--@endswitch--}}
-                                    {{--</div>--}}
-                                {{--</div>--}}
-                            {{--</div>--}}
-                        {{--</div>--}}
-                        {{--@if (isset($replies))--}}
-                            {{--<div class="artic-head comment-head">--}}
-                                {{--<span class="artic-title white-over">回复区</span>--}}
-                                {{--<div style="clear: both;"></div>--}}
-                            {{--</div>--}}
-                            {{--<div class="out-layout comment-wrap">--}}
-                                {{--<div class="course-comment">--}}
-                                    {{--<div class="comment-content">--}}
-                                        {{--<div class="comment-content-container">--}}
-                                            {{--<div class="js-show-comment">--}}
-                                                {{--<div class="comment-selfEdit-con">--}}
-                                                    {{--<div class="edit-input">我来说点什么</div>--}}
-                                                    {{--<img class="head avatar" src="/img/0.png" alt="">--}}
-                                                {{--</div>--}}
-                                            {{--</div>--}}
-                                            {{--<ul class="discuss_list">--}}
-                                                {{--@include('wechat.message_center.replies', [--}}
-                                                    {{--'replies' => $replies--}}
-                                                {{--])--}}
-                                            {{--</ul>--}}
-                                        {{--</div>--}}
-                                    {{--</div>--}}
-                                {{--</div>--}}
-                            {{--</div>--}}
-                        {{--@endif--}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @if (isset($replies))
+                            <div class="artic-head comment-head">
+                                <span class="artic-title white-over">回复区</span>
+                                <div style="clear: both;"></div>
+                            </div>
+                            <div class="out-layout comment-wrap">
+                                <div class="course-comment">
+                                    <div class="comment-content">
+                                        <div class="comment-content-container">
+                                            <div class="js-show-comment">
+                                                <div class="comment-selfEdit-con">
+                                                    <div class="edit-input">我来说点什么</div>
+                                                    <img class="head avatar" src="/img/0.png" alt="">
+                                                </div>
+                                            </div>
+                                            <ul class="discuss_list">
+                                                @include('wechat.message_center.replies', [
+                                                    'replies' => $replies
+                                                ])
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
                 @if (isset($replies))
