@@ -92,7 +92,6 @@ trait JobTrait {
                             ? $content['text']['content']
                             : config('app.url') . '/sms/' . $urlcode;
                         $result = $message->sendSms($smsMobiles, $sms);
-                        Log::debug(json_encode($result));
                         $message->log($smsLogUsers, $message, $result, $urlcode);
                         $this->inform($message, $result, $smsMobiles);
                     }
@@ -272,7 +271,7 @@ trait JobTrait {
                 } else {
                     $total = $targets->count();
                     $failed = $message->failedUserIds($result['invaliduser'], $result['invalidparty']);
-                    $succeeded = $total - $failed;
+                    $succeeded = $total - count($failed);
                     if (!$succeeded) {
                         $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
                     }
@@ -280,7 +279,7 @@ trait JobTrait {
                         $response['statusCode'] = HttpStatusCode::ACCEPTED;
                     }
                     $response['message'] = sprintf(
-                        __($msgTpl), $total, $succeeded, $failed);
+                        __($msgTpl), $total, $succeeded, count($failed));
                 }
             } else {
                 $response['title'] = $response['title'] . '(短信)';

@@ -19,7 +19,7 @@ use Throwable;
  */
 class SendMessage implements ShouldQueue {
     
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait, JobTrait;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, JobTrait;
     
     protected $message;
     
