@@ -704,7 +704,7 @@
                     dept_ids: mc.selectedDepartmentIds,
                     message_type_id: $('#message_type_id').val()
                 };
-                if ($timing.val()) {
+                if ($timing.val() === '1') {
                     $.extend(formData, { time: $time.val() });
                 }
                 if ($id.length > 0) {
