@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 use Throwable;
@@ -968,6 +969,8 @@ class Message extends Model {
         } else {
             list($smsTargets, $wxTargets) = $realTargets;
         }
+        Log::debug('sms: '. json_encode($smsTargets));
+        Log::debug('wx: ' . json_encode($wxTargets));
         $smsMobiles = Mobile::whereIn('user_id', $smsTargets->pluck('id')->toArray())
             ->where(['enabled' => 1, 'isdefault' => 1])->pluck('mobile')->toArray();
         list($smsLogUsers, $wxLogUsers) = array_map(
