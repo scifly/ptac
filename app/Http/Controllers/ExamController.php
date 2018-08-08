@@ -77,21 +77,6 @@ class ExamController extends Controller {
     }
     
     /**
-     * 考试详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function show($id) {
-        
-        return $this->output([
-            'exam' => $this->exam->find($id),
-        ]);
-        
-    }
-    
-    /**
      * 编辑考试
      *
      * @param $id

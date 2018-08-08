@@ -80,21 +80,6 @@ class CustodianController extends Controller {
     }
     
     /**
-     * 监护人详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function show($id) {
-        
-        return $this->output([
-            'custodian' => $this->custodian->find($id),
-        ]);
-        
-    }
-    
-    /**
      * 编辑监护人
      *
      * @param $id

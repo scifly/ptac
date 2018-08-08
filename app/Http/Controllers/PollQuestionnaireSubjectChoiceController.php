@@ -80,7 +80,7 @@ class PollQuestionnaireSubjectChoiceController extends Controller {
      * 编辑选项
      * @param $id
      * @return bool|JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function edit($id) {
         

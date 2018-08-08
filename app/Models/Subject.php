@@ -170,11 +170,7 @@ class Subject extends Model {
             [
                 'db'        => 'Subject.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    $id = $row['id'];
-                    $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
-                    $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
-                    
-                    return Snippet::status($d) . $editLink . $delLink;
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];

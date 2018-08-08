@@ -76,21 +76,6 @@ class ProcedureController extends Controller {
     }
     
     /**
-     * 审批流程详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function show($id) {
-        
-        return $this->output([
-            'procedure' => Procedure::find($id),
-        ]);
-        
-    }
-    
-    /**
      * 编辑审批流程
      *
      * @param $id

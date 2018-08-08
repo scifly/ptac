@@ -78,21 +78,6 @@ class SchoolController extends Controller {
     }
     
     /**
-     * 学校详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function show($id) {
-        
-        return $this->output([
-            'school' => $this->school->find($id),
-        ]);
-        
-    }
-    
-    /**
      * 编辑学校
      *
      * @param $id

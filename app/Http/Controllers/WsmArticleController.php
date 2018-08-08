@@ -81,21 +81,6 @@ class WsmArticleController extends Controller {
     }
     
     /**
-     * 微网站文章详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function show($id) {
-        
-        return $this->output([
-            'article' => WsmArticle::find($id),
-        ]);
-        
-    }
-    
-    /**
      * 编辑微网站文章
      *
      * @param $id

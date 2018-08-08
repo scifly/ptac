@@ -89,21 +89,6 @@ class StudentController extends Controller {
     }
     
     /**
-     * 学籍详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function show($id) {
-        
-        return $this->output([
-            'student' => Student::find($id),
-        ]);
-        
-    }
-    
-    /**
      * 编辑学籍
      *
      * @param $id

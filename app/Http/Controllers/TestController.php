@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Facades\Wechat;
 use App\Helpers\ModelTrait;
 use App\Models\Department;
 use Exception;

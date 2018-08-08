@@ -84,21 +84,6 @@ class EducatorController extends Controller {
     }
     
     /**
-     * 教职员工详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function show($id) {
-        
-        return $this->output([
-            'educator' => $this->educator->find($id),
-        ]);
-        
-    }
-    
-    /**
      * 编辑教职员工
      *
      * @param $id

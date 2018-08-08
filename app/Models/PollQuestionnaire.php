@@ -147,7 +147,7 @@ class PollQuestionnaire extends Model {
             [
                 'db'        => 'PollQuestionnaire.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row);
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];

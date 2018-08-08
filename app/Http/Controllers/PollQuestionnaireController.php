@@ -74,21 +74,6 @@ class PollQuestionnaireController extends Controller {
     }
     
     /**
-     * 问卷详情
-     *
-     * @param $id
-     * @return bool|JsonResponse
-     * @throws Throwable
-     */
-    public function show($id) {
-        
-        return $this->output([
-            'pq' => PollQuestionnaire::find($id),
-        ]);
-        
-    }
-    
-    /**
      * 编辑问卷
      * @param $id
      * @return bool|JsonResponse
