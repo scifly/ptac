@@ -65,7 +65,7 @@
                                 @if (sizeof($sent) > 0)
                                     @foreach($sent as $type => $messages)
                                         @foreach($messages as $message)
-                                            <div class="table-list list-{!! $type !!}">
+                                            <div class="table-list list-{!! $type !!} weui-cell weui-cell_swiped">
                                                 <div class="line"></div>
                                                 <div id="{!! $message['id'] !!}"
                                                      class="teacher-list-box grayline"
