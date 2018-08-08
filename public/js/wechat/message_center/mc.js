@@ -91,7 +91,6 @@
                             type = $('.weui-bar__item--on').attr('data-type'),
                             $messageList = $('.weui-popup__container .weui-tab__bd-item .list-layout');
 
-                        console.log(keyword);
                         $messageList.html('');
                         $.ajax({
                             type: 'POST',
