@@ -1071,11 +1071,10 @@ class Message extends Model {
         
         $messages = $this->where('content', 'like', $keyword)
             ->orWhere('title', 'like', $keyword)
-            ->get();
-        Log::debug(json_encode($messages));
-        $messages = $messages->filter(
+            ->get()->filter(
                 function (Message &$message) use ($userIds, $type) {
-                    Log::debug(json_encode($message->sender));
+                    if ($type == 'sent' && !$message->sender) return false;
+                    if ($type != 'sent' && !$message->receiver) return false;
                     $userId = $type == 'sent' ? $message->sender->id : $message->receiver->id;
                     $message->{'realname'} = User::find($userId)->realname;
                     $message->{'created'} = $this->humanDate($message->created_at);
