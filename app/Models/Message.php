@@ -831,9 +831,11 @@ class Message extends Model {
                             }
                         } else {
                             unset($content[$content['msgtype']]);
+                            $content['sms'] = $content['msgtype'] != 'text'
+                                ? config('app.url') . '/sms/' . $urlcode
+                                : $content['text']['content'];
                             $content['msgtype'] = 'sms';
                             $content['agentid'] = '0';
-                            $content['sms'] = config('app.url') . '/sms/' . $urlcode;
                             $data['title'] = MessageType::find($data['message_type_id'])->name . '(短信)';
                             $data['content'] = json_encode($content);
                             $data['sent'] = $result > 0 ? 0 : 1;
