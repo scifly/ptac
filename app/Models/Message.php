@@ -830,10 +830,10 @@ class Message extends Model {
                                 $data['sent'] = empty(array_intersect($custodianUserIds, $failedUserIds));
                             }
                         } else {
-                            unset($content[$content['msgtype']]);
                             $content['sms'] = $content['msgtype'] != 'text'
                                 ? config('app.url') . '/sms/' . $urlcode
                                 : $content['text']['content'];
+                            unset($content[$content['msgtype']]);
                             $content['msgtype'] = 'sms';
                             $content['agentid'] = '0';
                             $data['title'] = MessageType::find($data['message_type_id'])->name . '(短信)';
