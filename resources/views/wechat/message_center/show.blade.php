@@ -33,6 +33,7 @@
                                         <?php
                                         $type = $content['type'];
                                         $msg = $type != 'other' ? $content[$type]->{$type} : $content[$type];
+                                        Log::debug(json_encode($msg));
                                         ?>
                                         @switch ($type)
                                             @case ('text')
