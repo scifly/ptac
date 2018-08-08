@@ -293,19 +293,20 @@ class StudentAttendance extends Model {
                         ),
                     ];
                     $message = (new Message)->create([
-                        'comm_type_id' => CommType::whereName('微信')->first()->id,
-                        'app_id'       => App::whereCorpId($school->corp_id)->whereName('考勤中心')->first()->id,
-                        'msl_id'       => $msl->id,
-                        'title'        => '考勤消息(文本)',
-                        'content'      => json_encode($content),
-                        'serviceid'    => 0,
-                        'message_id'   => 0,
-                        'url'          => 'http://',
-                        'media_ids'    => 0,
-                        's_user_id'    => 0,
-                        'r_user_id'    => 0,
-                        'read'         => 0,
-                        'sent'         => 1,
+                        'comm_type_id'    => CommType::whereName('微信')->first()->id,
+                        'app_id'          => App::whereCorpId($school->corp_id)->whereName('考勤中心')->first()->id,
+                        'msl_id'          => $msl->id,
+                        'title'           => '考勤消息(文本)',
+                        'content'         => json_encode($content),
+                        'serviceid'       => 0,
+                        'message_id'      => 0,
+                        'message_type_id' => 1,
+                        'url'             => 'http://',
+                        'media_ids'       => 0,
+                        's_user_id'       => 0,
+                        'r_user_id'       => 0,
+                        'read'            => 0,
+                        'sent'            => 1,
                     ]);
                     SendMessage::dispatch($message);
                 }
