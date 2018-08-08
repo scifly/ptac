@@ -61,7 +61,7 @@
                                 </ul>
                                 <div class="select-container" style="display: none;"></div>
                             </div>
-                            <div class="list-layout">
+                            <div class="list-layout weui-cells">
                                 @if (sizeof($sent) > 0)
                                     @foreach($sent as $type => $messages)
                                         @foreach($messages as $message)
