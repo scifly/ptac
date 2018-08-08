@@ -4,7 +4,7 @@
         <div class="teacher-list-box grayline">
             <div class="teacher-work-box">
                 <a class="teacher-work-head" style="color: #000;"
-                   href="@if ($type == 'sent') {!! $message->sent ? 'show' : 'edit' !!}/{!! $message->id !!} @else show/{!! $message->id !!} @endif"
+                   href="@if ($type == 'sent') {!! $message->sent ? 'mc/show' : 'mc/edit' !!}/{!! $message->id !!} @else mc/show/{!! $message->id !!} @endif"
                 >
                     <div class="titleinfo">
                         <div class="titleinfo-head">
