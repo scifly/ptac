@@ -92,6 +92,7 @@ trait JobTrait {
                             ? $content['text']['content']
                             : config('app.url') . '/sms/' . $urlcode;
                         $result = $message->sendSms($smsMobiles, $sms);
+                        Log::debug(json_encode($result));
                         $message->log($smsLogUsers, $message, $result, $urlcode);
                         $this->inform($message, $result, $smsMobiles);
                     }
