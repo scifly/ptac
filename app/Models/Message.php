@@ -1066,14 +1066,13 @@ class Message extends Model {
                 $userIds, $user->custodian->students->pluck('user_id')->toArray()
             );
         }
-        $k = Request::input('keyword');
-        Log::debug(isset($k));
         $keyword = '%' . Request::input('keyword') . '%';
         $type = Request::input('type');
         $messages = $this->where('content', 'like', $keyword)
             ->orWhere('title', 'like', $keyword)
             ->get()->filter(
                 function (Message &$message) use ($userIds, $type) {
+                    Log::debug(json_encode($message->sender));
                     $userId = $type == 'sent' ? $message->sender->id : $message->receiver->id;
                     $message->{'realname'} = User::find($userId)->realname;
                     $message->{'created'} = $this->humanDate($message->created_at);
