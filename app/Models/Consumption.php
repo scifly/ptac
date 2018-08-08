@@ -136,20 +136,21 @@ class Consumption extends Model {
         
         try {
             DB::transaction(function () {
-               $data = Request::input('data');
-               $consumptions = [];
-               foreach ($data as &$datum) {
-                   $student = Student::whereStudentNumber($datum['student_number'])->first();
-                   $datum['student_id'] = $student ? $student->student_number : 0;
-                   abort_if(
-                       !Validator::make($datum, (new ConsumptionRequest)->rules()),
-                       HttpStatusCode::NOT_ACCEPTABLE,
-                       __('messages.not_acceptable')
-                   );
-                   unset($datum['student_number']);
-                   $consumptions[] = $datum;
-               }
-               $this->insert($consumptions);
+                $post = json_decode(Request::getContent(), true);
+                $data = $post['data'];
+                $consumptions = [];
+                foreach ($data as &$datum) {
+                    $student = Student::whereStudentNumber($datum['student_number'])->first();
+                    $datum['student_id'] = $student ? $student->student_number : 0;
+                    abort_if(
+                        !Validator::make($datum, (new ConsumptionRequest)->rules()),
+                        HttpStatusCode::NOT_ACCEPTABLE,
+                        __('messages.not_acceptable')
+                    );
+                    unset($datum['student_number']);
+                    $consumptions[] = $datum;
+                }
+                $this->insert($consumptions);
             });
         } catch (Exception $e) {
             throw $e;
@@ -157,7 +158,7 @@ class Consumption extends Model {
         
         return response()->json([
             'statusCode' => HttpStatusCode::OK,
-            'message' => __('messages.ok')
+            'message'    => __('messages.ok'),
         ]);
         
     }
@@ -242,7 +243,6 @@ class Consumption extends Model {
     }
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
-
     /**
      * 获取需要返回消费记录的学生ids
      *
