@@ -418,7 +418,56 @@ var page = {
                         }
                     });
                 });
+            },
+            batch = function (action) {
+                var type = '';
+                switch (action) {
+                    case 'enable': type = '启用'; break;
+                    case 'disable': type = '禁用'; break;
+                    case 'delete': type = '删除'; break;
+                    default: break;
+                }
+                if (selected.length === 0) {
+                    page.inform('批量' + type, '请选择需要批量' + type + '的记录', page.failure);
+                    return false;
+                }
+                $('.overlay').show();
+                $.ajax({
+                    type: action !== 'delete' ? 'PUT' : 'DELETE',
+                    dataType: 'json',
+                    url: page.siteRoot() + table + (action !== 'delete' ? '/update' : '/delete'),
+                    data: {
+                        ids: selected,
+                        action: action,
+                        _token: page.token()
+                    },
+                    success: function (result) {
+                        $('.overlay').hide();
+                        switch (action) {
+                            case 'enable':
+                            case 'disable':
+                                $(datatable + ' tbody tr.selected td:last-child >:first-child').each(function() {
+                                    $(this).removeClass().addClass(
+                                        'fa fa-circle ' + (action === 'enable' ? 'text-green' : 'text-gray')
+                                    );
+                                });
+                                break;
+                            case 'delete':
+                                $(datatable + ' tbody tr.selected').each(function() {
+                                    $(this).addClass('text-gray');
+                                });
+                                break;
+                            default:
+                                break;
+                        }
+                        page.inform('批量' + type, result.message, page.success);
+                    },
+                    error: function (e) {
+                        page.errorHandler(e);
+                    }
+                });
             };
+
         $tbody.on('click', 'tr', function () {
             var id = parseInt($(this).find('td').eq(0).text());
             var index = $.inArray(id, selected);
@@ -443,54 +492,6 @@ var page = {
                 $(this).removeClass('selected');
             });
         });
-        var batch = function (action) {
-            var type = '';
-            switch (action) {
-                case 'enable': type = '启用'; break;
-                case 'disable': type = '禁用'; break;
-                case 'delete': type = '删除'; break;
-                default: break;
-            }
-            if (selected.length === 0) {
-                page.inform('批量' + type, '请选择需要批量' + type + '的记录', page.failure);
-                return false;
-            }
-            $('.overlay').show();
-            $.ajax({
-                type: action !== 'delete' ? 'PUT' : 'DELETE',
-                dataType: 'json',
-                url: page.siteRoot() + table + (action !== 'delete' ? '/update' : '/delete'),
-                data: {
-                    ids: selected,
-                    action: action,
-                    _token: page.token()
-                },
-                success: function (result) {
-                    $('.overlay').hide();
-                    switch (action) {
-                        case 'enable':
-                        case 'disable':
-                            $(datatable + ' tbody tr.selected td:last-child >:first-child').each(function() {
-                                $(this).removeClass().addClass(
-                                    'fa fa-circle ' + (action === 'enable' ? 'text-green' : 'text-gray')
-                                );
-                            });
-                            break;
-                        case 'delete':
-                            $(datatable + ' tbody tr.selected').each(function() {
-                                $(this).addClass('text-gray');
-                            });
-                            break;
-                        default:
-                            break;
-                    }
-                    page.inform('批量' + type, result.message, page.success);
-                },
-                error: function (e) {
-                    page.errorHandler(e);
-                }
-            });
-        };
         $batchEnable.on('click', function() { batch('enable'); });
         $batchDisable.on('click', function() { batch('disable'); });
         $batchDelete.on('click', function() { batch('delete'); });
