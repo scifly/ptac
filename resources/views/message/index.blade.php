@@ -36,30 +36,10 @@
                     @include('message.create_edit')
                 </div>
                 <div class="tab-pane" id="tab02">
-                    <table id="data-table" style="width: 100%"
-                           class="display nowrap table table-striped table-bordered table-hover table-condensed">
-                        <thead>
-                        <tr class="bg-info">
-                            @foreach ($titles as $title)
-                                <th>{!! $title !!}</th>
-                            @endforeach
-                        </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                    @include('message.list_sent')
                 </div>
                 <div class="tab-pane" id="tab03">
-                    <table id="data-table-r" style="width: 100%"
-                           class="display nowrap table table-striped table-bordered table-hover table-condensed">
-                        <thead>
-                        <tr class="bg-info">
-                            @foreach ($rTitles as $title)
-                                <th>{!! $title !!}</th>
-                            @endforeach
-                        </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                    @include('message.list_received')
                 </div>
                 <div class="tab-pane" id="tab04"></div>
             </div>
