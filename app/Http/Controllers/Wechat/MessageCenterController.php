@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Wechat;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MessageRequest;
 use App\Models\Message;
-use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -138,7 +137,7 @@ class MessageCenterController extends Controller {
      *
      * @param $id
      * @return bool|JsonResponse|null
-     * @throws Exception
+     * @throws Throwable
      */
     public function destroy($id) {
         
