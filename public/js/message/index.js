@@ -812,7 +812,7 @@ function refreshValidation(anchor) {
     }
 }
 function reloadDatatable(options) {
-    if ($.dataTable) {
+    if ($.fn.dataTable) {
         $('#data-table').dataTable().fnDestroy();
     }
     page.initDatatable('messages', options);
