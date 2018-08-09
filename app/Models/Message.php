@@ -274,7 +274,7 @@ class Message extends Model {
                 )
             );
         }
-        $condition = $received
+        $condition = !$received
             ? 'Message.r_user_id = 0 AND Message.s_user_id IN' . ' (' . implode(',', $userIds) . ')'
             : 'Message.r_user_id = ' . Auth::id();
         
