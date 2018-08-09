@@ -74,27 +74,13 @@ class MessageCenterIndexComposer {
      * 格式化日期
      *
      * @param array $data
-     * @param $direction
+     * @param $direction - 已发/已收
      */
     private function format(array &$data, $direction) {
         
         foreach ($data as $type => &$messages) {
             foreach ($messages as &$message) {
                 $message['created_at'] = $this->humanDate($message['created_at']);
-                $object = json_decode($message['content']);
-                $type = array_search(mb_substr($message['title'], -3, 2), Constant::INFO_TYPE);
-                if (!$type) {
-                    $messageType = MessageType::find($message['message_type_id']);
-                    $messageTypeName = $messageType ? $messageType->name : '未知消息';
-                    if (is_object($object) && property_exists(get_class($object), 'msgtype')) {
-                        $type = $object->{'msgtype'};
-                        $title = $messageTypeName . '(' . Constant::INFO_TYPE[$type] . ')';
-                    } else {
-                        $title = $messageTypeName . '(未知)';
-                    }
-                    Message::find($message['id'])->update(['title' => $title]);
-                    $message['title'] = $title;
-                }
                 if (!$message['read'] && $direction == 'received') {
                     $message['title'] = '<b>' . $message['title'] . '</b>';
                     $message['created_at'] = '<b>' . $message['created_at'] . '</b>';
@@ -102,6 +88,8 @@ class MessageCenterIndexComposer {
                 if ($direction == 'sent') {
                     $recipient = User::find($message['r_user_id']);
                     $message['recipient'] = $recipient ? $recipient->realname : '(未知)';
+                    $message['color'] = $message['sent'] ? 'green' : ($message['event_id'] ? 'orange' : 'red');
+                    $message['status'] = $message['sent'] ? '已发送' : ($message['event_id'] ? '定时' : '草稿');
                 } else {
                     $sender = User::find($message['s_user_id']);
                     $message['sender'] = $sender ? $sender->realname : '(未知)';
