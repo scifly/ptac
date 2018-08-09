@@ -14,7 +14,7 @@
                 </li>
                 <li class="action-type">
                     <a href="#tab03" data-toggle="tab">
-                        <i class="fa fa-th-large"></i>&nbsp;收件箱
+                        <i class="fa fa-archive"></i>&nbsp;收件箱
                     </a>
                 </li>
                 <li class="action-type">
