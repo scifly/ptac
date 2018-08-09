@@ -811,10 +811,7 @@ function refreshValidation(anchor) {
     }
 }
 function loadDatatable(options, dtId) {
-    var datatable = typeof dtId === 'undefined' ? '#data-table' : '#' + dtId;
-
     if ($.fn.dataTable) {
-
         $('#data-table').dataTable().fnDestroy();
         $('#data-table-r').dataTable().fnDestroy();
     }
