@@ -31,7 +31,8 @@ class MessageCenterIndexComposer {
         # 当前用户发送的消息
         $sent = [];
         if ($canSend) {
-            $sent = Message::whereSUserId($user->id)->get()
+            $sent = Message::whereSUserId($user->id)
+                ->where('r_user_id', 0)->get()
                 ->/*unique('msl_id')->*/sortByDesc('created_at')
                 ->groupBy('message_type_id')->toArray();
         }
