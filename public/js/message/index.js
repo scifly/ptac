@@ -218,7 +218,7 @@ var options = [{
     className: 'text-center', targets: [2, 3, 4, 5, 6]
 }];
 // 消息列表
-page.initDatatable('messages', options);
+// page.initDatatable('messages', options);
 // 重新加载datatable
 $tabSent.on('click', function () { reloadDatatable(options); });
 // 显示/隐藏批处理按钮组
