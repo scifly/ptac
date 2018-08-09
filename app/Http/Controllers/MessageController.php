@@ -143,6 +143,7 @@ class MessageController extends Controller {
     
     /**
      * 删除消息
+     *
      * @param null $id
      * @return JsonResponse|string
      * @throws Throwable
