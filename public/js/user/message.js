@@ -1,5 +1,5 @@
 //# sourceURL=mc.js
 var options = [
-    { className: 'text-center', targets: [0, 1, 2, 3, 4, 5, 6, 7] },
+    { className: 'text-center', targets: [2, 3, 4, 5, 6] },
 ];
-page.initDatatable('users', options, 'message');
+page.initDatatable('users', options, 'message', '#data-table', 1);
