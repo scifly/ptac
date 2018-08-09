@@ -1080,7 +1080,7 @@ class Message extends Model {
                         $msl = $message->messageSendinglog;
                         $message->{'realname'} = $message->receiver
                             ? $message->receiver->realname
-                            : ($msl ? $msl->recipient_count : '0') . ' 名';
+                            : ($msl ? $msl->recipient_count : '0') . ' 人';
                         $message->{'color'} = $message->sent ? 'green' : ($message->event_id ? 'orange' : 'red');
                         $message->{'status'} = $message->sent ? '已发送' : ($message->event_id ? '定时' : '草稿');
                         $message->{'uri'} = 'mc/' . ($message->sent ? 'show' : 'edit') . '/' . $message->id;

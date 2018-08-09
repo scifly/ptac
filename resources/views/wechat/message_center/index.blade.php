@@ -79,7 +79,7 @@
                                                                         {!! $message['title'] !!}
                                                                     </div>
                                                                     <div class="title-info ml12">
-                                                                        接收者：{!! $message['recipient'] !!} ...
+                                                                        接收者：{!! $message['recipient'] !!}
                                                                     </div>
                                                                 </div>
                                                                 <span class="worktime">
