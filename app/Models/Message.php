@@ -1077,9 +1077,10 @@ class Message extends Model {
                     if ($type == 'sent') {
                         if (!$message->sender) { return false; }
                         $userId = $message->sender->id;
+                        $msl = $message->messageSendinglog;
                         $message->{'realname'} = $message->receiver
                             ? $message->receiver->realname
-                            : $message->messageSendinglog->recipient_count . ' 名';
+                            : ($msl ? $msl->recipient_count : '0') . ' 名';
                         $message->{'color'} = $message->sent ? 'green' : ($message->event_id ? 'orange' : 'red');
                         $message->{'status'} = $message->sent ? '已发送' : ($message->event_id ? '定时' : '草稿');
                         $message->{'uri'} = 'mc/' . ($message->sent ? 'show' : 'edit') . '/' . $message->id;
