@@ -4,6 +4,7 @@ namespace App\Http\ViewComposers;
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use App\Models\Message;
+use App\Models\MessageSendingLog;
 use App\Models\MessageType;
 use App\Models\School;
 use App\Models\Student;
@@ -83,7 +84,9 @@ class MessageCenterIndexComposer {
                 $message['created_at'] = $this->humanDate($message['created_at']);
                 if ($direction == 'sent') {
                     $recipient = User::find($message['r_user_id']);
-                    $message['recipient'] = $recipient ? $recipient->realname : '(未知)';
+                    $message['recipient'] = $recipient
+                        ? $recipient->realname
+                        : MessageSendingLog::find($message['msl_id'])->recipient_count . ' 名';
                     $message['color'] = $message['sent'] ? 'green' : ($message['event_id'] ? 'orange' : 'red');
                     $message['status'] = $message['sent'] ? '已发送' : ($message['event_id'] ? '定时' : '草稿');
                 } else {
