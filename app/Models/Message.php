@@ -156,6 +156,7 @@ class Message extends Model {
     function index() {
         
         Log::debug(json_encode(Request::query()));
+        Log::debug(json_encode(Request::input()));
         $columns = [
             ['db' => 'Message.id', 'dt' => 0],
             [
