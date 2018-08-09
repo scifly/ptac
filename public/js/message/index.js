@@ -223,6 +223,7 @@ $('.action-type').on('click', function () {
     var href = $(this).find('a').attr('href');
     if ($.inArray(href, ['#tab02', '#tab03']) !== -1) {
         $batchBtns.slideDown();
+        $('#batch-enable, #batch-disable').attr('data-field', href === '#tab02' ? 'sent' : 'read');
     } else {
         $batchBtns.slideUp();
     }
