@@ -56,9 +56,7 @@ init();
 /** 发送对象 */
 // 部门及联系人树加载
 $.getMultiScripts(['js/tree.js']).done(
-    function () {
-        $.tree().list('messages/index', 'contact');
-    }
+    function () { $.tree().list('messages/index', 'contact'); }
 );
 /** 图文 */
 var mpnews = { articles: [] },  // 文章数组
@@ -814,7 +812,9 @@ function refreshValidation(anchor) {
     }
 }
 function reloadDatatable(options) {
-    $('#data-table').dataTable().fnDestroy();
+    if ($.dataTable) {
+        $('#data-table').dataTable().fnDestroy();
+    }
     page.initDatatable('messages', options);
 }
 function getMessageId($button) {
