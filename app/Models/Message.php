@@ -263,22 +263,17 @@ class Message extends Model {
                 ],
             ],
         ];
-        $condition = null;
-        $role = Auth::user()->group->name;
-        if (in_array($role, Constant::SUPER_ROLES)) {
-            $userIds[] = Auth::id();
+        $user = Auth::user();
+        $userIds = [$user->id];
+        if (in_array($user->group->name, Constant::SUPER_ROLES)) {
             $userIds = array_unique(
                 array_merge(
                     $this->userIds(School::find($this->schoolId())->department_id),
                     $userIds
                 )
             );
-            $condition = 'Message.s_user_id IN' . ' (' . implode(',', $userIds) . ')';
-        } else {
-            $condition = 'Message.s_user_id = ' . Auth::id()
-                . ' OR Message.r_user_id = ' . Auth::id();
         }
-        
+        $condition = 'Message.r_user_id = 0 AND Message.s_user_id IN' . ' (' . implode(',', $userIds) . ')';
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition
         );
