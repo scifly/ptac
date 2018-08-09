@@ -43,8 +43,8 @@
                     </button>
                 @endcan
             @endif
-            @if (isset($uris['destroy']))
-                @can ('act', $uris['destroy'])
+            @if (isset($uris['destroy']) || isset($removable))
+                @can ('act', $uris['destroy'] || isset($removable))
                     <button id="batch-delete" type="button" class="btn btn-default" title="批量删除">
                         <i class="fa fa-trash text-red"></i>
                     </button>

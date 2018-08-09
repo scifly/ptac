@@ -17,6 +17,7 @@ class UserMessageComposer {
         $view->with([
             'titles' => ['#', '通信方式', '应用', '消息批次', '发送者', '类型', '接收于', '状态'],
             'batch' => true,
+            'removable' => true
         ]);
         
     }
