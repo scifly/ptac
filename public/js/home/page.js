@@ -135,8 +135,9 @@ var page = {
     getMenuUrl: function () {
         return page.siteRoot() + $('.sidebar-menu li.active').last().find('a').attr('href');
     },
-    getQueryString: function () {
-        return '?menuId=' + this.getActiveMenuId() + '&tabId=' + this.getActiveTabId();
+    getQueryString: function (extra) {
+        return '?extra=' + (typeof extra === 'undefined' ? '' : extra) +
+            '&menuId=' + this.getActiveMenuId() + '&tabId=' + this.getActiveTabId();
     },
     errorHandler: function (e) {
         var obj = JSON.parse(e.responseText);
@@ -355,8 +356,7 @@ var page = {
                     columns = $datatable.find('thead tr th').length,
                     statusCol = {className: 'text-right', targets: [columns - 1]},
                     uri = typeof method === 'undefined' ? '/index' : '/' + method,
-                    url = page.siteRoot() + table + uri + page.getQueryString() +
-                        (typeof extra !== 'undefined' ? ('&extra=' + extra) : '');
+                    url = page.siteRoot() + table + uri + page.getQueryString(extra);
 
                 if (typeof options === 'undefined') {
                     options = [statusCol];
