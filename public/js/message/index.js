@@ -814,7 +814,9 @@ function loadDatatable(options, dtId) {
     var datatable = typeof dtId === 'undefined' ? '#data-table' : '#' + dtId;
 
     if ($.fn.dataTable) {
-        $(datatable).dataTable().fnDestroy();
+
+        $('#data-table').dataTable().fnDestroy();
+        $('#data-table-r').dataTable().fnDestroy();
     }
     if (typeof dtId === 'undefined') {
         page.initDatatable('messages', options);
