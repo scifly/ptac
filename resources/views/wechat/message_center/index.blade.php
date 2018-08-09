@@ -74,20 +74,20 @@
                                                     <div class="teacher-work-box">
                                                         <a class="teacher-work-head" style="color:#000" href="#">
                                                             <div class="titleinfo">
-                                                                    <div class="titleinfo-head-left fl">
-                                                                        <div class="title ml12">
-                                                                            {!! $message['title'] !!}
-                                                                        </div>
-                                                                        <div class="title-info ml12">
-                                                                            接收者：{!! $message['recipient'] !!} ...
-                                                                        </div>
+                                                                <div class="titleinfo-head-left fl">
+                                                                    <div class="title ml12">
+                                                                        {!! $message['title'] !!}
                                                                     </div>
-                                                                    <span class="worktime">
-                                                                        {!! $message['created_at'] !!}
-                                                                        <span class="info-status {!! $message['color'] !!}">
-                                                                            {!! $message['status'] !!}
-                                                                        </span>
-													                </span>
+                                                                    <div class="title-info ml12">
+                                                                        接收者：{!! $message['recipient'] !!} ...
+                                                                    </div>
+                                                                </div>
+                                                                <span class="worktime">
+                                                                    {!! $message['created_at'] !!}
+                                                                    <span class="info-status {!! $message['color'] !!}">
+                                                                        {!! $message['status'] !!}
+                                                                    </span>
+                                                                </span>
                                                             </div>
                                                         </a>
                                                     </div>

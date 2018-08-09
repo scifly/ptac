@@ -1073,11 +1073,24 @@ class Message extends Model {
             ->orWhere('title', 'like', $keyword)
             ->get()->filter(
                 function (Message &$message) use ($userIds, $type) {
-                    if ($type == 'sent' && !$message->sender) return false;
-                    if ($type != 'sent' && !$message->receiver) return false;
-                    $userId = $type == 'sent' ? $message->sender->id : $message->receiver->id;
-                    $message->{'realname'} = User::find($userId)->realname;
                     $message->{'created'} = $this->humanDate($message->created_at);
+                    if ($type == 'sent') {
+                        if (!$message->sender) { return false; }
+                        $userId = $message->sender->id;
+                        $message->{'realname'} = $message->receiver ? $message->receiver->realname : '(未知)';
+                        $message->{'color'} = $message->sent ? 'green' : ($message->event_id ? 'orange' : 'red');
+                        $message->{'status'} = $message->sent ? '已发送' : ($message->event_id ? '定时' : '草稿');
+                        $message->{'uri'} = 'mc/' . ($message->sent ? 'show' : 'edit') . '/' . $message->id;
+                    } else {
+                        if (!$message->receiver) { return false; }
+                        $userId = $message->receiver->id;
+                        $message->{'realname'} = $message->sender ? $message->sender->realname : '(未知)';
+                        $message->{'uri'} = 'mc/show/' . $message->id;
+                        if (!$message->read) {
+                            $message->title = '<b>' . $message->title . '</b>';
+                            $message->{'created'} = '<b>' . $message->{'created'} . '</b>';
+                        }
+                    }
                     
                     return in_array($userId, $userIds);
                 }
