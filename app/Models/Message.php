@@ -155,7 +155,7 @@ class Message extends Model {
      */
     function index() {
 
-        $received = Request::get('extra');
+        $received = Request::query('extra');
         $columns = [
             ['db' => 'Message.id', 'dt' => 0],
             [
