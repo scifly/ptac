@@ -296,7 +296,7 @@
                            class="display nowrap table table-striped table-bordered table-hover table-condensed">
                         <thead>
                         <tr class="bg-info">
-                            @foreach ($titles as $title)
+                            @foreach ($rTitles as $title)
                                 <th>{!! $title !!}</th>
                             @endforeach
                         </tr>
