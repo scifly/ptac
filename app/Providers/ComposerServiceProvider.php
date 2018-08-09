@@ -156,7 +156,7 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('wechat.message_center.show', $ns . 'MessageCenterShowComposer');
     
         # 消息 - Message
-        View::composer('message.create_edit', $ns . 'MessageComposer');
+        // View::composer('message.create_edit', $ns . 'MessageComposer');
         View::composer('message.index', $ns . 'MessageIndexComposer');
     
         # 消息类型 - MessageType
