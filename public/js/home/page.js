@@ -496,10 +496,7 @@ var page = {
         $batchDisable.on('click', function() { batch('disable'); });
         $batchDelete.on('click', function() { batch('delete'); });
         $.getMultiScripts([plugins.datatable.js]).done(
-            function () {
-                $(datatable).dataTable().fnDestroy();
-                showTable();
-            }
+            function () { showTable(); }
         );
     },
     index: function (table, options) {
