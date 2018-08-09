@@ -74,7 +74,6 @@
                                                     <div class="teacher-work-box">
                                                         <a class="teacher-work-head" style="color:#000" href="#">
                                                             <div class="titleinfo">
-                                                                <div class="titleinfo-head">
                                                                     <div class="titleinfo-head-left fl">
                                                                         <div class="title ml12">
                                                                             {!! $message['title'] !!}
@@ -89,7 +88,6 @@
                                                                             {!! $message['status'] !!}
                                                                         </span>
 													                </span>
-                                                                </div>
                                                             </div>
                                                         </a>
                                                     </div>
