@@ -194,8 +194,11 @@ class Message extends Model {
             ],
             [
                 'db'        => 'User.realname', 'dt' => 4,
-                'formatter' => function ($d) {
-                    return $d ?? sprintf(Snippet::BADGE_GRAY, '(部门 & 会员)');
+                'formatter' => function ($d, $row) {
+                    if ($d) { return $d; }
+                    $msl = $this->find($row['id'])->messageSendinglog;
+                    
+                    return sprintf(Snippet::BADGE_GRAY, '(' . $msl->recipient_count . ' 人)');
                 },
             ],
             ['db' => 'MessageType.name as messagetypename', 'dt' => 5],
