@@ -213,10 +213,10 @@ class Message extends Model {
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $sent = Snippet::status($d, '已发', '未发');
-                    $read = Snippet::status($row['read'], '已读', '未读');
+                    // $read = Snippet::status($row['read'], '已读', '未读');
                     $editHtml = '<a id="%s" title="编辑" href="#"><i class="fa fa-edit" style="margin-left: 15px;"></i></a>';
                     $showHtml = '<a id="%s" title="详情" href="#"><i class="fa fa-laptop" style="margin-left: 15px;"></i></a>';
-                    $status = $sent . $read;
+                    $status = $sent/* . $read*/;
                     $status .= !$d
                         ? sprintf($editHtml, 'edit_' . $id)
                         : sprintf($showHtml, 'show_' . $id);

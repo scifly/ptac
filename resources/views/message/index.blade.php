@@ -291,7 +291,19 @@
                         <tbody></tbody>
                     </table>
                 </div>
-                <div class="tab-pane" id="tab03"></div>
+                <div class="tab-pane" id="tab03">
+                    <table id="data-table-r" style="width: 100%"
+                           class="display nowrap table table-striped table-bordered table-hover table-condensed">
+                        <thead>
+                        <tr class="bg-info">
+                            @foreach ($titles as $title)
+                                <th>{!! $title !!}</th>
+                            @endforeach
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
                 <div class="tab-pane" id="tab04"></div>
             </div>
         </div>
