@@ -198,7 +198,7 @@ class Message extends Model {
                     if ($d) { return $d; }
                     $msl = $this->find($row['id'])->messageSendinglog;
                     
-                    return sprintf(Snippet::BADGE_GRAY, $msl->recipient_count . ' 人');
+                    return sprintf(Snippet::BADGE_GRAY, ($msl ? $msl->recipient_count : '0') . ' 人');
                 },
             ],
             ['db' => 'MessageType.name as messagetypename', 'dt' => 5],
