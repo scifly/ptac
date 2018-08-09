@@ -350,7 +350,7 @@ var page = {
             $batchEnable = $('#batch-enable'),
             $batchDisable = $('#batch-disable'),
             $batchDelete = $('#batch-delete'),
-            showTable = function (extra) {
+            showTable = function () {
                 var $datatable = $(datatable),
                     columns = $datatable.find('thead tr th').length,
                     statusCol = {className: 'text-right', targets: [columns - 1]},
@@ -498,7 +498,7 @@ var page = {
         $batchDisable.on('click', function() { batch('disable'); });
         $batchDelete.on('click', function() { batch('delete'); });
         $.getMultiScripts([plugins.datatable.js]).done(
-            function () { showTable(extra); }
+            function () { showTable(); }
         );
     },
     index: function (table, options) {
