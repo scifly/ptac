@@ -422,15 +422,27 @@ var page = {
                 });
             },
             batch = function (action) {
-                var type = '';
+                var type = '',
+                    $batchEnable = $('#batch-enable'),
+                    $batchDisable = $('#batch-disable'),
+                    $batchDelete = $('#batch-delete'),
+                    data = {
+                        ids: selected,
+                        action: action,
+                        _token: page.token()
+                    };
+
                 switch (action) {
-                    case 'enable': type = '启用'; break;
-                    case 'disable': type = '禁用'; break;
-                    case 'delete': type = '删除'; break;
+                    case 'enable': type = $batchEnable.attr('title'); break;
+                    case 'disable': type = $batchDisable.attr('title'); break;
+                    case 'delete': type = $batchDelete.attr('title'); break;
                     default: break;
                 }
+                if ($.inArray(action, ['enable', 'disable']) !== -1) {
+                    data = $.extend(data, { field: $batchEnable.data('field') });
+                }
                 if (selected.length === 0) {
-                    page.inform('批量' + type, '请选择需要批量' + type + '的记录', page.failure);
+                    page.inform(type, '请选择需要' + type + '的记录', page.failure);
                     return false;
                 }
                 $('.overlay').show();
@@ -438,11 +450,7 @@ var page = {
                     type: action !== 'delete' ? 'PUT' : 'DELETE',
                     dataType: 'json',
                     url: page.siteRoot() + table + (action !== 'delete' ? '/update' : '/delete'),
-                    data: {
-                        ids: selected,
-                        action: action,
-                        _token: page.token()
-                    },
+                    data: data,
                     success: function (result) {
                         $('.overlay').hide();
                         switch (action) {

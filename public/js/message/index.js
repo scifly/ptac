@@ -224,8 +224,8 @@ $('.action-type').on('click', function () {
     if ($.inArray(href, ['#tab02', '#tab03']) !== -1) {
         $batchBtns.slideDown();
         $('#batch-enable, #batch-disable').attr('data-field', href === '#tab02' ? 'sent' : 'read');
-        $('#batch-enable').attr('title', href === '#tab02' ? '标记已发' : '标记已读');
-        $('#batch-disable').attr('title', href === '#tab02' ? '标记未发' : '标记未读');
+        $('#batch-enable').attr('title', href === '#tab02' ? '批量标记已发' : '批量标记已读');
+        $('#batch-disable').attr('title', href === '#tab02' ? '批量标记未发' : '批量标记未读');
     } else {
         $batchBtns.slideUp();
     }
