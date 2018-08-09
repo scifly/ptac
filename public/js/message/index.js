@@ -215,10 +215,9 @@ $draft.on('click', function () {
 var options = [{
     className: 'text-center', targets: [2, 3, 4, 5, 6]
 }];
-// 消息列表
-// page.initDatatable('messages', options);
 // 重新加载datatable
-$tabSent.on('click', function () { reloadDatatable(options); });
+$tabSent.on('click', function () { loadDatatable(options); });
+$tabReceived.on('click', function () { loadDatatable(options, 'data-table-r')});
 // 显示/隐藏批处理按钮组
 $('.action-type').on('click', function () {
     var href = $(this).find('a').attr('href');
@@ -811,11 +810,17 @@ function refreshValidation(anchor) {
             break;
     }
 }
-function reloadDatatable(options) {
+function loadDatatable(options, dtId) {
+    var datatable = typeof dtId === 'undefined' ? '#data-table' : '#' + dtId;
+
     if ($.fn.dataTable) {
-        $('#data-table').dataTable().fnDestroy();
+        $(datatable).dataTable().fnDestroy();
     }
-    page.initDatatable('messages', options);
+    if (typeof dtId === 'undefined') {
+        page.initDatatable('messages', options);
+    } else {
+        page.initDatatable('messages', options, 'index', dtId);
+    }
 }
 function getMessageId($button) {
     var paths = $button.parents().eq(0).attr('id').split('_');

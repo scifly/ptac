@@ -340,17 +340,18 @@ var page = {
             }
         });
     },
-    initDatatable: function (table, options, method) {
-        var rowIds = [],
+    initDatatable: function (table, options, method, dtId) {
+        var datatable = (typeof dtId === 'undefined' ? '#data-table' : '#' + dtId),
+            rowIds = [],
             selected = [],
-            $tbody = $('#data-table tbody'),
+            $tbody = $(datatable + ' tbody'),
             $selectAll = $('#select-all'),
             $deselectAll = $('#deselect-all'),
             $batchEnable = $('#batch-enable'),
             $batchDisable = $('#batch-disable'),
             $batchDelete = $('#batch-delete'),
             showTable = function () {
-                var $datatable = $('#data-table'),
+                var $datatable = $(datatable),
                     columns = $datatable.find('thead tr th').length,
                     statusCol = {className: 'text-right', targets: [columns - 1]},
                     uri = typeof method === 'undefined' ? '/index' : '/' + method;
@@ -429,7 +430,7 @@ var page = {
             $(this).toggleClass('selected');
         });
         $selectAll.on('click', function () {
-            var $rows = $('#data-table tbody tr');
+            var $rows = $(datatable + ' tbody tr');
             $.each($rows, function () {
                 $(this).addClass('selected');
             });
@@ -437,7 +438,7 @@ var page = {
         });
         $deselectAll.on('click', function () {
             selected = [];
-            var $rows = $('#data-table tbody tr');
+            var $rows = $(datatable + ' tbody tr');
             $.each($rows, function () {
                 $(this).removeClass('selected');
             });
@@ -469,14 +470,14 @@ var page = {
                     switch (action) {
                         case 'enable':
                         case 'disable':
-                            $('#data-table tbody tr.selected td:last-child >:first-child').each(function() {
+                            $(datatable + ' tbody tr.selected td:last-child >:first-child').each(function() {
                                 $(this).removeClass().addClass(
                                     'fa fa-circle ' + (action === 'enable' ? 'text-green' : 'text-gray')
                                 );
                             });
                             break;
                         case 'delete':
-                            $('#data-table tbody tr.selected').each(function() {
+                            $(datatable + ' tbody tr.selected').each(function() {
                                 $(this).addClass('text-gray');
                             });
                             break;
