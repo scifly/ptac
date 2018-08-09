@@ -8,13 +8,18 @@
         <div class="nav-tabs-custom">
             <ul class="nav nav-tabs pull-right">
                 <li class="action-type">
-                    <a href="#tab03" data-toggle="tab">
+                    <a href="#tab04" data-toggle="tab">
                         <i class="fa fa-th-large"></i>&nbsp;素材库
                     </a>
                 </li>
                 <li class="action-type">
+                    <a href="#tab03" data-toggle="tab">
+                        <i class="fa fa-th-large"></i>&nbsp;收件箱
+                    </a>
+                </li>
+                <li class="action-type">
                     <a href="#tab02" data-toggle="tab">
-                        <i class="fa fa-history"></i>&nbsp;已发送
+                        <i class="fa fa-history"></i>&nbsp;发件箱
                     </a>
                 </li>
                 <li class="active action-type">
@@ -287,6 +292,7 @@
                     </table>
                 </div>
                 <div class="tab-pane" id="tab03"></div>
+                <div class="tab-pane" id="tab04"></div>
             </div>
         </div>
     </div>

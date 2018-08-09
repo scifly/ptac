@@ -2,6 +2,7 @@
 var $batchBtns = $('.btn-group'),
     $tabSend = $('a[href="#tab01"]'),
     $tabSent = $('a[href="#tab02"]'),
+    $tabReceived = $('a[href="#tab03"]'),
     $targetIds = $('#selected-node-ids'),
     $messageTypeId = $('#message_type_id'),
     $messageContent = $('#message-content'),
@@ -211,7 +212,7 @@ $schedule.on('ifChecked', function () {
 $draft.on('click', function () {
     return message('draft');
 });
-/** 已发送 ----------------------------------------------------------------------------------------------------------- */
+/** 发件箱 ----------------------------------------------------------------------------------------------------------- */
 // 初始化"已发送"datatable
 var options = [{
     className: 'text-center', targets: [2, 3, 4, 5, 6]
@@ -222,7 +223,8 @@ page.initDatatable('messages', options);
 $tabSent.on('click', function () { reloadDatatable(options); });
 // 显示/隐藏批处理按钮组
 $('.action-type').on('click', function () {
-    if ($(this).find('a').attr('href') === '#tab02') {
+    var href = $(this).find('a').attr('href');
+    if ($.inArray(href, ['#tab02', '#tab03']) !== -1) {
         $batchBtns.slideDown();
     } else {
         $batchBtns.slideUp();
@@ -233,9 +235,9 @@ $(document).on('click', '.fa-edit', function () {
     var id = getMessageId($(this));
 
     $tabSent.parent().removeClass('active');
-    $('#tab02').removeClass('active');
+    $tabSent.removeClass('active');
     $tabSend.parent().addClass('active');
-    $('#tab01').addClass('active');
+    $tabSend.addClass('active');
     $batchBtns.hide();
     $('#id').val(id);
     $('.overlay').show();
