@@ -640,69 +640,75 @@ class Message extends Model {
             try {
                 DB::transaction(function () {
                     $ids = Request::input('ids');
-                    $read = Request::input('action') == 'enable' ? true : false;
+                    $field = Request::input('field');
+                    $status = Request::input('action') == 'enable' ? true : false;
                     foreach ($ids as $id) {
-                        $this->read($id, $read);
+                        if ($field == 'read') {
+                            $this->read($id, $status);
+                        } else {
+                            $this->find($id)->update([
+                                'sent' => $status
+                            ]);
+                        }
                     }
                 });
             } catch (Exception $e) {
                 throw $e;
             }
-            
-            return true;
-        }
-        try {
-            DB::transaction(function () use ($data, $id) {
-                $message = $this->find($id);
-                if (isset($data['time'])) {
-                    # 如果设置了发送时间
-                    if ($message->event_id) {
-                        # 如果指定消息已有对应事件，则更新对应事件
-                        Event::find($message->event_id)->update([
-                            'start'   => $data['time'],
-                            'end'     => $data['time'],
-                            'enabled' => isset($data['draft']) ? 1 : 0,
-                        ]);
+        } else {
+            try {
+                DB::transaction(function () use ($data, $id) {
+                    $message = $this->find($id);
+                    if (isset($data['time'])) {
+                        # 如果设置了发送时间
+                        if ($message->event_id) {
+                            # 如果指定消息已有对应事件，则更新对应事件
+                            Event::find($message->event_id)->update([
+                                'start'   => $data['time'],
+                                'end'     => $data['time'],
+                                'enabled' => isset($data['draft']) ? 1 : 0,
+                            ]);
+                        } else {
+                            # 如果指定消息没有对应事件，则创建对应事件
+                            $user = Auth::user();
+                            $time = $data['time'];
+                            $draft = $data['draft'] ?? null;
+                            $event = Event::create([
+                                'title'       => '定时消息',
+                                'remark'      => '定时消息',
+                                'location'    => 'n/a',
+                                'contact'     => 'n/a',
+                                'url'         => 'n/a',
+                                'start'       => $time,
+                                'end'         => $time,
+                                'ispublic'    => 0,
+                                'iscourse'    => 0,
+                                'educator_id' => $user->educator ? $user->educator->id : 0,
+                                'subject_id'  => 0,
+                                'alertable'   => 0,
+                                'alert_mins'  => 0,
+                                'user_id'     => $user->id,
+                                'enabled'     => isset($draft) ? 1 : 0,
+                            ]);
+                            $data['event_id'] = $event->id;
+                        }
+                        unset($data['draft']);
+                        unset($data['time']);
                     } else {
-                        # 如果指定消息没有对应事件，则创建对应事件
-                        $user = Auth::user();
-                        $time = $data['time'];
-                        $draft = $data['draft'] ?? null;
-                        $event = Event::create([
-                            'title'       => '定时消息',
-                            'remark'      => '定时消息',
-                            'location'    => 'n/a',
-                            'contact'     => 'n/a',
-                            'url'         => 'n/a',
-                            'start'       => $time,
-                            'end'         => $time,
-                            'ispublic'    => 0,
-                            'iscourse'    => 0,
-                            'educator_id' => $user->educator ? $user->educator->id : 0,
-                            'subject_id'  => 0,
-                            'alertable'   => 0,
-                            'alert_mins'  => 0,
-                            'user_id'     => $user->id,
-                            'enabled'     => isset($draft) ? 1 : 0,
-                        ]);
-                        $data['event_id'] = $event->id;
+                        # 如果没有设置发送时间
+                        $eventId = $message->event_id;
+                        if ($eventId) {
+                            # 如果指定消息已有对应事件，则删除该事件
+                            Event::find($eventId)->delete();
+                            $data['event_id'] = null;
+                        }
                     }
-                    unset($data['draft']);
-                    unset($data['time']);
-                } else {
-                    # 如果没有设置发送时间
-                    $eventId = $message->event_id;
-                    if ($eventId) {
-                        # 如果指定消息已有对应事件，则删除该事件
-                        Event::find($eventId)->delete();
-                        $data['event_id'] = null;
-                    }
-                }
-                # 更新消息草稿
-                $message->update($data);
-            });
-        } catch (Exception $e) {
-            throw $e;
+                    # 更新消息草稿
+                    $message->update($data);
+                });
+            } catch (Exception $e) {
+                throw $e;
+            }
         }
         
         return true;
