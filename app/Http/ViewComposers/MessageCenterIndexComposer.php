@@ -81,10 +81,6 @@ class MessageCenterIndexComposer {
         foreach ($data as $type => &$messages) {
             foreach ($messages as &$message) {
                 $message['created_at'] = $this->humanDate($message['created_at']);
-                if (!$message['read'] && $direction == 'received') {
-                    $message['title'] = '<b>' . $message['title'] . '</b>';
-                    $message['created_at'] = '<b>' . $message['created_at'] . '</b>';
-                }
                 if ($direction == 'sent') {
                     $recipient = User::find($message['r_user_id']);
                     $message['recipient'] = $recipient ? $recipient->realname : '(未知)';
@@ -93,6 +89,10 @@ class MessageCenterIndexComposer {
                 } else {
                     $sender = User::find($message['s_user_id']);
                     $message['sender'] = $sender ? $sender->realname : '(未知)';
+                    if (!$message['read']) {
+                        $message['title'] = '<b>' . $message['title'] . '</b>';
+                        $message['created_at'] = '<b>' . $message['created_at'] . '</b>';
+                    }
                 }
             }
         }
