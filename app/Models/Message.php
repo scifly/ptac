@@ -154,9 +154,8 @@ class Message extends Model {
      * @return array
      */
     function index() {
-        
-        Log::debug(json_encode(Request::query()));
-        Log::debug(json_encode(Request::input()));
+
+        $received = Request::get('extra');
         $columns = [
             ['db' => 'Message.id', 'dt' => 0],
             [
@@ -211,14 +210,14 @@ class Message extends Model {
                 },
             ],
             [
-                'db'        => 'Message.sent', 'dt' => 7,
-                'formatter' => function ($d, $row) {
+                'db'        => 'Message.' . ($received ? 'read' : 'sent'), 'dt' => 7,
+                'formatter' => function ($d, $row) use ($received) {
                     $id = $row['id'];
                     $sent = Snippet::status($d, '已发', '未发');
-                    // $read = Snippet::status($row['read'], '已读', '未读');
+                    $read = Snippet::status($row['read'], '已读', '未读');
                     $editHtml = '<a id="%s" title="编辑" href="#"><i class="fa fa-edit" style="margin-left: 15px;"></i></a>';
                     $showHtml = '<a id="%s" title="详情" href="#"><i class="fa fa-laptop" style="margin-left: 15px;"></i></a>';
-                    $status = $sent/* . $read*/;
+                    $status = $received ? $read : $sent;;
                     $status .= !$d
                         ? sprintf($editHtml, 'edit_' . $id)
                         : sprintf($showHtml, 'show_' . $id);
@@ -226,7 +225,7 @@ class Message extends Model {
                     return $status . sprintf(Snippet::DT_LINK_DEL, $id);
                 },
             ],
-            ['db' => 'Message.read', 'dt' => 8],
+            ['db' => 'Message.' . ($received ? 'sent' : 'read'), 'dt' => 8],
             ['db' => 'Message.content', 'dt' => 9],
             ['db' => 'Message.app_id', 'dt' => 10],
             ['db' => 'Message.event_id', 'dt' => 11],
@@ -261,7 +260,7 @@ class Message extends Model {
                 'alias'      => 'User',
                 'type'       => 'LEFT',
                 'conditions' => [
-                    'User.id = Message.r_user_id',
+                    'User.id = Message.' . ($received ? 's_user_id' : 'r_user_id'),
                 ],
             ],
         ];
@@ -275,7 +274,10 @@ class Message extends Model {
                 )
             );
         }
-        $condition = 'Message.r_user_id = 0 AND Message.s_user_id IN' . ' (' . implode(',', $userIds) . ')';
+        $condition = $received
+            ? 'Message.r_user_id = 0 AND Message.s_user_id IN' . ' (' . implode(',', $userIds) . ')'
+            : 'Message.r_user_id = ' . Auth::id();
+        
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition
         );

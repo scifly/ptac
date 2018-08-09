@@ -818,7 +818,7 @@ function loadDatatable(options, dtId) {
     if (typeof dtId === 'undefined') {
         page.initDatatable('messages', options);
     } else {
-        page.initDatatable('messages', options, 'index', dtId);
+        page.initDatatable('messages', options, 'index', dtId, 1);
     }
 }
 function getMessageId($button) {
