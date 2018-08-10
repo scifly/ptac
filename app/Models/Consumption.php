@@ -141,7 +141,7 @@ class Consumption extends Model {
                 $consumptions = [];
                 foreach ($data as &$datum) {
                     $student = Student::whereStudentNumber($datum['student_number'])->first();
-                    $datum['student_id'] = $student ? $student->student_number : 0;
+                    $datum['student_id'] = $student ? $student->id : 0;
                     $datum['machineid'] = $datum['attendid'];
                     abort_if(
                         !Validator::make($datum, (new ConsumptionRequest)->rules()),

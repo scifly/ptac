@@ -40,7 +40,7 @@ class ConsumptionRequest extends FormRequest {
         
         $input = $this->all();
         $student = Student::whereStudentNumber($input['student_number'])->first();
-        $input['student_id'] = $student ? $student->student_number : 0;
+        $input['student_id'] = $student ? $student->id : 0;
         $this->replace($input);
         
     }
