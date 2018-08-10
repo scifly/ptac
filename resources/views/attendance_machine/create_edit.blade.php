@@ -46,7 +46,7 @@
                 <div class="col-sm-6">
                     {!! Form::text('machineid', null, [
                         'class' => 'form-control text-blue',
-                        'placeholder' => '(小写字母和数字，不超过20个字符)',
+                        'placeholder' => '(不超过20个字符)',
                         'required' => 'true',
                         'maxlength' => '20'
                     ]) !!}
