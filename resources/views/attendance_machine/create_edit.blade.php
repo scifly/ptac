@@ -48,7 +48,6 @@
                         'class' => 'form-control text-blue',
                         'placeholder' => '(小写字母和数字，不超过20个字符)',
                         'required' => 'true',
-                        'data-parsley-type' => 'alphanum',
                         'maxlength' => '20'
                     ]) !!}
                 </div>
