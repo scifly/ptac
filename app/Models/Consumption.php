@@ -139,7 +139,6 @@ class Consumption extends Model {
             DB::transaction(function () {
                 $post = json_decode(Request::getContent(), true);
                 $data = $post['data'];
-                Log::debug(json_encode($data));
                 $consumptions = [];
                 foreach ($data as &$datum) {
                     $student = Student::whereStudentNumber($datum['student_number'])->first();
