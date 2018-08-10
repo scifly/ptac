@@ -149,6 +149,7 @@ class Consumption extends Model {
                         __('messages.not_acceptable')
                     );
                     unset($datum['student_number']);
+                    unset($datum['attendid']);
                     $consumptions[] = $datum;
                 }
                 $this->insert($consumptions);
