@@ -32,7 +32,7 @@ class AttendanceMachineRequest extends FormRequest {
                 'school_id,' . $this->input('school_id') . ',' .
                 'machineid,' . $this->input('machineid'),
             'location'  => 'required|string|between:2,255',
-            'machineid' => 'required|string|between:2,20',
+            'machineid' => 'required|string|between:1,20',
             'school_id' => 'required|integer',
             'enabled'   => 'required|boolean',
         ];
