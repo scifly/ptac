@@ -311,7 +311,7 @@ var page = {
             }
         });
     },
-    ajaxRequest: function (requestType, url, data, obj, options) {
+    ajaxRequest: function (requestType, url, data, succeed) {
         $('.overlay').show();
         $.ajax({
             type: requestType,
@@ -320,20 +320,21 @@ var page = {
             data: data,
             success: function (result) {
                 $('.overlay').hide();
-                switch (requestType) {
-                    case 'POST':        // create
-                        // obj.reset();
-                        $('input[type="text"], textarea').each(
-                            function() { $(this).val(''); }
-                        );
-                        break;
-                    case 'DELETE':
-                        $('#data-table').dataTable().fnDestroy();
-                        page.initDatatable(obj, options);
-                        break;
-                    default:
-                        break;
-                }
+                succeed();
+                // switch (requestType) {
+                //     case 'POST':        // create
+                //         // obj.reset();
+                //         $('input[type="text"], textarea').each(
+                //             function() { $(this).val(''); }
+                //         );
+                //         break;
+                //     case 'DELETE':
+                //         $('#data-table').dataTable().fnDestroy();
+                //         page.initDatatable(obj, options);
+                //         break;
+                //     default:
+                //         break;
+                // }
                 page.inform(result.title, result.message, page.success);
             },
             error: function (e) {
@@ -550,23 +551,6 @@ var page = {
             page.getTabContent($activeTabPane, table + '/' + url);
         });
     },
-    remove: function (table, options) {
-        // 删除记录
-        var id;
-        $(document).on('click', '.fa-remove', function () {
-            id = $(this).parents().eq(0).attr('id');
-            $('#modal-delete').modal({backdrop: true});
-        });
-        $('#confirm-delete').on('click', function () {
-            page.ajaxRequest(
-                'DELETE',
-                table + '/delete/' + id,
-                {_token: page.token()},
-                table,
-                options
-            );
-        });
-    },
     loadCss: function (css) {
         if (!$('link[href="' + page.siteRoot() + css + '"]').length) {
             $cip.after($("<link/>", {
@@ -642,8 +626,13 @@ var page = {
     },
     initParsley: function ($form, requestType, url) {
         $form.parsley().on('form:validated', function () {
+            var reset = function() {
+                $('input[type="text"], textarea').each(
+                    function() { $(this).val(''); }
+                );
+            };
             if ($('.parsley-error').length === 0) {
-                page.ajaxRequest(requestType, url, page.formData($form), $form[0]);
+                page.ajaxRequest(requestType, url, page.formData($form), reset);
             }
         }).on('form:submit', function () {
             return false;

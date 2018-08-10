@@ -6,6 +6,7 @@
             mpnews: { articles: [] },
             mpnewsCount: 0,
             dtOptions: [{className: 'text-center', targets: [2, 3, 4, 5, 6]}],
+            id: 0,
             index: function () {
                 var $batchBtns = $('.btn-group'),
                     $messageContent = $('#message-content');
@@ -192,10 +193,10 @@
                                 'class': 'mpnews',
                                 'src': imageUrl,
                                 'title': title,
-                                'id': 'mpnews-' + mpnewsCount
+                                'id': 'mpnews-' + message.mpnewsCount
                             };
                             $contentMpnews.append($('<img' + ' />', imgAttrs).prop('outerHTML'));
-                            mpnewsCount += 1;
+                            message.mpnewsCount += 1;
                         } else {
                             // 更新图文
                             var $mpnews = $($contentMpnews.children('img')[id]);
@@ -475,8 +476,16 @@
                         }
                     });
                 });
-                // 删除消息
-                page.remove('messages', message.dtOptions);
+                // 打开删除对话框
+                $(document).on('click', '.fa-remove', function () {
+                    message.id = $(this).parents().eq(0).attr('id');
+                    $('#modal-delete').modal({backdrop: true});
+                });
+                // 删除记录
+                $('#confirm-delete').on('click', function () {
+                    page.ajaxRequest('DELETE', table + '/delete/' + message.id, {_token: page.token()}, message.loadDt);
+                });
+                // page.remove('messages', message.dtOptions);
             },
             initEditor: function () {
                 page.loadCss(plugins.htmleditor.css);
@@ -673,15 +682,19 @@
 
                 return $.extend(formData, content);
             },
-            loadDt: function (options, dtId) {
+            loadDt: function () {
+                var $dtSent = $('#data-table'),
+                    $dtReceived = $('#data-table-r'),
+                    dtId = 'data-table' + ($dtSent.is(':visible') ? '' : '-r');
+
                 if ($.fn.dataTable) {
-                    $('#data-table').dataTable().fnDestroy();
-                    $('#data-table-r').dataTable().fnDestroy();
+                    $dtSent.dataTable().fnDestroy();
+                    $dtReceived.dataTable().fnDestroy();
                 }
-                if (typeof dtId === 'undefined') {
-                    page.initDatatable('messages', options);
+                if (dtId === 'data-table') {
+                    page.initDatatable('messages', message.dtOptions);
                 } else {
-                    page.initDatatable('messages', options, 'index', dtId, 1);
+                    page.initDatatable('messages', message.dtOptions, 'index', dtId, 1);
                 }
             },
             messageId: function ($button) {
