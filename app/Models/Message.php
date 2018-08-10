@@ -291,6 +291,7 @@ class Message extends Model {
      */
     function edit($id) {
         
+        $allowedDeptIds = $this->departmentIds(Auth::id());
         $content = $this->detail($id);
         $message = $content[$content['type']];
         $toparty = $message->{'toparty'};
@@ -298,10 +299,15 @@ class Message extends Model {
         $targetIds = !empty($toparty) ? explode('|', $toparty) : [];
         $userids = !empty($touser) ? explode('|', $touser) : [];
         $users = User::whereIn('userid', $userids)->get();
+        /** @var User $user */
         foreach ($users as $user) {
-            foreach ($user->departments as $department) {
-                $targetIds[] = 'user-' . $department->id . '-' . $user->id;
-            }
+            $departmentId = head(
+                array_intersect(
+                    $allowedDeptIds,
+                    $user->departments->pluck('id')->toArray()
+                )
+            );
+            $targetIds[] = 'user-' . $departmentId . '-' . $user->id;
         }
         $targetsHtml = '';
         foreach ($targetIds as $targetId) {
@@ -647,7 +653,7 @@ class Message extends Model {
                             $this->read($id, $status);
                         } else {
                             $this->find($id)->update([
-                                'sent' => $status
+                                'sent' => $status,
                             ]);
                         }
                     }
