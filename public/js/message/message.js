@@ -349,9 +349,9 @@
                         id = message.messageId($(this));
 
                     $tabSent.parent().removeClass('active');
-                    $tabSent.removeClass('active');
+                    $('#tab02').removeClass('active');
                     $tabSend.parent().addClass('active');
-                    $tabSend.addClass('active');
+                    $('#tab01').addClass('active');
                     $batchBtns.hide();
                     $id.val(id);
                     $('.overlay').show();
@@ -426,7 +426,7 @@
                                 case 'mpnews':
                                     var mpnewsList = '';
                                     message.mpnews = result['message'][type];
-                                    message.mpnewsCount = mpnews['articles'].length;
+                                    message.mpnewsCount = message.mpnews['articles'].length;
                                     $addMpnews.siblings().remove();
                                     for (var i = 0; i < message.mpnewsCount; i++) {
                                         imgAttrs = {
