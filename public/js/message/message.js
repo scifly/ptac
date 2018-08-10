@@ -332,12 +332,10 @@
 
                 // 重新加载datatable
                 $tabSent.on('click', function () {
-                    $('#data-table').show();
-                    message.loadDt();
+                    message.loadDt('data-table');
                 });
                 $tabReceived.on('click', function () {
-                    $('#data-table-r').show();
-                    message.loadDt();
+                    message.loadDt('data-table-r');
                 });
                 // 显示/隐藏批处理按钮组
                 $sections.on('click', function () {
@@ -688,11 +686,13 @@
 
                 return $.extend(formData, content);
             },
-            loadDt: function () {
+            loadDt: function (dtId) {
                 var $dtSent = $('#data-table'),
-                    $dtReceived = $('#data-table-r'),
-                    dtId = 'data-table' + ($dtSent.is(':visible') ? '' : '-r');
+                    $dtReceived = $('#data-table-r');
 
+                if (typeof dtId === 'undefined') {
+                    dtId = $dtSent.is(':visible') ? 'data-table' : 'data-table-r';
+                }
                 if ($.fn.dataTable) {
                     $dtSent.dataTable().fnDestroy();
                     $dtReceived.dataTable().fnDestroy();
