@@ -465,7 +465,7 @@ var page = {
                 });
             };
 
-        $tbody.on('click', 'tr', function () {
+        $tbody.off().on('click', 'tr', function () {
             var id = parseInt($(this).find('td').eq(0).text());
             var index = $.inArray(id, selected);
             if (index === -1) {
