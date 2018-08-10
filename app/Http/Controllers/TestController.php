@@ -26,7 +26,17 @@ class TestController extends Controller {
      * @throws \Exception
      */
     public function index() {
-
+    
+        $client = new Client();
+        $reponse = $client->post(
+            'http://weixin.028lk.com/api/student_attendance', [
+                'form_params' => [
+                    'ab' => 1
+                ],
+            ]
+        );
+        dd($reponse);
+        
         $a = [];
         dd($a[0]);
         
