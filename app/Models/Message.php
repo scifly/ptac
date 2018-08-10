@@ -478,7 +478,8 @@ class Message extends Model {
         
         try {
             DB::transaction(function () use ($id) {
-                WechatSms::whereMessageId($id)->first()->delete();
+                $wechatSms = WechatSms::whereMessageId($id)->first();
+                if ($wechatSms) { $wechatSms->delete(); }
                 $this->find($id)->delete();
             });
         } catch (Exception $e) {
