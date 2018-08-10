@@ -321,20 +321,6 @@ var page = {
             success: function (result) {
                 $('.overlay').hide();
                 succeed();
-                // switch (requestType) {
-                //     case 'POST':        // create
-                //         // obj.reset();
-                //         $('input[type="text"], textarea').each(
-                //             function() { $(this).val(''); }
-                //         );
-                //         break;
-                //     case 'DELETE':
-                //         $('#data-table').dataTable().fnDestroy();
-                //         page.initDatatable(obj, options);
-                //         break;
-                //     default:
-                //         break;
-                // }
                 page.inform(result.title, result.message, page.success);
             },
             error: function (e) {

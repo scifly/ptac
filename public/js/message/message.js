@@ -487,7 +487,12 @@
                 });
                 // 删除记录
                 $('#confirm-delete').on('click', function () {
-                    page.ajaxRequest('DELETE', 'messages/delete/' + message.id, {_token: page.token()}, message.loadDt);
+                    page.ajaxRequest(
+                        'DELETE',
+                        'messages/delete/' + message.id,
+                        {_token: page.token()},
+                        message.loadDt
+                    );
                 });
                 // page.remove('messages', message.dtOptions);
             },
