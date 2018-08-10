@@ -475,23 +475,23 @@ var page = {
             }
             $(this).toggleClass('selected');
         });
-        $selectAll.on('click', function () {
+        $selectAll.off().on('click', function () {
             var $rows = $(datatable + ' tbody tr');
             $.each($rows, function () {
                 $(this).addClass('selected');
             });
             selected = rowIds;
         });
-        $deselectAll.on('click', function () {
+        $deselectAll.off().on('click', function () {
             selected = [];
             var $rows = $(datatable + ' tbody tr');
             $.each($rows, function () {
                 $(this).removeClass('selected');
             });
         });
-        $batchEnable.on('click', function() { batch('enable'); });
-        $batchDisable.on('click', function() { batch('disable'); });
-        $batchDelete.on('click', function() { batch('delete'); });
+        $batchEnable.off().on('click', function() { batch('enable'); });
+        $batchDisable.off().on('click', function() { batch('disable'); });
+        $batchDelete.off().on('click', function() { batch('delete'); });
         $.getMultiScripts([plugins.datatable.js]).done(
             function () { showTable(); }
         );
