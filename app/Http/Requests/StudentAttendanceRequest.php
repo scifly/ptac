@@ -30,7 +30,7 @@ class StudentAttendanceRequest extends FormRequest {
             'media_id'       => 'required|integer',
             'longitude'      => 'required|numeric',
             'latitude'       => 'required|numeric',
-            'machineid'      => 'required|string|between:2,20',
+            'machineid'      => 'required|string|between:1,20',
         ];
         
     }
