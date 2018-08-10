@@ -9,6 +9,7 @@ use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
 use ReflectionClass;
 use ReflectionMethod;
+use Validator;
 
 /**
  * Class TestController
@@ -26,6 +27,27 @@ class TestController extends Controller {
      * @throws \Exception
      */
     public function index() {
+        
+        $rules = [
+            'student_number' => 'required|string|between:5,32',
+            'punch_time'     => 'required|date',
+            'inorout'        => 'required|integer',
+            'media_id'       => 'required|integer',
+            'longitude'      => 'required|numeric',
+            'latitude'       => 'required|numeric',
+            'machineid'      => 'required|string|between:1,20',
+        ];
+        $datum = [
+            'student_number' => '200000',
+            'punch_time' => '2018-03-20 10:12',
+            'inorout' => 0,
+            'machineid' => 1,
+            'longitude' => 0,
+            'latitude' => 0
+        ];
+        $result = Validator::make($datum, $rules);
+        dd($result->errors());
+        
     
         $client = new Client();
         $reponse = $client->post(
