@@ -192,7 +192,6 @@ class StudentAttendance extends Model {
         
         try {
             DB::transaction(function () {
-                Log::debug('wtf');
                 $post = json_decode(Request::getContent(), true);
                 $data = $post['data'];
                 $school = School::find($post['school_id']);
