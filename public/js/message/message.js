@@ -822,8 +822,10 @@
             },
             removeFile: function () {
                 $(document).on('click', '.remove-file', function () {
-                    var types = $(this).prev().attr('id').split('-'),
+                    var $messageContent = $('#message-content'),
+                        types = $(this).prev().attr('id').split('-'),
                         type = types[types.length - 1],
+                        $container = $messageContent.find('.tab-pane.active'),
                         $uploadBtn = $container.find('.upload-button'),
                         $label = $uploadBtn.find('label'),
                         $removeFile = $uploadBtn.find('.remove-file'),
