@@ -314,7 +314,9 @@
                 var $sections = $('.action-type'),
                     $batchBtns = $('.btn-group'),
                     $tabSend = $('a[href="#tab01"]'),
+                    $tabSendContent = $('#tab01'),
                     $tabSent = $('a[href="#tab02"]'),
+                    $tabSentContent = $('#tab02'),
                     $tabReceived = $('a[href="#tab03"]'),
                     $textContent = $('#text-content'),
                     $videoTitle = $('#video-title'),
@@ -349,9 +351,9 @@
                         id = message.messageId($(this));
 
                     $tabSent.parent().removeClass('active');
-                    $('#tab02').removeClass('active');
+                    $tabSentContent.removeClass('active');
                     $tabSend.parent().addClass('active');
-                    $('#tab01').addClass('active');
+                    $tabSendContent.addClass('active');
                     $batchBtns.hide();
                     $id.val(id);
                     $('.overlay').show();
