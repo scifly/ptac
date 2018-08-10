@@ -281,15 +281,17 @@ class StudentAttendance extends Model {
                         'toparty' => '',
                         'agentid' => $app->agentid,
                         'msgtype' => 'text',
-                        'text'    => strtr(
-                            $sa->studentAttendanceSetting->msg_template,
-                            [
-                                '{name}'   => $student->user->realname,
-                                '{time}'   => $sa->punch_time,
-                                '{rule}'   => $sa->studentAttendanceSetting->name,
-                                '{status}' => $sa->status == 1 ? '正常' : '异常',
-                            ]
-                        ),
+                        'text'    => [
+                            'content' => strtr(
+                                $sa->studentAttendanceSetting->msg_template,
+                                [
+                                    '{name}'   => $student->user->realname,
+                                    '{time}'   => $sa->punch_time,
+                                    '{rule}'   => $sa->studentAttendanceSetting->name,
+                                    '{status}' => $sa->status == 1 ? '正常' : '异常',
+                                ]
+                            )
+                        ]
                     ];
                     $message = (new Message)->create([
                         'comm_type_id'    => CommType::whereName('微信')->first()->id,
