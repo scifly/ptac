@@ -331,8 +331,8 @@
                     $smsContent = $('#sms-content');
 
                 // 重新加载datatable
-                $tabSent.on('click', function () { message.loadDt(message.dtOptions); });
-                $tabReceived.on('click', function () { message.loadDt(message.dtOptions, 'data-table-r')});
+                $tabSent.on('click', function () { message.loadDt(); });
+                $tabReceived.on('click', function () { message.loadDt(); });
                 // 显示/隐藏批处理按钮组
                 $sections.on('click', function () {
                     var href = $(this).find('a').attr('href');
