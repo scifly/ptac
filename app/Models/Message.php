@@ -288,50 +288,55 @@ class Message extends Model {
      *
      * @param $id
      * @return array
+     * @throws Exception
      */
     function edit($id) {
         
-        $allowedDeptIds = $this->departmentIds(Auth::id());
-        $content = $this->detail($id);
-        $message = $content[$content['type']];
-        $toparty = $message->{'toparty'};
-        $touser = $message->{'touser'};
-        $targetIds = !empty($toparty) ? explode('|', $toparty) : [];
-        $userids = !empty($touser) ? explode('|', $touser) : [];
-        $users = User::whereIn('userid', $userids)->get();
-        /** @var User $user */
-        foreach ($users as $user) {
-            $departmentId = head(
-                array_intersect(
-                    $allowedDeptIds,
-                    $user->departments->pluck('id')->toArray()
-                )
-            );
-            $targetIds[] = 'user-' . $departmentId . '-' . $user->id;
-        }
-        $targetsHtml = '';
-        foreach ($targetIds as $targetId) {
-            $paths = explode('-', $targetId);
-            if (sizeof($paths) > 1) {
-                $user = User::find($paths[2]);
-                $targetsHtml .= sprintf(
-                    Snippet::TREE_NODE,
-                    'fa fa-user',
-                    $user->realname,
-                    $paths[2]
+        try {
+            $allowedDeptIds = $this->departmentIds(Auth::id());
+            $content = $this->detail($id);
+            $message = $content[$content['type']];
+            $toparty = $message->{'toparty'};
+            $touser = $message->{'touser'};
+            $targetIds = !empty($toparty) ? explode('|', $toparty) : [];
+            $userids = !empty($touser) ? explode('|', $touser) : [];
+            $users = User::whereIn('userid', $userids)->get();
+            /** @var User $user */
+            foreach ($users as $user) {
+                $departmentId = head(
+                    array_intersect(
+                        $allowedDeptIds,
+                        $user->departments->pluck('id')->toArray()
+                    )
                 );
-            } else {
-                $department = Department::find($targetId);
-                $targetsHtml .= sprintf(
-                    Snippet::TREE_NODE,
-                    Constant::NODE_TYPES[$department->departmentType->name]['icon'],
-                    $department->name,
-                    $targetId
-                );
+                $targetIds[] = 'user-' . $departmentId . '-' . $user->id;
             }
+            $targetsHtml = '';
+            foreach ($targetIds as $targetId) {
+                $paths = explode('-', $targetId);
+                if (sizeof($paths) > 1) {
+                    $user = User::find($paths[2]);
+                    $targetsHtml .= sprintf(
+                        Snippet::TREE_NODE,
+                        'fa fa-user',
+                        $user->realname,
+                        $paths[2]
+                    );
+                } else {
+                    $department = Department::find($targetId);
+                    $targetsHtml .= sprintf(
+                        Snippet::TREE_NODE,
+                        Constant::NODE_TYPES[$department->departmentType->name]['icon'],
+                        $department->name,
+                        $targetId
+                    );
+                }
+            }
+            $timing = $this->find($id)->event_id ? true : false;
+            $time = $timing ? date('Y-m-d H:i', strtotime($this->find($id)->event->start)) : null;
+        } catch (Exception $e) {
+            throw $e;
         }
-        $timing = $this->find($id)->event_id ? true : false;
-        $time = $timing ? date('Y-m-d H:i', strtotime($this->find($id)->event->start)) : null;
         
         return [
             'selectedTargetIds' => $targetIds,
