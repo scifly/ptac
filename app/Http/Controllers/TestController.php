@@ -41,9 +41,10 @@ class TestController extends Controller {
             'student_number' => '200000',
             'punch_time' => '2018-03-20 10:12',
             'inorout' => 0,
-            'machineid' => 1,
+            'machineid' => '1',
             'longitude' => 0,
-            'latitude' => 0
+            'latitude' => 0,
+            'media_id' => 0
         ];
         $result = Validator::make($datum, $rules);
         dd($result->errors());
