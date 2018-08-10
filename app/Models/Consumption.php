@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 use Validator;
@@ -138,6 +139,7 @@ class Consumption extends Model {
             DB::transaction(function () {
                 $post = json_decode(Request::getContent(), true);
                 $data = $post['data'];
+                Log::debug(json_encode($data));
                 $consumptions = [];
                 foreach ($data as &$datum) {
                     $student = Student::whereStudentNumber($datum['student_number'])->first();
