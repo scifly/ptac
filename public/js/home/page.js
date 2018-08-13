@@ -381,7 +381,7 @@ var page = {
 
                 $datatable.find('tfoot th').each( function () {
                     var title = $(this).text();
-                    $(this).html('<input type="text" class="form-control" placeholder="' + title + '" />');
+                    $(this).html('<input type="text" class="form-control input-sm" placeholder="' + title + '" />');
                 } );
 
                 var dt = $datatable.DataTable(params).on('init.dt', function () {
@@ -421,14 +421,6 @@ var page = {
                         dt.columns(i).search(keyword).draw();
                     }
                 });
-                // dt.columns().every(function () {
-                //     var that = this;
-                //     $('input', this.footer()).off().on('keyup', function (e) {
-                //         if (that.search() !== this.value && e.keyCode === 13) {
-                //             that.search(this.value).draw();
-                //         }
-                //     });
-                // });
             },
             batch = function (action) {
                 var type = '',

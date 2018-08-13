@@ -13,7 +13,7 @@
             </tr>
             </thead>
             <tbody></tbody>
-            <tfoot>
+            <tfoot style="display: table-header-group">
             <tr>
                 @foreach ($titles as $title)
                     <th>{!! $title !!}</th>
