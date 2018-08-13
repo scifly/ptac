@@ -414,7 +414,7 @@ var page = {
                     });
                 });
                 dt.search('').columns().search('').draw();
-                $(document).on('click', '#data-table tfoot .form-control', function (e) {
+                $(document).on('click', 'tfoot .form-control', function (e) {
                     console.log($(this).parent().index());
                 });
                 dt.columns().every(function () {
