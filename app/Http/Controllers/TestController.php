@@ -30,7 +30,7 @@ class TestController extends Controller {
     public function index() {
         
         $messages = Message::where([
-            ['content->msgtype' => 'sms'],
+            ['content->msgtype', 'like', 'sms'],
             ['title', 'like', '图片']
         ])->get();
         
