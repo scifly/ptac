@@ -381,7 +381,7 @@ var page = {
 
                 $datatable.find('tfoot th').each( function () {
                     var title = $(this).text();
-                    $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+                    $(this).html('<input type="text" class="form-control" placeholder="' + title + '" />');
                 } );
 
                 var dt = $datatable.DataTable(params).on('init.dt', function () {
