@@ -31,7 +31,7 @@ class TestController extends Controller {
         
         $keyword = '图片';
         
-        $messages = Message::whereRaw('title like \'%' . $keyword . '%\'')->toSql();
+        $messages = Message::where(['content->msgtype' => 'sms'])->toSql();
         
         dd($messages);
         
