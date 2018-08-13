@@ -29,10 +29,7 @@ class TestController extends Controller {
      */
     public function index() {
         
-        $messages = Message::where([
-            // 'content->msgtype' => 'sms',
-            ['title', 'like', '图片']
-        ])->toSql();
+        $messages = Message::whereRaw('title like "%图片%"')->toSql();
         
         dd($messages);
         
