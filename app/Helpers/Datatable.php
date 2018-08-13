@@ -65,6 +65,10 @@ class Datatable {
         $limit = $this->limit();
         $order = $this->order($columns);
         $where = $this->filter($columns);
+        $keyword = Request::input('search');
+        if (isset($keyword) && $modelName == 'Message') {
+            $where .= 'OR Message.content LIKE BINARY \'%' . $keyword . '%\'';
+        }
         if (isset($condition)) {
             $where = empty($where)
                 ? ' WHERE ' . $condition
