@@ -413,7 +413,7 @@ var page = {
                         }
                     });
                 });
-
+                dt.search('').columns().search('').draw();
                 dt.columns().every(function () {
                     var that = this;
                     $('input', this.footer()).off().on('keyup', function (e) {
