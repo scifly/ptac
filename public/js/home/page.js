@@ -343,8 +343,7 @@ var page = {
                     columns = $datatable.find('thead tr th').length,
                     statusCol = {className: 'text-right', targets: [columns - 1]},
                     uri = typeof method === 'undefined' ? '/index' : '/' + method,
-                    url = page.siteRoot() + table + uri + page.getQueryString(extra),
-                    tooltip = '请输入关键词进行过滤';
+                    url = page.siteRoot() + table + uri + page.getQueryString(extra);
 
                 if (typeof options === 'undefined') {
                     options = [statusCol];
@@ -381,11 +380,7 @@ var page = {
                 $.fn.dataTable.ext.errMode = 'none';
 
                 $datatable.find('tfoot th').each( function () {
-                    var title = $(this).text();
-
-                    $(this).html(
-                        '<input type="text" title="' + tooltip + '"class="form-control input-sm" placeholder="' + title + '" />'
-                    );
+                    $(this).html('<input type="text" class="form-control input-sm" placeholder="' + $(this).text() + '" />');
                 } );
 
                 var dt = $datatable.DataTable(params).on('init.dt', function () {
