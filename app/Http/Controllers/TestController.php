@@ -32,9 +32,9 @@ class TestController extends Controller {
         $messages = Message::where([
             'content->msgtype' => 'sms',
             ['title', 'like', '图片']
-        ])->get();
+        ])->toSql();
         
-        dd($messages->toArray());
+        dd($messages);
         
         $rules = [
             'student_number' => 'required|string|between:5,32',
