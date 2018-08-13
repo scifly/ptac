@@ -30,10 +30,11 @@ class TestController extends Controller {
     public function index() {
         
         $messages = Message::where([
-            'content->msgtype' => 'sms'
-        ])->toSql();
+            'content->msgtype' => 'sms',
+            ['title', 'like', '图片']
+        ])->get();
         
-        dd($messages);
+        dd($messages->toArray());
         
         $rules = [
             'student_number' => 'required|string|between:5,32',
