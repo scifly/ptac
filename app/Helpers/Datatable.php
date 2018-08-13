@@ -67,7 +67,7 @@ class Datatable {
         $where = $this->filter($columns);
         $keyword = Request::input('search');
         if (isset($keyword['value']) && $modelName == 'Message') {
-            $where .= 'OR Message.content LIKE BINARY \'%' . $keyword['value'] . '%\'';
+            $where .= ' OR Message.content LIKE BINARY \'%' . $keyword['value'] . '%\'';
         }
         if (isset($condition)) {
             $where = empty($where)
