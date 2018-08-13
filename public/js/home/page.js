@@ -414,17 +414,21 @@ var page = {
                     });
                 });
                 dt.search('').columns().search('').draw();
-                $(document).on('click', 'tfoot .form-control', function (e) {
-                    console.log($(this).parent().index());
+                $(document).on('keyup', 'tfoot .form-control', function (e) {
+                    var i = $(this).parent().index(),
+                        keyword = $(this).val();
+                    if (e.keyCode === 13) {
+                        dt.columns(i).search(keyword).draw();
+                    }
                 });
-                dt.columns().every(function () {
-                    var that = this;
-                    $('input', this.footer()).off().on('keyup', function (e) {
-                        if (that.search() !== this.value && e.keyCode === 13) {
-                            that.search(this.value).draw();
-                        }
-                    });
-                });
+                // dt.columns().every(function () {
+                //     var that = this;
+                //     $('input', this.footer()).off().on('keyup', function (e) {
+                //         if (that.search() !== this.value && e.keyCode === 13) {
+                //             that.search(this.value).draw();
+                //         }
+                //     });
+                // });
             },
             batch = function (action) {
                 var type = '',
