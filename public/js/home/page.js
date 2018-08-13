@@ -573,6 +573,25 @@ var page = {
             page.getTabContent($activeTabPane, table + '/' + url);
         });
     },
+    remove: function(table, options) {
+        var id,
+            reloadDt = function () { this.initDatatable(table, options); };
+
+        // 打开删除对话框
+        $(document).on('click', '.fa-remove', function () {
+            id = $(this).parents().eq(0).attr('id');
+            $('#modal-delete').modal({backdrop: true});
+        });
+        // 删除记录
+        $('#confirm-delete').on('click', function () {
+            page.ajaxRequest(
+                'DELETE',
+                table + '/delete/' + id,
+                {_token: page.token()},
+                reloadDt
+            );
+        });
+    },
     loadCss: function (css) {
         if (!$('link[href="' + page.siteRoot() + css + '"]').length) {
             $cip.after($("<link/>", {
