@@ -65,6 +65,9 @@ class Datatable {
         $limit = $this->limit();
         $order = $this->order($columns);
         $where = $this->filter($columns);
+        if ($modelName == 'Message') {
+            
+        }
         if (isset($condition)) {
             $where = empty($where)
                 ? ' WHERE ' . $condition
