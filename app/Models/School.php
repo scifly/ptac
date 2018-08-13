@@ -265,13 +265,13 @@ class School extends Model {
         $columns = [
             ['db' => 'School.id', 'dt' => 0],
             [
-                'db'        => 'School.name', 'dt' => 1,
+                'db'        => 'School.name as schoolname', 'dt' => 1,
                 'formatter' => function ($d) {
                     return Snippet::school($d);
                 },
             ],
             ['db' => 'School.address', 'dt' => 2],
-            ['db' => 'SchoolType.name', 'dt' => 3],
+            ['db' => 'SchoolType.name as typename', 'dt' => 3],
             [
                 'db'        => 'Corp.name as corpname', 'dt' => 4,
                 'formatter' => function ($d) {
