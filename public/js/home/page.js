@@ -416,7 +416,7 @@ var page = {
                 dt.search('').columns().search('').draw();
                 dt.columns().every(function () {
                     var that = this;
-                    $('input', this.footer()).off().on('keyup', function (e) {
+                    $('input', this.footer()).on('keyup', function (e) {
                         if (that.search() !== this.value && e.keyCode === 13) {
                             that.search(this.value).draw();
                         }
