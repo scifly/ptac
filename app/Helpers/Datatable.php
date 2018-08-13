@@ -394,7 +394,7 @@ class Datatable {
             $str = $requestColumn['search']['value'];
             if ($requestColumn['searchable'] == 'true' && $str != '') {
                 # $binding = $this->bind($bindings, '%' . $str . '%', PDO::PARAM_STR);
-                $columnSearch[] = $column['db'] . " LIKE BINARY '%" . $str . "%'";
+                $columnSearch[] = explode(' ', $column['db'])[0] . " LIKE BINARY '%" . $str . "%'";
             }
         }
         // Combine the filters into a single string
