@@ -271,9 +271,9 @@ class School extends Model {
                 },
             ],
             ['db' => 'School.address', 'dt' => 2],
-            ['db' => 'SchoolType.name as typename', 'dt' => 3],
+            ['db' => 'SchoolType.name', 'dt' => 3],
             [
-                'db'        => 'Corp.name as corpname', 'dt' => 4,
+                'db'        => 'Corp.name', 'dt' => 4,
                 'formatter' => function ($d) {
                     return Snippet::corp($d);
                 },
@@ -286,7 +286,7 @@ class School extends Model {
                     return $this->syncStatus($d, $row, false);
                 },
             ],
-            ['db' => 'Department.synced as synced', 'dt' => 8],
+            ['db' => 'Department.synced', 'dt' => 8],
         ];
         $joins = [
             [
