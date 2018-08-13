@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ModelTrait;
 use App\Models\Department;
+use App\Models\Message;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -27,6 +28,10 @@ class TestController extends Controller {
      * @throws \Exception
      */
     public function index() {
+        
+        $messages = Message::where('content->msgtype', 'sms')->get();
+        
+        dd($messages->toArray());
         
         $rules = [
             'student_number' => 'required|string|between:5,32',
