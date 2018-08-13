@@ -638,7 +638,7 @@ var page = {
         return data;
     },
     initBackBtn: function (table) {
-        $('#cancel, #record-list').off('click').on('click', function () {
+        $('#cancel, #record-list').off().on('click', function () {
             page.backToList(table);
         })
     },

@@ -198,6 +198,8 @@
                         {!! Form::textarea('sms-content', null, [
                             'id' => 'sms-content',
                             'rows' => 5,
+                            'title' => '短信内容',
+                            'placeholder' => '（请在此输入短信内容）',
                             'class' => 'form-control text-blue',
                         ]) !!}
                         <p id="sms-length" class="help-block"></p>

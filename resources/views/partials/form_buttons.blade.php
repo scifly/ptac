@@ -2,7 +2,8 @@
 <div class="box-footer">
     <div class="form-group">
         <div class="col-sm-6 col-sm-offset-3">
-            <button class="btn btn-primary" id="{!! isset($id) ? $id : 'save' !!}" type="submit">
+            {{--<button class="btn btn-primary" id="{!! isset($id) ? $id : 'save' !!}" type="submit">--}}
+            <button class="btn btn-primary" @if (isset($id)) id="{!! $id !!}" @endif type="submit">
                 <i class="fa {!! isset($class) ? $class : 'fa-save' !!}">
                     {!! isset($label) ? $label : ' 保存' !!}
                 </i>
