@@ -381,8 +381,8 @@ var page = {
 
                 $datatable.find('tfoot th').each( function () {
                     $(this).html('<input type="text" class="form-control input-sm" placeholder="' + $(this).text() + '" />');
-                } );
-
+                });
+                $datatable.find('tfoot input').css('width', '100%');
                 var dt = $datatable.DataTable(params).on('init.dt', function () {
                     // $('.dt-buttons').addClass('pull-right');
                     // $('.buttons-pdf').addClass('btn-sm');
