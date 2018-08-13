@@ -365,7 +365,7 @@ var page = {
                         }
                     },
                     order: [[0, 'desc']],
-                    stateSave: false,
+                    stateSave: true,
                     autoWidth: true,
                     columnDefs: options,
                     scrollX: true,
@@ -416,7 +416,7 @@ var page = {
 
                 dt.columns().every(function () {
                     var that = this;
-                    $('input', this.footer()).on('keyup change', function () {
+                    $('input', this.footer()).off().on('keyup', function () {
                         if (that.search() !== this.value) {
                             that.search(this.value).draw();
                         }
