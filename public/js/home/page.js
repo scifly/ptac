@@ -6,24 +6,24 @@ var page = {
     success: 'img/confirm.png',
     failure: 'img/error.png',
     info: 'img/info.png',
-    dateRangeLocale: function() {
-       return {
-           format: "YYYY年MM月DD日",
-           separator: " 至 ",
-           applyLabel: "确定",
-           cancelLabel: "取消",
-           fromLabel: "从",
-           toLabel: "到",
-           todayRangeLabel: '今天',
-           customRangeLabel: "自定义",
-           weekLabel: "W",
-           daysOfWeek: ["日", "一", "二", "三", "四", "五", "六"],
-           monthNames: [
-               "一月", "二月", "三月", "四月", "五月", "六月",
-               "七月", "八月", "九月", "十月", "十一月", "十二月"
-           ],
-           firstDay: 1
-       };
+    dateRangeLocale: function () {
+        return {
+            format: "YYYY年MM月DD日",
+            separator: " 至 ",
+            applyLabel: "确定",
+            cancelLabel: "取消",
+            fromLabel: "从",
+            toLabel: "到",
+            todayRangeLabel: '今天',
+            customRangeLabel: "自定义",
+            weekLabel: "W",
+            daysOfWeek: ["日", "一", "二", "三", "四", "五", "六"],
+            monthNames: [
+                "一月", "二月", "三月", "四月", "五月", "六月",
+                "七月", "八月", "九月", "十月", "十一月", "十二月"
+            ],
+            firstDay: 1
+        };
     },
     dateRangeRanges: function () {
         return {
@@ -378,6 +378,12 @@ var page = {
                 page.loadCss(plugins.datatable.multiCss);
                 $('.overlay').show();
                 $.fn.dataTable.ext.errMode = 'none';
+
+                $datatable.find('tfoot th').each( function () {
+                    var title = $(this).text();
+                    $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+                } );
+
                 var dt = $datatable.DataTable(params).on('init.dt', function () {
                     // $('.dt-buttons').addClass('pull-right');
                     // $('.buttons-pdf').addClass('btn-sm');
@@ -396,7 +402,7 @@ var page = {
                 }).on('xhr.dt', function (e, settings, data) {
                     rowIds = data['ids'];
                     var differences = [];
-                    $.grep(selected, function(el) {
+                    $.grep(selected, function (el) {
                         if ($.inArray(el, rowIds) === -1) {
                             differences.push(el);
                         }
@@ -404,6 +410,15 @@ var page = {
                     $.each(differences, function () {
                         if ($.inArray(parseInt(this), rowIds) === -1) {
                             selected.splice($.inArray(parseInt(this), selected), 1);
+                        }
+                    });
+                });
+
+                dt.columns().every(function () {
+                    var that = this;
+                    $('input', this.footer()).on('keyup change', function () {
+                        if ( that.search() !== this.value ) {
+                            that.search( this.value ).draw();
                         }
                     });
                 });
@@ -420,13 +435,20 @@ var page = {
                     };
 
                 switch (action) {
-                    case 'enable': type = $batchEnable.attr('title'); break;
-                    case 'disable': type = $batchDisable.attr('title'); break;
-                    case 'delete': type = $batchDelete.attr('title'); break;
-                    default: break;
+                    case 'enable':
+                        type = $batchEnable.attr('title');
+                        break;
+                    case 'disable':
+                        type = $batchDisable.attr('title');
+                        break;
+                    case 'delete':
+                        type = $batchDelete.attr('title');
+                        break;
+                    default:
+                        break;
                 }
                 if ($.inArray(action, ['enable', 'disable']) !== -1) {
-                    data = $.extend(data, { field: $batchEnable.data('field') });
+                    data = $.extend(data, {field: $batchEnable.data('field')});
                 }
                 if (selected.length === 0) {
                     page.inform(type, '请选择需要' + type + '的记录', page.failure);
@@ -443,14 +465,14 @@ var page = {
                         switch (action) {
                             case 'enable':
                             case 'disable':
-                                $(datatable + ' tbody tr.selected td:last-child >:first-child').each(function() {
+                                $(datatable + ' tbody tr.selected td:last-child >:first-child').each(function () {
                                     $(this).removeClass().addClass(
                                         'fa fa-circle ' + (action === 'enable' ? 'text-green' : 'text-gray')
                                     );
                                 });
                                 break;
                             case 'delete':
-                                $(datatable + ' tbody tr.selected').each(function() {
+                                $(datatable + ' tbody tr.selected').each(function () {
                                     $(this).addClass('text-gray');
                                 });
                                 break;
@@ -489,11 +511,19 @@ var page = {
                 $(this).removeClass('selected');
             });
         });
-        $batchEnable.off().on('click', function() { batch('enable'); });
-        $batchDisable.off().on('click', function() { batch('disable'); });
-        $batchDelete.off().on('click', function() { batch('delete'); });
+        $batchEnable.off().on('click', function () {
+            batch('enable');
+        });
+        $batchDisable.off().on('click', function () {
+            batch('disable');
+        });
+        $batchDelete.off().on('click', function () {
+            batch('delete');
+        });
         $.getMultiScripts([plugins.datatable.js]).done(
-            function () { showTable(); }
+            function () {
+                showTable();
+            }
         );
     },
     index: function (table, options) {
@@ -513,9 +543,15 @@ var page = {
             page.getTabContent($activeTabPane, table + '/' + url);
         };
         // 编辑、充值、查看记录
-        $(document).on('click', '.fa-pencil', function () { operation(this); });
-        $(document).on('click', '.fa-money', function () { operation(this); });
-        $(document).on('click', '.fa-bars', function () { operation(this); });
+        $(document).on('click', '.fa-pencil', function () {
+            operation(this);
+        });
+        $(document).on('click', '.fa-money', function () {
+            operation(this);
+        });
+        $(document).on('click', '.fa-bars', function () {
+            operation(this);
+        });
         // 删除记录
         this.remove(table, options);
     },
@@ -524,7 +560,7 @@ var page = {
     },
     edit: function (formId, table, options) {
         var $id = $('#id');
-            id = $id.length > 0 ? $id.val() : '';
+        id = $id.length > 0 ? $id.val() : '';
         page.initForm(table, formId, table + '/update/' + id, 'PUT', options);
     },
     show: function (table) {
@@ -612,9 +648,11 @@ var page = {
     },
     initParsley: function ($form, requestType, url) {
         $form.parsley().on('form:validated', function () {
-            var reset = function() {
+            var reset = function () {
                 $('input[type="text"], textarea').each(
-                    function() { $(this).val(''); }
+                    function () {
+                        $(this).val('');
+                    }
                 );
             };
             if ($('.parsley-error').length === 0) {
@@ -686,7 +724,7 @@ var page = {
             }
         });
     },
-    dateRange: function(selector) {
+    dateRange: function (selector) {
         if (typeof selector === 'undefined') {
             selector = 'daterange';
         }
@@ -711,7 +749,9 @@ var page = {
             function () {
                 $.getScript(
                     page.siteRoot() + plugins.daterangepicker.js,
-                    function () { page.dateRange(selector); }
+                    function () {
+                        page.dateRange(selector);
+                    }
                 )
             }
         )

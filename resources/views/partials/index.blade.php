@@ -13,6 +13,13 @@
             </tr>
             </thead>
             <tbody></tbody>
+            <tfoot>
+            <tr>
+                @foreach ($titles as $title)
+                    <th>{!! $title !!}</th>
+                @endforeach
+            </tr>
+            </tfoot>
         </table>
     </div>
     @include('partials.form_overlay')
