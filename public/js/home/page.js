@@ -365,7 +365,7 @@ var page = {
                         }
                     },
                     order: [[0, 'desc']],
-                    stateSave: true,
+                    stateSave: false,
                     autoWidth: true,
                     columnDefs: options,
                     scrollX: true,
