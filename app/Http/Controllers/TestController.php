@@ -29,7 +29,9 @@ class TestController extends Controller {
      */
     public function index() {
         
-        $messages = Message::where('title', 'like', '"%图片%"')->toSql();
+        $keyword = '图片';
+        
+        $messages = Message::where('title', 'like', $keyword)->toSql();
         
         dd($messages);
         
