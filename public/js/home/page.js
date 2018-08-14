@@ -391,7 +391,7 @@ var page = {
                     $('.dataTables_scrollHeadInner').css('width', '100%');
                     $('.dataTables_scrollHeadInner table').css('width', '100%');
                     $('.overlay').hide();
-                    $datatable.find('tfoot th').each(function () {
+                    $datatable.find('#filters th').each(function () {
                         var alignment = $(this).attr('class');
                         if (alignment !== 'undefined') {
                             $(this).find('input').addClass(alignment);
@@ -413,7 +413,7 @@ var page = {
                         }
                     });
                 });
-                $datatable.find('tfoot th').each(function () {
+                $datatable.find('#filters th').each(function () {
                     $(this).html('<input type="text" class="form-control input-sm" />');
                 });
                 $datatable.find('tfoot input').css('width', '100%');
