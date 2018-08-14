@@ -98,13 +98,17 @@ class TestController extends Controller {
             0, 24
         );
         
-        $formData = json_decode(json_encode([
+        $formData = [
             'appid' => $appid,
             'hash' => $hash,
             'method' => $method,
             'data' => $data,
             'nonce' => $nonce
-        ]));
+        ];
+        $fields_string = '';
+        foreach($formData as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
+        rtrim($fields_string, '&');
+    
         // $formData = [
         //     'appid' => $appid,
         //     'hash' => $hash,
@@ -113,7 +117,7 @@ class TestController extends Controller {
         //     'nonce' => $nonce
         // ];
         
-        dd($this->curlPost($url, $formData));
+        dd($this->curlPost($url, $fields_string));
         
     }
     
