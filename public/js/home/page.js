@@ -413,6 +413,7 @@ var page = {
                     });
                 });
                 dt.search('').columns().search('').draw();
+                $(document).off('keyup', 'tfoot .form-control');
                 $(document).on('keyup', 'tfoot .form-control', function (e) {
                     var i = $(this).parent().index(),
                         keyword = $(this).val();
