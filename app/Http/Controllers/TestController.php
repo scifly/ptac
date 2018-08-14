@@ -32,7 +32,7 @@ class TestController extends Controller {
         
         Carbon::setLocale('zh');
         
-        dd(Carbon::parse('2 hours ago'));
+        dd(Carbon::parse('2 hours ago')->toDateTimeString());
         
         // $messages = Message::where([
         //     'content->msgtype' => 'sms',
