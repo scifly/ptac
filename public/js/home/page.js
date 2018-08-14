@@ -409,11 +409,7 @@ var page = {
                     });
                 });
                 $datatable.find('tfoot th').each(function () {
-                    var alignment = $(this).attr('class'),
-                        classes = 'form-control input-sm' + (alignment !== 'undefined' ? ' ' + alignment : ''),
-                        placeholder = $(this).text();
-
-                    $(this).html('<input type="text" class="' + classes + '" placeholder="' + placeholder + '" />');
+                    $(this).html('<input type="text" class="form-control input-sm" />');
                 });
                 $datatable.find('tfoot input').css('width', '100%');
                 dt.search('').columns().search('').draw();
