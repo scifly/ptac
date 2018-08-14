@@ -380,7 +380,10 @@ var page = {
                 $.fn.dataTable.ext.errMode = 'none';
 
                 $datatable.find('tfoot th').each( function () {
-                    $(this).html('<input type="text" class="form-control input-sm" placeholder="' + $(this).text() + '" />');
+                    var classes = 'form-control input-sm ' + $(this).attr('class'),
+                        placeholder = $(this).text();
+                    
+                    $(this).html('<input type="text" class="' + classes + '" placeholder="' + placeholder + '" />');
                 });
                 $datatable.find('tfoot input').css('width', '100%');
                 var dt = $datatable.DataTable(params).on('init.dt', function () {
