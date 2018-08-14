@@ -31,10 +31,10 @@ class TestController extends Controller {
     public function index() {
         
         Carbon::setLocale('en');
-        $ch = '1天前';
         $en = Carbon::parse('2018-06-12')->diffForHumans();
-        
-        dd($en);
+        Carbon::setLocale('zh');
+        $ch = Carbon::parse($en)->diffForHumans();
+        dd($ch);
         
         $appid = '5100000025';
         $appsecret = 'B4C6F3A34F5936CEBA92C008F12B0396';
