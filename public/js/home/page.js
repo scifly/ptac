@@ -392,22 +392,13 @@ var page = {
                     $('.dataTables_scrollHeadInner table').css('width', '100%');
                     $('.overlay').hide();
                     $datatable.find('tfoot th').each(function () {
-                        console.log($(this).attr('class'));
                         var classes = 'form-control input-sm ' + $(this).attr('class'),
                             placeholder = $(this).text();
 
                         $(this).html('<input type="text" class="' + classes + '" placeholder="' + placeholder + '" />');
                     });
                     $datatable.find('tfoot input').css('width', '100%');
-                    dt.search('').columns().search('').draw();
-                    $(document).off('keyup', 'tfoot .form-control');
-                    $(document).on('keyup', 'tfoot .form-control', function (e) {
-                        var i = $(this).parent().index(),
-                            keyword = $(this).val();
-                        if (e.keyCode === 13) {
-                            dt.columns(i).search(keyword).draw();
-                        }
-                    });
+
                 }).on('error.dt', function (e, settings, techNote, message) {
                     page.inform('加载列表', message, page.failure);
                 }).on('xhr.dt', function (e, settings, data) {
@@ -424,8 +415,16 @@ var page = {
                         }
                     });
                 });
-                
 
+                dt.search('').columns().search('').draw();
+                $(document).off('keyup', 'tfoot .form-control');
+                $(document).on('keyup', 'tfoot .form-control', function (e) {
+                    var i = $(this).parent().index(),
+                        keyword = $(this).val();
+                    if (e.keyCode === 13) {
+                        dt.columns(i).search(keyword).draw();
+                    }
+                });
             },
             batch = function (action) {
                 var type = '',
