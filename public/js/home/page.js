@@ -414,7 +414,7 @@ var page = {
                     });
                 });
                 $datatable.find('tfoot th').each(function () {
-                    $(this).html('<input type="text" class="form-control input-sm" />');
+                    $(this).html('<input type="text" class="form-control input-sm "' + $(this).attr('class') + ' />');
                 });
                 $datatable.find('tfoot input').css('width', '100%');
                 dt.search('').columns().search('').draw();
