@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ModelTrait;
 use App\Models\Department;
 use App\Models\Message;
+use Carbon\Carbon;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -28,6 +29,10 @@ class TestController extends Controller {
      * @throws \Exception
      */
     public function index() {
+        
+        Carbon::setLocale('zh');
+        
+        dd(Carbon::getDays());
         
         // $messages = Message::where([
         //     'content->msgtype' => 'sms',
