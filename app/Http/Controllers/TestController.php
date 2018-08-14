@@ -98,13 +98,13 @@ class TestController extends Controller {
             0, 24
         );
         
-        $formData = json_encode([
+        $formData = [
             'appid' => $appid,
             'hash' => $hash,
             'method' => $method,
             'data' => $data,
             'nonce' => $nonce
-        ]);
+        ];
         
         dd($this->curlPost($url, $formData));
         
