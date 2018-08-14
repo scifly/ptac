@@ -396,9 +396,8 @@ var page = {
                     $('.dataTables_scrollHeadInner table').css('width', '100%');
                     $('.overlay').hide();
                     $datatable.find('tfoot th').each(function () {
-                        var alignment = $(this).attr('class');
-                        if (alignment !== 'undefined') {
-                            $(this).find('input').addClass(alignment);
+                        if ($(this).attr('class') !== 'undefined') {
+                            $(this).find('input').addClass($(this).attr('class'));
                         }
                     });
                 }).on('error.dt', function (e, settings, techNote, message) {
