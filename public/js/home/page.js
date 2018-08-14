@@ -379,7 +379,7 @@ var page = {
                 $('.overlay').show();
                 $.fn.dataTable.ext.errMode = 'none';
 
-                $datatable.find('tfoot th').each( function () {
+                $datatable.find('tfoot th').each(function () {
                     console.log($(this).attr('class'));
                     var classes = 'form-control input-sm ' + $(this).attr('class'),
                         placeholder = $(this).text();
