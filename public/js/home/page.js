@@ -378,8 +378,6 @@ var page = {
                 page.loadCss(plugins.datatable.multiCss);
                 $('.overlay').show();
                 $.fn.dataTable.ext.errMode = 'none';
-
-
                 var dt = $datatable.DataTable(params).on('init.dt', function () {
                     // $('.dt-buttons').addClass('pull-right');
                     // $('.buttons-pdf').addClass('btn-sm');
@@ -410,7 +408,7 @@ var page = {
                     });
                 });
                 $datatable.find('tfoot th').each(function () {
-                    console.log($(this));
+                    console.log($(this).attr('class'));
                     var classes = 'form-control input-sm ' + $(this).attr('class'),
                         placeholder = $(this).text();
 
