@@ -391,9 +391,14 @@ var page = {
                     $('.dataTables_scrollHeadInner').css('width', '100%');
                     $('.dataTables_scrollHeadInner table').css('width', '100%');
                     $('.overlay').hide();
+                    $datatable.find('tfoot th').each(function () {
+                        var alignment = $(this).attr('class'),
+                            classes = 'form-control input-sm' + (alignment !== 'undefined' ? ' ' + alignment : ''),
+                            placeholder = $(this).text();
 
-
-
+                        $(this).html('<input type="text" class="' + classes + '" placeholder="' + placeholder + '" />');
+                    });
+                    $datatable.find('tfoot input').css('width', '100%');
                 }).on('error.dt', function (e, settings, techNote, message) {
                     page.inform('加载列表', message, page.failure);
                 }).on('xhr.dt', function (e, settings, data) {
@@ -409,14 +414,6 @@ var page = {
                             selected.splice($.inArray(parseInt(this), selected), 1);
                         }
                     });
-                    $datatable.find('tfoot th').each(function () {
-                        var alignment = $(this).attr('class'),
-                            classes = 'form-control input-sm' + (alignment !== 'undefined' ? ' ' + alignment : ''),
-                            placeholder = $(this).text();
-
-                        $(this).html('<input type="text" class="' + classes + '" placeholder="' + placeholder + '" />');
-                    });
-                    $datatable.find('tfoot input').css('width', '100%');
                 });
 
                 dt.search('').columns().search('').draw();
