@@ -50,6 +50,7 @@ class StudentIndexComposer {
             'classes'        => $classes,
             'importTemplate' => 'files/students.xlsx',
             'title'          => '导出学籍',
+            'filter'         => true
         ]);
         
     }
