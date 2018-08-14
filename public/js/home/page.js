@@ -396,9 +396,12 @@ var page = {
                     $('.dataTables_scrollHeadInner table').css('width', '100%');
                     $('.overlay').hide();
                     $('.dataTables_scrollFoot').find('tfoot th').each(function () {
-                        var $this = $(this);
+                        var $this = $(this),
+                            title = $datatable.find('thead th:nth(' + $this.index() + ')').text();
+
                         if ($this.attr('class') !== 'undefined') {
                             $this.find('input').addClass($this.attr('class'));
+                            $this.find('input').attr('title', '按"' + title + '"过滤');
                         }
                     });
                 }).on('error.dt', function (e, settings, techNote, message) {
