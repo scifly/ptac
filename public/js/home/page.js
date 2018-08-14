@@ -392,6 +392,8 @@ var page = {
                     $('.dataTables_scrollHeadInner table').css('width', '100%');
                     $('.overlay').hide();
 
+
+
                 }).on('error.dt', function (e, settings, techNote, message) {
                     page.inform('加载列表', message, page.failure);
                 }).on('xhr.dt', function (e, settings, data) {
@@ -407,7 +409,6 @@ var page = {
                             selected.splice($.inArray(parseInt(this), selected), 1);
                         }
                     });
-                }).on('draw.dt', function () {
                     $datatable.find('tfoot th').each(function () {
                         var alignment = $(this).attr('class'),
                             classes = 'form-control input-sm' + (alignment !== 'undefined' ? ' ' + alignment : ''),
