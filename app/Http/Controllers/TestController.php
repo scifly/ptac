@@ -32,7 +32,7 @@ class TestController extends Controller {
         
         Carbon::setLocale('zh');
         
-        dd(Carbon::createFromTimeString('1天前'));
+        dd(Carbon::createFromFormat('d天前', '1天前'));
         
         $appid = '5100000025';
         $appsecret = 'B4C6F3A34F5936CEBA92C008F12B0396';
