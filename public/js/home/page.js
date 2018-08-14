@@ -378,6 +378,10 @@ var page = {
                 page.loadCss(plugins.datatable.multiCss);
                 $('.overlay').show();
                 $.fn.dataTable.ext.errMode = 'none';
+                $datatable.find('tfoot th').each(function () {
+                    $(this).html('<input type="text" class="form-control input-sm" />');
+                });
+                $datatable.find('tfoot input').css('width', '100%');
                 var dt = $datatable.DataTable(params).on('init.dt', function () {
                     // $('.dt-buttons').addClass('pull-right');
                     // $('.buttons-pdf').addClass('btn-sm');
@@ -413,10 +417,7 @@ var page = {
                         }
                     });
                 });
-                $datatable.find('tfoot th').each(function () {
-                    $(this).html('<input type="text" class="form-control input-sm "' + $(this).attr('class') + ' />');
-                });
-                $datatable.find('tfoot input').css('width', '100%');
+
                 dt.search('').columns().search('').draw();
                 $(document).off('keyup', 'tfoot .form-control');
                 $(document).on('keyup', 'tfoot .form-control', function (e) {
