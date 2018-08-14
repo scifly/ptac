@@ -391,7 +391,7 @@ var page = {
                         if (e.keyCode === 13) {
                             dt.search(this.value, true).draw();
                         }
-                    }).attr('placeholder', '多关键词请用空格分隔');
+                    }).attr('title', '多关键词请用空格分隔');
                     $('.dataTables_scrollHeadInner').css('width', '100%');
                     $('.dataTables_scrollHeadInner table').css('width', '100%');
                     $('.overlay').hide();
