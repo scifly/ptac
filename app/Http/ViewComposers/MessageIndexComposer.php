@@ -36,6 +36,7 @@ class MessageIndexComposer {
             'smsMaxLength' => 300,
             'messageTypes' => MessageType::pluck('name', 'id')->toArray(),
             'batch'        => true,
+            'filter'       => true
         ]);
     }
     

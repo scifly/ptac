@@ -13,13 +13,15 @@
             </tr>
             </thead>
             <tbody></tbody>
-            <tfoot style="display: table-header-group">
-            <tr>
-                @foreach ($titles as $title)
-                    <th>{!! $title !!}</th>
-                @endforeach
-            </tr>
-            </tfoot>
+            @if (isset($filter))
+                <tfoot style="display: table-header-group">
+                <tr>
+                    @foreach ($titles as $title)
+                        <th>{!! $title !!}</th>
+                    @endforeach
+                </tr>
+                </tfoot>
+            @endif
         </table>
     </div>
     @include('partials.form_overlay')

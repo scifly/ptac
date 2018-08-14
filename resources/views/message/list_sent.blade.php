@@ -8,4 +8,13 @@
     </tr>
     </thead>
     <tbody></tbody>
+    @if (isset($filter))
+        <tfoot style="display: table-header-group">
+        <tr>
+            @foreach ($titles as $title)
+                <th>{!! $title !!}</th>
+            @endforeach
+        </tr>
+        </tfoot>
+    @endif
 </table>
