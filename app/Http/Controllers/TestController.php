@@ -32,9 +32,9 @@ class TestController extends Controller {
         
         Carbon::setLocale('en');
         $ch = '1天前';
-        $en =
-        $ch = Carbon::parse()->diffForHumans();
-        dd($ch);
+        $en = Carbon::parse('2018-06-12')->diffForHumans();
+        
+        dd($en);
         
         $appid = '5100000025';
         $appsecret = 'B4C6F3A34F5936CEBA92C008F12B0396';
