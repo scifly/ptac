@@ -29,12 +29,10 @@ class TestController extends Controller {
      * @throws \Exception
      */
     public function index() {
-    
-        setlocale(LC_ALL,"zh_CN.UTF8");
-        dd(strftime("%Y. %B %d. %A. %X %Z"));
-        // Carbon::setLocale('zh');
-        //
-        // dd(new Carbon('1天前'));
+        
+        Carbon::setLocale('zh');
+        
+        dd(new Carbon('1 day ago'));
         
         $appid = '5100000025';
         $appsecret = 'B4C6F3A34F5936CEBA92C008F12B0396';
