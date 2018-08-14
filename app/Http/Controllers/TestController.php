@@ -29,47 +29,47 @@ class TestController extends Controller {
      */
     public function index() {
         
-        $messages = Message::where([
-            'content->msgtype' => 'sms',
-            ['title', 'like', '图片']
-        ])->toSql();
-        
-        dd($messages);
-        
-        $rules = [
-            'student_number' => 'required|string|between:5,32',
-            'punch_time'     => 'required|date',
-            'inorout'        => 'required|integer',
-            'media_id'       => 'required|integer',
-            'longitude'      => 'required|numeric',
-            'latitude'       => 'required|numeric',
-            'machineid'      => 'required|string|between:1,20',
-        ];
-        $datum = [
-            'student_number' => '200000',
-            'punch_time' => '2018-03-20 10:12',
-            'inorout' => 0,
-            'machineid' => '1',
-            'longitude' => 0,
-            'latitude' => 0,
-            'media_id' => 0
-        ];
-        $result = Validator::make($datum, $rules);
-        dd($result->errors());
+        // $messages = Message::where([
+        //     'content->msgtype' => 'sms',
+        //     ['title', 'like', '图片']
+        // ])->toSql();
+        //
+        // dd($messages);
+        //
+        // $rules = [
+        //     'student_number' => 'required|string|between:5,32',
+        //     'punch_time'     => 'required|date',
+        //     'inorout'        => 'required|integer',
+        //     'media_id'       => 'required|integer',
+        //     'longitude'      => 'required|numeric',
+        //     'latitude'       => 'required|numeric',
+        //     'machineid'      => 'required|string|between:1,20',
+        // ];
+        // $datum = [
+        //     'student_number' => '200000',
+        //     'punch_time' => '2018-03-20 10:12',
+        //     'inorout' => 0,
+        //     'machineid' => '1',
+        //     'longitude' => 0,
+        //     'latitude' => 0,
+        //     'media_id' => 0
+        // ];
+        // $result = Validator::make($datum, $rules);
+        // dd($result->errors());
         
     
-        $client = new Client();
-        $reponse = $client->post(
-            'http://weixin.028lk.com/api/student_attendance', [
-                'form_params' => [
-                    'ab' => 1
-                ],
-            ]
-        );
-        dd($reponse);
-        
-        $a = [];
-        dd($a[0]);
+        // $client = new Client();
+        // $reponse = $client->post(
+        //     'http://weixin.028lk.com/api/student_attendance', [
+        //         'form_params' => [
+        //             'ab' => 1
+        //         ],
+        //     ]
+        // );
+        // dd($reponse);
+        //
+        // $a = [];
+        // dd($a[0]);
         
         $appid = '5100000025';
         $appsecret = 'B4C6F3A34F5936CEBA92C008F12B0396';
