@@ -396,8 +396,8 @@ var page = {
                     $('.dataTables_scrollHeadInner table').css('width', '100%');
                     $('.overlay').hide();
                     $datatable.find('tfoot th').each(function () {
-                        console.log($datatable.find('tfoot').length);
                         var alignment = $(this).attr('class');
+                        console.log(alignment);
                         if (alignment !== 'undefined') {
                             $(this).find('input').addClass(alignment);
                         }
