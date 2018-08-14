@@ -23,6 +23,7 @@ class EducatorAttendanceIndexComposer {
                     'icon'  => 'fa fa-bar-chart',
                 ],
             ],
+            'filter' => true
         ]);
         
     }
