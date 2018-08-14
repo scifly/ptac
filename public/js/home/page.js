@@ -397,7 +397,7 @@ var page = {
                     $('.overlay').hide();
                     $datatable.find('tfoot th').each(function () {
                         if ($(this).attr('class') !== 'undefined') {
-                            $(this).find('input').addClass($(this).attr('class'));
+                            $(this).find(':input').addClass($(this).attr('class'));
                         }
                     });
                 }).on('error.dt', function (e, settings, techNote, message) {
