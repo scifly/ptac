@@ -391,7 +391,12 @@ var page = {
                     $('.dataTables_scrollHeadInner').css('width', '100%');
                     $('.dataTables_scrollHeadInner table').css('width', '100%');
                     $('.overlay').hide();
-
+                    $datatable.find('tfoot th').each(function () {
+                        var alignment = $(this).attr('class');
+                        if (alignment !== 'undefined') {
+                            $(this).find('input').addClass(alignment);
+                        }
+                    });
                 }).on('error.dt', function (e, settings, techNote, message) {
                     page.inform('加载列表', message, page.failure);
                 }).on('xhr.dt', function (e, settings, data) {
