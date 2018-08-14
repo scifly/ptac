@@ -98,13 +98,13 @@ class TestController extends Controller {
             0, 24
         );
         
-        $formData = [
+        $formData = json_encode([
             'appid' => $appid,
             'hash' => $hash,
             'method' => $method,
             'data' => $data,
             'nonce' => $nonce
-        ];
+        ]);
         
         dd($this->curlPost($url, $formData));
         
@@ -228,7 +228,7 @@ class TestController extends Controller {
         $result = null;
         try {
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_URL, $url);c
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
