@@ -380,9 +380,10 @@ var page = {
                 $.fn.dataTable.ext.errMode = 'none';
 
                 $datatable.find('tfoot th').each( function () {
+                    console.log($(this).attr('class'));
                     var classes = 'form-control input-sm ' + $(this).attr('class'),
                         placeholder = $(this).text();
-                    
+
                     $(this).html('<input type="text" class="' + classes + '" placeholder="' + placeholder + '" />');
                 });
                 $datatable.find('tfoot input').css('width', '100%');
