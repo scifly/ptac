@@ -37,6 +37,7 @@ class CustodianIndexComposer {
                 ],
             ],
             'batch'   => true,
+            'filter'  => true,
             'titles'  => ['#', '姓名', '头像', '性别', '学生', '邮箱', '手机号码', '创建于', '更新于', '状态 . 操作'],
             'grades'  => $grades,
             'classes' => $classes,

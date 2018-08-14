@@ -35,6 +35,7 @@ class EducatorIndexComposer {
                 ],
             ],
             'batch'          => true,
+            'filter'         => true,
             'titles'         => ['#', '姓名', '头像', '性别', '创建于', '更新于', '状态 . 操作'],
             'departments'    => $departments,
             'importTemplate' => 'files/educators.xlsx',
