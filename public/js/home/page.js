@@ -397,7 +397,7 @@ var page = {
                     $('.overlay').hide();
                     $datatable.find('tfoot th').each(function () {
                         var alignment = $(this).attr('class');
-                        console.log(alignment);
+                        console.log($(this).find('input'));
                         if (alignment !== 'undefined') {
                             $(this).find('input').addClass(alignment);
                         }
