@@ -767,7 +767,6 @@ class User extends Authenticatable {
                 }
                 $messageType->delete();
                 $this->find($id)->delete();
-    
             });
         } catch (Exception $e) {
             throw $e;
