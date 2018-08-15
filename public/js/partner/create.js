@@ -1,0 +1,1 @@
+page.create('formPartner', 'partners');

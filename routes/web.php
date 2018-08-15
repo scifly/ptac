@@ -348,6 +348,8 @@ Route::group(['prefix' => 'operators'], function () {
     Route::post('create', $c . '@create');
     Route::post('edit/{id}', $c . '@edit');
 });
+# 合作伙伴
+Route::group(['prefix' => 'partners'], routes('PartnerController'));
 # (运营)系统设置
 Route::group(['prefix' => 'action_types'], routes('ActionTypeController'));
 Route::group(['prefix' => 'message_types'], routes('MessageTypeController'));

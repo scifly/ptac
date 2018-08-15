@@ -38,8 +38,7 @@ class PartnerRequest extends FormRequest {
             'group_id'              => 'required|integer',
             'username'              => 'required|string|between:6,255|unique:users,username,' .
                 $this->input('id') . ',id',
-            'password'              => 'string|min:6|confirmed',
-            'password_confirmation' => 'string|min:6',
+            'password'              => 'required|string|min:6',
             'gender'                => 'required|boolean',
             'realname'              => 'required|string',
             'userid'                => 'required|string',
@@ -54,6 +53,7 @@ class PartnerRequest extends FormRequest {
         
         $input = $this->all();
         $input['group_id'] = Group::whereName('api')->first()->id;
+        $input['password'] = bcrypt($input['english_name']);
         $input['gender'] = 0;
         $input['userid'] = $input['username'] . uniqid();
         $input['synced'] = 0;

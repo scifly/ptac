@@ -1,0 +1,1 @@
+page.edit('formPartner', 'partners');
