@@ -2,6 +2,7 @@
 namespace App\Http\Requests;
 
 use App\Helpers\Constant;
+use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\Rule;
@@ -11,6 +12,8 @@ use Illuminate\Validation\Rule;
  * @package App\Http\Requests
  */
 class ScoreRequest extends FormRequest {
+    
+    use ModelTrait;
     
     /**
      * Determine if the user is authorized to make this request.
@@ -26,15 +29,7 @@ class ScoreRequest extends FormRequest {
      */
     public function rules() {
         
-        if (Request::has('ids')) {
-            return [
-                'ids' => 'required|array',
-                'action' => [
-                    'required', Rule::in(Constant::BATCH_OPERATIONS)
-                ]
-            ];
-        }
-        return [
+        $rules = [
             'student_id' => 'required|integer|unique:scores,student_id,' .
                 $this->input('id') . ',id,' .
                 'subject_id,' . $this->input('subject_id') . ',' .
@@ -43,15 +38,20 @@ class ScoreRequest extends FormRequest {
             'exam_id'    => 'required|integer',
             'score'      => 'required|numeric',
         ];
+        $this->batchRules($rules);
+        
+        return $rules;
         
     }
     
     protected function prepareForValidation() {
         
-        $input = $this->all();
-        $input['class_rank'] = 0;
-        $input['grade_rank'] = 0;
-        $this->replace($input);
+        if (!Request::has('ids')) {
+            $input = $this->all();
+            $input['class_rank'] = 0;
+            $input['grade_rank'] = 0;
+            $this->replace($input);
+        }
         
     }
     

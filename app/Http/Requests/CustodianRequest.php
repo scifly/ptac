@@ -2,6 +2,7 @@
 namespace App\Http\Requests;
 
 use App\Helpers\Constant;
+use App\Helpers\ModelTrait;
 use App\Models\Group;
 use App\Rules\Email;
 use App\Rules\Mobile;
@@ -15,6 +16,7 @@ use Illuminate\Validation\Rule;
  */
 class CustodianRequest extends FormRequest {
     
+    use ModelTrait;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -29,15 +31,7 @@ class CustodianRequest extends FormRequest {
      */
     public function rules() {
     
-        if (Request::has('ids')) {
-            return [
-                'ids' => 'required|array',
-                'action' => [
-                    'required', Rule::in(Constant::BATCH_OPERATIONS)
-                ]
-            ];
-        }
-        return [
+        $rules =  [
             'user.realname' => 'required|string',
             'user.gender'   => 'required|boolean',
             'user.group_id' => 'required|integer',
@@ -45,6 +39,9 @@ class CustodianRequest extends FormRequest {
             'mobile.*'      => ['required', new Mobile],
             'student_ids'   => 'required',
         ];
+        $this->batchRules($rules);
+        
+        return $rules;
         
     }
     

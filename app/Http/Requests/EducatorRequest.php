@@ -29,15 +29,7 @@ class EducatorRequest extends FormRequest {
      */
     public function rules() {
     
-        if (Request::has('ids')) {
-            return [
-                'ids' => 'required|array',
-                'action' => [
-                    'required', Rule::in(Constant::BATCH_OPERATIONS)
-                ]
-            ];
-        }
-        return [
+        $rules = [
             'educator.school_id'         => 'required|integer',
             'user.group_id'              => 'required|integer',
             'user.realname'              => 'required|string',
@@ -49,6 +41,9 @@ class EducatorRequest extends FormRequest {
             'mobile.*'                   => ['required', new Mobile],
             'selectedDepartments'        => 'required|array',
         ];
+        $this->batchRules($rules);
+        
+        return $rules;
         
     }
     

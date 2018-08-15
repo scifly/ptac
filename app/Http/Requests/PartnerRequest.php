@@ -2,6 +2,7 @@
 namespace App\Http\Requests;
 
 use App\Helpers\Constant;
+use App\Helpers\ModelTrait;
 use App\Models\Group;
 use App\Rules\Email;
 use App\Rules\Mobile;
@@ -15,6 +16,8 @@ use Illuminate\Validation\Rule;
  * @package App\Http\Requests
  */
 class PartnerRequest extends FormRequest {
+    
+    use ModelTrait;
     
     /**
      * Determine if the user is authorized to make this request.
@@ -46,16 +49,7 @@ class PartnerRequest extends FormRequest {
             'synced'                => 'required|boolean',
             'subscribed'            => 'required|boolean',
         ];
-        $method = explode('/', Request::path())[1];
-        if ($method == 'update' && !Request::route('id')) {
-            $rules = [
-                'ids' => 'required|array',
-                'action' => [
-                    'required', Rule::in(['enable', 'disable', 'delete'])
-                ],
-                'field' => 'required|string'
-            ];
-        }
+        $this->batchRules($rules);
         
         return $rules;
         
@@ -63,8 +57,7 @@ class PartnerRequest extends FormRequest {
     
     protected function prepareForValidation() {
     
-        $method = explode('/', Request::path())[1];
-        if (!($method == 'update' && !Request::route('id'))) {
+        if (!Request::has('ids')) {
             $input = $this->all();
             $input['group_id'] = Group::whereName('api')->first()->id;
             $input['password'] = bcrypt($input['english_name']);

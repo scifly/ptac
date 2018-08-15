@@ -48,9 +48,8 @@ class MessageRequest extends FormRequest {
             'read'            => 'required|boolean',
             'sent'            => 'required|boolean',
         ];
-        $method = explode('/', Request::path())[1];
         $rules = array_merge(
-            $rules,  $method == 'send'
+            $rules,  $this->method() == 'send'
             ? [
                 'user_ids' => 'nullable|array',
                 'dept_ids' => 'nullable|array',
@@ -60,15 +59,7 @@ class MessageRequest extends FormRequest {
                 'content' => 'required|string',
             ]
         );
-        if ($method == 'update' && !Request::route('id')) {
-            $rules = [
-                'ids' => 'required|array',
-                'action' => [
-                    'required', Rule::in(['enable', 'disable', 'delete'])
-                ],
-                'field' => 'required|string'
-            ];
-        }
+        $this->batchRules($rules);
         
         
         return $rules;
@@ -77,8 +68,7 @@ class MessageRequest extends FormRequest {
     
     protected function prepareForValidation() {
     
-        $method = explode('/', Request::path())[1];
-        if (!($method == 'update' && !Request::route('id'))) {
+        if (!($this->method() == 'update' && !Request::route('id'))) {
             $input = $this->all();
             $input['comm_type_id'] = $input['type'] == 'sms'
                 ? CommType::whereName('短信')->first()->id

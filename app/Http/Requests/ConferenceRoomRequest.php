@@ -3,6 +3,7 @@ namespace App\Http\Requests;
 
 use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Request;
 
 /**
  * Class ConferenceRoomRequest
@@ -26,7 +27,7 @@ class ConferenceRoomRequest extends FormRequest {
      */
     public function rules() {
         
-        return [
+        $rules = [
             'name'      => 'required|string|between:2,60|unique:conference_rooms,name,' .
                 $this->input('id') . ',id,' .
                 'school_id,' . $this->input('school_id'),
@@ -34,14 +35,19 @@ class ConferenceRoomRequest extends FormRequest {
             'capacity'  => 'required|integer',
             'enabled'   => 'required|boolean',
         ];
+        $this->batchRules($rules);
+        
+        return $rules;
         
     }
     
     protected function prepareForValidation() {
         
-        $input = $this->all();
-        $input['school_id'] = $this->schoolId();
-        $this->replace($input);
+        if (!Request::has('ids')) {
+            $input = $this->all();
+            $input['school_id'] = $this->schoolId();
+            $this->replace($input);
+        }
         
     }
 }

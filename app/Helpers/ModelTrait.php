@@ -5,6 +5,7 @@ use App\Models\Corp;
 use App\Models\Menu;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Validation\Rule;
 use ReflectionClass;
 use App\Models\Squad;
 use App\Models\Action;
@@ -682,6 +683,37 @@ trait ModelTrait {
             : '(n/a)';
         
     }
+    
+    /**
+     * 返回Http请求对应的方法名称
+     *
+     * @return mixed
+     */
+    function method() {
+    
+        return explode('/', Request::path())[1];
+        
+    }
+    
+    /**
+     * 返回批量更新请求验证规则
+     *
+     * @param $rules
+     */
+    function batchRules(&$rules) {
+    
+        if ($this->method() == 'update' && !Request::route('id')) {
+            $rules = [
+                'ids' => 'required|array',
+                'action' => [
+                    'required', Rule::in(Constant::BATCH_OPERATIONS)
+                ],
+                'field' => 'required|string'
+            ];
+        }
+        
+    }
+    
     
 }
 

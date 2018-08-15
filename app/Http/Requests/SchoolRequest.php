@@ -32,15 +32,7 @@ class SchoolRequest extends FormRequest {
      */
     public function rules() {
     
-        if (Request::has('ids')) {
-            return [
-                'ids' => 'required|array',
-                'action' => [
-                    'required', Rule::in(Constant::BATCH_OPERATIONS)
-                ]
-            ];
-        }
-        return [
+        $rules = [
             'name'           => 'required|string|between:6,255|unique:schools,name,' .
                 $this->input('id') . ',id',
             'address'        => 'required|string|between:6,255',
@@ -51,6 +43,9 @@ class SchoolRequest extends FormRequest {
             'school_type_id' => 'required|integer',
             'enabled'        => 'required|boolean',
         ];
+        $this->batchRules($rules);
+        
+        return $rules;
         
     }
     

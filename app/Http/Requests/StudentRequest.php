@@ -2,6 +2,7 @@
 namespace App\Http\Requests;
 
 use App\Helpers\Constant;
+use App\Helpers\ModelTrait;
 use App\Rules\Email;
 use App\Rules\Mobile;
 use Illuminate\Foundation\Http\FormRequest;
@@ -13,6 +14,8 @@ use Illuminate\Validation\Rule;
  * @package App\Http\Requests
  */
 class StudentRequest extends FormRequest {
+    
+    use ModelTrait;
     
     /**
      * Determine if the user is authorized to make this request.
@@ -28,15 +31,7 @@ class StudentRequest extends FormRequest {
      */
     public function rules() {
     
-        if (Request::has('ids')) {
-            return [
-                'ids' => 'required|array',
-                'action' => [
-                    'required', Rule::in(Constant::BATCH_OPERATIONS)
-                ]
-            ];
-        }
-        return [
+        $rules = [
             'card_number'    => 'required|alphanum|between:2,32|unique:students,card_number,' .
                 $this->input('user_id') . ',user_id',
             'user.realname'  => 'required|string',
@@ -48,6 +43,9 @@ class StudentRequest extends FormRequest {
                 $this->input('user_id') . ',user_id',
             'birthday'       => 'required',
         ];
+        $this->batchRules($rules);
+        
+        return $rules;
         
     }
     
