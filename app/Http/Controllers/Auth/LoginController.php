@@ -68,10 +68,10 @@ class LoginController extends Controller {
         $password = $request->input('password');
         $rememberMe = $request->input('rememberMe') == 'true' ? true : false;
         # 用户名登录
-        if (User::whereUsername($input)->first()) {
+        if ($user = User::whereUsername($input)->first()) {
             $field = 'username';
             # 邮箱登录
-        } elseif (User::whereEmail($input)->first()) {
+        } elseif ($user = User::whereEmail($input)->first()) {
             $field = 'email';
             # 手机号码登录
         } else {
@@ -82,10 +82,17 @@ class LoginController extends Controller {
                 HttpStatusCode::NOT_ACCEPTABLE,
                 __('messages.invalid_credentials')
             );
+            $user = $mobile->user;
             # 通过默认手机号码查询对应的用户名
             $field = 'username';
             $input = User::find($mobile->user_id)->username;
         }
+        # 角色为监护人/学生/api的用户不得登录后台
+        abort_if(
+            ($user->custodian && !$user->educator) || $user->student || $user->group->name == 'api',
+            HttpStatusCode::NOT_ACCEPTABLE,
+            __('messages.invalid_credentials')
+        );
         # 登录(用户名或邮箱)
         if (Auth::attempt(
             [$field => $input, 'password' => $password],

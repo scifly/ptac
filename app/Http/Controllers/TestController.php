@@ -5,6 +5,7 @@ use App\Helpers\ModelTrait;
 use App\Models\Department;
 use App\Models\Message;
 use Carbon\Carbon;
+use Carbon\Translator;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
