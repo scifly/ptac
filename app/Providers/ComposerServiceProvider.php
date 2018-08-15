@@ -167,6 +167,9 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('operator.index', $ns . 'OperatorIndexComposer');
         View::composer('operator.create_edit', $ns . 'OperatorComposer');
     
+        # 合作伙伴 - Partner
+        View::composer('partner.index', $ns . 'PartnerIndexComposer');
+    
         # 投票问卷 - PollQuestionnaire
         View::composer('poll_questionnaire.index', $ns . 'PollQuestionnaireIndexComposer');
         View::composer('poll_questionnaire.create_edit', $ns . 'PollQuestionnaireComposer');
