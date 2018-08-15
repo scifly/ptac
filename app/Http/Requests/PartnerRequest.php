@@ -34,7 +34,7 @@ class PartnerRequest extends FormRequest {
      */
     public function rules() {
         
-        return [
+        $rules = [
             'group_id'              => 'required|integer',
             'username'              => 'required|string|between:6,255|unique:users,username,' .
                 $this->input('id') . ',id',
@@ -46,20 +46,34 @@ class PartnerRequest extends FormRequest {
             'synced'                => 'required|boolean',
             'subscribed'            => 'required|boolean',
         ];
+        $method = explode('/', Request::path())[1];
+        if ($method == 'update' && !Request::route('id')) {
+            $rules = [
+                'ids' => 'required|array',
+                'action' => [
+                    'required', Rule::in(['enable', 'disable', 'delete'])
+                ],
+                'field' => 'required|string'
+            ];
+        }
+        
+        return $rules;
         
     }
     
     protected function prepareForValidation() {
-        
-        $input = $this->all();
-        $input['group_id'] = Group::whereName('api')->first()->id;
-        $input['password'] = bcrypt($input['english_name']);
-        $input['gender'] = 0;
-        $input['userid'] = $input['username'] . uniqid();
-        $input['synced'] = 0;
-        $input['subscribed'] = 0;
-        
-        $this->replace($input);
+    
+        $method = explode('/', Request::path())[1];
+        if (!($method == 'update' && !Request::route('id'))) {
+            $input = $this->all();
+            $input['group_id'] = Group::whereName('api')->first()->id;
+            $input['password'] = bcrypt($input['english_name']);
+            $input['gender'] = 0;
+            $input['userid'] = $input['username'] . uniqid();
+            $input['synced'] = 0;
+            $input['subscribed'] = 0;
+            $this->replace($input);
+        }
         
     }
     
