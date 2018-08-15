@@ -582,7 +582,7 @@ var page = {
         });
     },
     remove: function(table, options) {
-        var id, reloadDt = function () { this.initDatatable(table, options); };
+        var id, reloadDt = function () { page.initDatatable(table, options); };
 
         // 打开删除对话框
         $(document).on('click', '.fa-remove', function () {
