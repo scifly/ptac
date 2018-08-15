@@ -401,8 +401,21 @@ class User extends Authenticatable {
                 },
             ]
         ];
+        $joins = [
+            [
+                'table' => 'groups',
+                'alias' => 'Groups',
+                'type'  => 'INNER',
+                'conditions' => [
+                    'Groups.id = User.group_id'
+                ]
+            ]
+        ];
+        $condition = 'Groups.name = \'api\'';
         
-        return Datatable::simple($this->getModel(), $columns);
+        return Datatable::simple(
+            $this->getModel(), $columns, $joins, $condition
+        );
         
     }
     
