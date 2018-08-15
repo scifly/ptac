@@ -392,10 +392,10 @@ class User extends Authenticatable {
             ['db' => 'User.english_name', 'dt' => 3],
             ['db' => 'User.telephone', 'dt' => 4],
             ['db' => 'User.email', 'dt' => 5],
-            ['db' => 'User.created_at', 'dt' => 7],
-            ['db' => 'User.updated_at', 'dt' => 8],
+            ['db' => 'User.created_at', 'dt' => 6],
+            ['db' => 'User.updated_at', 'dt' => 7],
             [
-                'db'        => 'User.enabled', 'dt' => 9,
+                'db'        => 'User.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
