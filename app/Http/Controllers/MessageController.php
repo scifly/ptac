@@ -81,6 +81,7 @@ class MessageController extends Controller {
      *
      * @param $id
      * @return JsonResponse
+     * @throws Exception
      */
     public function edit($id) {
     
