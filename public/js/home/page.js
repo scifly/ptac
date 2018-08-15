@@ -675,11 +675,9 @@ var page = {
     initParsley: function ($form, requestType, url) {
         $form.parsley().on('form:validated', function () {
             var reset = function () {
-                $('input[type="text"], textarea').each(
-                    function () {
-                        $(this).val('');
-                    }
-                );
+                if (requestType === 'POST') {
+                    $('input[type="text"], textarea').each(function () { $(this).val(''); });
+                }
             };
             if ($('.parsley-error').length === 0) {
                 page.ajaxRequest(requestType, url, page.formData($form), reset);
