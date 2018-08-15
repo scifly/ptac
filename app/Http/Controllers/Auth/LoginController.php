@@ -91,7 +91,7 @@ class LoginController extends Controller {
         abort_if(
             ($user->custodian && !$user->educator) || $user->student || $user->group->name == 'api',
             HttpStatusCode::NOT_ACCEPTABLE,
-            __('messages.invalid_credentials')
+            __('4327891')
         );
         # 登录(用户名或邮箱)
         if (Auth::attempt(

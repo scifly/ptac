@@ -18,19 +18,21 @@ use Throwable;
  *
  * @property int $id
  * @property string $name 消息类型名称
+ * @property string $user_id 合作伙伴用户id
  * @property string $remark 消息类型备注
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
  * @property-read Collection|Message[] $messages
+ * @property-read Collection|ApiMessage[] $apiMessages
  * @method static Builder|MessageType whereCreatedAt($value)
  * @method static Builder|MessageType whereEnabled($value)
  * @method static Builder|MessageType whereId($value)
  * @method static Builder|MessageType whereName($value)
+ * @method static Builder|MessageType whereUserId($value)
  * @method static Builder|MessageType whereRemark($value)
  * @method static Builder|MessageType whereUpdatedAt($value)
  * @mixin Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ApiMessage[] $apiMessages
  */
 class MessageType extends Model {
     
@@ -38,7 +40,7 @@ class MessageType extends Model {
     
     protected $table = 'message_types';
     
-    protected $fillable = ['name', 'remark', 'enabled'];
+    protected $fillable = ['name', 'user_id', 'remark', 'enabled'];
     
     /**
      * 获取指定消息类型包含的所有消息对象

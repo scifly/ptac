@@ -92,9 +92,9 @@ use Throwable;
  * @mixin Eloquent
  * @property-read Collection|Client[] $clients
  * @property-read Collection|Token[] $tokens
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Event[] $events
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireAnswer[] $pqAnswers
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireParticipant[] $pqParticipants
+ * @property-read Collection|Event[] $events
+ * @property-read Collection|PollQuestionnaireAnswer[] $pqAnswers
+ * @property-read Collection|PollQuestionnaireParticipant[] $pqParticipants
  */
 class User extends Authenticatable {
     
@@ -340,7 +340,8 @@ class User extends Authenticatable {
         unset($menu);
         switch ($menuType) {
             case '根':
-                $condition = sprintf($sql, implode(',', [$rootGId, $corpGId, $schoolGId]));
+                $allowedGIds = [$rootGId, $corpGId, $schoolGId];
+                $condition = sprintf($sql, implode(',', $allowedGIds));
                 break;
             case '企业':
                 $corp = Corp::whereMenuId($rootMenu->id)->first();
@@ -374,6 +375,34 @@ class User extends Authenticatable {
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition
         );
+        
+    }
+    
+    /**
+     * 合作伙伴列表
+     *
+     * @return array
+     */
+    function partnerIndex() {
+        
+        $columns = [
+            ['db' => 'User.id', 'dt' => 0],
+            ['db' => 'User.realname', 'dt' => 1],
+            ['db' => 'User.username', 'dt' => 2],
+            ['db' => 'User.english_name', 'dt' => 3],
+            ['db' => 'User.telephone', 'dt' => 4],
+            ['db' => 'User.email', 'dt' => 5],
+            ['db' => 'User.created_at', 'dt' => 7],
+            ['db' => 'User.updated_at', 'dt' => 8],
+            [
+                'db'        => 'User.enabled', 'dt' => 9,
+                'formatter' => function ($d, $row) {
+                    return Datatable::dtOps($d, $row);
+                },
+            ]
+        ];
+        
+        return Datatable::simple($this->getModel(), $columns);
         
     }
     
@@ -423,6 +452,33 @@ class User extends Authenticatable {
                 ]);
                 # 创建企业号成员
                 $this->createWechatUser($user->id);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
+    /**
+     * 保存合作伙伴
+     *
+     * @param array $data
+     * @return bool
+     * @throws Throwable
+     */
+    function partnerStore(array $data) {
+        
+        try {
+            DB::transaction(function () use ($data) {
+                $partner = $this->create($data);
+                MessageType::create([
+                   'name' => $partner->realname,
+                   'user_id' => $partner->id,
+                   'remark' => $partner->realname . '接口消息',
+                   'enabled' => 0 # 不会显示在消息中心“消息类型”下拉列表中
+                ]);
             });
         } catch (Exception $e) {
             throw $e;
@@ -513,6 +569,35 @@ class User extends Authenticatable {
     }
     
     /**
+     * 更新合作伙伴
+     *
+     * @param array $data
+     * @param null $id
+     * @return bool
+     * @throws Throwable
+     */
+    function partnerModify(array $data, $id = null) {
+        
+        if (!$id) { return $this->batch($this); }
+        try {
+            DB::transaction(function () use ($data, $id) {
+                $this->find($id)->update($data);
+                $messageType = MessageType::whereUserId($id)->first();
+                $messageType->update([
+                    'name' => $data['realname'],
+                    'remark' => $data['realname'] . '接口消息',
+                    'enabled' => 0
+                ]);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
+    /**
      * 更新企业号会员
      *
      * @param $id
@@ -569,13 +654,11 @@ class User extends Authenticatable {
     function remove($id = null, $broadcast = true) {
         
         if (!$id) {
-            $ids = Request::input('ids');
             try {
-                DB::transaction(function () use ($ids) {
+                DB::transaction(function () {
                     array_map(
-                        function ($id) {
-                            $this->purge($id, false);
-                        }, $ids
+                        function ($id) {$this->purge($id, false); },
+                        Request::input('ids')
                     );
                 });
             } catch (Exception $e) {
@@ -586,6 +669,34 @@ class User extends Authenticatable {
         }
         
         return $this->purge($id, $broadcast);
+        
+    }
+    
+    /**
+     * 删除合作伙伴
+     *
+     * @param null $id
+     * @return bool
+     * @throws Throwable
+     */
+    function partnerRemove($id = null) {
+        
+        if (!$id) {
+            try {
+                DB::transaction(function () {
+                    array_map(
+                        function ($id) { $this->partnerPurge($id); },
+                        Request::input('ids')
+                    );
+                });
+            } catch (Exception $e) {
+                throw $e;
+            }
+            
+            return true;
+        }
+        
+        return $this->partnerPurge($id);
         
     }
     
@@ -613,6 +724,32 @@ class User extends Authenticatable {
                 (new Event)->removeUser($id);
                 (new Message)->removeUser($id);
                 MessageReply::whereUserId($id)->delete();
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
+    /**
+     * 删除指定合作伙伴的所有数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Throwable
+     */
+    function partnerPurge($id) {
+        
+        try {
+            DB::transaction(function () use ($id) {
+                $messageType = MessageType::whereUserId($id)->first();
+                Message::whereMessageTypeId($messageType->id)->update([
+                    'message_type_id' => 0
+                ]);
+                $messageType->delete();
                 $this->find($id)->delete();
             });
         } catch (Exception $e) {
