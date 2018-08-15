@@ -759,11 +759,15 @@ class User extends Authenticatable {
         try {
             DB::transaction(function () use ($id) {
                 $messageType = MessageType::whereUserId($id)->first();
-                Message::whereMessageTypeId($messageType->id)->update([
-                    'message_type_id' => 0
-                ]);
+                $messages = Message::whereMessageTypeId($messageType->id)->get();
+                if ($messages->count()) {
+                    Message::whereMessageTypeId($messageType->id)->update([
+                        'message_type_id' => 0
+                    ]);
+                }
                 $messageType->delete();
                 $this->find($id)->delete();
+    
             });
         } catch (Exception $e) {
             throw $e;
