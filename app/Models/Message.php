@@ -983,7 +983,7 @@ class Message extends Model {
             if (array_key_exists(1, $realTargets->toArray())) {
                 # 如果发送对象仅包含已关注的用户
                 $wxTargets = $realTargets[1];
-            } else {
+            } elseif (array_key_exists(0, $realTargets->toArray())) {
                 # 如果发送对象仅包含未关注的用户
                 $smsTargets = $realTargets[0];
             }
