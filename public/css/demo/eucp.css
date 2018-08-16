@@ -1,0 +1,154 @@
+.pad0{
+	padding: 0;
+}
+.mar0{
+	margin: 0;
+}
+.mar-t-10{
+	margin-top: 10px;
+}
+.mar-t-15{
+	margin-top: 15px;
+}
+.white-bg{
+	background-color: #fff;
+}
+.font-black{
+	color: #333;
+}
+.font-blue{
+	color: #248be0;
+}
+.font-green{
+	color: green;
+}
+.font-red{
+	color: red;
+}
+
+.eucp{
+	padding: 15px;
+	margin-top: 10px;
+	width: auto;
+	overflow-x: hidden;
+}
+.eucp .title{
+	font-size: 28px;
+	letter-spacing:2px;
+	line-height: 100%;
+}
+.title:after{
+	content:"."; 
+	display:block; 
+	height:0; 
+	visibility:hidden; 
+	clear:both; 
+}
+.eucp .title .add_new{
+	display: inline-block;
+	float: right;
+}
+.eucp-search{
+	margin:0;
+}
+.choose-class{
+	/*margin-top: 20px;*/
+	padding: 0;
+}
+
+.eucp-col{
+	background-color: #fff;
+}
+.eucp-col:first-child{
+	border-radius: 5px 0 0 5px;
+}
+.eucp-col:last-child{
+	border-radius: 0 5px 5px 0;
+}
+.eucp-col-cur{
+	background-color: #81c714;
+	color: #fff;
+}
+
+.eucp-rest-times{
+	display: none;
+}
+.eucp-rest-times:after{
+	content:"."; 
+	display:block; 
+	height:0; 
+	visibility:hidden; 
+	clear:both; 
+}
+.eucp-rest-times input{
+	width: calc(50% - 12px);
+	text-align: center;
+	height: 30px;
+	line-height: 30px;
+	border-radius: 3px;
+	border: 1px solid #aaa;
+	float: left;
+	color: #444;
+}
+#start-time{
+	float: left;
+}
+#end-time{
+	float: right;
+}
+.eucp-rest-times .-css{
+	width: 20px;
+	text-align: center;
+	float: left;
+	height: 30px;
+	line-height: 30px;
+	font-size: 18px;
+}
+.rest-student-list-item p{
+	font-size: 16px;	
+}
+.student-rest-info{
+	border: 1px solid #337AB7;
+	border-radius: 5px;
+}
+.student-info-title{
+	color: #fff;
+	background-color: #337AB7;
+	height: 35px;
+	line-height: 35px;
+	font-size: 18px;
+	padding-left: 15px;
+}
+.student-rest-info .main{
+	font-size: 18px;
+	padding:10px 15px;
+}
+.choosed-class {
+	background-color: #E0F0DB;
+	color: #478832;
+	height: 50px;
+	line-height: 50px;
+	padding-left: 20px;
+}
+.head-portrait{
+	text-align: center;
+}
+.head-portrait img{
+	width: 120px;
+	height: 120px;
+	border-radius: 50%;
+}
+.eucp-form-item>.ui-select{
+	margin-left:24px;
+}
+.eucp-form-item .ui-reddot{
+	line-height: 46px;
+}
+.eucp-form-item .ui-reddot:after{
+	top: 4px;
+}
+
+.eucp-jiugong-icon{
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+}

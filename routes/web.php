@@ -367,3 +367,12 @@ $acronyms = Corp::pluck('acronym')->toArray();
 foreach ($acronyms as $acronym) {
     app_routes($acronym);
 }
+
+/** 演示 ------------------------------------------------------------------------------------------------------------- */
+$ctlr = 'DemoController@';
+$prefix = 'demos/';
+Route::get($prefix . 'index', $ctlr . 'index');
+Route::get($prefix . 'safe', $ctlr . 'safe');
+Route::get($prefix . 'wisdom', $ctlr . 'wisdom');
+Route::get($prefix . 'classroom', $ctlr . 'classroom');
+Route::get($prefix . 'info', $ctlr . 'info');
