@@ -78,7 +78,7 @@ class HomeController extends Controller {
             }
         }
         
-        return view('home.page', [
+        return view('layouts.web', [
             'menu'       => $this->menu->menuHtml($this->menu->rootMenuId()),
             'menuId'     => $menuId,
             'content'    => view('home.home'),
@@ -153,7 +153,7 @@ class HomeController extends Controller {
             return response()->json($this->result);
         }
         
-        return view('home.page', [
+        return view('layouts.web', [
             'menu'       => $this->menu->menuHtml($this->menu->rootMenuId()),
             'tabs'       => $tabArray,
             'menuId'     => $id,
