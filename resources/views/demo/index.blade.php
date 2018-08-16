@@ -1,6 +1,6 @@
 @extends('layouts.demo')
 @section('title')
-    <title>演示</title>
+    <title>智慧校园</title>
 @endsection
 @section('content')
     <tr class="">
