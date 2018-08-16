@@ -1,4 +1,4 @@
-@extends('wechat.layouts.master')
+@extends('layouts.wap')
 @section('title')
     <title>微网站</title>
 @endsection
