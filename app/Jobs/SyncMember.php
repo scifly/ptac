@@ -23,7 +23,7 @@ class SyncMember implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, JobTrait;
     
-    protected $data, $userId, $action;
+    protected $data, $userId, $action, $response;
     
     /**
      * Create a new job instance.
@@ -37,6 +37,12 @@ class SyncMember implements ShouldQueue {
         $this->data = $data;
         $this->userId = $userId;
         $this->action = $action;
+        $this->response = [
+            'userId' => $userId,
+            'title' => Constant::SYNC_ACTIONS[$this->action],
+            'statusCode' => HttpStatusCode::OK,
+            'message' => __('messages.synced')
+        ];
         
     }
     
@@ -48,40 +54,50 @@ class SyncMember implements ShouldQueue {
      */
     public function handle() {
     
-        $response = [
-            'userId' => $this->userId,
-            'title' => Constant::SYNC_ACTIONS[$this->action] . '企业微信会员',
-            'statusCode' => HttpStatusCode::OK,
-            'message' => __('messages.wechat_synced')
-        ];
+        $this->syncWx();
+        $this->syncKd('人员', $this->response);
+        
+        return true;
+        
+    }
+    
+    /**
+     * 同步企业微信会员
+     *
+     * @throws Exception
+     */
+    private function syncWx() {
+    
         $results = $this->syncMember($this->data, $this->action);
+        $this->response['title'] .= '企业微信会员';
         if (sizeof($results) == 1) {
             if ($results[key($results)]['errcode']) {
-                $response['message'] = $results[key($results)]['errmsg'];
-                $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+                $this->response['message'] = $results[key($results)]['errmsg'];
+                $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
             }
         } else {
             $errors = 0;
             foreach ($results as $corpId => $result) {
-                 $errors += $result['errcode'] ? 1 : 0;
+                $errors += $result['errcode'] ? 1 : 0;
             }
             if ($errors > 0) {
                 $message = '';
-                $response['statusCode'] = $errors < sizeof($results)
+                $this->response['statusCode'] = $errors < sizeof($results)
                     ? HttpStatusCode::ACCEPTED
                     : HttpStatusCode::INTERNAL_SERVER_ERROR;
                 foreach ($results as $corpId => $result) {
-                    $message .= Corp::find($corpId)->name . ': '
-                        . (!$result['errcode'] ? __('messages.wechat_synced') : $result['errmsg']) . "\n";
+                    $corpName = Corp::find($corpId)->name;
+                    $corpMsg = !$result['errcode']
+                        ? __('messages.synced') . '企业微信' . $corpName
+                        : $result['errmsg'];
+                    $message .= $corpName . ': ' .$corpMsg . "\n";
                 }
-                $response['message'] = $message;
+                $this->response['message'] = $message;
             }
         }
         if ($this->userId) {
-            event(new JobResponse($response));
+            event(new JobResponse($this->response));
         }
-        
-        return true;
         
     }
     

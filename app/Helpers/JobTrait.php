@@ -1,6 +1,7 @@
 <?php
 namespace App\Helpers;
 
+use App\Apis\Kinder;
 use App\Events\JobResponse;
 use App\Models\Corp;
 use App\Models\Message;
@@ -40,6 +41,53 @@ trait JobTrait {
         }
         
         return $results;
+        
+    }
+    
+    /**
+     * 同步卡德部门/人员
+     *
+     * @param string $type
+     * @param array $response
+     * @throws Exception
+     */
+    function syncKd($type, array $response) {
+    
+        $api = new Kinder();
+        $response['title'] .= '卡德' . $type;
+        $response['message'] .= '卡德';
+        $name = '';
+        switch ($this->action) {
+            case 'create':
+                $name = '新增';
+                break;
+            case 'update':
+                $name = '编辑';
+                break;
+            case 'delete':
+                $name = '删除';
+                break;
+            default:
+                break;
+        }
+        $result = $api->call($name . $type, $this->data);
+        $hasError = false;
+        if (isset($result->{'code'})) {
+            if ($result->{'code'}) {
+                $hasError = true;
+            }
+        } else {
+            if ($result->{'result'}) {
+                $hasError = true;
+            }
+        }
+        if ($hasError) {
+            $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+            $response['message'] = $result->{'msg'};
+        }
+        if ($response['userId']) {
+            event(new JobResponse($response));
+        }
         
     }
     
@@ -190,7 +238,7 @@ trait JobTrait {
         if ($action != 'delete') { unset($data['corpIds']); }
         $action .= 'User';
         $result = json_decode(Wechat::$action($accessToken, $data));
-        # 企业微信通讯录不存在需要更新的会员，则创建该会员
+        # 企业微信通讯录不存在指定的会员，则创建该会员
         if ($result->{'errcode'} == 60111 && $action == 'updateUser') {
             $result = json_decode(Wechat::createUser($accessToken, $data));
         }

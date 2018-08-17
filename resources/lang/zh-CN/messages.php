@@ -31,7 +31,7 @@ return [
     'invalid_file_format'      => '文件格式错误',
     'invalid_data_format'      => '导入数据格式不正确',
     'token_mismatch'           => '页面已失效，请重试',
-    'wechat_synced'            => '已同步到企业微信',
+    'synced'                   => '已同步到',
     'operator'           => [
         'stored' => '保存超级管理员',
     ],
@@ -50,8 +50,8 @@ return [
     ],
     'department'         => [
         'title'           => '部门管理',
-        'department_sync' => '%s企业微信部门',
-        'has_children'    => '请先删除自部门',
+        'department_sync' => '%s部门',
+        'has_children'    => '请先删除子部门',
         'not_found'       => '没有这个部门'
     ],
     'educator'           => [
