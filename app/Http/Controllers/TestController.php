@@ -37,7 +37,9 @@ class TestController extends Controller {
         $corp = Corp::find(2);
         $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
         $accessToken = $token['access_token'];
-        dd(Wechat::getDeptList($accessToken));
+        $result = json_decode(Wechat::getDeptList($accessToken), true);
+        $deparmtents = $result['department'];
+        dd($deparmtents);
         
     }
     
