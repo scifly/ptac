@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Facades\Wechat;
+use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use App\Models\Corp;
 use App\Models\Department;
@@ -37,9 +38,16 @@ class TestController extends Controller {
         $corp = Corp::find(3);
         $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
         $accessToken = $token['access_token'];
-        $result = json_decode(Wechat::getDeptList($accessToken), true);
-        $deparmtents = $result['department'];
-        dd($deparmtents);
+        // $result = json_decode(Wechat::getDeptList($accessToken), true);
+        // $deparmtents = $result['department'];
+        $result = json_decode(
+            Wechat::getDeptUserDetail($accessToken, 1175014494, 1), true
+        );
+        if ($result['errcode']) {
+            echo 'wtf! ' . Constant::WXERR[$result['errcode']];
+        }
+        $users = $result['userlist'];
+        dd($users);
         
     }
     
