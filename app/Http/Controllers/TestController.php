@@ -41,7 +41,7 @@ class TestController extends Controller {
         // $result = json_decode(Wechat::getDeptList($accessToken), true);
         // $deparmtents = $result['department'];
         $result = json_decode(
-            Wechat::getDeptUserDetail($accessToken, 0, 1), true
+            Wechat::getDeptUserDetail($accessToken, 1, 1), true
         );
         if ($result['errcode']) {
             echo 'wtf! ' . Constant::WXERR[$result['errcode']];
