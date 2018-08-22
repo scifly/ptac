@@ -98,7 +98,6 @@
                         {!! Form::text('encoding_aes_key', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请从企业微信后台复制粘贴到此处)',
-                            'required' => 'true',
                             'data-parsley-length' => '[43, 43]'
                         ]) !!}
                     </div>
@@ -114,7 +113,6 @@
                         {!! Form::text('token', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请从企业微信后台复制粘贴到此处)',
-                            'required' => 'true',
                             'data-parsley-length' => '[0, 255]'
                         ]) !!}
                     </div>

@@ -31,12 +31,15 @@ class CorpRequest extends FormRequest {
             'name'                => 'required|string|between:3,120|unique:corps,name,' .
                 $this->input('id') . ',id,' .
                 'company_id,' . $this->input('company_id'),
+            'company_id'          => 'required|integer',
             'acronym'             => 'required|string|between:3,20|unique:corps,acronym,' .
                 $this->input('id') . ',id',
             'department_id'       => 'required|integer',
             'menu_id'             => 'required|integer',
             'corpid'              => 'required|string|max:18',
             'contact_sync_secret' => 'required|string|max:43',
+            'encoding_aes_key'    => 'required|string',
+            'token'               => 'required|string'
         ];
         
     }
@@ -54,6 +57,12 @@ class CorpRequest extends FormRequest {
             $user = Auth::user();
             $departmentId = $this->head($user);
             $input['company_id'] = Corp::whereDepartmentId($departmentId)->first()->company_id;
+        }
+        if (empty($input['encoding_aes_key'])) {
+            $input['encoding_aes_key'] = '0';
+        }
+        if (empty($input['token'])) {
+            $input['token'] = '0';
         }
         
         $this->replace($input);
