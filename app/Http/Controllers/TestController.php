@@ -1,7 +1,9 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Facades\Wechat;
 use App\Helpers\ModelTrait;
+use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Message;
 use Carbon\Carbon;
@@ -32,16 +34,10 @@ class TestController extends Controller {
      */
     public function index() {
     
-        $test_array = [
-            'bla' => 'blub',
-            'foo' => 'bar',
-            'another_array' => [
-                'stack' => 'overflow',
-            ],
-        ];
-        $xml = new SimpleXMLElement('<root/>');
-        array_walk_recursive($test_array, [$xml, 'addChild']);
-        print $xml->asXML();
+        $corp = Corp::find(2);
+        $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
+        $accessToken = $token['access_token'];
+        dd(Wechat::getDeptList($accessToken));
         
     }
     
