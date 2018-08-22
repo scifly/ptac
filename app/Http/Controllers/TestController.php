@@ -38,7 +38,7 @@ class TestController extends Controller {
         $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
         $accessToken = $token['access_token'];
         $result = json_decode(
-            Wechat::getDeptUserDetail($accessToken, '1175014494', 1), true
+            Wechat::getDeptUserDetail($accessToken, '1', 1), true
         );
         $deparmtents = $result['userlist'];
         dd($deparmtents);
