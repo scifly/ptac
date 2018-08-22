@@ -12,6 +12,7 @@ use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
 use ReflectionClass;
 use ReflectionMethod;
+use SimpleXMLElement;
 use Validator;
 
 /**
@@ -30,60 +31,17 @@ class TestController extends Controller {
      * @throws \Exception
      */
     public function index() {
-        
-        Carbon::setLocale('en');
-        $en = Carbon::parse('2018-06-12')->diffForHumans();
-        Carbon::setLocale('zh');
-        $ch = Carbon::parse($en)->diffForHumans();
-        dd($ch);
-        
-        $appid = '5100000025';
-        $appsecret = 'B4C6F3A34F5936CEBA92C008F12B0396';
-        $nonce = '15';
-        $method = '10';
-        $url = 'http://eccard.eicp.net:8078/Dispatch.aspx';
-        
-        $data = urlencode(
-            base64_encode(
-                json_encode([
-                    'dname' => '小学一年级',
-                    'dfather' => '成都外国语学校',
-                    'dexpiration' => '2020-08-05 23:59:59',
-                    'dnumber' => '2000',
-                    'dtel' => '18030718323'
-                ])
-            )
-        );
-        ;
-        $hash = substr(
-            strtoupper(
-                base64_encode(
-                    md5($appid . '|' . $appsecret . '|' . $data . '|' . $nonce)
-                )
-            ),
-            0, 24
-        );
-        
-        $formData = [
-            'appid' => $appid,
-            'hash' => $hash,
-            'method' => $method,
-            'data' => $data,
-            'nonce' => $nonce
-        ];
-        $fields_string = '';
-        foreach($formData as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
-        rtrim($fields_string, '&');
     
-        // $formData = [
-        //     'appid' => $appid,
-        //     'hash' => $hash,
-        //     'method' => $method,
-        //     'data' => $data,
-        //     'nonce' => $nonce
-        // ];
-        
-        dd($this->curlPost($url, $fields_string));
+        $test_array = [
+            'bla' => 'blub',
+            'foo' => 'bar',
+            'another_array' => [
+                'stack' => 'overflow',
+            ],
+        ];
+        $xml = new SimpleXMLElement('<root/>');
+        array_walk_recursive($test_array, [$xml, 'addChild']);
+        print $xml->asXML();
         
     }
     
