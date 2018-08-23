@@ -44,7 +44,7 @@ class TestController extends Controller {
         $a = SchoolRequest::create('schools/store', 'POST', [
             'abc' => 'cde'
         ]);
-        dd((new School)->store($a));
+        dd($a->all());
         dd($a->input('abc'));
         $request = new SchoolRequest();
         $request->input('name', '测试');
