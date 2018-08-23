@@ -40,15 +40,32 @@ class TestController extends Controller {
      */
     public function index() {
     
-        
+        # 创建学校
         $request = SchoolRequest::create('schools/store', 'POST', [
-            'name' => ''
+            'name' => '成都美视国际学校',
+            // 'address' => '成都高新区人民南路南延线西侧',
+            // 'signature' => '【成都美视国际学校】',
+            // 'department_id' => 0,
+            // 'corp_id' => 3,
+            // 'menu_id' => 0,
+            // 'school_type_id' => 1,
+            // 'enabled' => 1
         ]);
+        $request->headers->add(['content-type' => 'application/json']);
+        Route::dispatch($request);
+        exit;
         $result = Validator::make($request->all(), $request->rules());
         $failed = $result->fails();
         if ($failed) {
             dd($result->errors());
         }
+        Route::dispatch($request);
+        
+        # 同步现有部门
+        
+        # 同步现有会员
+        
+        
         exit;
         $corp = Corp::find(3);
         $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
