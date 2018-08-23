@@ -41,18 +41,13 @@ class TestController extends Controller {
     public function index() {
     
         
-        $a = SchoolRequest::create('schools/store', 'POST', [
-            'abc' => 'cde'
+        $request = SchoolRequest::create('schools/store', 'POST', [
+            'name' => ''
         ]);
-        dd($a->all());
-        dd($a->input('abc'));
-        $request = new SchoolRequest();
-        $request->input('name', '测试');
-        $request->input('address', '测试');
-        $request->input('signature', '测试');
-        $request->input('corp_id', '测试');
-        dd($request->all());
-        
+        $result = Validator::make($request->all(), $request->rules());
+        if ($result->failed()) {
+            dd($result->errors());
+        }
         $corp = Corp::find(3);
         $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
         $accessToken = $token['access_token'];
