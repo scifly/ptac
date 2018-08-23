@@ -39,7 +39,7 @@ class TestController extends Controller {
     public function index() {
     
         
-        $a = SchoolRequest::create('schools/create', 'POST', []);
+        $a = SchoolRequest::create('schools/store', 'POST', []);
         dd(Route::dispatch($a));
         
         $request = new SchoolRequest();
