@@ -40,7 +40,9 @@ class TestController extends Controller {
     
         
         $a = SchoolRequest::create('schools/store', 'POST', []);
-        dd(Route::dispatch($a));
+        $r = Route::dispatch($a);
+        
+        dd($r->content());
         
         $request = new SchoolRequest();
         $request->input('name', '测试');
