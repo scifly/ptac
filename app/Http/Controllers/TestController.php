@@ -37,7 +37,11 @@ class TestController extends Controller {
     public function index() {
     
         $request = new SchoolRequest();
-        dd($request->input('name', '测试'));
+        $request->input('name', '测试');
+        $request->input('address', '测试');
+        $request->input('signature', '测试');
+        $request->input('corp_id', '测试');
+        dd($request->all());
         
         $corp = Corp::find(3);
         $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
