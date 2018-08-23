@@ -49,7 +49,8 @@ class TestController extends Controller {
             // 'corp_id' => 3,
             // 'menu_id' => 0,
             // 'school_type_id' => 1,
-            // 'enabled' => 1
+            // 'enabled' => 1,
+            '_token' => csrf_token()
         ]);
         $request->headers->add(['content-type' => 'application/json']);
         $response = Route::dispatch($request);
