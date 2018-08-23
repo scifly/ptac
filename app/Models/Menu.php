@@ -240,7 +240,7 @@ class Menu extends Model {
                             $menuTab->storeByMenuId($id, $tabIds);
                         }
                     } else {
-                        $menu->update(['enabled' => 0]);
+                        $menu->update(['enabled' => $menu->children->count() ? 1 : 0]);
                     }
                 }
             });
