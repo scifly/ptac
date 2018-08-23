@@ -14,6 +14,8 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use ReflectionClass;
 use ReflectionMethod;
 use SimpleXMLElement;
@@ -36,6 +38,10 @@ class TestController extends Controller {
      */
     public function index() {
     
+        $r = Request::create('event');
+        $result = Route::dispatch($r);
+        dd($result);
+        
         $request = new SchoolRequest();
         $request->input('name', '测试');
         $request->input('address', '测试');
