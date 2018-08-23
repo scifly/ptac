@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Facades\Wechat;
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
+use App\Http\Requests\SchoolRequest;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Message;
@@ -35,6 +36,9 @@ class TestController extends Controller {
      */
     public function index() {
     
+        $request = new SchoolRequest();
+        dd($request->all());
+        
         $corp = Corp::find(3);
         $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
         $accessToken = $token['access_token'];

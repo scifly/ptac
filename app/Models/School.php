@@ -338,8 +338,8 @@ class School extends Model {
             DB::transaction(function () use ($request, &$school) {
                 # 创建学校、对应的部门和菜单
                 $school = $this->create($request->all());
-                $department = (new Department())->storeDepartment($school, 'corp');
-                $menu = (new Menu())->storeMenu($school, 'corp');
+                $department = (new Department)->storeDepartment($school, 'corp');
+                $menu = (new Menu)->storeMenu($school, 'corp');
                 # 更新学校的部门id和菜单id
                 $school->update([
                     'department_id' => $department->id,

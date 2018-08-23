@@ -24,7 +24,8 @@ use Illuminate\Queue\SerializesModels;
  */
 class SyncDepartment implements ShouldQueue {
     
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait, JobTrait;
+    use Dispatchable, InteractsWithQueue, Queueable,
+        SerializesModels, ModelTrait, JobTrait;
     
     protected $data, $userId, $action, $response;
     
