@@ -45,9 +45,11 @@ class TestController extends Controller {
             'name' => ''
         ]);
         $result = Validator::make($request->all(), $request->rules());
-        if ($result->failed()) {
+        $failed = $result->fails();
+        if ($failed) {
             dd($result->errors());
         }
+        exit;
         $corp = Corp::find(3);
         $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
         $accessToken = $token['access_token'];
