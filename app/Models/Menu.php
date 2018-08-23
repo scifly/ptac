@@ -240,7 +240,10 @@ class Menu extends Model {
                             $menuTab->storeByMenuId($id, $tabIds);
                         }
                     } else {
-                        $menu->update(['enabled' => $menu->children->count() ? 1 : 0]);
+                        $enabledSubMenus = $menu->children->filter(
+                            function (Menu $menu) { return $menu->enabled; }
+                        );
+                        $menu->update(['enabled' => $enabledSubMenus->count() ? 1 : 0]);
                     }
                 }
             });
