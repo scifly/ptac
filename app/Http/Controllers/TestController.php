@@ -54,8 +54,7 @@ class TestController extends Controller {
         ]);
         $request->headers->add(['content-type' => 'application/json']);
         $response = Route::dispatch($request);
-        dd($response);
-        exit;
+        dd(json_decode($response->getContent()));
         $result = Validator::make($request->all(), $request->rules());
         $failed = $result->fails();
         if ($failed) {
