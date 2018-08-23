@@ -8,6 +8,7 @@ use App\Http\Requests\SchoolRequest;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Message;
+use App\Models\School;
 use Carbon\Carbon;
 use Carbon\Translator;
 use Exception;
@@ -35,6 +36,7 @@ class TestController extends Controller {
     
     /**
      * @throws \Exception
+     * @throws \Throwable
      */
     public function index() {
     
@@ -42,6 +44,7 @@ class TestController extends Controller {
         $a = SchoolRequest::create('schools/store', 'POST', [
             'abc' => 'cde'
         ]);
+        dd((new School)->store($a));
         dd($a->input('abc'));
         $request = new SchoolRequest();
         $request->input('name', '测试');
