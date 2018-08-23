@@ -39,9 +39,10 @@ class TestController extends Controller {
     public function index() {
     
         
-        $a = SchoolRequest::create('schools/store', 'POST', []);
-        Route::dispatch($a);
-        exit;
+        $a = SchoolRequest::create('schools/store', 'POST', [
+            'abc' => 'cde'
+        ]);
+        dd($a->input('abc'));
         $request = new SchoolRequest();
         $request->input('name', '测试');
         $request->input('address', '测试');
