@@ -71,17 +71,18 @@ trait JobTrait {
                 break;
         }
         $hasError = false;
-        $result = $api->call($name . $type, $this->data);
-        Log::debug(json_encode($result));
+        $result = json_decode(
+            $api->call($name . $type, $this->data), true
+        );
         if (!$result) {
             $hasError = true;
         } else {
-            if (isset($result->{'code'})) {
-                if ($result->{'code'}) {
+            if (isset($result['code'])) {
+                if ($result['code']) {
                     $hasError = true;
                 }
             } else {
-                if ($result->{'result'}) {
+                if ($result['result']) {
                     $hasError = true;
                 }
             }
