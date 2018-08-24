@@ -27,16 +27,16 @@
         channel = pusher.subscribe('my-channel');
 
     channel.bind('my-event', function (data) {
-        $('textarea').append(/*JSON.stringify(data)*/data['message']);
-        // alert();
+        $('textarea').append(data['message'] + "\n");
     });
     $('input[type="submit"]').on('click', function () {
         $.ajax({
             type: 'POST',
             url: 'index',
             dataType: 'json',
-            data: {_token: $('#csrf_token').attr('content') },
-            success: function () {}
+            data: {
+                _token: $('#csrf_token').attr('content')
+            }
         });
         return false;
     });

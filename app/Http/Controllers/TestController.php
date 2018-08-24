@@ -28,6 +28,10 @@ class TestController extends Controller {
     protected $keyId = 'LTAIk1710IrzHBg4';
     protected $keySecret = 'xxO5XaXx3O7kB3YR14XSdFulw1x56k';
     protected $callerShowNumber = '02388373982';
+    const APP_ID = '583692';
+    const KEY = '4e759473d69a97307905';
+    const SECRET = 'e51dbcffbb1250a2d98e';
+    const CLUSTER = 'eu';
     
     /**
      * @throws \Exception
@@ -202,15 +206,9 @@ class TestController extends Controller {
      */
     private function msSync() {
     
-        $options = array(
-            'cluster' => 'eu',
-            'encrypted' => true
-        );
         $pusher = new Pusher(
-            '4e759473d69a97307905',
-            'e51dbcffbb1250a2d98e',
-            '583692',
-            $options
+            self::KEY, self::SECRET, self::APP_ID,
+            ['cluster' => self::CLUSTER, 'encrypted' => true]
         );
     
         $data['message'] = 'hello world';
