@@ -56,24 +56,40 @@ class TestController extends Controller {
      */
     public function index() {
 
-        if (Request::method() == 'POST') {
-            // $pusher = new Pusher(
-            //     '4e759473d69a97307905',
-            //     'e51dbcffbb1250a2d98e',
-            //     '583692',
-            //     [
-            //         'cluster' => 'eu',
-            //         'encrypted' => true
-            //     ]
-            // );
-            // $data['message'] = '你好！';
-            // $pusher->trigger('my-channel', 'my-event', $data);
-            // return response()->json();
-            return response()->json($this->msSync());
-        }
-        
-        return view('user.test');
-        // $this->msSync();
+        // if (Request::method() == 'POST') {
+        //     // $pusher = new Pusher(
+        //     //     '4e759473d69a97307905',
+        //     //     'e51dbcffbb1250a2d98e',
+        //     //     '583692',
+        //     //     [
+        //     //         'cluster' => 'eu',
+        //     //         'encrypted' => true
+        //     //     ]
+        //     // );
+        //     // $data['message'] = '你好！';
+        //     // $pusher->trigger('my-channel', 'my-event', $data);
+        //     // return response()->json();
+        //     return response()->json($this->msSync());
+        // }
+        //
+        // return view('user.test');
+        // // $this->msSync();
+        $corp = Corp::find(3);
+        $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
+        $accessToken = $token['access_token'];
+        $result = json_decode(Wechat::getDeptList($accessToken), true);
+        $deparmtents = $result['department'];
+        usort($deparmtents, function($a, $b) {
+            return $a['id'] <=> $b['id'];
+        });
+        // $result = json_decode(
+        //     Wechat::getDeptUserDetail($accessToken, 1, 1), true
+        // );
+        // if ($result['errcode']) {
+        //     echo 'wtf! ' . Constant::WXERR[$result['errcode']];
+        // }
+        // $users = $result['userlist'];
+        dd($deparmtents);
         
     }
     
