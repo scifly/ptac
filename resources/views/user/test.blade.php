@@ -13,9 +13,11 @@
 {!! Form::open(['url' => 'test/index', 'method' => 'post']) !!}
 {!! Form::submit() !!}
 {!! Form::close() !!}
+<script src="{{ URL::asset('js/jquery.min.js') }}"></script>
+<script src="{{ URL::asset('js/pusher.min.js') }}"></script>
+
 <script src="https://js.pusher.com/4.3/pusher.min.js"></script>
 <script>
-    // Enable pusher logging - don't include this in production
     Pusher.logToConsole = true;
     var pusher = new Pusher('4e759473d69a97307905', {
         cluster: 'eu',
