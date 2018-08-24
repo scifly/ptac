@@ -98,8 +98,6 @@ class SyncDepartment implements ShouldQueue {
         }
         event(new JobResponse($this->response));
         
-        return true;
-        
     }
     
 }
