@@ -47,7 +47,7 @@ class TestController extends Controller {
             );
             $data['message'] = '你好！';
             $pusher->trigger('my-channel', 'my-event', $data);
-            return null;
+            return response()->json();
             // return 'triggered';
         }
         
