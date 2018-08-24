@@ -34,7 +34,7 @@
             type: 'POST',
             url: 'index',
             dataType: 'json',
-            data: {_token: $('#csrf_token').val() },
+            data: {_token: $('#csrf_token').attr('content') },
             success: function () {}
         });
         return false;
