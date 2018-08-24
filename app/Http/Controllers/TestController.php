@@ -233,9 +233,7 @@ class TestController extends Controller {
     
         try {
             DB::transaction(function () use ($pusher) {
-                $data['message'] = '开始创建学校';
-                $pusher->trigger('my-channel', 'my-event', $data);
-                # 创建学校
+                $this->inform('开始创建学校');
                 $data = [
                     'name' => '成都美视国际学校',
                     'address' => '成都高新区人民南路南延线西侧',
@@ -265,7 +263,7 @@ class TestController extends Controller {
                 CreateSchool::dispatch($school);
             });
         } catch (Exception $e) {
-            throw $e;
+            $this->inform($e->getMessage());
         }
         // return true;
         
