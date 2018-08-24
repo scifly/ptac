@@ -260,7 +260,7 @@ class TestController extends Controller {
                     'menu_id' => $menu->id
                 ]);
                 $this->inform('创建学校微网站/基础菜单/基本角色等');
-                CreateSchool::dispatch($school);
+                CreateSchool::dispatch($school, null);
             });
         } catch (Exception $e) {
             $this->inform($e->getMessage());
