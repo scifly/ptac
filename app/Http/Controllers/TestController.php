@@ -7,19 +7,14 @@ use App\Helpers\ModelTrait;
 use App\Http\Requests\SchoolRequest;
 use App\Models\Corp;
 use App\Models\Department;
-use App\Models\Message;
-use App\Models\School;
-use Carbon\Carbon;
-use Carbon\Translator;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Route;
+use Pusher\Pusher;
 use ReflectionClass;
 use ReflectionMethod;
-use SimpleXMLElement;
 use Validator;
 
 /**
@@ -39,48 +34,25 @@ class TestController extends Controller {
      * @throws \Throwable
      */
     public function index() {
-    
-        # 创建学校
-        $request = SchoolRequest::create('schools/store', 'POST', [
-            'name' => '成都美视国际学校',
-            // 'address' => '成都高新区人民南路南延线西侧',
-            // 'signature' => '【成都美视国际学校】',
-            // 'department_id' => 0,
-            // 'corp_id' => 3,
-            // 'menu_id' => 0,
-            // 'school_type_id' => 1,
-            // 'enabled' => 1,
-            '_token' => csrf_token()
-        ]);
-        $request->headers->add(['content-type' => 'application/json']);
-        $response = Route::dispatch($request);
-        dd($response);
-        $result = Validator::make($request->all(), $request->rules());
-        $failed = $result->fails();
-        if ($failed) {
-            dd($result->errors());
+
+        if (Request::method() == 'POST') {
+            $pusher = new Pusher(
+                '4e759473d69a97307905',
+                'e51dbcffbb1250a2d98e',
+                '583692',
+                [
+                    'cluster' => 'eu',
+                    'encrypted' => true
+                ]
+            );
+            $data['message'] = 'hello world';
+            $pusher->trigger('my-channel', 'my-event', $data);
+            
+            return 'triggered';
         }
-        Route::dispatch($request);
         
-        # 同步现有部门
-        
-        # 同步现有会员
-        
-        
-        exit;
-        $corp = Corp::find(3);
-        $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
-        $accessToken = $token['access_token'];
-        // $result = json_decode(Wechat::getDeptList($accessToken), true);
-        // $deparmtents = $result['department'];
-        $result = json_decode(
-            Wechat::getDeptUserDetail($accessToken, 1, 1), true
-        );
-        if ($result['errcode']) {
-            echo 'wtf! ' . Constant::WXERR[$result['errcode']];
-        }
-        $users = $result['userlist'];
-        dd($users);
+        return view('test.index');
+        // $this->msSync();
         
     }
     
@@ -222,6 +194,64 @@ class TestController extends Controller {
         }
         
         return $result;
+        
+    }
+    
+    /**
+     * @throws \Pusher\PusherException
+     */
+    private function msSync() {
+    
+        $options = array(
+            'cluster' => 'eu',
+            'encrypted' => true
+        );
+        $pusher = new Pusher(
+            '4e759473d69a97307905',
+            'e51dbcffbb1250a2d98e',
+            '583692',
+            $options
+        );
+    
+        $data['message'] = 'hello world';
+        $pusher->trigger('my-channel', 'my-event', $data);
+        # 创建学校
+        $data = [
+            'name' => '成都美视国际学校',
+            'address' => '成都高新区人民南路南延线西侧',
+            'signature' => '【成都美视国际学校】',
+            'department_id' => 0,
+            'corp_id' => 3,
+            'menu_id' => 0,
+            'school_type_id' => 1,
+            'enabled' => 1,
+        ];
+        $rules = (new SchoolRequest)->rules();
+        $validation = Validator::make($data, $rules);
+        if ($validation->fails()) {
+            dd($validation->errors());
+        }
+    
+    
+        # 同步现有部门
+    
+        # 同步现有会员
+    
+    
+        exit;
+        $corp = Corp::find(3);
+        $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
+        $accessToken = $token['access_token'];
+        // $result = json_decode(Wechat::getDeptList($accessToken), true);
+        // $deparmtents = $result['department'];
+        $result = json_decode(
+            Wechat::getDeptUserDetail($accessToken, 1, 1), true
+        );
+        if ($result['errcode']) {
+            echo 'wtf! ' . Constant::WXERR[$result['errcode']];
+        }
+        $users = $result['userlist'];
+        dd($users);
         
     }
     
