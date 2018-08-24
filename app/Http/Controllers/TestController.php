@@ -1,9 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Facades\Wechat;
+use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use App\Http\Requests\SchoolRequest;
 use App\Jobs\CreateSchool;
+use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Menu;
 use App\Models\School;
@@ -229,34 +232,22 @@ class TestController extends Controller {
     
         try {
             DB::transaction(function () use ($pusher) {
-                $this->inform('开始创建学校');
-                $data = [
-                    'name' => '成都美视国际学校',
-                    'address' => '成都高新区人民南路南延线西侧',
-                    'signature' => '【成都美视】',
-                    'department_id' => 0,
-                    'corp_id' => 3,
-                    'menu_id' => 0,
-                    'school_type_id' => 1,
-                    'enabled' => 1,
-                ];
-                $rules = (new SchoolRequest)->rules();
-                $validation = Validator::make($data, $rules);
-                if ($validation->fails()) {
-                    json_encode($validation->errors());
-                }
-                $school = School::create($data);
-                $this->inform('创建学校对应的部门');
-                $department = (new Department)->storeDepartment($school, 'corp');
-                $this->inform('创建学校对应的菜单');
-                $menu = (new Menu)->storeMenu($school, 'corp');
-                $this->inform('更新学校部门及菜单id');
-                $school->update([
-                    'department_id' => $department->id,
-                    'menu_id' => $menu->id
-                ]);
-                $this->inform('创建学校微网站/基础菜单/基本角色等');
-                CreateSchool::dispatch($school, null);
+                $corp = Corp::find(3);
+                $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
+                $accessToken = $token['access_token'];
+                $result = json_decode(Wechat::getDeptList($accessToken), true);
+                $deparmtents = $result['department'];
+                usort($deparmtents, function($a, $b) {
+                    return $a['id'] <=> $b['id'];
+                });
+                // $result = json_decode(
+                //     Wechat::getDeptUserDetail($accessToken, 1, 1), true
+                // );
+                // if ($result['errcode']) {
+                //     echo 'wtf! ' . Constant::WXERR[$result['errcode']];
+                // }
+                // $users = $result['userlist'];
+                dd($deparmtents);
             });
         } catch (Exception $e) {
             $this->inform($e->getMessage());
