@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Pusher Test</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}" id="csrf_token">
 </head>
 <body>
 <h1>Pusher Test</h1>
@@ -33,6 +34,7 @@
             type: 'POST',
             url: 'index',
             dataType: 'json',
+            data: {_token: $('#csrf_token').val() },
             success: function () {}
         });
         return false;
