@@ -26,8 +26,9 @@
         }),
         channel = pusher.subscribe('my-channel');
 
-    channel.on('my-event', function (data) {
-        alert(JSON.stringify(data));
+    channel.bind('my-event', function (data) {
+        $('textarea').append(JSON.stringify(data));
+        // alert();
     });
     $('input[type="submit"]').on('click', function () {
         $.ajax({
