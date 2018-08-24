@@ -28,6 +28,7 @@
     channel.bind('my-event', function (data) {
         alert(JSON.stringify(data));
     });
+    $('input[type="submit"]').on('click', function () { return false; });
 </script>
 </body>
 </html>
