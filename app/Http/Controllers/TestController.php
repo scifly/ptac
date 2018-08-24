@@ -51,7 +51,7 @@ class TestController extends Controller {
             return 'triggered';
         }
         
-        return view('test.index');
+        return view('test.test');
         // $this->msSync();
         
     }
