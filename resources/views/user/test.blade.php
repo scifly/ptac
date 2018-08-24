@@ -26,7 +26,7 @@
         }),
         channel = pusher.subscribe('my-channel');
 
-    channel.bind('my-event', function (data) {
+    channel.on('my-event', function (data) {
         alert(JSON.stringify(data));
     });
     $('input[type="submit"]').on('click', function () {
