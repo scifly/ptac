@@ -69,8 +69,7 @@ class TestController extends Controller {
             // $data['message'] = '你好！';
             // $pusher->trigger('my-channel', 'my-event', $data);
             // return response()->json();
-            $this->msSync();
-            return response()->json();
+            return response()->json($this->msSync());
         }
         
         return view('user.test');
@@ -247,7 +246,7 @@ class TestController extends Controller {
                 //     echo 'wtf! ' . Constant::WXERR[$result['errcode']];
                 // }
                 // $users = $result['userlist'];
-                dd($deparmtents);
+                return $deparmtents;
             });
         } catch (Exception $e) {
             $this->inform($e->getMessage());
