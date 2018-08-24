@@ -5,12 +5,17 @@ use App\Facades\Wechat;
 use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use App\Http\Requests\SchoolRequest;
+use App\Jobs\CreateSchool;
 use App\Models\Corp;
 use App\Models\Department;
+use App\Models\Menu;
+use App\Models\School;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use http\Env\Response;
 use Illuminate\Console\DetectsApplicationNamespace;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Pusher\Pusher;
 use ReflectionClass;
@@ -24,7 +29,7 @@ use Validator;
 class TestController extends Controller {
     
     use DetectsApplicationNamespace, ModelTrait;
-    
+    protected $pusher;
     protected $keyId = 'LTAIk1710IrzHBg4';
     protected $keySecret = 'xxO5XaXx3O7kB3YR14XSdFulw1x56k';
     protected $callerShowNumber = '02388373982';
@@ -34,25 +39,39 @@ class TestController extends Controller {
     const CLUSTER = 'eu';
     
     /**
+     * TestController constructor.
+     * @throws \Pusher\PusherException
+     */
+    function __construct() {
+        
+        $this->pusher = new Pusher(
+            self::KEY, self::SECRET, self::APP_ID,
+            ['cluster' => self::CLUSTER, 'encrypted' => true]
+        );
+        
+    }
+    
+    /**
      * @throws \Exception
      * @throws \Throwable
      */
     public function index() {
 
         if (Request::method() == 'POST') {
-            $pusher = new Pusher(
-                '4e759473d69a97307905',
-                'e51dbcffbb1250a2d98e',
-                '583692',
-                [
-                    'cluster' => 'eu',
-                    'encrypted' => true
-                ]
-            );
-            $data['message'] = '你好！';
-            $pusher->trigger('my-channel', 'my-event', $data);
+            // $pusher = new Pusher(
+            //     '4e759473d69a97307905',
+            //     'e51dbcffbb1250a2d98e',
+            //     '583692',
+            //     [
+            //         'cluster' => 'eu',
+            //         'encrypted' => true
+            //     ]
+            // );
+            // $data['message'] = '你好！';
+            // $pusher->trigger('my-channel', 'my-event', $data);
+            // return response()->json();
+            $this->msSync();
             return response()->json();
-            // return 'triggered';
         }
         
         return view('user.test');
@@ -203,6 +222,7 @@ class TestController extends Controller {
     
     /**
      * @throws \Pusher\PusherException
+     * @throws \Throwable
      */
     private function msSync() {
     
@@ -211,45 +231,76 @@ class TestController extends Controller {
             ['cluster' => self::CLUSTER, 'encrypted' => true]
         );
     
-        $data['message'] = 'hello world';
-        $pusher->trigger('my-channel', 'my-event', $data);
-        # 创建学校
-        $data = [
-            'name' => '成都美视国际学校',
-            'address' => '成都高新区人民南路南延线西侧',
-            'signature' => '【成都美视国际学校】',
-            'department_id' => 0,
-            'corp_id' => 3,
-            'menu_id' => 0,
-            'school_type_id' => 1,
-            'enabled' => 1,
-        ];
-        $rules = (new SchoolRequest)->rules();
-        $validation = Validator::make($data, $rules);
-        if ($validation->fails()) {
-            dd($validation->errors());
+        try {
+            DB::transaction(function () use ($pusher) {
+                $data['message'] = '开始创建学校';
+                $pusher->trigger('my-channel', 'my-event', $data);
+                # 创建学校
+                $data = [
+                    'name' => '成都美视国际学校',
+                    'address' => '成都高新区人民南路南延线西侧',
+                    'signature' => '【成都美视国际学校】',
+                    'department_id' => 0,
+                    'corp_id' => 3,
+                    'menu_id' => 0,
+                    'school_type_id' => 1,
+                    'enabled' => 1,
+                ];
+                $rules = (new SchoolRequest)->rules();
+                $validation = Validator::make($data, $rules);
+                if ($validation->fails()) {
+                    dd($validation->errors());
+                }
+                $school = School::create($data);
+                $this->inform('创建学校对应的部门');
+                $department = (new Department)->storeDepartment($school, 'corp');
+                $this->inform('创建学校对应的菜单');
+                $menu = (new Menu)->storeMenu($school, 'corp');
+                $this->inform('更新学校部门及菜单id');
+                $school->update([
+                    'department_id' => $department->id,
+                    'menu_id' => $menu->id
+                ]);
+                $this->inform('创建学校微网站/基础菜单/基本角色等');
+                CreateSchool::dispatch($school);
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
-    
+        // return true;
+        
     
         # 同步现有部门
     
         # 同步现有会员
     
     
-        exit;
-        $corp = Corp::find(3);
-        $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
-        $accessToken = $token['access_token'];
-        // $result = json_decode(Wechat::getDeptList($accessToken), true);
-        // $deparmtents = $result['department'];
-        $result = json_decode(
-            Wechat::getDeptUserDetail($accessToken, 1, 1), true
-        );
-        if ($result['errcode']) {
-            echo 'wtf! ' . Constant::WXERR[$result['errcode']];
-        }
-        $users = $result['userlist'];
-        dd($users);
+        // $corp = Corp::find(3);
+        // $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
+        // $accessToken = $token['access_token'];
+        // // $result = json_decode(Wechat::getDeptList($accessToken), true);
+        // // $deparmtents = $result['department'];
+        // $result = json_decode(
+        //     Wechat::getDeptUserDetail($accessToken, 1, 1), true
+        // );
+        // if ($result['errcode']) {
+        //     echo 'wtf! ' . Constant::WXERR[$result['errcode']];
+        // }
+        // $users = $result['userlist'];
+        // dd($users);
+        
+    }
+    
+    /**
+     * 发送广播消息
+     *
+     * @param $message
+     * @throws \Pusher\PusherException
+     */
+    private function inform($message) {
+    
+        $data['message'] = $message;
+        $this->pusher->trigger('my-channel', 'my-event', $data);
         
     }
     

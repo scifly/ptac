@@ -346,8 +346,9 @@ class CreateSchool implements ShouldQueue {
             $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
             $response['message'] = $e->getMessage();
         }
-        
-        event(new JobResponse($response));
+        if ($this->userId) {
+            event(new JobResponse($response));
+        }
 
     }
     
