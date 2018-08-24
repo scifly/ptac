@@ -31,7 +31,7 @@
     $('input[type="submit"]').on('click', function () {
         $.ajax({
             type: 'POST',
-            url: 'test/index',
+            url: 'index',
             dataType: 'json',
             success: function () {}
         });
