@@ -8,6 +8,7 @@ use App\Http\Requests\SchoolRequest;
 use App\Jobs\CreateSchool;
 use App\Models\Corp;
 use App\Models\Department;
+use App\Models\DepartmentType;
 use App\Models\Menu;
 use App\Models\School;
 use Exception;
@@ -56,40 +57,46 @@ class TestController extends Controller {
      */
     public function index() {
 
-        // if (Request::method() == 'POST') {
-        //     // $pusher = new Pusher(
-        //     //     '4e759473d69a97307905',
-        //     //     'e51dbcffbb1250a2d98e',
-        //     //     '583692',
-        //     //     [
-        //     //         'cluster' => 'eu',
-        //     //         'encrypted' => true
-        //     //     ]
-        //     // );
-        //     // $data['message'] = '你好！';
-        //     // $pusher->trigger('my-channel', 'my-event', $data);
-        //     // return response()->json();
-        //     return response()->json($this->msSync());
-        // }
-        //
-        // return view('user.test');
-        // // $this->msSync();
-        $corp = Corp::find(3);
-        $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
-        $accessToken = $token['access_token'];
-        $result = json_decode(Wechat::getDeptList($accessToken), true);
-        $deparmtents = $result['department'];
-        usort($deparmtents, function($a, $b) {
-            return $a['id'] <=> $b['id'];
-        });
-        // $result = json_decode(
-        //     Wechat::getDeptUserDetail($accessToken, 1, 1), true
-        // );
-        // if ($result['errcode']) {
-        //     echo 'wtf! ' . Constant::WXERR[$result['errcode']];
-        // }
-        // $users = $result['userlist'];
-        dd($deparmtents);
+        try {
+            DB::transaction(function () {
+                $corp = Corp::find(3);
+                $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
+                $accessToken = $token['access_token'];
+                $result = json_decode(Wechat::getDeptList($accessToken), true);
+                $departments = $result['department'];
+                usort($departments, function($a, $b) {
+                    return $a['id'] <=> $b['id'];
+                });
+                $departmentTypeId = DepartmentType::whereName('其他')->first()->id;
+                foreach ($departments as &$department) {
+                    $id = $department['id'];
+                    $name = $department['name'];
+                    $parentid = $department['parentid'];
+                    $order = $department['order'];
+                    if (!in_array($id, [35, 117504494])) {
+                        if ($parentid == 1175014494) {
+                            $parentId = 35;
+                        } else {
+                            $key = array_search($parentid, array_column($departments, 'id'));
+                            $parentId = $departments[$key]['newid'];
+                        }
+                        $data = [
+                            'name' => $name,
+                            'parent_id' => $parentId,
+                            'department_type_id' => $departmentTypeId,
+                            'order' => $order,
+                            'enabled' => 1
+                        ];
+                        $newDeptartment = (new Department)->store($data);
+                        $department['newid'] = $newDeptartment->id;
+                    }
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
         
     }
     
