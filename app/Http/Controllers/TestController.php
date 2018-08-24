@@ -1,19 +1,15 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Facades\Wechat;
-use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use App\Http\Requests\SchoolRequest;
 use App\Jobs\CreateSchool;
-use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Menu;
 use App\Models\School;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
-use http\Env\Response;
 use Illuminate\Console\DetectsApplicationNamespace;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;

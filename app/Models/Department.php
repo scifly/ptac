@@ -207,7 +207,7 @@ class Department extends Model {
             : [
                 'id'       => $department->id,
                 'name'     => $department->name,
-                'parentid' => $department->departmentType->name == '学校' ? 1 : $department->parent_id,
+                'parentid' => $department->departmentType->name == '学校' ? 1175014494 : $department->parent_id,
                 'order'    => $department->order,
                 'corp_id'  => $this->corpId($id),
             ];
