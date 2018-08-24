@@ -237,7 +237,7 @@ class TestController extends Controller {
                 $data = [
                     'name' => '成都美视国际学校',
                     'address' => '成都高新区人民南路南延线西侧',
-                    'signature' => '【成都美视国际学校】',
+                    'signature' => '【成都美视】',
                     'department_id' => 0,
                     'corp_id' => 3,
                     'menu_id' => 0,
@@ -247,7 +247,7 @@ class TestController extends Controller {
                 $rules = (new SchoolRequest)->rules();
                 $validation = Validator::make($data, $rules);
                 if ($validation->fails()) {
-                    dd($validation->errors());
+                    json_encode($validation->errors());
                 }
                 $school = School::create($data);
                 $this->inform('创建学校对应的部门');
