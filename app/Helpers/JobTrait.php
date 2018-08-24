@@ -89,7 +89,7 @@ trait JobTrait {
         }
         if ($hasError) {
             $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-            $response['message'] = $result ? $result->{'msg'} : '接口错误';
+            $response['message'] = $result ? $result['msg'] : '接口错误';
         }
         if ($response['userId']) {
             event(new JobResponse($response));
