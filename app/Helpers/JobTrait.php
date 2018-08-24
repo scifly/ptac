@@ -54,8 +54,6 @@ trait JobTrait {
     function syncKd($type, array $response) {
     
         $api = new Kinder();
-        $response['title'] .= '卡德' . $type;
-        $response['message'] .= '卡德';
         $name = '';
         switch ($this->action) {
             case 'create':
@@ -70,6 +68,8 @@ trait JobTrait {
             default:
                 break;
         }
+        $response['title'] = $name . '卡德' . $type;
+        $response['message'] = __('messages.synced') . '卡德';
         $hasError = false;
         $result = json_decode(
             $api->call($name . $type, $this->data), true
