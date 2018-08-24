@@ -26,7 +26,7 @@ Route::get('logout', 'Auth\LoginController@logout');
 Route::get('/', 'HomeController@index');
 Route::get('/home', 'HomeController@index')->name('home');
 /** 测试用路由 */
-Route::get('test/index', 'TestController@index');
+Route::any('test/index', 'TestController@index');
 Route::get('test/create', 'TestController@create');
 Route::get('test', 'TestController@test');
 /** Broadcasting test */
