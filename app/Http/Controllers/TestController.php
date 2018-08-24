@@ -45,7 +45,7 @@ class TestController extends Controller {
                     'encrypted' => true
                 ]
             );
-            $data['message'] = 'hello world';
+            $data['message'] = '你好！';
             $pusher->trigger('my-channel', 'my-event', $data);
             
             return 'triggered';
