@@ -11,6 +11,7 @@
     with event name <code>my-event</code>.
 </p>
 {!! Form::open(['url' => 'test/index', 'method' => 'post']) !!}
+{!! Form::textarea('message', null) !!}
 {!! Form::submit() !!}
 {!! Form::close() !!}
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
@@ -20,11 +21,12 @@
 <script>
     Pusher.logToConsole = true;
     var pusher = new Pusher('4e759473d69a97307905', {
-        cluster: 'eu',
-        encrypted: true
-    });
-    var channel = pusher.subscribe('my-channel');
-    channel.bind('my-event', function (data) {
+            cluster: 'eu',
+            encrypted: true
+        }),
+        channel = pusher.subscribe('my-channel');
+
+    channel.on('my-event', function (data) {
         alert(JSON.stringify(data));
     });
 </script>
