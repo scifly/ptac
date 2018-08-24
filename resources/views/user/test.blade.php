@@ -27,7 +27,7 @@
         channel = pusher.subscribe('my-channel');
 
     channel.bind('my-event', function (data) {
-        $('textarea').append(JSON.stringify(data));
+        $('textarea').append(/*JSON.stringify(data)*/data['message']);
         // alert();
     });
     $('input[type="submit"]').on('click', function () {
