@@ -70,20 +70,24 @@ trait JobTrait {
             default:
                 break;
         }
-        $result = $api->call($name . $type, $this->data);
         $hasError = false;
-        if (isset($result->{'code'})) {
-            if ($result->{'code'}) {
-                $hasError = true;
-            }
+        $result = $api->call($name . $type, $this->data);
+        if (!$result) {
+            $hasError = true;
         } else {
-            if ($result->{'result'}) {
-                $hasError = true;
+            if (isset($result->{'code'})) {
+                if ($result->{'code'}) {
+                    $hasError = true;
+                }
+            } else {
+                if ($result->{'result'}) {
+                    $hasError = true;
+                }
             }
         }
         if ($hasError) {
             $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-            $response['message'] = $result->{'msg'};
+            $response['message'] = $result ? $result->{'msg'} : '接口错误';
         }
         if ($response['userId']) {
             event(new JobResponse($response));
