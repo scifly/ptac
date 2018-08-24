@@ -16,8 +16,7 @@
 {!! Form::close() !!}
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
 <script src="{{ URL::asset('js/pusher.min.js') }}"></script>
-
-<script src="https://js.pusher.com/4.3/pusher.min.js"></script>
+{{--<script src="https://js.pusher.com/4.3/pusher.min.js"></script>--}}
 <script>
     Pusher.logToConsole = true;
     var pusher = new Pusher('4e759473d69a97307905', {
