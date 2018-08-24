@@ -73,7 +73,7 @@ class TestController extends Controller {
                     $name = $department['name'];
                     $parentid = $department['parentid'];
                     $order = $department['order'];
-                    if (!in_array($id, [35, 117504494])) {
+                    if (!in_array($id, [35, 1175014494])) {
                         if ($parentid == 1175014494) {
                             $parentId = 35;
                         } else {
