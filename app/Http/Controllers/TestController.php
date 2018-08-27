@@ -74,12 +74,12 @@ class TestController extends Controller {
                 # 获取所有部门
                 $result = json_decode(Wechat::getDeptList($accessToken), true);
                 $departments = $result['department'];
-                # 获取所有会员
-                $result = json_decode(Wechat::getDeptUserDetail($accessToken, $rootDepartmentId, 1), true);
-                $members = $result['userlist'];
                 usort($departments, function($a, $b) {
                     return $a['id'] <=> $b['id'];
                 });
+                # 获取所有会员
+                $result = json_decode(Wechat::getDeptUserDetail($accessToken, $rootDepartmentId, 1), true);
+                $members = $result['userlist'];
                 $departmentTypeId = DepartmentType::whereName('其他')->first()->id;
                 $school = School::whereDepartmentId($schoolDepartmentId)->first();
                 # 在学校对应的部门下创建现有部门
