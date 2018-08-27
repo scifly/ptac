@@ -68,7 +68,7 @@ class TestController extends Controller {
             DB::transaction(function () {
                 $schoolDepartmentId = 33;
                 $rootDepartmentId = 1175014494;
-                $corp = Corp::find(3);
+                $corp = Corp::find(2);
                 $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
                 $accessToken = $token['access_token'];
                 # 获取所有部门
