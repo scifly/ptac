@@ -125,7 +125,7 @@ class TestController extends Controller {
                         'position'     => $member['position'],
                         'english_name' => $member['english_name'],
                         'telephone'    => $member['telephone'],
-                        'order'        => $member['order'],
+                        'order'        => json_encode($member['order']),
                         'enabled'      => $member['enable'],
                         'synced'       => 1,
                         'subscribed'   => $member['status'] == 1 ? 1 : 0,
