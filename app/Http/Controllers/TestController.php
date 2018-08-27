@@ -6,11 +6,18 @@ use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use App\Http\Requests\SchoolRequest;
 use App\Jobs\CreateSchool;
+use App\Jobs\SyncDepartment;
+use App\Jobs\SyncMember;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\DepartmentType;
+use App\Models\DepartmentUser;
+use App\Models\Educator;
+use App\Models\Group;
 use App\Models\Menu;
+use App\Models\Mobile;
 use App\Models\School;
+use App\Models\User;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -59,23 +66,31 @@ class TestController extends Controller {
 
         try {
             DB::transaction(function () {
+                $schoolDepartmentId = 35;
+                $rootDepartmentId = 1175014494;
                 $corp = Corp::find(3);
                 $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
                 $accessToken = $token['access_token'];
+                # 获取所有部门
                 $result = json_decode(Wechat::getDeptList($accessToken), true);
                 $departments = $result['department'];
+                # 获取所有会员
+                $result = json_decode(Wechat::getDeptUserDetail($accessToken, $rootDepartmentId, 1), true);
+                $members = $result['userlist'];
                 usort($departments, function($a, $b) {
                     return $a['id'] <=> $b['id'];
                 });
                 $departmentTypeId = DepartmentType::whereName('其他')->first()->id;
+                $school = School::whereDepartmentId($schoolDepartmentId)->first();
+                # 在学校对应的部门下创建现有部门
                 foreach ($departments as &$department) {
                     $id = $department['id'];
                     $name = $department['name'];
                     $parentid = $department['parentid'];
                     $order = $department['order'];
-                    if (!in_array($id, [35, 1175014494])) {
-                        if ($parentid == 1175014494) {
-                            $parentId = 35;
+                    if (!in_array($id, [$schoolDepartmentId, $rootDepartmentId])) {
+                        if ($parentid == $rootDepartmentId) {
+                            $parentId = $schoolDepartmentId;
                         } else {
                             $key = array_search($parentid, array_column($departments, 'id'));
                             $parentId = $departments[$key]['newid'];
@@ -89,14 +104,76 @@ class TestController extends Controller {
                         ];
                         $newDeptartment = (new Department)->store($data);
                         $department['newid'] = $newDeptartment->id;
+                    } else {
+                        $department['newid'] = $department['id'];
                     }
+                }
+                # 在本地创建所有会员（均为教职员工角色），并更新对应企业微信会员信息（所属部门）
+                $groupId = Group::whereName('教职员工')->where('school_id', $school->id)->first()->id;
+                foreach ($members as $member) {
+                    # 创建本地用户
+                    $user = User::create([
+                        'username'     => $member['username'],
+                        'group_id'     => $groupId,
+                        'password'     => bcrypt('12345678'),
+                        'email'        => $member['email'],
+                        'realname'     => $member['name'],
+                        'gender'       => $member['gender'],
+                        'userid'       => $member['userid'],
+                        'isleader'     => 0,
+                        'english_name' => $member['english_name'],
+                        'telephone'    => $member['telephone'],
+                        'enabled'      => $member['enable'],
+                        'synced'       => 1,
+                        'subscribed'   => $member['status'],
+                    ]);
+                    # 创建教职员工
+                    Educator::create([
+                        'user_id' => $user->id,
+                        'school_id' => $school->id,
+                        'sms_quote' => 0,
+                        'enabled' => $user->enabled,
+                    ]);
+                    # 创建部门&用户绑定关系
+                    $departmentIds = array_map(
+                        function ($id) use ($departments) {
+                            $key = array_search($id, array_column($departments, 'id'));
+                            return $departments[$key]['newid'];
+                        }, $member['department']
+                    );
+                    foreach ($departmentIds as $departmentId) {
+                        DepartmentUser::create([
+                            'user_id' => $user->id,
+                            'department_id' => $departmentId,
+                            'enabled' => $user->enabled,
+                        ]);
+                    }
+                    # 保存用户默认手机号码
+                    Mobile::create([
+                        'user_id' => $user->id,
+                        'mobile' => $member['mobile'],
+                        'isdefault' => 1,
+                        'enabled' => 1
+                    ]);
+                    # 更新用户对应的企业微信会员信息（所属部门）
+                    $data = [
+                        'corpIds'      => [$school->corp_id],
+                        'userid'       => $user->userid,
+                        'department'   => $departmentIds,
+                    ];
+                    SyncMember::dispatch($data, null, 'update');
+                }
+                # 删除所有手动创建的部门
+                for ($i = count($departments) - 1; $i >= 0; $i--) {
+                    $data = ['id' => $departments[$i]['id'], 'corp_id' => $school->corp_id];
+                    SyncDepartment::dispatch($data, null, 'delete');
                 }
             });
         } catch (Exception $e) {
             throw $e;
         }
         
-        return true;
+        return 'done';
         
     }
     

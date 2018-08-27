@@ -307,16 +307,14 @@ class Educator extends Model {
                         }
                     }
                 }
-                # 创建部门信息
+                # 创建部门用户绑定关系
                 $selectedDepartments = $request->input('selectedDepartments');
-                if (!empty($selectedDepartments)) {
-                    foreach ($selectedDepartments as $department) {
-                        DepartmentUser::create([
-                            'user_id'       => $u->id,
-                            'department_id' => $department,
-                            'enabled'       => $user['enabled'],
-                        ]);
-                    }
+                foreach ($selectedDepartments as $department) {
+                    DepartmentUser::create([
+                        'user_id'       => $u->id,
+                        'department_id' => $department,
+                        'enabled'       => $user['enabled'],
+                    ]);
                 }
                 # 当选择了学校角色没有选择学校部门时
                 $schoolId = $this->schoolId();
