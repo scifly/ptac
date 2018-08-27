@@ -113,19 +113,22 @@ class TestController extends Controller {
                 foreach ($members as $member) {
                     # 创建本地用户
                     $user = User::create([
-                        'username'     => $member['username'],
+                        'username'     => $member['userid'],
                         'group_id'     => $groupId,
                         'password'     => bcrypt('12345678'),
                         'email'        => $member['email'],
                         'realname'     => $member['name'],
-                        'gender'       => $member['gender'],
+                        'avatar_url'   => $member['avatar'],
+                        'gender'       => $member['gender'] == 1 ? 1 : 0,
                         'userid'       => $member['userid'],
                         'isleader'     => 0,
+                        'position'     => $member['position'],
                         'english_name' => $member['english_name'],
                         'telephone'    => $member['telephone'],
+                        'order'        => $member['order'],
                         'enabled'      => $member['enable'],
                         'synced'       => 1,
-                        'subscribed'   => $member['status'],
+                        'subscribed'   => $member['status'] == 1 ? 1 : 0,
                     ]);
                     # 创建教职员工
                     Educator::create([
