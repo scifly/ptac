@@ -6,6 +6,7 @@ use App\Helpers\Wechat\WXBizMsgCrypt;
 use App\Http\Controllers\Controller;
 use App\Models\Corp;
 use App\Models\Department;
+use App\Models\DepartmentType;
 use App\Models\DepartmentUser;
 use App\Models\Educator;
 use App\Models\Group;
@@ -170,9 +171,25 @@ class SyncController extends Controller {
                                 (new User)->remove($userId, false);
                                 break;
                             case 'create_party':
-                            
+                                $data = [
+                                    'id' => $this->event->{'Id'},
+                                    'name' => $this->event->{'Name'},
+                                    'parent_id' => $this->event->{'ParentId'},
+                                    'department_type_id' => DepartmentType::whereName('其他')->first()->id,
+                                    'enabled' => 1
+                                ];
+                                Department::create($data);
+                                break;
                             case 'update_party':
+                                $department = Department::find($this->event->{'Id'});
+                                $department->update([
+                                    'name' => $this->event->{'Name'},
+                                    'parent_id' => $this->event->{'ParentId'}
+                                ]);
+                                break;
                             case 'delete_party':
+                                (new Department)->remove($this->event->{'Id'});
+                                break;
                             case 'update_tag':
                             default:
                                 break;

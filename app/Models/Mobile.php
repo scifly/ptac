@@ -36,7 +36,7 @@ class Mobile extends Model {
     
     use ModelTrait;
     
-    protected $fillable = ['id', 'mobile', 'user_id', 'isdefault', 'enabled'];
+    protected $fillable = ['mobile', 'user_id', 'isdefault', 'enabled'];
     
     /**
      * 返回指定手机所属的用户对象

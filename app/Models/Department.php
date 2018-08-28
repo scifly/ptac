@@ -62,7 +62,7 @@ class Department extends Model {
     use ModelTrait;
     
     protected $fillable = [
-        'parent_id', 'department_type_id', 'name',
+        'id', 'parent_id', 'department_type_id', 'name',
         'remark', 'order', 'enabled', 'synced',
     ];
     
