@@ -2,14 +2,13 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Pusher Test</title>
+    <title>美视通讯录同步</title>
     <meta name="csrf-token" content="{{ csrf_token() }}" id="csrf_token">
 </head>
 <body>
 <h1>Pusher Test</h1>
 <p>
-    Try publishing an event to channel <code>my-channel</code>
-    with event name <code>my-event</code>.
+    同步美视企业微信通讯录到本地数据库
 </p>
 {!! Form::open(['url' => 'test/index', 'method' => 'post']) !!}
 {!! Form::textarea('message', null) !!}
