@@ -167,14 +167,18 @@ class TestController extends Controller {
                         $this->inform('创建用户：' . $member['name']);
                     }
                     # 删除所有手动创建的部门
+                    $this->inform('删除所有手动创建的企业微信部门');
                     for ($i = count($departments) - 1; $i >= 0; $i--) {
                         $data = ['id' => $departments[$i]['id'], 'corp_id' => $school->corp_id];
                         SyncDepartment::dispatch($data, null, 'delete');
                     }
                 });
             } catch (Exception $e) {
+                $this->inform($e->getMessage());
                 throw $e;
             }
+            $this->inform('done');
+            return true;
         }
         
         return view('user.test');
