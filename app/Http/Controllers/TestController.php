@@ -59,6 +59,7 @@ class TestController extends Controller {
      */
     public function index() {
 
+        set_time_limit(0);
         if (Request::method() == 'POST') {
             try {
                 DB::transaction(function () {
