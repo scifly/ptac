@@ -5,10 +5,19 @@ use App\Facades\Wechat;
 use App\Helpers\Wechat\WXBizMsgCrypt;
 use App\Http\Controllers\Controller;
 use App\Models\Corp;
+use App\Models\Department;
+use App\Models\DepartmentUser;
+use App\Models\Educator;
+use App\Models\Group;
 use App\Models\Mobile;
+use App\Models\School;
 use App\Models\User;
-use Illuminate\Support\Facades\Log;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * 微信考勤
@@ -18,24 +27,180 @@ use Illuminate\Support\Facades\Request;
  */
 class SyncController extends Controller {
     
-    function __construct() { }
+    const MEMBER_PROPERTIES = [
+        'NewUserID'   => 'userid',
+        'Name'        => 'realname',
+        'Position'    => 'position',
+        'Gender'      => 'gender',
+        'Email'       => 'email',
+        'Status'      => 'subscribed',
+        'Avatar'      => 'avatar_url',
+        'EnglishName' => 'english_name',
+        'IsLeader'    => 'isleader',
+        'Telephone'   => 'telephone',
+    ];
+    protected $corp, $event, $schools, $schoolDepartmentIds;
+    
+    function __construct() {
+        
+        $paths = explode('/', Request::path());
+        $this->corp = Corp::whereAcronym($paths[0])->first();
+        $this->schools = $this->corp->schools;
+        $this->schoolDepartmentIds = $this->schools->pluck('department_id')->toArray();
+        
+    }
     
     /**
      * 接收通讯录变更事件
-     * @throws \Exception
+     *
+     * @return string
+     * @throws Throwable
      */
     public function sync() {
         
         // $this->verifyUrl();
         // exit;
+        try {
+            DB::transaction(function () {
+                $this->event = $this->event();
+                $type = $this->event->{'Event'};
+                switch ($type) {
+                    case 'subscribe':
+                        User::whereUserid($this->event->{'FromUserName'})->first()->update([
+                            'avatar_url' => $this->member()->{'avatar'},
+                            'subscribed' => 1,
+                        ]);
+                        break;
+                    case 'unsubscribe':
+                        User::whereUserid($this->event->{'FromUserName'})->first()->update([
+                            'subscribed' => 0,
+                        ]);
+                        break;
+                    case 'change_contact':
+                        $changeType = $this->event->{'ChangeType'};
+                        switch ($changeType) {
+                            case 'create_user':
+                                # 创建用户(教职员工)
+                                $data = $this->memberData();
+                                $data['username'] = $data['userid'];
+                                $data['password'] = bcrypt('12345678');
+                                $data['synced'] = 1;
+                                $data['enabled'] = 1;
+                                $role = $this->role();
+                                $school = null;
+                                switch ($role) {
+                                    case 'educator':
+                                        $school = $this->school();
+                                        $data['group_id'] = Group::where([
+                                            'name' => '教职员工',
+                                            'school_id' => $school->id
+                                        ])->first()->id;
+                                        break;
+                                    case 'school':
+                                        $data['group_id'] = Group::whereName('学校')->first()->id;
+                                        break;
+                                    case 'corp':
+                                        $data['group_id'] = Group::whereName('企业')->first()->id;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                $user = User::create($data);
+                                if ($role != 'corp') {
+                                    # 创建教职员工
+                                    Educator::create([
+                                        'user_id'   => $user->id,
+                                        'school_id' => $school->id,
+                                        'sms_quote' => 0,
+                                        'enabled'   => 1
+                                    ]);
+                                    $departmentIds = (array) $this->event->{'Department'};
+                                } else {
+                                    $departmentIds = [$this->corp->department_id];
+                                }
+                                # 创建部门&用户绑定关系
+                                (new DepartmentUser)->storeByUserId($user->id, $departmentIds);
+                                # 保存用户手机号码
+                                Mobile::create([
+                                    'user_id' => $user->id,
+                                    'mobile' => $this->event->{'Mobile'},
+                                    'isdefault' => 1,
+                                    'enabled' => 1
+                                ]);
+                                break;
+                            case 'update_user':
+                                # 更新用户
+                                $user = User::whereUserid($this->event->{'UserID'})->first();
+                                $user->update($this->memberData());
+                                # 更新用户手机号码
+                                if (property_exists($this->event, 'Mobile')) {
+                                    Mobile::where(['user_id' => $user->id, 'isdefault' => 1])
+                                        ->first()->update(['mobile' => $this->event->{'Mobile'}]);
+                                }
+                                # 更新用户所属部门
+                                if (property_exists($this->event, 'Department')) {
+                                    $du = new DepartmentUser;
+                                    $du->where('user_id', $user->id)->delete();
+                                    $role = $this->role();
+                                    $departmentIds = (array) $this->event->{'Department'};
+                                    switch ($role) {
+                                        case 'educator':
+                                            $user->update([
+                                                'group_id' => Group::where([
+                                                    'name' => '教职员工',
+                                                    'school_id' => $this->school()->id
+                                                ])
+                                            ]);
+                                            break;
+                                        case 'school':
+                                            $user->update(['group_id' => Group::whereName('学校')->first()->id]);
+                                            break;
+                                        case 'corp':
+                                            $user->update(['group_id' => Group::whereName('企业')->first()->id]);
+                                            $departmentIds = [$this->corp->department_id];
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                    $du->storeByUserId($user->id, $departmentIds);
+                                }
+                                break;
+                            case 'delete_user':
+                                $userId = User::whereUserid($this->event->{'UserID'})->first()->id;
+                                (new User)->remove($userId, false);
+                                break;
+                            case 'create_party':
+                            
+                            case 'update_party':
+                            case 'delete_party':
+                            case 'update_tag':
+                            default:
+                                break;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
         
-        $paths = explode('/', Request::path());
-        $corp = Corp::whereAcronym($paths[0])->first();
-        // 假设企业号在公众平台上设置的参数如下
+        return true;
+        
+    }
+    
+    /**
+     * 返回企业微信推送的事件对象
+     *
+     * @return int|\SimpleXMLElement
+     */
+    private function event() {
+        
         $wxcpt = new WXBizMsgCrypt(
-            $corp->token,
-            $corp->encoding_aes_key,
-            $corp->corpid
+            $this->corp->token,
+            $this->corp->encoding_aes_key,
+            $this->corp->corpid
         );
         $msgSignature = Request::query('msg_signature');
         $timestamp = Request::query('timestamp');
@@ -48,65 +213,109 @@ class SyncController extends Controller {
             $content,
             $timestamp
         );
-        if ($errcode) { return $errcode; }
-        $event = simplexml_load_string($content, 'SimpleXMLElement', LIBXML_NOCDATA);
-        $userid = $event->{'UserID'};
-        Log::debug(json_encode($event));
-        $user = User::whereUserid($userid)->first();
-        $token = Wechat::getAccessToken(
-            $corp->corpid,
-            $corp->contact_sync_secret,
-            true
-        );
-        if ($token['errcode']) { return $token['errcode']; }
-        $member = json_decode(Wechat::getUser($token['access_token'], $userid));
-        if ($member->{'errcode'}) {
-            Log::debug(json_encode($member));
-            return $member->{'errcode'};
-        }
-        $type = $event->{'Event'};
-        switch ($type) {
-            case 'subscribe':
-                $user->update([
-                    'avatar_url' => $member->{'avatar'},
-                    'subscribed' => 1,
-                ]);
-                break;
-            case 'unsubscribe':
-                $user->update(['subscribed' => 0]);
-                break;
-            case 'change_contact':
-                $data = [
-                    'gender'     => property_exists($member, 'gender')
-                        ? ($member->{'gender'} == 1 ? 0 : 1)
-                        : $user->gender,
-                    'email'      => property_exists($member, 'email')
-                        ? $member->{'email'}
-                        : $user->email,
-                    'avatar_url' => property_exists($member, 'avatar')
-                        ? $member->{'avatar'}
-                        : $user->avatar_url,
-                    'subscribed' => property_exists($member, 'status')
-                        ? ($member->{'status'} == 1 ? 1 : 0)
-                        : $user->subscribed,
-                ];
-                Log::debug(json_encode($data));
-                $user->update($data);
-                if (property_exists($member, 'mobile')) {
-                    Mobile::whereUserId($user->id)->where('isdefault', 1)->first()->update([
-                        'mobile' => $member->{'mobile'},
-                    ]);
-                }
-                break;
-            default:
-                break;
-        }
         
-        return '';
+        return $errcode
+            ? $errcode
+            : simplexml_load_string($content, 'SimpleXMLElement', LIBXML_NOCDATA);
         
     }
     
-    public function verifyUrl() {
+    /**
+     * 返回事件对应的会员对象
+     *
+     * @return mixed
+     */
+    private function member() {
+        
+        $userid = $this->event->{'UserID'};
+        $token = Wechat::getAccessToken(
+            $this->corp->corpid,
+            $this->corp->contact_sync_secret,
+            true
+        );
+        if ($token['errcode']) {
+            return $token['errcode'];
+        }
+        $member = json_decode(Wechat::getUser($token['access_token'], $userid));
+        
+        return $member->{'errcode'} ? $member->{'errcode'} : $member;
+        
+    }
+    
+    /**
+     * 从事件中提取并返回会员数据
+     *
+     * @return array
+     */
+    private function memberData() {
+        
+        $data = [];
+        foreach (self::MEMBER_PROPERTIES as $property => $field) {
+            if (property_exists($this->event, $property)) {
+                $value = $this->event->{$property};
+                if ($property == 'Gender') {
+                    $value = $value == 1 ? 0 : 1;
+                }
+                if ($property == 'Status') {
+                    $value = $value == 1 ? 1 : 0;
+                }
+                $data[$field] = $value;
+            }
+        }
+        
+        return $data;
+        
+    }
+    
+    /**
+     * 返回会员角色
+     *
+     * @return string
+     */
+    private function role() {
+        
+        $department = new Department;
+        $departmentIds = $this->event->{'Department'};
+        $dIds = array_intersect($departmentIds, [1, 1175014494]);
+        if (!empty($dIds)) { return 'corp'; }
+        foreach ($this->schoolDepartmentIds as $schoolDepartmentId) {
+            $schoolDepartmentIds = array_merge(
+                $schoolDepartmentId,
+                $department->subDepartmentIds($schoolDepartmentId)
+            );
+            $diffs = array_diff($departmentIds, $schoolDepartmentIds);
+            if (empty($diffs)) {
+                return in_array($schoolDepartmentId, $departmentIds) ? 'school' : 'educator';
+            }
+            if (sizeof($diffs) == sizeof($departmentIds)) {
+                continue;
+            }
+            
+            return 'corp';
+        }
+        
+        return 'educator';
+        
+    }
+    
+    /**
+     * 返回会员所属的学校对象
+     *
+     * @return School|Builder|Model|null|object
+     */
+    private function school() {
+        
+        $departmentId = head((array)$this->event->{'Department'});
+        $schoolDepartmentId = (new Department)->departmentId($departmentId);
+        
+        return School::whereDepartmentId($schoolDepartmentId)->first();
+        
+    }
+    
+    /**
+     * 验证回调Url
+     */
+    protected function verifyUrl() {
         
         $paths = explode('/', Request::path());
         $corp = Corp::whereAcronym($paths[0])->first();

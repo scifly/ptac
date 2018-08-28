@@ -2,10 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Facades\Wechat;
-use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
-use App\Http\Requests\SchoolRequest;
-use App\Jobs\CreateSchool;
 use App\Jobs\SyncDepartment;
 use App\Jobs\SyncMember;
 use App\Models\Corp;
@@ -14,7 +11,6 @@ use App\Models\DepartmentType;
 use App\Models\DepartmentUser;
 use App\Models\Educator;
 use App\Models\Group;
-use App\Models\Menu;
 use App\Models\Mobile;
 use App\Models\School;
 use App\Models\User;
@@ -23,11 +19,9 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 use Pusher\Pusher;
 use ReflectionClass;
 use ReflectionMethod;
-use Validator;
 
 /**
  * Class TestController
@@ -64,6 +58,14 @@ class TestController extends Controller {
      */
     public function index() {
 
+        Mobile::create([
+            'id' => 55,
+            'mobile' => '13709308833',
+            'user_id' => 1,
+            'enabled' => 1,
+            'isdefault' => 1
+        ]);
+        exit;
         try {
             DB::transaction(function () {
                 $schoolDepartmentId = 33;

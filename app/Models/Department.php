@@ -896,4 +896,30 @@ class Department extends Model {
         
     }
     
+    /**
+     * 根据部门ID返回其父级部门中类型为$type的部门ID
+     *
+     * @param $id
+     * @param string $type
+     * @return int|mixed
+     */
+    function departmentId($id, $type = '学校') {
+        
+        $department = $this->find($id);
+        if (!$department) {
+            return null;
+        }
+        $departmentType = $department->departmentType->name;
+        while ($departmentType != $type) {
+            $department = $department->parent;
+            if (!$department) {
+                return null;
+            }
+            $departmentType = $department->menuType->name;
+        }
+        
+        return $department->id;
+        
+    }
+    
 }

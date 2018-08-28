@@ -308,14 +308,9 @@ class Educator extends Model {
                     }
                 }
                 # 创建部门用户绑定关系
-                $selectedDepartments = $request->input('selectedDepartments');
-                foreach ($selectedDepartments as $department) {
-                    DepartmentUser::create([
-                        'user_id'       => $u->id,
-                        'department_id' => $department,
-                        'enabled'       => $user['enabled'],
-                    ]);
-                }
+                (new DepartmentUser)->storeByUserId(
+                    $u->id, $request->input('selectedDepartments')
+                );
                 # 当选择了学校角色没有选择学校部门时
                 $schoolId = $this->schoolId();
                 $schoolDeptId = School::find($schoolId)->department_id;
