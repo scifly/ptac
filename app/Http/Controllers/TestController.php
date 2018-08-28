@@ -58,14 +58,6 @@ class TestController extends Controller {
      */
     public function index() {
 
-        Mobile::create([
-            'id' => 55,
-            'mobile' => '13709308833',
-            'user_id' => 1,
-            'enabled' => 1,
-            'isdefault' => 1
-        ]);
-        exit;
         try {
             DB::transaction(function () {
                 $schoolDepartmentId = 33;
