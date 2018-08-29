@@ -401,11 +401,13 @@ var page = {
                             title = $title.text(),
                             searchDisabled = $title.hasClass('searching_disabled');
 
-                        if ($this.attr('class') !== 'undefined' && !searchDisabled) {
-                            $this.find('input').addClass($this.attr('class'));
-                            $this.find('input').attr('title', '按"' + title + '"过滤');
-                        } else {
-                            $this.html(title);
+                        if ($this.attr('class') !== 'undefined') {
+                            if (searchDisabled) {
+                                $this.html(title);
+                            } else {
+                                $this.find('input').addClass($this.attr('class'));
+                                $this.find('input').attr('title', '按"' + title + '"过滤');
+                            }
                         }
                     });
                 }).on('error.dt', function (e, settings, techNote, message) {
