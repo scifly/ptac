@@ -62,7 +62,7 @@ class TestController extends Controller {
      */
     public function index() {
 
-        $this->{Inflector::camelize('create_user')};
+        $this->{Inflector::camelize('create_user')}();
         exit;
         
         set_time_limit(0);
