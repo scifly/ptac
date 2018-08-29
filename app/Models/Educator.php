@@ -203,6 +203,7 @@ class Educator extends Model {
                     return Snippet::gender($d);
                 }
             ],
+            ['db' => 'User.position', 'dt' => 4],
             ['db' => 'Educator.created_at', 'dt' => 4],
             ['db' => 'Educator.updated_at', 'dt' => 5],
             [
