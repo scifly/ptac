@@ -14,6 +14,7 @@ use App\Models\Group;
 use App\Models\Mobile;
 use App\Models\School;
 use App\Models\User;
+use Doctrine\Common\Inflector\Inflector;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -59,6 +60,7 @@ class TestController extends Controller {
      */
     public function index() {
 
+        dd(Inflector::camelize('create_user'));
         set_time_limit(0);
         if (Request::method() == 'POST') {
             try {
