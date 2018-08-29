@@ -397,11 +397,15 @@ var page = {
                     $('.overlay').hide();
                     $('.dataTables_scrollFoot').find('tfoot th').each(function () {
                         var $this = $(this),
-                            title = $datatable.find('thead th:nth(' + $this.index() + ')').text();
+                            $title = $datatable.find('thead th:nth(' + $this.index() + ')'),
+                            title = $title.text(),
+                            searchDisabled = $title.hasClass('searching_disabled');
 
-                        if ($this.attr('class') !== 'undefined') {
+                        if ($this.attr('class') !== 'undefined' && !searchDisabled) {
                             $this.find('input').addClass($this.attr('class'));
                             $this.find('input').attr('title', '按"' + title + '"过滤');
+                        } else {
+                            $this.html(title);
                         }
                     });
                 }).on('error.dt', function (e, settings, techNote, message) {
