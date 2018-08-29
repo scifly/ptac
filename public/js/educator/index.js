@@ -1,6 +1,7 @@
 //# sourceURL=index.js
 page.index('educators', [
     {className: 'text-center', targets: [1, 2, 3, 4, 5, 6]},
+    {className: 'not-searchable', targets: [2]},
     {searchable: false, targets: [2]},
     {orderable: false, targets: [2]}
 ]);
