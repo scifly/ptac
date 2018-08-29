@@ -53,14 +53,18 @@ class TestController extends Controller {
         );
         
     }
-    
+    private function createUser() {
+        echo 'create_user';
+    }
     /**
      * @throws \Exception
      * @throws \Throwable
      */
     public function index() {
 
-        dd(Inflector::camelize('create_user'));
+        $this->{Inflector::camelize('create_user')};
+        exit;
+        
         set_time_limit(0);
         if (Request::method() == 'POST') {
             try {

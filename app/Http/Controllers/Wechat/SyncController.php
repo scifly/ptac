@@ -13,6 +13,7 @@ use App\Models\Group;
 use App\Models\Mobile;
 use App\Models\School;
 use App\Models\User;
+use Doctrine\Common\Inflector\Inflector;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -79,6 +80,7 @@ class SyncController extends Controller {
                         break;
                     case 'change_contact':  # 通讯录变更
                         $changeType = $this->event->{'ChangeType'};
+                        $this->{Inflector::camelize($changeType)};
                         switch ($changeType) {
                             case 'create_user':     # 创建会员
                                 $this->createUser();
