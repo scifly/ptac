@@ -66,7 +66,7 @@ class TestController extends Controller {
         // dd($subs);
         $data = [
             "id" => 94,
-            "parent_id" => 10000,
+            "parentid" => 10000,
             "department_type_id" => 7,
             "name" => "IB部",
             "remark" => null,
