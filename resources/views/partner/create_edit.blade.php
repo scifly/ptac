@@ -59,6 +59,25 @@
                     </div>
                 </div>
             </div>
+            <!-- 接口类名 -->
+            <div class="form-group">
+                {!! Form::label('position', '接口类名', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        <div class="input-group-addon" style="width: 45px;">
+                            <strong>类</strong>
+                        </div>
+                        {!! Form::text('position', null, [
+                            'class' => 'form-control text-blue',
+                            'placeholder' => '(必填)',
+                            'required' => 'true',
+                            'data-parsley-length' => '[6, 255]'
+                        ]) !!}
+                    </div>
+                </div>
+            </div>
             <!-- 联系人 -->
             <div class="form-group">
                 {{ Form::label('telephone', '联系人', [

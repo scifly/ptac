@@ -82,8 +82,8 @@ class School extends Model {
     use ModelTrait;
     
     protected $fillable = [
-        'name', 'address', 'school_type_id', 'menu_id', 'signature',
-        'corp_id', 'department_id', 'enabled',
+        'name', 'address', 'school_type_id', 'menu_id', 'signature', 'corp_id',
+        'longitude', 'latitude', 'department_id', 'user_ids', 'enabled',
     ];
     
     /**

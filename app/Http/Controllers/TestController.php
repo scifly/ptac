@@ -53,9 +53,7 @@ class TestController extends Controller {
         );
         
     }
-    private function createUser() {
-        echo 'create_user';
-    }
+    
     /**
      * @throws \Exception
      * @throws \Throwable

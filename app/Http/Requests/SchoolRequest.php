@@ -42,6 +42,7 @@ class SchoolRequest extends FormRequest {
             'menu_id'        => 'required|integer',
             'school_type_id' => 'required|integer',
             'enabled'        => 'required|boolean',
+            'user_ids'       => 'nullable|array'
         ];
         $this->batchRules($rules);
         
@@ -71,6 +72,9 @@ class SchoolRequest extends FormRequest {
             }
             if (!isset($input['school_type_id'])) {
                 $input['school_type_id'] = School::find($this->schoolId())->school_type_id;
+            }
+            if (isset($input['user_ids'])) {
+                $input['user_ids'] = implode(',', $input['user_ids']);
             }
             if (!isset($input['corp_id'])) {
                 $user = Auth::user();

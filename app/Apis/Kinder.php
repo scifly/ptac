@@ -14,7 +14,8 @@ class Kinder {
     
     const APP_ID = '5100000025';
     const APP_SECRET = 'B4C6F3A34F5936CEBA92C008F12B0396';
-    const URL = 'http://eccard.eicp.net:8078/Dispatch.aspx';
+    // const URL = 'http://eccard.eicp.net:8078/Dispatch.aspx';
+    const URL = 'http://192.168.10.117:8084/Dispatch.aspx';
     const METHOD_CODE = [
         '10' => '新增部门',
         '11' => '编辑部门',
@@ -24,6 +25,10 @@ class Kinder {
         '15' => '删除人员',
         '16' => '充值',
     ];
+    
+    function sync() {
+    
+    }
     
     /**
      * 接口调用
@@ -80,8 +85,8 @@ class Kinder {
         
         $params = '';
         switch ($method) {
-            case '10':
-            case '11':
+            case '10':      # 新增部门
+            case '11':      # 编辑部门
                 $params = [
                     'dname'       => $data['name'],
                     'dfather'     => $data['parentid'],
@@ -93,11 +98,11 @@ class Kinder {
                     $params = array_merge($params, ['did' => $data['id'] + 10000]);
                 }
                 break;
-            case '12':
+            case '12':      # 删除部门
                 $params = ['did' => $data['id']];
                 break;
-            case '13':
-            case '14':
+            case '13':      # 新增人员
+            case '14':      # 编辑人员
                 $user = User::whereUserid($data['userid'])->first();
                 $params = [
                     'cnumber' => $data['userid'],
@@ -116,11 +121,11 @@ class Kinder {
                     $params = array_merge($params, ['cid' => $user->id + 10000]);
                 }
                 break;
-            case '15':
+            case '15':      # 删除人员
                 $user = User::whereUserid($data['userid'])->first();
                 $params = ['cid' => $user->id + 10000];
                 break;
-            case '16':
+            case '16':      # 充值
                 $params = [
                     'qcls'     => '',
                     'cid'      => '',

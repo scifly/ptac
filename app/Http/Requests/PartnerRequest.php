@@ -45,6 +45,7 @@ class PartnerRequest extends FormRequest {
             'gender'                => 'required|boolean',
             'realname'              => 'required|string',
             'userid'                => 'required|string',
+            'position'              => 'required|string',   # 接口类名
             'enabled'               => 'required|boolean',
             'synced'                => 'required|boolean',
             'subscribed'            => 'required|boolean',
@@ -60,6 +61,7 @@ class PartnerRequest extends FormRequest {
         if (!Request::has('ids')) {
             $input = $this->all();
             $input['group_id'] = Group::whereName('api')->first()->id;
+            # english_name - 接口密码明文
             $input['password'] = bcrypt($input['english_name']);
             $input['gender'] = 0;
             $input['userid'] = $input['username'] . uniqid();

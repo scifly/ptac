@@ -73,7 +73,15 @@
                     'items' => $corps,
                     'icon' => 'fa fa-weixin text-green'
                 ])
+                @include('partials.multiple_select', [
+                    'label' => '第三方同步接口',
+                    'id' => 'user_ids',
+                    'icon' => 'fa fa-link',
+                    'items' => $apis,
+                    'selectedItems' => $selectedApis ?? null,
+                ])
             @endif
+
             @include('partials.enabled', [
                 'id' => 'enabled',
                 'value' => $school['enabled'] ?? null

@@ -5,8 +5,10 @@ use App\Helpers\HttpStatusCode;
 use App\Jobs\SendMessageApi;
 use App\Models\Consumption;
 use App\Models\EducatorAttendance;
+use App\Models\Group;
 use App\Models\Message;
 use App\Models\StudentAttendance;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -48,22 +50,27 @@ class ApiController extends Controller {
      * @return JsonResponse
      */
     public function login() {
-        
-        if (Auth::id() || Auth::attempt([
-                'username' => request('username'),
-                'password' => request('password'),
-            ])) {
+    
+        $username = request('username');
+        $credential = [
+            'username' => $username,
+            'password' => request('password')
+        ];
+        $apiUser = User::where([
+            'username' => $username,
+            'group_id' => Group::whereName('api')->first()->id
+        ])->first();
+        if ($apiUser && (Auth::id() || Auth::attempt($credential))) {
             $user = Auth::user();
             $this->result['token'] = $user->createToken('ptac')->accessToken;
-            $statusCode = HttpStatusCode::OK;
         } else {
             $this->result['message'] = __('messages.forbidden');
-            $this->result['statusCode'] = $statusCode = HttpStatusCode::UNAUTHORIZED;
+            $this->result['statusCode'] = HttpStatusCode::UNAUTHORIZED;
         }
         
         return response()->json(
             $this->result,
-            $statusCode
+            $this->result['statusCode']
         );
         
     }
