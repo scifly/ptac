@@ -157,23 +157,22 @@ class Kinder {
             case '10':      # 新增部门
             case '11':      # 编辑部门
                 $params = [
+                    'did'         => $data['id'] + 10000,
                     'dname'       => $data['name'],
                     'dfather'     => $data['parentid'],
                     'dexpiration' => '2020-09-01 23:59:59',
                     'dnumber'     => Department::find($data['id'])->users->count(),
                     'dtel'        => 'n/a',
                 ];
-                if ($method == '11') {
-                    $params = array_merge($params, ['did' => $data['id'] + 10000]);
-                }
                 break;
             case '12':      # 删除部门
-                $params = ['did' => $data['id']];
+                $params = ['did' => $data['id'] + 10000];
                 break;
             case '13':      # 新增人员
             case '14':      # 编辑人员
                 $user = User::whereUserid($data['userid'])->first();
                 $params = [
+                    'cid'     => $user->id + 10000,
                     'cnumber' => $data['userid'],
                     'cname'   => $data['name'],
                     'did'     => head($user->departments->pluck('id')->toArray()),
@@ -186,9 +185,6 @@ class Kinder {
                     'remark'  => 'n/a',
                     'bank'    => 'n/a',
                 ];
-                if ($method == '14') {
-                    $params = array_merge($params, ['cid' => $user->id + 10000]);
-                }
                 break;
             case '15':      # 删除人员
                 $user = User::whereUserid($data['userid'])->first();
