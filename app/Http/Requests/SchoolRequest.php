@@ -42,7 +42,7 @@ class SchoolRequest extends FormRequest {
             'menu_id'        => 'required|integer',
             'school_type_id' => 'required|integer',
             'enabled'        => 'required|boolean',
-            'user_ids'       => 'nullable|array'
+            'user_ids'       => 'nullable|string'
         ];
         $this->batchRules($rules);
         
