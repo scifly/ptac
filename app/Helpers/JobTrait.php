@@ -193,7 +193,7 @@ trait JobTrait {
                         $departmentId ? '部门' : '人员',
                         $action, $data, $response
                     );
-                    $api->{'sync'};
+                    $api->{'sync'}();
                 }
             }
         }
