@@ -47,7 +47,8 @@ class SchoolComposer {
             'corps'       => $corps,
             'uris'        => $this->uris(),
             'disabled'    => null,   # disabled - 是否显示'返回列表'和'取消'按钮
-            'apis'        => $apis
+            'apis'        => $apis,
+            'selectedApis' => null
         ];
         if ($this->menu->menuId(session('menuId'))) {
             if (Request::route('id')) {
@@ -59,16 +60,16 @@ class SchoolComposer {
                     $school->school_type_id => $school->schoolType->name,
                 ];
                 $params['disabled'] = true;
-                $params['selectedApis'] = $school->user_ids
-                    ? User::whereIn('id', explode(',', $school->user_ids))->get()->pluck('realname', 'id')->toArray() : [];
             }
-        } else {
-            $menuId = $this->menu->menuId(
-                session('menuId'), '企业'
-            );
-            if ($menuId) {
-                $corp = Corp::whereMenuId($menuId)->first();
-                $params['corps'] = [$corp->id => $corp->name];
+        } elseif ($menuId = $this->menu->menuId(session('menuId'), '企业')) {
+            $corp = Corp::whereMenuId($menuId)->first();
+            $params['corps'] = [$corp->id => $corp->name];
+        }
+        if (Request::route('id')) {
+            $school = School::find(Request::route('id'));
+            if ($school->user_ids) {
+                $params['selectedApis'] = User::whereIn('id', explode(',', $school->user_ids))
+                    ->get()->pluck('realname', 'id')->toArray();
             }
         }
         $view->with($params);
