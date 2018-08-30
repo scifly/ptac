@@ -124,7 +124,7 @@ class Kinder {
             )
         );
         try {
-            $reponse = (new Client)->post(
+            $response = (new Client)->post(
                 self::URL, [
                     'form_params' => [
                         'appid'  => self::APP_ID,
@@ -136,7 +136,7 @@ class Kinder {
                 ]
             );
             
-            return $reponse->getBody()->getContents();
+            return $response->getBody()->getContents();
         } catch (Exception $e) {
             throw $e;
         }
