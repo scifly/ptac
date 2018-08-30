@@ -60,7 +60,7 @@ class TestController extends Controller {
      */
     public function index() {
 
-        dd(explode(',', null));
+        dd(sizeof(explode(',', null)));
         exit;
         
         set_time_limit(0);
