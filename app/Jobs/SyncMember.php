@@ -5,8 +5,6 @@ use App\Models\Corp;
 use App\Helpers\JobTrait;
 use App\Helpers\Constant;
 use App\Events\JobResponse;
-use App\Models\School;
-use App\Models\User;
 use Exception;
 use Illuminate\Bus\Queueable;
 use App\Helpers\HttpStatusCode;
@@ -58,19 +56,12 @@ class SyncMember implements ShouldQueue {
     
         # 同步至企业微信通讯录
         $this->sync();
-        # 同步至第三方合作伙伴通讯录
-        foreach ($this->schoolIds() as $schoolId) {
-            $userIds = School::find($schoolId)->user_ids;
-            if ($userIds) {
-                foreach (explode(',', $userIds) as $userId) {
-                    $className = 'App\\Apis\\' . ucfirst(User::find($userId)->position);
-                    $api = new $className(
-                        '人员', $this->action, $this->data, $this->response
-                    );
-                    $api->{'sync'};
-                }
-            }
-        }
+        # 同步至第三方合作伙伴通讯录(人员)
+        $this->apiSync(
+            $this->action,
+            $this->data,
+            $this->response
+        );
         
         return true;
         
@@ -113,39 +104,6 @@ class SyncMember implements ShouldQueue {
         if ($this->userId) {
             event(new JobResponse($this->response));
         }
-        
-    }
-    
-    /**
-     * 返回被同步用户所属的学校id列表
-     *
-     * @return array|null
-     */
-    private function schoolIds() {
-        
-        $user = User::whereUserid($this->data['userid'])->first();
-        $role = $user->group->name;
-        $schoolIds = null;
-        switch ($role) {
-            case '学生':
-                $schoolIds = [$user->student->squad->grade->school_id];
-                break;
-            case '学校':
-            case '教职员工':
-                $schoolIds = [$user->educator->school_id];
-                break;
-            case '监护人':
-                $schoolIds = [];
-                foreach ($user->custodian->students as $student) {
-                    $schoolIds[] = $student->squad->grade->school_id;
-                }
-                $schoolIds = array_unique($schoolIds);
-                break;
-            default:
-                break;
-        }
-        
-        return $schoolIds ?? [];
         
     }
     

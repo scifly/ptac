@@ -57,15 +57,22 @@ class SyncDepartment implements ShouldQueue {
      */
     public function handle() {
         
-        $this->syncWx();
-        $this->syncKd('部门', $this->response);
+        # 同步至企业微信通讯录
+        $this->sync();
+        # 同步至第三方合作伙伴通讯录(部门)
+        $this->apiSync(
+            $this->action,
+            $this->data,
+            $this->response,
+            $this->data['id']
+        );
         
         return true;
         
     }
     
     /** 同步企业微信部门 */
-    private function syncWx() {
+    private function sync() {
         
         $corp = Corp::find($this->data['corp_id']);
         $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);

@@ -128,7 +128,7 @@ class SendMessageApi implements ShouldQueue {
                     'read'            => 0,
                     'sent'            => $result,
                 ];
-                $this->sendMessage($message->create($data));
+                $this->send($message->create($data));
             });
         } catch (Exception $e) {
             throw $e;

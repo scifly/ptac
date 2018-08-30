@@ -1,11 +1,12 @@
 <?php
 namespace App\Helpers;
 
-use App\Apis\Kinder;
 use App\Events\JobResponse;
 use App\Models\Corp;
+use App\Models\Department;
 use App\Models\Message;
 use App\Models\MessageSendingLog;
+use App\Models\School;
 use App\Models\User;
 use App\Facades\Wechat;
 use Exception;
@@ -51,7 +52,7 @@ trait JobTrait {
      * @return bool
      * @throws Throwable
      */
-    function sendMessage(Message $message) {
+    function send(Message $message) {
     
         try {
             DB::transaction(function () use ($message) {
@@ -174,59 +175,28 @@ trait JobTrait {
     }
     
     /**
-     * 同步会员信息
+     * 同步至第三方合作伙伴通讯录
      *
-     * @param string $corpid
-     * @param string $secret
-     * @param mixed $data
-     * @param string $action
-     * @return bool|mixed
-     * @throws Exception
+     * @param $action
+     * @param $data
+     * @param $response
+     * @param null $departmentId - 同步部门
      */
-    private function operate($corpid, $secret, $data, $action) {
-        
-        $token = Wechat::getAccessToken($corpid, $secret, true);
-        if ($token['errcode']) { return $token; }
-        $accessToken = $token['access_token'];
-        if ($action != 'delete') { unset($data['corpIds']); }
-        $action .= 'User';
-        $result = json_decode(Wechat::$action($accessToken, $data));
-        # 企业微信通讯录不存在指定的会员，则创建该会员
-        if ($result->{'errcode'} == 60111 && $action == 'updateUser') {
-            $result = json_decode(Wechat::createUser($accessToken, $data));
-        }
-        if (!$result->{'errcode'} && $action != 'deleteUser') {
-            User::whereUserid($data['userid'])->first()->update(['synced' => 1]);
-            if ($action == 'updateUser') {
-                $member = json_decode(Wechat::getUser($accessToken, $data['userid']));
-                if (!$member->{'errcode'} && $member->{'status'} == 1) {
-                    User::whereUserid($data['userid'])->first()->update([
-                        'avatar_url' => $member->{'avatar'},
-                        'subscribed' => 1
-                    ]);
+    function apiSync($action, $data, $response, $departmentId = null) {
+    
+        foreach ($this->schoolIds($departmentId) as $schoolId) {
+            $userIds = School::find($schoolId)->user_ids;
+            if ($userIds) {
+                foreach (explode(',', $userIds) as $userId) {
+                    $className = 'App\\Apis\\' . ucfirst(User::find($userId)->position);
+                    $api = new $className(
+                        $departmentId ? '部门' : '人员',
+                        $action, $data, $response
+                    );
+                    $api->{'sync'};
                 }
             }
         }
-        $response = [
-            'errcode' => $result->{'errcode'},
-            'errmsg' => Constant::WXERR[$result->{'errcode'}]
-        ];
-        
-        return $response;
-        
-    }
-    
-    /**
-     * 返回指定用户对象所属的学校id
-     *
-     * @param User $user
-     * @return int
-     */
-    function school_id(User $user) {
-    
-        return $user->educator
-            ? $user->educator->school_id
-            : $user->student->squad->grade->school_id;
         
     }
     
@@ -237,13 +207,54 @@ trait JobTrait {
      * @return int|mixed
      */
     function mslId($recipients) {
-    
+        
         $msl = [
             'read_count'      => 0,
             'received_count'  => 0,
             'recipient_count' => $recipients,
         ];
         return MessageSendingLog::create($msl)->id;
+        
+    }
+    
+    /**
+     * 返回被同步用户所属的学校id列表
+     *
+     * @param null $departmntId
+     * @return array|null
+     */
+    private function schoolIds($departmntId = null) {
+    
+        $schoolIds = null;
+        if ($departmntId) {
+            return [
+                School::whereDepartmentId(
+                    (new Department)->departmentId($departmntId)
+                )
+            ];
+        }
+        $user = User::whereUserid($this->data['userid'])->first();
+        $role = $user->group->name;
+        switch ($role) {
+            case '学生':
+                $schoolIds = [$user->student->squad->grade->school_id];
+                break;
+            case '学校':
+            case '教职员工':
+                $schoolIds = [$user->educator->school_id];
+                break;
+            case '监护人':
+                $schoolIds = [];
+                foreach ($user->custodian->students as $student) {
+                    $schoolIds[] = $student->squad->grade->school_id;
+                }
+                $schoolIds = array_unique($schoolIds);
+                break;
+            default:
+                break;
+        }
+        
+        return $schoolIds ?? [];
         
     }
     
@@ -296,6 +307,49 @@ trait JobTrait {
             }
             event(new JobResponse($response));
         }
+        
+    }
+    
+    /**
+     * 同步会员信息
+     *
+     * @param string $corpid
+     * @param string $secret
+     * @param mixed $data
+     * @param string $action
+     * @return bool|mixed
+     * @throws Exception
+     */
+    private function operate($corpid, $secret, $data, $action) {
+        
+        $token = Wechat::getAccessToken($corpid, $secret, true);
+        if ($token['errcode']) { return $token; }
+        $accessToken = $token['access_token'];
+        if ($action != 'delete') { unset($data['corpIds']); }
+        $action .= 'User';
+        $result = json_decode(Wechat::$action($accessToken, $data));
+        # 企业微信通讯录不存在指定的会员，则创建该会员
+        if ($result->{'errcode'} == 60111 && $action == 'updateUser') {
+            $result = json_decode(Wechat::createUser($accessToken, $data));
+        }
+        if (!$result->{'errcode'} && $action != 'deleteUser') {
+            User::whereUserid($data['userid'])->first()->update(['synced' => 1]);
+            if ($action == 'updateUser') {
+                $member = json_decode(Wechat::getUser($accessToken, $data['userid']));
+                if (!$member->{'errcode'} && $member->{'status'} == 1) {
+                    User::whereUserid($data['userid'])->first()->update([
+                        'avatar_url' => $member->{'avatar'},
+                        'subscribed' => 1
+                    ]);
+                }
+            }
+        }
+        $response = [
+            'errcode' => $result->{'errcode'},
+            'errmsg' => Constant::WXERR[$result->{'errcode'}]
+        ];
+        
+        return $response;
         
     }
     

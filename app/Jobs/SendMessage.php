@@ -2,7 +2,6 @@
 namespace App\Jobs;
 
 use App\Helpers\JobTrait;
-use App\Helpers\ModelTrait;
 use App\Models\Message;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -44,7 +43,7 @@ class SendMessage implements ShouldQueue {
         
         try {
             DB::transaction(function () {
-                $this->sendMessage($this->message);
+                $this->send($this->message);
             });
         } catch (Exception $e) {
             throw $e;

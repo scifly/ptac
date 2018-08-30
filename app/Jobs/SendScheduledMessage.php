@@ -46,7 +46,7 @@ class SendScheduledMessage implements ShouldQueue {
                 foreach ($events as $event) {
                     $message = Message::whereEventId($event->id)->first();
                     if (!$message) { continue; }
-                    $sent = $this->sendMessage($message);
+                    $sent = $this->send($message);
                     if ($sent) { $event->update(['enabled' => 0]); }
                 }
             });
