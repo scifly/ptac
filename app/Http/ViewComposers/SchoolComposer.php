@@ -60,7 +60,7 @@ class SchoolComposer {
                 ];
                 $params['disabled'] = true;
                 $params['selectedApis'] = $school->user_ids
-                    ? User::whereIn('id', explode(',', $school->user_ids))->pluck('realname', 'id')->toArray() : [];
+                    ? User::whereIn('id', explode(',', $school->user_ids))->get()->pluck('realname', 'id')->toArray() : [];
             }
         } else {
             $menuId = $this->menu->menuId(
