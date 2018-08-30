@@ -230,7 +230,7 @@ trait JobTrait {
             return [
                 School::whereDepartmentId(
                     (new Department)->departmentId($departmntId)
-                )
+                )->first()->id
             ];
         }
         $user = User::whereUserid($this->data['userid'])->first();
