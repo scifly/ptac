@@ -61,9 +61,9 @@ class TestController extends Controller {
      */
     public function index() {
 
-        $department = new Department;
-        $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();
-        dd($subs);
+        // $department = new Department;
+        // $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();
+        // dd($subs);
         $data = [
             "id" => 94,
             "parent_id" => 10000,
