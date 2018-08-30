@@ -30,6 +30,7 @@ use Throwable;
  * @property string $name 学校名称
  * @property string $signature 签名
  * @property string $address 学校地址
+ * @property string $user_ids 第三方接口对应的用户id列表
  * @property float|null $longitude 学校所处经度
  * @property float|null $latitude 学校所处纬度
  * @property int $corp_id 学校所属企业ID

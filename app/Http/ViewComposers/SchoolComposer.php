@@ -3,9 +3,11 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use App\Models\Corp;
+use App\Models\Group;
 use App\Models\Menu;
 use App\Models\School;
 use App\Models\SchoolType;
+use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
@@ -36,11 +38,16 @@ class SchoolComposer {
         
         $corps = Corp::whereEnabled(1)->pluck('name', 'id');
         $schoolTypes = SchoolType::whereEnabled(1)->pluck('name', 'id');
+        $apis = User::where([
+            'group_id' => Group::whereName('api')->first()->id,
+            'enabled' => 1
+        ])->pluck('realname', 'id')->toArray();
         $params = [
             'schoolTypes' => $schoolTypes,
             'corps'       => $corps,
             'uris'        => $this->uris(),
-            'disabled'    => null   # diaabled - 是否显示'返回列表'和'取消'按钮
+            'disabled'    => null,   # disabled - 是否显示'返回列表'和'取消'按钮
+            'apis'        => $apis
         ];
         if ($this->menu->menuId(session('menuId'))) {
             if (Request::route('id')) {
@@ -52,6 +59,8 @@ class SchoolComposer {
                     $school->school_type_id => $school->schoolType->name,
                 ];
                 $params['disabled'] = true;
+                $params['selectedApis'] = $school->user_ids
+                    ? explode(',', $school->user_ids) : [];
             }
         } else {
             $menuId = $this->menu->menuId(
