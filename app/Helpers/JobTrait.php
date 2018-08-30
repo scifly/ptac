@@ -184,7 +184,7 @@ trait JobTrait {
      */
     function apiSync($action, $data, $response, $departmentId = null) {
     
-        foreach ($this->schoolIds($departmentId) as $schoolId) {
+        foreach ($this->school_ids($departmentId) as $schoolId) {
             $userIds = School::find($schoolId)->user_ids;
             if ($userIds) {
                 foreach (explode(',', $userIds) as $userId) {
@@ -223,7 +223,7 @@ trait JobTrait {
      * @param null $departmntId
      * @return array|null
      */
-    private function schoolIds($departmntId = null) {
+    private function school_ids($departmntId = null) {
     
         $schoolIds = null;
         if ($departmntId) {
