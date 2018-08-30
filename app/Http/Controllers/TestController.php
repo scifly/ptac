@@ -76,7 +76,7 @@ class TestController extends Controller {
             "enabled" => 1,
             "synced" => 1,
         ];
-        $response = [];
+        $response = ['userId' => null];
         $kd = new Kinder('部门', 'create', $data, $response);
         if (Request::method() == 'POST') {
             dd($kd->sync());
