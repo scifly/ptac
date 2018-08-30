@@ -1,6 +1,8 @@
 <?php
 namespace App\Apis;
 
+use App\Events\JobResponse;
+use App\Helpers\HttpStatusCode;
 use App\Models\Department;
 use App\Models\User;
 use Exception;
@@ -26,8 +28,73 @@ class Kinder {
         '16' => '充值',
     ];
     
+    protected $type, $action, $data, $response;
+    
+    /**
+     * Kinder constructor.
+     *
+     * @param $type
+     * @param $action
+     * @param $data
+     * @param $response
+     */
+    function __construct($type, $action, $data, $response) {
+    
+        $this->type = $type;
+        $this->action = $action;
+        $this->data = $data;
+        $this->response = $response;
+        
+    }
+    
+    /**
+     * 同步通讯录
+     *
+     * @throws Exception
+     */
     function sync() {
     
+        $name = '';
+        switch ($this->action) {
+            case 'create':
+                $name = '新增';
+                break;
+            case 'update':
+                $name = '编辑';
+                break;
+            case 'delete':
+                $name = '删除';
+                break;
+            default:
+                break;
+        }
+        $this->response['title'] = $name . '卡德' . $this->type;
+        $this->response['message'] = __('messages.synced') . '卡德';
+        $hasError = false;
+        $result = json_decode(
+            $this->call($name . $this->type, $this->data), true
+        );
+        if (!$result) {
+            $hasError = true;
+        } else {
+            if (isset($result['code'])) {
+                if ($result['code']) {
+                    $hasError = true;
+                }
+            } else {
+                if ($result['result']) {
+                    $hasError = true;
+                }
+            }
+        }
+        if ($hasError) {
+            $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+            $this->response['message'] = '同步失败';
+        }
+        if ($this->response['userId']) {
+            event(new JobResponse($this->response));
+        }
+        
     }
     
     /**

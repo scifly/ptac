@@ -45,59 +45,6 @@ trait JobTrait {
     }
     
     /**
-     * 同步卡德部门/人员
-     *
-     * @param string $type
-     * @param array $response
-     * @throws Exception
-     */
-    function syncKd($type, array $response) {
-    
-        $api = new Kinder();
-        $name = '';
-        switch ($this->action) {
-            case 'create':
-                $name = '新增';
-                break;
-            case 'update':
-                $name = '编辑';
-                break;
-            case 'delete':
-                $name = '删除';
-                break;
-            default:
-                break;
-        }
-        $response['title'] = $name . '卡德' . $type;
-        $response['message'] = __('messages.synced') . '卡德';
-        $hasError = false;
-        $result = json_decode(
-            $api->call($name . $type, $this->data), true
-        );
-        if (!$result) {
-            $hasError = true;
-        } else {
-            if (isset($result['code'])) {
-                if ($result['code']) {
-                    $hasError = true;
-                }
-            } else {
-                if ($result['result']) {
-                    $hasError = true;
-                }
-            }
-        }
-        if ($hasError) {
-            $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-            $response['message'] = '同步失败';
-        }
-        if ($response['userId']) {
-            event(new JobResponse($response));
-        }
-        
-    }
-    
-    /**
      * 发送消息（微信、短信）
      *
      * @param Message $message
