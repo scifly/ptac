@@ -94,6 +94,8 @@ class Kinder {
         if ($this->response['userId']) {
             event(new JobResponse($this->response));
         }
+
+        return $this->response;
         
     }
     

@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Apis\Kinder;
 use App\Facades\Wechat;
 use App\Helpers\ModelTrait;
 use App\Jobs\SyncDepartment;
@@ -63,9 +64,22 @@ class TestController extends Controller {
         $department = new Department;
         $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();
         dd($subs);
-        
+        $data = [
+            "id" => 94,
+            "parent_id" => 10000,
+            "department_type_id" => 7,
+            "name" => "IB部",
+            "remark" => null,
+            "order" => 99999500,
+            "created_at" => "2018-08-28 17:48:33",
+            "updated_at" => "2018-08-29 08:17:46",
+            "enabled" => 1,
+            "synced" => 1,
+        ];
+        $response = [];
+        $kd = new Kinder('部门', 'create', $data, $response);
         if (Request::method() == 'POST') {
-            
+            dd($kd->sync());
             return true;
         }
         
