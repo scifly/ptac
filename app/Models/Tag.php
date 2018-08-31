@@ -34,7 +34,7 @@ use Throwable;
  * @method static Builder|Tag whereSchoolId($value)
  * @method static Builder|Tag whereUpdatedAt($value)
  * @mixin Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $users
+ * @property-read Collection|\App\Models\User[] $users
  */
 class Tag extends Model {
     

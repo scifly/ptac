@@ -15,7 +15,7 @@ use Throwable;
  */
 class TagController extends Controller {
     
-    protected $team;
+    protected $tag;
     
     /**
      * TagController constructor.
@@ -24,7 +24,7 @@ class TagController extends Controller {
     public function __construct(Tag $tag) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->team = $tag;
+        $this->tag = $tag;
         $this->approve($tag);
         
     }
@@ -39,7 +39,7 @@ class TagController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->team->index()
+                $this->tag->index()
             );
         }
         
@@ -68,7 +68,7 @@ class TagController extends Controller {
     public function store(TagRequest $request) {
         
         return $this->result(
-            $this->team->store(
+            $this->tag->store(
                 $request->all()
             )
         );
@@ -100,7 +100,7 @@ class TagController extends Controller {
     public function update(TagRequest $request, $id) {
         
         return $this->result(
-            $this->team->modify(
+            $this->tag->modify(
                 $request->all(), $id
             )
         );
@@ -117,7 +117,7 @@ class TagController extends Controller {
     public function destroy($id) {
         
         return $this->result(
-            $this->team->remove($id)
+            $this->tag->remove($id)
         );
         
     }
