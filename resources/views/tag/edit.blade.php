@@ -1,4 +1,4 @@
-{!! Form::model($team, [
+{!! Form::model($tag, [
     'method' => 'put',
     'id' => 'formTag',
     'data-parsley-validate' => 'true'
