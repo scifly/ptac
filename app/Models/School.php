@@ -58,7 +58,7 @@ use Throwable;
  * @property-read SchoolType $schoolType
  * @property-read Collection|Semester[] $semesters
  * @property-read Collection|Subject[] $subjects
- * @property-read Collection|Team[] $teams
+ * @property-read Collection|Tag[] $tags
  * @property-read WapSite $wapSite
  * @property-read Collection|WapSiteModule[] $wapSiteModules
  * @method static Builder|School whereAddress($value)
@@ -77,6 +77,7 @@ use Throwable;
  * @method static Builder|School whereSmsUsed($value)
  * @method static Builder|School whereUpdatedAt($value)
  * @mixin Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\School whereUserIds($value)
  */
 class School extends Model {
     
@@ -169,7 +170,7 @@ class School extends Model {
      *
      * @return HasMany
      */
-    function teams() { return $this->hasMany('App\Models\Team'); }
+    function tags() { return $this->hasMany('App\Models\Tag'); }
     
     /**
      * 获取指定学校所有的年级对象
@@ -429,7 +430,7 @@ class School extends Model {
                     'ExamType', 'EducatorAttendanceSetting', 'Grade',
                     'Group', 'Major', 'PollQuestionnaire',
                     'Procedure', 'Semester', 'Subject',
-                    'Team', 'WapSite', 'Educator',
+                    'Tag', 'WapSite', 'Educator',
                 ];
                 $keys = array_fill(0, sizeof($classes), 'school_id');
                 $values = array_fill(0, sizeof($classes), $id);

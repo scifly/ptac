@@ -1,1 +1,0 @@
-page.create('formTeam', 'teams');

@@ -1,7 +1,7 @@
 {!! Form::model($team, [
     'method' => 'put',
-    'id' => 'formTeam',
+    'id' => 'formTag',
     'data-parsley-validate' => 'true'
 ]) !!}
-@include('team.create_edit')
+@include('tag.create_edit')
 {!! Form::close() !!}

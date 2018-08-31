@@ -111,7 +111,7 @@ $factory->define(App\Models\ProcedureType::class, function (Faker\Generator $fak
 
 });
 
-$factory->define(App\Models\Team::class, function (Faker\Generator $faker) {
+$factory->define(App\Models\Tag::class, function (Faker\Generator $faker) {
 
     return [
         'name' => $faker->name,

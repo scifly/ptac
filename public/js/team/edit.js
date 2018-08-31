@@ -1,1 +1,0 @@
-page.edit('formTeam', 'teams');

@@ -5,10 +5,10 @@ use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Class TeamRequest
+ * Class TagRequest
  * @package App\Http\Requests
  */
-class TeamRequest extends FormRequest {
+class TagRequest extends FormRequest {
     
     use ModelTrait;
     
@@ -34,7 +34,7 @@ class TeamRequest extends FormRequest {
                     $query->where('school_id', $this->input('school_id'));
                 })
             ],*/
-            'name'      => 'required|string|between:2,255|unique:teams,name,' .
+            'name'      => 'required|string|between:2,255|unique:tags,name,' .
                 $this->input('id') . ',id,' .
                 'school_id,' . $this->input('school_id'),
             'school_id' => 'required|integer',

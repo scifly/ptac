@@ -1,36 +1,36 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Http\Requests\TeamRequest;
-use App\Models\Team;
+use App\Http\Requests\TagRequest;
+use App\Models\Tag;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
- * 教职员工组
+ * 标签管理
  *
- * Class TeamController
+ * Class TagController
  * @package App\Http\Controllers
  */
-class TeamController extends Controller {
+class TagController extends Controller {
     
     protected $team;
     
     /**
-     * TeamController constructor.
-     * @param Team $team
+     * TagController constructor.
+     * @param Tag $tag
      */
-    public function __construct(Team $team) {
+    public function __construct(Tag $tag) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->team = $team;
-        $this->approve($team);
+        $this->team = $tag;
+        $this->approve($tag);
         
     }
     
     /**
-     * 教职员工组列表
+     * 标签列表
      *
      * @return bool|JsonResponse
      * @throws Throwable
@@ -48,7 +48,7 @@ class TeamController extends Controller {
     }
     
     /**
-     * 创建教职员工组
+     * 创建标签
      *
      * @return bool|JsonResponse
      * @throws Throwable
@@ -60,12 +60,12 @@ class TeamController extends Controller {
     }
     
     /**
-     * 保存教职员工组
+     * 保存标签
      *
-     * @param TeamRequest $request
+     * @param TagRequest $request
      * @return JsonResponse
      */
-    public function store(TeamRequest $request) {
+    public function store(TagRequest $request) {
         
         return $this->result(
             $this->team->store(
@@ -76,7 +76,7 @@ class TeamController extends Controller {
     }
     
     /**
-     * 编辑教职员工组
+     * 编辑标签
      *
      * @param $id
      * @return bool|JsonResponse
@@ -85,19 +85,19 @@ class TeamController extends Controller {
     public function edit($id) {
         
         return $this->output([
-            'team' => Team::find($id),
+            'tag' => Tag::find($id),
         ]);
         
     }
     
     /**
-     * 更新教职员工组
+     * 更新标签
      *
-     * @param TeamRequest $request
+     * @param TagRequest $request
      * @param $id
      * @return JsonResponse
      */
-    public function update(TeamRequest $request, $id) {
+    public function update(TagRequest $request, $id) {
         
         return $this->result(
             $this->team->modify(
@@ -108,7 +108,7 @@ class TeamController extends Controller {
     }
     
     /**
-     * 删除教职员工组
+     * 删除标签
      *
      * @param $id
      * @return JsonResponse

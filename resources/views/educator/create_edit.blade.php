@@ -172,10 +172,10 @@
             </div>
             <!-- 所属教职员工组 -->
             @include('partials.multiple_select', [
-               'label' => '所属组',
-               'id' => 'educator[team_id]',
-               'items' => $teams,
-               'selectedItems' => $selectedTeams ?? []
+               'label' => '标签',
+               'id' => 'educator[tag_ids]',
+               'items' => $tags,
+               'selectedItems' => $selectdTags ?? []
             ])
             <!-- 状态 -->
             @include('partials.enabled', [

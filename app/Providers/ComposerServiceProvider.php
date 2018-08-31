@@ -252,9 +252,9 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('tab.index', $ns . 'TabIndexComposer');
         View::composer('tab.create_edit', $ns . 'TabComposer');
     
-        # 教职员工组 - Team
-        View::composer('team.index', $ns . 'TeamIndexComposer');
-        View::composer('team.create_edit', $ns . 'TeamComposer');
+        # 标签 - Tag
+        View::composer('tag.index', $ns . 'TagIndexComposer');
+        View::composer('tag.create_edit', $ns . 'TagComposer');
     
         # 用户中心 - User
         View::composer('user.edit', $ns . 'UserEditComposer');

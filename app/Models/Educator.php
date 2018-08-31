@@ -38,7 +38,7 @@ use Throwable;
  * @property int $enabled
  * @property-read Collection|Squad[] $classes
  * @property-read School $school
- * @property-read Collection|Team[] $teams
+ * @property-read Collection|Tag[] $tags
  * @property-read User $user
  * @method static Builder|Educator whereCreatedAt($value)
  * @method static Builder|Educator whereEnabled($value)
@@ -105,20 +105,6 @@ class Educator extends Model {
             'App\Models\EducatorClass',
             'educator_id',
             'id'
-        );
-        
-    }
-    
-    /**
-     * 获取指定教职员工所属的所有教职员工组对象
-     *
-     * @return BelongsToMany
-     */
-    function teams() {
-        
-        return $this->belongsToMany(
-            'App\Models\Team',
-            'educators_teams'
         );
         
     }
@@ -244,7 +230,7 @@ class Educator extends Model {
      * @param EducatorRequest|CustodianRequest $request
      * @return bool|mixed
      * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     function store(EducatorRequest $request) {
         
@@ -298,11 +284,11 @@ class Educator extends Model {
                             }
                         }
                     }
-                    if (isset($educatorInputData['team_id'])) {
-                        foreach ($educatorInputData['team_id'] as $key => $row) {
-                            EducatorTeam::create([
-                                'educator_id' => $educator->id,
-                                'team_id'     => $row,
+                    if (isset($educatorInputData['tag_ids'])) {
+                        foreach ($educatorInputData['tag_ids'] as $tagId) {
+                            TagUser::create([
+                                'user_id' => $u->id,
+                                'tag_id'     => $tagId,
                                 'enabled'     => $user['enabled'],
                             ]);
                         }
@@ -404,12 +390,12 @@ class Educator extends Model {
                     'sms_quote' => 0,
                     'enabled'   => $user['enabled'],
                 ]);
-                if (isset($educator['team_id'])) {
-                    EducatorTeam::whereEducatorId($request->input('id'))->delete();
-                    foreach ($educator['team_id'] as $key => $row) {
-                        EducatorTeam::create([
-                            'educator_id' => $request->input('id'),
-                            'team_id'     => $row,
+                if (isset($educator['tag_ids'])) {
+                    TagUser::whereUserId($request->input('user_id'))->delete();
+                    foreach ($educator['tag_ids'] as $tagId) {
+                        TagUser::create([
+                            'user_id' => $request->input('user_id'),
+                            'tag_id'     => $tagId,
                             'enabled'     => $user['enabled'],
                         ]);
                     }
@@ -527,7 +513,7 @@ class Educator extends Model {
                 (new EducatorAppeal)->removeEducator($id);
                 EducatorAttendance::whereEducatorId($id)->delete();
                 EducatorClass::whereEducatorId($id)->delete();
-                EducatorTeam::whereEducatorId($id)->delete();
+                TagUser::whereUserId($educator->user_id)->delete();
                 Event::whereEducatorId($id)->delete();
                 (new Grade)->removeEducator($id);
                 (new Squad)->removeEducator($id);

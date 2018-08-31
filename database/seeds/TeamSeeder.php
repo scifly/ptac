@@ -11,7 +11,7 @@ class TeamSeeder extends Seeder {
      */
     public function run() {
 
-        factory(App\Models\Team::class, 15)->create()->each(function ($team) {
+        factory(App\Models\Tag::class, 15)->create()->each(function ($team) {
             $team->save();
         });
 

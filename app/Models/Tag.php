@@ -15,10 +15,10 @@ use Illuminate\Support\Facades\DB;
 use Throwable;
 
 /**
- * App\Models\Team 教职员工组
+ * App\Models\Tag 标签
  *
  * @property int $id
- * @property string $name 教职员工组名称
+ * @property string $name 标签名称
  * @property int $school_id 所属学校ID
  * @property string|null $remark 备注
  * @property Carbon|null $created_at
@@ -26,16 +26,17 @@ use Throwable;
  * @property int $enabled
  * @property-read Collection|Educator[] $educators
  * @property-read School $school
- * @method static Builder|Team whereCreatedAt($value)
- * @method static Builder|Team whereEnabled($value)
- * @method static Builder|Team whereId($value)
- * @method static Builder|Team whereName($value)
- * @method static Builder|Team whereRemark($value)
- * @method static Builder|Team whereSchoolId($value)
- * @method static Builder|Team whereUpdatedAt($value)
+ * @method static Builder|Tag whereCreatedAt($value)
+ * @method static Builder|Tag whereEnabled($value)
+ * @method static Builder|Tag whereId($value)
+ * @method static Builder|Tag whereName($value)
+ * @method static Builder|Tag whereRemark($value)
+ * @method static Builder|Tag whereSchoolId($value)
+ * @method static Builder|Tag whereUpdatedAt($value)
  * @mixin Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\User[] $users
  */
-class Team extends Model {
+class Tag extends Model {
     
     use ModelTrait;
     
@@ -53,47 +54,29 @@ class Team extends Model {
      *
      * @return BelongsToMany
      */
-    function educators() { return $this->belongsToMany('App\Models\Educator', 'educators_teams'); }
+    function users() { return $this->belongsToMany('App\Models\User', 'tags_users'); }
     
     /**
-     * 获取教职员工组列表
-     *
-     * @param array $teamIds
-     * @return array
-     */
-    function teams(array $teamIds) {
-        
-        $teams = [];
-        foreach ($teamIds as $id) {
-            $team = self::find($id);
-            $teams[$team->id] = $team['name'];
-        }
-        
-        return $teams;
-        
-    }
-    
-    /**
-     * 教职员工组列表
+     * 标签列表
      *
      * @return array
      */
     function index() {
         
         $columns = [
-            ['db' => 'Team.id', 'dt' => 0],
-            ['db' => 'Team.name', 'dt' => 1],
-            ['db' => 'Team.remark', 'dt' => 2],
-            ['db' => 'Team.created_at', 'dt' => 3],
-            ['db' => 'Team.updated_at', 'dt' => 4],
+            ['db' => 'Tag.id', 'dt' => 0],
+            ['db' => 'Tag.name', 'dt' => 1],
+            ['db' => 'Tag.remark', 'dt' => 2],
+            ['db' => 'Tag.created_at', 'dt' => 3],
+            ['db' => 'Tag.updated_at', 'dt' => 4],
             [
-                'db'        => 'Team.enabled', 'dt' => 5,
+                'db'        => 'Tag.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
             ],
         ];
-        $condition = 'Team.school_id = ' . $this->schoolId();
+        $condition = 'Tag.school_id = ' . $this->schoolId();
         
         return Datatable::simple(
             $this->getModel(), $columns, null, $condition
@@ -102,7 +85,7 @@ class Team extends Model {
     }
     
     /**
-     * 保存教职员工组
+     * 保存标签
      *
      * @param array $data
      * @return bool
@@ -114,7 +97,7 @@ class Team extends Model {
     }
     
     /**
-     * 更新教职员工组
+     * 更新标签
      *
      * @param array $data
      * @param $id
@@ -127,7 +110,7 @@ class Team extends Model {
     }
     
     /**
-     * 删除教职员工组
+     * 删除标签
      *
      * @param $id
      * @return bool|null
@@ -140,7 +123,7 @@ class Team extends Model {
     }
     
     /**
-     * 删除指定教职员工组的所有数据
+     * 删除指定标签的所有数据
      *
      * @param $id
      * @return bool
@@ -150,7 +133,7 @@ class Team extends Model {
         
         try {
             DB::transaction(function () use ($id) {
-                EducatorTeam::whereTeamId($id)->delete();
+                TagUser::whereTagId($id)->delete();
                 $this->find($id)->delete();
             });
         } catch (Exception $e) {

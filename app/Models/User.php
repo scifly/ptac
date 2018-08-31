@@ -95,6 +95,7 @@ use Throwable;
  * @property-read Collection|Event[] $events
  * @property-read Collection|PollQuestionnaireAnswer[] $pqAnswers
  * @property-read Collection|PollQuestionnaireParticipant[] $pqParticipants
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
  */
 class User extends Authenticatable {
     
@@ -174,6 +175,13 @@ class User extends Authenticatable {
         return $this->belongsToMany('App\Models\Department', 'departments_users');
         
     }
+    
+    /**
+     * 获取指定用户所属的所有标签对象
+     *
+     * @return BelongsToMany
+     */
+    function tags() { return $this->belongsToMany('App\Models\Tag', 'tags_users'); }
     
     /**
      * 获取指定用户创建的所有日历对象

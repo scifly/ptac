@@ -55,7 +55,7 @@ use Throwable;
  * @property-read Collection|Department[] $departments
  * @property-read Collection|Grade[] $grades
  * @property-read Collection|School[] $schools
- * @property-read Collection|Team[] $teams
+ * @property-read Collection|Tag[] $tags
  * @property-read Department $department
  * @property-read Menu $menu
  * @property string|null $access_token 通讯录同步应用access_token
@@ -124,9 +124,9 @@ class Corp extends Model {
      *
      * @return HasManyThrough
      */
-    function teams() {
+    function tags() {
         
-        return $this->hasManyThrough('App\Models\Team', 'App\Models\School');
+        return $this->hasManyThrough('App\Models\Tag', 'App\Models\School');
         
     }
     

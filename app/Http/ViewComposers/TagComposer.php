@@ -4,19 +4,15 @@ namespace App\Http\ViewComposers;
 use Illuminate\Contracts\View\View;
 
 /**
- * Class TeamIndexComposer
+ * Class TagComposer
  * @package App\Http\ViewComposers
  */
-class TeamIndexComposer {
+class TagComposer {
     
     /**
      * @param View $view
      */
     public function compose(View $view) {
-        
-        $view->with([
-            'titles' => ['#', '名称', '备注', '创建于', '更新于', '状态 . 操作'],
-        ]);
         
     }
     

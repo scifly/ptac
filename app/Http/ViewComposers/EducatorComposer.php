@@ -9,7 +9,7 @@ use App\Models\Educator;
 use App\Models\Group;
 use App\Models\Squad;
 use App\Models\Subject;
-use App\Models\Team;
+use App\Models\Tag;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
@@ -58,7 +58,7 @@ class EducatorComposer {
                 $subjectList[$subject->id] = $subject->name;
             }
         }
-        $teams = Team::whereSchoolId($schoolId)
+        $tags = Tag::whereSchoolId($schoolId)
             ->where('enabled', 1)->pluck('name', 'id')
             ->toArray();
         $groups = Group::whereSchoolId($schoolId)
@@ -66,18 +66,12 @@ class EducatorComposer {
             ->pluck('name', 'id')->toArray();
         $subjectList[0] = '(请选择)';
         ksort($subjectList);
-        $mobiles = $selectedTeams = $selectedDepartmentIds = $selectedDepartments = [];
+        $mobiles = $selectedTags = $selectedDepartmentIds = $selectedDepartments = [];
         if (Request::route('id')) {
-            $selectedTeams = [];
             $educator = Educator::find(Request::route('id'));
             $mobiles = $educator->user->mobiles;
-            foreach ($educator->teams as $v) {
-                $selectedTeams[$v->id] = $v->name;
-            }
-            $selectedDepartmentIds = [];
-            foreach ($educator->user->departments as $department) {
-                $selectedDepartmentIds[] = $department->id;
-            }
+            $selectedTags = $educator->user->tags->pluck('name', 'id')->toArray();
+            $selectedDepartmentIds = $educator->user->departments->pluck('id')->toArray();
             $selectedDepartments = $this->selectedNodes($selectedDepartmentIds);
         }
         $view->with([
@@ -85,8 +79,8 @@ class EducatorComposer {
             'subjects'              => $subjectList,
             'groups'                => $groups,
             'mobiles'               => $mobiles,
-            'teams'                 => $teams,
-            'selectedTeams'         => $selectedTeams,
+            'tags'                  => $tags,
+            'selectedTags'          => $selectedTags,
             'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
             'selectedDepartments'   => $selectedDepartments,
         ]);
