@@ -4,18 +4,8 @@ namespace App\Http\Controllers;
 use App\Apis\Kinder;
 use App\Facades\Wechat;
 use App\Helpers\ModelTrait;
-use App\Jobs\SyncDepartment;
-use App\Jobs\SyncMember;
 use App\Models\Corp;
 use App\Models\Department;
-use App\Models\DepartmentType;
-use App\Models\DepartmentUser;
-use App\Models\Educator;
-use App\Models\Group;
-use App\Models\Mobile;
-use App\Models\School;
-use App\Models\User;
-use Doctrine\Common\Inflector\Inflector;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -60,27 +50,20 @@ class TestController extends Controller {
      * @throws \Throwable
      */
     public function index() {
-
-        // $department = new Department;
-        // $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();
-        // dd($subs);
-        $data = [
-            "id" => 94,
-            "parentid" => 10000,
-            "department_type_id" => 7,
-            "name" => "IB部",
-            "remark" => null,
-            "order" => 99999500,
-            "created_at" => "2018-08-28 17:48:33",
-            "updated_at" => "2018-08-29 08:17:46",
-            "enabled" => 1,
-            "synced" => 1,
-        ];
-        $response = ['userId' => null];
-        $kd = new Kinder('部门', 'create', $data, $response);
+    
+        $data = ['id' => '94'];
+        $kd = new Kinder('部门', 'create', $data, ['userId' => null]);
+        dd($kd->sync());
         if (Request::method() == 'POST') {
-            dd($kd->sync());
-            return true;
+            $department = new Department;
+            $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();
+            $response = ['userId' => null];
+            foreach ($subs as $sub) {
+                $sub['parentid'] = $sub['parent_id'];
+                $kd = new Kinder('部门', 'create', $sub, $response);
+                $kd->sync();
+                unset($kd);
+            }
         }
         
         return view('user.test');

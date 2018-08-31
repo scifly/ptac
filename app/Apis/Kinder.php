@@ -27,6 +27,11 @@ class Kinder {
         '15' => '删除人员',
         '16' => '充值',
     ];
+    const ACTION_NAME = [
+        'create' => '新增',
+        'update' => '编辑',
+        'delete' => '删除'
+    ];
     
     protected $type, $action, $data, $response;
     
@@ -54,20 +59,7 @@ class Kinder {
      */
     function sync() {
     
-        $name = '';
-        switch ($this->action) {
-            case 'create':
-                $name = '新增';
-                break;
-            case 'update':
-                $name = '编辑';
-                break;
-            case 'delete':
-                $name = '删除';
-                break;
-            default:
-                break;
-        }
+        $name = self::ACTION_NAME[$this->action];
         $this->response['title'] = $name . '卡德' . $this->type;
         $this->response['message'] = __('messages.synced') . '卡德';
         $hasError = false;
