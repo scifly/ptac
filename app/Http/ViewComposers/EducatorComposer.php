@@ -61,6 +61,7 @@ class EducatorComposer {
         $tags = Tag::whereSchoolId($schoolId)
             ->where('enabled', 1)->pluck('name', 'id')
             ->toArray();
+        $this->formatTag($tags);
         $groups = Group::whereSchoolId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id')->toArray();
@@ -71,6 +72,7 @@ class EducatorComposer {
             $educator = Educator::find(Request::route('id'));
             $mobiles = $educator->user->mobiles;
             $selectedTags = $educator->user->tags->pluck('name', 'id')->toArray();
+            $this->formatTag($selectedTags);
             $selectedDepartmentIds = $educator->user->departments->pluck('id')->toArray();
             $selectedDepartments = $this->selectedNodes($selectedDepartmentIds);
         }
@@ -111,6 +113,14 @@ class EducatorComposer {
         }
         
         return $nodes;
+        
+    }
+    
+    private function formatTag(array &$tags) {
+        
+        foreach ($tags as $tag) {
+        
+        }
         
     }
     

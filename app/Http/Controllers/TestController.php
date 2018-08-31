@@ -51,6 +51,13 @@ class TestController extends Controller {
      */
     public function index() {
     
+        $tags = [
+            ['a' => '1'],
+            ['a' => '2'],
+            ['a' => '3'],
+        ];
+        $this->formatTags($tags);
+        dd($tags);
         // $data = [
         //     'id' => '94',
         //     'name' => 'IB部',
@@ -283,6 +290,14 @@ class TestController extends Controller {
     
         $data['message'] = $message;
         $this->pusher->trigger('my-channel', 'my-event', $data);
+        
+    }
+    
+    private function formatTags(&$tags) {
+
+        foreach ($tags as &$tag) {
+            $tag['a'] = $tag['a'] . '.tag';
+        }
         
     }
     

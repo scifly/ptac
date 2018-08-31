@@ -43,14 +43,14 @@ class Tag extends Model {
     protected $fillable = ['name', 'school_id', 'remark', 'enabled'];
     
     /**
-     * 返回指定教职员工组所属的学校对象
+     * 返回指定标签所属的学校对象
      *
      * @return BelongsTo
      */
     function school() { return $this->belongsTo('App\Models\School'); }
     
     /**
-     * 获取指定教职员工组包含的所有教职员工对象
+     * 获取指定标签包含的所有用户对象
      *
      * @return BelongsToMany
      */
@@ -65,7 +65,12 @@ class Tag extends Model {
         
         $columns = [
             ['db' => 'Tag.id', 'dt' => 0],
-            ['db' => 'Tag.name', 'dt' => 1],
+            [
+                'db' => 'Tag.name', 'dt' => 1,
+                'formatter' => function ($d) {
+                    return explode('.', $d)[0];
+                }
+            ],
             ['db' => 'Tag.remark', 'dt' => 2],
             ['db' => 'Tag.created_at', 'dt' => 3],
             ['db' => 'Tag.updated_at', 'dt' => 4],
