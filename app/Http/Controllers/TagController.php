@@ -84,8 +84,11 @@ class TagController extends Controller {
      */
     public function edit($id) {
         
+        $tag = $this->tag->find($id);
+        $tag->name = explode('.', $tag->name)[0];
+        
         return $this->output([
-            'tag' => Tag::find($id),
+            'tag' => $tag,
         ]);
         
     }

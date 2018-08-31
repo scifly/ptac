@@ -61,7 +61,7 @@ class EducatorComposer {
         $tags = Tag::whereSchoolId($schoolId)
             ->where('enabled', 1)->pluck('name', 'id')
             ->toArray();
-        $this->formatTag($tags);
+        $this->formatTags($tags);
         $groups = Group::whereSchoolId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id')->toArray();
@@ -72,7 +72,7 @@ class EducatorComposer {
             $educator = Educator::find(Request::route('id'));
             $mobiles = $educator->user->mobiles;
             $selectedTags = $educator->user->tags->pluck('name', 'id')->toArray();
-            $this->formatTag($selectedTags);
+            $this->formatTags($selectedTags);
             $selectedDepartmentIds = $educator->user->departments->pluck('id')->toArray();
             $selectedDepartments = $this->selectedNodes($selectedDepartmentIds);
         }
@@ -116,10 +116,15 @@ class EducatorComposer {
         
     }
     
-    private function formatTag(array &$tags) {
+    /**
+     * 移除标签中的school_id
+     *
+     * @param array $tags
+     */
+    private function formatTags(array &$tags) {
         
-        foreach ($tags as $tag) {
-        
+        foreach ($tags as &$tag) {
+            $tag['name'] = explode('.', $tag['name'])[0];
         }
         
     }
