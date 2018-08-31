@@ -51,13 +51,13 @@ class TestController extends Controller {
      */
     public function index() {
     
-        $data = [
-            'id' => '94',
-            'name' => 'IB部',
-            'parentid' => '10000',
-        ];
-        $kd = new Kinder('部门', 'delete', $data, ['userId' => null]);
-        dd($kd->sync());
+        // $data = [
+        //     'id' => '94',
+        //     'name' => 'IB部',
+        //     'parentid' => '10000',
+        // ];
+        // $kd = new Kinder('部门', 'delete', $data, ['userId' => null]);
+        // dd($kd->sync());
         if (Request::method() == 'POST') {
             $department = new Department;
             $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();
