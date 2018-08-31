@@ -62,24 +62,10 @@ class Kinder {
         $name = self::ACTION_NAME[$this->action];
         $this->response['title'] = $name . '卡德' . $this->type;
         $this->response['message'] = __('messages.synced') . '卡德';
-        $hasError = false;
         $result = json_decode(
             $this->call($name . $this->type, $this->data), true
         );
-        if (!$result) {
-            $hasError = true;
-        } else {
-            if (isset($result['code'])) {
-                if ($result['code']) {
-                    $hasError = true;
-                }
-            } else {
-                if ($result['result']) {
-                    $hasError = true;
-                }
-            }
-        }
-        if ($hasError) {
+        if ($result ? ($result['code'] ? true : false ) : true) {
             $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
             $this->response['message'] = '同步失败';
         }
