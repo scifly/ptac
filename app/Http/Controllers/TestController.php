@@ -56,7 +56,7 @@ class TestController extends Controller {
             'name' => 'IB部',
             'parentid' => '10000',
         ];
-        $kd = new Kinder('部门', 'create', $data, ['userId' => null]);
+        $kd = new Kinder('部门', 'delete', $data, ['userId' => null]);
         dd($kd->sync());
         if (Request::method() == 'POST') {
             $department = new Department;
