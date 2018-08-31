@@ -87,7 +87,7 @@ class Kinder {
             event(new JobResponse($this->response));
         }
 
-        return $this->response;
+        return $result;
         
     }
     

@@ -51,7 +51,11 @@ class TestController extends Controller {
      */
     public function index() {
     
-        $data = ['id' => '94'];
+        $data = [
+            'id' => '94',
+            'name' => 'IB部',
+            'parentid' => '10000',
+        ];
         $kd = new Kinder('部门', 'delete', $data, ['userId' => null]);
         dd($kd->sync());
         if (Request::method() == 'POST') {
