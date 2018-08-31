@@ -66,7 +66,7 @@ class TestController extends Controller {
                 $sub['parentid'] = $sub['parent_id'];
                 $kd = new Kinder('部门', 'create', $sub, $response);
                 $result = $kd->sync();
-                $this->inform($result->{'msg'} . ' : ' . $sub['name'] . $sub['id']);
+                $this->inform($result->{'msg'} . ' : ' . $sub['name'] . ' : ' . $sub['id']);
                 unset($kd);
             }
         }
