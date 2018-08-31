@@ -51,13 +51,13 @@ class TestController extends Controller {
      */
     public function index() {
     
-        // $data = [
-        //     'id' => '94',
-        //     'name' => 'IB部',
-        //     'parentid' => '10000',
-        // ];
-        // $kd = new Kinder('部门', 'delete', $data, ['userId' => null]);
-        // dd($kd->sync());
+        $data = [
+            'id' => '94',
+            'name' => 'IB部',
+            'parentid' => '10000',
+        ];
+        $kd = new Kinder('部门', 'delete', $data, ['userId' => null]);
+        dd($kd->sync());
         if (Request::method() == 'POST') {
             $department = new Department;
             $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();
@@ -66,7 +66,7 @@ class TestController extends Controller {
                 $sub['parentid'] = $sub['parent_id'];
                 $kd = new Kinder('部门', 'create', $sub, $response);
                 $result = $kd->sync();
-                $this->inform($result->{'msg'} . ' : ' . $sub['name'] . ' : ' . $sub['id']);
+                $this->inform($result['msg'] . ' : ' . $sub['name'] . ' : ' . $sub['id']);
                 unset($kd);
             }
         }
