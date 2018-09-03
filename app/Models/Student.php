@@ -179,25 +179,19 @@ class Student extends Model {
             [
                 'db' => 'User.synced', 'dt' => 11,
                 'formatter' => function ($d) {
-                    $color = $d ? 'text-green' : 'text-gray';
-                    $title = $d ? '已同步' : '未同步';
-            
-                    return sprintf(Snippet::ICON, 'fa-weixin ' . $color, $title);
+                    return $this->synced($d);
                 }
             ],
             [
                 'db' => 'User.subscribed', 'dt' => 12,
                 'formatter' => function ($d) {
-                    $color = $d ? 'text-green' : 'text-gray';
-                    $title = $d ? '已关注' : '未关注';
-            
-                    return sprintf(Snippet::ICON, 'fa-registered ' . $color, $title);
+                    return $this->subscribed($d);
                 }
             ],
             [
                 'db'        => 'Student.enabled', 'dt' => 13,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
+                    return Datatable::status($d, $row, false);
                 },
             ],
             ['db' => 'User.synced', 'dt' => 13],

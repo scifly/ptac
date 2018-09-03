@@ -77,7 +77,7 @@ use Throwable;
  * @method static Builder|School whereSmsUsed($value)
  * @method static Builder|School whereUpdatedAt($value)
  * @mixin Eloquent
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\School whereUserIds($value)
+ * @method static Builder|School whereUserIds($value)
  */
 class School extends Model {
     
@@ -283,12 +283,17 @@ class School extends Model {
             ['db' => 'School.created_at', 'dt' => 5],
             ['db' => 'School.updated_at', 'dt' => 6],
             [
-                'db'        => 'School.enabled', 'dt' => 7,
+                'db' => 'Department.synced as synced', 'dt' => 7,
+                'formatter' => function ($d) {
+                    return $this->synced($d);
+                }
+            ],
+            [
+                'db'        => 'School.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
-                    return $this->syncStatus($d, $row, false);
+                    return Datatable::status($d, $row, false);
                 },
             ],
-            ['db' => 'Department.synced as synced', 'dt' => 8],
         ];
         $joins = [
             [

@@ -119,7 +119,7 @@ class Group extends Model {
             [
                 'db'        => 'Groups.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
+                    return Datatable::status($d, $row, false);
                 },
             ],
         ];

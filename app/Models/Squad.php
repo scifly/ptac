@@ -34,6 +34,7 @@ use Throwable;
  * @property-read Collection|Educator[] $educators
  * @property-read Grade $grade
  * @property-read Collection|Student[] $students
+ * @property-read Collection|Subject[] $subjects
  * @method static Builder|Squad whereCreatedAt($value)
  * @method static Builder|Squad whereDepartmentId($value)
  * @method static Builder|Squad whereEducatorIds($value)
@@ -43,7 +44,6 @@ use Throwable;
  * @method static Builder|Squad whereName($value)
  * @method static Builder|Squad whereUpdatedAt($value)
  * @mixin Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Subject[] $subjects
  */
 class Squad extends Model {
     
@@ -145,12 +145,17 @@ class Squad extends Model {
             ['db' => 'Squad.created_at', 'dt' => 4],
             ['db' => 'Squad.updated_at', 'dt' => 5],
             [
-                'db'        => 'Squad.enabled', 'dt' => 6,
+                'db' => 'Department.synced as synced', 'dt' => 6,
+                'formatter' => function ($d) {
+                    return $this->synced($d);
+                }
+            ],
+            [
+                'db'        => 'Squad.enabled', 'dt' => 7,
                 'formatter' => function ($d, $row) {
-                    return $this->syncStatus($d, $row, false);
+                    return Datatable::status($d, $row, false);
                 },
             ],
-            ['db' => 'Department.synced as synced', 'dt' => 7],
         ];
         $joins = [
             [

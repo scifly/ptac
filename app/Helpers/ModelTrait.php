@@ -143,35 +143,32 @@ trait ModelTrait {
     }
     
     /**
-     * 返回
+     * 返回同步状态图标html
      *
-     * @param $d
-     * @param $row
-     * @param bool $contact - 是否为联系人（学生、教职员工、监护人）
+     * @param boolean $value
      * @return string
      */
-    function syncStatus($d, $row, $contact = true) {
-        
-        $user = Auth::user();
-        $id = $row['id'];
-        $status = Snippet::status($d);
-        $status .= ($row['synced']
-            ? sprintf(Snippet::ICON, 'fa-wechat text-green', '已同步')
-            : sprintf(Snippet::ICON, 'fa-wechat text-gray', '未同步')
-        );
-        if ($contact) {
-            $status .= ($row['subscribed']
-                ? sprintf(Snippet::ICON, 'fa-registered text-green', '已关注')
-                : sprintf(Snippet::ICON, 'fa-registered text-gray', '未关注')
-            );
-        }
-        $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
-        $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
+    function synced($value) {
     
-        return
-            $status .
-            ($user->can('act', $this->uris()['edit']) ? $editLink : '') .
-            ($user->can('act', $this->uris()['destroy']) ? $delLink : '');
+        $color = $value ? 'text-green' : 'text-gray';
+        $title = $value ? '已同步' : '未同步';
+    
+        return sprintf(Snippet::ICON, 'fa-weixin ' . $color, $title);
+        
+    }
+    
+    /**
+     * 返回关注状态图标html
+     *
+     * @param boolean $value
+     * @return string
+     */
+    function subscribed($value) {
+    
+        $color = $value ? 'text-green' : 'text-gray';
+        $title = $value ? '已关注' : '未关注';
+    
+        return sprintf(Snippet::ICON, 'fa-registered ' . $color, $title);
         
     }
     

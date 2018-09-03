@@ -256,13 +256,23 @@ class User extends Authenticatable {
             ['db' => 'User.created_at', 'dt' => 7],
             ['db' => 'User.updated_at', 'dt' => 8],
             [
-                'db'        => 'User.enabled', 'dt' => 9,
+                'db' => 'User.synced', 'dt' => 9,
+                'formatter' => function ($d) {
+                    return $this->synced($d);
+                }
+            ],
+            [
+                'db' => 'User.subscribed', 'dt' => 10,
+                'formatter' => function ($d) {
+                    return $this->subscribed($d);
+                }
+            ],
+            [
+                'db'        => 'User.enabled', 'dt' => 11,
                 'formatter' => function ($d, $row) {
-                    return $this->syncStatus($d, $row);
+                    return Datatable::status($d, $row, false);
                 },
             ],
-            ['db' => 'User.synced', 'dt' => 10],
-            ['db' => 'User.subscribed', 'dt' => 11],
         ];
         $joins = [
             [
@@ -342,7 +352,7 @@ class User extends Authenticatable {
             [
                 'db'        => 'User.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
+                    return Datatable::status($d, $row, false);
                 },
             ],
         ];

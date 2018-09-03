@@ -146,12 +146,17 @@ class Grade extends Model {
             ['db' => 'Grade.created_at', 'dt' => 3],
             ['db' => 'Grade.updated_at', 'dt' => 4],
             [
-                'db'        => 'Grade.enabled', 'dt' => 5,
+                'db' => 'Department.synced as synced', 'dt' => 5,
+                'formatter' => function ($d) {
+                    return $this->synced($d);
+                }
+            ],
+            [
+                'db'        => 'Grade.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
-                    return $this->syncStatus($d, $row, false);
+                    return Datatable::status($d, $row, false);
                 },
             ],
-            ['db' => 'Department.synced as synced', 'dt' => 6],
         ];
         $joins = [
             [

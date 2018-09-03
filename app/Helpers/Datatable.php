@@ -180,7 +180,7 @@ class Datatable {
      * @param bool|true $del - if set to false, do not show delete link
      * @return string
      */
-    function dtOps($active, $row, $show = true, $edit = true, $del = true) {
+    function status($active, $row, $show = true, $edit = true, $del = true) {
         
         $user = Auth::user();
         $id = $row['id'];

@@ -103,7 +103,7 @@ class Major extends Model {
             [
                 'db'        => 'Major.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
+                    return Datatable::status($d, $row, false);
                 },
             ],
         ];

@@ -88,7 +88,7 @@ class WapSite extends Model {
             [
                 'db'        => 'WapSite.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row);
+                    return Datatable::status($d, $row);
                 },
             ],
         ];

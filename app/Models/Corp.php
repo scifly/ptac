@@ -160,7 +160,7 @@ class Corp extends Model {
             [
                 'db'        => 'Corp.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
+                    return Datatable::status($d, $row, false);
                 },
             ],
         ];

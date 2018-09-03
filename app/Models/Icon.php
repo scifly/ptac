@@ -101,7 +101,7 @@ class Icon extends Model {
             [
                 'db'        => 'Icon.enabled', 'dt' => 5,
                 'formatter' => function ($d, $row) {
-                    return Datatable::dtOps($d, $row, false);
+                    return Datatable::status($d, $row, false);
                 },
             ],
         ];
