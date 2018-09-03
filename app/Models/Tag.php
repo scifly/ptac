@@ -3,6 +3,8 @@ namespace App\Models;
 
 use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
+use App\Helpers\Snippet;
+use App\Jobs\SyncTag;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -11,6 +13,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -33,14 +36,19 @@ use Throwable;
  * @method static Builder|Tag whereRemark($value)
  * @method static Builder|Tag whereSchoolId($value)
  * @method static Builder|Tag whereUpdatedAt($value)
+ * @method static Builder|Tag whereSynced($value)
  * @mixin Eloquent
  * @property-read Collection|\App\Models\User[] $users
+ * @property int $synced 同步状态
  */
 class Tag extends Model {
     
     use ModelTrait;
     
-    protected $fillable = ['name', 'school_id', 'remark', 'enabled'];
+    protected $fillable = [
+        'name', 'school_id', 'remark',
+        'enabled', 'synced'
+    ];
     
     /**
      * 返回指定标签所属的学校对象
@@ -75,7 +83,15 @@ class Tag extends Model {
             ['db' => 'Tag.created_at', 'dt' => 3],
             ['db' => 'Tag.updated_at', 'dt' => 4],
             [
-                'db'        => 'Tag.enabled', 'dt' => 5,
+                'db' => 'Tag.synced', 'dt' => 5,
+                'formatter' => function ($d) {
+                    return $d
+                        ? sprintf(Snippet::ICON, 'fa-wechat text-green', '已同步')
+                        : sprintf(Snippet::ICON, 'fa-wechat text-gray', '未同步');
+                }
+            ],
+            [
+                'db'        => 'Tag.enabled', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     return Datatable::dtOps($d, $row, false);
                 },
@@ -97,7 +113,12 @@ class Tag extends Model {
      */
     function store(array $data) {
         
-        return $this->create($data) ? true : false;
+        $tag = $this->create($data);
+        if ($tag) {
+            $this->sync($tag->id, 'create');
+        }
+        
+        return $tag ? true : false;
         
     }
     
@@ -110,7 +131,12 @@ class Tag extends Model {
      */
     function modify(array $data, $id) {
         
-        return $this->find($id)->update($data);
+        $updated = $this->find($id)->update($data);
+        if ($updated) {
+            $this->sync($id, 'update');
+        }
+        
+        return $updated;
         
     }
     
@@ -123,7 +149,12 @@ class Tag extends Model {
      */
     function remove($id = null) {
         
-        return $this->del($this, $id);
+        $deleted = $this->del($this, $id);
+        if ($deleted) {
+            $this->sync($id, 'delete');
+        }
+        
+        return $deleted;
         
     }
     
@@ -146,6 +177,25 @@ class Tag extends Model {
         }
         
         return true;
+        
+    }
+    
+    /**
+     * 同步企业微信通绪论标签
+     *
+     * @param $id
+     * @param $action
+     */
+    private function sync($id, $action) {
+        
+        $tag = $this->find($id);
+        $data = [
+            'tagid' => $id, 'corp_id' => $tag->school->corp_id
+        ];
+        if ($action != 'delete') {
+            $data['tagname'] = $tag->name;
+        }
+        SyncTag::dispatch($data, Auth::id(), $action);
         
     }
     

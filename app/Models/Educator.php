@@ -193,18 +193,34 @@ class Educator extends Model {
             ['db' => 'Educator.created_at', 'dt' => 5],
             ['db' => 'Educator.updated_at', 'dt' => 6],
             [
-                'db'        => 'Educator.enabled', 'dt' => 7,
+                'db' => 'User.synced', 'dt' => 7,
+                'formatter' => function ($d) {
+                    $color = $d ? 'text-green' : 'text-gray';
+                    $title = $d ? '已同步' : '未同步';
+    
+                    return sprintf(Snippet::ICON, 'fa-registered ' . $color, $title);
+                }
+            ],
+            [
+                'db' => 'User.subscribed', 'dt' => 8,
+                'formatter' => function ($d) {
+                    $color = $d ? 'text-green' : 'text-gray';
+                    $title = $d ? '已关注' : '未关注';
+                    
+                    return sprintf(Snippet::ICON, 'fa-registered ' . $color, $title);
+                }
+            ],
+            [
+                'db'        => 'Educator.enabled', 'dt' => 9,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $user = Auth::user();
                     $rechargeLink = sprintf(Snippet::DT_LINK_RECHARGE, 'recharge_' . $id);
                     
-                    return $this->syncStatus($d, $row) .
+                    return Datatable::dtOps($d, $row, false) .
                         ($user->can('act', self::uris()['recharge']) ? $rechargeLink : '');
                 },
             ],
-            ['db' => 'User.synced', 'dt' => 8],
-            ['db' => 'User.subscribed', 'dt' => 9],
         ];
         $joins = [
             [

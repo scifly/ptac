@@ -802,16 +802,17 @@ class Wechat {
      * 标签管理 - 创建标签
      *
      * @param string $accessToken 接口调用凭证
-     * @param string $tagName 标签名称，长度限制为32个字（汉字或英文字母），标签名不可与其他标签重名。
-     * @param integer $tagId 标签id，非负整型，指定此参数时新增的标签会生成对应的标签id，不指定时则以目前最大的id自增。
+     * @param array $data -
+     *      tagname: 标签名称，长度限制为32个字（汉字或英文字母），标签不可与其他标签重名。
+     *      tagid: 标签id
      * @return mixed
      * @throws Exception
      */
-    function createTag($accessToken, $tagName, $tagId = null) {
+    function createTag($accessToken, array $data) {
         
         return $this->curlPost(
             sprintf(self::URL_CREATE_TAG, $accessToken),
-            json_encode(['tagname' => $tagName, 'tagid' => $tagId])
+            json_encode($data)
         );
         
     }
@@ -820,16 +821,17 @@ class Wechat {
      * 标签管理 - 更新标签名字
      *
      * @param string $accessToken 接口调用凭证
-     * @param string $tagName 标签名称，长度限制为32个字（汉字或英文字母），标签不可与其他标签重名。
-     * @param integer $tagId 标签ID
+     * @param array $data
+     *      tagname: 标签名称，长度限制为32个字（汉字或英文字母），标签不可与其他标签重名。
+     *      tagid: 标签id
      * @return mixed json格式
      * @throws Exception
      */
-    function updateTag($accessToken, $tagName, $tagId) {
+    function updateTag($accessToken, array $data) {
         
         return $this->curlPost(
             sprintf(self::URL_UPDATE_TAG, $accessToken),
-            json_encode(['tagname' => $tagName, 'tagid' => $tagId])
+            json_encode($data)
         );
         
     }
@@ -842,7 +844,7 @@ class Wechat {
      * @return mixed json格式
      * @throws Exception
      */
-    function delTag($accessToken, $tagId) {
+    function deleteTag($accessToken, $tagId) {
         
         return $this->curlGet(sprintf(self::URL_DEL_TAG, $accessToken, $tagId));
         
