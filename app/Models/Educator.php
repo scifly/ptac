@@ -198,7 +198,7 @@ class Educator extends Model {
                     $color = $d ? 'text-green' : 'text-gray';
                     $title = $d ? '已同步' : '未同步';
     
-                    return sprintf(Snippet::ICON, 'fa-registered ' . $color, $title);
+                    return sprintf(Snippet::ICON, 'fa-weixin ' . $color, $title);
                 }
             ],
             [
