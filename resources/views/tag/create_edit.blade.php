@@ -12,12 +12,17 @@
                     'class' => 'col-sm-3 control-label']
                 ) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('name', null, [
-                        'class' => 'form-control text-blue',
-                        'placeholder' => '(不得超过20个汉字)',
-                        'required' => 'true',
-                        'maxlength' => '60'
-                    ]) !!}
+                    <div class="input-group">
+                        @include('partials.icon_addon', [
+                            'class' => 'fa-tag'
+                        ])
+                        {!! Form::text('name', null, [
+                            'class' => 'form-control text-blue',
+                            'placeholder' => '(不得超过20个汉字)',
+                            'required' => 'true',
+                            'maxlength' => '60'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             @include('partials.remark')
