@@ -36,7 +36,9 @@ class EducatorIndexComposer {
             ],
             'batch'          => true,
             'filter'         => true,
-            'titles'         => ['#', '姓名', '头像', '性别', '职务', '创建于', '更新于', '同步', '关注', '状态 . 操作'],
+            'titles'         => [
+                '#', '姓名', '头像', '性别', '职务', '创建于', '更新于',
+                '同步状态', '关注状态', '状态 . 操作'],
             'departments'    => $departments,
             'importTemplate' => 'files/educators.xlsx',
             'title'          => '导出教职员工',
