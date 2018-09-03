@@ -177,19 +177,7 @@ class Student extends Model {
             ['db' => 'Student.created_at', 'dt' => 9],
             ['db' => 'Student.updated_at', 'dt' => 10],
             [
-                'db' => 'User.synced', 'dt' => 11,
-                'formatter' => function ($d) {
-                    return $this->synced($d);
-                }
-            ],
-            [
-                'db' => 'User.subscribed', 'dt' => 12,
-                'formatter' => function ($d) {
-                    return $this->subscribed($d);
-                }
-            ],
-            [
-                'db'        => 'Student.enabled', 'dt' => 13,
+                'db'        => 'Student.enabled', 'dt' => 11,
                 'formatter' => function ($d, $row) {
                     return Datatable::status($d, $row, false);
                 },
