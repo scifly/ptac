@@ -44,6 +44,7 @@ use Throwable;
  * @property-read Collection|Score[] $scores
  * @property-read Squad $squad
  * @property-read User $user
+ * @property-read Collection|Consumption[] $consumptions
  * @method static Builder|Student whereBirthday($value)
  * @method static Builder|Student whereCardNumber($value)
  * @method static Builder|Student whereClassId($value)
@@ -56,7 +57,6 @@ use Throwable;
  * @method static Builder|Student whereUpdatedAt($value)
  * @method static Builder|Student whereUserId($value)
  * @mixin Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Consumption[] $consumptions
  */
 class Student extends Model {
     
@@ -169,30 +169,35 @@ class Student extends Model {
                 },
             ],
             [
-                'db'        => 'Student.id as mobile', 'dt' => 8,
-                'formatter' => function ($d) {
-                    $student = $this->find($d);
-                    $mobiles = $student->user->mobiles;
-                    $mobile = [];
-                    foreach ($mobiles as $key => $value) {
-                        $mobile[] = $value->mobile;
-                    }
-                    
-                    return implode(',', $mobile);
-                },
-            ],
-            [
-                'db'        => 'Student.birthday', 'dt' => 9,
+                'db'        => 'Student.birthday', 'dt' => 8,
                 'formatter' => function ($d) {
                     return $d ? substr($d, 0, 10) : '';
                 },
             ],
-            ['db' => 'Student.created_at', 'dt' => 10],
-            ['db' => 'Student.updated_at', 'dt' => 11],
+            ['db' => 'Student.created_at', 'dt' => 9],
+            ['db' => 'Student.updated_at', 'dt' => 10],
             [
-                'db'        => 'Student.enabled', 'dt' => 12,
+                'db' => 'User.synced', 'dt' => 11,
+                'formatter' => function ($d) {
+                    $color = $d ? 'text-green' : 'text-gray';
+                    $title = $d ? '已同步' : '未同步';
+            
+                    return sprintf(Snippet::ICON, 'fa-weixin ' . $color, $title);
+                }
+            ],
+            [
+                'db' => 'User.subscribed', 'dt' => 12,
+                'formatter' => function ($d) {
+                    $color = $d ? 'text-green' : 'text-gray';
+                    $title = $d ? '已关注' : '未关注';
+            
+                    return sprintf(Snippet::ICON, 'fa-registered ' . $color, $title);
+                }
+            ],
+            [
+                'db'        => 'Student.enabled', 'dt' => 13,
                 'formatter' => function ($d, $row) {
-                    return $this->syncStatus($d, $row);
+                    return Datatable::dtOps($d, $row, false);
                 },
             ],
             ['db' => 'User.synced', 'dt' => 13],
