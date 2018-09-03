@@ -6,6 +6,7 @@ use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Http\Requests\WapSiteModuleRequest;
 use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Builder;
@@ -36,7 +37,7 @@ use Throwable;
  * @method static Builder|WapSiteModule whereName($value)
  * @method static Builder|WapSiteModule whereUpdatedAt($value)
  * @method static Builder|WapSiteModule whereWapSiteId($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class WapSiteModule extends Model {
     

@@ -26,6 +26,7 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read Procedure $procedure
  * @method static Builder|ProcedureStep whereApproverUserIds($value)
  * @method static Builder|ProcedureStep whereCreatedAt($value)
  * @method static Builder|ProcedureStep whereEnabled($value)
@@ -36,7 +37,6 @@ use Throwable;
  * @method static Builder|ProcedureStep whereRemark($value)
  * @method static Builder|ProcedureStep whereUpdatedAt($value)
  * @mixin Eloquent
- * @property-read Procedure $procedure
  */
 class ProcedureStep extends Model {
     

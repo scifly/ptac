@@ -40,6 +40,7 @@ use Throwable;
  * @property-read School $school
  * @property-read Collection|Tag[] $tags
  * @property-read User $user
+ * @property-read Collection|EducatorClass[] $educatorClasses
  * @method static Builder|Educator whereCreatedAt($value)
  * @method static Builder|Educator whereEnabled($value)
  * @method static Builder|Educator whereId($value)
@@ -48,7 +49,6 @@ use Throwable;
  * @method static Builder|Educator whereUpdatedAt($value)
  * @method static Builder|Educator whereUserId($value)
  * @mixin Eloquent
- * @property-read Collection|EducatorClass[] $educatorClasses
  */
 class Educator extends Model {
     

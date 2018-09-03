@@ -11,44 +11,45 @@ use Illuminate\Support\Facades\DB;
 use Throwable;
 
 /**
- * App\Models\TagUser
+ * Class DepartmentTag
  *
+ * @package App\Models
  * @property int $id
+ * @property int $department_id 部门id
  * @property int $tag_id 标签id
- * @property int $user_id 用户id
  * @property Carbon|null $created_at 创建于
  * @property Carbon|null $updated_at 更新于
  * @property int $enabled 状态
- * @method static Builder|TagUser whereCreatedAt($value)
- * @method static Builder|TagUser whereEnabled($value)
- * @method static Builder|TagUser whereId($value)
- * @method static Builder|TagUser whereTagId($value)
- * @method static Builder|TagUser whereUpdatedAt($value)
- * @method static Builder|TagUser whereUserId($value)
+ * @method static Builder|DepartmentTag whereCreatedAt($value)
+ * @method static Builder|DepartmentTag whereDepartmentId($value)
+ * @method static Builder|DepartmentTag whereEnabled($value)
+ * @method static Builder|DepartmentTag whereId($value)
+ * @method static Builder|DepartmentTag whereTagId($value)
+ * @method static Builder|DepartmentTag whereUpdatedAt($value)
  * @mixin Eloquent
  */
-class TagUser extends Model {
+class DepartmentTag extends Model {
     
-    protected $table = 'tags_users';
+    protected $table = 'departments_tags';
     
-    protected $fillable = ['tag_id', 'user_id', 'enabled'];
+    protected $fillable = ['department_id', 'tag_id', 'enabled'];
     
     /**
-     * 保存指定用户所属的标签记录
+     * 保存指定部门所属的标签记录
      *
-     * @param $userId
+     * @param $departmentId
      * @param array $tagIds
      * @return bool
      * @throws Throwable
      */
-    function storeByUserId($userId, array $tagIds) {
+    function storeByDepartmentId($departmentId, array $tagIds) {
         
         try {
-            DB::transaction(function () use ($userId, $tagIds) {
+            DB::transaction(function () use ($departmentId, $tagIds) {
                 $records = [];
                 foreach ($tagIds as $tagId) {
                     $records[] = [
-                        'user_id' => $userId,
+                        'department_id' => $departmentId,
                         'tag_id'  => $tagId,
                         'enabled' => Constant::ENABLED,
                     ];
@@ -64,21 +65,21 @@ class TagUser extends Model {
     }
     
     /**
-     * 保存指定标签所包含的用户记录
+     * 保存指定标签所包含的部门记录
      *
      * @param $tagId
-     * @param array $userIds
+     * @param array $departmentIds
      * @return bool
      * @throws Throwable
      */
-    function storeByTagId($tagId, array $userIds) {
+    function storeByTagId($tagId, array $departmentIds) {
         
         try {
-            DB::transaction(function () use ($tagId, $userIds) {
+            DB::transaction(function () use ($tagId, $departmentIds) {
                 $records = [];
-                foreach ($userIds as $userId) {
+                foreach ($departmentIds as $departmentId) {
                     $records[] = [
-                        'user_id' => $userId,
+                        'department_id' => $departmentId,
                         'tag_id'  => $tagId,
                         'enabled' => Constant::ENABLED,
                     ];

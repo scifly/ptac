@@ -59,7 +59,7 @@ use Throwable;
  * @property-read Department $department
  * @property-read Menu $menu
  * @property string|null $access_token 通讯录同步应用access_token
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\App[] $apps
+ * @property-read Collection|App[] $apps
  * @method static Builder|Corp whereAccessToken($value)
  */
 class Corp extends Model {

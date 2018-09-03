@@ -6,6 +6,7 @@ use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -34,6 +35,10 @@ use Throwable;
  * @property-read Collection|PollQuestionnaireSubject[] $poll_questionnaire_subject
  * @property-read School $school
  * @property-read User $user
+ * @property-read Collection|PollQuestionnaireAnswer[] $pqAnswers
+ * @property-read Collection|PollQuestionnaireSubjectChoice[] $pqChoices
+ * @property-read Collection|PollQuestionnaireParticipant[] $pqParticipants
+ * @property-read Collection|PollQuestionnaireSubject[] $pqSubjects
  * @method static Builder|PollQuestionnaire whereCreatedAt($value)
  * @method static Builder|PollQuestionnaire whereEnabled($value)
  * @method static Builder|PollQuestionnaire whereEnd($value)
@@ -43,11 +48,7 @@ use Throwable;
  * @method static Builder|PollQuestionnaire whereStart($value)
  * @method static Builder|PollQuestionnaire whereUpdatedAt($value)
  * @method static Builder|PollQuestionnaire whereUserId($value)
- * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireAnswer[] $pqAnswers
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireSubjectChoice[] $pqChoices
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireParticipant[] $pqParticipants
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireSubject[] $pqSubjects
+ * @mixin Eloquent
  */
 class PollQuestionnaire extends Model {
     

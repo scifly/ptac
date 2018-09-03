@@ -170,7 +170,7 @@
                     <a id="choose" href="#"><i class="fa fa-sitemap"></i>&nbsp; 选择</a>
                 </div>
             </div>
-            <!-- 所属教职员工组 -->
+            <!-- 所属标签 -->
             @include('partials.multiple_select', [
                'label' => '标签',
                'id' => 'educator[tag_ids]',

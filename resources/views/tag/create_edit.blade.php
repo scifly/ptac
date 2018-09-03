@@ -4,8 +4,8 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-        @if (!empty($team['id']))
-                {{ Form::hidden('id', $team['id'], ['id' => 'id']) }}
+        @if (!empty($tag['id']))
+                {{ Form::hidden('id', $tag['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [
@@ -18,9 +18,9 @@
                         ])
                         {!! Form::text('name', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '(不得超过20个汉字)',
+                            'placeholder' => '(不得超过32个汉字)',
                             'required' => 'true',
-                            'maxlength' => '60'
+                            'maxlength' => '32'
                         ]) !!}
                     </div>
                 </div>
@@ -28,7 +28,7 @@
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
-                'value' => $team['enabled'] ?? null
+                'value' => $tag['enabled'] ?? null
             ])
         </div>
     </div>

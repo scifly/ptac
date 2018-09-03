@@ -95,7 +95,7 @@ use Throwable;
  * @property-read Collection|Event[] $events
  * @property-read Collection|PollQuestionnaireAnswer[] $pqAnswers
  * @property-read Collection|PollQuestionnaireParticipant[] $pqParticipants
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Tag[] $tags
+ * @property-read Collection|Tag[] $tags
  */
 class User extends Authenticatable {
     

@@ -3,7 +3,6 @@ namespace App\Models;
 
 use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
 use App\Jobs\SyncTag;
 use Carbon\Carbon;
 use Eloquent;
@@ -40,6 +39,7 @@ use Throwable;
  * @mixin Eloquent
  * @property-read Collection|\App\Models\User[] $users
  * @property int $synced 同步状态
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Department[] $departments
  */
 class Tag extends Model {
     
@@ -65,6 +65,13 @@ class Tag extends Model {
     function users() { return $this->belongsToMany('App\Models\User', 'tags_users'); }
     
     /**
+     * 获取指定标签包含的所有部门对象
+     *
+     * @return BelongsToMany
+     */
+    function departments() { return $this->belongsToMany('App\Models\Department', 'departments_users'); }
+    
+    /**
      * 标签列表
      *
      * @return array
@@ -85,9 +92,7 @@ class Tag extends Model {
             [
                 'db' => 'Tag.synced', 'dt' => 5,
                 'formatter' => function ($d) {
-                    return $d
-                        ? sprintf(Snippet::ICON, 'fa-wechat text-green', '已同步')
-                        : sprintf(Snippet::ICON, 'fa-wechat text-gray', '未同步');
+                    return $this->synced($d);
                 }
             ],
             [

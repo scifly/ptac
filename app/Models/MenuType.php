@@ -32,7 +32,7 @@ use Throwable;
  * @method static Builder|MenuType whereRemark($value)
  * @method static Builder|MenuType whereUpdatedAt($value)
  * @mixin Eloquent
- * @property-read Collection|\App\Models\Menu[] $menus
+ * @property-read Collection|Menu[] $menus
  */
 class MenuType extends Model {
     

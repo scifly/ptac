@@ -43,6 +43,7 @@ use Throwable;
  * @property-read School $school
  * @property-read Squad $squad
  * @property-read Collection|User[] $users
+ * @property-read Collection|Tag[] $tags
  * @method static Builder|Department whereCreatedAt($value)
  * @method static Builder|Department whereDepartmentTypeId($value)
  * @method static Builder|Department whereEnabled($value)
@@ -114,6 +115,13 @@ class Department extends Model {
      * @return BelongsToMany
      */
     function users() { return $this->belongsToMany('App\Models\User', 'departments_users'); }
+    
+    /**
+     * 返回部门所属的标签
+     *
+     * @return BelongsToMany
+     */
+    function tags() { return $this->belongsToMany('App\Models\Tag', 'departments_tags'); }
     
     /**
      * 直接上级部门

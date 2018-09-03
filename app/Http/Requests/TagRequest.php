@@ -34,12 +34,13 @@ class TagRequest extends FormRequest {
                     $query->where('school_id', $this->input('school_id'));
                 })
             ],*/
-            'name'      => 'required|string|between:2,255|unique:tags,name,' .
+            'name'      => 'required|string|between:2,32|unique:tags,name,' .
                 $this->input('id') . ',id',
                 // 'school_id,' . $this->input('school_id'),
             'school_id' => 'required|integer',
             'remark'    => 'nullable|string|max:255',
             'enabled'   => 'required|boolean',
+            'synced'    => 'required|boolean'
         ];
         
     }
@@ -49,6 +50,7 @@ class TagRequest extends FormRequest {
         $input = $this->all();
         $input['school_id'] = $this->schoolId();
         $input['name'] = $input['name'] . '.' . $this->schoolId();
+        $input['synced'] = 0;
         $this->replace($input);
         
     }
