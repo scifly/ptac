@@ -88,8 +88,11 @@ class TagController extends Controller {
      * @return bool|JsonResponse
      * @throws Throwable
      */
-    public function edit($id) {
+    public function edit($id = null) {
         
+        if (Request::method() == 'POST') {
+            return $this->department->contacts();
+        }
         $tag = $this->tag->find($id);
         $tag->name = explode('.', $tag->name)[0];
         
