@@ -79,7 +79,7 @@ Route::group(['prefix' => 'students'], function () {
 });
 # 标签
 Route::group(['prefix' => 'tags'], routes('TagController'));
-Route::post('tags/create', 'TagsController@create');
+Route::post('tags/create', 'TagController@create');
 # 用户中心
 Route::group(['prefix' => 'users'], function () {
     $c = 'UserController';
