@@ -1,9 +1,9 @@
-<div class="box box-default box-solid">
+<div class="box box-default box-solid main-form">
     <div class="box-header with-border">
         @include('partials.form_header')
     </div>
     <div class="box-body">
-        <div class="form-horizontal main-form">
+        <div class="form-horizontal">
             @if (!empty($tag['id']))
                 {{ Form::hidden('id', $tag['id'], ['id' => 'id']) }}
             @endif
