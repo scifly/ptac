@@ -180,12 +180,7 @@ class Tag extends Model {
      */
     function remove($id = null) {
         
-        $deleted = $this->del($this, $id);
-        if ($deleted) {
-            $this->sync($id, 'delete');
-        }
-        
-        return $deleted;
+        return $this->del($this, $id);
         
     }
     
@@ -202,6 +197,7 @@ class Tag extends Model {
             DB::transaction(function () use ($id) {
                 TagUser::whereTagId($id)->delete();
                 DepartmentTag::whereTagId($id)->delete();
+                $this->sync($id, 'delete');
                 $this->find($id)->delete();
             });
         } catch (Exception $e) {
