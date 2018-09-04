@@ -30,9 +30,10 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    <div id="checked-nodes"></div>
+                    <div id="checked-nodes">{!! $targets ?? '' !!}</div>
                     {!! Form::hidden('selected-node-ids', null, [
                         'id' => 'selected-node-ids',
+                        'value' => $targetIds ?? null
                     ]) !!}
                     {!! Form::button('<i class="fa fa-user-plus text-blue">&nbsp;选择</i>', [
                         'id' => 'choose',

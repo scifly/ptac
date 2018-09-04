@@ -297,15 +297,18 @@ class Corp extends Model {
             case '运营':
             case '企业':
                 $corpMenuId = (new Menu)->menuId(session('menuId'), '企业');
-                
-                return $corpMenuId ? $this->where('menu_id', $corpMenuId)->first()->id : null;
+                $corpId = $corpMenuId ? $this->where('menu_id', $corpMenuId)->first()->id : null;
+                break;
             case '学校':
                 $schoolMenuId = (new Menu)->menuId(session('menuId'));
-                
-                return School::whereMenuId($schoolMenuId)->first()->corp_id;
+                $corpId = School::whereMenuId($schoolMenuId)->first()->corp_id;
+                break;
             default:
-                return School::find($user->educator->school_id)->corp_id;
+                $corpId = School::find($user->educator->school_id)->corp_id;
+                break;
         }
+        
+        return $corpId;
         
     }
     

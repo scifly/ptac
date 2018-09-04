@@ -69,6 +69,7 @@ class TagController extends Controller {
      *
      * @param TagRequest $request
      * @return JsonResponse
+     * @throws Throwable
      */
     public function store(TagRequest $request) {
         

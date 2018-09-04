@@ -858,7 +858,7 @@ class Wechat {
      * @return mixed json格式
      * @throws Exception
      */
-    function getUserTag($accessToken, $tagId) {
+    function getTagMember($accessToken, $tagId) {
         
         return $this->curlGet(sprintf(self::URL_GET_TAG_USER, $accessToken, $tagId));
         
@@ -868,44 +868,38 @@ class Wechat {
      * 标签管理 - 增加标签成员
      *
      * @param string $accessToken 接口调用凭证
-     * @param integer $tagId 标签ID
-     * @param array $userList 企业成员ID列表，注意：userlist、partylist不能同时为空，单次请求长度不超过1000
-     * @param array $partyList 企业部门ID列表，注意：userlist、partylist不能同时为空，单次请求长度不超过100
+     * @param array $data
+     *      tagId 标签ID
+     *      userList 企业成员ID列表，注意：userlist、partylist不能同时为空，单次请求长度不超过1000
+     *      partyList 企业部门ID列表，注意：userlist、partylist不能同时为空，单次请求长度不超过100
      * @return mixed json格式
      * @throws Exception
      */
-    function addUserTag($accessToken, $tagId, $userList = null, $partyList = null) {
+    function addTagMember($accessToken, array $data) {
         
         return $this->curlPost(
             sprintf(self::URL_ADD_TAG_USER, $accessToken),
-            json_encode([
-                'tagid'     => $tagId,
-                'userlist'  => $userList,
-                'partylist' => $partyList,
-            ])
+            json_encode($data)
         );
         
     }
     
     /**
-     * 标签管理 - 删除标签
+     * 标签管理 - 删除标签成员
      *
      * @param string $accessToken 接口调用凭证
-     * @param integer $tagId 标签ID
-     * @param array $userList 企业成员ID列表，注意：userlist、partylist不能同时为空，单次请求长度不超过1000
-     * @param array $partyList 企业部门ID列表，注意：userlist、partylist不能同时为空，单次请求长度不超过100
+     * @param array $data
+     *      tagId 标签ID
+     *      userList 企业成员ID列表，注意：userlist、partylist不能同时为空，单次请求长度不超过1000
+     *      partyList 企业部门ID列表，注意：userlist、partylist不能同时为空，单次请求长度不超过100
      * @return mixed json格式
      * @throws Exception
      */
-    function delUserTag($accessToken, $tagId, $userList = null, $partyList = null) {
+    function delTagMember($accessToken, array $data) {
         
         return $this->curlPost(
             sprintf(self::URL_DEL_TAG_USER, $accessToken),
-            json_encode([
-                'tagId'     => $tagId,
-                'userlist'  => $userList,
-                'partylist' => $partyList,
-            ])
+            json_encode($data)
         );
         
     }

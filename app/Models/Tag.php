@@ -114,15 +114,28 @@ class Tag extends Model {
      *
      * @param array $data
      * @return bool
+     * @throws Throwable
      */
     function store(array $data) {
         
-        $tag = $this->create($data);
-        if ($tag) {
-            $this->sync($tag->id, 'create');
+        try {
+            DB::transaction(function () use ($data) {
+                $tag = $this->create($data);
+                if (isset($data['user_ids'])) {
+                    (new TagUser)->storeByTagId($tag->id, $data['user_ids']);
+                }
+                if (isset($data['dept_ids'])) {
+                    (new DepartmentTag)->storeByTagId($tag->id, $data['dept_ids']);
+                }
+                if ($tag) {
+                    $this->sync($tag->id, 'create');
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
         
-        return $tag ? true : false;
+        return true;
         
     }
     
@@ -132,15 +145,29 @@ class Tag extends Model {
      * @param array $data
      * @param $id
      * @return bool
+     * @throws Throwable
      */
     function modify(array $data, $id) {
         
-        $updated = $this->find($id)->update($data);
-        if ($updated) {
-            $this->sync($id, 'update');
+        try {
+            DB::transaction(function () use ($data, $id) {
+                $tag = $this->find($id);
+                if (isset($data['user_ids'])) {
+                    TagUser::whereTagId($tag->id)->delete();
+                    (new TagUser)->storeByTagId($id, $data['user_ids']);
+                }
+                if (isset($data['dept_ids'])) {
+                    DepartmentTag::whereTagId($tag->id)->delete();
+                    (new DepartmentTag)->storeByTagId($tag->id, $data['dept_ids']);
+                }
+                $updated = $tag->update($data);
+                if ($updated) { $this->sync($id, 'update'); }
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
         
-        return $updated;
+        return true;
         
     }
     
@@ -174,6 +201,7 @@ class Tag extends Model {
         try {
             DB::transaction(function () use ($id) {
                 TagUser::whereTagId($id)->delete();
+                DepartmentTag::whereTagId($id)->delete();
                 $this->find($id)->delete();
             });
         } catch (Exception $e) {

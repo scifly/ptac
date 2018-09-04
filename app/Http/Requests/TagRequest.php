@@ -34,13 +34,13 @@ class TagRequest extends FormRequest {
                     $query->where('school_id', $this->input('school_id'));
                 })
             ],*/
-            'name'      => 'required|string|between:2,32|unique:tags,name,' .
+            'name'           => 'required|string|between:2,32|unique:tags,name,' .
                 $this->input('id') . ',id',
-                // 'school_id,' . $this->input('school_id'),
-            'school_id' => 'required|integer',
-            'remark'    => 'nullable|string|max:255',
-            'enabled'   => 'required|boolean',
-            'synced'    => 'required|boolean'
+            // 'school_id,' . $this->input('school_id'),
+            'school_id'      => 'required|integer',
+            'remark'         => 'nullable|string|max:255',
+            'enabled'        => 'required|boolean',
+            'synced'         => 'required|boolean',
         ];
         
     }
@@ -51,6 +51,20 @@ class TagRequest extends FormRequest {
         $input['school_id'] = $this->schoolId();
         $input['name'] = $input['name'] . '.' . $this->schoolId();
         $input['synced'] = 0;
+        if (isset($input['selected-node-ids'])) {
+            $deptIds = $userIds = [];
+            $targetIds = explode(',', $input['selected-node-ids']);
+            foreach ($targetIds as $targetId) {
+                $paths = explode('-', $targetId);
+                if (isset($paths[2])) {
+                    $userIds[] = $paths[2];
+                } else {
+                    $deptIds[] = $targetId;
+                }
+            }
+            $input['user_ids'] = array_unique($userIds);
+            $input['dept_ids'] = array_unique($deptIds);
+        }
         $this->replace($input);
         
     }

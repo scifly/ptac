@@ -293,7 +293,6 @@ class Message extends Model {
     function edit($id) {
         
         try {
-            $allowedDeptIds = $this->departmentIds(Auth::id());
             $content = $this->detail($id);
             $message = $content[$content['type']];
             $toparty = $message->{'toparty'};
@@ -301,37 +300,7 @@ class Message extends Model {
             $targetIds = !empty($toparty) ? explode('|', $toparty) : [];
             $userids = !empty($touser) ? explode('|', $touser) : [];
             $users = User::whereIn('userid', $userids)->get();
-            /** @var User $user */
-            foreach ($users as $user) {
-                $departmentId = head(
-                    array_intersect(
-                        $allowedDeptIds,
-                        $user->departments->pluck('id')->toArray()
-                    )
-                );
-                $targetIds[] = 'user-' . $departmentId . '-' . $user->id;
-            }
-            $targetsHtml = '';
-            foreach ($targetIds as $targetId) {
-                $paths = explode('-', $targetId);
-                if (sizeof($paths) > 1) {
-                    $user = User::find($paths[2]);
-                    $targetsHtml .= sprintf(
-                        Snippet::TREE_NODE,
-                        'fa fa-user',
-                        $user->realname,
-                        $paths[2]
-                    );
-                } else {
-                    $department = Department::find($targetId);
-                    $targetsHtml .= sprintf(
-                        Snippet::TREE_NODE,
-                        Constant::NODE_TYPES[$department->departmentType->name]['icon'],
-                        $department->name,
-                        $targetId
-                    );
-                }
-            }
+            $targetsHtml = $this->targetsHtml($users, $targetIds);
             $timing = $this->find($id)->event_id ? true : false;
             $time = $timing ? date('Y-m-d H:i', strtotime($this->find($id)->event->start)) : null;
         } catch (Exception $e) {
@@ -347,6 +316,52 @@ class Message extends Model {
             'timing'            => $timing,
             'time'              => $time,
         ];
+        
+    }
+    
+    /**
+     * 获取发送对象列表Html
+     *
+     * @param $users
+     * @param $targetIds
+     * @return string
+     */
+    function targetsHtml($users, &$targetIds) {
+    
+        $allowedDeptIds = $this->departmentIds(Auth::id());
+        foreach ($users as $user) {
+            $departmentId = head(
+                array_intersect(
+                    $allowedDeptIds,
+                    $user->departments->pluck('id')->toArray()
+                )
+            );
+            $targetIds[] = 'user-' . $departmentId . '-' . $user->id;
+        }
+        $targetsHtml = '';
+        foreach ($targetIds as $targetId) {
+            $paths = explode('-', $targetId);
+            if (sizeof($paths) > 1) {
+                $user = User::find($paths[2]);
+                $targetsHtml .= sprintf(
+                    Snippet::TREE_NODE,
+                    'fa fa-user',
+                    $user->realname,
+                    $paths[2]
+                );
+            } else {
+                $department = Department::find($targetId);
+                $targetsHtml .= sprintf(
+                    Snippet::TREE_NODE,
+                    Constant::NODE_TYPES[$department->departmentType->name]['icon'],
+                    $department->name,
+                    $targetId
+                );
+            }
+        }
+        
+        
+        return $targetsHtml;
         
     }
     
