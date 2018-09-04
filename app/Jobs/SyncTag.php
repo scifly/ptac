@@ -67,7 +67,7 @@ class SyncTag implements ShouldQueue {
             DB::transaction(function () {
                 $corp = Corp::find($this->data['corp_id']);
                 $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
-                $this->throw_if($token);
+                $this->throw_if(json_decode(json_encode($token)));
                 $this->response['title'] .= '企业微信通讯录标签';
                 $this->response['message'] .= '企业微信通讯录';
                 $accessToken = $token['access_token'];

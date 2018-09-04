@@ -56,6 +56,7 @@ class TestController extends Controller {
             ['a' => '2'],
             ['a' => '3'],
         ];
+        dd(json_decode($tags));
         $this->formatTags($tags);
         dd($tags);
         // $data = [
