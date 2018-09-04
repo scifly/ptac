@@ -68,7 +68,7 @@ class Tag extends Model {
      *
      * @return BelongsToMany
      */
-    function departments() { return $this->belongsToMany('App\Models\Department', 'departments_users'); }
+    function departments() { return $this->belongsToMany('App\Models\Department', 'departments_tags'); }
     
     /**
      * 标签列表
