@@ -105,6 +105,7 @@ class TagController extends Controller {
      * @param TagRequest $request
      * @param $id
      * @return JsonResponse
+     * @throws Throwable
      */
     public function update(TagRequest $request, $id) {
         
