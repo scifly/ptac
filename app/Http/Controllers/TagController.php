@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TagRequest;
+use App\Models\Department;
 use App\Models\Tag;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -15,16 +16,18 @@ use Throwable;
  */
 class TagController extends Controller {
     
-    protected $tag;
+    protected $tag, $department;
     
     /**
      * TagController constructor.
      * @param Tag $tag
+     * @param Department $department
      */
-    public function __construct(Tag $tag) {
+    public function __construct(Tag $tag, Department $department) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->tag = $tag;
+        $this->department = $department;
         $this->approve($tag);
         
     }
@@ -55,7 +58,9 @@ class TagController extends Controller {
      */
     public function create() {
         
-        return $this->output();
+        return Request::method() == 'POST'
+            ? $this->department->contacts()
+            : $this->output();
         
     }
     

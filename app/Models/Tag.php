@@ -26,8 +26,10 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
- * @property-read Collection|Educator[] $educators
+ * @property int $synced 同步状态
+ * @property-read Collection|User[] $users
  * @property-read School $school
+ * @property-read Collection|Department[] $departments
  * @method static Builder|Tag whereCreatedAt($value)
  * @method static Builder|Tag whereEnabled($value)
  * @method static Builder|Tag whereId($value)
@@ -37,9 +39,6 @@ use Throwable;
  * @method static Builder|Tag whereUpdatedAt($value)
  * @method static Builder|Tag whereSynced($value)
  * @mixin Eloquent
- * @property-read Collection|\App\Models\User[] $users
- * @property int $synced 同步状态
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Department[] $departments
  */
 class Tag extends Model {
     

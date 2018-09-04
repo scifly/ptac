@@ -9,7 +9,6 @@ use App\Models\Educator;
 use App\Models\Group;
 use App\Models\Squad;
 use App\Models\Subject;
-use App\Models\Tag;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
@@ -58,10 +57,6 @@ class EducatorComposer {
                 $subjectList[$subject->id] = $subject->name;
             }
         }
-        $tags = Tag::whereSchoolId($schoolId)
-            ->where('enabled', 1)->pluck('name', 'id')
-            ->toArray();
-        $this->formatTags($tags);
         $groups = Group::whereSchoolId($schoolId)
             ->where('enabled', 1)
             ->pluck('name', 'id')->toArray();
@@ -71,8 +66,6 @@ class EducatorComposer {
         if (Request::route('id')) {
             $educator = Educator::find(Request::route('id'));
             $mobiles = $educator->user->mobiles;
-            $selectedTags = $educator->user->tags->pluck('name', 'id')->toArray();
-            $this->formatTags($selectedTags);
             $selectedDepartmentIds = $educator->user->departments->pluck('id')->toArray();
             $selectedDepartments = $this->selectedNodes($selectedDepartmentIds);
         }
@@ -81,8 +74,6 @@ class EducatorComposer {
             'subjects'              => $subjectList,
             'groups'                => $groups,
             'mobiles'               => $mobiles,
-            'tags'                  => $tags,
-            'selectedTags'          => $selectedTags,
             'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
             'selectedDepartments'   => $selectedDepartments,
         ]);
@@ -113,19 +104,6 @@ class EducatorComposer {
         }
         
         return $nodes;
-        
-    }
-    
-    /**
-     * 移除标签中的school_id
-     *
-     * @param array $tags
-     */
-    private function formatTags(array &$tags) {
-        
-        foreach ($tags as &$tag) {
-            $tag['name'] = explode('.', $tag['name'])[0];
-        }
         
     }
     

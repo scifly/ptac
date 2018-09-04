@@ -294,15 +294,6 @@ class Educator extends Model {
                             }
                         }
                     }
-                    if (isset($educatorInputData['tag_ids'])) {
-                        foreach ($educatorInputData['tag_ids'] as $tagId) {
-                            TagUser::create([
-                                'user_id' => $u->id,
-                                'tag_id'     => $tagId,
-                                'enabled'     => $user['enabled'],
-                            ]);
-                        }
-                    }
                 }
                 # 创建部门用户绑定关系
                 (new DepartmentUser)->storeByUserId(
@@ -400,16 +391,6 @@ class Educator extends Model {
                     'sms_quote' => 0,
                     'enabled'   => $user['enabled'],
                 ]);
-                if (isset($educator['tag_ids'])) {
-                    TagUser::whereUserId($request->input('user_id'))->delete();
-                    foreach ($educator['tag_ids'] as $tagId) {
-                        TagUser::create([
-                            'user_id' => $request->input('user_id'),
-                            'tag_id'     => $tagId,
-                            'enabled'     => $user['enabled'],
-                        ]);
-                    }
-                }
                 if ($user['group_id'] != Group::whereName('学校')->first()->id) {
                     $classSubjectData = $request->input('classSubject');
                     if ($classSubjectData) {

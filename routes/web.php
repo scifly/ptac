@@ -77,6 +77,9 @@ Route::group(['prefix' => 'students'], function () {
     Route::get('export', $c . '@export');
     Route::post('export', $c . '@export');
 });
+# 标签
+Route::group(['prefix' => 'tags'], routes('TagController'));
+Route::post('tags/create', 'TagsController@create');
 # 用户中心
 Route::group(['prefix' => 'users'], function () {
     $c = 'UserController';
@@ -276,10 +279,9 @@ Route::group(['prefix' => 'orders'], function () {
 Route::group(['prefix' => 'combo_types'], routes('ComboTypeController'));
 
 /** 系统设置 */
-# 学校设置 - 学校管理.学期设置.教职员工组别设置.学校类型设置
+# 学校设置 - 学校管理.学期设置
 Route::group(['prefix' => 'schools'], routes('SchoolController'));
 Route::group(['prefix' => 'semesters'], routes('SemesterController'));
-Route::group(['prefix' => 'tags'], routes('TagController'));
 # 科目设置 - 科目管理.科目次分类设置
 Route::group(['prefix' => 'subjects'], routes('SubjectController'));
 Route::get('subjects/query/{id}', 'SubjectController@query');

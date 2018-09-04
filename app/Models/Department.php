@@ -59,7 +59,6 @@ use Throwable;
  */
 class Department extends Model {
     
-    // todo: needs to be optimized
     use ModelTrait;
     
     protected $fillable = [

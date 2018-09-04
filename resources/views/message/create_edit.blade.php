@@ -6,20 +6,20 @@
     <i class="fa fa-refresh fa-spin"></i>
 </div>
 <div class="form-horizontal main-form" id="message">
-{!! Form::open([
-    'method' => 'post',
-    'id' => 'formMessage',
-    'data-parsley-validate' => 'true'
-]) !!}
-<!-- 选择应用 -->
-@include('partials.single_select', [
-    'label' => '应用',
-    'id' => 'app_ids',
-    'icon' => 'fa fa-weixin text-green',
-    'items' => $apps,
-])
-{!! Form::hidden('id', null, ['id' => 'id']) !!}
-<!-- 发送对象 -->
+    {!! Form::open([
+        'method' => 'post',
+        'id' => 'formMessage',
+        'data-parsley-validate' => 'true'
+    ]) !!}
+    <!-- 选择应用 -->
+    @include('partials.single_select', [
+        'label' => '应用',
+        'id' => 'app_ids',
+        'icon' => 'fa fa-weixin text-green',
+        'items' => $apps,
+    ])
+    {!! Form::hidden('id', null, ['id' => 'id']) !!}
+    <!-- 发送对象 -->
     <div class="form-group">
         {!! Form::label('targets', '发送对象', [
             'class' => 'col-sm-3 control-label'
@@ -37,12 +37,12 @@
         </div>
     </div>
     <!-- 消息类型 -->
-@include('partials.single_select', [
-    'label' => '消息类型',
-    'id' => 'message_type_id',
-    'items' => $messageTypes
-])
-<!-- 消息内容 -->
+    @include('partials.single_select', [
+        'label' => '消息类型',
+        'id' => 'message_type_id',
+        'items' => $messageTypes
+    ])
+    <!-- 消息内容 -->
     <div class="form-group">
         {!! Form::label('content', '消息内容', [
             'class' => 'col-sm-3 control-label'
@@ -208,13 +208,13 @@
             </div>
         </div>
     </div>
-@include('partials.enabled', [
-    'id' => 'schedule',
-    'label' => '发送时间',
-    'value' => 0,
-    'options' => ['定时', '立即']
-])
-<!-- 定时发送 -->
+    @include('partials.enabled', [
+        'id' => 'schedule',
+        'label' => '发送时间',
+        'value' => 0,
+        'options' => ['定时', '立即']
+    ])
+    <!-- 定时发送 -->
     <div class="form-group" id="timing" style="display: none;">
         <div class="col-sm-3"></div>
         <div class="col-sm-6">

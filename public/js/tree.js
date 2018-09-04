@@ -482,7 +482,7 @@
                         // 转换成数组
                         selectedDepartmentIds = $selectedDepartmentIds.val().split(',');
 
-                    //清除数组的 上面选中的部门id 返回还是数组
+                    // 清除数组上面选中的部门id 返回还是数组
                     for (var i = 0; i < selectedDepartmentIds.length; i++) {
                         if (selectedDepartmentIds[i] === nodeId) {
                             selectedDepartmentIds.splice(i, 1);
@@ -491,7 +491,7 @@
                     }
                     // 删除指定的部门
                     $(this).parents('button').remove();
-                    //将删除后的数组转换成字符串 并赋值回input 方便在上面初始化中 初始 已选择的部门
+                    // 将删除后的数组转换成字符串 并赋值回input 方便在上面初始化中 初始 已选择的部门
                     $selectedDepartmentIds.val(selectedDepartmentIds.toString());
                     //同时删除 右侧列表 选中的节点
                     $('#tree' + nodeId).remove();
