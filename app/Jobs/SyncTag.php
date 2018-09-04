@@ -62,29 +62,7 @@ class SyncTag implements ShouldQueue {
      * @throws Throwable
      */
     public function handle() {
-        
-        # 同步至企业微信通讯录
-        $this->sync();
-        # 同步至第三方合作伙伴通讯录(部门)
-        $this->apiSync(
-            $this->action,
-            $this->data,
-            $this->response,
-            $this->data['tagid']
-        );
-        
-        return true;
-        
-    }
     
-    /**
-     * 同步企业微信部门
-     *
-     * @throws Exception
-     * @throws Throwable
-     */
-    private function sync() {
-        
         try {
             DB::transaction(function () {
                 $corp = Corp::find($this->data['corp_id']);
@@ -177,8 +155,9 @@ class SyncTag implements ShouldQueue {
             $this->response['statusCode'] = $e->getCode();
             $this->response['message'] = $e->getMessage();
         }
-        
         event(new JobResponse($this->response));
+        
+        return true;
         
     }
     
