@@ -15,18 +15,6 @@ class TagComposer {
     
     use ModelTrait;
     
-    protected $tag;
-    
-    /**
-     * TagComposer constructor.
-     * @param Tag $tag
-     */
-    function __construct(Tag $tag) {
-        
-        $this->tag = $tag;
-        
-    }
-    
     /**
      * @param View $view
      */
@@ -34,7 +22,7 @@ class TagComposer {
         
         $targetsHtml = $targetIds = null;
         if (Request::route('id')) {
-            $tag = $this->tag->find(Request::route('id'));
+            $tag = Tag::find(Request::route('id'));
             $targetIds = $tag->departments->pluck('id')->toArray();
             $targetsHtml = (new Message)->targetsHtml($tag->users, $targetIds);
         }
