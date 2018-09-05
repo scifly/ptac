@@ -6,6 +6,7 @@ use App\Facades\Wechat;
 use App\Helpers\ModelTrait;
 use App\Models\Corp;
 use App\Models\Department;
+use App\Models\User;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -50,15 +51,10 @@ class TestController extends Controller {
      * @throws \Throwable
      */
     public function index() {
-    
-        $tags = [
-            ['a' => '1'],
-            ['a' => '2'],
-            ['a' => '3'],
-        ];
-        dd(json_decode($tags));
-        $this->formatTags($tags);
-        dd($tags);
+
+        $user = User::find(1);
+        
+        dd(isset($user->{'user_id'}));
         // $data = [
         //     'id' => '94',
         //     'name' => 'IB部',

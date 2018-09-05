@@ -3,6 +3,7 @@ namespace App\Http\Requests;
 
 use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class TagRequest
@@ -38,6 +39,7 @@ class TagRequest extends FormRequest {
                 $this->input('id') . ',id',
             // 'school_id,' . $this->input('school_id'),
             'school_id'      => 'required|integer',
+            'user_id'        => 'required|integer',
             'remark'         => 'nullable|string|max:255',
             'enabled'        => 'required|boolean',
             'synced'         => 'required|boolean',
@@ -49,6 +51,7 @@ class TagRequest extends FormRequest {
         
         $input = $this->all();
         $input['school_id'] = $this->schoolId();
+        $input['user_id'] = Auth::id();
         $input['name'] = $input['name'] . '.' . $this->schoolId();
         $input['synced'] = 0;
         if (isset($input['selected-node-ids'])) {
