@@ -29,7 +29,7 @@ class TagComposer {
         
         $view->with([
             'targets' => $targetsHtml,
-            'targetIds' => implode(',', $targetIds)
+            'targetIds' => $targetIds ? implode(',', $targetIds) : ''
         ]);
         
     }
