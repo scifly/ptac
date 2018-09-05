@@ -8,6 +8,7 @@ use App\Helpers\PolicyTrait;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -53,6 +54,9 @@ class CommonPolicy {
             case 'update':
             case 'delete':
                 $isModelAllowed = in_array($model->{'school_id'}, $this->schoolIds());
+                if (isset($model->{'user_id'}) && !$isSuperRole) {
+                    $isModelAllowed = $isModelAllowed && ($model->{'user_id'} == Auth::id());
+                }
                 return $isSuperRole ? $isModelAllowed : ($isModelAllowed && $this->action($user));
             default:
                 return false;

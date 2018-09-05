@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
+use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use App\Jobs\SyncTag;
 use Carbon\Carbon;
@@ -22,6 +23,7 @@ use Throwable;
  * @property int $id
  * @property string $name 标签名称
  * @property int $school_id 所属学校ID
+ * @property int $user_id 创建者的用户id
  * @property string|null $remark 备注
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -29,6 +31,7 @@ use Throwable;
  * @property int $synced 同步状态
  * @property-read Collection|User[] $users
  * @property-read School $school
+ * @property-read User $creator
  * @property-read Collection|Department[] $departments
  * @method static Builder|Tag whereCreatedAt($value)
  * @method static Builder|Tag whereEnabled($value)
@@ -36,6 +39,7 @@ use Throwable;
  * @method static Builder|Tag whereName($value)
  * @method static Builder|Tag whereRemark($value)
  * @method static Builder|Tag whereSchoolId($value)
+ * @method static Builder|Tag whereUserId($value)
  * @method static Builder|Tag whereUpdatedAt($value)
  * @method static Builder|Tag whereSynced($value)
  * @mixin Eloquent
@@ -45,8 +49,8 @@ class Tag extends Model {
     use ModelTrait;
     
     protected $fillable = [
-        'name', 'school_id', 'remark',
-        'enabled', 'synced'
+        'name', 'school_id', 'user_id',
+        'remark', 'enabled', 'synced'
     ];
     
     /**
@@ -55,6 +59,13 @@ class Tag extends Model {
      * @return BelongsTo
      */
     function school() { return $this->belongsTo('App\Models\School'); }
+    
+    /**
+     * 返回指定标签的创建者用户对象
+     *
+     * @return BelongsTo
+     */
+    function creator() { return $this->belongsTo('App\Models\User'); }
     
     /**
      * 获取指定标签包含的所有用户对象
@@ -102,6 +113,10 @@ class Tag extends Model {
             ],
         ];
         $condition = 'Tag.school_id = ' . $this->schoolId();
+        # 非超级用户(运营、企业、学校)只能查看编辑自己创建的标签
+        if (!in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
+            $condition .= ' AND Tag.user_id = ' . Auth::id();
+        }
         
         return Datatable::simple(
             $this->getModel(), $columns, null, $condition

@@ -96,6 +96,7 @@ use Throwable;
  * @property-read Collection|PollQuestionnaireAnswer[] $pqAnswers
  * @property-read Collection|PollQuestionnaireParticipant[] $pqParticipants
  * @property-read Collection|Tag[] $tags
+ * @property-read Collection|Tag[] $_tags
  */
 class User extends Authenticatable {
     
@@ -175,6 +176,13 @@ class User extends Authenticatable {
         return $this->belongsToMany('App\Models\Department', 'departments_users');
         
     }
+    
+    /**
+     * 获取指定用户创建的所有标签对象
+     *
+     * @return HasMany
+     */
+    function _tags() { return $this->hasMany('App\Models\Tag'); }
     
     /**
      * 获取指定用户所属的所有标签对象
