@@ -152,12 +152,12 @@ class Tag extends Model {
         try {
             DB::transaction(function () use ($data, $id) {
                 $tag = $this->find($id);
+                TagUser::whereTagId($tag->id)->delete();
+                DepartmentTag::whereTagId($tag->id)->delete();
                 if (isset($data['user_ids'])) {
-                    TagUser::whereTagId($tag->id)->delete();
                     (new TagUser)->storeByTagId($id, $data['user_ids']);
                 }
                 if (isset($data['dept_ids'])) {
-                    DepartmentTag::whereTagId($tag->id)->delete();
                     (new DepartmentTag)->storeByTagId($tag->id, $data['dept_ids']);
                 }
                 $updated = $tag->update($data);
