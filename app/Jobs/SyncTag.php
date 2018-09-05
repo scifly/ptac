@@ -119,14 +119,16 @@ class SyncTag implements ShouldQueue {
                             foreach ($result->{'userlist'} as $user) {
                                 $userlist[] = $user->{'userid'};
                             }
-                            $result = json_decode(
-                                Wechat::delTagMember($accessToken, [
-                                    'tagid' => $tag->id,
-                                    'userlist' => $userlist,
-                                    'partylist' => $result->{'partylist'}
-                                ])
-                            );
-                            $this->throw_if($result);
+                            if (!empty($userlist) || !empty($result->{'partylist'})) {
+                                $result = json_decode(
+                                    Wechat::delTagMember($accessToken, [
+                                        'tagid' => $tag->id,
+                                        'userlist' => $userlist,
+                                        'partylist' => $result->{'partylist'}
+                                    ])
+                                );
+                                $this->throw_if($result);
+                            }
                             $result = json_decode(
                                 Wechat::addTagMember($accessToken, $data)
                             );
