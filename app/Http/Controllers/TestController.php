@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Request;
 use Pusher\Pusher;
 use ReflectionClass;
 use ReflectionMethod;
+use SimpleXMLElement;
 
 /**
  * Class TestController
@@ -32,6 +33,10 @@ class TestController extends Controller {
     const KEY = '4e759473d69a97307905';
     const SECRET = 'e51dbcffbb1250a2d98e';
     const CLUSTER = 'eu';
+    
+    
+
+    
     
     /**
      * TestController constructor.
@@ -51,17 +56,33 @@ class TestController extends Controller {
      * @throws \Throwable
      */
     public function index() {
-
-        $user = User::find(1);
+    
+        $params = [
+            'appid' => 'wxe75227cead6b8aec',
+            'body' => 'H5支付测试',
+            'mch_id' => '1226652702',
+            'nonce_str' => '43219047328190473290',
+            'notify_url' => 'http://weixin.028lk.com/wlrj/notify',
+            'out_trade_no' => '1415659990',
+            'spbill_create_ip' => Request::ip(),
+            'total_fee' => 1,
+            'trade_type' => 'MWEB',
+            'scene_info' => '{"h5_info": {"type":"Wap","wap_url":"http://weixin.028lk.com/wlrj/homework","wap_name":"一卡通充值"}}',
+            'sign' => ''
+        ];
+        $xml = new SimpleXMLElement('');
+        array_walk_recursive($params, array($xml, 'addChild'));
+        dd($xml->asXML());
         
-        dd(isset($user->{'user_id'}));
-        // $data = [
-        //     'id' => '94',
-        //     'name' => 'IB部',
-        //     'parentid' => '10000',
-        // ];
-        // $kd = new Kinder('部门', 'delete', $data, ['userId' => null]);
-        // dd($kd->sync());
+    }
+    
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws \Pusher\PusherException
+     * @throws Exception
+     */
+    private function sync() {
+    
         if (Request::method() == 'POST') {
             $department = new Department;
             $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();
@@ -74,9 +95,9 @@ class TestController extends Controller {
                 unset($kd);
             }
         }
-        
+    
         return view('user.test');
-        
+    
     }
     
     public function apiCall() {

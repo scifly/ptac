@@ -750,6 +750,8 @@ class User extends Authenticatable {
             DB::transaction(function () use ($id, $broadcast) {
                 $this->deleteWechatUser($id, $broadcast);
                 DepartmentUser::whereUserId($id)->delete();
+                TagUser::whereUserId($id)->delete();
+                Tag::whereUserId($id)->delete();
                 Mobile::whereUserId($id)->delete();
                 (new Order)->removeUser($id);
                 PollQuestionnaire::whereUserId($id)->update(['user_id' => 0]);

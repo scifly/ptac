@@ -349,8 +349,10 @@ class Department extends Model {
                 $userIds = array_unique(
                     $du->whereIn('department_id', $ids)->pluck('user_id')->toArray()
                 );
-                # 删除用户&部门绑定关系
+                # 删除部门&用户绑定关系
                 (new DepartmentUser)->whereIn('department_id', $ids)->delete();
+                # 删除部门&标签绑定关系
+                (new DepartmentTag)->whereIn('department_id', $ids)->delete();
                 # 更新被删除部门所包含用户对应的企业微信会员信息
                 array_map(
                     function ($userId) use ($user) {
