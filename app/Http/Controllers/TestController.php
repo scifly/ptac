@@ -74,7 +74,7 @@ class TestController extends Controller {
         $xml = new SimpleXMLElement('<xml/>');
         array_walk_recursive($params, [$xml, 'addChild']);
         
-        dd($xml->asXML());
+        dd(preg_replace('/^.+\n/', '', $xml->asXML()));
         
     }
     
