@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Wechat;
 
 use App\Http\Controllers\Controller;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use PhpOffice\PhpSpreadsheet\Reader\Xls\MD5;
 use SimpleXMLElement;
@@ -66,7 +67,7 @@ XML;
             $xml = new SimpleXMLElement('<xml/>');
             array_walk_recursive($params, [$xml, 'addChild']);
             $strXml = preg_replace('/^.+\n/', '', $xml->asXML());
-    
+            Log::debug($strXml);
             $result = simplexml_load_string(
                 $this->curlPost(self::URL_UNIFIEDORDER, $strXml),
                 'SimpleXMLElement', LIBXML_NOCDATA
