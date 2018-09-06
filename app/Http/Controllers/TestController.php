@@ -72,6 +72,7 @@ class TestController extends Controller {
         ];
         $xml = new SimpleXMLElement('');
         array_walk_recursive($params, array($xml, 'addChild'));
+        
         dd($xml->asXML());
         
     }
