@@ -68,7 +68,7 @@ class TestController extends Controller {
             'total_fee' => 1,
             'trade_type' => 'MWEB',
             'scene_info' => '{"h5_info": {"type":"Wap","wap_url":"http://weixin.028lk.com/wlrj/homework","wap_name":"一卡通充值"}}',
-            'sign' => ''
+            'sign' => 'r789270'
         ];
         $xml = new SimpleXMLElement('<xml/>');
         array_walk_recursive($params, [$xml, 'addChild']);
