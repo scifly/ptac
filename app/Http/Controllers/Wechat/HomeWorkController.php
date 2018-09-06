@@ -59,7 +59,7 @@ class HomeWorkController extends Controller {
             $strXml = preg_replace('/^.+\n/', '', $xml->asXML());
             // Log::debug($strXml);
             $result = simplexml_load_string(
-                $this->curlPost(self::URL_UNIFIEDORDER, trim($strXml, "\n")),
+                $this->curlPost(self::URL_UNIFIEDORDER, $strXml),
                 'SimpleXMLElement', LIBXML_NOCDATA
             );
     
