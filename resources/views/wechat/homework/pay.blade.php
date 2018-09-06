@@ -5,7 +5,7 @@
  * 博客：https://qq52o.me
  */
 $money= 1;                     //充值金额 微信支付单位为分
-$userip = get_client_ip();     //获得用户设备IP
+$userip = Request::ip(); # get_client_ip();     //获得用户设备IP
 $appid  = "wwefd1c6553e218347";                  //应用APPID
 $mch_id = "1226652702";                  //微信支付商户号
 $key    = "43728910dsajfksfdjksalj432443AAA";                 //微信商户API密钥
