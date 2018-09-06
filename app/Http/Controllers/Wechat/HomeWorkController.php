@@ -52,7 +52,7 @@ class HomeWorkController extends Controller {
                 $str .= $key . '=' . $value . '&';
             }
             $strTemp = $str . 'key=' . $apiKey;
-            Log::debug($strTemp);
+            // Log::debug($strTemp);
             $sign = strtoupper(md5($strTemp));
             // $params['sign'] = $sign;
             // $params = array_flip($params);
@@ -72,6 +72,7 @@ class HomeWorkController extends Controller {
 </xml>
 XML;
             $strXml = sprintf($xml, $nonce, $ip, $sign);
+            Log::debug($strXml);
             // $xml = new SimpleXMLElement('<xml/>');
             // array_walk_recursive($params, [$xml, 'addChild']);
             // $strXml = preg_replace('/^.+\n/', '', $xml->asXML());
