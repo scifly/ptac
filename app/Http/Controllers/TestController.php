@@ -70,7 +70,7 @@ class TestController extends Controller {
             'scene_info' => '{"h5_info": {"type":"Wap","wap_url":"http://weixin.028lk.com/wlrj/homework","wap_name":"一卡通充值"}}',
             'sign' => ''
         ];
-        $xml = new SimpleXMLElement('');
+        $xml = new SimpleXMLElement('</xml>');
         array_walk_recursive($params, array($xml, 'addChild'));
         
         dd($xml->asXML());
