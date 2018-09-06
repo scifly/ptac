@@ -59,7 +59,7 @@ XML;
                 'scene_info' => '{"h5_info": {"type":"Wap","wap_url":"http://weixin.028lk.com/wlrj/homework","wap_name":"一卡通充值"}}',
             ];
             $strTemp = http_build_query($params) . '&key=' . $apiKey;
-            $sign = strtoupper(hash_hmac('sha256', strtoupper(md5($strTemp)), $apiKey));
+            $sign = strtoupper(hash_hmac('sha256', $strTemp, $apiKey));
             $params['sign'] = $sign;
             $params = array_flip($params);
             $xml = new SimpleXMLElement('<xml/>');
