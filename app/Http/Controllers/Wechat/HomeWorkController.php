@@ -50,12 +50,12 @@ XML;
             // return $this->hw->wIndex();
             $params = [
                 'appid' => 'wwefd1c6553e218347',
-                'body' => 'H5支付测试',
+                'body' => 'wtf',
                 'mch_id' => '1226652702',
                 'nonce_str' => $this->randomstring(32),
                 'notify_url' => 'http://weixin.028lk.com/wlrj/notify',
                 'out_trade_no' => '1415659990',
-                'scene_info' => '{"h5_info": {"type":"Wap","wap_url":"http://weixin.028lk.com/wlrj/homework","wap_name":"一卡通充值"}}',
+                'scene_info' => '{"h5_info": {"type":"Wap","wap_url":"http://weixin.028lk.com/wlrj/homework","wap_name":"wtf"}}',
                 'spbill_create_ip' => Request::ip(),
                 'total_fee' => 1,
                 'trade_type' => 'MWEB',
