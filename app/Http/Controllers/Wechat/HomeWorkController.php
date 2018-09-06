@@ -51,7 +51,7 @@ class HomeWorkController extends Controller {
             }
             $strTemp = $str . 'key=' . $apiKey;
             Log::debug($strTemp);
-            $sign = iconv('ISO-8859-1', 'UTF-8', strtoupper(md5($strTemp)));
+            $sign = iconv('UTF-8', 'ISO-8859-1', strtoupper(md5($strTemp)));
             $params['sign'] = $sign;
             $params = array_flip($params);
             $xml = new SimpleXMLElement('<xml/>');
