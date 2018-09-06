@@ -36,6 +36,7 @@ $post_data = "<xml>
             </xml>";//拼接成XML 格式
 $url = "https://api.mch.weixin.qq.com/pay/unifiedorder";//微信传参地址
 $dataxml = postXmlCurl($post_data,$url); //后台POST微信传参地址  同时取得微信返回的参数
+        dd($dataxml);
 $objectxml = (array)simplexml_load_string($dataxml, 'SimpleXMLElement', LIBXML_NOCDATA); //将微信返回的XML 转换成数组
         dd($objectxml);
 /**
