@@ -71,7 +71,7 @@ class TestController extends Controller {
             'sign' => 'r789270'
         ];
         $params = array_flip($params);
-        $xml = new SimpleXMLElement('</>');
+        $xml = new SimpleXMLElement('<xml/>');
         array_walk_recursive($params, [$xml, 'addChild']);
         
         dd($xml->asXML());
