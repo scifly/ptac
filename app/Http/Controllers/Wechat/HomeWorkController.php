@@ -60,7 +60,11 @@ XML;
                 'total_fee' => 1,
                 'trade_type' => 'MWEB',
             ];
-            $strTemp = http_build_query($params) . '&key=' . $apiKey;
+            $str = '';
+            foreach ($params as $key => $value) {
+                $str .= $key . '=' . $value . '&';
+            }
+            $strTemp = $str . 'key=' . $apiKey;
             $sign = strtoupper(md5($strTemp));
             $params['sign'] = $sign;
             $params = array_flip($params);
