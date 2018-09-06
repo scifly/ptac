@@ -52,15 +52,14 @@ XML;
                 'appid' => 'wwefd1c6553e218347',
                 'body' => 'english',
                 'mch_id' => '1226652702',
-                'nonce_str' => strtoupper($this->randomstring(32)),
-                'notify_url' => urlencode('http://weixin.028lk.com/wlrj/notify'),
+                'nonce_str' => $this->randomstring(32),
+                'notify_url' => 'http://weixin.028lk.com/wlrj/notify',
                 'out_trade_no' => '1415659990',
                 'scene_info' => '{"h5_info": {"type":"Wap","wap_url":"http://weixin.028lk.com/wlrj/homework","wap_name":"english"}}',
                 'spbill_create_ip' => Request::ip(),
                 'total_fee' => 1,
                 'trade_type' => 'MWEB',
             ];
-            ksort($params);
             $str = '';
             foreach ($params as $key => $value) {
                 $str .= $key . '=' . $value . '&';
@@ -68,7 +67,6 @@ XML;
             $strTemp = $str . 'key=' . $apiKey;
             $sign = strtoupper(md5($strTemp));
             $params['sign'] = $sign;
-            ksort($params);
             $params = array_flip($params);
             $xml = new SimpleXMLElement('<xml/>');
             array_walk_recursive($params, [$xml, 'addChild']);
