@@ -32,7 +32,7 @@ XML;
     
     function __construct() {
         
-        $this->middleware('wechat');
+        // $this->middleware('wechat');
         
     }
     
