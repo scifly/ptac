@@ -47,7 +47,7 @@ XML;
             $apiKey = '43728910dsajfksfdjksalj432443AAA';
             // return $this->hw->wIndex();
             $params = [
-                'appid' => 'wxe75227cead6b8aec',
+                'appid' => 'wwefd1c6553e218347',
                 'body' => 'H5支付测试',
                 'mch_id' => '1226652702',
                 'nonce_str' => $this->randomstring(32),
