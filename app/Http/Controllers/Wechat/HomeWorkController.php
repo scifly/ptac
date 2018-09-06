@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Wechat;
 use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Support\Facades\Request;
+use PhpOffice\PhpSpreadsheet\Reader\Xls\MD5;
 use SimpleXMLElement;
 
 /**
@@ -54,12 +55,12 @@ XML;
                 'notify_url' => 'http://weixin.028lk.com/wlrj/notify',
                 'out_trade_no' => '1415659990',
                 'spbill_create_ip' => Request::ip(),
+                'scene_info' => '{"h5_info": {"type":"Wap","wap_url":"http://weixin.028lk.com/wlrj/homework","wap_name":"一卡通充值"}}',
                 'total_fee' => 1,
                 'trade_type' => 'MWEB',
-                'scene_info' => '{"h5_info": {"type":"Wap","wap_url":"http://weixin.028lk.com/wlrj/homework","wap_name":"一卡通充值"}}',
             ];
             $strTemp = http_build_query($params) . '&key=' . $apiKey;
-            $sign = strtoupper(hash_hmac('sha256', $strTemp, $apiKey));
+            $sign = strtoupper(md5($strTemp));
             $params['sign'] = $sign;
             $params = array_flip($params);
             $xml = new SimpleXMLElement('<xml/>');
