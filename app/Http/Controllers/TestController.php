@@ -57,20 +57,23 @@ class TestController extends Controller {
      */
     public function index() {
     
+        $apiKey = '43728910dsajfksfdjksalj432443AAA';
+        // return $this->hw->wIndex();
         $params = [
             'appid' => 'wxe75227cead6b8aec',
             'body' => 'H5支付测试',
             'mch_id' => '1226652702',
-            'nonce_str' => '43219047328190473290',
+            'nonce_str' => '473829107483902174389012',
             'notify_url' => 'http://weixin.028lk.com/wlrj/notify',
             'out_trade_no' => '1415659990',
             'spbill_create_ip' => Request::ip(),
             'total_fee' => 1,
             'trade_type' => 'MWEB',
             'scene_info' => '{"h5_info": {"type":"Wap","wap_url":"http://weixin.028lk.com/wlrj/homework","wap_name":"一卡通充值"}}',
-            'sign' => 'r789270'
         ];
-        dd(http_build_query($params));
+        $strTemp = http_build_query($params) . '&key=' . $apiKey;
+        $sign = strtoupper(hash_hmac('sha256', strtoupper(md5($strTemp)), $apiKey));
+        $params['sign'] = $sign;
         $params = array_flip($params);
         $xml = new SimpleXMLElement('<xml/>');
         array_walk_recursive($params, [$xml, 'addChild']);
