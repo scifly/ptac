@@ -71,7 +71,6 @@ class TestController extends Controller {
             'trade_type' => 'MWEB',
             'scene_info' => '{"h5_info": {"type":"Wap","wap_url":"http://weixin.028lk.com/wlrj/homework","wap_name":"一卡通充值"}}',
         ];
-        dd(http_build_query($params));
         $strTemp = http_build_query($params) . '&key=' . $apiKey;
         $sign = strtoupper(hash_hmac('sha256', strtoupper(md5($strTemp)), $apiKey));
         $params['sign'] = $sign;
@@ -79,7 +78,9 @@ class TestController extends Controller {
         $xml = new SimpleXMLElement('<xml/>');
         array_walk_recursive($params, [$xml, 'addChild']);
         
-        dd(preg_replace('/^.+\n/', '', $xml->asXML()));
+        dd(
+            trim(preg_replace('/^.+\n/', '', $xml->asXML()), "\n")
+        );
         
     }
     
