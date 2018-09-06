@@ -60,6 +60,7 @@ XML;
                 'total_fee' => 1,
                 'trade_type' => 'MWEB',
             ];
+            ksort($params);
             $str = '';
             foreach ($params as $key => $value) {
                 $str .= $key . '=' . $value . '&';
@@ -67,6 +68,7 @@ XML;
             $strTemp = $str . 'key=' . $apiKey;
             $sign = strtoupper(md5($strTemp));
             $params['sign'] = $sign;
+            ksort($params);
             $params = array_flip($params);
             $xml = new SimpleXMLElement('<xml/>');
             array_walk_recursive($params, [$xml, 'addChild']);
