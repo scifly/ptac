@@ -72,7 +72,7 @@ XML;
      */
     public function index() {
 
-    
+        $this->sync();
         
     }
     
