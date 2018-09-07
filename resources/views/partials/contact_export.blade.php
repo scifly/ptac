@@ -13,7 +13,7 @@
                             {{ Form::label('range', '导出范围', [
                                 'class' => 'col-sm-3 control-label'
                             ]) }}
-                            <div class="col-sm-6" style="padding-top: 5px;">
+                            <div class="col-sm-6" style="padding-top: 5px;" id="range">
                                 @if (isset($departments))
                                     <input id="range0" checked type="radio" name="range" class="minimal" value="0">
                                     <label for="range0" style="{!! $lblStyle !!}">部门</label>

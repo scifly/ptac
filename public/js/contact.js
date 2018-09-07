@@ -144,7 +144,7 @@
                                 $studentId.remove();
                                 $studentPrev.after(result['html']['students']['original']['html']);
                             }
-                            if ($('.checked').find('input').val() === "1") {
+                            if ($('#range .checked').find('input').val() === "1") {
                                 $('#' + contact.options.classId).prop('disabled', true);
                             }
                             page.initSelect2();
