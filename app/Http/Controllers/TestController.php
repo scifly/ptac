@@ -71,17 +71,6 @@ XML;
      * @throws \Throwable
      */
     public function index() {
-
-        $this->sync();
-        
-    }
-    
-    /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     * @throws \Pusher\PusherException
-     * @throws Exception
-     */
-    private function sync() {
     
         if (Request::method() == 'POST') {
             $department = new Department;
@@ -97,7 +86,7 @@ XML;
         }
     
         return view('user.test');
-    
+        
     }
     
     public function apiCall() {
