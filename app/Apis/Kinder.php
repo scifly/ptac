@@ -156,7 +156,7 @@ class Kinder {
                     'did'     => head($user->departments->pluck('id')->toArray()),
                     'sex'     => $data['gender'] ? 0 : 1,
                     'cardid'  => 'n/a',
-                    'tel'     => head($user->mobiles->toArray()),
+                    'tel'     => head($user->mobiles->pluck('mobile')->toArray()),
                     'post'    => $user->group_id,
                     'status'  => $user->enabled,
                     'address' => 'n/a',
