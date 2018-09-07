@@ -89,7 +89,12 @@ XML;
             foreach ($users as $user) {
                 $kd = new Kinder('人员', 'create', $user, $response);
                 $result = $kd->sync();
-                $this->inform($result['msg'] . ' : ' . $user['realname'] . ' : ' . $user['id']);
+                $this->inform(
+                    $result['code'] . ' : ' .
+                    $result['msg'] . ' : ' .
+                    $user['realname'] . ' : ' .
+                    $user['id']
+                );
                 unset($kd);
             }
         }
