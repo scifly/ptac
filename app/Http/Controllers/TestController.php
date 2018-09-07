@@ -73,14 +73,23 @@ XML;
     public function index() {
     
         if (Request::method() == 'POST') {
-            $department = new Department;
-            $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();
+            // $department = new Department;
+            // $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();
+            // $response = ['userId' => null];
+            // foreach ($subs as $sub) {
+            //     $sub['parentid'] = $sub['parent_id'];
+            //     $kd = new Kinder('部门', 'create', $sub, $response);
+            //     $result = $kd->sync();
+            //     $this->inform($result['msg'] . ' : ' . $sub['name'] . ' : ' . $sub['id']);
+            //     unset($kd);
+            // }
+            
+            $users = User::where('id', '>', 800)->get()->toArray();
             $response = ['userId' => null];
-            foreach ($subs as $sub) {
-                $sub['parentid'] = $sub['parent_id'];
-                $kd = new Kinder('部门', 'create', $sub, $response);
+            foreach ($users as $user) {
+                $kd = new Kinder('人员', 'create', $user, $response);
                 $result = $kd->sync();
-                $this->inform($result['msg'] . ' : ' . $sub['name'] . ' : ' . $sub['id']);
+                $this->inform($result['msg'] . ' : ' . $user['realname'] . ' : ' . $user['id']);
                 unset($kd);
             }
         }
