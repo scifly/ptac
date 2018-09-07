@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
@@ -178,6 +179,7 @@ class Grade extends Model {
         ];
         $condition = 'School.id = ' . $this->schoolId();
         if (!in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
+            Log::debug('you');
             $condition .= ' AND Grade.id IN (' . implode(',', $this->gradeIds()) . ')';
         }
         
