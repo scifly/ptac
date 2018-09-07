@@ -84,8 +84,10 @@ function app_routes($acronym) {
     Route::get($p . 'stat', $c . '@stat');
     
     /** 布置作业 */
-    Route::any($acronym . '/homework', 'Wechat\HomeWorkController@index');
-    Route::any($acronym . '/notify', 'Wechat\HomeWorkController@notify');
+    $c = 'Wechat\HomeWorkController';
+    $p = $acronym . '/hw/';
+    Route::any($p, $c . '@index');
+    Route::any($p . 'notify', $c . '@notify');
     
     /** 微网站 */
     $c = 'Wechat\MobileSiteController';

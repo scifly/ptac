@@ -1,8 +1,13 @@
 <?php
 namespace App\Http\Controllers\Wechat;
 
+use App\Helpers\Wechat\JsApiPay;
+use App\Helpers\Wechat\WxPayApi;
+use App\Helpers\Wechat\WxPayConfig;
+use App\Helpers\Wechat\WxPayUnifiedOrder;
 use App\Http\Controllers\Controller;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use SimpleXMLElement;
 
@@ -29,44 +34,32 @@ class HomeWorkController extends Controller {
      */
     public function index() {
     
-        // return $this->hw->wIndex();
-        if (Request::method() == 'POST') {
-            $apiKey = '4372983891jkfdl43u2okjdkkdkfjkkk';
-            $nonce = $this->randomstring(32);
-            $ip = Request::ip();
-            $params = [
-                'appid' => 'wwefd1c6553e218347',
-                'body' => 'english',
-                'mch_id' => '1226652702',
-                'nonce_str' => $nonce,
-                'notify_url' => 'http://weixin.028lk.com/wlrj/notify',
-                'out_trade_no' => '1415659990',
-                'scene_info' => '{"h5_info": {"type":"Wap","wap_url":"http://weixin.028lk.com/wlrj/homework","wap_name":"english"}}',
-                'spbill_create_ip' => $ip,
-                'total_fee' => '1',
-                'trade_type' => 'MWEB',
-            ];
-            $str = '';
-            ksort($params);
-            foreach ($params as $key => $value) {
-                $str .= $key . '=' . $value . '&';
-            }
-            $strTemp = $str . 'key=' . $apiKey;
-            $sign = strtoupper(md5($strTemp));
-            $params['sign'] = $sign;
-            $params = array_flip($params);
-            $xml = new SimpleXMLElement('<xml/>');
-            array_walk_recursive($params, [$xml, 'addChild']);
-            $strXml = preg_replace('/^.+\n/', '', $xml->asXML());
-            $result = simplexml_load_string(
-                $this->curlPost(self::URL_UNIFIEDORDER, $strXml),
-                'SimpleXMLElement', LIBXML_NOCDATA
-            );
-
-            dd($result);
+        try {
+            $tools = new JsApiPay();
+            $openId = $tools->getOpenId();
+            $input = new WxPayUnifiedOrder();
+            $input->setBody("test");
+            $input->setAttach("test");
+            $input->setOutTradeNo("sdkphp" . date("YmdHis"));
+            $input->setTotalFee("1");
+            $input->setTimeStart(date("YmdHis"));
+            $input->setTimeExpire(date("YmdHis", time() + 600));
+            $input->setGoodsTag("test");
+            $input->setNotifyUrl("http://paysdk.weixin.qq.com/notify.php");
+            $input->setTradeType("JSAPI");
+            $input->setOpenId($openId);
+            $config = new WxPayConfig();
+            $order = WxPayApi::unifiedOrder($config, $input);
+    
+            return view('wechat.homework.index', [
+                'jsApiParameters' => $tools->getJsApiParameters($order),
+                'editAddress' => $tools->getEditAddressParameters()
+            ]);
+        } catch (Exception $e) {
+            Log::ERROR(json_encode($e));
         }
-
-        return view('wechat.homework.index');
+    
+        return 'something went wrong';
         
     }
     
@@ -127,6 +120,53 @@ class HomeWorkController extends Controller {
         }
         
         return $result;
+        
+    }
+    
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws Exception
+     */
+    private function html5pay() {
+    
+        // return $this->hw->wIndex();
+        if (Request::method() == 'POST') {
+            $apiKey = '4372983891jkfdl43u2okjdkkdkfjkkk';
+            $nonce = $this->randomstring(32);
+            $ip = Request::ip();
+            $params = [
+                'appid' => 'wwefd1c6553e218347',
+                'body' => 'english',
+                'mch_id' => '1226652702',
+                'nonce_str' => $nonce,
+                'notify_url' => 'http://weixin.028lk.com/wlrj/notify',
+                'out_trade_no' => '1415659990',
+                'scene_info' => '{"h5_info": {"type":"Wap","wap_url":"http://weixin.028lk.com/wlrj/homework","wap_name":"english"}}',
+                'spbill_create_ip' => $ip,
+                'total_fee' => '1',
+                'trade_type' => 'MWEB',
+            ];
+            $str = '';
+            ksort($params);
+            foreach ($params as $key => $value) {
+                $str .= $key . '=' . $value . '&';
+            }
+            $strTemp = $str . 'key=' . $apiKey;
+            $sign = strtoupper(md5($strTemp));
+            $params['sign'] = $sign;
+            $params = array_flip($params);
+            $xml = new SimpleXMLElement('<xml/>');
+            array_walk_recursive($params, [$xml, 'addChild']);
+            $strXml = preg_replace('/^.+\n/', '', $xml->asXML());
+            $result = simplexml_load_string(
+                $this->curlPost(self::URL_UNIFIEDORDER, $strXml),
+                'SimpleXMLElement', LIBXML_NOCDATA
+            );
+        
+            dd($result);
+        }
+    
+        return view('wechat.homework.index');
         
     }
     
