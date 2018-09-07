@@ -154,7 +154,7 @@ class Kinder {
                     'cnumber' => $data['userid'],
                     'cname'   => $data['realname'],
                     'did'     => head($user->departments->pluck('id')->toArray()),
-                    'sex'     => !$data['gender'],
+                    'sex'     => $data['gender'] ? 0 : 1,
                     'cardid'  => 'n/a',
                     'tel'     => head($user->mobiles->toArray()),
                     'post'    => $user->group_id,
