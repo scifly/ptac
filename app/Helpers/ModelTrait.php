@@ -657,7 +657,6 @@ trait ModelTrait {
         $userIds = $this->userIds($departmentId);
         foreach ($userIds as $id) {
             $user = User::find($id);
-            if (!$user) { Log::debug($id); }
             $$type = $user ? $user->{$type} : null;
             if ($$type) {
                 $ids[] = $$type->id;
