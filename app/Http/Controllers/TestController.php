@@ -84,7 +84,7 @@ XML;
             //     unset($kd);
             // }
             
-            $users = User::where('id', '>', 800)->get()->toArray();
+            $users = User::whereGroupId(11)->where('id', '>', 800)->get()->toArray();
             $response = ['userId' => null];
             foreach ($users as $user) {
                 $kd = new Kinder('人员', 'create', $user, $response);
