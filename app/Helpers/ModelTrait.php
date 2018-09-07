@@ -5,6 +5,7 @@ use App\Models\Corp;
 use App\Models\Menu;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use ReflectionClass;
 use App\Models\Squad;
@@ -655,7 +656,9 @@ trait ModelTrait {
         $ids = [];
         $userIds = $this->userIds($departmentId);
         foreach ($userIds as $id) {
-            $$type = User::find($id)->{$type};
+            $user = User::find($id);
+            if (!$user) { Log::debug($id); }
+            $$type = $user ? $user->{$type} : null;
             if ($$type) {
                 $ids[] = $$type->id;
             }
