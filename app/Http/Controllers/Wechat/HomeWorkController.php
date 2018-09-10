@@ -48,6 +48,7 @@ class HomeWorkController extends Controller {
             $input->setNotifyUrl("http://paysdk.weixin.qq.com/notify.php");
             $input->setTradeType("JSAPI");
             $input->setOpenId($openId);
+            Log::debug(json_encode($input));
             $config = new WxPayConfig();
             $order = WxPayApi::unifiedOrder($config, $input);
     
