@@ -12,7 +12,7 @@ function callpay() {
         jsApiCall();
     }
 }
-//调用微信JS api 支付
+// 调用微信JS api 支付
 function jsApiCall() {
     WeixinJSBridge.invoke(
         'getBrandWCPayRequest',
@@ -23,19 +23,22 @@ function jsApiCall() {
         }
     );
 }
-//获取共享地址
+// 获取共享地址
 function editAddress() {
     WeixinJSBridge.invoke(
         'editAddress',
         $.parseJSON($('#url').val()),
         function (res) {
-
             var value1 = res['proviceFirstStageName'],
                 value2 = res['addressCitySecondStageName'],
                 value3 = res['addressCountiesThirdStageName'],
                 value4 = res['addressDetailInfo'],
                 tel = res['telNumber'];
 
+            alert(value1);
+            alert(value2);
+            alert(value3);
+            alert(value4);
             alert(value1 + value2 + value3 + value4 + ":" + tel);
         }
     );
