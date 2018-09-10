@@ -40,18 +40,18 @@ function editAddress() {
         }
     );
 }
-window.onload = function () {
+$(document).on('WeixinJSBridgeReady',function(){
     alert('wtf');
-    $(document).on('WeixinJSBridgeReady',function(){
+    if (typeof WeixinJSBridge === "undefined") {
         if (document.addEventListener) {
             document.addEventListener('WeixinJSBridgeReady', editAddress, false);
         } else if (document.attachEvent) {
             document.attachEvent('WeixinJSBridgeReady', editAddress);
             document.attachEvent('onWeixinJSBridgeReady', editAddress);
         }
-    });
-    // if (typeof WeixinJSBridge === "undefined") {
-    // } else {
-    //     editAddress();
-    // }
-};
+    } else {
+        editAddress();
+    }
+});
+// window.onload = function () {
+// };
