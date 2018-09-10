@@ -138,7 +138,7 @@ class JsApiPay {
             Constant::WXERR[$result['errcode']]
         );
         $result = json_decode(
-            Wechat::convertToOpenid($accessToken, $result['UserID'], '1000002')
+            Wechat::convertToOpenid($accessToken, $result['UserId'], '1000002')
         );
         Log::debug(json_encode($result));
         exit;
