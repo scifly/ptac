@@ -53,10 +53,10 @@ class JsApiPay {
             // $baseUrl = urlencode('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . $_SERVER['QUERY_STRING']);
             // $url = $this->_createOauthUrlForCode($baseUrl);
             $url = Wechat::getCodeUrl('wwefd1c6553e218347', '1000002', Request::url());
-            Log::debug($url);
             Header("Location: $url");
             exit();
         } else {
+            Log::debug('code: ' . $_GET['code']);
             //获取code码，以获取openid
             $code = $_GET['code'];
             $openid = $this->getOpenidFromMp($code);
