@@ -25,6 +25,7 @@ function jsApiCall() {
 }
 //获取共享地址
 function editAddress() {
+    alert($('#url').val());
     WeixinJSBridge.invoke(
         'editAddress',
         $('#url').val(),
