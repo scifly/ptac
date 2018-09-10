@@ -41,8 +41,9 @@ function editAddress() {
     );
 }
 window.onload = function () {
+    alert($('#params').val());
     if (typeof WeixinJSBridge === "undefined") {
-        $(document).on('WeixinJSBridgeReady',function(){
+        $(document).on('WeixinJSBridgeReady', function(){
             if (document.addEventListener) {
                 document.addEventListener('WeixinJSBridgeReady', editAddress, false);
             } else if (document.attachEvent) {
