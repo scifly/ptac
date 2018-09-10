@@ -49,7 +49,6 @@ class JsApiPay {
         if (!isset($_GET['code'])) {
             //触发微信返回code码
             $baseUrl = urlencode('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . $_SERVER['QUERY_STRING']);
-            Log::debug($baseUrl);
             $url = $this->_createOauthUrlForCode($baseUrl);
             Header("Location: $url");
             exit();
@@ -136,6 +135,7 @@ class JsApiPay {
         }
         //运行curl，结果以jason形式返回
         $res = curl_exec($ch);
+        Log::debug(json_encode($res));
         curl_close($ch);
         //取出openid
         $data = json_decode($res, true);
