@@ -16,7 +16,7 @@ function callpay() {
 function jsApiCall() {
     WeixinJSBridge.invoke(
         'getBrandWCPayRequest',
-        $('#params').val(),
+        $.parseJSON($('#params').val()),
         function (res) {
             WeixinJSBridge.log(res['err_msg']);
             alert(res['err_code'] + res['err_desc'] + res['err_msg']);
@@ -27,7 +27,7 @@ function jsApiCall() {
 function editAddress() {
     WeixinJSBridge.invoke(
         'editAddress',
-        $('#url').val(),
+        $.parseJSON($('#url').val()),
         function (res) {
 
             var value1 = res['proviceFirstStageName'],
@@ -41,7 +41,6 @@ function editAddress() {
     );
 }
 window.onload = function () {
-    alert($('#params').val());
     if (typeof WeixinJSBridge === "undefined") {
         $(document).on('WeixinJSBridgeReady', function(){
             if (document.addEventListener) {
