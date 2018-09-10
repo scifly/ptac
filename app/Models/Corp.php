@@ -36,6 +36,10 @@ use Throwable;
  * @property int $department_id 对应的部门ID
  * @property string $encoding_aes_key 接收消息服务器配置项，用于加密消息体
  * @property string $token 接收消息服务器配置项，用于生成签名
+ * @property string|null $access_token 通讯录同步应用access_token
+ * @property int $departmentid 企业微信后台通讯录的根部门id
+ * @property string|null $mchid 微信支付商户号
+ * @property string|null $apikey 微信支付商户支付密钥
  * @method static Builder|Corp whereCorpid($value)
  * @method static Builder|Corp whereContactSyncSecret($value)
  * @method static Builder|Corp whereCreatedAt($value)
@@ -50,7 +54,9 @@ use Throwable;
  * @method static Builder|Corp whereCompanyId($value)
  * @method static Builder|Corp whereDepartmentId($value)
  * @method static Builder|Corp whereMenuId($value)
- * @mixin Eloquent
+ * @method static Builder|Corp whereApikey($value)
+ * @method static Builder|Corp whereMchid($value)
+ * @method static Builder|Corp whereAccessToken($value)
  * @property-read Company $company
  * @property-read Collection|Department[] $departments
  * @property-read Collection|Grade[] $grades
@@ -58,9 +64,8 @@ use Throwable;
  * @property-read Collection|Tag[] $tags
  * @property-read Department $department
  * @property-read Menu $menu
- * @property string|null $access_token 通讯录同步应用access_token
  * @property-read Collection|App[] $apps
- * @method static Builder|Corp whereAccessToken($value)
+ * @mixin Eloquent
  */
 class Corp extends Model {
     
@@ -70,7 +75,8 @@ class Corp extends Model {
         'name', 'acronym', 'company_id', 'expire_at',
         'corpid', 'contact_sync_secret', 'access_token',
         'encoding_aes_key', 'token', 'menu_id',
-        'department_id', 'enabled',
+        'department_id', 'departmentid', 'mchid',
+        'apikey', 'enabled',
     ];
     
     /**

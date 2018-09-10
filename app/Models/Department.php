@@ -34,6 +34,7 @@ use Throwable;
  * @property Carbon|null $updated_at
  * @property int $enabled
  * @property int $department_type_id 所属部门类型ID
+ * @property int|null $synced 是否已同步到企业微信通讯录
  * @property-read Collection|Department[] $children
  * @property-read Company $company
  * @property-read Corp $corp
@@ -55,7 +56,6 @@ use Throwable;
  * @method static Builder|Department whereUpdatedAt($value)
  * @method static Builder|Department whereSynced($value)
  * @mixin Eloquent
- * @property int|null $synced 是否已同步到企业微信通讯录
  */
 class Department extends Model {
     
