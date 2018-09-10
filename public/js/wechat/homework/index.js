@@ -25,7 +25,6 @@ function jsApiCall() {
 }
 //获取共享地址
 function editAddress() {
-    alert($('#url').val());
     WeixinJSBridge.invoke(
         'editAddress',
         $('#url').val(),
@@ -42,11 +41,9 @@ function editAddress() {
     );
 }
 window.onload = function () {
-    editAddress();
     if (typeof WeixinJSBridge === "undefined") {
         $(document).on('WeixinJSBridgeReady',function(){
             if (document.addEventListener) {
-                alert('u');
                 document.addEventListener('WeixinJSBridgeReady', editAddress, false);
             } else if (document.attachEvent) {
                 document.attachEvent('WeixinJSBridgeReady', editAddress);
