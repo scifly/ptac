@@ -32,7 +32,7 @@ class JsApiPay {
      * @var array
      */
     public $data = null;
-    
+    protected $curl_timeout = 360;
     /**
      *
      * 通过跳转获取用户的openid，跳转流程如下：
@@ -117,7 +117,7 @@ class JsApiPay {
         $ua = "WXPaySDK/3.0.9 (" . PHP_OS . ") PHP/" . PHP_VERSION . " CURL/" . $curlVersion['version'] . " "
             . $config->getMerchantId();
         //设置超时
-        curl_setopt($ch, CURLOPT_TIMEOUT, $this->{'curl_timeout'});
+        curl_setopt($ch, CURLOPT_TIMEOUT, $this->curl_timeout);
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
