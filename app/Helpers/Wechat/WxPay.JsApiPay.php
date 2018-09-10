@@ -1,6 +1,7 @@
 <?php
 namespace App\Helpers\Wechat;
 use App\Facades\Wechat;
+use App\Helpers\HttpStatusCode;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
@@ -56,7 +57,6 @@ class JsApiPay {
             Header("Location: $url");
             exit();
         } else {
-            Log::debug('code: ' . $_GET['code']);
             //获取code码，以获取openid
             $code = $_GET['code'];
             $openid = $this->getOpenidFromMp($code);
@@ -115,38 +115,55 @@ class JsApiPay {
      */
     public function getOpenidFromMp($code) {
         
-        $url = $this->__createOauthUrlForOpenid($code);
-        //初始化curl
-        $ch = curl_init();
-        $curlVersion = curl_version();
-        $config = new WxPayConfig();
-        $ua = "WXPaySDK/3.0.9 (" . PHP_OS . ") PHP/" . PHP_VERSION . " CURL/" . $curlVersion['version'] . " "
-            . $config->getMerchantId();
-        //设置超时
-        curl_setopt($ch, CURLOPT_TIMEOUT, $this->curl_timeout);
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-        curl_setopt($ch, CURLOPT_USERAGENT, $ua);
-        curl_setopt($ch, CURLOPT_HEADER, FALSE);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        $proxyHost = "0.0.0.0";
-        $proxyPort = 0;
-        $config->getProxy($proxyHost, $proxyPort);
-        if ($proxyHost != "0.0.0.0" && $proxyPort != 0) {
-            curl_setopt($ch, CURLOPT_PROXY, $proxyHost);
-            curl_setopt($ch, CURLOPT_PROXYPORT, $proxyPort);
+        // $url = $this->__createOauthUrlForOpenid($code);
+        $token = Wechat::getAccessToken(
+            'wwefd1c6553e218347',
+            'EfS77mm40eYEJgLVJSeuWQgx0odW2vumk2rOxSBvnvg'
+        );
+        if ($token['errcode']) {
+            abort(
+                HttpStatusCode::INTERNAL_SERVER_ERROR,
+                $token['errmsg']
+            );
         }
-        //运行curl，结果以jason形式返回
-        $res = curl_exec($ch);
-        Log::debug(json_encode($res));
-        curl_close($ch);
-        //取出openid
-        $data = json_decode($res, true);
-        $this->data = $data;
-        $openid = $data['openid'];
+        $result = json_decode(
+            Wechat::getUserInfo($token['access_token'], $code),
+            JSON_UNESCAPED_UNICODE
+        );
+        // //初始化curl
+        // $ch = curl_init();
+        // $curlVersion = curl_version();
+        // $config = new WxPayConfig();
+        // $ua = "WXPaySDK/3.0.9 (" . PHP_OS . ") PHP/" . PHP_VERSION . " CURL/" . $curlVersion['version'] . " "
+        //     . $config->getMerchantId();
+        // //设置超时
+        // curl_setopt($ch, CURLOPT_TIMEOUT, $this->curl_timeout);
+        // curl_setopt($ch, CURLOPT_URL, $url);
+        // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        // curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+        // curl_setopt($ch, CURLOPT_USERAGENT, $ua);
+        // curl_setopt($ch, CURLOPT_HEADER, FALSE);
+        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        // $proxyHost = "0.0.0.0";
+        // $proxyPort = 0;
+        // $config->getProxy($proxyHost, $proxyPort);
+        // if ($proxyHost != "0.0.0.0" && $proxyPort != 0) {
+        //     curl_setopt($ch, CURLOPT_PROXY, $proxyHost);
+        //     curl_setopt($ch, CURLOPT_PROXYPORT, $proxyPort);
+        // }
+        // //运行curl，结果以jason形式返回
+        // $res = curl_exec($ch);
+        // Log::debug(json_encode($res));
+        // curl_close($ch);
+        // //取出openid
+        // $data = json_decode($res, true);
+        // $this->data = $data;
+        // $openid = $data['openid'];
         
-        return $openid;
+        Log::debug(json_encode($result));
+        
+        exit;
+        return $data['openid'];
         
     }
     
