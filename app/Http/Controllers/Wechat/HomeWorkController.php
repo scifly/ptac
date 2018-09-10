@@ -56,7 +56,7 @@ class HomeWorkController extends Controller {
                 'editAddress' => $tools->getEditAddressParameters()
             ]);
         } catch (Exception $e) {
-            Log::ERROR(json_encode($e));
+            Log::ERROR(json_encode($e->getMessage()));
         }
     
         return 'something went wrong';
