@@ -38,7 +38,7 @@ class WxPayConfig extends WxPayConfigInterface {
      * 签名和验证签名方式， 支持md5和sha256方式
      **/
     public function getNotifyUrl() {
-        return "";
+        return "http://weixin.028lk.com/lkrj/hw/notify";
     }
     
     /**

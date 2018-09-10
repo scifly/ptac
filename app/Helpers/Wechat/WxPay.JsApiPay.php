@@ -1,5 +1,7 @@
 <?php
 namespace App\Helpers\Wechat;
+use Illuminate\Support\Facades\Log;
+
 /**
  * example目录下为简单的支付样例，仅能用于搭建快速体验微信支付使用
  * 样例的作用仅限于指导如何使用sdk，在安全上面仅做了简单处理， 复制使用样例代码时请慎重
@@ -47,6 +49,7 @@ class JsApiPay {
         if (!isset($_GET['code'])) {
             //触发微信返回code码
             $baseUrl = urlencode('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . $_SERVER['QUERY_STRING']);
+            Log::debug($baseUrl);
             $url = $this->_createOauthUrlForCode($baseUrl);
             Header("Location: $url");
             exit();
