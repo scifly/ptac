@@ -1,6 +1,8 @@
 <?php
 namespace App\Helpers\Wechat;
+use App\Facades\Wechat;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Request;
 
 /**
  * example目录下为简单的支付样例，仅能用于搭建快速体验微信支付使用
@@ -48,8 +50,9 @@ class JsApiPay {
         //通过code获得openid
         if (!isset($_GET['code'])) {
             //触发微信返回code码
-            $baseUrl = urlencode('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . $_SERVER['QUERY_STRING']);
-            $url = $this->_createOauthUrlForCode($baseUrl);
+            // $baseUrl = urlencode('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . $_SERVER['QUERY_STRING']);
+            // $url = $this->_createOauthUrlForCode($baseUrl);
+            $url = Wechat::getCodeUrl('wwefd1c6553e218347', '1000002', Request::url());
             Header("Location: $url");
             exit();
         } else {
