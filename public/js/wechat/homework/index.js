@@ -19,7 +19,9 @@ function jsApiCall() {
         $.parseJSON($('#params').val()),
         function (res) {
             WeixinJSBridge.log(res['err_msg']);
-            alert('wtf');
+            alert(res['err_code']);
+            alert(res['err_desc']);
+            alert(res['err_msg']);
             alert(res['err_code'] + res['err_desc'] + res['err_msg']);
         }
     );
