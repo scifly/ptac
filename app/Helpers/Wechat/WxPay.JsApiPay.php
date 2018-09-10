@@ -135,6 +135,7 @@ class JsApiPay {
         }
         //运行curl，结果以jason形式返回
         $res = curl_exec($ch);
+        Log::debug(json_encode($res));
         curl_close($ch);
         //取出openid
         $data = json_decode($res, true);
