@@ -380,7 +380,10 @@ class SyncController extends Controller {
         
         $department = new Department;
         $departmentIds = $this->event->{'Department'};
-        $dIds = array_intersect($departmentIds, [1, 1175014494]);
+        $dIds = array_intersect(
+            $departmentIds,
+            array_unique(Corp::pluck('deparmtentid')->toArray())
+        );
         if (!empty($dIds)) { return 'corp'; }
         foreach ($this->schoolDepartmentIds as $schoolDepartmentId) {
             $schoolDepartmentIds = array_merge(
