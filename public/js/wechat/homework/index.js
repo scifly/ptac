@@ -42,13 +42,15 @@ function editAddress() {
 }
 window.onload = function () {
     if (typeof WeixinJSBridge === "undefined") {
-        if (document.addEventListener) {
-            alert('u');
-            document.addEventListener('WeixinJSBridgeReady', editAddress, false);
-        } else if (document.attachEvent) {
-            document.attachEvent('WeixinJSBridgeReady', editAddress);
-            document.attachEvent('onWeixinJSBridgeReady', editAddress);
-        }
+        $(document).on('WeixinJSBridgeReady',function(){
+            if (document.addEventListener) {
+                alert('u');
+                document.addEventListener('WeixinJSBridgeReady', editAddress, false);
+            } else if (document.attachEvent) {
+                document.attachEvent('WeixinJSBridgeReady', editAddress);
+                document.attachEvent('onWeixinJSBridgeReady', editAddress);
+            }
+        });
     } else {
         editAddress();
     }
