@@ -19,6 +19,7 @@ function jsApiCall() {
         $.parseJSON($('#params').val()),
         function (res) {
             WeixinJSBridge.log(res['err_msg']);
+            alert('wtf');
             alert(res['err_code'] + res['err_desc'] + res['err_msg']);
         }
     );
@@ -35,10 +36,6 @@ function editAddress() {
                 value4 = res['addressDetailInfo'],
                 tel = res['telNumber'];
 
-            alert(value1);
-            alert(value2);
-            alert(value3);
-            alert(value4);
             alert(value1 + value2 + value3 + value4 + ":" + tel);
         }
     );
