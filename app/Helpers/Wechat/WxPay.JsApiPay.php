@@ -1,6 +1,7 @@
 <?php
 namespace App\Helpers\Wechat;
 use App\Facades\Wechat;
+use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
@@ -126,10 +127,21 @@ class JsApiPay {
                 $token['errmsg']
             );
         }
+        $accessToken = $token['access_token'];
         $result = json_decode(
-            Wechat::getUserInfo($token['access_token'], $code),
+            Wechat::getUserInfo($accessToken, $code),
             JSON_UNESCAPED_UNICODE
         );
+        abort_if(
+            $result['errcode'],
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            Constant::WXERR[$result['errcode']]
+        );
+        $result = json_decode(
+            Wechat::convertToOpenid($accessToken, $result['UserID'], '1000002')
+        );
+        Log::debug(json_encode($result));
+        exit;
         // //初始化curl
         // $ch = curl_init();
         // $curlVersion = curl_version();
@@ -160,9 +172,6 @@ class JsApiPay {
         // $this->data = $data;
         // $openid = $data['openid'];
         
-        Log::debug(json_encode($result));
-        
-        exit;
         return $data['openid'];
         
     }
