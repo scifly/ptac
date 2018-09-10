@@ -37,7 +37,6 @@ class HomeWorkController extends Controller {
         try {
             $tools = new JsApiPay();
             $openId = $tools->getOpenId();
-            Log::debug($openId);
             $input = new WxPayUnifiedOrder();
             $input->setBody("test");
             $input->setAttach("test");
@@ -58,7 +57,7 @@ class HomeWorkController extends Controller {
                 'editAddress' => $tools->getEditAddressParameters()
             ]);
         } catch (Exception $e) {
-            Log::ERROR(json_encode($e->getMessage()));
+            Log::ERROR($e->getMessage());
         }
     
         return 'something went wrong';
