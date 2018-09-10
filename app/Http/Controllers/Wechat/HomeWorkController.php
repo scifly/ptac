@@ -37,6 +37,7 @@ class HomeWorkController extends Controller {
         try {
             $tools = new JsApiPay();
             $openId = $tools->getOpenId();
+            Log::debug('openid: ' . $openId);
             $input = new WxPayUnifiedOrder();
             $input->setBody("test");
             $input->setAttach("test");
