@@ -52,7 +52,7 @@
                 ])
             @endif
             <div class="form-group">
-                {!! Form::label('corpid', '企业号ID', [
+                {!! Form::label('corpid', '企业ID', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
@@ -139,7 +139,9 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
-                        @include('partials.icon_addon', ['class' => 'fa-key'])
+                        <div class="input-group-addon" style="width: 45px;">
+                            <strong>商</strong>
+                        </div>
                         {!! Form::text('mchid', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请从微信商户平台复制粘贴到此处)',
