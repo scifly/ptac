@@ -39,7 +39,11 @@ class CorpRequest extends FormRequest {
             'corpid'              => 'required|string|max:18',
             'contact_sync_secret' => 'required|string|max:43',
             'encoding_aes_key'    => 'required|string',
-            'token'               => 'required|string'
+            'token'               => 'required|string',
+            'departmentid'        => 'required|integer',
+            'mchid'               => 'nullable|string|max:10',
+            'apikey'              => 'nullable|string|max:32',
+            'enabled'             => 'required|boolean'
         ];
         
     }
@@ -63,6 +67,15 @@ class CorpRequest extends FormRequest {
         }
         if (empty($input['token'])) {
             $input['token'] = '0';
+        }
+        if (empty($input['departmentid'])) {
+            $input['departmentid'] = 1;
+        }
+        if (empty($input['mchid'])) {
+            $input['mchid'] = '0';
+        }
+        if (empty($input['apikey'])) {
+            $input['apikey'] = '0';
         }
         
         $this->replace($input);

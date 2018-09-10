@@ -22,7 +22,6 @@ use Illuminate\Support\Facades\Request;
 class JsApiPay {
     
     /**
-     *
      * 网页授权接口微信服务器返回的数据，返回样例如下
      * {
      *  "access_token":"ACCESS_TOKEN",
@@ -67,47 +66,6 @@ class JsApiPay {
     
     /**
      *
-     * 构造获取code的url连接
-     * @param string $redirectUrl 微信服务器回跳的url，需要url编码
-     *
-     * @return string - 返回构造好的url
-     */
-    private function _createOauthUrlForCode($redirectUrl) {
-        
-        $config = new WxPayConfig();
-        $urlObj["appid"] = $config->getAppId();
-        $urlObj["redirect_uri"] = "$redirectUrl";
-        $urlObj["response_type"] = "code";
-        $urlObj["scope"] = "snsapi_base";
-        $urlObj["state"] = "STATE" . "#wechat_redirect";
-        $bizString = $this->toUrlParams($urlObj);
-        
-        return "https://open.weixin.qq.com/connect/oauth2/authorize?" . $bizString;
-        
-    }
-    
-    /**
-     * 拼接签名字符串
-     *
-     * @param array $urlObj
-     * @return string - 返回已经拼接好的字符串
-     */
-    private function toUrlParams($urlObj) {
-        
-        $buff = "";
-        foreach ($urlObj as $k => $v) {
-            if ($k != "sign") {
-                $buff .= $k . "=" . $v . "&";
-            }
-        }
-        $buff = trim($buff, "&");
-        
-        return $buff;
-        
-    }
-    
-    /**
-     *
      * 通过code从工作平台获取openid机器access_token
      * @param string $code 微信跳转回来带上的code
      *
@@ -144,56 +102,6 @@ class JsApiPay {
             Constant::WXERR[$result['errcode']]
         );
         return $result['openid'];
-        // $url = $this->__createOauthUrlForOpenid($code);
-        // //初始化curl
-        // $ch = curl_init();
-        // $curlVersion = curl_version();
-        // $config = new WxPayConfig();
-        // $ua = "WXPaySDK/3.0.9 (" . PHP_OS . ") PHP/" . PHP_VERSION . " CURL/" . $curlVersion['version'] . " "
-        //     . $config->getMerchantId();
-        // //设置超时
-        // curl_setopt($ch, CURLOPT_TIMEOUT, $this->curl_timeout);
-        // curl_setopt($ch, CURLOPT_URL, $url);
-        // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        // curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-        // curl_setopt($ch, CURLOPT_USERAGENT, $ua);
-        // curl_setopt($ch, CURLOPT_HEADER, FALSE);
-        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        // $proxyHost = "0.0.0.0";
-        // $proxyPort = 0;
-        // $config->getProxy($proxyHost, $proxyPort);
-        // if ($proxyHost != "0.0.0.0" && $proxyPort != 0) {
-        //     curl_setopt($ch, CURLOPT_PROXY, $proxyHost);
-        //     curl_setopt($ch, CURLOPT_PROXYPORT, $proxyPort);
-        // }
-        // //运行curl，结果以jason形式返回
-        // $res = curl_exec($ch);
-        // Log::debug(json_encode($res));
-        // curl_close($ch);
-        // //取出openid
-        // $data = json_decode($res, true);
-        // $this->data = $data;
-        // $openid = $data['openid'];
-        // return $openid;
-        
-    }
-    
-    /**
-     *
-     * 构造获取open和access_toke的url地址
-     * @param $code
-     * @return string - 请求的url
-     */
-    private function __createOauthUrlForOpenid($code) {
-        
-        $config = new WxPayConfig();
-        $urlObj["appid"] = $config->getAppId();
-        $urlObj["secret"] = $config->getAppSecret();
-        $urlObj["code"] = $code;
-        $urlObj["grant_type"] = "authorization_code";
-        $bizString = $this->toUrlParams($urlObj);
-        
-        return "https://api.weixin.qq.com/sns/oauth2/access_token?" . $bizString;
         
     }
     
@@ -256,6 +164,26 @@ class JsApiPay {
         $parameters = json_encode($afterData);
         
         return $parameters;
+        
+    }
+    
+    /**
+     * 拼接签名字符串
+     *
+     * @param array $urlObj
+     * @return string - 返回已经拼接好的字符串
+     */
+    private function toUrlParams($urlObj) {
+        
+        $buff = "";
+        foreach ($urlObj as $k => $v) {
+            if ($k != "sign") {
+                $buff .= $k . "=" . $v . "&";
+            }
+        }
+        $buff = trim($buff, "&");
+        
+        return $buff;
         
     }
     

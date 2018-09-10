@@ -118,6 +118,51 @@
                     </div>
                 </div>
             </div>
+            <div class="form-group">
+                {!! Form::label('departmentid', '根部门id', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    <div class="input-group" style="width: 100%;">
+                        @include('partials.icon_addon', ['class' => 'fa-sitemap'])
+                        {!! Form::text('departmentid', null, [
+                            'class' => 'form-control text-blue',
+                            'placeholder' => '(请从企业微信后台复制粘贴到此处)',
+                            'type' => 'number'
+                        ]) !!}
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('mchid', '商户号', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    <div class="input-group" style="width: 100%;">
+                        @include('partials.icon_addon', ['class' => 'fa-key'])
+                        {!! Form::text('mchid', null, [
+                            'class' => 'form-control text-blue',
+                            'placeholder' => '(请从微信商户平台复制粘贴到此处)',
+                            'data-parsley-length' => '[0, 255]'
+                        ]) !!}
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('apikey', '商户支付密钥', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    <div class="input-group" style="width: 100%;">
+                        @include('partials.icon_addon', ['class' => 'fa-key'])
+                        {!! Form::text('apikey', null, [
+                            'class' => 'form-control text-blue',
+                            'placeholder' => '(请从微信商户平台复制粘贴到此处)',
+                            'data-parsley-length' => '[0, 255]'
+                        ]) !!}
+                    </div>
+                </div>
+            </div>
             @if (isset($corp['department_id']))
                 {!! Form::hidden('department_id', $corp['department_id']) !!}
             @endif
