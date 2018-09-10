@@ -16,12 +16,12 @@
 </div>
 @yield('search')
 <script src="{{ asset('/js/jquery.min.js') }}"></script>
-{{--<script src="{{ asset('/js/wechat/fastclick.js') }}"></script>--}}
-{{--<script src="{{ asset('/js/wechat/jquery-weui.min.js') }}"></script>--}}
-{{--<script src="{{ asset('/js/wechat/swiper.js') }}"></script>--}}
-{{--<script src="{{ asset('/js/wechat/jweixin.js') }}"></script>--}}
-{{--<script src="{{ asset('/js/wechat/wap.js') }}"></script>--}}
-{{--<script src="{{ asset('/js/plugins/echarts/echarts.common.min.js') }}"></script>--}}
+<script src="{{ asset('/js/wechat/fastclick.js') }}"></script>
+<script src="{{ asset('/js/wechat/jquery-weui.min.js') }}"></script>
+<script src="{{ asset('/js/wechat/swiper.js') }}"></script>
+<script src="{{ asset('/js/wechat/jweixin.js') }}"></script>
+<script src="{{ asset('/js/wechat/wap.js') }}"></script>
+<script src="{{ asset('/js/plugins/echarts/echarts.common.min.js') }}"></script>
 @yield('script')
 </body>
 </html>
