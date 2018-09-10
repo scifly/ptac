@@ -1,3 +1,4 @@
+alert('wtf');
 $('#pay').on('click', function () { callpay(); });
 
 function callpay() {
