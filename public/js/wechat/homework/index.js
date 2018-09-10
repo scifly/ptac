@@ -25,7 +25,6 @@ function jsApiCall() {
 }
 //获取共享地址
 function editAddress() {
-    alert($('#url').val());
     WeixinJSBridge.invoke(
         'editAddress',
         $('#url').val(),
@@ -37,25 +36,22 @@ function editAddress() {
                 value4 = res['addressDetailInfo'],
                 tel = res['telNumber'];
 
-            alert(value1);
-            alert(value2);
-            alert(value3);
-            alert(value4);
-            alert(tel);
             alert(value1 + value2 + value3 + value4 + ":" + tel);
         }
     );
 }
 window.onload = function () {
     alert('wtf');
-    if (typeof WeixinJSBridge === "undefined") {
+    $(document).on('WeixinJSBridgeReady',function(){
         if (document.addEventListener) {
             document.addEventListener('WeixinJSBridgeReady', editAddress, false);
         } else if (document.attachEvent) {
             document.attachEvent('WeixinJSBridgeReady', editAddress);
             document.attachEvent('onWeixinJSBridgeReady', editAddress);
         }
-    } else {
-        editAddress();
-    }
+    });
+    // if (typeof WeixinJSBridge === "undefined") {
+    // } else {
+    //     editAddress();
+    // }
 };
