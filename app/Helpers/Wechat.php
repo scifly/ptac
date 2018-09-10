@@ -426,11 +426,11 @@ class Wechat {
      * @return mixed
      * @throws Exception
      */
-    function convertToOpenid($accessToken, $userId, $agentId) {
+    function convertToOpenid($accessToken, $userId/*, $agentId*/) {
         
         return self::curlPost(
             sprintf(self::URL_USERID_TO_OPENID, $accessToken),
-            json_encode(['userid' => $userId, 'agentid' => $agentId])
+            json_encode(['userid' => $userId/*, 'agentid' => $agentId*/])
         );
         
     }
