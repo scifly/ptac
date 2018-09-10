@@ -3,7 +3,6 @@ namespace App\Helpers\Wechat;
 use App\Facades\Wechat;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -115,8 +114,7 @@ class JsApiPay {
      * @return string openid
      */
     public function getOpenidFromMp($code) {
-        
-        // $url = $this->__createOauthUrlForOpenid($code);
+    
         $token = Wechat::getAccessToken(
             'wwefd1c6553e218347',
             'EfS77mm40eYEJgLVJSeuWQgx0odW2vumk2rOxSBvnvg'
@@ -138,10 +136,15 @@ class JsApiPay {
             Constant::WXERR[$result['errcode']]
         );
         $result = json_decode(
-            Wechat::convertToOpenid($accessToken, $result['UserId'], '1000002')
+            Wechat::convertToOpenid($accessToken, $result['UserId'], '1000002'), true
         );
-        Log::debug(json_encode($result));
-        exit;
+        abort_if(
+            $result['errcode'],
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            Constant::WXERR[$result['errcode']]
+        );
+        return $result['openid'];
+        // $url = $this->__createOauthUrlForOpenid($code);
         // //初始化curl
         // $ch = curl_init();
         // $curlVersion = curl_version();
@@ -171,8 +174,7 @@ class JsApiPay {
         // $data = json_decode($res, true);
         // $this->data = $data;
         // $openid = $data['openid'];
-        
-        return $data['openid'];
+        // return $openid;
         
     }
     
