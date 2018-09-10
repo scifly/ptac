@@ -29,12 +29,18 @@ function editAddress() {
         'editAddress',
         $('#url').val(),
         function (res) {
+
             var value1 = res['proviceFirstStageName'],
                 value2 = res['addressCitySecondStageName'],
                 value3 = res['addressCountiesThirdStageName'],
                 value4 = res['addressDetailInfo'],
                 tel = res['telNumber'];
 
+            alert(value1);
+            alert(value2);
+            alert(value3);
+            alert(value4);
+            alert(tel);
             alert(value1 + value2 + value3 + value4 + ":" + tel);
         }
     );
