@@ -41,7 +41,6 @@ function editAddress() {
     );
 }
 window.onload = function () {
-    alert('wtf');
     if (typeof WeixinJSBridge === "undefined") {
         if (document.addEventListener) {
             document.addEventListener('WeixinJSBridgeReady', editAddress, false);
