@@ -265,7 +265,7 @@ class Student extends Model {
                 ]);
                 unset($du);
                 # 创建企业号成员
-                $user->createWechatUser($user->id);
+                // $user->createWechatUser($user->id);
             });
         } catch (Exception $e) {
             throw $e;
@@ -328,7 +328,7 @@ class Student extends Model {
                 ]);
                 unset($du);
                 # 更新企业号成员
-                $user->UpdateWechatUser($user->id);
+                // $user->UpdateWechatUser($user->id);
             });
         } catch (Exception $e) {
             throw $e;

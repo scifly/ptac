@@ -1,12 +1,18 @@
 <?php
 namespace App\Http\Controllers\Wechat;
 
+use App\Facades\Wechat;
+use App\Helpers\Constant;
+use App\Helpers\HttpStatusCode;
 use App\Helpers\Wechat\JsApiPay;
 use App\Helpers\Wechat\WxPayApi;
 use App\Helpers\Wechat\WxPayConfig;
 use App\Helpers\Wechat\WxPayUnifiedOrder;
 use App\Http\Controllers\Controller;
+use App\Models\App;
+use App\Models\Corp;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use SimpleXMLElement;
@@ -35,8 +41,6 @@ class HomeWorkController extends Controller {
     public function index() {
     
         try {
-            $tools = new JsApiPay();
-            $openId = $tools->getOpenId();
             $input = new WxPayUnifiedOrder();
             $input->setBody("test");
             $input->setAttach("test");
@@ -47,13 +51,14 @@ class HomeWorkController extends Controller {
             $input->setGoodsTag("test");
             $input->setNotifyUrl("http://paysdk.weixin.qq.com/notify.php");
             $input->setTradeType("JSAPI");
-            $input->setOpenId($openId);
+            $input->setOpenId($this->openId());
             $config = new WxPayConfig();
             $order = WxPayApi::unifiedOrder($config, $input);
-            Log::debug(json_encode($order));
+            $jsApiPay = new JsApiPay();
+            
             return view('wechat.homework.index', [
-                'jsApiParameters' => $tools->getJsApiParameters($order),
-                'editAddress' => $tools->getEditAddressParameters()
+                'jsApiParameters' => $jsApiPay->getJsApiParameters($order),
+                'editAddress' => $jsApiPay->getEditAddressParameters()
             ]);
         } catch (Exception $e) {
             Log::ERROR($e->getMessage());
@@ -167,6 +172,36 @@ class HomeWorkController extends Controller {
         }
     
         return view('wechat.homework.index');
+        
+    }
+    
+    /**
+     * 获取当前登录用户的openid
+     *
+     * @return mixed
+     */
+    private function openid() {
+    
+        $corp = Corp::find(session('corpId'));
+        $paths = explode('/', Request::path());
+        $app = App::whereCorpId($corp->id)->where('name', Constant::APPS[$paths[1]])->first();
+        $token = Wechat::getAccessToken($corp->corpid, $app->secret);
+        abort_if(
+            $token['errcode'],
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            $token['errmsg']
+        );
+        $user = Auth::user();
+        $result = json_decode(
+            Wechat::convertToOpenid($token['access_token'], $user->userid), true
+        );
+        abort_if(
+            $result['errcode'],
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            Constant::WXERR[$result['errcode']]
+        );
+        
+        return $result['openid'];
         
     }
     

@@ -748,7 +748,10 @@ class User extends Authenticatable {
         
         try {
             DB::transaction(function () use ($id, $broadcast) {
-                $this->deleteWechatUser($id, $broadcast);
+                $user = $this->find($id);
+                if (!$user->student) {
+                    $this->deleteWechatUser($id, $broadcast);
+                }
                 DepartmentUser::whereUserId($id)->delete();
                 TagUser::whereUserId($id)->delete();
                 Tag::whereUserId($id)->delete();
@@ -762,7 +765,7 @@ class User extends Authenticatable {
                 (new Event)->removeUser($id);
                 (new Message)->removeUser($id);
                 MessageReply::whereUserId($id)->delete();
-                $this->find($id)->delete();
+                $user->delete();
             });
         } catch (Exception $e) {
             throw $e;
