@@ -98,11 +98,12 @@ class ImportScore implements ShouldQueue {
                 $illegals[] = array_values($datum);
                 continue;
             }
-            $scoreExists = Score::whereEnabled(1)
-                ->whereExamId($score['exam_id'])
-                ->whereStudentId($student->id)
-                ->whereSubjectId($score['subject_id'])
-                ->first();
+            $scoreExists = Score::where([
+                'exam_id'    => $score['exam_id'],
+                'student_id' => $student->id,
+                'subject_id' => $score['subject_id'],
+                'enabled'    => 1,
+            ])->first();
             if ($scoreExists) {
                 $updates[] = $score;
             } else {

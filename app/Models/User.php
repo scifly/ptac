@@ -464,11 +464,12 @@ class User extends Authenticatable {
      * 创建企业号会员
      *
      * @param $id
+     * @param bool $broadcast
      * @return bool
      */
-    function createWechatUser($id) {
+    function createWechatUser($id, $broadcast = true) {
         
-        return $this->sync($id, 'create');
+        return $this->sync($id, 'create', $broadcast);
         
     }
     

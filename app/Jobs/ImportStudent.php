@@ -186,7 +186,7 @@ class ImportStudent implements ShouldQueue {
                         'remark'         => $insert['remark'],
                         'enabled'        => 1,
                     ]);
-                    # 创建监护人关系
+                    # 保存监护关系
                     if (!empty($relationships)) {
                         foreach ($relationships as $r) {
                             $paths = explode(':', $r);
@@ -212,28 +212,28 @@ class ImportStudent implements ShouldQueue {
                                         'user_id' => $user['id'],
                                         'enabled' => 1,
                                     ]);
-                                    # 创建 监护关系
+                                    # 保存监护关系
                                     CustodianStudent::create([
                                         'custodian_id' => $c['id'],
                                         'student_id'   => $s['id'],
                                         'relationship' => $paths[0],
                                         'enabled'      => 1,
                                     ]);
-                                    # 创建监护人用户手机号码
+                                    # 保存监护人用户手机号码
                                     Mobile::create([
                                         'user_id'   => $user['id'],
                                         'mobile'    => $paths[3],
                                         'isdefault' => 1,
                                         'enabled'   => 1,
                                     ]);
-                                    # 创建部门成员
+                                    # 保存部门 & 用户绑定关系
                                     DepartmentUser::create([
                                         'department_id' => $insert['department_id'],
                                         'user_id'       => $user['id'],
                                         'enabled'       => 1,
                                     ]);
-                                    # 创建企业号成员
-                                    $user->createWechatUser($user['id']);
+                                    # 创建企业微信会员
+                                    $user->createWechatUser($user['id'], false);
                                 } else {
                                     # 手机号码存在时 更新user 再判断监护人是否存在 监护关系是否存在
                                     $user = User::find($m->user_id);
@@ -247,7 +247,7 @@ class ImportStudent implements ShouldQueue {
                                     if (empty($c)) {
                                         # 创建监护人
                                         $custodian = Custodian::create(['user_id' => $m->user_id]);
-                                        # 创建 监护关系
+                                        # 保存监护关系
                                         CustodianStudent::create([
                                             'custodian_id' => $custodian['id'],
                                             'student_id'   => $s['id'],
@@ -269,28 +269,27 @@ class ImportStudent implements ShouldQueue {
                                             ]);
                                         }
                                     }
-                                    # 更新部门成员
+                                    # 更新部门 & 用户绑定关系
                                     DepartmentUser::whereUserId($m->user_id)->delete();
                                     DepartmentUser::create([
                                         'department_id' => $insert['department_id'],
                                         'user_id'       => $m->user_id,
                                         'enabled'       => 1,
                                     ]);
-                                    # 更新企业号监护人成员
-                                    $user->updateWechatUser($m->user_id);
+                                    # 更新企业微信会员
+                                    $user->updateWechatUser($m->user_id, false);
                                 }
                             }
                         }
-                        
                     }
-                    # 创建学生用户手机号码
+                    # 保存学生用户手机号码
                     Mobile::create([
                         'user_id'   => $u['id'],
                         'mobile'    => $insert['mobile'],
                         'isdefault' => 1,
                         'enabled'   => 1,
                     ]);
-                    # 创建部门成员
+                    # 保存部门 & 用户绑定关系
                     DepartmentUser::create([
                         'department_id' => $insert['department_id'],
                         'user_id'       => $u['id'],
