@@ -411,16 +411,18 @@ class User extends Authenticatable {
                     'isleader'     => 0,
                     'subscribed'   => 0,
                 ]);
-                # 创建教职员工
-                Educator::create([
-                    'user_id'   => $user->id,
-                    'school_id' => $this->schoolId() ?? $data['school_id'],
-                    'sms_quote' => 0,
-                    'enabled'   => 1,
-                ]);
+                if (!in_array($user->group->name, ['运营', '企业'])) {
+                    # 创建教职员工
+                    Educator::create([
+                        'user_id'   => $user->id,
+                        'school_id' => $this->schoolId() ?? $data['school_id'],
+                        'sms_quote' => 0,
+                        'enabled'   => 1,
+                    ]);
+                }
                 # 保存手机号码
                 (new Mobile)->store($data['mobile'], $user);
-                # 保存用户&部门隶属关系
+                # 保存用户&部门绑定关系
                 (new DepartmentUser)->store([
                     'department_id' => $this->departmentId($data),
                     'user_id'       => $user->id,
