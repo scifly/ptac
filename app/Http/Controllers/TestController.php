@@ -53,30 +53,30 @@ class TestController extends Controller {
     public function index() {
     
         if (Request::method() == 'POST') {
-            // $department = new Department;
-            // $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();
-            // $response = ['userId' => null];
-            // foreach ($subs as $sub) {
-            //     $sub['parentid'] = $sub['parent_id'];
-            //     $kd = new Kinder('部门', 'create', $sub, $response);
-            //     $result = $kd->sync();
-            //     $this->inform($result['msg'] . ' : ' . $sub['name'] . ' : ' . $sub['id']);
-            //     unset($kd);
-            // }
-            
-            $users = User::whereGroupId(11)->where('id', '>', 800)->get()->toArray();
+            $department = new Department;
+            $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();
             $response = ['userId' => null];
-            foreach ($users as $user) {
-                $kd = new Kinder('人员', 'create', $user, $response);
+            foreach ($subs as $sub) {
+                $sub['parentid'] = $sub['parent_id'] == 33 ? 10000 : $sub['parent_id'] + 10000;
+                $kd = new Kinder('部门', 'create', $sub, $response);
                 $result = $kd->sync();
-                $this->inform(
-                    $result['code'] . ' : ' .
-                    $result['msg'] . ' : ' .
-                    $user['realname'] . ' : ' .
-                    $user['id']
-                );
+                $this->inform($result['msg'] . ' : ' . $sub['name'] . ' : ' . $sub['id']);
                 unset($kd);
             }
+            
+            // $users = User::whereGroupId(11)->where('id', '>', 800)->get()->toArray();
+            // $response = ['userId' => null];
+            // foreach ($users as $user) {
+            //     $kd = new Kinder('人员', 'create', $user, $response);
+            //     $result = $kd->sync();
+            //     $this->inform(
+            //         $result['code'] . ' : ' .
+            //         $result['msg'] . ' : ' .
+            //         $user['realname'] . ' : ' .
+            //         $user['id']
+            //     );
+            //     unset($kd);
+            // }
         }
     
         return view('user.test');

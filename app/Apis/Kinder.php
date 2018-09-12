@@ -17,7 +17,7 @@ class Kinder {
     const APP_ID = '5100000025';
     const APP_SECRET = 'B4C6F3A34F5936CEBA92C008F12B0396';
     // const URL = 'http://eccard.eicp.net:8078/Dispatch.aspx';
-    const URL = 'http://192.168.10.117:8084/Dispatch.aspx';
+    const URL = 'http://192.168.5.211:8084/Dispatch.aspx';
     const METHOD_CODE = [
         '10' => '新增部门',
         '11' => '编辑部门',
@@ -137,7 +137,7 @@ class Kinder {
                 $params = [
                     'did'         => $data['id'] + 10000,
                     'dname'       => $data['name'],
-                    'dfather'     => $data['parentid'] + 10000,
+                    'dfather'     => $data['parentid'],
                     'dexpiration' => '2020-09-01 23:59:59',
                     'dnumber'     => Department::find($data['id'])->users->count(),
                     'dtel'        => 'n/a',
@@ -153,7 +153,7 @@ class Kinder {
                     'cid'     => $user->id + 10000,
                     'cnumber' => $data['userid'],
                     'cname'   => $data['realname'],
-                    'did'     => head($user->departments->pluck('id')->toArray()),
+                    'did'     => head($user->departments->pluck('id')->toArray()) + 10000,
                     'sex'     => $data['gender'] ? 0 : 1,
                     'cardid'  => 'n/a',
                     'tel'     => head($user->mobiles->pluck('mobile')->toArray()),
