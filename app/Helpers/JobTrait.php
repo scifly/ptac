@@ -39,9 +39,7 @@ trait JobTrait {
                 $data['department'] = [$corp->departmentid];
             }
             $results[$corp->id] = $this->operate(
-                $corp->corpid, $corp->contact_sync_secret,
-                $action == 'delete' ? $data['userid'] : $data,
-                $action
+                $corp->corpid, $corp->contact_sync_secret, $data, $action
             );
         }
         
@@ -338,7 +336,7 @@ trait JobTrait {
             unset($data['corpIds']);
         }
         $action .= 'User';
-        $result = json_decode(Wechat::$action($accessToken, $data));
+        $result = json_decode(Wechat::$action($accessToken, $action == 'deleteUser' ? $data['userid'] : $data));
         # 企业微信通讯录不存在指定的会员，则创建该会员
         if ($result->{'errcode'} == 60111 && $action == 'updateUser') {
             $result = json_decode(Wechat::createUser($accessToken, $data));
