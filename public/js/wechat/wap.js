@@ -17,13 +17,21 @@ var wap = {
             yyyy = today.getFullYear();
 
         if (dd < 10) {
-            dd = '0' + dd
+            dd = '0' + dd;
+        }
+        if (mm < 10) {
+            mm = '0' + mm;
         }
 
-        if ( mm < 10) {
-            mm = '0' + mm
-        }
-
-        return yyyy + '-' + mm + '-' + dd ;
+        return yyyy + '-' + mm + '-' + dd;
     }
 };
+var pusherKey = $('#pusher_key').attr('content'),
+    pusherCluster = $('#pusher_cluster').attr('content'),
+    memberId = $('#member_id').val(),
+    pusher = new Pusher(pusherKey, {cluster: pusherCluster, encrypted: true}),
+    channel = pusher.subscribe('member.' + memberId);
+
+channel.bind('broadcast', function (data) {
+    $.toptip(data['message'], 'success');
+});

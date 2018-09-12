@@ -1,11 +1,9 @@
 <?php
 namespace App\Http\Requests;
 
-use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Validation\Rule;
 
 /**
  * Class ScoreRequest

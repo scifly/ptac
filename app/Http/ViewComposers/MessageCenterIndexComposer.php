@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use App\Models\Message;
 use App\Models\MessageSendingLog;

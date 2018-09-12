@@ -9,7 +9,6 @@ use App\Rules\Mobile;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Validation\Rule;
 
 /**
  * Class OperatorRequest

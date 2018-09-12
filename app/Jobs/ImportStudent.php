@@ -389,7 +389,7 @@ class ImportStudent implements ShouldQueue {
                                         'enabled'       => 1,
                                     ]);
                                     # 创建企业号成员
-                                    $user->createWechatUser($user['id']);
+                                    $user->createWechatUser($user['id'], false);
                                 } else {
                                     # 手机号码存在 反查用户表
                                     $user = User::find($m->user_id);
@@ -434,7 +434,7 @@ class ImportStudent implements ShouldQueue {
                                         'enabled'       => 1,
                                     ]);
                                     # 更新企业号监护人成员
-                                    $user->updateWechatUser($m->user_id);
+                                    $user->updateWechatUser($m->user_id, false);
                                 }
                             }
                         }
