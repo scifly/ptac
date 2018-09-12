@@ -44,7 +44,7 @@ class Mobile implements Rule {
             }
         }
         
-        return preg_match('/^1[34578][0-9]{9}$/', $this->mobile);
+        return preg_match('/^1[34578][0-9]{8}$/', $this->mobile);
         
     }
     
