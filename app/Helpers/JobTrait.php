@@ -34,6 +34,10 @@ trait JobTrait {
         $corps = Corp::whereIn('id', $data['corpIds'])->get();
         $results = [];
         foreach ($corps as $corp) {
+            $member = User::whereUserid($data['userid'])->first();
+            if (in_array($member->group->name, ['运营', '企业'])) {
+                $data['department'] = [$corp->departmentid];
+            }
             $results[$corp->id] = $this->operate(
                 $corp->corpid, $corp->contact_sync_secret,
                 $action == 'delete' ? $data['userid'] : $data,
