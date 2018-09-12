@@ -188,7 +188,7 @@ trait JobTrait {
      */
     function apiSync($action, $data, $response, $departmentId = null) {
     
-        foreach ($this->school_ids($departmentId) as $schoolId) {
+        foreach ($this->school_ids($data, $departmentId) as $schoolId) {
             $userIds = School::find($schoolId)->user_ids;
             if ($userIds) {
                 foreach (explode(',', $userIds) as $userId) {
@@ -224,10 +224,11 @@ trait JobTrait {
     /**
      * 返回被同步用户所属的学校id列表
      *
+     * @param array $data
      * @param null $departmntId
      * @return array|null
      */
-    private function school_ids($departmntId = null) {
+    private function school_ids(array $data, $departmntId = null) {
     
         $schoolIds = null;
         if ($departmntId) {
@@ -237,7 +238,7 @@ trait JobTrait {
                 )->first()->id
             ];
         }
-        $user = User::whereUserid($this->data['userid'])->first();
+        $user = User::whereUserid($data['userid'])->first();
         $role = $user->group->name;
         switch ($role) {
             case '学生':
