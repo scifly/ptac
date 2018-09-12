@@ -185,7 +185,10 @@ trait JobTrait {
     function apiSync($action, $data, $response, $departmentId = null) {
         
         $type = $departmentId ? '部门' : '人员';
-        foreach ($this->school_ids($data, $departmentId) as $schoolId) {
+        $schoolIds = $departmentId
+            ? [School::whereDepartmentId((new Department)->departmentId($departmentId))->first()->id]
+            : $data['schoolIds'];
+        foreach ($schoolIds as $schoolId) {
             $userIds = School::find($schoolId)->user_ids;
             if ($userIds) {
                 foreach (explode(',', $userIds) as $userId) {
@@ -213,48 +216,6 @@ trait JobTrait {
         ];
         
         return MessageSendingLog::create($msl)->id;
-        
-    }
-    
-    /**
-     * 返回被同步用户所属的学校id列表
-     *
-     * @param array $data
-     * @param null $departmntId
-     * @return array|null
-     */
-    private function school_ids(array $data, $departmntId = null) {
-        
-        $schoolIds = null;
-        if ($departmntId) {
-            return [
-                School::whereDepartmentId(
-                    (new Department)->departmentId($departmntId)
-                )->first()->id,
-            ];
-        }
-        $user = User::whereUserid($data['userid'])->first();
-        $role = $user->group->name;
-        switch ($role) {
-            case '学生':
-                $schoolIds = [$user->student->squad->grade->school_id];
-                break;
-            case '学校':
-            case '教职员工':
-                $schoolIds = [$user->educator->school_id];
-                break;
-            case '监护人':
-                $schoolIds = [];
-                foreach ($user->custodian->students as $student) {
-                    $schoolIds[] = $student->squad->grade->school_id;
-                }
-                $schoolIds = array_unique($schoolIds);
-                break;
-            default:
-                break;
-        }
-        
-        return $schoolIds ?? [];
         
     }
     

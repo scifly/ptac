@@ -486,6 +486,7 @@ class User extends Authenticatable {
     function sync($id, $action, $broadcast = true) {
         
         $user = $this->find($id);
+        $corpIds = $schoolIds = [];
         switch ($user->group->name) {
             case '运营':
                 $corpIds = Corp::pluck('id')->toArray();
@@ -495,17 +496,22 @@ class User extends Authenticatable {
                 $corpIds = [Corp::whereDepartmentId(head($departmentIds))->first()->id];
                 break;
             case '学生':
-                $corpIds = [$user->student->squad->grade->school->corp_id];
+                $school = $user->student->squad->grade->school;
+                $corpIds = [$school->corp_id];
+                $schoolIds = [$school->id];
                 break;
             case '监护人':
                 $students = $user->custodian->students;
-                $corpIds = [];
                 foreach ($students as $student) {
-                    $corpIds[] = $student->squad->grade->school->corp_id;
+                    $school = $student->squad->grade->school;
+                    $corpIds[] = $school->corp_id;
+                    $schoolIds[] = $school->id;
                 }
                 break;
             default: # 学校、教职员工或其他角色:
-                $corpIds = [$user->educator->school->corp_id];
+                $school = $user->educator->school;
+                $corpIds = [$school->corp_id];
+                $schoolIds = [$school->id];
                 break;
         }
         $data = [
@@ -513,6 +519,7 @@ class User extends Authenticatable {
             'userid'   => $user->userid,
             'position' => $user->group->name,
             'corpIds'  => $corpIds,
+            'schoolIds' => $schoolIds
         ];
         if ($action != 'delete') {
             $data = array_merge(
