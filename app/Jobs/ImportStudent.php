@@ -296,7 +296,7 @@ class ImportStudent implements ShouldQueue {
                         'enabled'       => 1,
                     ]);
                     # 创建企业号成员
-                    // $s->user->createWechatUser($u['id']);
+                    $s->user->createWechatUser($u['id']);
                 }
             });
         } catch (Exception $e) {
@@ -447,7 +447,7 @@ class ImportStudent implements ShouldQueue {
                         'enabled'       => 1,
                     ]);
                     # 更新企业号监护人成员
-                    // $student->user->updateWechatUser($student->user_id);
+                    $student->user->updateWechatUser($student->user_id);
                 }
             });
         } catch (Exception $e) {

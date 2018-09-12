@@ -38,11 +38,16 @@ trait JobTrait {
             if ($member && in_array($member->group->name, ['运营', '企业'])) {
                 $data['department'] = [$corp->departmentid];
             }
-            $results[$corp->id] = $this->operate(
-                $corp->corpid, $corp->contact_sync_secret,
-                $action == 'delete' ? $data['userid'] : $data,
-                $action
-            );
+            if ($member->group->name !== '学生') {
+                $result = $this->operate(
+                    $corp->corpid, $corp->contact_sync_secret,
+                    $action == 'delete' ? $data['userid'] : $data,
+                    $action
+                );
+            } else {
+                $result = ['errcode' => 0, 'errmsg' => __('messages.ok')];
+            }
+            $results[$corp->id] = $result;
         }
         
         return $results;
@@ -188,15 +193,13 @@ trait JobTrait {
      */
     function apiSync($action, $data, $response, $departmentId = null) {
     
+        $type = $departmentId ? '部门' : '人员';
         foreach ($this->school_ids($data, $departmentId) as $schoolId) {
             $userIds = School::find($schoolId)->user_ids;
             if ($userIds) {
                 foreach (explode(',', $userIds) as $userId) {
                     $className = 'App\\Apis\\' . ucfirst(User::find($userId)->position);
-                    $api = new $className(
-                        $departmentId ? '部门' : '人员',
-                        $action, $data, $response
-                    );
+                    $api = new $className($type, $action, $data, $response);
                     $api->{'sync'}();
                 }
             }
@@ -349,12 +352,11 @@ trait JobTrait {
                 }
             }
         }
-        $response = [
+        
+        return [
             'errcode' => $result->{'errcode'},
             'errmsg' => Constant::WXERR[$result->{'errcode'}]
         ];
-        
-        return $response;
         
     }
     
