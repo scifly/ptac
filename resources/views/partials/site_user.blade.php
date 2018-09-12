@@ -1,12 +1,12 @@
 {!! Form::hidden('userId', Auth::id(), ['id' => 'userId']) !!}
 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-    <img src="{{ Auth::user()->avatar_url ?? URL::asset('img/default.png') }}"
+    <img src="{{ empty(Auth::user()->avatar_url) ? URL::asset('img/default.png') : Auth::user()->avatar_url }}"
          class="user-image" alt="用户头像">
     <span class="hidden-xs">{{ Auth::user()->realname }}</span>
 </a>
 <ul class="dropdown-menu">
     <li class="user-header">
-        <img src="{{ Auth::user()->avatar_url ?? URL::asset('img/default.png') }}"
+        <img src="{{ empty(Auth::user()->avatar_url) ? URL::asset('img/default.png') : Auth::user()->avatar_url }}"
              class="img-circle" alt="用户头像">
         <p>
             {{ Auth::user()->realname }}
