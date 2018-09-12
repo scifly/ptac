@@ -38,16 +38,11 @@ trait JobTrait {
             if ($member && in_array($member->group->name, ['运营', '企业'])) {
                 $data['department'] = [$corp->departmentid];
             }
-            if ($member->group->name !== '学生') {
-                $result = $this->operate(
-                    $corp->corpid, $corp->contact_sync_secret,
-                    $action == 'delete' ? $data['userid'] : $data,
-                    $action
-                );
-            } else {
-                $result = ['errcode' => 0, 'errmsg' => __('messages.ok')];
-            }
-            $results[$corp->id] = $result;
+            $results[$corp->id] = $this->operate(
+                $corp->corpid, $corp->contact_sync_secret,
+                $action == 'delete' ? $data['userid'] : $data,
+                $action
+            );
         }
         
         return $results;
@@ -62,7 +57,7 @@ trait JobTrait {
      * @throws Throwable
      */
     function send(Message $message) {
-    
+        
         try {
             DB::transaction(function () use ($message) {
                 $content = json_decode($message->content, true);
@@ -70,7 +65,6 @@ trait JobTrait {
                     ->pluck('id')->toArray();
                 $departmentIds = explode('|', $content['toparty']);
                 $msgType = $content['msgtype'];
-    
                 if ($msgType == 'sms') {
                     list($logUsers, $mobiles) = $message->smsTargets($userIds, $departmentIds);
                     $result = $message->sendSms($mobiles, $content['sms']);
@@ -85,7 +79,6 @@ trait JobTrait {
                      */
                     list($smsMobiles, $smsLogUsers, $wxTargets, $wxLogUsers, $realTargetUsers) =
                         $message->wxTargets($userIds, $departmentIds);
-        
                     # step 1: 向已关注的用户（监护人、教职员工）发送微信
                     $subscribedTargets = $realTargetUsers->where('subscribed', 1);
                     if ($subscribedTargets->count()) {
@@ -125,7 +118,7 @@ trait JobTrait {
      * @throws Throwable
      */
     function import($job, $title) {
-    
+        
         $response = [
             'userId'     => $job->userId,
             'title'      => __($title),
@@ -141,10 +134,10 @@ trait JobTrait {
             try {
                 DB::transaction(function () use ($job, $inserts, $updates, $illegals, $title, &$response) {
                     event(new JobResponse([
-                        'userId' => $job->userId,
-                        'title' => __($title),
+                        'userId'     => $job->userId,
+                        'title'      => __($title),
                         'statusCode' => HttpStatusCode::ACCEPTED,
-                        'message' => !count($illegals)
+                        'message'    => !count($illegals)
                             ? sprintf(
                                 __('messages.import_request_submitted'),
                                 count($inserts), count($updates)
@@ -153,7 +146,7 @@ trait JobTrait {
                                 __('messages.import_request_submitted') .
                                 __('messages.import_illegals'),
                                 count($inserts), count($updates), count($illegals)
-                            )
+                            ),
                     ]));
                     # 插入数据
                     $job->{'insert'}($inserts);
@@ -178,7 +171,7 @@ trait JobTrait {
             }
         }
         event(new JobResponse($response));
-    
+        
         return true;
         
     }
@@ -192,7 +185,7 @@ trait JobTrait {
      * @param null $departmentId - 同步部门
      */
     function apiSync($action, $data, $response, $departmentId = null) {
-    
+        
         $type = $departmentId ? '部门' : '人员';
         foreach ($this->school_ids($data, $departmentId) as $schoolId) {
             $userIds = School::find($schoolId)->user_ids;
@@ -220,6 +213,7 @@ trait JobTrait {
             'received_count'  => 0,
             'recipient_count' => $recipients,
         ];
+        
         return MessageSendingLog::create($msl)->id;
         
     }
@@ -232,13 +226,13 @@ trait JobTrait {
      * @return array|null
      */
     private function school_ids(array $data, $departmntId = null) {
-    
+        
         $schoolIds = null;
         if ($departmntId) {
             return [
                 School::whereDepartmentId(
                     (new Department)->departmentId($departmntId)
-                )->first()->id
+                )->first()->id,
             ];
         }
         $user = User::whereUserid($data['userid'])->first();
@@ -330,10 +324,19 @@ trait JobTrait {
      */
     private function operate($corpid, $secret, $data, $action) {
         
+        # 角色为‘学生’的用户无需同步到企业微信
+        if ($data['position'] == '学生') {
+            return ['errcode' => 0, 'errmsg' => __('messages.ok')];
+        }
+        # 获取access_token
         $token = Wechat::getAccessToken($corpid, $secret, true);
-        if ($token['errcode']) { return $token; }
+        if ($token['errcode']) {
+            return $token;
+        }
         $accessToken = $token['access_token'];
-        if ($action != 'delete') { unset($data['corpIds']); }
+        if ($action != 'delete') {
+            unset($data['corpIds']);
+        }
         $action .= 'User';
         $result = json_decode(Wechat::$action($accessToken, $data));
         # 企业微信通讯录不存在指定的会员，则创建该会员
@@ -347,7 +350,7 @@ trait JobTrait {
                 if (!$member->{'errcode'} && $member->{'status'} == 1) {
                     User::whereUserid($data['userid'])->first()->update([
                         'avatar_url' => $member->{'avatar'},
-                        'subscribed' => 1
+                        'subscribed' => 1,
                     ]);
                 }
             }
@@ -355,7 +358,7 @@ trait JobTrait {
         
         return [
             'errcode' => $result->{'errcode'},
-            'errmsg' => Constant::WXERR[$result->{'errcode'}]
+            'errmsg'  => Constant::WXERR[$result->{'errcode'}],
         ];
         
     }

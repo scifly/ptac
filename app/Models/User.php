@@ -264,16 +264,16 @@ class User extends Authenticatable {
             ['db' => 'User.created_at', 'dt' => 7],
             ['db' => 'User.updated_at', 'dt' => 8],
             [
-                'db' => 'User.synced', 'dt' => 9,
+                'db'        => 'User.synced', 'dt' => 9,
                 'formatter' => function ($d) {
                     return $this->synced($d);
-                }
+                },
             ],
             [
-                'db' => 'User.subscribed', 'dt' => 10,
+                'db'        => 'User.subscribed', 'dt' => 10,
                 'formatter' => function ($d) {
                     return $this->subscribed($d);
-                }
+                },
             ],
             [
                 'db'        => 'User.enabled', 'dt' => 11,
@@ -508,29 +508,30 @@ class User extends Authenticatable {
                 $corpIds = [$user->educator->school->corp_id];
                 break;
         }
-        if ($action == 'delete') {
-            $data = [
-                'userid'  => $user->userid,
-                'corpIds' => $corpIds,
-            ];
-        } else {
-            $data = [
-                'corpIds'      => $corpIds,
-                'userid'       => $user->userid,
-                'name'         => $user->realname,
-                'english_name' => $user->english_name,
-                'position'     => $user->group->name,
-                'mobile'       => head(
-                    $user->mobiles
-                        ->where('isdefault', 1)
-                        ->pluck('mobile')->toArray()
-                ),
-                'email'        => $user->email,
-                'department'   => in_array($user->group->name, ['运营', '企业'])
-                    ? [1] : $user->departments->pluck('id')->toArray(),
-                'gender'       => $user->gender,
-                'enable'       => $user->enabled,
-            ];
+        $data = [
+            'id'       => $user->id,
+            'userid'   => $user->userid,
+            'position' => $user->group->name,
+            'corpIds'  => $corpIds,
+        ];
+        if ($action != 'delete') {
+            $data = array_merge(
+                $data,
+                [
+                    'name'         => $user->realname,
+                    'english_name' => $user->english_name,
+                    'mobile'       => head(
+                        $user->mobiles
+                            ->where('isdefault', 1)
+                            ->pluck('mobile')->toArray()
+                    ),
+                    'email'        => $user->email,
+                    'department'   => in_array($user->group->name, ['运营', '企业'])
+                        ? [1] : $user->departments->pluck('id')->toArray(),
+                    'gender'       => $user->gender,
+                    'enable'       => $user->enabled,
+                ]
+            );
         }
         SyncMember::dispatch($data, $broadcast ? Auth::id() : null, $action);
         
@@ -1005,7 +1006,6 @@ class User extends Authenticatable {
     }
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
-
     /**
      * 根据部门id获取部门所属学校的部门id
      *
