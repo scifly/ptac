@@ -536,6 +536,7 @@ class User extends Authenticatable {
                     'department'   => in_array($user->group->name, ['运营', '企业'])
                         ? [1] : $user->departments->pluck('id')->toArray(),
                     'gender'       => $user->gender,
+                    'remark'       => $user->student ? $user->student->oncampus : 'n/a',
                     'enable'       => $user->enabled,
                 ]
             );

@@ -160,7 +160,7 @@ class Kinder {
                     'post'    => $user->group_id,
                     'status'  => $user->enabled,
                     'address' => 'n/a',
-                    'remark'  => 'n/a',
+                    'remark'  => $data['remark'],
                     'bank'    => 'n/a',
                 ];
                 break;
