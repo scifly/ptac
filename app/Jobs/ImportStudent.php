@@ -183,7 +183,7 @@ class ImportStudent implements ShouldQueue {
                         'card_number'    => $insert['card_number'],
                         'oncampus'       => $insert['oncampus'] == '住读' ? '1' : '0',
                         'birthday'       => $insert['birthday'],
-                        'remark'         => $insert['remark'],
+                        'remark'         => $insert['remark'] ?? '导入',
                         'enabled'        => 1,
                     ]);
                     # 保存监护关系
