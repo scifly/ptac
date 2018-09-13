@@ -137,7 +137,7 @@ class Kinder {
                 $params = [
                     'did'         => $data['id'] + 10000,
                     'dname'       => $data['name'],
-                    'dfather'     => $data['parentid'],
+                    'dfather'     => $data['parentid'] == 33 ? 10000 : $data['parentid'] + 10000,
                     'dexpiration' => '2020-09-01 23:59:59',
                     'dnumber'     => Department::find($data['id'])->users->count(),
                     'dtel'        => 'n/a',
