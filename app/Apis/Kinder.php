@@ -17,7 +17,7 @@ class Kinder {
     const APP_ID = '5100000025';
     const APP_SECRET = 'B4C6F3A34F5936CEBA92C008F12B0396';
     // const URL = 'http://eccard.eicp.net:8078/Dispatch.aspx';
-    const URL = 'http://192.168.5.211:8084/Dispatch.aspx';
+    const URL = 'http://192.168.5.221:8084/Dispatch.aspx';
     const METHOD_CODE = [
         '10' => '新增部门',
         '11' => '编辑部门',
