@@ -2,6 +2,7 @@
 namespace App\Http\Requests;
 
 use App\Helpers\ModelTrait;
+use App\Models\Group;
 use App\Rules\Email;
 use App\Rules\Mobile;
 use Illuminate\Foundation\Http\FormRequest;
@@ -34,6 +35,7 @@ class StudentRequest extends FormRequest {
                 $this->input('user_id') . ',user_id',
             'user.realname'  => 'required|string',
             'user.gender'    => 'required|boolean',
+            'user.group_id'  => 'required|integer',
             'user.email'     => ['nullable', 'email', new Email],
             'mobile.*'       => ['nullable', new Mobile],
             'remark'         => 'required|string',
@@ -70,6 +72,7 @@ class StudentRequest extends FormRequest {
             if (!isset($input['remark'])) {
                 $input['remark'] = 'student';
             }
+            $input['user']['group_id'] = Group::whereName('学生')->first()->id;
             $this->replace($input);
         }
         

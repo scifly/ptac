@@ -228,7 +228,7 @@ class Student extends Model {
                 $user = User::create([
                     'username'     => $userid,
                     'userid'       => $userid,
-                    'group_id'     => Group::whereName('学生')->first()->id,
+                    'group_id'     => $data['user']['group_id'],
                     'password'     => bcrypt('student8888'),
                     'email'        => $data['user']['email'],
                     'realname'     => $data['user']['realname'],
@@ -293,7 +293,7 @@ class Student extends Model {
                 $user = User::find($data['user_id']);
                 # 更新用户
                 $user->update([
-                    'group_id'     => Group::whereName('学生')->first()->id,
+                    'group_id'     => $data['user']['group_id'],
                     'email'        => $data['user']['email'],
                     'realname'     => $data['user']['realname'],
                     'gender'       => $data['user']['gender'],
