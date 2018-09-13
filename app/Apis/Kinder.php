@@ -152,7 +152,7 @@ class Kinder {
                 $params = [
                     'cid'     => $user->id + 10000,
                     'cnumber' => $data['userid'],
-                    'cname'   => $data['realname'],
+                    'cname'   => $data['name'],
                     'did'     => head($user->departments->pluck('id')->toArray()) + 10000,
                     'sex'     => $data['gender'] ? 0 : 1,
                     'cardid'  => 'n/a',

@@ -48,7 +48,7 @@ class SyncMember implements ShouldQueue {
     
     /**
      * Execute the job.
-     *
+     *p
      * @return bool
      * @throws Exception
      */
