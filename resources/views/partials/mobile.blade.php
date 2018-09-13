@@ -21,25 +21,25 @@
                                 <div class="input-group">
                                     @include('partials.icon_addon', ['class' => 'fa-mobile'])
                                     <input class="form-control"
-                                           name="mobile[{{ $key }}][mobile]"
+                                           name="mobile[{!! $key !!}][mobile]"
                                            placeholder="(请输入手机号码)"
-                                           value='{{ $mobile->mobile }}'
+                                           value='{!! $mobile->mobile !!}'
                                            required
                                            pattern="/^1[0-9]{10}$/"
                                            style="width: 100%"
                                     />
                                     <input class="form-control"
-                                           name="mobile[{{ $key }}][id]"
+                                           name="mobile[{!! $key !!}][id]"
                                            type="hidden"
-                                           value='{{ $mobile->id }}'
+                                           value='{!! $mobile->id !!}'
                                     />
                                 </div>
                             </td>
                             <td class="text-center">
-                                <label for="mobile[isdefault]"></label>
                                 <input name="mobile[isdefault]"
-                                       value="{{ $key }}"
-                                       id="mobile[isdefault]"
+                                       value="{!! $key !!}"
+                                       id="mobile[isdefault]{!! $key !!}"
+                                       title="默认手机号码"
                                        type="radio"
                                        class="minimal"
                                        required
@@ -47,10 +47,10 @@
                                 />
                             </td>
                             <td class="text-center">
-                                <label for="mobile[{{ $key }}][enabled]"></label>
-                                <input name="mobile[{{ $key }}][enabled]"
-                                       value="{{ $mobile->enabled }}"
-                                       id="mobile[{{ $key }}][enabled]"
+                                <label for="mobile[{!! $key !!}][enabled]"></label>
+                                <input name="mobile[{!! $key !!}][enabled]"
+                                       value="{!! $mobile->enabled !!}"
+                                       id="mobile[{!! $key !!}][enabled]"
                                        type="checkbox"
                                        class="minimal"
                                        @if($mobile->enabled) checked @endif
@@ -91,10 +91,10 @@
                             </div>
                         </td>
                         <td class="text-center">
-                            <label for="mobile[isdefault]"></label>
                             <input id="mobile[isdefault]"
                                    name="mobile[isdefault]"
                                    value="0"
+                                   title="默认手机号码"
                                    checked
                                    type="radio"
                                    class="minimal"

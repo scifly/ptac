@@ -926,7 +926,7 @@ class Department extends Model {
             if (!$department) {
                 return null;
             }
-            $departmentType = $department->menuType->name;
+            $departmentType = $department->departmentType->name;
         }
         
         return $department->id;

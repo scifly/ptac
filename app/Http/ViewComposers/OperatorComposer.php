@@ -99,12 +99,8 @@ class OperatorComposer {
             default:
                 break;
         }
-        $mobiles = [];
-        if (Request::route('id')) {
-            $mobiles = User::find(Request::route('id'))->mobiles;
-        }
         $view->with([
-            'mobiles' => $mobiles,
+            'mobiles' => Request::route('id') ? User::find(Request::route('id'))->mobiles : [],
             'groups'  => $groups,
             'corps'   => $corps,
             'schools' => $schools,
