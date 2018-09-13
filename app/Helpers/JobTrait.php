@@ -3,7 +3,6 @@ namespace App\Helpers;
 
 use App\Events\JobResponse;
 use App\Models\Corp;
-use App\Models\Department;
 use App\Models\Message;
 use App\Models\MessageSendingLog;
 use App\Models\School;
