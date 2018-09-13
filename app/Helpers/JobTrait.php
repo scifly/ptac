@@ -185,10 +185,7 @@ trait JobTrait {
     function apiSync($action, $data, $response, $departmentId = null) {
         
         $type = $departmentId ? '部门' : '人员';
-        $schoolIds = $departmentId
-            ? [School::whereDepartmentId((new Department)->departmentId($departmentId))->first()->id]
-            : $data['schoolIds'];
-        foreach ($schoolIds as $schoolId) {
+        foreach ($data['schoolIds'] as $schoolId) {
             $userIds = School::find($schoolId)->user_ids;
             if ($userIds) {
                 foreach (explode(',', $userIds) as $userId) {

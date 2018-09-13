@@ -209,17 +209,23 @@ class Department extends Model {
     private function sync($id, $action) {
         
         $department = $this->find($id);
-        $data = $action == 'delete'
-            ? ['id' => $id, 'corp_id' => $this->corpId($id)]
-            : [
-                'id'       => $department->id,
-                'name'     => $department->name,
-                'parentid' => $department->departmentType->name == '学校'
-                    ? $department->school->corp->departmentid
-                    : $department->parent_id,
-                'order'    => $department->order,
-                'corp_id'  => $this->corpId($id),
-            ];
+        $data = [
+            'id' => $id,
+            'schoolIds' => [$this->schoolId()],
+            'corp_id' => $this->corpId($id)
+        ];
+        if ($action != 'delete') {
+            $data = array_merge(
+                $data,
+                [
+                    'name'     => $department->name,
+                    'parentid' => $department->departmentType->name == '学校'
+                        ? $department->school->corp->departmentid
+                        : $department->parent_id,
+                    'order'    => $department->order,
+                ]
+            );
+        }
         SyncDepartment::dispatch($data, Auth::id(), $action);
         
         return true;
