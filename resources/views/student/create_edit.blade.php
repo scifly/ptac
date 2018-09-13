@@ -170,7 +170,7 @@
             ])
             <!-- 备注 -->
             @include('partials.remark', [
-                'field' => 'user[remark]'
+                'field' => 'remark'
             ])
             <!-- 状态 -->
             @include('partials.enabled', [
