@@ -168,7 +168,7 @@ class ImportStudent implements ShouldQueue {
                         'group_id'   => Group::whereName('学生')->first()->id,
                         'password'   => bcrypt('student8888'),
                         'realname'   => $insert['name'],
-                        'gender'     => $insert['gender'] == '男' ? '0' : '1',
+                        'gender'     => $insert['gender'] == '男' ? '1' : '0',
                         'userid'     => uniqid('student_'),
                         'isleader'   => 0,
                         'enabled'    => 1,
@@ -181,7 +181,7 @@ class ImportStudent implements ShouldQueue {
                         'class_id'       => $insert['class_id'],
                         'student_number' => $insert['student_number'],
                         'card_number'    => $insert['card_number'],
-                        'oncampus'       => $insert['oncampus'] == '住读' ? '0' : '1',
+                        'oncampus'       => $insert['oncampus'] == '住读' ? '1' : '0',
                         'birthday'       => $insert['birthday'],
                         'remark'         => $insert['remark'],
                         'enabled'        => 1,
@@ -200,7 +200,7 @@ class ImportStudent implements ShouldQueue {
                                         'group_id'   => Group::whereName('监护人')->first()->id,
                                         'password'   => bcrypt('custodian8888'),
                                         'realname'   => $paths[1],
-                                        'gender'     => $paths[2] == '男' ? '0' : '1',
+                                        'gender'     => $paths[2] == '男' ? '1' : '0',
                                         'userid'     => uniqid('custodian_'),
                                         'isleader'   => 0,
                                         'enabled'    => 1,
@@ -330,13 +330,13 @@ class ImportStudent implements ShouldQueue {
                     $student = Student::whereStudentNumber($update['student_number'])->first();
                     $student->class_id = $update['class_id'];
                     $student->card_number = $update['card_number'];
-                    $student->oncampus = $update['oncampus'] == '住读' ? '0' : '1';
+                    $student->oncampus = $update['oncampus'] == '住读' ? '1' : '0';
                     $student->birthday = $update['birthday'];
                     $student->remark = $update['remark'];
                     $student->save();
                     User::find($student->user_id)->update([
                         'realname' => $update['name'],
-                        'gender'   => $update['gender'] == '男' ? '0' : '1',
+                        'gender'   => $update['gender'] == '男' ? '1' : '0',
                     ]);
                     Mobile::whereUserId($student->user_id)->update(['isdefault' => 0, 'enabled' => 0]);
                     Mobile::create([
@@ -359,7 +359,7 @@ class ImportStudent implements ShouldQueue {
                                         'group_id'   => Group::whereName('监护人')->first()->id,
                                         'password'   => bcrypt('custodian8888'),
                                         'realname'   => $paths[1],
-                                        'gender'     => $paths[2] == '男' ? '0' : '1',
+                                        'gender'     => $paths[2] == '男' ? '1' : '0',
                                         'userid'     => uniqid('custodian_'),
                                         'isleader'   => 0,
                                         'enabled'    => 1,
@@ -396,7 +396,7 @@ class ImportStudent implements ShouldQueue {
                                     # 用户存在时更新数据
                                     if (!empty($user)) {
                                         $user->realname = $paths[1];
-                                        $user->gender = $paths[2] == '男' ? '0' : '1';
+                                        $user->gender = $paths[2] == '男' ? '1' : '0';
                                         $user->save();
                                     }
                                     $c = Custodian::whereUserId($m->user_id)->first();
