@@ -77,7 +77,7 @@ class ImportStudent implements ShouldQueue {
         
         // unset($data[0]);
         $rules = [
-            'name'           => 'required|string|between:2,6',
+            'name'           => 'required|string|between:2,60',
             'gender'         => ['required', Rule::in(['男', '女'])],
             'birthday'       => 'required|date',
             'school'         => 'required|string|between:4,20',
