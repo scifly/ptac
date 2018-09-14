@@ -522,6 +522,18 @@ class User extends Authenticatable {
             'schoolIds' => $schoolIds
         ];
         if ($action != 'delete') {
+            $remark = '';
+            if ($user->student) {
+                $remark = $user->student->oncampus;
+            }
+            if ($user->custodian) {
+                $students = $user->custodian->students;
+                $remarks = [];
+                foreach ($students as $student) {
+                    $remarks[] = $student->name . '.' . $student->student_number;
+                }
+                $remark = implode(',', $remarks);
+            }
             $data = array_merge(
                 $data,
                 [
@@ -536,7 +548,7 @@ class User extends Authenticatable {
                     'department'   => in_array($user->group->name, ['运营', '企业'])
                         ? [1] : $user->departments->pluck('id')->toArray(),
                     'gender'       => $user->gender,
-                    'remark'       => $user->student ? $user->student->oncampus : 'n/a',
+                    'remark'       => $remark,
                     'enable'       => $user->enabled,
                 ]
             );

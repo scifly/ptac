@@ -55,7 +55,7 @@ class SyncMember implements ShouldQueue {
     public function handle() {
     
         # 同步至企业微信通讯录
-        $this->sync();
+        // $this->sync();
         # 同步至第三方合作伙伴通讯录(人员)
         $this->apiSync(
             $this->action,
