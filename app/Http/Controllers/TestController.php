@@ -88,7 +88,7 @@ class TestController extends Controller {
                         # 同步监护人
                         /** @var User $custodianUser */
                         $custodians = $user->student->custodians;
-                        if (!$custodians) { continue; }
+                        if ($custodians->isEmpty()) { continue; }
                         $custodianUser = $custodians->first()->user;
                         $custodianUser->{'name'} = $custodianUser->realname;
                         $custodianUser->{'remark'} = $user->realname . '.' . $user->student->student_number;
