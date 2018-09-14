@@ -402,6 +402,9 @@ var page = {
                                 $this.html(title);
                             } else {
                                 $this.find('input').addClass($this.attr('class'));
+                                if (!$this.find('input').hasClass('input-sm')) {
+                                    $this.find('input').addClass('input-sm');
+                                }
                             }
                         }
                     });
