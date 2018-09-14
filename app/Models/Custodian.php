@@ -168,7 +168,10 @@ class Custodian extends Model {
         $userIds = array_unique(
             DepartmentUser::whereIn('department_id', $departmentIds)->get()->pluck('user_id')->toArray()
         );
-        $condition = 'User.id IN (' . implode(',', $userIds) . ')';
+        $condition = 'User.group_id = ' . Group::whereName('监护人')->first()->id;
+        if (!empty($userIds)) {
+            $condition .= ' AND User.id IN (' . implode(',', $userIds) . ')';
+        }
         // $condition = 'Custodian.id IN (' . implode(',', $this->contactIds('custodian')) . ')';
         
         return Datatable::simple(

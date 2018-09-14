@@ -230,7 +230,10 @@ class Educator extends Model {
         $userIds = array_unique(
             DepartmentUser::whereIn('department_id', $departmentIds)->get()->pluck('user_id')->toArray()
         );
-        $condition = 'User.id IN (' . implode(',', $userIds) . ')';
+        $condition = 'User.group_id = ' . Group::whereName('教职员工')->where('school_id', $this->schoolId())->first()->id;
+        if (!empty($userIds)) {
+            $condition .= ' AND User.id IN (' . implode(',', $userIds) . ')';
+        }
         // $condition = 'Educator.id IN (' . implode(',', $this->contactIds('educator')) . ')';
         
         return Datatable::simple(
