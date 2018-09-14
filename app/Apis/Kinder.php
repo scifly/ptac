@@ -148,7 +148,7 @@ class Kinder {
                 break;
             case '13':      # 新增人员
             case '14':      # 编辑人员
-                $user = User::find($data['id'])->first();
+                $user = User::find($data['id']);
                 $params = [
                     'cid'     => $user->id + 10000,
                     'cnumber' => $data['userid'],
