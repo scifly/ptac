@@ -208,7 +208,10 @@ class Student extends Model {
         $userIds = array_unique(
             DepartmentUser::whereIn('department_id', $departmentIds)->get()->pluck('user_id')->toArray()
         );
-        $condition = 'User.id IN (' . implode(',', $userIds) . ')';
+        $condition = '';
+        if (!empty($userIds)) {
+            $condition = 'User.id IN (' . implode(',', $userIds) . ')';
+        }
         
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition
