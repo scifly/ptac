@@ -338,7 +338,7 @@ class ImportStudent implements ShouldQueue {
                     $student->card_number = $update['card_number'];
                     $student->oncampus = $update['oncampus'] == '住读' ? '1' : '0';
                     $student->birthday = $update['birthday'];
-                    $student->remark = $update['remark'];
+                    $student->remark = '导入';
                     $student->save();
                     User::find($student->user_id)->update([
                         'realname' => $update['name'],
@@ -373,7 +373,10 @@ class ImportStudent implements ShouldQueue {
                                         'subscribed' => 0,
                                     ]);
                                     # 创建监护人
-                                    $c = Custodian::create(['user_id' => $user['id']]);
+                                    $c = Custodian::create([
+                                        'user_id' => $user['id'],
+                                        'enabled' => 1
+                                    ]);
                                     # 创建 监护关系
                                     CustodianStudent::create([
                                         'custodian_id' => $c['id'],
