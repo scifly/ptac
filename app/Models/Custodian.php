@@ -164,7 +164,12 @@ class Custodian extends Model {
                 ],
             ],
         ];
-        $condition = 'Custodian.id IN (' . implode(',', $this->contactIds('custodian')) . ')';
+        $departmentIds = $this->departmentIds(Auth::id());
+        $userIds = array_unique(
+            DepartmentUser::whereIn('department_id', $departmentIds)->get()->pluck('user_id')->toArray()
+        );
+        $condition = 'User.id IN (' . implode(',', $userIds) . ')';
+        // $condition = 'Custodian.id IN (' . implode(',', $this->contactIds('custodian')) . ')';
         
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition

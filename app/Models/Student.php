@@ -203,7 +203,12 @@ class Student extends Model {
                 ],
             ],
         ];
-        $condition = 'Student.id In (' . implode(',', $this->contactIds('student')) . ')';
+        // $condition = 'Student.id In (' . implode(',', $this->contactIds('student')) . ')';
+        $departmentIds = $this->departmentIds(Auth::id());
+        $userIds = array_unique(
+            DepartmentUser::whereIn('department_id', $departmentIds)->get()->pluck('user_id')->toArray()
+        );
+        $condition = 'User.id IN (' . implode(',', $userIds) . ')';
         
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition
