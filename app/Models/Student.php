@@ -210,7 +210,7 @@ class Student extends Model {
         );
         $condition = 'User.group_id = ' . Group::whereName('学生')->first()->id;
         if (!empty($userIds)) {
-            $condition = ' AND User.id IN (' . implode(',', $userIds) . ')';
+            $condition .= ' AND User.id IN (' . implode(',', $userIds) . ')';
         }
         
         return Datatable::simple(
