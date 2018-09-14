@@ -20,7 +20,7 @@
                         <th>
                             @if (!is_array($title))
                                 {!! Form::text('', null, [
-                                    'class' => 'form-control input-sm',
+                                    'class' => 'form-control',
                                     'title' => '按"' . $title . '"过滤'
                                 ]) !!}
                             @else
