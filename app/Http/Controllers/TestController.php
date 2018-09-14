@@ -87,7 +87,9 @@ class TestController extends Controller {
                         unset($kd);
                         # 同步监护人
                         /** @var User $custodianUser */
-                        $custodianUser = $user->student->custodians->first()->user;
+                        $custodians = $user->student->custodians;
+                        if (!$custodians) { continue; }
+                        $custodianUser = $custodians->first()->user;
                         $custodianUser->{'name'} = $custodianUser->realname;
                         $custodianUser->{'remark'} = $user->realname . '.' . $user->student->student_number;
                         $kd = new Kinder('人员', 'create', $custodianUser->toArray(), $response);
