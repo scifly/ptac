@@ -399,7 +399,7 @@ var page = {
                             searchDisabled = $title.hasClass('searching_disabled');
                         if ($this.attr('class') !== 'undefined') {
                             if (searchDisabled) {
-                                $this.html(title);
+                                $this.html('');
                             } else {
                                 $this.find('input').addClass($this.attr('class'));
                             }
