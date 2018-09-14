@@ -230,7 +230,8 @@ class Educator extends Model {
         $userIds = array_unique(
             DepartmentUser::whereIn('department_id', $departmentIds)->get()->pluck('user_id')->toArray()
         );
-        $condition = 'User.group_id = ' . Group::whereName('教职员工')->where('school_id', $this->schoolId())->first()->id;
+        $role = Group::whereName('教职员工')->where('school_id', $this->schoolId())->first();
+        $condition = 'User.group_id = ' . ($role ? $role->id : 'null');
         if (!empty($userIds)) {
             $condition .= ' AND User.id IN (' . implode(',', $userIds) . ')';
         }
