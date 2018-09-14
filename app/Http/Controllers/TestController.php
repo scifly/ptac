@@ -66,7 +66,7 @@ class TestController extends Controller {
             // }
             try {
                 DB::transaction(function () {
-                    $studentUserIds = Student::all()->pluck('user_id')->toArray();
+                    $studentUserIds = Student::whereRemark('导入')->pluck('user_id')->toArray();
                     $users = User::whereIn('id', $studentUserIds)->get();
     
                     // $users = User::whereGroupId(11)->where('id', '>', 800)->get()->toArray();
