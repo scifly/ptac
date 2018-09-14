@@ -22,6 +22,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Throwable;
 use Validator;
@@ -192,6 +193,7 @@ class ImportStudent implements ShouldQueue {
                             $paths = explode(':', $r);
                             if (count($paths) == 4) {
                                 $m = Mobile::whereMobile($paths[3])->first();
+                                Log::debug($m->mobile);
                                 # 手机号码不存在时 增加监护人用户 如果存在则更新
                                 if (empty($m)) {
                                     # 创建监护人用户
