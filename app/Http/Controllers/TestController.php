@@ -6,6 +6,7 @@ use App\Facades\Wechat;
 use App\Helpers\ModelTrait;
 use App\Models\Corp;
 use App\Models\Department;
+use App\Models\Student;
 use App\Models\User;
 use Exception;
 use GuzzleHttp\Client;
@@ -53,30 +54,57 @@ class TestController extends Controller {
     public function index() {
     
         if (Request::method() == 'POST') {
-            $department = new Department;
-            $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();
-            $response = ['userId' => null];
-            foreach ($subs as $sub) {
-                $sub['parentid'] = $sub['parent_id'] == 33 ? 10000 : $sub['parent_id'] + 10000;
-                $kd = new Kinder('部门', 'create', $sub, $response);
-                $result = $kd->sync();
-                $this->inform($result['msg'] . ' : ' . $sub['name'] . ' : ' . $sub['id']);
-                unset($kd);
-            }
-            
-            // $users = User::whereGroupId(11)->where('id', '>', 800)->get()->toArray();
+            // $department = new Department;
+            // $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();
             // $response = ['userId' => null];
-            // foreach ($users as $user) {
-            //     $kd = new Kinder('人员', 'create', $user, $response);
+            // foreach ($subs as $sub) {
+            //     $sub['parentid'] = $sub['parent_id'] == 33 ? 10000 : $sub['parent_id'] + 10000;
+            //     $kd = new Kinder('部门', 'create', $sub, $response);
             //     $result = $kd->sync();
-            //     $this->inform(
-            //         $result['code'] . ' : ' .
-            //         $result['msg'] . ' : ' .
-            //         $user['realname'] . ' : ' .
-            //         $user['id']
-            //     );
+            //     $this->inform($result['msg'] . ' : ' . $sub['name'] . ' : ' . $sub['id']);
             //     unset($kd);
             // }
+            try {
+                DB::transaction(function () {
+                    $studentUserIds = Student::all()->pluck('user_id')->toArray();
+                    $users = User::whereIn('id', $studentUserIds)->get();
+    
+                    // $users = User::whereGroupId(11)->where('id', '>', 800)->get()->toArray();
+                    $response = ['userId' => null];
+                    /** @var User $user */
+                    foreach ($users as $user) {
+                        # 同步学生
+                        $user->{'name'} = $user->realname;
+                        $user->{'remark'} = $user->student->oncampus;
+                        $kd = new Kinder('人员', 'create', $user->toArray(), $response);
+                        $result = $kd->sync();
+                        $this->inform(
+                            $result['code'] . ' : ' .
+                            $result['msg'] . ' : ' .
+                            $user->realname . ' : ' .
+                            $user->id . ' : 学生'
+                        );
+                        unset($kd);
+                        # 同步监护人
+                        /** @var User $custodianUser */
+                        $custodianUser = $user->student->custodians->first()->user;
+                        $custodianUser->{'name'} = $custodianUser->realname;
+                        $custodianUser->{'remark'} = $user->realname . '.' . $user->student->student_number;
+                        $kd = new Kinder('人员', 'create', $custodianUser->toArray(), $response);
+                        $result = $kd->sync();
+                        $this->inform(
+                            $result['code'] . ' : ' .
+                            $result['msg'] . ' : ' .
+                            $custodianUser->realname . ' : ' .
+                            $custodianUser->id . ' : 监护人'
+                        );
+                        unset($kd);
+                    }
+                });
+            } catch (Exception $e) {
+                $this->inform($e->getMessage());
+            }
+            
         }
     
         return view('user.test');
