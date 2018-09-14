@@ -17,7 +17,12 @@
                 <tfoot style="display: table-header-group">
                 <tr>
                     @foreach ($titles as $title)
-                        <th>{!! $title !!}</th>
+                        <th>
+                            {!! Form::text('', null, [
+                                'class' => 'form-control input',
+                                'title' => '按"' . $title . '"过滤'
+                            ]) !!}
+                        </th>
                     @endforeach
                 </tr>
                 </tfoot>
