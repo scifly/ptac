@@ -246,7 +246,10 @@ class ImportStudent implements ShouldQueue {
                                     # 监护人不存在时
                                     if (empty($c)) {
                                         # 创建监护人
-                                        $custodian = Custodian::create(['user_id' => $m->user_id]);
+                                        $custodian = Custodian::create([
+                                            'user_id' => $m->user_id,
+                                            'enabled' => 1
+                                        ]);
                                         # 保存监护关系
                                         CustodianStudent::create([
                                             'custodian_id' => $custodian['id'],
