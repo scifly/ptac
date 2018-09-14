@@ -151,7 +151,6 @@ trait JobTrait {
                     $job->{'update'}($updates);
                     # 生成错误数据excel文件
                     if (!empty($illegals)) {
-                        Log::debug('wtf, 437892');
                         $job->{'excel'}($illegals, 'illegals', '错误数据', false);
                         $response['url'] = 'uploads/' . date('Y/m/d/') . 'illegals.xlsx';
                     }
