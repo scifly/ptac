@@ -44,7 +44,7 @@ class EducatorIndexComposer {
                         [-1 => '全部', 0 => '女', 1 => '男'], 'filter_gender'
                     )
                 ],
-                '职务', '创建于', '更新于', '同步状态',
+                '职务', '创建于', '更新于',
                 [
                     'title' => '同步状态',
                     'html' => $this->singleSelectList(

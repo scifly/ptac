@@ -395,7 +395,6 @@ var page = {
                     $('.dataTables_scrollFoot').find('tfoot th').each(function () {
                         var $this = $(this),
                             $title = $datatable.find('thead th:nth(' + $this.index() + ')'),
-                            title = $title.text(),
                             searchDisabled = $title.hasClass('searching_disabled');
                         if ($this.attr('class') !== 'undefined') {
                             if (searchDisabled) {
