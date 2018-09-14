@@ -193,6 +193,7 @@ class ImportStudent implements ShouldQueue {
                             $paths = explode(':', $r);
                             if (count($paths) == 4) {
                                 $m = Mobile::whereMobile($paths[3])->first();
+                                if (!empty($m)) { continue; }
                                 # 手机号码不存在时 增加监护人用户 如果存在则更新
                                 if (empty($m)) {
                                     # 创建监护人用户
