@@ -78,9 +78,9 @@ class Datatable {
         // Main query to actually get the data
         $fields = implode(", ", $this->pluck($columns, 'db'));
         $query = "SELECT SQL_CALC_FOUND_ROWS " . $fields . " FROM " . $from . $where . $order . $limit;
+        Log::debug($query);
         $data = DB::select($query);
         $query = "SELECT " . $useTable . ".id FROM " . $from . $where;
-        Log::debug($query);
         $ids = DB::select($query);
         $rowIds = [];
         foreach ($ids as $id) {
