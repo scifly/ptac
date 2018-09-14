@@ -208,9 +208,9 @@ class Student extends Model {
         $userIds = array_unique(
             DepartmentUser::whereIn('department_id', $departmentIds)->get()->pluck('user_id')->toArray()
         );
-        $condition = null;
+        $condition = 'User.group_id = ' . Group::whereName('学生')->first()->id;
         if (!empty($userIds)) {
-            $condition = 'User.id IN (' . implode(',', $userIds) . ')';
+            $condition = 'AND User.id IN (' . implode(',', $userIds) . ')';
         }
         
         return Datatable::simple(
