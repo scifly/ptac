@@ -8,7 +8,7 @@
             <thead>
             <tr class="bg-info">
                 @foreach ($titles as $title)
-                    <th>{!! $title !!}</th>
+                    <th>{!! !is_array($title) ? $title : $title['title'] !!}</th>
                 @endforeach
             </tr>
             </thead>
@@ -18,10 +18,14 @@
                 <tr>
                     @foreach ($titles as $title)
                         <th>
-                            {!! Form::text('', null, [
-                                'class' => 'form-control input-sm',
-                                'title' => '按"' . $title . '"过滤'
-                            ]) !!}
+                            @if (!is_array($title))
+                                {!! Form::text('', null, [
+                                    'class' => 'form-control input-sm',
+                                    'title' => '按"' . $title . '"过滤'
+                                ]) !!}
+                            @else
+                                {!! $title['html'] !!}
+                            @endif
                         </th>
                     @endforeach
                 </tr>

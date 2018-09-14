@@ -36,9 +36,34 @@ class EducatorIndexComposer {
             ],
             'batch'          => true,
             'filter'         => true,
-            'titles'         => [
-                '#', '姓名', '头像', '性别', '职务', '创建于', '更新于',
-                '同步状态', '关注状态', '状态 . 操作'],
+            'titles'        => [
+                '#', '姓名', '头像',
+                [
+                    'title' => '性别',
+                    'html' => $this->singleSelectList(
+                        [-1 => '全部', 0 => '女', 1 => '男'], 'filter_gender'
+                    )
+                ],
+                '职务', '创建于', '更新于', '同步状态',
+                [
+                    'title' => '同步状态',
+                    'html' => $this->singleSelectList(
+                        [-1 => '全部', 0 => '未同步', 1 => '已同步'], 'filter_synced'
+                    ),
+                ],
+                [
+                    'title' => '关注状态',
+                    'html' => $this->singleSelectList(
+                        [-1 => '全部', 0 => '未关注', 1 => '已关注'], 'filter_subscribed'
+                    )
+                ],
+                [
+                    'title' => '状态 . 操作',
+                    'html' => $this->singleSelectList(
+                        [-1 => '全部', 0 => '未启用', 1 => '已启用'], 'filter_enabled'
+                    )
+                ],
+            ],
             'departments'    => $departments,
             'importTemplate' => 'files/educators.xlsx',
             'title'          => '导出教职员工',
