@@ -378,9 +378,6 @@ var page = {
                 page.loadCss(plugins.datatable.multiCss);
                 $('.overlay').show();
                 $.fn.dataTable.ext.errMode = 'none';
-                // $datatable.find('tfoot th').each(function () {
-                //     $(this).html('<input type="text" class="form-control input-sm" />');
-                // });
                 $datatable.find('tfoot input').css('width', '100%');
                 var dt = $datatable.DataTable(params).on('init.dt', function () {
                     // $('.dt-buttons').addClass('pull-right');
@@ -404,8 +401,7 @@ var page = {
                             if (searchDisabled) {
                                 $this.html(title);
                             } else {
-                                // $this.find('input').addClass($this.attr('class'));
-                                // $this.find('input').attr('title', '按"' + title + '"过滤');
+                                $this.find('input').addClass($this.attr('class'));
                             }
                         }
                     });
