@@ -19,7 +19,7 @@
                     @foreach ($titles as $title)
                         <th>
                             {!! Form::text('', null, [
-                                'class' => 'form-control input',
+                                'class' => 'form-control input-sm',
                                 'title' => '按"' . $title . '"过滤'
                             ]) !!}
                         </th>
