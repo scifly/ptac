@@ -41,26 +41,26 @@ class EducatorIndexComposer {
                 [
                     'title' => '性别',
                     'html' => $this->singleSelectList(
-                        [-1 => '全部', 0 => '女', 1 => '男'], 'filter_gender'
+                        [null => '全部', 0 => '女', 1 => '男'], 'filter_gender'
                     )
                 ],
                 '职务', '创建于', '更新于',
                 [
                     'title' => '同步状态',
                     'html' => $this->singleSelectList(
-                        [-1 => '全部', 0 => '未同步', 1 => '已同步'], 'filter_synced'
+                        [null => '全部', 0 => '未同步', 1 => '已同步'], 'filter_synced'
                     ),
                 ],
                 [
                     'title' => '关注状态',
                     'html' => $this->singleSelectList(
-                        [-1 => '全部', 0 => '未关注', 1 => '已关注'], 'filter_subscribed'
+                        [null => '全部', 0 => '未关注', 1 => '已关注'], 'filter_subscribed'
                     )
                 ],
                 [
                     'title' => '状态 . 操作',
                     'html' => $this->singleSelectList(
-                        [-1 => '全部', 0 => '未启用', 1 => '已启用'], 'filter_enabled'
+                        [null => '全部', 0 => '未启用', 1 => '已启用'], 'filter_enabled'
                     )
                 ],
             ],
