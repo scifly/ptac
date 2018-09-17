@@ -430,6 +430,11 @@ var page = {
                         dt.columns(i).search(keyword).draw();
                     }
                 });
+                $(document).off('change', 'tfoot .select2');
+                $(document).on('change', 'tfoot .select2', function () {
+                    var i = $(this).parent().index();
+                    dt.columns(i).search($(this).val()).draw();
+                });
             },
             batch = function (action) {
                 var type = '',
