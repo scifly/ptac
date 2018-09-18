@@ -4,26 +4,28 @@
         var dtrange = {
             options: $.extend({}, options),
             init: function (selector, tp) {
+                var tpicker = tp !== 'undefined';
                 $.getScript(
                     page.siteRoot() + plugins.daterangepicker.moment,
                     function () {
                         $.getScript(
                             page.siteRoot() + plugins.daterangepicker.js,
                             function () {
-                                var format = typeof tp === 'undefined'
-                                    ? "YYYY-MM-DD"
-                                    : "YYYY-MM-DD hh:mm:ss";
+                                var format = tpicker ? "YYYY-MM-DD hh:mm:ss" : "YYYY-MM-DD",
+                                    $picker = $(typeof selector === 'undefined' ? '#daterange' : selector);
+
                                 page.loadCss(plugins.daterangepicker.css);
-                                $(typeof selector === 'undefined' ? '#daterange' : selector).daterangepicker({
+
+                                $picker.daterangepicker({
                                     autoUpdateInput: false,
-                                    timePicker: tp !== 'undefined',
+                                    timePicker: tpicker,
                                     timePicker24Hour: true,
                                     timePickerSeconds: true,
                                     locale: {
                                         format: format,
                                         separator: ' ~ ',
                                         applyLabel: "确定",
-                                        cancelLabel: "取消",
+                                        cancelLabel: "清除",
                                         fromLabel: "从",
                                         toLabel: "到",
                                         weekLabel: "W",
@@ -34,6 +36,14 @@
                                         ],
                                         firstDay: 1
                                     }
+                                });
+                                $picker.on('apply.daterangepicker', function(ev, picker) {
+                                    var format = tpicker ? 'YYYY-MM-DD hh:mm:ss' : 'YYYY-MM-DD';
+                                    $(this).val(picker.startDate.format(format) + ' ~ ' + picker.endDate.format(format));
+                                });
+
+                                $picker.on('cancel.daterangepicker', function() {
+                                    $(this).val('');
                                 });
                             }
                         );
