@@ -38,12 +38,13 @@
                                     }
                                 });
                                 $picker.on('apply.daterangepicker', function(ev, picker) {
-                                    var format = tpicker ? 'YYYY-MM-DD hh:mm:ss' : 'YYYY-MM-DD';
-                                    $(this).val(picker.startDate.format(format) + ' ~ ' + picker.endDate.format(format));
+                                    var format = tpicker ? 'YYYY-MM-DD hh:mm:ss' : 'YYYY-MM-DD',
+                                        value = picker.startDate.format(format) + ' ~ ' + picker.endDate.format(format);
+                                    $(this).val(value).trigger('change');
                                 });
 
                                 $picker.on('cancel.daterangepicker', function() {
-                                    $(this).val('');
+                                    $(this).val('').trigger('change');
                                 });
                             }
                         );
