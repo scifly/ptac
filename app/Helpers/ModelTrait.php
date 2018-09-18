@@ -605,6 +605,18 @@ trait ModelTrait {
     }
     
     /**
+     * 返回日期时间过滤字段对应的html
+     *
+     * @param $title
+     * @return string
+     */
+    function inputDateTimeRange($title) {
+        
+        return '<input type="text" class="form-control dtrange" title="按' . $title . '过滤" />';
+        
+    }
+    
+    /**
      * 获取当前请求对应的企业号id和“通讯录同步”Secret
      *
      * @return array

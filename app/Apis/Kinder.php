@@ -134,13 +134,14 @@ class Kinder {
         switch ($method) {
             case '10':      # 新增部门
             case '11':      # 编辑部门
+                $departmentTypeName = Department::find($data['id'])->departmentType->name;
                 $params = [
                     'did'         => $data['id'] + 10000,
                     'dname'       => $data['name'],
                     'dfather'     => $data['parentid'] == 33 ? 10000 : $data['parentid'] + 10000,
                     'dexpiration' => '2020-09-01 23:59:59',
                     'dnumber'     => Department::find($data['id'])->users->count(),
-                    'dtel'        => 'n/a',
+                    'dtel'        => in_array($departmentTypeName, ['年级', '班级']) ? $departmentTypeName : 'n/a',
                 ];
                 break;
             case '12':      # 删除部门
@@ -149,9 +150,10 @@ class Kinder {
             case '13':      # 新增人员
             case '14':      # 编辑人员
                 $user = User::find($data['id']);
+                $cnumber = $user->student ? $user->student->student_number : $data['userid'];
                 $params = [
                     'cid'     => $data['id'] + 10000,
-                    'cnumber' => $data['userid'],
+                    'cnumber' => $cnumber,
                     'cname'   => $data['name'],
                     'did'     => head($user->departments->pluck('id')->toArray()) + 10000,
                     'sex'     => $data['gender'] ? 0 : 1,
@@ -161,7 +163,7 @@ class Kinder {
                     'status'  => $user->enabled,
                     'address' => 'n/a',
                     'remark'  => $data['remark'],
-                    'bank'    => 'n/a',
+                    'bank'    => $user->custodian ? 'custodian' : 'n/a',
                 ];
                 break;
             case '15':      # 删除人员

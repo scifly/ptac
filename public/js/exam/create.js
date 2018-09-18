@@ -1,5 +1,4 @@
 page.create('formExam', 'exams');
-
-$.getMultiScripts(['js/exam/exam.js']).done(
-    function () { $.exam().initDateRange(); }
+$.getMultiScripts(['js/dtrange.js']).done(
+    function () { $.dtrange().init(); }
 );

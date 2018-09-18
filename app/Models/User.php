@@ -773,9 +773,7 @@ class User extends Authenticatable {
         try {
             DB::transaction(function () use ($id, $broadcast) {
                 $user = $this->find($id);
-                if (!$user->student) {
-                    $this->deleteWechatUser($id, $broadcast);
-                }
+                $this->deleteWechatUser($id, $broadcast);
                 DepartmentUser::whereUserId($id)->delete();
                 TagUser::whereUserId($id)->delete();
                 Tag::whereUserId($id)->delete();

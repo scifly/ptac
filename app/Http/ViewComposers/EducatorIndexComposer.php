@@ -44,7 +44,17 @@ class EducatorIndexComposer {
                         [null => '全部', 0 => '女', 1 => '男'], 'filter_gender'
                     )
                 ],
-                '职务', '创建于', '更新于',
+                '职务',
+                // '创建于',
+                // '更新于',
+                [
+                    'title' => '创建于',
+                    'html'  => $this->inputDateTimeRange('创建于')
+                ],
+                [
+                    'title' => '更新于',
+                    'html'  => $this->inputDateTimeRange('更新于')
+                ],
                 [
                     'title' => '同步状态',
                     'html' => $this->singleSelectList(

@@ -1,19 +1,23 @@
-//# sourceURL=exam.js
+//# sourceURL=dtrange.js
 (function ($) {
-    $.exam = function (options) {
-        var exam = {
+    $.dtrange = function (options) {
+        var dtrange = {
             options: $.extend({}, options),
-            init: function () {
+            init: function (selector, timepicker) {
                 $.getScript(
                     page.siteRoot() + plugins.daterangepicker.moment,
                     function () {
                         $.getScript(
                             page.siteRoot() + plugins.daterangepicker.js,
                             function () {
+                                var
+                                    format = typeof timepicker === 'undefined'
+                                        ? "YYYY-MM-DD"
+                                        : "YYYY-MM-DD hh:mm:ss";
                                 page.loadCss(plugins.daterangepicker.css);
-                                $('#daterange').daterangepicker({
+                                $(typeof selector === 'undefined' ? '#daterange' : selector).daterangepicker({
                                     locale: {
-                                        format: "YYYY-MM-DD",
+                                        format: format,
                                         separator: ' ~ ',
                                         applyLabel: "确定",
                                         cancelLabel: "取消",
@@ -35,6 +39,6 @@
             }
         };
 
-        return {initDateRange: exam.init };
+        return { init: dtrange.init };
     }
 })(jQuery);
