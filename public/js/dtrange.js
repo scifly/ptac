@@ -28,6 +28,7 @@
                     : "YYYY-MM-DD hh:mm:ss";
                 page.loadCss(plugins.daterangepicker.css);
                 $(typeof selector === 'undefined' ? '#daterange' : selector).daterangepicker({
+                    autoUpdateInput: false,
                     locale: {
                         format: format,
                         timepicker: tp !== 'undefined',
