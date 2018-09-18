@@ -3,7 +3,7 @@
     $.dtrange = function (options) {
         var dtrange = {
             options: $.extend({}, options),
-            init: function (selector, timepicker) {
+            init: function (selector, tp) {
                 $.getScript(
                     page.siteRoot() + plugins.daterangepicker.moment,
                     function () {
@@ -11,13 +11,14 @@
                             page.siteRoot() + plugins.daterangepicker.js,
                             function () {
                                 var
-                                    format = typeof timepicker === 'undefined'
+                                    format = typeof tp === 'undefined'
                                         ? "YYYY-MM-DD"
                                         : "YYYY-MM-DD hh:mm:ss";
                                 page.loadCss(plugins.daterangepicker.css);
                                 $(typeof selector === 'undefined' ? '#daterange' : selector).daterangepicker({
                                     locale: {
                                         format: format,
+                                        timepicker: tp !== 'undefined',
                                         separator: ' ~ ',
                                         applyLabel: "确定",
                                         cancelLabel: "取消",
