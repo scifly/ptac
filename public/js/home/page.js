@@ -435,6 +435,11 @@ var page = {
                     var i = $(this).parent().index();
                     dt.columns(i).search($(this).val()).draw();
                 });
+                $(document).off('change', 'tfoot .dtrange');
+                $(document).on('change', 'tfoot .dtrange', function () {
+                    var i = $(this).parent().index();
+                    dt.columns(i).search($(this).val()).draw();
+                });
             },
             batch = function (action) {
                 var type = '',

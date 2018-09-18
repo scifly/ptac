@@ -530,7 +530,7 @@ class User extends Authenticatable {
                 $students = $user->custodian->students;
                 $remarks = [];
                 foreach ($students as $student) {
-                    $remarks[] = $student->name . '.' . $student->student_number;
+                    $remarks[] = $student->user->realname . '.' . $student->student_number;
                 }
                 $remark = implode(',', $remarks);
             }
