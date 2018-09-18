@@ -17,8 +17,8 @@
                                 $(typeof selector === 'undefined' ? '#daterange' : selector).daterangepicker({
                                     autoUpdateInput: false,
                                     timePicker: tp !== 'undefined',
-                                    format: format,
                                     locale: {
+                                        format: format,
                                         separator: ' ~ ',
                                         applyLabel: "确定",
                                         cancelLabel: "取消",
