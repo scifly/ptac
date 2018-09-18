@@ -16,9 +16,9 @@
                                 page.loadCss(plugins.daterangepicker.css);
                                 $(typeof selector === 'undefined' ? '#daterange' : selector).daterangepicker({
                                     autoUpdateInput: false,
+                                    timePicker: tp !== 'undefined',
                                     locale: {
                                         format: format,
-                                        timePicker: tp !== 'undefined',
                                         separator: ' ~ ',
                                         applyLabel: "确定",
                                         cancelLabel: "取消",
