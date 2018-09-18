@@ -12,9 +12,8 @@
                             function () {
                                 if (typeof tp !== 'undefined') {
                                     page.loadCss(plugins.timepicker.css);
-                                    $.getMultiScripts([plugins.timepicker.js], function () {
-                                        dtrange.load(selector, tp);
-                                    })
+                                    $.getMultiScripts([plugins.timepicker.js]).done(
+                                        function () { dtrange.load(selector, tp); });
                                 } else {
                                     dtrange.load(selector, tp);
                                 }
