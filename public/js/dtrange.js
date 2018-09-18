@@ -17,6 +17,8 @@
                                 $(typeof selector === 'undefined' ? '#daterange' : selector).daterangepicker({
                                     autoUpdateInput: false,
                                     timePicker: tp !== 'undefined',
+                                    timePicker24Hour: true,
+                                    timePickerSeconds: true,
                                     locale: {
                                         format: format,
                                         separator: ' ~ ',
