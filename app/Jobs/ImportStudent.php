@@ -58,7 +58,7 @@ class ImportStudent implements ShouldQueue {
     
     /**
      * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
     function handle() {
         

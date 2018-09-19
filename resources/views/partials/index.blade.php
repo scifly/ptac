@@ -14,7 +14,7 @@
             </thead>
             <tbody></tbody>
             @if (isset($filter))
-                <tfoot style="display: table-header-group">
+                <tfoot style="display: table-header-group; width: 100%">
                 <tr>
                     @foreach ($titles as $title)
                         <th>

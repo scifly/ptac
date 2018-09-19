@@ -515,11 +515,11 @@ class User extends Authenticatable {
                 break;
         }
         $data = [
-            'id'       => $user->id,
-            'userid'   => $user->userid,
-            'position' => $user->group->name,
-            'corpIds'  => $corpIds,
-            'schoolIds' => $schoolIds
+            'id'        => $user->id,
+            'userid'    => $user->userid,
+            'position'  => $user->group->name,
+            'corpIds'   => $corpIds,
+            'schoolIds' => $schoolIds,
         ];
         if ($action != 'delete') {
             $remark = '';
@@ -552,6 +552,10 @@ class User extends Authenticatable {
                     'enable'       => $user->enabled,
                 ]
             );
+            # 在创建会员时，默认情况下不向该会员发送邀请
+            if ($action == 'create') {
+                $data = array_merge($data, ['to_invite' => false]);
+            }
         }
         SyncMember::dispatch($data, $broadcast ? Auth::id() : null, $action);
         
