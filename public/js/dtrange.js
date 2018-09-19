@@ -4,7 +4,7 @@
         var dtrange = {
             options: $.extend({}, options),
             init: function (selector, tp) {
-                var tpicker = (tp !== 'undefined');
+                var tpicker = (typeof tp !== 'undefined');
                 $.getScript(
                     page.siteRoot() + plugins.daterangepicker.moment,
                     function () {
