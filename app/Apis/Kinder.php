@@ -150,12 +150,19 @@ class Kinder {
             case '13':      # 新增人员
             case '14':      # 编辑人员
                 $user = User::find($data['id']);
-                $cnumber = $user->student ? $user->student->student_number : $data['userid'];
+                $departmentId = head($user->departments->pluck('id')->toArray());
+                $did = $departmentId + (!$user->custodian ? 10000 : 50000);
+                $cnumber = $data['userid'];
+                if ($user->student) {
+                    $cnumber = $user->student->student_number;
+                } elseif ($user->custodian) {
+                    $cnumber = head($user->custodian->students->pluck('student_number')->toArray()) . $data['id'];
+                }
                 $params = [
                     'cid'     => $data['id'] + 10000,
                     'cnumber' => $cnumber,
                     'cname'   => $data['name'],
-                    'did'     => head($user->departments->pluck('id')->toArray()) + 10000,
+                    'did'     => $did,
                     'sex'     => $data['gender'] ? 0 : 1,
                     'cardid'  => 'n/a',
                     'tel'     => head($user->mobiles->pluck('mobile')->toArray()),

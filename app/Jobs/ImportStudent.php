@@ -22,7 +22,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Throwable;
 use Validator;
@@ -237,7 +236,6 @@ class ImportStudent implements ShouldQueue {
                                     # 创建企业微信会员
                                     $user->createWechatUser($user['id'], false);
                                 } else {
-                                    Log::debug($m->mobile);
                                     # 手机号码存在时 更新user 再判断监护人是否存在 监护关系是否存在
                                     $user = User::find($m->user_id);
                                     if (!empty($user)) {

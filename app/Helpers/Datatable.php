@@ -396,7 +396,13 @@ class Datatable {
             $str = $requestColumn['search']['value'];
             if ($requestColumn['searchable'] == 'true' && $str != '') {
                 # $binding = $this->bind($bindings, '%' . $str . '%', PDO::PARAM_STR);
-                $columnSearch[] = explode(' ', $column['db'])[0] . " LIKE BINARY '%" . $str . "%'";
+                $field = explode(' ', $column['db'])[0];
+                if (!isset($column['dr'])) {
+                    $columnSearch[] = $field . " LIKE BINARY '%" . $str . "%'";
+                } else {
+                    $values = explode(' ~ ', $str);
+                    $columnSearch[] = $field . " BETWEEN '" . $values[0] . "' AND '" . $values[1] . "'";
+                }
             }
         }
         // Combine the filters into a single string

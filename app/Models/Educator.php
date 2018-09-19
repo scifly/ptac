@@ -190,8 +190,8 @@ class Educator extends Model {
                 }
             ],
             ['db' => 'User.position', 'dt' => 4],
-            ['db' => 'Educator.created_at', 'dt' => 5],
-            ['db' => 'Educator.updated_at', 'dt' => 6],
+            ['db' => 'Educator.created_at', 'dt' => 5, 'dr' => true],
+            ['db' => 'Educator.updated_at', 'dt' => 6, 'dr' => true],
             [
                 'db' => 'User.synced', 'dt' => 7,
                 'formatter' => function ($d) {
