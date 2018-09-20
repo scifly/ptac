@@ -103,9 +103,8 @@ class Custodian extends Model {
                     return Student::find($d)->user->realname;
                 },
             ],
-            ['db' => 'User.email', 'dt' => 5],
             [
-                'db'        => 'Custodian.id as mobile', 'dt' => 6,
+                'db'        => 'Custodian.id as mobile', 'dt' => 5,
                 'formatter' => function ($d) {
                     $custodian = $this->find($d);
                     $mobiles = Mobile::whereUserId($custodian->user_id)->get();
@@ -117,22 +116,22 @@ class Custodian extends Model {
                     return implode(',', $mobile);
                 },
             ],
-            ['db' => 'Custodian.created_at', 'dt' => 7],
-            ['db' => 'Custodian.updated_at', 'dt' => 8],
+            ['db' => 'Custodian.created_at', 'dt' => 6],
+            ['db' => 'Custodian.updated_at', 'dt' => 7],
             [
-                'db' => 'User.synced', 'dt' => 9,
+                'db' => 'User.synced', 'dt' => 8,
                 'formatter' => function ($d) {
                     return $this->synced($d);
                 }
             ],
             [
-                'db' => 'User.subscribed', 'dt' => 10,
+                'db' => 'User.subscribed', 'dt' => 9,
                 'formatter' => function ($d) {
                     return $this->subscribed($d);
                 }
             ],
             [
-                'db'        => 'User.enabled', 'dt' => 11,
+                'db'        => 'User.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
                     return Datatable::status($d, $row, false);
                 },
@@ -172,7 +171,6 @@ class Custodian extends Model {
         if (!empty($userIds)) {
             $condition .= ' AND User.id IN (' . implode(',', $userIds) . ')';
         }
-        // $condition = 'Custodian.id IN (' . implode(',', $this->contactIds('custodian')) . ')';
         
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition

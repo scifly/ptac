@@ -46,7 +46,7 @@ class CustodianIndexComposer {
                         [null => '全部', 0 => '女', 1 => '男'], 'filter_gender'
                     )
                 ],
-                '学生', '邮箱', '手机号码',
+                '学生', '手机号码',
                 [
                     'title' => '创建于',
                     'html' => $this->inputDateTimeRange('创建于')
