@@ -203,14 +203,18 @@ class Student extends Model {
                 ],
             ],
         ];
-        // $condition = 'Student.id In (' . implode(',', $this->contactIds('student')) . ')';
-        $departmentIds = $this->departmentIds(Auth::id());
-        $userIds = array_unique(
-            DepartmentUser::whereIn('department_id', $departmentIds)->get()->pluck('user_id')->toArray()
-        );
-        $condition = 'User.group_id = ' . Group::whereName('学生')->first()->id;
-        if (!empty($userIds)) {
-            $condition .= ' AND User.id IN (' . implode(',', $userIds) . ')';
+        if (in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
+            $classIds = School::find($this->schoolId())->classes->pluck('id')->toArray();
+            $condition = 'Student.class_id IN (' . implode(',', $classIds) . ')';
+        } else {
+            $departmentIds = $this->departmentIds(Auth::id());
+            $userIds = array_unique(
+                DepartmentUser::whereIn('department_id', $departmentIds)->get()->pluck('user_id')->toArray()
+            );
+            $condition = 'User.group_id = ' . Group::whereName('学生')->first()->id;
+            if (!empty($userIds)) {
+                $condition .= ' AND User.id IN (' . implode(',', $userIds) . ')';
+            }
         }
         
         return Datatable::simple(
