@@ -1,4 +1,6 @@
-page.initDatatable('student_attendances');
+page.initDatatable('student_attendances',[
+    {className: 'text-center', targets: [2, 3, 4, 5, 6]},
+]);
 $.getMultiScripts(['js/dtrange.js']).done(
     function () {
         $.dtrange().init('.dtrange');
