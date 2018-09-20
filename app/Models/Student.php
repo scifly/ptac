@@ -203,19 +203,20 @@ class Student extends Model {
                 ],
             ],
         ];
-        if (in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
-            $classIds = School::find($this->schoolId())->classes->pluck('id')->toArray();
-            $condition = 'Student.class_id IN (' . (empty($classIds) ? '0' : implode(',', $classIds)) . ')';
-        } else {
-            $departmentIds = $this->departmentIds(Auth::id());
-            $userIds = array_unique(
-                DepartmentUser::whereIn('department_id', $departmentIds)->get()->pluck('user_id')->toArray()
-            );
-            $condition = 'User.group_id = ' . Group::whereName('学生')->first()->id;
-            if (!empty($userIds)) {
-                $condition .= ' AND User.id IN (' . implode(',', $userIds) . ')';
-            }
+        $departmentIds = $this->departmentIds(Auth::id());
+        $userIds = array_unique(
+            DepartmentUser::whereIn('department_id', $departmentIds)->get()->pluck('user_id')->toArray()
+        );
+        $condition = 'User.group_id = ' . Group::whereName('学生')->first()->id;
+        if (!empty($userIds)) {
+            $condition .= ' AND User.id IN (' . implode(',', $userIds) . ')';
         }
+        // if (in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
+        //     $classIds = School::find($this->schoolId())->classes->pluck('id')->toArray();
+        //     $condition = 'Student.class_id IN (' . (empty($classIds) ? '0' : implode(',', $classIds)) . ')';
+        // } else {
+        //
+        // }
         
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition
