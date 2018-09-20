@@ -334,7 +334,10 @@
                 $tabSent.on('click', function () {message.loadDt('data-table');});
                 $tabReceived.on('click', function () {message.loadDt('data-table-r');});
                 $.getMultiScripts(['js/dtrange.js']).done(
-                    function () { $.dtrange().init('.dtrange'); }
+                    function () {
+                        $.dtrange().init('.dtrange');
+                        page.initSelect2();
+                    }
                 );
                 // 显示/隐藏批处理按钮组
                 $sections.on('click', function () {
