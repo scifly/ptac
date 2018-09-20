@@ -52,7 +52,7 @@
                     <div class="input-group">
                         @include('partials.icon_addon', ['class' => 'fa-calendar'])
                         {!! Form::text('daterange', isset($exam) ? $exam->start_date . ' ~ ' . $exam->end_date : null, [
-                            'class' => 'form-control text-blue',
+                            'class' => 'form-control text-blue drange',
                             'placeholder' => '(开始日期 - 结束日期)',
                             'required' => 'true',
                         ]) !!}

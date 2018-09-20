@@ -45,8 +45,6 @@ class EducatorIndexComposer {
                     )
                 ],
                 '职务',
-                // '创建于',
-                // '更新于',
                 [
                     'title' => '创建于',
                     'html'  => $this->inputDateTimeRange('创建于')

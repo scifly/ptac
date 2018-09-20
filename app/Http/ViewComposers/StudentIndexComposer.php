@@ -42,8 +42,38 @@ class StudentIndexComposer {
                 ],
             ],
             'titles'         => [
-                '#', '姓名', '头像', '性别', '班级', '学号', '卡号', '住校',
-                '生日', '创建于', '更新于', '状态 . 操作',
+                '#', '姓名', '头像',
+                [
+                    'title' => '性别',
+                    'html' => $this->singleSelectList(
+                        [null => '全部', 0 => '女', 1 => '男'], 'filter_gender'
+                    )
+                ],
+                '班级', '学号', '卡号',
+                [
+                    'title' => '住校',
+                    'html' => $this->singleSelectList(
+                        [null => '全部', 0 => '否', '是'], 'filter_oncampus'
+                    )
+                ],
+                [
+                    'title' => '生日',
+                    'html' => $this->inputDateTimeRange('生日', false)
+                ],
+                [
+                    'title' => '创建于',
+                    'html' => $this->inputDateTimeRange('创建于')
+                ],
+                [
+                    'title' => '更新于',
+                    'html' => $this->inputDateTimeRange('更新于')
+                ],
+                [
+                    'title' => '状态 . 操作',
+                    'html' => $this->singleSelectList(
+                        [null => '全部', 0 => '已禁用', 1 => '已启用'], 'filter_enabled'
+                    )
+                ]
             ],
             'batch'          => true,
             'grades'         => $grades,

@@ -6,7 +6,7 @@ page.index('educators', [
     {orderable: false, targets: [2]}
 ]);
 $.getMultiScripts(['js/dtrange.js']).done(
-    function () { $.dtrange().init('.dtrange', true); }
+    function () { $.dtrange().init('.dtrange'); }
 );
 /** 初始化教职员工首页功能 */
 $.getMultiScripts(['js/contact.js']).done(

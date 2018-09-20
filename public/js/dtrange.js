@@ -3,21 +3,20 @@
     $.dtrange = function (options) {
         var dtrange = {
             options: $.extend({}, options),
-            init: function (selector, tp) {
-                var tpicker = (typeof tp !== 'undefined');
+            init: function (selector) {
                 $.getScript(
                     page.siteRoot() + plugins.daterangepicker.moment,
                     function () {
                         $.getScript(
                             page.siteRoot() + plugins.daterangepicker.js,
                             function () {
-                                var format = tpicker ? "YYYY-MM-DD hh:mm:ss" : "YYYY-MM-DD",
-                                    $picker = $(typeof selector === 'undefined' ? '#daterange' : selector);
+                                var format = (selector === '.dtrange' ? "YYYY-MM-DD hh:mm:ss" : "YYYY-MM-DD"),
+                                    $picker = $(selector);
 
                                 page.loadCss(plugins.daterangepicker.css);
                                 $picker.daterangepicker({
                                     autoUpdateInput: false,
-                                    timePicker: tpicker,
+                                    timePicker: selector === '.dtrange',
                                     timePicker24Hour: true,
                                     timePickerSeconds: true,
                                     locale: {
@@ -37,8 +36,7 @@
                                     }
                                 });
                                 $picker.on('apply.daterangepicker', function(ev, picker) {
-                                    var format = tpicker ? 'YYYY-MM-DD hh:mm:ss' : 'YYYY-MM-DD',
-                                        value = picker.startDate.format(format) + ' ~ ' + picker.endDate.format(format);
+                                    var value = picker.startDate.format(format) + ' ~ ' + picker.endDate.format(format);
                                     $(this).val(value).trigger('change');
                                 });
 

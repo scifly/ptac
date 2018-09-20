@@ -608,11 +608,14 @@ trait ModelTrait {
      * 返回日期时间过滤字段对应的html
      *
      * @param $title
+     * @param bool $timepicker
      * @return string
      */
-    function inputDateTimeRange($title) {
+    function inputDateTimeRange($title, $timepicker = true) {
         
-        return '<input type="text" class="form-control dtrange" title="按' . $title . '过滤" />';
+        $class = 'form-control ' . ($timepicker ? 'dtrange' : 'drange');
+        
+        return '<input type="text" class="' . $class . '" title="按' . $title . '过滤" />';
         
     }
     
