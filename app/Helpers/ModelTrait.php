@@ -664,7 +664,7 @@ trait ModelTrait {
             ? [Group::whereName($type)->first()->id]
             : Group::whereSchoolId($this->schoolId())->get()->pluck('id')->toArray();
         
-        return 'User.group_id IN (' . implode(',', $groupIds) . ')' .
+        return 'User.group_id IN (' . (empty($groupIds) ? '0' : implode(',', $groupIds)) . ')' .
             ' AND User.id IN (' . (empty($userIds) ? '0' : implode(',', $userIds)) . ')';
         
     }
