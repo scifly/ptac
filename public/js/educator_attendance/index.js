@@ -1,5 +1,5 @@
 page.initDatatable('educator_attendances', [
-    {className: 'text-center', targets: [2, 3, 4]}
+    {className: 'text-center', targets: [1, 2, 3, 4]}
 ]);
 $.getMultiScripts(['js/dtrange.js']).done(
     function () {
