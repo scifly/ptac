@@ -11,7 +11,7 @@
     @if (isset($filter))
         <tfoot style="display: table-header-group">
         <tr>
-            @foreach ($titles as $title)
+            @foreach ($rTitles as $title)
                 <th>
                     @if (!is_array($title))
                         {!! Form::text('', null, [
