@@ -98,16 +98,28 @@ class ScoreTotal extends Model {
         
         $columns = [
             ['db' => 'ScoreTotal.id', 'dt' => 0],
-            ['db' => 'Student.student_number', 'dt' => 1],
-            ['db' => 'User.realname', 'dt' => 2],
-            ['db' => 'Exam.name as examname', 'dt' => 3],
-            ['db' => 'ScoreTotal.score', 'dt' => 4],
-            ['db' => 'ScoreTotal.class_rank', 'dt' => 5],
-            ['db' => 'ScoreTotal.grade_rank', 'dt' => 6],
-            ['db' => 'ScoreTotal.created_at', 'dt' => 7, 'dr' => true],
-            ['db' => 'ScoreTotal.updated_at', 'dt' => 8, 'dr' => true],
+            ['db' => 'User.realname', 'dt' => 1],
+            ['db' => 'Student.student_number', 'dt' => 2],
             [
-                'db'        => 'ScoreTotal.enabled', 'dt' => 9,
+                'db'        => 'Grade.name as gradename', 'dt' => 3,
+                'formatter' => function ($d) {
+                    return Snippet::grade($d);
+                },
+            ],
+            [
+                'db'        => 'Squad.name', 'dt' => 4,
+                'formatter' => function ($d) {
+                    return Snippet::squad($d);
+                },
+            ],
+            ['db' => 'Exam.name as examname', 'dt' => 5],
+            ['db' => 'ScoreTotal.score', 'dt' => 6],
+            ['db' => 'ScoreTotal.class_rank', 'dt' => 7],
+            ['db' => 'ScoreTotal.grade_rank', 'dt' => 8],
+            ['db' => 'ScoreTotal.created_at', 'dt' => 9, 'dr' => true],
+            ['db' => 'ScoreTotal.updated_at', 'dt' => 10, 'dr' => true],
+            [
+                'db'        => 'ScoreTotal.enabled', 'dt' => 11,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $delLink = sprintf(Snippet::DT_LINK_DEL, $id);
@@ -139,6 +151,22 @@ class ScoreTotal extends Model {
                 'type'       => 'INNER',
                 'conditions' => [
                     'User.id = Student.user_id',
+                ],
+            ],
+            [
+                'table'      => 'classes',
+                'alias'      => 'Squad',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Squad.id = Student.class_id',
+                ],
+            ],
+            [
+                'table'      => 'grades',
+                'alias'      => 'Grade',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'Grade.id = Squad.grade_id',
                 ],
             ],
         ];

@@ -3,6 +3,7 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use App\Models\Exam;
+use App\Models\Grade;
 use App\Models\Score;
 use App\Models\Squad;
 use App\Models\Subject;
@@ -20,10 +21,33 @@ class ScoreTotalIndexComposer {
      * @param View $view
      */
     public function compose(View $view) {
-        
+    
+        $optionAll = [null => '全部'];
+        $htmlClass = $this->singleSelectList(
+            array_merge(
+                $optionAll,
+                Squad::whereIn('id', $this->classIds())->get()->pluck('name', 'id')->toArray()
+            ), 'filter_class'
+        );
+        $htmlGrade = $this->singleSelectList(
+            array_merge(
+                $optionAll,
+                Grade::whereIn('id', $this->gradeIds())->get()->pluck('name', 'id')->toArray()
+            ), 'filter_grade'
+        );
+        $htmlExam = $this->singleSelectList(
+            array_merge(
+                $optionAll,
+                Exam::whereIn('id', $this->examIds())->get()->pluck('name', 'id')->toArray()
+            ), 'filter_grade'
+        );
         $view->with([
             'titles' => [
-                '#', '学号', '姓名', '考试名称', '总成绩', '班级排名', '年级排名',
+                '#', '姓名', '学号',
+                ['title' => '年级', 'html' => $htmlGrade],
+                ['title' => '班级', 'html' => $htmlClass],
+                ['title' => '考试名称', 'html' => $htmlExam],
+                '总成绩', '班级排名', '年级排名',
                 [
                     'title' => '创建于',
                     'html'  => $this->inputDateTimeRange('创建于'),
