@@ -3,6 +3,7 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use App\Models\Exam;
+use App\Models\Grade;
 use App\Models\Score;
 use App\Models\Squad;
 use App\Models\Subject;
@@ -55,6 +56,19 @@ class ScoreIndexComposer {
             'grade_min'     => '年最低',
             'class_min'     => '班最低',
         ];
+        $optionAll = [null => '全部'];
+        $htmlClass = $this->singleSelectList(
+            array_merge(
+                $optionAll,
+                Squad::whereIn('id', $this->classIds())->get()->pluck('name', 'id')->toArray()
+            ), 'filter_class'
+        );
+        $htmlGrade = $this->singleSelectList(
+            array_merge(
+                $optionAll,
+                Grade::whereIn('id', $this->gradeIds())->get()->pluck('name', 'id')->toArray()
+            ), 'filter_grade'
+        );
         $view->with([
             'buttons'        => [
                 'send'   => [
@@ -84,8 +98,10 @@ class ScoreIndexComposer {
                 ],
             ],
             'titles'         => [
-                '#', '姓名', '年级', '班级', '学号', '科目名称',
-                '考试名称', '班级排名', '年级排名', '成绩',
+                '#', '姓名',
+                ['title' => '年级', 'html' => $htmlGrade],
+                ['title' => '班级', 'html' => $htmlClass],
+                '学号', '科目名称', '考试名称', '班级排名', '年级排名', '成绩',
                 [
                     'title' => '创建于',
                     'html' => $this->inputDateTimeRange('创建于')
