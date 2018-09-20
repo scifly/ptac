@@ -121,13 +121,13 @@ class Score extends Model {
             ['db' => 'Exam.name as examname', 'dt' => 6],
             ['db' => 'Score.score', 'dt' => 7],
             [
-                'db'        => 'Score.class_rank', 'dt' => 8,
+                'db'        => 'Score.grade_rank', 'dt' => 9,
                 'formatter' => function ($d) {
                     return $d === 0 ? "未统计" : $d;
                 },
             ],
             [
-                'db'        => 'Score.grade_rank', 'dt' => 9,
+                'db'        => 'Score.class_rank', 'dt' => 8,
                 'formatter' => function ($d) {
                     return $d === 0 ? "未统计" : $d;
                 },

@@ -114,8 +114,8 @@ class ScoreTotal extends Model {
             ],
             ['db' => 'Exam.name as examname', 'dt' => 5],
             ['db' => 'ScoreTotal.score', 'dt' => 6],
-            ['db' => 'ScoreTotal.class_rank', 'dt' => 7],
-            ['db' => 'ScoreTotal.grade_rank', 'dt' => 8],
+            ['db' => 'ScoreTotal.grade_rank', 'dt' => 7],
+            ['db' => 'ScoreTotal.class_rank', 'dt' => 8],
             ['db' => 'ScoreTotal.created_at', 'dt' => 9, 'dr' => true],
             ['db' => 'ScoreTotal.updated_at', 'dt' => 10, 'dr' => true],
             [
