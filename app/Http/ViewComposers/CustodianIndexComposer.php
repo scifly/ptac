@@ -39,8 +39,41 @@ class CustodianIndexComposer {
             'batch'   => true,
             'filter'  => true,
             'titles'  => [
-                '#', '姓名', '头像', '性别', '学生', '邮箱', '手机号码',
-                '创建于', '更新于', '同步状态', '关注状态', '状态 . 操作'],
+                '#', '姓名', '头像',
+                [
+                    'title' => '性别',
+                    'html' => $this->singleSelectList(
+                        [null => '全部', 0 => '女', 1 => '男'], 'filter_gender'
+                    )
+                ],
+                '学生', '邮箱', '手机号码',
+                [
+                    'title' => '创建于',
+                    'html' => $this->inputDateTimeRange('创建于')
+                ],
+                [
+                    'title' => '更新于',
+                    'html' => $this->inputDateTimeRange('更新于')
+                ],
+                [
+                    'title' => '同步状态',
+                    'html' => $this->singleSelectList(
+                        [null => '全部', 0 => '未同步', 1 => '已同步'], 'filter_synced'
+                    ),
+                ],
+                [
+                    'title' => '关注状态',
+                    'html' => $this->singleSelectList(
+                        [null => '全部', 0 => '未关注', 1 => '已关注'], 'filter_subscribed'
+                    )
+                ],
+                [
+                    'title' => '状态 . 操作',
+                    'html' => $this->singleSelectList(
+                        [null => '全部', 0 => '未启用', 1 => '已启用'], 'filter_enabled'
+                    )
+                ],
+            ],
             'grades'  => $grades,
             'classes' => $classes,
             'title'   => '导出监护人',
