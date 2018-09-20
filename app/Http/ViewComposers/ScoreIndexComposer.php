@@ -69,6 +69,18 @@ class ScoreIndexComposer {
                 Grade::whereIn('id', $this->gradeIds())->get()->pluck('name', 'id')->toArray()
             ), 'filter_grade'
         );
+        $htmlSubject = $this->singleSelectList(
+            array_merge(
+                $optionAll,
+                Subject::whereSchoolId($this->schoolId())->get()->pluck('name', 'id')->toArray()
+            ), 'filter_grade'
+        );
+        $htmlExam = $this->singleSelectList(
+            array_merge(
+                $optionAll,
+                Exam::whereIn('id', $this->examIds())->get()->pluck('name', 'id')->toArray()
+            ), 'filter_grade'
+        );
         $view->with([
             'buttons'        => [
                 'send'   => [
@@ -101,7 +113,10 @@ class ScoreIndexComposer {
                 '#', '姓名',
                 ['title' => '年级', 'html' => $htmlGrade],
                 ['title' => '班级', 'html' => $htmlClass],
-                '学号', '科目名称', '考试名称', '班级排名', '年级排名', '成绩',
+                '学号',
+                ['title' => '科目名称', 'html' => $htmlSubject],
+                ['title' => '考试名称', 'html' => $htmlExam],
+                '班级排名', '年级排名', '成绩',
                 [
                     'title' => '创建于',
                     'html' => $this->inputDateTimeRange('创建于')
