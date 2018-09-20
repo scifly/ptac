@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Apis\Kinder;
 use App\Facades\Wechat;
 use App\Helpers\ModelTrait;
+use App\Models\CommType;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Student;
@@ -52,7 +53,13 @@ class TestController extends Controller {
      * @throws \Throwable
      */
     public function index() {
-    
+
+        $comm = [null => '全部'];
+        $comm = array_merge(
+            $comm,
+            CommType::all()->pluck('name', 'id')->toArray()
+        );
+        dd($comm);
         if (Request::method() == 'POST') {
             // $department = new Department;
             // $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();

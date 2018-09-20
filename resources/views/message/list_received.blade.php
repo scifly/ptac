@@ -3,7 +3,7 @@
     <thead>
     <tr class="bg-info">
         @foreach ($rTitles as $title)
-            <th>{!! $title !!}</th>
+            <th>{!! !is_array($title) ? $title : $title['title'] !!}</th>
         @endforeach
     </tr>
     </thead>
@@ -11,8 +11,17 @@
     @if (isset($filter))
         <tfoot style="display: table-header-group">
         <tr>
-            @foreach ($rTitles as $title)
-                <th>{!! $title !!}</th>
+            @foreach ($titles as $title)
+                <th>
+                    @if (!is_array($title))
+                        {!! Form::text('', null, [
+                            'class' => 'form-control',
+                            'title' => '按"' . $title . '"过滤'
+                        ]) !!}
+                    @else
+                        {!! $title['html'] !!}
+                    @endif
+                </th>
             @endforeach
         </tr>
         </tfoot>
