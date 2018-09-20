@@ -205,7 +205,7 @@ class Student extends Model {
         ];
         if (in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
             $classIds = School::find($this->schoolId())->classes->pluck('id')->toArray();
-            $condition = 'Student.class_id IN (' . implode(',', $classIds) . ')';
+            $condition = 'Student.class_id IN (' . (empty($classIds) ? '0' : implode(',', $classIds)) . ')';
         } else {
             $departmentIds = $this->departmentIds(Auth::id());
             $userIds = array_unique(
