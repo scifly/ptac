@@ -110,13 +110,12 @@ class ScoreIndexComposer {
                 ],
             ],
             'titles'         => [
-                '#', '姓名',
+                '#', '姓名', '学号',
                 ['title' => '年级', 'html' => $htmlGrade],
                 ['title' => '班级', 'html' => $htmlClass],
-                '学号',
                 ['title' => '科目名称', 'html' => $htmlSubject],
                 ['title' => '考试名称', 'html' => $htmlExam],
-                '班级排名', '年级排名', '成绩',
+                '成绩', '班级排名', '年级排名',
                 [
                     'title' => '创建于',
                     'html' => $this->inputDateTimeRange('创建于')

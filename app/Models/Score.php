@@ -104,34 +104,34 @@ class Score extends Model {
         $columns = [
             ['db' => 'Score.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
+            ['db' => 'Student.student_number', 'dt' => 2],
             [
-                'db'        => 'Grade.name as gradename', 'dt' => 2,
+                'db'        => 'Grade.name as gradename', 'dt' => 3,
                 'formatter' => function ($d) {
                     return Snippet::grade($d);
                 },
             ],
             [
-                'db'        => 'Squad.name', 'dt' => 3,
+                'db'        => 'Squad.name', 'dt' => 4,
                 'formatter' => function ($d) {
                     return Snippet::squad($d);
                 },
             ],
-            ['db' => 'Student.student_number', 'dt' => 4],
             ['db' => 'Subject.name as subjectname', 'dt' => 5],
             ['db' => 'Exam.name as examname', 'dt' => 6],
+            ['db' => 'Score.score', 'dt' => 7],
             [
-                'db'        => 'Score.class_rank', 'dt' => 7,
+                'db'        => 'Score.class_rank', 'dt' => 8,
                 'formatter' => function ($d) {
                     return $d === 0 ? "未统计" : $d;
                 },
             ],
             [
-                'db'        => 'Score.grade_rank', 'dt' => 8,
+                'db'        => 'Score.grade_rank', 'dt' => 9,
                 'formatter' => function ($d) {
                     return $d === 0 ? "未统计" : $d;
                 },
             ],
-            ['db' => 'Score.score', 'dt' => 9],
             ['db' => 'Score.created_at', 'dt' => 10, 'dr' => true],
             ['db' => 'Score.updated_at', 'dt' => 11, 'dr' => true],
             [
