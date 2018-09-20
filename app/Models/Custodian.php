@@ -160,17 +160,9 @@ class Custodian extends Model {
                 ]
             ]
         ];
-        $departmentIds = $this->departmentIds(Auth::id());
-        $userIds = array_unique(
-            DepartmentUser::whereIn('department_id', $departmentIds)->get()->pluck('user_id')->toArray()
-        );
-        $condition = 'User.group_id = ' . Group::whereName('监护人')->first()->id;
-        if (!empty($userIds)) {
-            $condition .= ' AND User.id IN (' . implode(',', $userIds) . ')';
-        }
         
         return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
+            $this->getModel(), $columns, $joins, $this->contactCondition('监护人')
         );
         
     }

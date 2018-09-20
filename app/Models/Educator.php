@@ -236,19 +236,9 @@ class Educator extends Model {
                 ]
             ]
         ];
-        $departmentIds = $this->departmentIds(Auth::id());
-        $userIds = array_unique(
-            DepartmentUser::whereIn('department_id', $departmentIds)->get()->pluck('user_id')->toArray()
-        );
-        $role = Group::whereName('教职员工')->where('school_id', $this->schoolId())->first();
-        $condition = 'User.group_id = ' . ($role ? $role->id : 'null');
-        if (!empty($userIds)) {
-            $condition .= ' AND User.id IN (' . implode(',', $userIds) . ')';
-        }
-        // $condition = 'Educator.id IN (' . implode(',', $this->contactIds('educator')) . ')';
         
         return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
+            $this->getModel(), $columns, $joins, $this->contactCondition()
         );
         
     }

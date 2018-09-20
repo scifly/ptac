@@ -2,6 +2,7 @@
 namespace App\Helpers;
 
 use App\Models\Corp;
+use App\Models\Group;
 use App\Models\Menu;
 use App\Models\User;
 use Carbon\Carbon;
@@ -643,6 +644,28 @@ trait ModelTrait {
             $corp->corpid,
             $corp->contact_sync_secret
         ];
+        
+    }
+    
+    /**
+     * 返回指定类型联系人对应的datatable过滤条件
+     *
+     * @param string $type - 学生/监护人，如果为空，则为教职员工及其他类型
+     * @return string - sql查询条件
+     */
+    function contactCondition($type = '') {
+
+        $departmentIds = $this->departmentIds(Auth::id());
+        $userIds = array_unique(
+            DepartmentUser::whereIn('department_id', $departmentIds)
+                ->get()->pluck('user_id')->toArray()
+        );
+        $groupIds = $type != ''
+            ? [Group::whereName($type)->first()->id]
+            : Group::whereSchoolId($this->schoolId())->get()->pluck('id')->toArray();
+        
+        return 'User.group_id IN (' . implode(',', $groupIds) . ')' .
+            ' AND User.id IN (' . (empty($userIds) ? '0' : implode(',', $userIds)) . ')';
         
     }
     

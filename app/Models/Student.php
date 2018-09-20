@@ -203,16 +203,9 @@ class Student extends Model {
                 ],
             ],
         ];
-        $departmentIds = $this->departmentIds(Auth::id());
-        $userIds = array_unique(
-            DepartmentUser::whereIn('department_id', $departmentIds)
-                ->get()->pluck('user_id')->toArray()
-        );
-        $condition = 'User.group_id = ' . Group::whereName('学生')->first()->id .
-            ' AND User.id IN (' . (empty($userIds) ? '0' : implode(',', $userIds)) . ')';
-        
+
         return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
+            $this->getModel(), $columns, $joins, $this->contactCondition('学生')
         );
         
     }
