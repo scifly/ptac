@@ -3,6 +3,7 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use App\Models\App;
+use App\Models\CommType;
 use App\Models\MessageType;
 use App\Models\School;
 use Illuminate\Contracts\View\View;
@@ -29,9 +30,52 @@ class MessageIndexComposer {
         foreach ($data as $datum) {
             $apps[$datum['id']] = $datum['name'] . '|' . $datum['square_logo_url'];
         }
+        $optionAll = [null => '全部'];
+ 
+        $htmlCommType = $this->singleSelectList(
+            array_merge(
+                $optionAll,
+                CommType::all()->pluck('name', 'id')->toArray()
+            ), 'filter_commtype'
+        );
+        $htmlApp = $this->singleSelectList(
+            array_merge(
+                $optionAll,
+                App::whereCorpId(School::find($this->schoolId())->corp_id)
+                    ->get()->pluck('name', 'id')->toArray()
+            ), 'filter_app'
+        );
+        $htmlMessageType = $this->singleSelectList(
+            array_merge(
+                $optionAll,
+                MessageType::all()->pluck('name', 'id')->toArray()
+            ), 'filter_message_type'
+        );
         $view->with([
-            'titles'       => ['#', '通信方式', '应用', '消息批次', '接收者', '类型', '发送于', '状态'],
-            'rTitles'      => ['#', '通信方式', '应用', '消息批次', '发送者', '类型', '接收于', '状态'],
+            'titles'       => [
+                '#',
+                ['title' => '通信方式', 'html' => $htmlCommType],
+                ['title' => '应用', 'html' => $htmlApp],
+                '消息批次', '接收者',
+                ['title' => '类型', 'html' => $htmlMessageType],
+                ['title' => '发送于', 'html' => $this->inputDateTimeRange('发送于')],
+                [
+                    'title' => '状态',
+                    array_merge($optionAll, [0 => '未发', 1 => '已发'])
+                ],
+            ],
+            'rTitles'      => [
+                '#',
+                ['title' => '通信方式', 'html' => $htmlCommType],
+                ['title' => '应用', 'html' => $htmlApp],
+                '消息批次', '发送者',
+                ['title' => '类型', 'html' => $htmlMessageType],
+                ['title' => '接收于', 'html' => $this->inputDateTimeRange('接收于')],
+                [
+                    'title' => '状态',
+                    array_merge($optionAll, [0 => '未读', 1 => '已读'])
+                ],
+            ],
             'apps'         => $apps,
             'smsMaxLength' => 300,
             'messageTypes' => MessageType::pluck('name', 'id')->toArray(),
