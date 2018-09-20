@@ -74,7 +74,7 @@ class ScoreIndexComposer {
                 ],
                 'rank'   => [
                     'id'    => 'rank',
-                    'label' => ' 排名统计',
+                    'label' => ' 排名',
                     'icon'  => 'fa fa-sort-numeric-asc',
                 ],
                 'stat'   => [
@@ -85,7 +85,21 @@ class ScoreIndexComposer {
             ],
             'titles'         => [
                 '#', '姓名', '年级', '班级', '学号', '科目名称', '考试名称',
-                '班级排名', '年级排名', '成绩', '创建于', '更新于', '状态 . 操作',
+                '班级排名', '年级排名', '成绩',
+                [
+                    'title' => '创建于',
+                    'html' => $this->inputDateTimeRange('创建于')
+                ],
+                [
+                    'title' => '更新于',
+                    'html' => $this->inputDateTimeRange('更新于')
+                ],
+                [
+                    'title' => '状态 . 操作',
+                    'html' => $this->singleSelectList(
+                        [null => '全部', 0 => '已禁用', 1 => '已启用'], 'filter_enabled'
+                    )
+                ],
             ],
             'batch'          => true,
             'filter'         => true,
