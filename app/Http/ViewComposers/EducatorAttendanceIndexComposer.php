@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\ViewComposers;
 
+use App\Helpers\ModelTrait;
 use Illuminate\Contracts\View\View;
 
 /**
@@ -9,13 +10,34 @@ use Illuminate\Contracts\View\View;
  */
 class EducatorAttendanceIndexComposer {
     
+    use ModelTrait;
+    
     /**
      * @param View $view
      */
     public function compose(View $view) {
         
         $view->with([
-            'titles'  => ['#', '姓名', '打卡时间', '进/出', '考勤时段', '状态 . 操作'],
+            'titles'  => [
+                '#', '姓名',
+                [
+                    'title' => '打卡时间',
+                    'html' => $this->inputDateTimeRange('打卡时间')
+                ],
+                [
+                    'title' => '进/出',
+                    'html' => $this->singleSelectList(
+                        [null => '全部', 0 => '进', 1 => '出'], 'filter_inorout'
+                    )
+                ],
+                '考勤时段',
+                [
+                    'title' => '状态 . 操作',
+                    'html' => $this->singleSelectList(
+                        [null => '全部', 0 => '异常', 1 => '正常'], 'filter_status'
+                    )
+                ]
+            ],
             'buttons' => [
                 'stat' => [
                     'id'    => 'stat',
