@@ -3,5 +3,8 @@ page.index('score_totals', [
     {className: 'text-right', targets: [4]}
 ]);
 $.getMultiScripts(['js/dtrange.js']).done(
-    function () { $.dtrange().init('.dtrange'); }
+    function () {
+        $.dtrange().init('.dtrange');
+        page.initSelect2();
+    }
 );
