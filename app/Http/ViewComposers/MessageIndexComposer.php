@@ -61,7 +61,9 @@ class MessageIndexComposer {
                 ['title' => '发送于', 'html' => $this->inputDateTimeRange('发送于')],
                 [
                     'title' => '状态',
-                    array_merge($optionAll, [0 => '未发', 1 => '已发'])
+                    'html' => $this->singleSelectList(
+                        array_merge($optionAll, [0 => '未发', 1 => '已发']), 'filter_sent'
+                    )
                 ],
             ],
             'rTitles'      => [
@@ -73,7 +75,9 @@ class MessageIndexComposer {
                 ['title' => '接收于', 'html' => $this->inputDateTimeRange('接收于')],
                 [
                     'title' => '状态',
-                    array_merge($optionAll, [0 => '未读', 1 => '已读'])
+                    'html' => $this->singleSelectList(
+                        array_merge($optionAll, [0 => '未读', 1 => '已读']), 'filter_read'
+                    )
                 ],
             ],
             'apps'         => $apps,
