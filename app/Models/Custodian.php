@@ -103,19 +103,7 @@ class Custodian extends Model {
                     return Student::find($d)->user->realname;
                 },
             ],
-            [
-                'db'        => 'Custodian.id as mobile', 'dt' => 5,
-                'formatter' => function ($d) {
-                    $custodian = $this->find($d);
-                    $mobiles = Mobile::whereUserId($custodian->user_id)->get();
-                    $mobile = [];
-                    foreach ($mobiles as $key => $value) {
-                        $mobile[] = $value->mobile;
-                    }
-                    
-                    return implode(',', $mobile);
-                },
-            ],
+            ['db' => 'Mobile.mobile', 'dt' => 5],
             ['db' => 'Custodian.created_at', 'dt' => 6, 'dr' => true],
             ['db' => 'Custodian.updated_at', 'dt' => 7, 'dr' => true],
             [
@@ -162,6 +150,15 @@ class Custodian extends Model {
                     'Student.id = CustodianStudent.student_id',
                 ],
             ],
+            [
+                'table' => 'mobiles',
+                'alias' => 'Mobile',
+                'type' => 'INNER',
+                'conditions' => [
+                    'User.id = Mobile.user_id',
+                    'Mobile.isdefault = 1'
+                ]
+            ]
         ];
         $departmentIds = $this->departmentIds(Auth::id());
         $userIds = array_unique(

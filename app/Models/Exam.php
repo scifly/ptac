@@ -87,16 +87,15 @@ class Exam extends Model {
         $columns = [
             ['db' => 'Exam.id', 'dt' => 0],
             ['db' => 'Exam.name', 'dt' => 1],
-            ['db' => 'Exam.remark', 'dt' => 2],
-            ['db' => 'ExamType.name as examtypename', 'dt' => 3],
-            ['db' => 'Exam.max_scores', 'dt' => 4],
-            ['db' => 'Exam.pass_scores', 'dt' => 5],
-            ['db' => 'Exam.start_date', 'dt' => 6],
-            ['db' => 'Exam.end_date', 'dt' => 7],
-            ['db' => 'Exam.created_at', 'dt' => 8],
-            ['db' => 'Exam.updated_at', 'dt' => 9],
+            ['db' => 'ExamType.name as examtypename', 'dt' => 2],
+            ['db' => 'Exam.max_scores', 'dt' => 3],
+            ['db' => 'Exam.pass_scores', 'dt' => 4],
+            ['db' => 'Exam.start_date', 'dt' => 5, 'dr' => true],
+            ['db' => 'Exam.end_date', 'dt' => 6, 'dr' => true],
+            ['db' => 'Exam.created_at', 'dt' => 7, 'dr' => true],
+            ['db' => 'Exam.updated_at', 'dt' => 8, 'dr' => true],
             [
-                'db'        => 'Exam.enabled', 'dt' => 10,
+                'db'        => 'Exam.enabled', 'dt' => 9,
                 'formatter' => function ($d, $row) {
                     return Datatable::status($d, $row, false);
                 },

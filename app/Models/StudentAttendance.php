@@ -120,7 +120,7 @@ class StudentAttendance extends Model {
             ['db' => 'StudentAttendance.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
             ['db' => 'Student.card_number', 'dt' => 2],
-            ['db' => 'StudentAttendance.punch_time', 'dt' => 3],
+            ['db' => 'StudentAttendance.punch_time', 'dt' => 3, 'dr' => true],
             ['db' => 'StudentAttendanceSetting.name as sasname', 'dt' => 4],
             ['db' => 'AttendanceMachine.name as machinename', 'dt' => 5],
             [

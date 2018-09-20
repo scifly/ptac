@@ -132,8 +132,8 @@ class Score extends Model {
                 },
             ],
             ['db' => 'Score.score', 'dt' => 9],
-            ['db' => 'Score.created_at', 'dt' => 10],
-            ['db' => 'Score.updated_at', 'dt' => 11],
+            ['db' => 'Score.created_at', 'dt' => 10, 'dr' => true],
+            ['db' => 'Score.updated_at', 'dt' => 11, 'dr' => true],
             [
                 'db'        => 'Score.enabled', 'dt' => 12,
                 'formatter' => function ($d, $row) {

@@ -104,8 +104,8 @@ class ScoreTotal extends Model {
             ['db' => 'ScoreTotal.score', 'dt' => 4],
             ['db' => 'ScoreTotal.class_rank', 'dt' => 5],
             ['db' => 'ScoreTotal.grade_rank', 'dt' => 6],
-            ['db' => 'ScoreTotal.created_at', 'dt' => 7],
-            ['db' => 'ScoreTotal.updated_at', 'dt' => 8],
+            ['db' => 'ScoreTotal.created_at', 'dt' => 7, 'dr' => true],
+            ['db' => 'ScoreTotal.updated_at', 'dt' => 8, 'dr' => true],
             [
                 'db'        => 'ScoreTotal.enabled', 'dt' => 9,
                 'formatter' => function ($d, $row) {

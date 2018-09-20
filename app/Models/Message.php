@@ -203,7 +203,7 @@ class Message extends Model {
             ],
             ['db' => 'MessageType.name as messagetypename', 'dt' => 5],
             [
-                'db'        => 'Message.created_at', 'dt' => 6,
+                'db'        => 'Message.created_at', 'dt' => 6, 'dr' => true,
                 'formatter' => function ($d, $row) {
                     return $row['sent'] ? $d : sprintf(Snippet::BADGE_GRAY, '(n/a)');
                 },

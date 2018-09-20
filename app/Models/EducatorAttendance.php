@@ -87,7 +87,7 @@ class EducatorAttendance extends Model {
         $columns = [
             ['db' => 'EducatorAttendance.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
-            ['db' => 'EducatorAttendance.punch_time', 'dt' => 2],
+            ['db' => 'EducatorAttendance.punch_time', 'dt' => 2, 'dr' => true],
             [
                 'db'        => 'EducatorAttendance.inorout', 'dt' => 3,
                 'formatter' => function ($d) {
