@@ -28,8 +28,8 @@ class ExamIndexComposer {
         $view->with([
             'titles' => [
                 '#', '名称',
-                ['title' => '考试类型', 'html' => $htmlExamType],
-                '科目满分', '科目及格分数',
+                ['title' => '类型', 'html' => $htmlExamType],
+                '满分', '及格分数',
                 [
                     'title' => '开始日期',
                     'html' => $this->inputDateTimeRange('开始日期', false)
