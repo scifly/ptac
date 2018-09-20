@@ -49,7 +49,16 @@ class StudentIndexComposer {
                         [null => '全部', 0 => '女', 1 => '男'], 'filter_gender'
                     )
                 ],
-                '班级', '学号', '卡号',
+                [
+                    'title' => '班级',
+                    'html' => $this->singleSelectList(
+                        array_merge(
+                            [null => '全部'],
+                            Squad::whereIn('id', $this->classIds())->get()->pluck('name', 'id')->toArray()
+                        ), 'filter_class'
+                    )
+                ],
+                '学号', '卡号',
                 [
                     'title' => '住校',
                     'html' => $this->singleSelectList(
