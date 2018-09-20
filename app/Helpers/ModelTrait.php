@@ -615,7 +615,7 @@ trait ModelTrait {
         
         $class = 'form-control ' . ($timepicker ? 'dtrange' : 'drange');
         
-        return '<input type="text" class="' . $class . '" title="按"' . $title . '"过滤" />';
+        return '<input type="text" class="' . $class . '" title="按' . $title . '过滤" />';
         
     }
     
