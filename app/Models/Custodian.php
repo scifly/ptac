@@ -116,8 +116,8 @@ class Custodian extends Model {
                     return implode(',', $mobile);
                 },
             ],
-            ['db' => 'Custodian.created_at', 'dt' => 6],
-            ['db' => 'Custodian.updated_at', 'dt' => 7],
+            ['db' => 'Custodian.created_at', 'dt' => 6, 'dr' => true],
+            ['db' => 'Custodian.updated_at', 'dt' => 7, 'dr' => true],
             [
                 'db' => 'User.synced', 'dt' => 8,
                 'formatter' => function ($d) {

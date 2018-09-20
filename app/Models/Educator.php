@@ -190,22 +190,23 @@ class Educator extends Model {
                 }
             ],
             ['db' => 'User.position', 'dt' => 4],
-            ['db' => 'Educator.created_at', 'dt' => 5, 'dr' => true],
-            ['db' => 'Educator.updated_at', 'dt' => 6, 'dr' => true],
+            ['db' => 'Mobile.mobile', 'dt' => 5],
+            ['db' => 'Educator.created_at', 'dt' => 6, 'dr' => true],
+            ['db' => 'Educator.updated_at', 'dt' => 7, 'dr' => true],
             [
-                'db' => 'User.synced', 'dt' => 7,
+                'db' => 'User.synced', 'dt' => 8,
                 'formatter' => function ($d) {
                     return $this->synced($d);
                 }
             ],
             [
-                'db' => 'User.subscribed', 'dt' => 8,
+                'db' => 'User.subscribed', 'dt' => 9,
                 'formatter' => function ($d) {
                     return $this->subscribed($d);
                 }
             ],
             [
-                'db'        => 'Educator.enabled', 'dt' => 9,
+                'db'        => 'Educator.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $user = Auth::user();
@@ -225,6 +226,15 @@ class Educator extends Model {
                     'User.id = Educator.user_id',
                 ],
             ],
+            [
+                'table' => 'mobiles',
+                'alias' => 'Mobile',
+                'type' => 'INNER',
+                'conditions' => [
+                    'User.id = Mobile.user_id',
+                    'Mobile.isdefault = 1'
+                ]
+            ]
         ];
         $departmentIds = $this->departmentIds(Auth::id());
         $userIds = array_unique(

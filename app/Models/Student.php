@@ -169,13 +169,13 @@ class Student extends Model {
                 },
             ],
             [
-                'db'        => 'Student.birthday', 'dt' => 8,
+                'db'        => 'Student.birthday', 'dt' => 8, 'dr' => true,
                 'formatter' => function ($d) {
                     return $d ? substr($d, 0, 10) : '';
                 },
             ],
-            ['db' => 'Student.created_at', 'dt' => 9],
-            ['db' => 'Student.updated_at', 'dt' => 10],
+            ['db' => 'Student.created_at', 'dt' => 9, 'dr' => true],
+            ['db' => 'Student.updated_at', 'dt' => 10, 'dr' => true],
             [
                 'db'        => 'Student.enabled', 'dt' => 11,
                 'formatter' => function ($d, $row) {

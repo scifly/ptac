@@ -44,7 +44,7 @@ class EducatorIndexComposer {
                         [null => '全部', 0 => '女', 1 => '男'], 'filter_gender'
                     )
                 ],
-                '职务',
+                '职务', '手机号码',
                 [
                     'title' => '创建于',
                     'html'  => $this->inputDateTimeRange('创建于')
