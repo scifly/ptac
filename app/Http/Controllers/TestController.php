@@ -8,6 +8,7 @@ use App\Models\Action;
 use App\Models\CommType;
 use App\Models\Corp;
 use App\Models\Department;
+use App\Models\Group;
 use App\Models\Student;
 use App\Models\User;
 use Exception;
@@ -55,6 +56,8 @@ class TestController extends Controller {
      */
     public function index() {
 
+        $names = Group::whereIn('name', ['运营', '企业', '学校'])->pluck('id', 'name')->toArray();
+        dd($names);
         $n = new ReflectionClass('\App\Http\Controllers\ActionController');
         dd($n->getProperty('type')->getValue());
         $comm = [null => '全部'];

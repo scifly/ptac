@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\ViewComposers;
 
+use App\Models\Group;
 use App\Models\Icon;
 use App\Models\Menu;
 use App\Models\Tab;
@@ -28,6 +29,7 @@ class MenuComposer {
     public function compose(View $view) {
         
         $role = Auth::user()->group->name;
+        $companyGroupId = Group::whereIn('name', ['运营', '企业', '学校']);
         $tabs = null;
         switch ($role) {
             case '运营':
