@@ -56,7 +56,7 @@ class TestController extends Controller {
     public function index() {
 
         $n = new ReflectionClass('\App\Http\Controllers\ActionController');
-        dd($n->getProperty('type')->getValue($n));
+        dd($n->getProperties());
         $comm = [null => '全部'];
         $comm = array_merge(
             $comm,
