@@ -20,7 +20,6 @@ class TagComposer {
      */
     public function compose(View $view) {
         
-        $targetsHtml = $targetIds = null;
         if (Request::route('id')) {
             $tag = Tag::find(Request::route('id'));
             $targetIds = $tag->departments->pluck('id')->toArray();
@@ -28,8 +27,8 @@ class TagComposer {
         }
         
         $view->with([
-            'targets' => $targetsHtml,
-            'targetIds' => $targetIds ? implode(',', $targetIds) : ''
+            'targets' => $targetsHtml ?? null,
+            'targetIds' => isset($targetIds) ? implode(',', $targetIds) : ''
         ]);
         
     }

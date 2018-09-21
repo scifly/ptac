@@ -49,7 +49,6 @@ class StudentComposer {
                 ->pluck('name', 'id')
                 ->toArray();
         }
-        $mobiles = $user = null;
         if (Request::route('id')) {
             $student = Student::find(Request::route('id'));
             $user = $student->user;
@@ -58,8 +57,8 @@ class StudentComposer {
         $view->with([
             'grades'  => $grades,
             'classes' => $classes,
-            'user'    => $user,
-            'mobiles' => $mobiles,
+            'user'    => $user ?? null,
+            'mobiles' => $mobiles ?? null,
         ]);
         
     }

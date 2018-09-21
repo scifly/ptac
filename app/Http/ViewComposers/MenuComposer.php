@@ -29,8 +29,7 @@ class MenuComposer {
     public function compose(View $view) {
         
         $role = Auth::user()->group->name;
-        $companyGroupId = Group::whereIn('name', ['运营', '企业', '学校']);
-        $tabs = null;
+        $groupIds = Group::whereIn('name', ['运营', '企业', '学校'])->pluck('id', 'name')->toArray();
         switch ($role) {
             case '运营':
                 $tabs = Tab::whereEnabled(1)
@@ -38,26 +37,25 @@ class MenuComposer {
                 break;
             case '企业':
                 $tabs = Tab::whereEnabled(1)
-                    ->where('group_id', '<>', 1)
+                    ->where('group_id', '<>', $groupIds['运营'])
                     ->pluck('name', 'id');
                 break;
             case '学校':
                 $tabs = Tab::whereEnabled(1)
-                    ->whereIn('group_id', [0, 3])
+                    ->whereIn('group_id', [0, $groupIds['学校']])
                     ->pluck('name', 'id');
                 break;
             default:
                 break;
         }
-        $selectedTabs = [];
         if (Request::route('id')) {
             $selectedTabs = Menu::find(Request::route('id'))
                 ->tabs->pluck('name', 'id')->toArray();
         }
         $view->with([
-            'tabs'         => $tabs,
+            'tabs'         => $tabs ?? null,
             'icons'        => $this->icon->icons(),
-            'selectedTabs' => $selectedTabs,
+            'selectedTabs' => $selectedTabs ?? [],
         ]);
         
     }

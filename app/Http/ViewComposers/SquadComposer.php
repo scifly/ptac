@@ -42,7 +42,6 @@ class SquadComposer {
         foreach ($educators as $educator) {
             $educatorList[$educator->id] = $educator->user->realname;
         }
-        $selectedEducators = null;
         if (Request::route('id')) {
             $educatorIds = Squad::find(Request::route('id'))->educator_ids;
             if ($educatorIds != '0') {
@@ -54,7 +53,7 @@ class SquadComposer {
         $view->with([
             'grades'            => $grades,
             'educators'         => $educatorList,
-            'selectedEducators' => $selectedEducators,
+            'selectedEducators' => $selectedEducators ?? null,
         ]);
         
     }

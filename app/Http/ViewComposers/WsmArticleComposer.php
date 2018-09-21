@@ -33,19 +33,18 @@ class WsmArticleComposer {
      */
     public function compose(View $view) {
         
-        $schoolId = $this->schoolId();
-        $medias = null;
         if (Request::route('id')) {
             $medias = $this->media->medias(
                 explode(',', WsmArticle::find(Request::route('id'))->media_ids)
             );
         }
+        
         $view->with([
-            'wsms'   => School::find($schoolId)
+            'wsms'   => School::find($this->schoolId())
                 ->wapSite->wapSiteModules
                 ->pluck('name', 'id')
                 ->toArray(),
-            'medias' => $medias,
+            'medias' => $medias ?? null,
         ]);
         
     }

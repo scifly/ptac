@@ -2,6 +2,7 @@
 namespace App\Http\ViewComposers;
 
 use App\Models\Action;
+use App\Models\Group;
 use App\Models\Icon;
 use App\Models\Menu;
 use App\Models\Tab;
@@ -35,7 +36,6 @@ class TabComposer {
      */
     public function compose(View $view) {
         
-        $selectedMenus = null;
         if (Request::route('id')) {
             $tab = Tab::find(Request::route('id'));
             $tabMenus = $tab->menus;
@@ -47,14 +47,11 @@ class TabComposer {
         $view->with([
             'icons'         => $this->icon->icons(),
             'actions'       => $this->action->actions(),
-            'groups'        => [
-                0 => '所有',
-                1 => '运营',
-                2 => '企业',
-                3 => '学校',
-            ],
+            'groups'        => array_merge(
+                [0 => '所有'], Group::whereIn('name', ['运营', '企业', '学校'])->pluck('name', 'id')->toArray()
+            ),
             'menus'         => $this->menu->leaves(1),
-            'selectedMenus' => $selectedMenus,
+            'selectedMenus' => $selectedMenus ?? null,
         ]);
         
     }

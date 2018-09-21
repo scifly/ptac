@@ -29,15 +29,15 @@ class WapSiteComposer {
      */
     public function compose(View $view) {
         
-        $medias = null;
         if (Request::route('id')) {
             $ws = WapSite::find(Request::route('id'));
-            $medias = !empty($ws->media_ids)
-                ? $this->media->medias(explode(',', $ws->media_ids))
-                : null;
+            if (!empty($ws->media_ids)) {
+                $medias = $this->media->medias(explode(',', $ws->media_ids));
+            }
         }
+        
         $view->with([
-            'medias' => $medias,
+            'medias' => $medias ?? null,
         ]);
         
     }

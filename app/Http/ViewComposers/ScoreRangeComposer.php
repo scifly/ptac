@@ -26,7 +26,6 @@ class ScoreRangeComposer {
             ->pluck('name', 'id')
             ->toArray();
         array_unshift($subjects, '总分');
-        $selectedSubjects = null;
         if (Request::route('id')) {
             $sr = ScoreRange::find(Request::route('id'));
             $ids = explode(',', $sr->subject_ids);
@@ -41,7 +40,7 @@ class ScoreRangeComposer {
         }
         $view->with([
             'subjects'         => $subjects,
-            'selectedSubjects' => $selectedSubjects,
+            'selectedSubjects' => $selectedSubjects ?? null,
         ]);
         
     }

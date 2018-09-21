@@ -20,13 +20,12 @@ class WapSiteModuleComposer {
      */
     public function compose(View $view) {
         
-        $media = null;
         if (Request::route('id')) {
             $media = WapSiteModule::find(Request::route('id'))->media;
         }
         $view->with([
             'wapSites' => WapSite::whereSchoolId($this->schoolId())->pluck('site_title', 'id'),
-            'media'    => $media,
+            'media'    => $media ?? null,
         ]);
         
     }

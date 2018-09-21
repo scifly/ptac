@@ -56,9 +56,8 @@ class TestController extends Controller {
      */
     public function index() {
 
-        $names = Group::whereIn('name', ['运营', '企业', '学校'])->pluck('id', 'name')->toArray();
-        dd($names);
         $n = new ReflectionClass('\App\Http\Controllers\ActionController');
+        dd($n->hasProperty('ty743892'));
         dd($n->getProperty('type')->getValue());
         $comm = [null => '全部'];
         $comm = array_merge(

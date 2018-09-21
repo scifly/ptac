@@ -385,16 +385,13 @@ class Tab extends Model {
      */
     private function indexActionId($ctlrName) {
         
-        $action = new Action();
-        $a = $actionId = $action::whereEnabled(1)
-            ->where('controller', $ctlrName)
-            ->where('method', 'index')
-            ->first();
-        if (!$a) {
-            return 0;
-        }
+        $action = (new Action)->where([
+            'enabled' => 1,
+            'controller' => $ctlrName,
+            'method' => 'index'
+        ])->first();
         
-        return $a->id;
+        return $action ? $action->id : 0;
         
     }
     
