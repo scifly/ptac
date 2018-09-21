@@ -19,6 +19,7 @@ class ActionController extends Controller {
     
     public $type = 1;
     protected $action;
+    const TYPE = 1;
     
     /**
      * ActionController constructor.
