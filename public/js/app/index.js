@@ -102,8 +102,8 @@ $(document).off('click', '.fa-pencil').on(
 );
 
 // 删除应用
-$(document).off('click', '.fa-remove').on(
-    'click', '.fa-remove',
+$('.fa-remove').on(
+    'click', 
     function (e) {
         e.stopPropagation();
         id = $(this).parentsUntil('tbody').eq(2).children(0).first().html();
