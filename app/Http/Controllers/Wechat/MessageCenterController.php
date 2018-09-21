@@ -12,6 +12,8 @@ use Illuminate\View\View;
 use Throwable;
 
 /**
+ * 消息中心
+ *
  * Class MessageCenterController
  * @package App\Http\Controllers\Wechat
  */

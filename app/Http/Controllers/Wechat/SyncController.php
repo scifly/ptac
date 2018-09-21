@@ -22,9 +22,9 @@ use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
- * 微信考勤
+ * 通讯录变更同步
  *
- * Class AttendanceController
+ * Class SyncController
  * @package App\Http\Controllers\Wechat
  */
 class SyncController extends Controller {

@@ -10,7 +10,7 @@ use Illuminate\View\View;
 use Throwable;
 
 /**
- * 微信端成绩
+ * 成绩中心
  *
  * Class ScoreController
  * @package App\Http\Controllers

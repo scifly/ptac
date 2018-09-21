@@ -9,7 +9,7 @@ use Illuminate\View\View;
 use Throwable;
 
 /**
- * 微信考勤
+ * 考勤管理
  *
  * Class AttendanceController
  * @package App\Http\Controllers\Wechat

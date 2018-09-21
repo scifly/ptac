@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Request;
 use SimpleXMLElement;
 
 /**
+ * 布置作业
+ *
  * Class HomeWorkController
  * @package App\Http\Controllers\Wechat
  */

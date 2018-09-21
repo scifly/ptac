@@ -11,6 +11,8 @@ use Illuminate\Routing\Redirector;
 use Illuminate\View\View;
 
 /**
+ * 微网站
+ *
  * Class MobileSiteController
  * @package App\Http\Controllers\Wechat
  */
