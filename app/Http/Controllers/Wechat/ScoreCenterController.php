@@ -22,7 +22,8 @@ class ScoreCenterController extends Controller {
     protected $score, $exam;
     
     /**
-     * MessageCenterController constructor.
+     * ScoreCenterController constructor.
+     *
      * @param Score $score
      * @param Exam $exam
      */
@@ -35,7 +36,7 @@ class ScoreCenterController extends Controller {
     }
     
     /**
-     * 微信端成绩
+     * 成绩列表
      *
      * @return string
      * @throws Throwable
@@ -69,7 +70,7 @@ class ScoreCenterController extends Controller {
     }
     
     /**
-     * 微信 教师端成绩分析
+     * 成绩分析（教师端）
      *
      * @return string
      */
@@ -80,7 +81,7 @@ class ScoreCenterController extends Controller {
     }
     
     /**
-     * 返回指定学生指定考试的综合成绩分析结果
+     * 综合成绩分析
      *
      * @return Factory|View|string
      */

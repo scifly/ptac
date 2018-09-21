@@ -43,7 +43,7 @@ class AttendanceController extends Controller {
     }
     
     /**
-     * 返回指定学生的考勤记录
+     * 获取指定学生的考勤记录
      *
      * @param null $studentId
      * @return Factory|JsonResponse|View
@@ -55,7 +55,7 @@ class AttendanceController extends Controller {
     }
     
     /**
-     * 学生饼图数据
+     * 获取学生饼图数据
      *
      * @throws Throwable
      */

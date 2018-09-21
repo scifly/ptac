@@ -20,6 +20,7 @@ class WechatSmsController extends Controller {
     
     /**
      * WechatSmsController constructor.
+     *
      * @param WechatSms $wechatSms
      */
     function __construct(WechatSms $wechatSms) {
