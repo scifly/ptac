@@ -17,6 +17,7 @@ use Throwable;
  */
 class ActionController extends Controller {
     
+    private $type = 1;
     protected $action;
     
     /**
