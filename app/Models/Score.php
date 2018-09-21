@@ -18,7 +18,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -1089,7 +1088,6 @@ class Score extends Model {
                     'grade_rank' => $score ? $score->grade_rank : '——',
                 ];
             }
-            Log::debug(json_encode($scores));
             #处理$studentScore 按照key值升序
             ksort($scores);
             $scoreTotal = ScoreTotal::whereStudentId($studentId)

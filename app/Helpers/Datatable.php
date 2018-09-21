@@ -5,7 +5,6 @@ use DateTime;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -78,7 +77,6 @@ class Datatable {
         // Main query to actually get the data
         $fields = implode(", ", $this->pluck($columns, 'db'));
         $query = "SELECT SQL_CALC_FOUND_ROWS " . $fields . " FROM " . $from . $where . $order . $limit;
-        Log::debug($query);
         $data = DB::select($query);
         $query = "SELECT " . $useTable . ".id FROM " . $from . $where;
         $ids = DB::select($query);

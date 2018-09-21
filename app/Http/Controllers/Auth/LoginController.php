@@ -8,7 +8,6 @@ use App\Models\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Class LoginController
@@ -91,7 +90,6 @@ class LoginController extends Controller {
             $input = User::find($mobile->user_id)->username;
         }
         # 角色为监护人/学生/api的用户不得登录后台
-        Log::debug(json_encode($user));
         abort_if(
             ($user->custodian && !$user->educator) || $user->student || $user->group->name == 'api',
             HttpStatusCode::NOT_ACCEPTABLE,

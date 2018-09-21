@@ -72,8 +72,6 @@ class ConsumptionPolicy {
         $dateRange = explode(' - ', $cs->dateRange);
         
         if (in_array($user->group->name, Constant::SUPER_ROLES)) {
-            Log::debug('student_ids: ' . json_encode($studentIds));
-            Log::debug('studentIds: ' . json_encode($this->contactIds('student')));
             return empty(array_diff($studentIds, $this->contactIds('student')))
                 && ($dateRange[1] >= $dateRange[0]);
         }
