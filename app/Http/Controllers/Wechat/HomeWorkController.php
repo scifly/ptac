@@ -23,6 +23,8 @@ use SimpleXMLElement;
  */
 class HomeWorkController extends Controller {
     
+    static $category = 1; # 微信端控制器
+    
     const URL_UNIFIEDORDER = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
 
     protected $hw;

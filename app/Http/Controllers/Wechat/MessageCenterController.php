@@ -17,6 +17,8 @@ use Throwable;
  */
 class MessageCenterController extends Controller {
     
+    static $category = 1; # 微信端控制器
+    
     protected $message;
     
     /**

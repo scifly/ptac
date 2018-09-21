@@ -16,6 +16,8 @@ use Throwable;
  */
 class AttendanceController extends Controller {
     
+    static $category = 1; # 微信端控制器
+    
     protected $sa;
     
     /**

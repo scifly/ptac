@@ -16,6 +16,8 @@ use Illuminate\View\View;
  */
 class MobileSiteController extends Controller {
     
+    static $category = 1; # 微信端控制器
+    
     protected $ws, $wsm, $wsma;
     
     /**

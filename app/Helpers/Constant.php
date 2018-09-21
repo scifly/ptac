@@ -82,21 +82,21 @@ class Constant {
     const CONTROLLER_DIR = 'app/Http/Controllers';
     
     const EXCLUDED_CONTROLLERS = [
-        'ApiController',
-        'AttendanceController',
-        'Controller',
-        'ForgotPasswordController',
-        'HomeController',
-        'HomeWorkController',
-        'LoginController',
-        'MessageCenterController',
-        'MobileSiteController',
-        'RegisterController',
-        'ResetPasswordController',
-        'ScoreCenterController',
-        'SyncController',
+        // 'ApiController',
+        // 'AttendanceController',
+        // 'Controller',
+        // 'ForgotPasswordController',
+        // 'HomeController',
+        // 'HomeWorkController',
+        // 'LoginController',
+        // 'MessageCenterController',
+        // 'MobileSiteController',
+        // 'RegisterController',
+        // 'ResetPasswordController',
+        // 'ScoreCenterController',
+        // 'SyncController',
         'TestController',
-        'WechatSmsController',
+        // 'WechatSmsController',
     ];
     
     const INFO_TYPE = [

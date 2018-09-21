@@ -20,8 +20,15 @@ class ActionIndexComposer {
         $view->with([
             'titles' => [
                 '#', '名称', '方法', '路由', '控制器',
-                'View路径', 'js路径', '请求类型', '状态 . 操作',
+                'View路径', 'js路径', '请求类型',
+                [
+                    'title' => '状态 . 操作',
+                    'html' => $this->singleSelectList(
+                        [null => '全部', 0 => '已禁用', 1 => '已启用'], 'filter_enabled'
+                    )
+                ]
             ],
+            'filter' => true,
         ]);
         
     }

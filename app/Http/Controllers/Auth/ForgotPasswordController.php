@@ -22,11 +22,14 @@ class ForgotPasswordController extends Controller {
     */
     use SendsPasswordResetEmails;
     
+    static $category = 2; # 其他类型控制器
+    
     /**
      * Create a new controller instance.
      *
      */
     public function __construct() {
+        
         $this->middleware('guest');
         
     }

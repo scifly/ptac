@@ -25,6 +25,7 @@ class RegisterController extends Controller {
     */
     use RegistersUsers;
     
+    static $category = 2; # 其他类型控制器
     /**
      * Where to redirect users after registration.
      *
@@ -38,6 +39,7 @@ class RegisterController extends Controller {
      * @param User $user
      */
     public function __construct(User $user) {
+        
         $this->middleware('guest');
         $this->user = $user;
         

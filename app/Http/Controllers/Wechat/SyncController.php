@@ -29,6 +29,8 @@ use Throwable;
  */
 class SyncController extends Controller {
     
+    static $category = 2; # 其他类型控制器
+    
     const MEMBER_PROPERTIES = [
         'NewUserID'   => 'userid',
         'Name'        => 'realname',

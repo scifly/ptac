@@ -28,6 +28,8 @@ class LoginController extends Controller {
     */
     use AuthenticatesUsers;
     
+    static $category = 2; # 其他类型控制器
+    
     /**
      * 登录后的跳转地址
      *

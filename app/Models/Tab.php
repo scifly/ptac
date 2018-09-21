@@ -45,17 +45,19 @@ use Throwable;
  * @method static Builder|Tab whereName($value)
  * @method static Builder|Tab whereRemark($value)
  * @method static Builder|Tab whereUpdatedAt($value)
+ * @method static Builder|Tab whereCategory($value)
  * @mixin Eloquent
  * @property int|null $new_column
  * @method static Builder|Tab whereNewColumn($value)
+ * @property int $category 控制器类型: 0 - 后台，1 - 微信端, 2 - 其他
  */
 class Tab extends Model {
     
     use ModelTrait;
     
     protected $fillable = [
-        'name', 'remark', 'icon_id', 'group_id',
-        'action_id', 'enabled', 'controller',
+        'name', 'controller', 'icon_id', 'group_id',
+        'action_id', 'remark', 'category', 'enabled',
     ];
     
     /**
@@ -286,6 +288,7 @@ class Tab extends Model {
                 'controller' => $ctlrName,
                 'remark'     => $controller,
                 'action_id'  => self::indexActionId($ctlrName),
+                'category'   => $obj->hasProperty('category') ? $obj->getProperty('category')->getValue() : 0,
                 'enabled'    => Constant::ENABLED,
             ];
             $tab = self::whereController($record['controller'])->first();

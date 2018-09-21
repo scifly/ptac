@@ -1,7 +1,5 @@
 <?php
-namespace App\Http\Controllers\Wechat;
-
-use App\Http\Controllers\Controller;
+namespace App\Http\Controllers;
 
 /**
  * 企业微信应用入口
@@ -10,8 +8,6 @@ use App\Http\Controllers\Controller;
  * @package App\Http\Controllers\Wechat
  */
 class WechatController extends Controller {
-    
-    protected $wechatSms;
     
     /**
      * WechatController constructor.
