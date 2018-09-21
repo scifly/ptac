@@ -102,8 +102,8 @@ $(document).off('click', '.fa-pencil').on(
 );
 
 // 删除应用
-$('.fa-remove').on(
-    'click',
+$(document).on(
+    'click', '.fa-remove',
     function (e) {
         e.stopPropagation();
         id = $(this).parentsUntil('tbody').eq(2).children(0).first().html();
@@ -128,7 +128,7 @@ $('#confirm-delete').on('click', function () {
 });
 
 // 选择/取消选择应用
-$('tbody tr').on('click', function () {
+$(document).on('click', 'tbody tr', function () {
     var $this = $(this),
         $id = $('#id'),
         $agentid = $('#agentid'),
