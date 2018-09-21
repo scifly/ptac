@@ -594,7 +594,7 @@ trait ModelTrait {
      */
     function singleSelectList(array $items, $id) {
         
-        $html = '<select class="form-control select2 input-sm" id="%s" name="%s" style="width: %s"' .
+        $html = '<select class="form-control select2" id="%s" name="%s" style="width: %s"' .
             (sizeof($items) <=1 ? ' disabled ' : '') . '>';
         foreach ($items as $key => $value) {
             $html .= '<option value="' . $key . '">' . $value . '</option>';
@@ -614,7 +614,7 @@ trait ModelTrait {
      */
     function inputDateTimeRange($title, $timepicker = true) {
         
-        $class = 'form-control input-sm ' . ($timepicker ? 'dtrange' : 'drange');
+        $class = 'form-control ' . ($timepicker ? 'dtrange' : 'drange');
         
         return '<input type="text" class="' . $class . '" title="按' . $title . '过滤" />';
         
