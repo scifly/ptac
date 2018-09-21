@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Apis\Kinder;
 use App\Facades\Wechat;
 use App\Helpers\ModelTrait;
+use App\Models\Action;
 use App\Models\CommType;
 use App\Models\Corp;
 use App\Models\Department;
@@ -54,6 +55,8 @@ class TestController extends Controller {
      */
     public function index() {
 
+        $n = new ReflectionClass('App\Controllers\ActionController');
+        dd($n->getProperty('type'));
         $comm = [null => '全部'];
         $comm = array_merge(
             $comm,

@@ -65,6 +65,7 @@ class Action extends Model {
     ];
     protected $routes;
     
+    public $type = 1;
     /**
      * 返回当前action包含的卡片
      *
