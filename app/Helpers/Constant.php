@@ -84,7 +84,7 @@ class Constant {
     const EXCLUDED_CONTROLLERS = [
         // 'ApiController',
         // 'AttendanceController',
-        // 'Controller',
+        'Controller',
         // 'ForgotPasswordController',
         // 'HomeController',
         // 'HomeWorkController',
