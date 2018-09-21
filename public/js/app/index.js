@@ -103,11 +103,11 @@ $(document).off('click', '.fa-pencil').on(
 
 // 删除应用
 $('.fa-remove').on(
-    'click', 
+    'click',
     function (e) {
         e.stopPropagation();
         id = $(this).parentsUntil('tbody').eq(2).children(0).first().html();
-        $('#modal-dialog').modal({backdrop: true});
+        $('#modal-delete').modal({backdrop: true});
     }
 );
 $('#confirm-delete').on('click', function () {
