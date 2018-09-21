@@ -7,9 +7,9 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\View\View;
 
 /**
- * 微信企业应用
+ * 微信消息短信
  *
- * Class AppController
+ * Class WechatSmsController
  * @package App\Http\Controllers\Wechat
  */
 class WechatSmsController extends Controller {
@@ -17,7 +17,7 @@ class WechatSmsController extends Controller {
     protected $wechatSms;
     
     /**
-     * AppController constructor.
+     * WechatSmsController constructor.
      * @param WechatSms $wechatSms
      */
     function __construct(WechatSms $wechatSms) {

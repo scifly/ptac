@@ -169,6 +169,7 @@ class Kinder {
                     'post'    => $user->group_id,
                     'status'  => $user->enabled,
                     'address' => 'n/a',
+                    'ishome'  => $user->group->name == '学生' ? $data['remark'] : 0,
                     'remark'  => $data['remark'],
                     'bank'    => $user->custodian ? 'custodian' : 'n/a',
                 ];

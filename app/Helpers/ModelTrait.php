@@ -614,7 +614,7 @@ trait ModelTrait {
      */
     function inputDateTimeRange($title, $timepicker = true) {
         
-        $class = 'form-control ' . ($timepicker ? 'dtrange' : 'drange');
+        $class = 'form-control input-sm ' . ($timepicker ? 'dtrange' : 'drange');
         
         return '<input type="text" class="' . $class . '" title="按' . $title . '过滤" />';
         
