@@ -643,9 +643,9 @@ class Action extends Model {
                 foreach ($r->methods as $method) {
                     $actionTypeIds[] = $actionTypes[$method];
                 }
+                return implode(',', $actionTypeIds);
             }
-            
-            return implode(',', $actionTypeIds);
+    
         }
         
         return null;
