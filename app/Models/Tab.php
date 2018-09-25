@@ -259,9 +259,9 @@ class Tab extends Model {
         $controllerNames = $action->controllerNames($controllers);
         // remove nonexisting controllers
         $existingCtlrs = [];
-        $ctlrs = self::groupBy('controller')->get(['controller'])->toArray();
+        $ctlrs = self::groupBy('name')->get(['name'])->toArray();
         foreach ($ctlrs as $ctlr) {
-            $existingCtlrs[] = $ctlr['controller'];
+            $existingCtlrs[] = $ctlr['name'];
         }
         $ctlrDiff = array_merge(
             array_diff($existingCtlrs, $controllerNames),
@@ -387,7 +387,7 @@ class Tab extends Model {
         
         $action = (new Action)->where([
             'enabled' => 1,
-            'controller' => $ctlrName,
+            'tab_id' => Tab::whereName($ctlrName)->first()->id,
             'method' => 'index'
         ])->first();
         
