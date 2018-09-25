@@ -5,6 +5,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 
 /**
+ * 重置密码
+ *
  * Class ResetPasswordController
  * @package App\Http\Controllers\Auth
  */

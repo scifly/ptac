@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 /**
+ * 登录
+ *
  * Class LoginController
  * @package App\Http\Controllers\Auth
  */

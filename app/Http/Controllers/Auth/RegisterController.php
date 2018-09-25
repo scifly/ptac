@@ -8,6 +8,8 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
 
 /**
+ * 注册
+ *
  * Class RegisterController
  * @package App\Http\Controllers\Auth
  */
