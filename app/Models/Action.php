@@ -604,7 +604,7 @@ class Action extends Model {
         if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
             /** @var \Illuminate\Routing\Route $route */
             foreach ($this->routes as $route) {
-                if ($action == 'ActionController') {
+                if ($controller == 'ActionController') {
                     dd($route);
                 }
                 $aPos = stripos(
