@@ -639,7 +639,7 @@ class Action extends Model {
      */
     private function actionTypeIds($controller, $action) {
         
-        $action = ($action == 'destroy' ? 'delete' : $action);
+        // $action = ($action == 'destroy' ? 'delete' : $action);
         if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
             foreach ($this->routes as $route) {
                 $aPos = stripos(
