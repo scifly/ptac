@@ -29,6 +29,7 @@ class StudentIndexComposer {
             ->pluck('name', 'id')
             ->toArray();
         $view->with([
+            'uris' => $this->uris(),
             'buttons'        => [
                 'import' => [
                     'id'    => 'import',
