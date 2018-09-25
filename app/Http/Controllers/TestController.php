@@ -57,7 +57,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        dd(Inflector::pluralize(Inflector::tableize('HomeWork')));
+        dd(Inflector::pluralize(Inflector::tableize('MessageCenter')));
         if (Request::method() == 'POST') {
             // $department = new Department;
             // $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();
