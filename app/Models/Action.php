@@ -93,7 +93,7 @@ class Action extends Model {
             if (
                 in_array($id, explode(',', $action['action_type_ids'])) &&
                 !strpos($action['route'], '{') &&
-                Tab::whereName($action->controller)->first()->category != 2 # 其他类型控制器
+                Tab::whereController($action->controller)->first()->category != 2 # 其他类型控制器
             ) {
                 $actions[$action->controller][$action->id] = $action['name'] . ' - ' . $action['route'];
             }
