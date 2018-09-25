@@ -57,7 +57,11 @@ class TestController extends Controller {
         $routes = Route::getRoutes()->getRoutes();
         /** @var \Illuminate\Routing\Route $route */
         foreach ($routes as $route) {
-            echo ($route->action['controller']);
+            if (isset($route->action['controller'])) {
+                echo ($route->action['controller']);
+            } else {
+                dd($route);
+            }
         }
         exit;
         if (Request::method() == 'POST') {
