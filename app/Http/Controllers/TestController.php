@@ -58,7 +58,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        dd(Route::getRoutes()->getRoutes());
+        dd(json_decode(Route::getRoutes(), true));
         if (Request::method() == 'POST') {
             // $department = new Department;
             // $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();
