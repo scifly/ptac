@@ -8,7 +8,6 @@ use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use function GuzzleHttp\default_ca_bundle;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;

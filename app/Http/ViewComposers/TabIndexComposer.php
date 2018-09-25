@@ -27,7 +27,7 @@ class TabIndexComposer {
                 [
                     'title' => '角色',
                     'html' => $this->singleSelectList(
-                        array_merge($optionAll, $roles), 'filter_group'
+                        array_merge($optionAll, [0 => '所有'], $roles), 'filter_group'
                     )
                 ],
                 '默认功能',
