@@ -190,7 +190,7 @@ class Action extends Model {
                 },
             ],
             [
-                'db'        => 'Action.controller', 'dt' => 4,
+                'db'        => 'Tab.name as controller', 'dt' => 4,
                 'formatter' => function ($d) {
                     return !empty($d) ? sprintf(Snippet::BADGE_RED, $d) : '-';
                 },
@@ -223,8 +223,18 @@ class Action extends Model {
                 },
             ],
         ];
+        $joins = [
+            [
+                'table' => 'tabs',
+                'alias' => 'Tab',
+                'type' => 'INNER',
+                'conditions' => [
+                    'Tab.id = Action.tab_id'
+                ]
+            ]
+        ];
         
-        return Datatable::simple($this->getModel(), $columns);
+        return Datatable::simple($this->getModel(), $columns, $joins);
         
     }
     
