@@ -64,6 +64,7 @@ class Action extends Model {
         'js', 'action_type_ids', 'enabled',
     ];
     protected $routes;
+    protected $acronyms;
     
     public $type = 1;
     /**
@@ -253,6 +254,7 @@ class Action extends Model {
     function scan() {
         
         $this->routes = Route::getRoutes()->getRoutes();
+        $this->acronyms = Corp::pluck('acronym')->toArray();
         $controllers = self::scanDirs(self::siteRoot() . Constant::CONTROLLER_DIR);
         # 获取控制器的名字空间
         $this->controllerNamespaces($controllers);
@@ -615,7 +617,9 @@ class Action extends Model {
                 if ($rPos === 0 || ($rPos === false && array_search($tableName, $uris) === false)) {
                     return $route->uri;
                 }
-                $uris[0] = '{acronym}';
+                if (in_array($uris[0], $this->acronyms)) {
+                    $uris[0] =  '{acronym}';
+                }
                 return implode('/', $uris);
             }
         }
