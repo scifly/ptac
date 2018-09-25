@@ -604,6 +604,7 @@ class Action extends Model {
         if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
             /** @var \Illuminate\Routing\Route $route */
             foreach ($this->routes as $route) {
+                dd($route);
                 $aPos = stripos(
                     $route->action['controller'],
                     $controller . '@' . $action
