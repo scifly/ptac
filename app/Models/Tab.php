@@ -8,6 +8,7 @@ use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use function GuzzleHttp\default_ca_bundle;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -94,38 +95,23 @@ class Tab extends Model {
                 'db'        => 'Tab.name', 'dt' => 1,
                 'formatter' => function ($d, $row) {
                     $iconId = self::find($row['id'])->icon_id;
-                    if ($iconId) {
-                        return sprintf(Snippet::ICON, Icon::find($iconId)->name, '') . $d;
-                    }
-                    
-                    return sprintf(Snippet::ICON, 'fa-calendar-check-o text-gray', '') . $d;
+                    return $iconId
+                        ? sprintf(Snippet::ICON, Icon::find($iconId)->name, '') . $d
+                        : sprintf(Snippet::ICON, 'fa-calendar-check-o text-gray', '') . $d;
                 },
             ],
             ['db' => 'Tab.controller', 'dt' => 2],
             [
                 'db'        => 'Tab.group_id', 'dt' => 3,
                 'formatter' => function ($d) {
-                    $badge = Snippet::BADGE_BLACK;
-                    if ($d == 0) {
-                        return sprintf($badge, '所有');
-                    }
-                    $group = Group::find($d)->name;
+                    $group = $d ? Group::find($d)->name : '所有';
                     switch ($group) {
-                        case '运营':
-                            $badge = Snippet::BADGE_LIGHT_BLUE;
-                            break;
-                        case '企业':
-                            $badge = Snippet::BADGE_GREEN;
-                            break;
-                        case '学校':
-                            $badge = Snippet::BADGE_FUCHSIA;
-                            break;
-                        default:
-                            break;
-                        
+                        case '所有': return sprintf(Snippet::BADGE_BLACK, $group);
+                        case '运营': return sprintf(Snippet::BADGE_LIGHT_BLUE, $group);
+                        case '企业': return sprintf(Snippet::BADGE_GREEN, $group);
+                        case '学校': return sprintf(Snippet::BADGE_FUCHSIA, $group);
+                        default: return '-';
                     }
-                    
-                    return sprintf($badge, $group);
                 },
             ],
             [
@@ -139,7 +125,18 @@ class Tab extends Model {
             ['db' => 'Tab.created_at', 'dt' => 5],
             ['db' => 'Tab.updated_at', 'dt' => 6],
             [
-                'db'        => 'Tab.enabled', 'dt' => 7,
+                'db' => 'Tab.category', 'dt' => 7,
+                'formatter' => function ($d) {
+                    switch ($d) {
+                        case 0: return sprintf(Snippet::BADGE_LIGHT_BLUE, '后台');
+                        case 1: return sprintf(Snippet::BADGE_GREEN, '前端');
+                        case 2: return sprintf(Snippet::BADGE_GRAY, '其他');
+                        default: return '-';
+                    }
+                }
+            ],
+            [
+                'db'        => 'Tab.enabled', 'dt' => 8,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
