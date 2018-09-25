@@ -610,8 +610,8 @@ class Action extends Model {
                 );
                 if ($aPos === false) { continue; }
                 $rPos = stripos(
-                    $this->tableName($controller) . '/' . $action,
-                    $route->uri
+                    $route->uri,
+                    $this->tableName($controller) . '/' . $action
                 );
                 if ($rPos === false || $rPos === 0) {
                     return $route->uri;
