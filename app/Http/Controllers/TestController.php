@@ -59,6 +59,7 @@ class TestController extends Controller {
     public function index() {
     
         $routes = Route::getRoutes()->getRoutes();
+        dd(json_decode(json_encode($routes), true));
         $rs = [];
         foreach ($routes as $route) {
             $rs[] = json_decode(json_encode($route), true);
