@@ -285,7 +285,6 @@ Route::group(['prefix' => 'schools'], routes('SchoolController'));
 Route::group(['prefix' => 'semesters'], routes('SemesterController'));
 # 科目设置 - 科目管理.科目次分类设置
 Route::group(['prefix' => 'subjects'], routes('SubjectController'));
-Route::get('subjects/query/{id}', 'SubjectController@query');
 Route::group(['prefix' => 'subject_modules'], routes('SubjectModuleController'));
 Route::group(['prefix' => 'majors'], routes('MajorController'));
 # 角色/权限 - 角色管理.权限管理
