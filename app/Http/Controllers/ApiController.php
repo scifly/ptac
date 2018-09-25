@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
+ * 接口
+ *
  * Class ApiController
  * @package App\Http\Controllers
  */
