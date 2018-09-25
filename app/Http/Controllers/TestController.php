@@ -56,13 +56,15 @@ class TestController extends Controller {
     
         $routes = Route::getRoutes()->getRoutes();
         /** @var \Illuminate\Routing\Route $route */
+        $uris = [];
         foreach ($routes as $route) {
             if (isset($route->action['controller'])) {
                 echo ($route->action['controller']);
             } else {
-                dd($route);
+                $uris[] = $route->uri;
             }
         }
+        dd($uris);
         exit;
         if (Request::method() == 'POST') {
             // $department = new Department;
