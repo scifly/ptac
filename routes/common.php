@@ -79,7 +79,8 @@ function app_routes($acronym) {
     Route::any($p, $c . '@index');
     Route::get($p . 'detail', $c . '@detail');
     Route::post($p . 'detail', $c . '@detail');
-    Route::any($p . 'show', $c . '@show');
+    Route::get($p . 'graph', $c . '@graph');
+    Route::post($p . 'graph', $c . '@graph');
     Route::get($p . 'analyze', $c . '@analyze');
     Route::get($p . 'stat', $c . '@stat');
     
