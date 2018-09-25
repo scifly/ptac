@@ -59,7 +59,7 @@ class TestController extends Controller {
     public function index() {
     
         $routes = Route::getRoutes()->getRoutes();
-        dd(array_search('api/student_consumption', array_column($routes, 'uri')));
+        dd(array_search('api/', array_column($routes, 'uri')));
         if (Request::method() == 'POST') {
             // $department = new Department;
             // $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();
