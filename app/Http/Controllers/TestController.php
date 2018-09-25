@@ -59,7 +59,10 @@ class TestController extends Controller {
     public function index() {
     
         $routes = Route::getRoutes()->getRoutes();
-        dd($routes);
+        /** @var \Illuminate\Routing\Route $route */
+        foreach ($routes as $route) {
+            dd($route->action);
+        }
         if (Request::method() == 'POST') {
             // $department = new Department;
             // $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();
