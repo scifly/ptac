@@ -605,7 +605,7 @@ class Action extends Model {
             /** @var \Illuminate\Routing\Route $route */
             foreach ($this->routes as $route) {
                 $aPos = stripos(
-                    $route->action['controller'],
+                    $route->action['controller'] ?? '',
                     $controller . '@' . $action
                 );
                 if ($aPos === false) { continue; }
