@@ -584,11 +584,10 @@ class Action extends Model {
             $controller, 0,
             strlen($controller) - strlen('Controller')
         );
-        if ($modelName === 'Squad') {
-            return 'classes';
-        }
         
-        return Inflector::pluralize(Inflector::tableize($modelName));
+        return $modelName === 'Squad'
+            ? 'classes'
+            : Inflector::pluralize(Inflector::tableize($modelName));
         
     }
     
