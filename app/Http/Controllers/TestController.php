@@ -18,6 +18,7 @@ use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Route;
 use Pusher\Pusher;
 use ReflectionClass;
 use ReflectionMethod;
@@ -57,7 +58,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        dd(strpos('abcdefg', 'a'));
+        dd(Route::getRoutes()->getRoutes());
         if (Request::method() == 'POST') {
             // $department = new Department;
             // $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();
