@@ -42,10 +42,11 @@ class Controller extends BaseController {
         # 获取功能对象
         $method = Request::route()->getActionMethod();
         $controller = class_basename(Request::route()->controller);
-        $params['uris'] = $this->uris($controller);
+        $tabId = Tab::whereName($controller)->first()->id;
+        $params['uris'] = $this->uris($tabId);
         $action = Action::where([
             'method' => $method,
-            'tab_id' => Tab::whereName($controller)->first()->id
+            'tab_id' => $tabId
         ])->first();
         abort_if(
             !$action,
