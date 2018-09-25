@@ -11,6 +11,7 @@ use App\Models\Department;
 use App\Models\Group;
 use App\Models\Student;
 use App\Models\User;
+use Doctrine\Common\Inflector\Inflector;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -55,16 +56,8 @@ class TestController extends Controller {
      * @throws \Throwable
      */
     public function index() {
-
-        $n = new ReflectionClass('\App\Http\Controllers\ActionController');
-        dd($n->hasProperty('ty743892'));
-        dd($n->getProperty('type')->getValue());
-        $comm = [null => '全部'];
-        $comm = array_merge(
-            $comm,
-            CommType::all()->pluck('name', 'id')->toArray()
-        );
-        dd($comm);
+    
+        dd(Inflector::pluralize(Inflector::tableize('HomeWork')));
         if (Request::method() == 'POST') {
             // $department = new Department;
             // $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();

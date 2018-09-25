@@ -21,7 +21,7 @@
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请输入真实姓名)',
                             'required' => 'true',
-                            'data-parsley-length' => '[2,10]'
+                            'data-parsley-length' => '[2,255]'
                         ]) !!}
                     </div>
                 </div>
