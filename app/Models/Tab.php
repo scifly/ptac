@@ -32,6 +32,7 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property int $category 控制器类型: 0 - 后台，1 - 微信端, 2 - 其他
  * @property-read Action $action
  * @property-read Icon|null $icon
  * @property-read Collection|Menu[] $menus
@@ -49,7 +50,6 @@ use Throwable;
  * @mixin Eloquent
  * @property int|null $new_column
  * @method static Builder|Tab whereNewColumn($value)
- * @property int $category 控制器类型: 0 - 后台，1 - 微信端, 2 - 其他
  */
 class Tab extends Model {
     
@@ -131,7 +131,9 @@ class Tab extends Model {
             [
                 'db'        => 'Action.name as actionname', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return sprintf(Snippet::ICON, 'fa-gears', '') . $d;
+                    return !empty($d)
+                        ? sprintf(Snippet::ICON, 'fa-gears', '') . $d
+                        : $d;
                 },
             ],
             ['db' => 'Tab.created_at', 'dt' => 5],
