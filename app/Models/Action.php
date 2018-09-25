@@ -636,10 +636,12 @@ class Action extends Model {
             $route = $this->tableName($controller) . '/' . $action;
             $actionTypeIds = [];
             foreach ($this->routes as $r) {
-                if (stripos($r->uri, $route) === 0) {
-                    foreach ($r->methods as $method) {
-                        $actionTypeIds[] = $actionTypes[$method];
-                    }
+                $pos = stripos($r->uri, $route);
+                if ($pos === false) {
+                    continue;
+                }
+                foreach ($r->methods as $method) {
+                    $actionTypeIds[] = $actionTypes[$method];
                 }
             }
             
