@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
@@ -33,9 +34,9 @@ use Throwable;
  * @property Carbon|null $updated_at
  * @property int $enabled
  * @property int $category 控制器类型: 0 - 后台，1 - 微信端, 2 - 其他
- * @property-read Action $action
  * @property-read Icon|null $icon
  * @property-read Collection|Menu[] $menus
+ * @property-read Collection|Action[] $actions
  * @method static Builder|Tab whereActionId($value)
  * @method static Builder|Tab whereComment($value)
  * @method static Builder|Tab whereCreatedAt($value)
@@ -75,9 +76,9 @@ class Tab extends Model {
     /**
      * 返回指定卡片默认的Action对象
      *
-     * @return BelongsTo
+     * @return HasMany
      */
-    function action() { return $this->belongsTo('App\Models\Action'); }
+    function actions() { return $this->hasMany('App\Models\Action'); }
     
     /**
      * 卡片列表
@@ -281,15 +282,15 @@ class Tab extends Model {
             if (in_array($ctlrName, Constant::EXCLUDED_CONTROLLERS)) continue;
             $record = [
                 'name'       => $ctlrName,
-                'comments'   => self::controllerComments($obj),
+                'comment'    => self::controllerComments($obj),
                 'remark'     => $controller,
                 'action_id'  => self::indexActionId($ctlrName),
                 'category'   => $obj->hasProperty('category') ? $obj->getProperty('category')->getValue() : 0,
                 'enabled'    => Constant::ENABLED,
             ];
-            $tab = self::whereController($record['controller'])->first();
+            $tab = self::whereName($record['name'])->first();
             if ($tab) {
-                $tab->name = $record['name'];
+                $tab->comment = $record['comment'];
                 if (empty($tab->action_id)) {
                     $tab->action_id = $record['action_id'];
                 }

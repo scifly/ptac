@@ -46,19 +46,12 @@
                     ]) !!}
                 </div>
             </div>
-            <div class="form-group">
-                {!! Form::label('controller', '控制器名称',[
-                    'class' => 'col-sm-3 control-label'
-                ]) !!}
-                <div class="col-sm-6">
-                    {!! Form::text('controller', null, [
-                        'class' => 'form-control text-blue',
-                        'placeholder' => '(请输入控制器名称)',
-                        'required' => 'true',
-                        'maxlength' => '255'
-                    ]) !!}
-                </div>
-            </div>
+            @include('partials.single_select', [
+                'label' => '控制器',
+                'id' => 'tab_id',
+                'items' => $tabs,
+                'icon' => 'fa fa-building text-blue'
+            ])
             <div class="form-group">
                 {!! Form::label('view', 'view路径', [
                     'class' => 'col-sm-3 control-label'

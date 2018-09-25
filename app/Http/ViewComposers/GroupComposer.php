@@ -50,7 +50,7 @@ class GroupComposer {
             
         }
         foreach ($tabs as $tab) {
-            $actions = Action::whereController($tab->controller)
+            $actions = Action::whereTabId($tab->id)
                 ->get(['id', 'name', 'method']);
             $actionList = [];
             foreach ($actions as $action) {

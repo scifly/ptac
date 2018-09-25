@@ -3,6 +3,7 @@ namespace App\Http\ViewComposers;
 
 use App\Models\Action;
 use App\Models\ActionType;
+use App\Models\Tab;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
 
@@ -27,6 +28,7 @@ class ActionComposer {
         }
         $view->with([
             'actionTypes'         => ActionType::pluck('name', 'id'),
+            'tabs'                => Tab::pluck('name', 'id'),
             'selectedActionTypes' => $selectedActionTypes ?? null,
         ]);
         

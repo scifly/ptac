@@ -7,6 +7,7 @@ use App\Models\Action;
 use App\Models\ActionGroup;
 use App\Models\Corp;
 use App\Models\Department;
+use App\Models\Group;
 use App\Models\GroupMenu;
 use App\Models\Menu;
 use App\Models\School;
@@ -77,10 +78,12 @@ class CheckRole {
         }
         
         # 功能权限判断
-        $controller = Action::whereRoute($route)->first()->controller;
+        $controller = Action::whereRoute($route)->first()->tab->name;
+        $corpGroupIds = array_merge([0], Group::whereIn('name', ['企业', '学校'])->pluck('id')->toArray());
+        $schoolGroupIds = [0, Group::whereName('学校')->first()->id];
         if (in_array($role, ['企业', '学校'])) {
-            $tab = Tab::whereIn('group_id', $role == '企业' ? [0, 2, 3] : [0, 3])
-                ->where('controller', $controller)
+            $tab = Tab::whereIn('group_id', $role == '企业' ? $corpGroupIds : $schoolGroupIds)
+                ->where('name', $controller)
                 ->first();
             $abort = !$tab ?? false;
         } else {

@@ -13,7 +13,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use ReflectionClass;
@@ -36,7 +36,7 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
- * @property-read Collection|Tab[] $tabs
+ * @property-read Tab $tab
  * @method static Builder|Action whereActionTypeIds($value)
  * @method static Builder|Action whereController($value)
  * @method static Builder|Action whereTabId($value)
@@ -61,8 +61,8 @@ class Action extends Model {
         'sort', 'move', 'rankTabs', 'sanction',
     ];
     protected $fillable = [
-        'name', 'method', 'remark', 'tab_id',
-        'controller', 'view', 'route',
+        'name', 'method', 'remark',
+        'tab_id', 'view', 'route',
         'js', 'action_type_ids', 'enabled',
     ];
     protected $routes;
@@ -70,12 +70,13 @@ class Action extends Model {
     protected $actionTypes;
     
     public $type = 1;
+    
     /**
      * 返回当前action包含的卡片
      *
-     * @return HasMany
+     * @return BelongsTo
      */
-    function tabs() { return $this->hasMany('App\Models\Tab'); }
+    function tab() { return $this->belongsTo('App\Models\Tab'); }
     
     /**
      * 返回HTTP请求方法中包含GET以及路由中不带参数的action列表
@@ -85,7 +86,7 @@ class Action extends Model {
     function actions() {
         
         $data = self::whereEnabled(1)->get([
-            'controller', 'name', 'id',
+            'tab_id', 'name', 'id',
             'action_type_ids', 'route',
         ]);
         $actions = [];
@@ -95,9 +96,9 @@ class Action extends Model {
             if (
                 in_array($id, explode(',', $action['action_type_ids'])) &&
                 !strpos($action['route'], '{') &&
-                Tab::whereController($action->controller)->first()->category != 2 # 其他类型控制器
+                Tab::find($action->tab_id)->category != 2 # 其他类型控制器
             ) {
-                $actions[$action->controller][$action->id] = $action['name'] . ' - ' . $action['route'];
+                $actions[$action->tab->name][$action->id] = $action['name'] . ' - ' . $action['route'];
             }
         }
         ksort($actions);
@@ -270,20 +271,16 @@ class Action extends Model {
         );
         $selfDefinedMethods = [];
         // remove actions of non-existing controllers
-        $ctlrs = $this->groupBy('controller')->get(['controller'])->toArray();
-        $existingCtlrs = [];
-        foreach ($ctlrs as $ctlr) {
-            $existingCtlrs[] = $ctlr['controller'];
-        }
-        $ctlrDiffs = array_diff($existingCtlrs, $controllerNames);
+        $ctlrs = $this->groupBy('tab_id')->get(['tab_id'])->toArray();
+        $existingCtlrs = Tab::whereIn('id', $ctlrs)->pluck('id')->toArray();
+        $ctlrDiffs = array_diff($existingCtlrs, Tab::whereIn('name', $controllerNames)->pluck('id')->toArray());
         foreach ($ctlrDiffs as $ctlr) {
-            $actions = $this->where('controller', $ctlr)->get();
+            $actions = self::whereTabId($ctlr)->get();
             foreach ($actions as $a) {
                 if (!$this->remove($a->id)) {
                     return false;
                 };
             }
-            # $this->where('controller', $ctlr)->delete();
         }
         foreach ($controllers as $controller) {
             $paths = explode('\\', $controller);
@@ -310,7 +307,7 @@ class Action extends Model {
                             'name'            => $this->methodComment($obj, $method),
                             'method'          => $action,
                             'remark'          => '',
-                            'controller'      => $ctlr,
+                            'tab_id'          => Tab::whereName($ctlr)->first()->id,
                             'view'            => $this->viewPath($ctlr, $action),
                             'route'           => $this->actionRoute($ctlr, $action),
                             'action_type_ids' => $this->actionTypeIds($ctlr, $action),
@@ -324,7 +321,7 @@ class Action extends Model {
         foreach ($selfDefinedMethods as $actions) {
             foreach ($actions as $action) {
                 $a = $this->where([
-                    ['controller', $action['controller']],
+                    ['tab_id', $action['tab_id']],
                     ['method', $action['method']],
                 ])->first();
                 if ($a) {
@@ -339,7 +336,7 @@ class Action extends Model {
                         'name'            => trim($action['name']),
                         'method'          => $action['method'],
                         'remark'          => $action['remark'],
-                        'controller'      => $action['controller'],
+                        'tab_id'          => $action['tab_id'],
                         'view'            => $action['view'],
                         'route'           => $action['route'],
                         'action_type_ids' => $action['action_type_ids'],
@@ -460,15 +457,15 @@ class Action extends Model {
         // remove non-existing methods of current controller
         $currentMethods = self::methodNames($methods);
         $existingMethods = [];
-        $controllerName = self::controllerName($className);
-        $results = self::whereController($controllerName)->get(['method'])->toArray();
+        $tabId = Tab::whereName(self::controllerName($className))->first()->id;
+        $results = self::whereTabId($tabId)->get(['method'])->toArray();
         foreach ($results as $result) {
             $existingMethods[] = $result['method'];
         }
         $methodDiffs = array_diff($existingMethods, $currentMethods);
         foreach ($methodDiffs as $method) {
             $a = self::where([
-                ['controller', $controllerName],
+                ['tab_id', $tabId],
                 ['method', $method],
             ])->first();
             try {

@@ -45,7 +45,7 @@ class Controller extends BaseController {
         $params['uris'] = $this->uris($controller);
         $action = Action::where([
             'method' => $method,
-            'controller' => $controller
+            'tab_id' => Tab::whereName($controller)->first()->id
         ])->first();
         abort_if(
             !$action,
@@ -141,12 +141,12 @@ class Controller extends BaseController {
     /**
      * 返回指定控制器对应的所有路由
      *
-     * @param $controller
+     * @param integer $tabId - 控制器id
      * @return array
      */
-    private function uris($controller) {
+    private function uris($tabId) {
         
-        $routes = Action::whereController($controller)
+        $routes = Action::whereTabId($tabId)
             ->where('route', '<>', null)
             ->pluck('route', 'method')
             ->toArray();

@@ -322,7 +322,7 @@ class CreateSchool implements ShouldQueue {
                     # 创建菜单卡片绑定关系
                     if ($data['tabs']) {
                         foreach ($data['tabs'] as $name) {
-                            $tab = Tab::whereName($name)->first();
+                            $tab = Tab::whereComment($name)->first();
                             MenuTab::create([
                                 'menu_id' => $menu->id,
                                 'tab_id'  => $tab->id,

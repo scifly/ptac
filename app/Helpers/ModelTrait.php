@@ -4,6 +4,7 @@ namespace App\Helpers;
 use App\Models\Corp;
 use App\Models\Group;
 use App\Models\Menu;
+use App\Models\Tab;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -183,7 +184,7 @@ trait ModelTrait {
         
         if (!Request::route()) { return null; }
         $controller = class_basename(Request::route()->controller);
-        $routes = Action::whereController($controller)
+        $routes = Action::whereTabId(Tab::whereName($controller)->first()->id)
             ->where('route', '<>', null)
             ->pluck('route', 'method')
             ->toArray();
