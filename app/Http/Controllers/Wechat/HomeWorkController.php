@@ -72,12 +72,6 @@ class HomeWorkController extends Controller {
         
     }
     
-    public function notify() {
-        
-        echo 'whatsoever';
-        
-    }
-    
     /**
      * 生成碎金字符串
      *

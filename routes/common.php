@@ -76,7 +76,8 @@ function app_routes($acronym) {
     /** 成绩中心 */
     $c = 'Wechat\ScoreCenterController';
     $p = $acronym . '/score_centers/';
-    Route::any($p, $c . '@index');
+    Route::get($p, $c . '@index');
+    Route::post($p, $c . '@index');
     Route::get($p . 'detail', $c . '@detail');
     Route::post($p . 'detail', $c . '@detail');
     Route::get($p . 'graph', $c . '@graph');
@@ -87,13 +88,12 @@ function app_routes($acronym) {
     /** 布置作业 */
     $c = 'Wechat\HomeWorkController';
     $p = $acronym . '/home_works/';
-    Route::any($p, $c . '@index');
-    Route::any($p . 'notify', $c . '@notify');
+    Route::get($p, $c . '@index');
     
     /** 微网站 */
     $c = 'Wechat\MobileSiteController';
     $p = $acronym . '/mobile_sites/';
-    Route::any($p, $c . '@index');
-    Route::any($p . 'module', $c . '@module');
-    Route::any($p . 'article', $c . '@article');
+    Route::get($p, $c . '@index');
+    Route::get($p . 'module', $c . '@module');
+    Route::get($p . 'article', $c . '@article');
 }
