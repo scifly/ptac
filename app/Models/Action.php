@@ -604,9 +604,10 @@ class Action extends Model {
         if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
             $route = $this->tableName($controller) . '/' . $action;
             foreach ($this->routes as $r) {
-                if (stripos($r->uri, $route) === 0) {
-                    return $r->uri;
+                if (stripos($r->uri, $route) === false) {
+                    continue;
                 }
+                return $r->uri;
             }
         }
         

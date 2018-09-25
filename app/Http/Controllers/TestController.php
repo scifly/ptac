@@ -57,7 +57,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        dd(false >= 0);
+        dd(strpos('abcdefg', 'h'));
         if (Request::method() == 'POST') {
             // $department = new Department;
             // $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();
