@@ -28,6 +28,7 @@ use Throwable;
  * @property string|null $action_type_ids HTTP请求类型IDs
  * @property string|null $remark 备注
  * @property string $controller 所属controller类名
+ * @property string $tab_id 所属控制器id
  * @property string|null $view 对应的blade view名
  * @property string $method
  * @property string|null $js
@@ -38,6 +39,7 @@ use Throwable;
  * @property-read Collection|Tab[] $tabs
  * @method static Builder|Action whereActionTypeIds($value)
  * @method static Builder|Action whereController($value)
+ * @method static Builder|Action whereTabId($value)
  * @method static Builder|Action whereCreatedAt($value)
  * @method static Builder|Action whereEnabled($value)
  * @method static Builder|Action whereId($value)
@@ -59,7 +61,7 @@ class Action extends Model {
         'sort', 'move', 'rankTabs', 'sanction',
     ];
     protected $fillable = [
-        'name', 'method', 'remark',
+        'name', 'method', 'remark', 'tab_id',
         'controller', 'view', 'route',
         'js', 'action_type_ids', 'enabled',
     ];
