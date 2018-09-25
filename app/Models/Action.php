@@ -604,10 +604,16 @@ class Action extends Model {
         if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
             $route = $this->tableName($controller) . '/' . $action;
             foreach ($this->routes as $r) {
-                if (stripos($r->uri, $route) === false) {
+                $pos = stripos($r->uri, $route);
+                if ($pos === false) {
                     continue;
+                } elseif ($pos === 0) {
+                    return $r->uri;
+                } else {
+                    $uris = explode('/', $r->uri);
+                    $uris[0] = '{acronym}';
+                    return implode('/', $uris);
                 }
-                return $r->uri;
             }
         }
         
