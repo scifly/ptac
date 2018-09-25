@@ -65,6 +65,7 @@ class Action extends Model {
     ];
     protected $routes;
     protected $acronyms;
+    protected $actionTypes;
     
     public $type = 1;
     /**
@@ -255,6 +256,7 @@ class Action extends Model {
         
         $this->routes = Route::getRoutes()->getRoutes();
         $this->acronyms = Corp::pluck('acronym')->toArray();
+        $this->actionTypes = ActionType::pluck('id', 'name')->toArray();
         $controllers = self::scanDirs(self::siteRoot() . Constant::CONTROLLER_DIR);
         # 获取控制器的名字空间
         $this->controllerNamespaces($controllers);
@@ -638,17 +640,16 @@ class Action extends Model {
     private function actionTypeIds($controller, $action) {
         
         $action = ($action == 'destroy' ? 'delete' : $action);
-        $actionTypes = ActionType::pluck('id', 'name')->toArray();
         if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
-            $route = $this->tableName($controller) . '/' . $action;
-            $actionTypeIds = [];
-            foreach ($this->routes as $r) {
-                $pos = stripos($r->uri, $route);
-                if ($pos === false) {
-                    continue;
-                }
-                foreach ($r->methods as $method) {
-                    $actionTypeIds[] = $actionTypes[$method];
+            foreach ($this->routes as $route) {
+                $aPos = stripos(
+                    $route->action['controller'] ?? '',
+                    '\\' . $controller . '@' . $action
+                );
+                if ($aPos === false) { continue; }
+                $actionTypeIds = [];
+                foreach ($route->methods as $method) {
+                    $actionTypeIds[] = $this->actionTypes[$method];
                 }
                 return implode(',', $actionTypeIds);
             }
