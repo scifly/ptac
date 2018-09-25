@@ -602,7 +602,7 @@ class Action extends Model {
         
         $action = ($action == 'destroy' ? 'delete' : $action);
         if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
-            /** @var \Illuminate\Routing\Route $r */
+            /** @var \Illuminate\Routing\Route $route */
             foreach ($this->routes as $route) {
                 $aPos = stripos(
                     $route->action['controller'],
