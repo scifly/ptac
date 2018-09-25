@@ -602,21 +602,32 @@ class Action extends Model {
         
         $action = ($action == 'destroy' ? 'delete' : $action);
         if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
-            $tableName = $this->tableName($controller);
-            $route =  $tableName . '/' . $action;
-            foreach ($this->routes as $r) {
-                $pos = stripos($r->uri, $route);
-                if ($pos === false) {
-                    continue;
-                } elseif ($pos === 0) {
-                    return $r->uri;
-                } else if (substr($r->uri, $pos - 1, 1) == '_') {
+            /** @var \Illuminate\Routing\Route $r */
+            foreach ($this->routes as $route) {
+                $aPos = stripos(
+                    $route->action['controller'],
+                    $controller . '@' . $action
+                );
+                if ($aPos === false) { continue; }
+                $rPos = stripos(
+                    $this->tableName($controller) . '/' . $action,
+                    $route->uri
+                );
+                if ($rPos === false || $rPos === 0) {
+                    return $route->uri;
+                }
+                $uris = explode('/', $route->uri);
+                $uris[0] = '{acronym}';
+                return implode('/', $uris);
+                /*else if ( $rPos === 0) {
+                    return $route->uri;
+                } else if (substr($route->uri, $rPos - 1, 1) == '_') {
                     continue;
                 } else {
-                    $uris = explode('/', $r->uri);
+                    $uris = explode('/', $route->uri);
                     $uris[0] = '{acronym}';
                     return implode('/', $uris);
-                }
+                }*/
             }
         }
         
