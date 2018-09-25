@@ -61,8 +61,9 @@ class TestController extends Controller {
         $routes = Route::getRoutes()->getRoutes();
         $rs = [];
         foreach ($routes as $route) {
-            $rs[] = json_decode($route, true);
+            $rs[] = json_decode(json_encode($route), true);
         }
+        dd($rs);
         if (Request::method() == 'POST') {
             // $department = new Department;
             // $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();
