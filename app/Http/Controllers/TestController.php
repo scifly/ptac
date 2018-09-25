@@ -57,7 +57,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        dd(Inflector::pluralize(Inflector::tableize('WechatSms')));
+        dd(Inflector::pluralize(Inflector::tableize('Sync')));
         if (Request::method() == 'POST') {
             // $department = new Department;
             // $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();
