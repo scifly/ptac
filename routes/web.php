@@ -212,7 +212,6 @@ Route::group(['prefix' => 'poll_questionnaire_subject_choices'], routes('PollQue
 # 查询/统计
 Route::group(['prefix' => 'poll_questionnaire_participants'], function () {
     $c = 'PollQuestionnaireParticipantController';
-    Route::get('/', $c . '@index');
     Route::get('index', $c . '@index');
     Route::post('show/{id}', $c . '@show');
     Route::put('update', $c . '@update')->name("pqp_update");
