@@ -57,8 +57,9 @@ class TestController extends Controller {
         $routes = Route::getRoutes()->getRoutes();
         /** @var \Illuminate\Routing\Route $route */
         foreach ($routes as $route) {
-            dd($route->action['controller']);
+            echo ($route->action['controller']);
         }
+        exit;
         if (Request::method() == 'POST') {
             // $department = new Department;
             // $subs = $department->whereIn('id', $department->subDepartmentIds(33))->get()->toArray();
