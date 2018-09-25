@@ -7,6 +7,7 @@ use App\Helpers\ModelTrait;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Student;
+use App\Models\Tab;
 use App\Models\User;
 use Exception;
 use GuzzleHttp\Client;
@@ -54,6 +55,14 @@ class TestController extends Controller {
      */
     public function index() {
     
+        
+        $tabs = Tab::all();
+        foreach ($tabs as $tab) {
+            $name = $tab->comment;
+            $comment = $tab->name;
+            $tab->name = $comment;
+            $tab->comment = $name;
+        }
         $routes = Route::getRoutes()->getRoutes();
         /** @var \Illuminate\Routing\Route $route */
         $uris = [];

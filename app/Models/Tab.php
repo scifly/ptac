@@ -27,7 +27,7 @@ use Throwable;
  * @property int $group_id 所属角色Id
  * @property int $action_id 默认加载的Action ID
  * @property int|null $icon_id 图标ID
- * @property string $controller 控制器名称
+ * @property string $comment 控制器(中文)名称
  * @property string|null $remark 卡片备注
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -37,7 +37,7 @@ use Throwable;
  * @property-read Icon|null $icon
  * @property-read Collection|Menu[] $menus
  * @method static Builder|Tab whereActionId($value)
- * @method static Builder|Tab whereController($value)
+ * @method static Builder|Tab whereComment($value)
  * @method static Builder|Tab whereCreatedAt($value)
  * @method static Builder|Tab whereEnabled($value)
  * @method static Builder|Tab whereGroupId($value)
@@ -48,15 +48,13 @@ use Throwable;
  * @method static Builder|Tab whereUpdatedAt($value)
  * @method static Builder|Tab whereCategory($value)
  * @mixin Eloquent
- * @property int|null $new_column
- * @method static Builder|Tab whereNewColumn($value)
  */
 class Tab extends Model {
     
     use ModelTrait;
     
     protected $fillable = [
-        'name', 'controller', 'icon_id', 'group_id',
+        'name', 'comment', 'icon_id', 'group_id',
         'action_id', 'remark', 'category', 'enabled',
     ];
     
@@ -99,7 +97,7 @@ class Tab extends Model {
                         : sprintf(Snippet::ICON, 'fa-calendar-check-o text-gray', '') . $d;
                 },
             ],
-            ['db' => 'Tab.controller', 'dt' => 2],
+            ['db' => 'Tab.comment', 'dt' => 2],
             [
                 'db'        => 'Tab.group_id', 'dt' => 3,
                 'formatter' => function ($d) {
@@ -269,12 +267,12 @@ class Tab extends Model {
             Constant::EXCLUDED_CONTROLLERS
         );
         foreach ($ctlrDiff as $ctlr) {
-            $tab = self::whereController($ctlr)->first();
+            $tab = self::whereName($ctlr)->first();
             if ($tab && !self::remove($tab->id)) {
                 return false;
             }
         }
-        // create new Tabs or update the existing Tabs
+        // create new Tabs or update the existing ones
         foreach ($controllers as $controller) {
             $obj = new ReflectionClass(ucfirst($controller));
             $ctlrNameSpace = $obj->getName();
@@ -282,8 +280,8 @@ class Tab extends Model {
             $ctlrName = $paths[sizeof($paths) - 1];
             if (in_array($ctlrName, Constant::EXCLUDED_CONTROLLERS)) continue;
             $record = [
-                'name'       => self::controllerComments($obj),
-                'controller' => $ctlrName,
+                'name'       => $ctlrName,
+                'comments'   => self::controllerComments($obj),
                 'remark'     => $controller,
                 'action_id'  => self::indexActionId($ctlrName),
                 'category'   => $obj->hasProperty('category') ? $obj->getProperty('category')->getValue() : 0,

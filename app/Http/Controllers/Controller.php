@@ -43,7 +43,10 @@ class Controller extends BaseController {
         $method = Request::route()->getActionMethod();
         $controller = class_basename(Request::route()->controller);
         $params['uris'] = $this->uris($controller);
-        $action = Action::whereMethod($method)->where('controller', $controller)->first();
+        $action = Action::where([
+            'method' => $method,
+            'controller' => $controller
+        ])->first();
         abort_if(
             !$action,
             HttpStatusCode::NOT_FOUND,
