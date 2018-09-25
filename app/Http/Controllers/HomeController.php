@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
+use App\Models\Action;
 use App\Models\Menu;
 use App\Models\MenuTab;
 use App\Models\School;
@@ -116,13 +117,14 @@ class HomeController extends Controller {
                 continue;
             }
             $tab = Tab::find($tabId);
-            if (!empty($tab->action->route)) {
+            $action = Action::find($tab->action_id);
+            if (!empty($action->route)) {
                 $tabArray[] = [
                     'id'     => 'tab_' . $tab->id,
-                    'name'   => $tab->name,
+                    'name'   => $tab->comment,
                     'icon'   => isset($tab->icon_id) ? $tab->icon->name : null,
                     'active' => false,
-                    'url'    => $tab->action->route,
+                    'url'    => $action->route,
                 ];
             } else {
                 $isTabLegit = false;
