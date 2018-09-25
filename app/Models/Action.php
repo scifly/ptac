@@ -602,13 +602,16 @@ class Action extends Model {
         
         $action = ($action == 'destroy' ? 'delete' : $action);
         if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
-            $route = $this->tableName($controller) . '/' . $action;
+            $tableName = $this->tableName($controller);
+            $route =  $tableName . '/' . $action;
             foreach ($this->routes as $r) {
                 $pos = stripos($r->uri, $route);
                 if ($pos === false) {
                     continue;
                 } elseif ($pos === 0) {
                     return $r->uri;
+                } else if (substr($r->uri, $pos - 1, 1) == '_') {
+                    continue;
                 } else {
                     $uris = explode('/', $r->uri);
                     $uris[0] = '{acronym}';
