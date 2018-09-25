@@ -133,7 +133,7 @@ class Tab extends Model {
                 'formatter' => function ($d) {
                     return !empty($d)
                         ? sprintf(Snippet::ICON, 'fa-gears', '') . $d
-                        : $d;
+                        : '-';
                 },
             ],
             ['db' => 'Tab.created_at', 'dt' => 5],
