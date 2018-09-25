@@ -604,7 +604,7 @@ class Action extends Model {
      */
     private function actionRoute($controller, $action) {
         
-        $action = ($action == 'destroy' ? 'delete' : $action);
+        // $action = ($action == 'destroy' ? 'delete' : $action);
         if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
             /** @var \Illuminate\Routing\Route $route */
             foreach ($this->routes as $route) {
