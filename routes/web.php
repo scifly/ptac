@@ -239,6 +239,10 @@ Route::group(['prefix' => 'procedure_logs'], function () {
 # 会议助手
 Route::group(['prefix' => 'conference_rooms'], routes('ConferenceRoomController'));
 Route::group(['prefix' => 'conference_queues'], routes('ConferenceQueueController'));
+Route::group(['prefix' => 'conference_queues'], function () {
+    $c = 'ConferenceQueueController';
+    Route::get('show/{id}', $c . '@show');
+});
 Route::group(['prefix' => 'conference_participants'], function () {
     $c = 'ConferenceParticipantController';
     Route::get('index', $c . '@index');
