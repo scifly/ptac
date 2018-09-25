@@ -609,25 +609,14 @@ class Action extends Model {
                     '\\' . $controller . '@' . $action
                 );
                 if ($aPos === false) { continue; }
-                $rPos = stripos(
-                    $route->uri,
-                    $this->tableName($controller) . '/' . $action
-                );
-                if ($rPos === false || $rPos === 0) {
+                $tableName = $this->tableName($controller);
+                $uris = explode('/', $route->uri);
+                $rPos = stripos($route->uri, $tableName . '/' . $action);
+                if ($rPos === 0 || ($rPos === false && array_search($tableName, $uris) === false)) {
                     return $route->uri;
                 }
-                $uris = explode('/', $route->uri);
                 $uris[0] = '{acronym}';
                 return implode('/', $uris);
-                /*else if ( $rPos === 0) {
-                    return $route->uri;
-                } else if (substr($route->uri, $rPos - 1, 1) == '_') {
-                    continue;
-                } else {
-                    $uris = explode('/', $route->uri);
-                    $uris[0] = '{acronym}';
-                    return implode('/', $uris);
-                }*/
             }
         }
         
