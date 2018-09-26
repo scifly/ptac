@@ -58,7 +58,22 @@ class TestController extends Controller {
     public function index() {
     
         $routes = Route::getRoutes()->getRoutes();
-        dd($routes);
+        $neededRoutes = array_filter(
+            $routes,
+            function (\Illuminate\Routing\Route $route) {
+                $aPos = stripos(
+                    $route->action['controller'] ?? '',
+                    '\\' . 'StudentAttendanceController' . '@detail'
+                );
+                return $aPos !== false;
+            }
+        );
+        dd($neededRoutes);
+        $indice = array_map(
+            function (\Illuminate\Routing\Route $route) use () {
+            
+            }, $routes
+        );
         dd([null => '全部'] + ActionType::pluck('name', 'id')->toArray());
         try {
             DB::transaction(function () {
