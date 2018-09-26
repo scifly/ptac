@@ -26,7 +26,7 @@ class ActionIndexComposer {
                 [
                     'title' => '请求类型',
                     'html' => $this->singleSelectList(
-                        array_merge($optionAll, ActionType::pluck('name', 'id')->toArray()),
+                        $optionAll + ActionType::pluck('name', 'id')->toArray(),
                         'filter_action_type'
                     )
                 ],
