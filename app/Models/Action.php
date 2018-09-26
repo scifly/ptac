@@ -552,47 +552,6 @@ class Action extends Model {
     }
     
     /**
-     * 获取控制器action对应的View路径
-     *
-     * @param $controller
-     * @param $action
-     * @return string
-     */
-    private function viewPath($controller, $action) {
-        
-        if (in_array($action, self::ACTIONS_WITHOUT_VIEW_AND_JS)) {
-            return null;
-        }
-        if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
-            switch ($action) {
-                case 'index':
-                case 'create':
-                case 'edit':
-                case 'show':
-                    $prefix = str_singular($this->tableName($controller));
-                    $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
-                    $viewPath = $prefix . '.' . $action;
-                    break;
-                case 'menuTabs':
-                    $viewPath = 'menu.menu_tabs';
-                    break;
-                case 'relationship':
-                    $viewPath = 'custodian.relationship';
-                    break;
-                default:
-                    $viewPath = Inflector::singularize(self::tableName($controller)) . '.' . $action;
-                    break;
-            }
-            $category = Tab::whereName($controller)->first()->category;
-            return !$category ? $viewPath
-                : ($category == 1 ? 'wechat.' . $viewPath  : 'auth.' . $action);
-        }
-        
-        return '';
-        
-    }
-    
-    /**
      * 根据控制器名称返回表名称
      *
      * @param $controller string 控制器类名
@@ -620,7 +579,6 @@ class Action extends Model {
      */
     private function actionRoute($controller, $action) {
         
-        // $action = ($action == 'destroy' ? 'delete' : $action);
         if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
             /** @var \Illuminate\Routing\Route $route */
             foreach ($this->routes as $route) {
@@ -655,32 +613,55 @@ class Action extends Model {
      */
     private function actionTypeIds($controller, $action) {
         
-        // $action = ($action == 'destroy' ? 'delete' : $action);
-        if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
-            $routes = array_filter(
-                $this->routes,
-                function (\Illuminate\Routing\Route $route) use ($controller, $action) {
-                    $aPos = stripos(
-                        $route->action['controller'] ?? '',
-                        '\\' . $controller . '@' . $action
-                    );
-                    return $aPos !== false;
-                }
-            );
-            $actionTypeIds = [];
-            /** @var \Illuminate\Routing\Route $route */
-            foreach ($routes as $route) {
-                $methods = $route->methods;
-                $actionTypeIds = array_merge(
-                    $actionTypeIds,
-                    ActionType::whereIn('name', $methods)->pluck('id')->toArray()
-                );
-            }
-            
-            return implode(',', array_unique($actionTypeIds));
+        if (in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
+            return null;
         }
+        $actionTypes = $this->actionMethods($controller, $action);
+        $actionTypeIds = ActionType::whereIn('name', $actionTypes)->pluck('id')->toArray();
         
-        return null;
+        return implode(',', $actionTypeIds);
+        
+    }
+    
+    /**
+     * 获取控制器action对应的View路径
+     *
+     * @param $controller
+     * @param $action
+     * @return string
+     */
+    private function viewPath($controller, $action) {
+        
+        if (
+            in_array($action, self::ACTIONS_WITHOUT_VIEW_AND_JS) ||
+            in_array($controller, Constant::EXCLUDED_CONTROLLERS) ||
+            !in_array('GET', $this->actionMethods($controller, $action))
+        ) {
+            return null;
+        }
+        switch ($action) {
+            case 'index':
+            case 'create':
+            case 'edit':
+            case 'show':
+                $prefix = str_singular($this->tableName($controller));
+                $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
+                $viewPath = $prefix . '.' . $action;
+                break;
+            case 'menuTabs':
+                $viewPath = 'menu.menu_tabs';
+                break;
+            case 'relationship':
+                $viewPath = 'custodian.relationship';
+                break;
+            default:
+                $viewPath = Inflector::singularize(self::tableName($controller)) . '.' . $action;
+                break;
+        }
+        $category = Tab::whereName($controller)->first()->category;
+        
+        return !$category ? $viewPath
+            : ($category == 1 ? 'wechat.' . $viewPath  : 'auth.' . $action);
         
     }
     
@@ -693,17 +674,45 @@ class Action extends Model {
      */
     private function jsPath($ctlr, $action) {
         
-        if (!in_array($ctlr, Constant::EXCLUDED_CONTROLLERS)) {
-            $prefix = str_singular($this->tableName($ctlr));
-            $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
-            if (in_array($action, self::ACTIONS_WITHOUT_VIEW_AND_JS)) {
-                return null;
+        if (
+            in_array($action, self::ACTIONS_WITHOUT_VIEW_AND_JS) ||
+            in_array($ctlr, Constant::EXCLUDED_CONTROLLERS) ||
+            !in_array('GET', $this->actionMethods($ctlr, $action))
+        ) {
+            return null;
+        }
+        $prefix = str_singular($this->tableName($ctlr));
+        $prefix = ($prefix === 'corps') ? 'corp' : $prefix;
+        
+        return 'js/' . $prefix . '/' . $action . '.js';
+        
+    }
+    
+    /**
+     * 返回指定控制器 & 方法对应的路由对象
+     *
+     * @param $controller
+     * @param $action
+     * @return array|mixed
+     */
+    private function actionMethods($controller, $action) {
+
+        $routes = array_filter(
+            $this->routes,
+            function (\Illuminate\Routing\Route $route) use ($controller, $action) {
+                return stripos(
+                    $route->action['controller'] ?? '',
+                    '\\' . $controller . '@' . $action
+                ) !== false;
             }
-            
-            return 'js/' . $prefix . '/' . $action . '.js';
+        );
+        $methods = [];
+        /** @var \Illuminate\Routing\Route $route */
+        foreach ($routes as $route) {
+            $methods = array_merge($methods, $route->methods);
         }
         
-        return null;
+        return array_unique($methods);
         
     }
     
