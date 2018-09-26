@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 # Route::get('/fireEvent', function() {
 #     event(new eventTrigger());
 # });
-Route::get('/messages/send', 'MessageController@send');
+// Route::get('/messages/send', 'MessageController@send');
 Route::auth();
 
 # 关闭注册功能
