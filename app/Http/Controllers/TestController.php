@@ -69,11 +69,6 @@ class TestController extends Controller {
             }
         );
         dd($neededRoutes);
-        $indice = array_map(
-            function (\Illuminate\Routing\Route $route) use () {
-            
-            }, $routes
-        );
         dd([null => '全部'] + ActionType::pluck('name', 'id')->toArray());
         try {
             DB::transaction(function () {
