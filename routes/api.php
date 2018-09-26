@@ -20,4 +20,3 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::post('educator_attendance', $c . 'educatorAttendance');
     Route::post('send_msg', $c . 'sendMsg');
 });
-

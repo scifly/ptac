@@ -75,21 +75,6 @@ class ConferenceQueueController extends Controller {
     }
     
     /**
-     * 会议详情
-     *
-     * @param $id
-     * @return JsonResponse
-     * @throws Throwable
-     */
-    public function show($id) {
-        
-        return $this->output([
-            'cq' => $this->cq->find($id),
-        ]);
-        
-    }
-    
-    /**
      * 编辑会议
      *
      * @param $id
