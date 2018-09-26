@@ -128,7 +128,8 @@ $('#confirm-delete').on('click', function () {
 });
 
 // 选择/取消选择应用
-$(document).on('click', 'tbody tr', function () {
+$(document).off('click', 'tbody tr')
+    .on('click', 'tbody tr', function () {
     var $this = $(this),
         $id = $('#id'),
         $agentid = $('#agentid'),
