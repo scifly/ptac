@@ -57,7 +57,7 @@ class Action extends Model {
     
     const ACTIONS_WITHOUT_VIEW_AND_JS = [
         'destroy', 'store', 'update', 'sync', 'export',
-        'move', 'rankTabs', 'sanction', 'import',
+        'move', 'rankTabs', 'sanction', 'import', 'rank',
         'studentAttendance', 'educatorAttendance',
         'studentConsumption', 'sendMsg', 'login',
     ];
