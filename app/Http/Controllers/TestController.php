@@ -57,6 +57,8 @@ class TestController extends Controller {
      */
     public function index() {
     
+        $routes = Route::getRoutes()->getRoutes();
+        dd($routes);
         dd([null => '全部'] + ActionType::pluck('name', 'id')->toArray());
         try {
             DB::transaction(function () {
