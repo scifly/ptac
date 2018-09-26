@@ -84,6 +84,8 @@ class Constant {
     const EXCLUDED_CONTROLLERS = [
         'Controller',
         'HomeController',
+        'SyncController',
+        'ApiController',
         'TestController',
     ];
     
