@@ -59,7 +59,7 @@ class Action extends Model {
         'destroy', 'store', 'update', 'sync',
         'sort', 'move', 'rankTabs', 'sanction',
         'studentAttendance', 'educatorAttendance',
-        'studentConsumption', 'sendMsg', 'login'
+        'studentConsumption', 'sendMsg', 'login',
     ];
     protected $fillable = [
         'name', 'method', 'remark',
@@ -222,7 +222,7 @@ class Action extends Model {
                             $d == 1 ? sprintf(Snippet::BADGE_GREEN, '前端')
                                 : sprintf(Snippet::BADGE_GRAY, '其他')
                         );
-                }
+                },
             ],
             [
                 'db'        => 'Action.enabled', 'dt' => 9,
@@ -240,9 +240,9 @@ class Action extends Model {
                 'alias' => 'Tab',
                 'type' => 'INNER',
                 'conditions' => [
-                    'Tab.id = Action.tab_id'
-                ]
-            ]
+                    'Tab.id = Action.tab_id',
+                ],
+            ],
         ];
         
         return Datatable::simple($this->getModel(), $columns, $joins);
@@ -657,19 +657,27 @@ class Action extends Model {
         
         // $action = ($action == 'destroy' ? 'delete' : $action);
         if (!in_array($controller, Constant::EXCLUDED_CONTROLLERS)) {
-            foreach ($this->routes as $route) {
-                $aPos = stripos(
-                    $route->action['controller'] ?? '',
-                    '\\' . $controller . '@' . $action
-                );
-                if ($aPos === false) { continue; }
-                $actionTypeIds = [];
-                foreach ($route->methods as $method) {
-                    $actionTypeIds[] = $this->actionTypes[$method];
+            $routes = array_filter(
+                $this->routes,
+                function (\Illuminate\Routing\Route $route) use ($controller, $action) {
+                    $aPos = stripos(
+                        $route->action['controller'] ?? '',
+                        '\\' . $controller . '@' . $action
+                    );
+                    return $aPos !== false;
                 }
-                return implode(',', $actionTypeIds);
+            );
+            $actionTypeIds = [];
+            /** @var \Illuminate\Routing\Route $route */
+            foreach ($routes as $route) {
+                $methods = $route->methods;
+                $actionTypeIds = array_merge(
+                    $actionTypeIds,
+                    ActionType::whereIn('name', $methods)->pluck('id')->toArray()
+                );
             }
-    
+            
+            return implode(',', array_unique($actionTypeIds));
         }
         
         return null;
