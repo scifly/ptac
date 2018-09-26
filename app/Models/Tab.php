@@ -291,6 +291,7 @@ class Tab extends Model {
             $tab = self::whereName($record['name'])->first();
             if ($tab) {
                 $tab->comment = $record['comment'];
+                $tab->category = $record['category'];
                 if (empty($tab->action_id)) {
                     $tab->action_id = $record['action_id'];
                 }
