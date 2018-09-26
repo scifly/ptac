@@ -56,8 +56,8 @@ class Action extends Model {
     use ModelTrait;
     
     const ACTIONS_WITHOUT_VIEW_AND_JS = [
-        'destroy', 'store', 'update', 'sync',
-        'sort', 'move', 'rankTabs', 'sanction',
+        'destroy', 'store', 'update', 'sync', 'export',
+        'sort', 'move', 'rankTabs', 'sanction', 'import',
         'studentAttendance', 'educatorAttendance',
         'studentConsumption', 'sendMsg', 'login',
     ];
