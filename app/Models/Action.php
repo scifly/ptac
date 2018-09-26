@@ -257,16 +257,10 @@ class Action extends Model {
      */
     private function actionTypes($action_type_ids) {
         
-        $actionTypes = [];
-        $actionTypeIds = explode(',', $action_type_ids);
-        foreach ($actionTypeIds as $actionTypeId) {
-            $actionType = ActionType::whereId($actionTypeId)->where('enabled', 1)->first();
-            if ($actionType) {
-                $actionTypes[] = $actionType->name;
-            }
-        }
+        $actionTypes = ActionType::whereIn('id', explode(',', $action_type_ids))
+            ->where('enabled', 1)->pluck('name')->toArray();
         
-        return implode(', ', $actionTypes);
+        return implode(',', $actionTypes);
         
     }
     
