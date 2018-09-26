@@ -57,7 +57,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        dd(array_merge([null => '全部'], ActionType::pluck('name', 'id')->toArray()));
+        dd([null => '全部'] + ActionType::pluck('name', 'id')->toArray());
         try {
             DB::transaction(function () {
                 $tabs = Tab::all();
