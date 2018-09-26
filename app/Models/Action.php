@@ -11,7 +11,6 @@ use Doctrine\Common\Inflector\Inflector;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
@@ -57,7 +56,7 @@ class Action extends Model {
     use ModelTrait;
     
     const ACTIONS_WITHOUT_VIEW_AND_JS = [
-        'destroy', 'store', 'update',
+        'destroy', 'store', 'update', 'sync',
         'sort', 'move', 'rankTabs', 'sanction',
     ];
     protected $fillable = [
@@ -578,8 +577,9 @@ class Action extends Model {
                     $viewPath = Inflector::singularize(self::tableName($controller)) . '.' . $action;
                     break;
             }
-            
-            return $viewPath;
+            $category = Tab::whereName($controller)->first()->category;
+            return !$category ? $viewPath
+                : ($category == 1 ? 'wechat.' . $viewPath  : 'auth.' . $action);
         }
         
         return '';
