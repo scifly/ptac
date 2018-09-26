@@ -213,7 +213,17 @@ class Action extends Model {
                 },
             ],
             [
-                'db'        => 'Action.enabled', 'dt' => 8,
+                'db'        => 'Tab.category', 'dt' => 8,
+                'formatter' => function ($d) {
+                    return !$d ? sprintf(Snippet::BADGE_LIGHT_BLUE, '后台')
+                        : (
+                            $d == 1 ? sprintf(Snippet::BADGE_GREEN, '前端')
+                                : sprintf(Snippet::BADGE_GRAY, '其他')
+                        );
+                }
+            ],
+            [
+                'db'        => 'Action.enabled', 'dt' => 9,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
                     $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);
