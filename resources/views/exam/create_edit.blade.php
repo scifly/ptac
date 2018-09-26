@@ -35,14 +35,14 @@
                 'id' => 'class_ids',
                 'icon' => 'fa fa-users',
                 'items' => $classes,
-                'selectedItems' => isset($selectedClasses) ? $selectedClasses : []
+                'selectedItems' => $selectedClasses
             ])
             @include('partials.multiple_select', [
                 'label' => '科目',
                 'id' => 'subject_ids',
                 'icon' => 'fa fa-book',
                 'items' => $subjects,
-                'selectedItems' => isset($selectedSubjects) ? $selectedSubjects : []
+                'selectedItems' => $selectedSubjects
             ])
             <div class="form-group">
                 {!! Form::label('daterange', '起止日期', [
@@ -59,26 +59,6 @@
                     </div>
                 </div>
             </div>
-            {{--<div class="form-group">--}}
-                {{--{!! Form::label('start_date', '考试开始日期', [--}}
-                    {{--'class' => 'col-sm-3 control-label'--}}
-                {{--]) !!}--}}
-                {{--<div class="col-sm-6">--}}
-                    {{--{!! Form::date('start_date', null, [--}}
-                        {{--'class' => 'form-control text-blue',--}}
-                    {{--]) !!}--}}
-                {{--</div>--}}
-            {{--</div>--}}
-            {{--<div class="form-group">--}}
-                {{--{!! Form::label('end_date', '考试结束日期', [--}}
-                    {{--'class' => 'col-sm-3 control-label'--}}
-                {{--]) !!}--}}
-                {{--<div class="col-sm-6">--}}
-                    {{--{!! Form::date('end_date', null, [--}}
-                        {{--'class' => 'form-control text-blue',--}}
-                    {{--]) !!}--}}
-                {{--</div>--}}
-            {{--</div>--}}
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
