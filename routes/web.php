@@ -148,6 +148,7 @@ Route::group(['prefix' => 'student_attendances'], function () {
     Route::get('index', $c . '@index');
     Route::get('stat', $c . '@stat');
     Route::post('stat', $c . '@stat');
+    Route::get('detail', $c . '@detail');
     Route::post('detail', $c . '@detail');
     Route::get('export', $c . '@export');
 });
