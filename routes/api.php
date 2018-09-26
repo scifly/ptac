@@ -11,7 +11,7 @@
 |
 */
 # api登录
-Route::post('login', 'ApiController@login');
+Route::post('login', 'ApiController@signin');
 
 Route::group(['middleware' => 'auth:api'], function() {
     $c = 'ApiController@';

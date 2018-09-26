@@ -59,7 +59,7 @@ class Action extends Model {
         'destroy', 'store', 'update', 'sync', 'export',
         'move', 'rankTabs', 'sanction', 'import', 'rank',
         'studentAttendance', 'educatorAttendance', 'detail',
-        'studentConsumption', 'sendMsg', 'login',
+        'studentConsumption', 'sendMsg'
     ];
     protected $fillable = [
         'name', 'method', 'remark',
