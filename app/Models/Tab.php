@@ -259,22 +259,19 @@ class Tab extends Model {
                 $action = new Action();
                 $controllers = $this->controllerPaths($action->siteRoot() . Constant::CONTROLLER_DIR);
                 $action->controllerNamespaces($controllers);
-                $controllerNames = $action->controllerNames($controllers);
                 // remove nonexisting controllers
-                $existingCtlrs = [];
-                $ctlrs = $this->groupBy('name')->get(['name'])->toArray();
-                foreach ($ctlrs as $ctlr) {
-                    $existingCtlrs[] = $ctlr['name'];
-                }
                 $ctlrDiff = array_merge(
-                    array_diff($existingCtlrs, $controllerNames),
+                    array_diff(
+                        $this->pluck('name')->toArray(),
+                        $action->controllerNames($controllers)
+                    ),
                     Constant::EXCLUDED_CONTROLLERS
                 );
                 foreach ($ctlrDiff as $ctlr) {
                     $tab = $this->whereName($ctlr)->first();
                     throw_if(
                         $tab && !self::remove($tab->id),
-                        new HttpException(__('messages.del_fail'))
+                        new Exception(__('messages.del_fail'))
                     );
                 }
                 // create new Tabs or update the existing ones
