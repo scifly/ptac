@@ -176,9 +176,10 @@ class Controller extends BaseController {
         $path = explode('\\', get_called_class());
         $controller = $path[sizeof($path) - 1];
         unset($e);
-        $action = Action::whereMethod($method)
-            ->where('controller', $controller)
-            ->first();
+        $action = Action::where([
+            'tab_id' => Tab::whereName($controller)->first()->id,
+            'method' => $method
+        ])->first();
         # 获取Http状态码
         $statusCode = $result
             ? HttpStatusCode::OK
