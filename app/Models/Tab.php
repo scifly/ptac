@@ -8,6 +8,7 @@ use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
+use HttpException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -21,7 +22,7 @@ use ReflectionClass;
 use Throwable;
 
 /**
- * App\Models\Tab 卡片
+ * App\Models\Tab 控制器
  *
  * @property int $id
  * @property string $name 卡片名称
@@ -253,54 +254,62 @@ class Tab extends Model {
      */
     function scan() {
         
-        $action = new Action();
-        $controllers = self::controllerPaths($action->siteRoot() . Constant::CONTROLLER_DIR);
-        $action->controllerNamespaces($controllers);
-        $controllerNames = $action->controllerNames($controllers);
-        // remove nonexisting controllers
-        $existingCtlrs = [];
-        $ctlrs = self::groupBy('name')->get(['name'])->toArray();
-        foreach ($ctlrs as $ctlr) {
-            $existingCtlrs[] = $ctlr['name'];
-        }
-        $ctlrDiff = array_merge(
-            array_diff($existingCtlrs, $controllerNames),
-            Constant::EXCLUDED_CONTROLLERS
-        );
-        foreach ($ctlrDiff as $ctlr) {
-            $tab = self::whereName($ctlr)->first();
-            if ($tab && !self::remove($tab->id)) {
-                return false;
-            }
-        }
-        // create new Tabs or update the existing ones
-        foreach ($controllers as $controller) {
-            $obj = new ReflectionClass(ucfirst($controller));
-            $ctlrNameSpace = $obj->getName();
-            $paths = explode('\\', $ctlrNameSpace);
-            $ctlrName = $paths[sizeof($paths) - 1];
-            if (in_array($ctlrName, Constant::EXCLUDED_CONTROLLERS)) continue;
-            $record = [
-                'name'       => $ctlrName,
-                'comment'    => self::controllerComments($obj),
-                'remark'     => $controller,
-                'action_id'  => self::indexActionId($ctlrName),
-                'category'   => $obj->hasProperty('category') ? $obj->getProperty('category')->getValue() : 0,
-                'enabled'    => Constant::ENABLED,
-            ];
-            $tab = self::whereName($record['name'])->first();
-            if ($tab) {
-                $tab->comment = $record['comment'];
-                $tab->category = $record['category'];
-                if (empty($tab->action_id)) {
-                    $tab->action_id = $record['action_id'];
+        try {
+            DB::transaction(function () {
+                $action = new Action();
+                $controllers = $this->controllerPaths($action->siteRoot() . Constant::CONTROLLER_DIR);
+                $action->controllerNamespaces($controllers);
+                $controllerNames = $action->controllerNames($controllers);
+                // remove nonexisting controllers
+                $existingCtlrs = [];
+                $ctlrs = $this->groupBy('name')->get(['name'])->toArray();
+                foreach ($ctlrs as $ctlr) {
+                    $existingCtlrs[] = $ctlr['name'];
                 }
-                $tab->save();
-            } else {
-                self::create($record);
-            }
+                $ctlrDiff = array_merge(
+                    array_diff($existingCtlrs, $controllerNames),
+                    Constant::EXCLUDED_CONTROLLERS
+                );
+                foreach ($ctlrDiff as $ctlr) {
+                    $tab = $this->whereName($ctlr)->first();
+                    throw_if(
+                        $tab && !self::remove($tab->id),
+                        new HttpException(__('messages.del_fail'))
+                    );
+                }
+                // create new Tabs or update the existing ones
+                foreach ($controllers as $controller) {
+                    $obj = new ReflectionClass(ucfirst($controller));
+                    $ctlrNameSpace = $obj->getName();
+                    $paths = explode('\\', $ctlrNameSpace);
+                    $ctlrName = $paths[sizeof($paths) - 1];
+                    if (in_array($ctlrName, Constant::EXCLUDED_CONTROLLERS)) continue;
+                    $record = [
+                        'name'       => $ctlrName,
+                        'comment'    => self::controllerComments($obj),
+                        'remark'     => $controller,
+                        'action_id'  => self::indexActionId($ctlrName),
+                        'category'   => $obj->hasProperty('category')
+                            ? $obj->getProperty('category')->getValue() : 0,
+                        'enabled'    => Constant::ENABLED,
+                    ];
+                    $tab = $this->whereName($record['name'])->first();
+                    if ($tab) {
+                        $tab->comment = $record['comment'];
+                        $tab->category = $record['category'];
+                        if (empty($tab->action_id)) {
+                            $tab->action_id = $record['action_id'];
+                        }
+                        $tab->save();
+                    } else {
+                        $this->create($record);
+                    }
+                }
+                unset($action);
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
-        unset($action);
         
         return true;
         

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
- * 卡片
+ * 控制器
  *
  * Class TabController
  * @package App\Http\Controllers
@@ -37,7 +37,7 @@ class TabController extends Controller {
     }
     
     /**
-     * 卡片列表
+     * 控制器列表
      *
      * @return bool|JsonResponse
      * @throws Exception
@@ -55,7 +55,7 @@ class TabController extends Controller {
     }
     
     /**
-     * 编辑卡片
+     * 编辑控制器
      *
      * @param $id
      * @return bool|JsonResponse
@@ -70,7 +70,7 @@ class TabController extends Controller {
     }
     
     /**
-     * 更新卡片
+     * 更新控制器
      *
      * @param TabRequest $request
      * @param $id
