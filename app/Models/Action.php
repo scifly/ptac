@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Doctrine\Common\Inflector\Inflector;
 use Eloquent;
 use Exception;
+use HttpException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -273,96 +274,98 @@ class Action extends Model {
      */
     function scan() {
         
-        $this->routes = Route::getRoutes()->getRoutes();
-        $this->acronyms = Corp::pluck('acronym')->toArray();
-        $this->actionTypes = ActionType::pluck('id', 'name')->toArray();
-        $controllers = self::scanDirs(self::siteRoot() . Constant::CONTROLLER_DIR);
-        # 获取控制器的名字空间
-        $this->controllerNamespaces($controllers);
-        # 移除excluded控制器
-        $controllerNames = array_diff(
-            $this->controllerNames($controllers),
-            Constant::EXCLUDED_CONTROLLERS
-        );
-        $selfDefinedMethods = [];
-        // remove actions of non-existing controllers
-        $ctlrs = $this->groupBy('tab_id')->get(['tab_id'])->toArray();
-        $existingCtlrs = Tab::whereIn('id', $ctlrs)->pluck('id')->toArray();
-        $ctlrDiffs = array_diff($existingCtlrs, Tab::whereIn('name', $controllerNames)->pluck('id')->toArray());
-        foreach ($ctlrDiffs as $ctlr) {
-            $actions = self::whereTabId($ctlr)->get();
-            foreach ($actions as $a) {
-                if (!$this->remove($a->id)) {
-                    return false;
-                };
-            }
-        }
-        foreach ($controllers as $controller) {
-            $paths = explode('\\', $controller);
-            if (!in_array($paths[sizeof($paths) - 1], Constant::EXCLUDED_CONTROLLERS)) {
-                $obj = new ReflectionClass(ucfirst($controller));
-                $className = $obj->getName();
-                $methods = $obj->getMethods();
-                // remove non-existing methods of current controller
-                try {
-                    $this->delNonExistingMethods($methods, $className);
-                } catch (Exception $e) {
-                    throw $e;
-                }
-                foreach ($methods as $method) {
-                    $action = $method->getName();
-                    if (
-                        $method->class === $className &&
-                        !($method->isConstructor()) &&
-                        $method->isUserDefined() &&
-                        $method->isPublic()
-                    ) {
-                        $ctlr = $this->controllerName($className);
-                        $selfDefinedMethods[$className][$action] = [
-                            'name'            => $this->methodComment($obj, $method),
-                            'method'          => $action,
-                            'remark'          => '',
-                            'tab_id'          => Tab::whereName($ctlr)->first()->id,
-                            'view'            => $this->viewPath($ctlr, $action),
-                            'route'           => $this->actionRoute($ctlr, $action),
-                            'action_type_ids' => $this->actionTypeIds($ctlr, $action),
-                            'js'              => $this->jsPath($ctlr, $action),
-                        ];
+        try {
+            DB::transaction(function () {
+                $this->routes = Route::getRoutes()->getRoutes();
+                $this->acronyms = Corp::pluck('acronym')->toArray();
+                $this->actionTypes = ActionType::pluck('id', 'name')->toArray();
+                $controllers = self::scanDirs(self::siteRoot() . Constant::CONTROLLER_DIR);
+                # 获取控制器的名字空间
+                $this->controllerNamespaces($controllers);
+                # 移除excluded控制器
+                $controllerNames = array_diff(
+                    $this->controllerNames($controllers),
+                    Constant::EXCLUDED_CONTROLLERS
+                );
+                $selfDefinedMethods = [];
+                // remove actions of non-existing controllers
+                $ctlrs = $this->groupBy('tab_id')->get(['tab_id'])->toArray();
+                $existingCtlrs = Tab::whereIn('id', $ctlrs)->pluck('id')->toArray();
+                $ctlrDiffs = array_diff($existingCtlrs, Tab::whereIn('name', $controllerNames)->pluck('id')->toArray());
+                foreach ($ctlrDiffs as $ctlr) {
+                    $actions = self::whereTabId($ctlr)->get();
+                    foreach ($actions as $a) {
+                        $removed = $this->remove($a->id);
+                        throw_if(!$removed, new HttpException(__('messages.del_fail')));
                     }
                 }
-            }
-            
-        }
-        foreach ($selfDefinedMethods as $actions) {
-            foreach ($actions as $action) {
-                $a = $this->where([
-                    ['tab_id', $action['tab_id']],
-                    ['method', $action['method']],
-                ])->first();
-                if ($a) {
-                    $a->name = trim($action['name']);
-                    $a->route = $action['route'];
-                    $a->view = $action['view'];
-                    $a->js = $action['js'];
-                    $a->action_type_ids = $action['action_type_ids'];
-                    $a->save();
-                } else {
-                    $this->create([
-                        'name'            => trim($action['name']),
-                        'method'          => $action['method'],
-                        'remark'          => $action['remark'],
-                        'tab_id'          => $action['tab_id'],
-                        'view'            => $action['view'],
-                        'route'           => $action['route'],
-                        'action_type_ids' => $action['action_type_ids'],
-                        'js'              => $action['js'],
-                        'enabled'         => Constant::ENABLED,
-                    ]);
+                foreach ($controllers as $controller) {
+                    $paths = explode('\\', $controller);
+                    if (!in_array($paths[sizeof($paths) - 1], Constant::EXCLUDED_CONTROLLERS)) {
+                        $obj = new ReflectionClass(ucfirst($controller));
+                        $className = $obj->getName();
+                        $methods = $obj->getMethods();
+                        // remove non-existing methods of current controller
+                        $this->delNonExistingMethods($methods, $className);
+                        foreach ($methods as $method) {
+                            $action = $method->getName();
+                            if (
+                                $method->class === $className &&
+                                !($method->isConstructor()) &&
+                                $method->isUserDefined() &&
+                                $method->isPublic()
+                            ) {
+                                $ctlr = $this->controllerName($className);
+                                $selfDefinedMethods[$className][$action] = [
+                                    'name'            => $this->methodComment($obj, $method),
+                                    'method'          => $action,
+                                    'remark'          => '',
+                                    'tab_id'          => Tab::whereName($ctlr)->first()->id,
+                                    'view'            => $this->viewPath($ctlr, $action),
+                                    'route'           => $this->actionRoute($ctlr, $action),
+                                    'action_type_ids' => $this->actionTypeIds($ctlr, $action),
+                                    'js'              => $this->jsPath($ctlr, $action),
+                                ];
+                            }
+                        }
+                    }
+        
                 }
-            }
+                foreach ($selfDefinedMethods as $actions) {
+                    foreach ($actions as $action) {
+                        $a = $this->where([
+                            ['tab_id', $action['tab_id']],
+                            ['method', $action['method']],
+                        ])->first();
+                        if ($a) {
+                            $a->name = trim($action['name']);
+                            $a->route = $action['route'];
+                            $a->view = $action['view'];
+                            $a->js = $action['js'];
+                            $a->action_type_ids = $action['action_type_ids'];
+                            $a->save();
+                        } else {
+                            $this->create([
+                                'name'            => trim($action['name']),
+                                'method'          => $action['method'],
+                                'remark'          => $action['remark'],
+                                'tab_id'          => $action['tab_id'],
+                                'view'            => $action['view'],
+                                'route'           => $action['route'],
+                                'action_type_ids' => $action['action_type_ids'],
+                                'js'              => $action['js'],
+                                'enabled'         => Constant::ENABLED,
+                            ]);
+                        }
+                    }
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
         
         return true;
+        
     }
     
     /**
@@ -470,24 +473,21 @@ class Action extends Model {
     private function delNonExistingMethods(array $methods, string $className) {
         
         // remove non-existing methods of current controller
-        $currentMethods = self::methodNames($methods);
-        $existingMethods = [];
-        $tabId = Tab::whereName(self::controllerName($className))->first()->id;
-        $results = self::whereTabId($tabId)->get(['method'])->toArray();
-        foreach ($results as $result) {
-            $existingMethods[] = $result['method'];
-        }
-        $methodDiffs = array_diff($existingMethods, $currentMethods);
-        foreach ($methodDiffs as $method) {
-            $a = self::where([
-                ['tab_id', $tabId],
-                ['method', $method],
-            ])->first();
-            try {
-                self::remove($a->id);
-            } catch (Exception $e) {
-                throw $e;
-            }
+        try {
+            DB::transaction(function () use ($methods, $className) {
+                $currentMethods = $this->methodNames($methods);
+                $tabId = Tab::whereName($this->controllerName($className))->first()->id;
+                $existingMethods = $this->whereTabId($tabId)->pluck('method')->toArray();
+                $methodDiffs = array_diff($existingMethods, $currentMethods);
+                foreach ($methodDiffs as $method) {
+                    $this->remove(
+                        $this->where(['tab_id' => $tabId, 'method' => $method])->first()->id
+                    );
+                }
+                
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
         
         return true;

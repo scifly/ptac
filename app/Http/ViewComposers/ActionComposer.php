@@ -18,14 +18,8 @@ class ActionComposer {
      */
     public function compose(View $view) {
         
-        $actionTypeIds = explode(
-            ',', Action::find(Request::route('id'))->action_type_ids
-        );
-        $selectedActionTypes = [];
-        foreach ($actionTypeIds as $actionTypeId) {
-            $actionType = ActionType::find($actionTypeId)->toArray();
-            $selectedActionTypes[$actionTypeId] = $actionType['name'];
-        }
+        $actionTypeIds = explode(',', Action::find(Request::route('id'))->action_type_ids);
+        $selectedActionTypes = ActionType::whereIn('id', $actionTypeIds)->pluck('name', 'id')->toArray();
         $view->with([
             'actionTypes'         => ActionType::pluck('name', 'id'),
             'tabs'                => Tab::pluck('name', 'id'),
