@@ -8,7 +8,6 @@ use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use HttpException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -260,17 +259,17 @@ class Tab extends Model {
                 $controllers = $this->controllerPaths($action->siteRoot() . Constant::CONTROLLER_DIR);
                 $action->controllerNamespaces($controllers);
                 // remove nonexisting controllers
-                $ctlrDiff = array_merge(
+                $ctlrs = array_merge(
                     array_diff(
                         $this->pluck('name')->toArray(),
                         $action->controllerNames($controllers)
                     ),
                     Constant::EXCLUDED_CONTROLLERS
                 );
-                foreach ($ctlrDiff as $ctlr) {
+                foreach ($ctlrs as $ctlr) {
                     $tab = $this->whereName($ctlr)->first();
                     throw_if(
-                        $tab && !self::remove($tab->id),
+                        $tab && !$this->remove($tab->id),
                         new Exception(__('messages.del_fail'))
                     );
                 }
