@@ -336,9 +336,8 @@ class CreateSchool implements ShouldQueue {
                 foreach ($this->educatorMenus as $name) {
                     $menuIds[] = $this->menus[$name]['id'];
                 }
-                $tabIds = Tab::whereIn('name', $this->educatorTabs)->pluck('id')->toArray();
-                $controllers = Tab::whereIn('name', $this->educatorTabs)->pluck('controller')->toArray();
-                $actionIds = Action::whereIn('controller', $controllers)->pluck('id')->toArray();
+                $tabIds = Tab::whereIn('comment', $this->educatorTabs)->pluck('id')->toArray();
+                $actionIds = Action::whereIn('tab_id', $tabIds)->pluck('id')->toArray();
                 (new Group)->store([
                     'name'       => '教职员工',
                     'remark'     => '基本角色',

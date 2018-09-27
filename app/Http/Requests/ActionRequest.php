@@ -31,7 +31,7 @@ class ActionRequest extends FormRequest {
         return [
             'name'            => 'required|string|between:2,255',
             'method'          => 'required|string|between:2,255',
-            'controller'      => 'required|string|between:2,255',
+            'tab_id'          => 'required|integer',
             'remark'          => 'nullable|string|between:2,255',
             'view'            => 'nullable|string|between:2,255',
             'route'           => 'nullable|string|between:2,255',

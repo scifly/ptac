@@ -62,14 +62,12 @@ class GroupPolicy {
             $allowedMenuIds = $this->menu->subMenuIds(School::find($schoolId)->menu_id);
             $isMenuAllowed = empty(array_diff($menuIds, $allowedMenuIds));
             $allowedTabIds = Tab::whereIn('group_id', [0, Group::whereName('学校')->first()->id])
-                ->get()->pluck('id')->toArray();
+                ->pluck('id')->toArray();
             $isTabAllowed = empty(array_diff($tabIds, $allowedTabIds));
             $deniedTabIds = Tab::whereIn('name', ['部门', '角色', '菜单', '超级用户'])
-                ->get()->pluck('id')->toArray();
-            $allowedControllers = Tab::whereIn('id', array_diff($allowedTabIds, $deniedTabIds))
-                ->get()->pluck('controller')->toArray();
-            $allowedActionIds = Action::whereIn('controller', $allowedControllers)
-                ->get()->pluck('id')->toArray();
+                ->pluck('id')->toArray();
+            $allowedActionIds = Action::whereIn('tab_id', array_diff($allowedTabIds, $deniedTabIds))
+                ->pluck('id')->toArray();
             $isActionAllowed = empty(array_diff($actionIds, $allowedActionIds));
         }
         if (in_array($action, ['edit', 'update', 'destroy'])) {
