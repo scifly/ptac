@@ -92,7 +92,7 @@ class Tab extends Model {
             [
                 'db'        => 'Tab.name', 'dt' => 1,
                 'formatter' => function ($d, $row) {
-                    $iconId = self::find($row['id'])->icon_id;
+                    $iconId = $this->find($row['id'])->icon_id;
                     return $iconId
                         ? sprintf(Snippet::ICON, Icon::find($iconId)->name, '') . $d
                         : sprintf(Snippet::ICON, 'fa-calendar-check-o text-gray', '') . $d;
