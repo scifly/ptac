@@ -422,7 +422,6 @@ class Wechat {
      *
      * @param string $accessToken 接口调用凭证
      * @param string $userId 微信用户ID
-     * @param integer $agentId 企业应用ID
      * @return mixed
      * @throws Exception
      */
