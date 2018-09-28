@@ -340,7 +340,7 @@
             </div>
         </div>
         <!-- 封面图 -->
-        <div class="weui-cell{!!-- msg-send-conicon msg-send-bg b-top--!!}">
+        <div class="weui-cell{{-- msg-send-conicon msg-send-bg b-top--}}">
             <div class="weui-cell__bd">
                 <div class="weui-uploader">
                     <div class="weui-uploader__hd">
