@@ -219,7 +219,7 @@ class WapSiteModule extends Model {
             ->get();
         $module = $this->find($id);
         
-        return view('wechat.wapsite.module', [
+        return view('wechat.mobile_site.module', [
             'articles' => $articles,
             'module'   => $module,
             'ws'       => true,

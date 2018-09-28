@@ -3,7 +3,7 @@
     <title>考勤中心</title>
 @endsection
 @section('css')
-    <link rel="stylesheet" href="{{ asset('/css/wechat/attendance/educator.css') }}">
+    <link rel="stylesheet" href="{!! asset('/css/wechat/attendance/educator.css') !!}">
 @endsection
 @section('content')
     <div class="multi-role">
@@ -114,5 +114,5 @@
     </div>
 @endsection
 @section('script')
-    <script src="{{ asset('/js/wechat/attendance/educator.js') }}"></script>
+    <script src="{!! asset('/js/wechat/attendance/educator.js') !!}"></script>
 @endsection

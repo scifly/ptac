@@ -3,7 +3,7 @@
     <title>微网站</title>
 @endsection
 @section('css')
-    <link rel="stylesheet" href="{{ asset('/css/wechat/wapsite/index.css') }}">
+    <link rel="stylesheet" href="{!! asset('/css/wechat/mobile_site/index.css') !!}">
 @endsection
 @section('content')
     <!--轮播图-->
@@ -11,7 +11,7 @@
         <div class="switchclass-head">
             <div class="weui-cell">
                 <div class="weui-cell__bd title-name">
-                    <div>{{ $wapsite->site_title }}</div>
+                    <div>{!! $wapsite->site_title !!}</div>
                 </div>
             </div>
         </div>
@@ -20,8 +20,8 @@
         <div class="swiper-wrapper" style="">
             @foreach($medias as $key => $media)
                 @if ($media)
-                    <div class="swiper-slide" data-swiper-slide-index="{{ $key }}">
-                        <img src="../{{ $media->path }}" alt="">
+                    <div class="swiper-slide" data-swiper-slide-index="{!! $key !!}">
+                        <img src="../{!! $media->path !!}" alt="">
                     </div>
                 @endif
             @endforeach
@@ -37,11 +37,11 @@
         @if ($wapsite)
             @foreach ($wapsite->wapSiteModules as $module)
                 @if ($module)
-                    <a href="{{ url($acronym . '/ws/module?id=' . $module->id) }}" class=" weui-grid js_grid">
+                    <a href="{!! url($acronym . '/mobile_sites/module?id=' . $module->id) !!}" class=" weui-grid js_grid">
                         <div class=" weui-grid__icon">
-                            <img src="../{{ $module->media->path }}" alt="">
+                            <img src="../{!! $module->media->path !!}" alt="">
                         </div>
-                        <p class="weui-grid__label">{{ $module->name }}</p>
+                        <p class="weui-grid__label">{!! $module->name !!}</p>
                     </a>
                 @endif
             @endforeach

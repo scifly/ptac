@@ -263,7 +263,7 @@ class WapSite extends Model {
             __('messages.not_found')
         );
         
-        return view('wechat.wapsite.home', [
+        return view('wechat.mobile_site.home', [
             'wapsite' => $wapSite,
             'medias'  => (new Media())->medias(
                 explode(',', $wapSite->media_ids)

@@ -3,7 +3,7 @@
     <title>成绩中心</title>
 @endsection
 @section('css')
-    <link rel="stylesheet" href="{{ asset('/css/wechat/score/student.css') }}">
+    <link rel="stylesheet" href="{!! asset('/css/wechat/score_center/student.css') !!}">
 @endsection
 @section('content')
 <div class="header">
@@ -36,17 +36,17 @@
         </div>
     </div>
     <div class="score">
-        {{ $score ? $score->score : '(成绩未录入)' }}
+        {!! $score ? $score->score : '(成绩未录入)' !!}
     </div>
 </div>
 <div class="otherinfo">
     <div class="average">
         <div class="byclass">
-            <p>{{ $stat['classAvg'] }}</p>
+            <p>{!! $stat['classAvg'] !!}</p>
             <p class="subtitle">班平均</p>
         </div>
         <div class="byschool">
-            <p>{{ $stat['gradeAvg'] }}</p>
+            <p>{!! $stat['gradeAvg'] !!}</p>
             <p class="subtitle">年平均</p>
         </div>
     </div>
@@ -71,12 +71,12 @@
         <p>单科</p>
     </a>
     <a class="btnItem"
-       href='{{ url($acronym . "/sc/stat?examId=" . $exam->id . "&studentId=" . $studentId) }}'>
+       href='{!! url($acronym . "/score_centers/stat?examId=" . $exam->id . "&studentId=" . $studentId) !!}'>
         <i class="icon iconfont icon-renzheng7"></i>
         <p>综合</p>
     </a>
 </div>
 @endsection
 @section('script')
-    <script src="{{ URL::asset('js/wechat/score/student.js') }}"></script>
+    <script src="{!! URL::asset('js/wechat/score_center/student.js') !!}"></script>
 @endsection

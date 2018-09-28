@@ -1,11 +1,11 @@
 @extends('layouts.wap')
 @section('css')
-	<link rel="stylesheet" href="{{ asset('css/wechat/score/graph.css') }}">
+	<link rel="stylesheet" href="{!! asset('css/wechat/score_center/graph.css') !!}">
 @endsection
 @section('content')
 	<div class="header">
-		<div class="title">学生：{{ $student->user->realname }}</div>
-		<div class="myclass">{{ $student->squad->name }}</div>
+		<div class="title">学生：{!! $student->user->realname !!}</div>
+		<div class="myclass">{!! $student->squad->name !!}</div>
 		{!! Form::hidden('student_id', $student->id, ['id' => 'student_id']) !!}
 		{!! Form::hidden('exam_id', $exam->id, ['id' => 'exam_id']) !!}
 	</div>
@@ -15,7 +15,7 @@
 		</div>
 		@foreach($subjects as $id => $name)
 			<div class="tab-item">
-				{{ $name }}
+				{!! $name !!}
 				{!! Form::hidden('', $id) !!}
 			</div>
 		@endforeach
@@ -36,5 +36,5 @@
 	</div>
 @endsection
 @section('script')
-	<script src="{{ asset('/js/wechat/score/graph.js') }}"></script>
+	<script src="{!! asset('/js/wechat/score_center/graph.js') !!}"></script>
 @endsection

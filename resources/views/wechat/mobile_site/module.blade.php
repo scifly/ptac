@@ -3,7 +3,7 @@
 	<title>微网站</title>
 @endsection
 @section('css')
-	<link rel="stylesheet" href="{!! asset('/css/wechat/wapsite/module.css') !!}">
+	<link rel="stylesheet" href="{!! asset('/css/wechat/mobile_site/module.css') !!}">
 @endsection
 @section('content')
 <!--轮播图-->
@@ -21,7 +21,7 @@
 		<div class="weui-panel weui-panel_access">
 			<div class="weui-panel__bd">
 				@foreach($articles as $article)
-					<a href="{!! url($acronym . '/ws/article?id=' . $article->id) !!}"
+					<a href="{!! url($acronym . '/mobile_sites/article?id=' . $article->id) !!}"
 					   class="weui-media-box weui-media-box_appmsg"
 					>
 						<div class="weui-media-box__hd">

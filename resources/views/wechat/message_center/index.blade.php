@@ -14,7 +14,7 @@
                     @if ($canSend)
                         <span class="addworkicon">
 							<a class="icon iconfont icon-add c-green"
-                               href="{!! url($acronym . '/mc/create') !!}"
+                               href="{!! url($acronym . '/message_centers/create') !!}"
                             ></a>
 						</span>
                     @endif

@@ -689,7 +689,7 @@ class Action extends Model {
     }
     
     /**
-     * 返回指定控制器 & 方法对应的路由对象
+     * 返回指定控制器 & 方法对应的Http请求方式
      *
      * @param $controller
      * @param $action

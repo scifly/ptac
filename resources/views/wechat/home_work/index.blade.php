@@ -3,7 +3,7 @@
     <title>微信h5支付测试</title>
 @endsection
 @section('css')
-    <link rel="stylesheet" href="{!! asset('/css/wechat/homework/index.css') !!}">
+    <link rel="stylesheet" href="{!! asset('/css/wechat/home_work/index.css') !!}">
 @endsection
 @section('content')
     {!! Form::hidden('params', $jsApiParameters, ['id' => 'params']) !!}
@@ -20,5 +20,5 @@
     </div>
 @endsection
 @section('script')
-    <script src="{!! asset('/js/wechat/homework/index.js') !!}"></script>
+    <script src="{!! asset('/js/wechat/home_work/index.js') !!}"></script>
 @endsection

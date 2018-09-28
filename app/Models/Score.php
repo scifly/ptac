@@ -1205,7 +1205,7 @@ class Score extends Model {
             $type = 'class';
         }
         
-        return view('wechat.score.index', [
+        return view('wechat.score_center.index', [
             'targets' => $targets,
             'exams'   => $exams,
             'type' => $type
@@ -1297,7 +1297,7 @@ class Score extends Model {
                 'total' => $total,
                 'exam'  => $exam->toArray()
             ])
-            : view('wechat.score.student', [
+            : view('wechat.score_center.student', [
                 'score'     => $score,
                 'stat'      => $stat,
                 'total'     => $total,
@@ -1369,7 +1369,7 @@ class Score extends Model {
         if ($classId && $examId) {
             $data = $this->examDetail($examId, $classId, $student);
             
-            return view('wechat.score.squad', [
+            return view('wechat.score_center.squad', [
                 'data'    => $data,
                 'classId' => $classId,
                 'examId'  => $examId,
@@ -1455,7 +1455,7 @@ class Score extends Model {
         $student = Student::find($studentId);
         $subjects = Subject::whereIn('id', explode(',', $exam->subject_ids))->pluck('name', 'id');
         
-        return view('wechat.score.graph', [
+        return view('wechat.score_center.graph', [
             'subjects' => $subjects,
             'student'  => $student,
             'exam'     => $exam,
@@ -1546,7 +1546,7 @@ class Score extends Model {
                 'totalRanges' => [],
             ];
         
-        return view('wechat.score.analyze', [
+        return view('wechat.score_center.analyze', [
             'data'    => $data,
             'examId'  => $examId,
             'classId' => $classId,
@@ -1571,7 +1571,7 @@ class Score extends Model {
             __('messages.not_found')
         );
         
-        return view('wechat.score.stat', [
+        return view('wechat.score_center.stat', [
             'data'      => $this->wAnalyze([
                 'exam_id'    => $examId,
                 'student_id' => $studentId,

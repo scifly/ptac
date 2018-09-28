@@ -3,12 +3,12 @@
     <title>成绩中心</title>
 @endsection
 @section('css')
-    <link rel="stylesheet" href="{{ asset('css/wechat/score/squad.css') }}">
+    <link rel="stylesheet" href="{!! asset('css/wechat/score_center/squad.css') !!}">
 @endsection
 @section('content')
     <div class="header">
-        <div class="title">{{ $data['exam'] }}</div>
-        <div class="myclass">{{ $data['exam'] }}</div>
+        <div class="title">{!! $data['exam'] !!}</div>
+        <div class="myclass">{!! $data['exam'] !!}</div>
     </div>
     <div class="weui-search-bar" id="searchBar">
         <form class="weui-search-bar__form" action="">
@@ -66,7 +66,7 @@
             <i class="icon iconfont icon-document"></i>
             <p>详情</p>
         </a>
-        <a class="btnItem" href='{{ url($acronym . "/sc/analyze?examId=". $examId ."&classId=". $classId) }}'>
+        <a class="btnItem" href='{!! url($acronym . "/score_centers/analyze?examId=". $examId ."&classId=". $classId) !!}'>
             <i class="icon iconfont icon-renzheng7"></i>
             <p>统计</p>
         </a>

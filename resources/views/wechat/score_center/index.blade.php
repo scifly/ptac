@@ -3,7 +3,7 @@
     <title>成绩中心</title>
 @endsection
 @section('css')
-    <link rel="stylesheet" href="{{ asset('/css/wechat/score/index.css') }}">
+    <link rel="stylesheet" href="{!! asset('/css/wechat/score_center/index.css') !!}">
 @endsection
 @section('content')
     <div class="multi-role">
@@ -48,8 +48,8 @@
                        href="#" data-type="{!! $type !!}"
                        data-value="{!! $exam['id'] !!}"
                     >
-                        <div class="weui-cell__bd"><p>{{ $exam['name'] }}</p></div>
-                        <div class="weui-cell__ft time">{{ $exam['start_date'] }}</div>
+                        <div class="weui-cell__bd"><p>{!! $exam['name'] !!}</p></div>
+                        <div class="weui-cell__ft time">{!! $exam['start_date'] !!}</div>
                     </a>
                 @endforeach
             @else
@@ -62,5 +62,5 @@
     </div>
 @endsection
 @section('script')
-    <script src="{{ asset('/js/wechat/score/index.js') }}"></script>
+    <script src="{!! asset('/js/wechat/score_center/index.js') !!}"></script>
 @endsection

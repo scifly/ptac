@@ -60,7 +60,7 @@ class HomeWorkController extends Controller {
             $order = WxPayApi::unifiedOrder($config, $input);
             $jsApiPay = new JsApiPay();
             
-            return view('wechat.homework.index', [
+            return view('wechat.home_work.index', [
                 'jsApiParameters' => $jsApiPay->getJsApiParameters($order),
                 'editAddress' => $jsApiPay->getEditAddressParameters()
             ]);
@@ -169,7 +169,7 @@ class HomeWorkController extends Controller {
             dd($result);
         }
     
-        return view('wechat.homework.index');
+        return view('wechat.home_work.index');
         
     }
     

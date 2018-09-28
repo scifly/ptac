@@ -261,7 +261,7 @@ class WsmArticle extends Model {
         $id = Request::input('id');
         $article = $this->find($id);
         
-        return view('wechat.wapsite.article', [
+        return view('wechat.mobile_site.article', [
             'article' => $article,
             'medias'  => $this->media->medias(
                 explode(',', $article->media_ids)
