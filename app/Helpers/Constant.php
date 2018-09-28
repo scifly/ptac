@@ -109,11 +109,11 @@ class Constant {
     ];
     
     const APPS = [
-        'at' => '考勤中心',
-        'mc' => '消息中心',
-        'sc' => '成绩中心',
-        'ws' => '微网站',
-        'hw' => '应用测试'
+        'attendances' => '考勤中心',
+        'message_centers' => '消息中心',
+        'score_centers' => '成绩中心',
+        'mobile_sites' => '微网站',
+        'home_works' => '应用测试'
     ];
     
     # 错误代码 & 消息
