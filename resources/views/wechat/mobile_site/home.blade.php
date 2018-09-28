@@ -37,7 +37,7 @@
         @if ($wapsite)
             @foreach ($wapsite->wapSiteModules as $module)
                 @if ($module)
-                    <a href="{!! url($acronym . '/mobile_sites/module?id=' . $module->id) !!}" class=" weui-grid js_grid">
+                    <a href="{!! url(session('acronym') . '/mobile_sites/module?id=' . $module->id) !!}" class=" weui-grid js_grid">
                         <div class=" weui-grid__icon">
                             <img src="../{!! $module->media->path !!}" alt="">
                         </div>
