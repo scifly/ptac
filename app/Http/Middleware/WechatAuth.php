@@ -43,11 +43,12 @@ class WechatAuth {
                 );
             }
             $token = Wechat::getAccessToken($corp->corpid, $secret);
-            abort_if(
-                $token['errcode'],
-                HttpStatusCode::INTERNAL_SERVER_ERROR,
-                $token['errmsg']
-            );
+            if ($token['errcode']) {
+                abort(
+                    HttpStatusCode::INTERNAL_SERVER_ERROR,
+                    $token['errmsg']
+                );
+            }
             $result = json_decode(
                 Wechat::getUserInfo($token['access_token'], $code),
                 JSON_UNESCAPED_UNICODE

@@ -45,7 +45,6 @@ trait WechatTrait {
             );
         }
         $token = Wechat::getAccessToken($corp->corpid, $secret);
-        Log::debug(json_encode($token));
         if ($token['errcode']) {
             abort(
                 HttpStatusCode::INTERNAL_SERVER_ERROR,
