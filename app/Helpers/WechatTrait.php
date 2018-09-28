@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -44,6 +45,7 @@ trait WechatTrait {
             );
         }
         $token = Wechat::getAccessToken($corp->corpid, $secret);
+        Log::debug(json_encode($token));
         if ($token['errcode']) {
             abort(
                 HttpStatusCode::INTERNAL_SERVER_ERROR,
