@@ -57,8 +57,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        phpinfo();
-        exit;
+        phpinfo(); exit;
         $routes = Route::getRoutes()->getRoutes();
         $neededRoutes = array_filter(
             $routes,
