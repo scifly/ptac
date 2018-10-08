@@ -5,7 +5,6 @@ use App\Apis\Kinder;
 use App\Facades\Wechat;
 use App\Helpers\ModelTrait;
 use App\Models\Action;
-use App\Models\ActionType;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Student;
@@ -57,19 +56,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        $test = [
-            'a' => 1,
-            'b' => 2,
-        ];
-        
-        echo $test['c'] ?? 'c does not exist';
-        echo '<br />';
-        if (!isset($test['c'])) {
-            echo 'wtf';
-        }
         exit;
-        
-        
         try {
             DB::transaction(function () {
                 $tabs = Tab::all();
