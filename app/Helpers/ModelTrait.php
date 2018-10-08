@@ -7,7 +7,6 @@ use App\Models\Menu;
 use App\Models\Tab;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use ReflectionClass;
 use App\Models\Squad;

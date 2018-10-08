@@ -155,7 +155,6 @@ return [
         App\Providers\WechatServiceProvider::class,
         App\Providers\DatatableServiceProvider::class,
         App\Providers\ComposerServiceProvider::class,
-        Maatwebsite\Excel\ExcelServiceProvider::class,
         Laravel\Passport\PassportServiceProvider::class
     ],
     /*
@@ -206,6 +205,5 @@ return [
         'Datatable'    => App\Facades\Datatable::class,
         'Form'         => Collective\Html\FormFacade::class,
         'Html'         => Collective\Html\HtmlFacade::class,
-        'Excel'        => Maatwebsite\Excel\Facades\Excel::class,
     ],
 ];
