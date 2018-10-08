@@ -56,7 +56,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        return view('test.test');
+        return view('user.test');
         exit;
         try {
             DB::transaction(function () {
