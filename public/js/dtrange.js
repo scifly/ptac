@@ -44,6 +44,10 @@
                                 $picker.on('cancel.daterangepicker', function() {
                                     $(this).val('').trigger('change');
                                 });
+
+                                $picker.on('show.daterangepicker', function() {
+                                    alert('wtf');
+                                });
                             }
                         );
                     }
