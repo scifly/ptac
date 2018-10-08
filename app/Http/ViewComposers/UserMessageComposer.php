@@ -16,10 +16,10 @@ class UserMessageComposer {
      * @param View $view
      */
     public function compose(View $view) {
-    
+        
         list($optionAll, $htmlCommType, $htmlApp, $htmlMessageType) = $this->messageFilters();
         $view->with([
-            'titles' => [
+            'titles'    => [
                 '#',
                 ['title' => '通信方式', 'html' => $htmlCommType],
                 ['title' => '应用', 'html' => $htmlApp],
@@ -28,13 +28,14 @@ class UserMessageComposer {
                 ['title' => '接收于', 'html' => $this->inputDateTimeRange('接收于')],
                 [
                     'title' => '状态',
-                    'html' => $this->singleSelectList(
+                    'html'  => $this->singleSelectList(
                         array_merge($optionAll, [0 => '未读', 1 => '已读']), 'filter_read'
-                    )
+                    ),
                 ],
             ],
-            'batch' => true,
-            'removable' => true
+            'batch'     => true,
+            'removable' => true,
+            'filter'    => true,
         ]);
         
     }
