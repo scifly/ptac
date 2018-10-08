@@ -50,8 +50,10 @@ class GroupComposer {
             
         }
         foreach ($tabs as $tab) {
-            $actions = Action::whereTabId($tab->id)
-                ->get(['id', 'name', 'method']);
+            $actions = Action::where([
+                'tab_id' => $tab->id,
+                'category' => 0
+            ])->get(['id', 'name', 'method']);
             $actionList = [];
             foreach ($actions as $action) {
                 if (!in_array(trim($action->name), $this->excludedActions)) {
