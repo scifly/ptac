@@ -10,9 +10,7 @@
 <p>
     同步美视企业微信通讯录到本地数据库
 </p>
-@if ($a['f'])
-    abc is not defined
-@endif
+{!! $a['f'] ?? 'undefined index f' !!}
 {{--{!! Form::open(['url' => 'test/index', 'method' => 'post']) !!}--}}
 {{--{!! Form::textarea('message', null) !!}--}}
 {{--{!! Form::submit() !!}--}}
