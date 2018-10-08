@@ -96,7 +96,7 @@
                             <tr class="bg-info">
                                 <th>学生</th>
                                 <th>学号</th>
-                                <th>监护人关系</th>
+                                <th>监护关系</th>
                                 <th>操作</th>
                             </tr>
                             </thead>
