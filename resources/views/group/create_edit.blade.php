@@ -18,7 +18,7 @@
                         @if (!empty($group['id']))
                             {{ Form::hidden('id', $group['id'], ['id' => 'id']) }}
                         @endif
-                        {{ Form::hidden( 'menu_ids', $selectedMenuIds ?? null, ['id' => 'menu_ids'] ) }}
+                        {{ Form::hidden('menu_ids', $selectedMenuIds ?? null, ['id' => 'menu_ids']) }}
                         {{ Form::hidden(
                             'tab_ids',
                             !empty($selectedTabIds) ? implode(',', $selectedTabIds) : null,
