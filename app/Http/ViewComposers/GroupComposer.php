@@ -63,7 +63,7 @@ class GroupComposer {
                 }
             }
             $tabActions[] = [
-                'tab'     => ['id' => $tab->id, 'name' => $tab->name],
+                'tab'     => ['id' => $tab->id, 'name' => $tab->comment],
                 'actions' => $actionList,
             ];
         }
