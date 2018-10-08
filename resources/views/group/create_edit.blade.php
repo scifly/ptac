@@ -85,10 +85,7 @@
                                                    @if (isset($selectedTabIds) && in_array($ta['tab']['id'], $selectedTabIds))
                                                    checked
                                                    @endif
-                                            >&nbsp;
-                                            <span style="margin-left: 5px; vertical-align: middle;">
-                                                {{ $ta['tab']['name'] }}
-                                            </span>
+                                            >&nbsp;<span style="margin-left: 5px; margin-top: 3px;">{{ $ta['tab']['name'] }}</span>
                                         </label>
                                         <div class="box-tools pull-right">
                                             <button type="button" class="btn btn-box-tool" data-widget="collapse">
@@ -110,7 +107,7 @@
                                                                @if (isset($selectedActionIds) && in_array($action['id'], $selectedActionIds))
                                                                checked
                                                                @endif
-                                                        >&nbsp;<span style="vertical-align: middle;">{{ $action['name'] }}</span>
+                                                        >&nbsp;<span>{{ $action['name'] }}</span>
                                                         </label>
                                                     </p>
                                                 </li>
