@@ -1,9 +1,12 @@
 <?php
 namespace App\Helpers;
 
+use App\Models\App;
+use App\Models\CommType;
 use App\Models\Corp;
 use App\Models\Group;
 use App\Models\Menu;
+use App\Models\MessageType;
 use App\Models\Tab;
 use App\Models\User;
 use Carbon\Carbon;
@@ -582,6 +585,44 @@ trait ModelTrait {
     function uploadedFilePath($filename): string {
         
         return 'uploads/' . date('Y/m/d/') . $filename;
+        
+    }
+    
+    /**
+     * 返回消息Datatable过滤器（通信方式、应用及消息类型）下拉列表html
+     *
+     * @return array
+     */
+    function messageFilters() {
+    
+        $optionAll = [null => '全部'];
+    
+        $htmlCommType = $this->singleSelectList(
+            array_merge(
+                $optionAll,
+                CommType::all()->pluck('name', 'id')->toArray()
+            ), 'filter_commtype'
+        );
+        $htmlApp = $this->singleSelectList(
+            array_merge(
+                $optionAll,
+                App::whereCorpId(School::find($this->schoolId())->corp_id)
+                    ->get()->pluck('name', 'id')->toArray()
+            ), 'filter_app'
+        );
+        $htmlMessageType = $this->singleSelectList(
+            array_merge(
+                $optionAll,
+                MessageType::all()->pluck('name', 'id')->toArray()
+            ), 'filter_message_type'
+        );
+        
+        return [
+            $optionAll,
+            $htmlCommType,
+            $htmlApp,
+            $htmlMessageType
+        ];
         
     }
     
