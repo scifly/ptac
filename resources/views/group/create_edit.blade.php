@@ -15,25 +15,25 @@
                 <div class="tab-pane active" id="tab01">
                     <div class="form-horizontal">
                         <!-- 角色ID -->
-                        @if (!empty($group['id']))
-                            {{ Form::hidden('id', $group['id'], ['id' => 'id']) }}
-                        @endif
-                        {{ Form::hidden(
-                            'menu_ids', 
-                            $selectedMenuIds ?? null, 
-                            ['id' => 'menu_ids']
-                        ) }}
-                        {{ Form::hidden(
-                            'tab_ids', 
-                            !empty($selectedTabIds) ? implode(',', $selectedTabIds) : null, 
-                            ['id' => 'tab_ids']
-                        ) }}
-                        {{ Form::hidden(
-                            'action_ids', 
-                            !empty($selectedActionIds) ? implode(',', $selectedActionIds) : null, 
-                            ['id' => 'action_ids']
-                        ) }}
-                        <!-- 角色名称 -->
+                    @if (!empty($group['id']))
+                        {{ Form::hidden('id', $group['id'], ['id' => 'id']) }}
+                    @endif
+                    {{ Form::hidden(
+                        'menu_ids',
+                        $selectedMenuIds ?? null,
+                        ['id' => 'menu_ids']
+                    ) }}
+                    {{ Form::hidden(
+                        'tab_ids',
+                        !empty($selectedTabIds) ? implode(',', $selectedTabIds) : null,
+                        ['id' => 'tab_ids']
+                    ) }}
+                    {{ Form::hidden(
+                        'action_ids',
+                        !empty($selectedActionIds) ? implode(',', $selectedActionIds) : null,
+                        ['id' => 'action_ids']
+                    ) }}
+                    <!-- 角色名称 -->
                         <div class="form-group">
                             {!! Form::label('name', '名称', [
                                 'class' => 'col-sm-3 control-label'
@@ -51,15 +51,15 @@
                             </div>
                         </div>
                         <!-- 角色所属学校 -->
-                        @include('partials.single_select', [
-                            'id' => 'school_id',
-                            'label' => '所属学校',
-                            'icon' => 'fa fa-university text-purple',
-                            'items' => $schools
-                        ])
-                        <!-- 角色备注 -->
-                        @include('partials.remark')
-                        <!-- 状态 -->
+                    @include('partials.single_select', [
+                        'id' => 'school_id',
+                        'label' => '所属学校',
+                        'icon' => 'fa fa-university text-purple',
+                        'items' => $schools
+                    ])
+                    <!-- 角色备注 -->
+                    @include('partials.remark')
+                    <!-- 状态 -->
                         @include('partials.enabled', [
                             'id' => 'enabled',
                             'value' => $group['enabled'] ?? null
@@ -85,7 +85,8 @@
                                                    @if (isset($selectedTabIds) && in_array($ta['tab']['id'], $selectedTabIds))
                                                    checked
                                                    @endif
-                                            >&nbsp;<span style="margin-left: 5px; vertical-align: middle;">{{ $ta['tab']['name'] }}</span>
+                                            >&nbsp;
+                                            <span style="margin-left: 5px; vertical-align: middle;">{{ $ta['tab']['name'] }}</span>
                                         </label>
                                         <div class="box-tools pull-right">
                                             <button type="button" class="btn btn-box-tool" data-widget="collapse">
@@ -98,16 +99,18 @@
                                             @foreach($ta['actions'] as $action)
                                                 <li>
                                                     <p class="help-block">
-                                                        <label for="actions[{{ $action['id'] }}]['enabled']" class="actionsgroup">
-                                                        <input name="actions[{{ $action['id'] }}]['enabled']"
-                                                               id="actions[{{ $action['id'] }}]['enabled']"
-                                                               type="checkbox" class="minimal actions"
-                                                               value="{{ $action['id'] }}"
-                                                               data-method="{{ $action['method'] }}"
-                                                               @if (isset($selectedActionIds) && in_array($action['id'], $selectedActionIds))
-                                                               checked
-                                                               @endif
-                                                        >&nbsp;<span style="vertical-align: middle;">{{ $action['name'] }}</span>
+                                                        <label for="actions[{{ $action['id'] }}]['enabled']"
+                                                               class="actionsgroup">
+                                                            <input name="actions[{{ $action['id'] }}]['enabled']"
+                                                                   id="actions[{{ $action['id'] }}]['enabled']"
+                                                                   type="checkbox" class="minimal actions"
+                                                                   value="{{ $action['id'] }}"
+                                                                   data-method="{{ $action['method'] }}"
+                                                                   @if (isset($selectedActionIds) && in_array($action['id'], $selectedActionIds))
+                                                                   checked
+                                                                   @endif
+                                                            >&nbsp;
+                                                            <span style="vertical-align: middle;">{{ $action['name'] }}</span>
                                                         </label>
                                                     </p>
                                                 </li>
