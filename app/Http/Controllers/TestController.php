@@ -56,7 +56,10 @@ class TestController extends Controller {
      */
     public function index() {
     
-        return view('user.test');
+        return view('user.test', [
+            'a' => ['c' => 1, 'b' => 2],
+            'b' => 2
+        ]);
         exit;
         try {
             DB::transaction(function () {
