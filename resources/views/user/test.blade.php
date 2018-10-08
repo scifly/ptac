@@ -10,36 +10,35 @@
 <p>
     同步美视企业微信通讯录到本地数据库
 </p>
-{!! $a['f'] ?? 'undefined index f' !!}
-{{--{!! Form::open(['url' => 'test/index', 'method' => 'post']) !!}--}}
-{{--{!! Form::textarea('message', null) !!}--}}
-{{--{!! Form::submit() !!}--}}
-{{--{!! Form::close() !!}--}}
-{{--<script src="{{ URL::asset('js/jquery.min.js') }}"></script>--}}
-{{--<script src="{{ URL::asset('js/pusher.min.js') }}"></script>--}}
-{{--<script src="https://js.pusher.com/4.3/pusher.min.js"></script>--}}
-{{--<script>--}}
-    {{--Pusher.logToConsole = true;--}}
-    {{--var pusher = new Pusher('4e759473d69a97307905', {--}}
-            {{--cluster: 'eu',--}}
-            {{--encrypted: true--}}
-        {{--}),--}}
-        {{--channel = pusher.subscribe('my-channel');--}}
+{!! Form::open(['url' => 'test/index', 'method' => 'post']) !!}
+{!! Form::textarea('message', null) !!}
+{!! Form::submit() !!}
+{!! Form::close() !!}
+<script src="{{ URL::asset('js/jquery.min.js') }}"></script>
+<script src="{{ URL::asset('js/pusher.min.js') }}"></script>
+<script src="https://js.pusher.com/4.3/pusher.min.js"></script>
+<script>
+    Pusher.logToConsole = true;
+    var pusher = new Pusher('4e759473d69a97307905', {
+            cluster: 'eu',
+            encrypted: true
+        }),
+        channel = pusher.subscribe('my-channel');
 
-    {{--channel.bind('my-event', function (data) {--}}
-        {{--$('textarea').append(data['message'] + "\n");--}}
-    {{--});--}}
-    {{--$('input[type="submit"]').on('click', function () {--}}
-        {{--$.ajax({--}}
-            {{--type: 'POST',--}}
-            {{--url: 'index',--}}
-            {{--dataType: 'json',--}}
-            {{--data: {--}}
-                {{--_token: $('#csrf_token').attr('content')--}}
-            {{--}--}}
-        {{--});--}}
-        {{--return false;--}}
-    {{--});--}}
-{{--</script>--}}
+    channel.bind('my-event', function (data) {
+        $('textarea').append(data['message'] + "\n");
+    });
+    $('input[type="submit"]').on('click', function () {
+        $.ajax({
+            type: 'POST',
+            url: 'index',
+            dataType: 'json',
+            data: {
+                _token: $('#csrf_token').attr('content')
+            }
+        });
+        return false;
+    });
+</script>
 </body>
 </html>

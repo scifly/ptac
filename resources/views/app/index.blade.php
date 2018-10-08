@@ -102,7 +102,7 @@
                         <td class="text-center">{{ $app['created_at'] }}</td>
                         <td class="text-center">{{ $app['updated_at'] }}</td>
                         <td class="text-right">
-                            @if($app['enabled'])
+                            @if ($app['enabled'])
                                 <i class="fa fa-circle text-green" title="已启用"></i>
                             @else
                                 <i class="fa fa-circle text-gray" title="未启用"></i>
