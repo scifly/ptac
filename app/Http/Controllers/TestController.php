@@ -57,20 +57,19 @@ class TestController extends Controller {
      */
     public function index() {
     
-        phpinfo(); exit;
-        $routes = Route::getRoutes()->getRoutes();
-        $neededRoutes = array_filter(
-            $routes,
-            function (\Illuminate\Routing\Route $route) {
-                $aPos = stripos(
-                    $route->action['controller'] ?? '',
-                    '\\' . 'StudentAttendanceController' . '@detail'
-                );
-                return $aPos !== false;
-            }
-        );
-        dd($neededRoutes);
-        dd([null => '全部'] + ActionType::pluck('name', 'id')->toArray());
+        $test = [
+            'a' => 1,
+            'b' => 2,
+        ];
+        
+        echo $test['c'] ?? 'c does not exist';
+        echo '<br />';
+        if (!$test['c']) {
+            echo 'wtf';
+        }
+        exit;
+        
+        
         try {
             DB::transaction(function () {
                 $tabs = Tab::all();

@@ -140,6 +140,21 @@
                     </div>
                 </div>
             </div>
+            <!--职务-->
+            <div class="form-group">
+                {!! Form::label('user[position]', '职务', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        @include('partials.icon_addon', ['class' => 'fa-briefcase'])
+                        {!! Form::text('user[position]', null, [
+                            'class' => 'form-control text-blue',
+                            'placeholder' => '(请输入职务)',
+                        ]) !!}
+                    </div>
+                </div>
+            </div>
             <!-- 手机号码 -->
             @include('partials.mobile')
             <!-- 所属班级 -->

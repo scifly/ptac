@@ -55,13 +55,13 @@ class Educator extends Model {
     use ModelTrait;
     
     const EXPORT_TITLES = [
-        '#', '姓名', '所属学校', '手机号码',
+        '#', '姓名', '所属学校', '手机号码', '职务',
         '创建于', '更新于', '状态',
     ];
     
     protected $fillable = [
         'user_id', 'team_ids', 'school_id',
-        'sms_quote', 'enabled',
+        'position', 'sms_quote', 'enabled',
     ];
     
     /**
@@ -269,6 +269,7 @@ class Educator extends Model {
                     'english_name' => $user['english_name'],
                     'telephone'    => $user['telephone'],
                     'enabled'      => $user['enabled'],
+                    'position'     => $user['position'],
                     'synced'       => 0,
                     'subscribed'   => 0,
                 ]);
@@ -366,6 +367,7 @@ class Educator extends Model {
                     'isleader'     => 0,
                     'english_name' => $user['english_name'],
                     'telephone'    => $user['telephone'],
+                    'position'     => $user['position'],
                     'enabled'      => $user['enabled'],
                 ]);
                 $selectedDepartments = $request->input('selectedDepartments');
@@ -631,6 +633,7 @@ class Educator extends Model {
                 $educator->user->realname,
                 $educator->school->name,
                 implode(', ', $educator->user->mobiles->pluck('mobile')->toArray()),
+                $educator->user->position,
                 $educator->created_at,
                 $educator->updated_at,
                 $educator->enabled ? '启用' : '禁用',
