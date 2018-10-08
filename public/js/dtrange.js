@@ -19,7 +19,7 @@
                                     timePicker: selector === '.dtrange',
                                     timePicker24Hour: true,
                                     timePickerSeconds: true,
-                                    opens: 'left',
+                                    opens: 'center',
                                     drops: 'up',
                                     locale: {
                                         format: format,
