@@ -107,7 +107,7 @@
                                                                @if (isset($selectedActionIds) && in_array($action['id'], $selectedActionIds))
                                                                checked
                                                                @endif
-                                                        >&nbsp;<span>{{ $action['name'] }}</span>
+                                                        >&nbsp;<span style="vertical-align: middle;">{{ $action['name'] }}</span>
                                                         </label>
                                                     </p>
                                                 </li>
