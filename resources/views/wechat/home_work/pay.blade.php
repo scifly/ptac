@@ -167,7 +167,7 @@ function get_client_ip($type = 0) {
             font-size: 42px;
             color: #fff;
             background: #07BF05;
-            border: 0px;
+            border: 0;
             text-align: center;
         }
 

@@ -9,12 +9,12 @@
                     <div class="box-header with-border">
                         <h4 class="box-title">Draggable Events</h4>
                     </div>
-                    <div class="box box-primary" style="position: relative; left: 0px; top: 0px;">
+                    <div class="box box-primary" style="position: relative; left: 0; top: 0;">
                         <div class="box-body">
                             @if (!empty($userId))
-                                <input hidden name="user_id" value={{$userId}}>
+                                {!! Form::hidden('user_id', $userId) !!}
                             @endif
-                            <input hidden name="isAdmin" value={{$isAdmin}}>
+                            {!! Form::hidden('isAdmin', $isAdmin) !!}
                             <ul id="external-events" class="todo-list ui-sortable" style="overflow: visible">
                                 @foreach($events as $event)
                                     <li class="external-event" style="padding: 5px">

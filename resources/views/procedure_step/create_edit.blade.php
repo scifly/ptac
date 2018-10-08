@@ -30,8 +30,10 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    <select multiple="multiple" name="approver_user_ids[]" id="approver_user_ids" class="form-control">
-                        <input type="hidden" id="approver_select_ids"
+                    <select multiple="multiple" name="approver_user_ids[]"
+                            id="approver_user_ids" class="form-control" title="审批用户"
+                    >
+                        <input type="hidden" id="approver_select_ids" title="审批用户"
                                value="{{ $ps->approver_user_ids or '' }}">
                     </select>
                 </div>

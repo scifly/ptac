@@ -86,7 +86,7 @@ class SubjectController extends Controller {
     public function edit($id) {
         
         return $this->output([
-            'subject' => Subject::find($id),
+            '_subject' => Subject::find($id),
         ]);
         
     }
