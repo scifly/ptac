@@ -82,7 +82,7 @@
                                 @include('partials.icon_addon', ['class' => 'fa-mobile'])
                                 <input class="form-control"
                                        name="mobile[0][mobile]"
-                                       placeholder="（请输入手机号码）"
+                                       placeholder="(请输入手机号码)"
                                        value=''
                                        required
                                        pattern="/^1[0-9]{10}$/"
