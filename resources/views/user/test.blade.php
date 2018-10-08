@@ -10,7 +10,7 @@
 <p>
     同步美视企业微信通讯录到本地数据库
 </p>
-@if (!isset($abc))
+@if ($abc)
     abc is not defined
 @endif
 {{--{!! Form::open(['url' => 'test/index', 'method' => 'post']) !!}--}}
