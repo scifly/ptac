@@ -41,11 +41,9 @@
                                     var value = picker.startDate.format(format) + ' ~ ' + picker.endDate.format(format);
                                     $(this).val(value).trigger('change');
                                 });
-
                                 $picker.on('cancel.daterangepicker', function() {
                                     $(this).val('').trigger('change');
                                 });
-
                                 // $picker.on('show.daterangepicker', function() {
                                 //     options['drops'] = 'up';
                                 //     $picker.daterangepicker(options);
