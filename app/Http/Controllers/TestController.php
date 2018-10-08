@@ -64,7 +64,7 @@ class TestController extends Controller {
         
         echo $test['c'] ?? 'c does not exist';
         echo '<br />';
-        if (!$test['c']) {
+        if (!isset($test['c'])) {
             echo 'wtf';
         }
         exit;
