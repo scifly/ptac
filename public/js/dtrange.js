@@ -46,7 +46,7 @@
                                 });
 
                                 $picker.on('show.daterangepicker', function() {
-                                    $picker.datepicker('option', 'drops', 'up');
+                                    $picker.daterangepicker('option', 'drops', 'up');
                                 });
                             }
                         );
