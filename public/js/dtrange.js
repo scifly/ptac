@@ -46,10 +46,10 @@
                                     $(this).val('').trigger('change');
                                 });
 
-                                $picker.on('show.daterangepicker', function() {
-                                    options['drops'] = 'up';
-                                    $picker.daterangepicker(options);
-                                });
+                                // $picker.on('show.daterangepicker', function() {
+                                //     options['drops'] = 'up';
+                                //     $picker.daterangepicker(options);
+                                // });
                             }
                         );
                     }
