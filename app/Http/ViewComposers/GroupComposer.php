@@ -26,7 +26,8 @@ class GroupComposer {
     public function compose(View $view) {
         
         $tabActions = [];
-        $tabs = Tab::whereIn('group_id', [0, Group::whereName('学校')->first()->id])->get();
+        $tabs = Tab::whereIn('group_id', [0, Group::whereName('学校')->first()->id])
+            ->where('category', 0)->get();
         $schools = [];
         $menu = new Menu();
         $rootMenuId = $menu->rootMenuId(true);
@@ -50,10 +51,8 @@ class GroupComposer {
             
         }
         foreach ($tabs as $tab) {
-            $actions = Action::where([
-                'tab_id' => $tab->id,
-                'category' => 0
-            ])->get(['id', 'name', 'method']);
+            $actions = Action::whereTabId($tab->id)
+                ->get(['id', 'name', 'method']);
             $actionList = [];
             foreach ($actions as $action) {
                 if (!in_array(trim($action->name), $this->excludedActions)) {
