@@ -20,7 +20,6 @@
                                     timePicker24Hour: true,
                                     timePickerSeconds: true,
                                     opens: 'left',
-                                    showDropdowns: false,
                                     locale: {
                                         format: format,
                                         separator: ' ~ ',
