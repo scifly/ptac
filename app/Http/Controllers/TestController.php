@@ -17,6 +17,7 @@ use Illuminate\Console\DetectsApplicationNamespace;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
 use Pusher\Pusher;
 use ReflectionClass;
 use ReflectionMethod;
@@ -56,6 +57,8 @@ class TestController extends Controller {
      */
     public function index() {
     
+        dd(URL::asset('img/0.png'));
+        
         return view('user.test', [
             'a' => ['c' => 1, 'b' => 2],
             'b' => 2
