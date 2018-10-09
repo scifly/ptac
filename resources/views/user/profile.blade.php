@@ -19,10 +19,10 @@
                             ]) !!}
                             <div class="col-sm-6">
                                 <div class="input-group">
-                                    @if(Auth::user()->avatar_url && file_exists(Auth::user()->avatar_url))
-                                        <img src="{{Auth::user()->avatar_url}}" style="height: 80px;border-radius: 40px;">
-                                        @else
-                                        <img src="{{asset('img/user2-160x160.jpg')}}" style="height: 80px;border-radius: 40px;">
+                                    @if (Auth::user()->avatar_url && file_exists(Auth::user()->avatar_url))
+                                        <img src="{!! Auth::user()->avatar_url !!}" style="height: 80px;border-radius: 40px;">
+                                    @else
+                                        <img src="{!! asset('img/user2-160x160.jpg') !!}" style="height: 80px;border-radius: 40px;">
                                     @endif
                                 </div>
                             </div>

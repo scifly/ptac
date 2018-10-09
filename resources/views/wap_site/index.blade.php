@@ -5,7 +5,7 @@
     </div>
     <div class="box box-primary" style="margin-top:10px;">
         <div class="box-body box-profile" style="position: relative;padding: 20px;text-align: center;">
-            <img class="avater" src='{{ asset("../img/window-icon.png") }}'>
+            <img class="avater" src='{!! asset("img/window-icon.png") !!}'>
             <div class="maininfo">
                 <h3 class="profile-username">{{ $ws->site_title }}</h3>
             </div>

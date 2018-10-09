@@ -52,15 +52,13 @@ class MessageRequest extends FormRequest {
             ? [
                 'user_ids' => 'nullable|array',
                 'dept_ids' => 'nullable|array',
-                'app_ids'  => 'required|array',
             ]
             : [
                 'content' => 'required|string',
             ]
         );
         $this->batchRules($rules);
-        
-        
+
         return $rules;
         
     }
@@ -102,13 +100,6 @@ class MessageRequest extends FormRequest {
             # 定时发送的日期时间
             if (isset($input['time'])) {
                 $input['time'] = $input['time'] . ':00';
-            }
-            if (!isset($input['app_ids'])) {
-                $schoolId = $this->schoolId() ?? session('schoolId');
-                $corp = School::find($schoolId)->corp;
-                $input['app_ids'] = [
-                    App::whereName('消息中心')->where('corp_id', $corp->id)->first()->id,
-                ];
             }
             if (!isset($input['user_ids'])) {
                 $input['user_ids'] = [];

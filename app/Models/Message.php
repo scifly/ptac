@@ -536,9 +536,7 @@ class Message extends Model {
         try {
             DB::transaction(function () use ($data) {
                 throw_if(
-                    empty($data['user_ids']) &&
-                    empty($data['dept_ids']) &&
-                    empty($data['app_ids']),
+                    empty($data['user_ids']) && empty($data['dept_ids']),
                     HttpStatusCode::NOT_ACCEPTABLE
                 );
                 if (
@@ -552,34 +550,36 @@ class Message extends Model {
                         'recipient_count' => 0,
                     ]);
                     $data['msl_id'] = $msl->id;
-                    foreach ($data['app_ids'] as $appId) {
-                        $userids = User::whereIn('id', $data['user_ids'])->pluck('userid')->toArray();
-                        $content = [
-                            'touser'      => implode('|', $userids),
-                            'toparty'     => implode('|', $data['dept_ids']),
-                            'msgtype'     => $data['type'],
-                            'agentid'     => $data['type'] == 'sms' ? 0 : App::find($appId)->agentid,
-                            $data['type'] => $data[$data['type']],
-                        ];
-                        # 创建需要发送的消息
-                        $message = $this->create([
-                            'comm_type_id' => $data['comm_type_id'],
-                            'app_id'       => $appId,
-                            'msl_id'       => $data['msl_id'],
-                            'title'        => $data['title'],
-                            'content'      => json_encode($content),
-                            'serviceid'    => $data['serviceid'],
-                            'message_id'   => $data['message_id'],
-                            'message_type_id' => $data['message_type_id'],
-                            'url'          => $data['url'],
-                            'media_ids'    => $data['media_ids'],
-                            's_user_id'    => Auth::id(),
-                            'r_user_id'    => $data['r_user_id'],
-                            'read'         => 1,
-                            'sent'         => 1,
-                        ]);
-                        SendMessage::dispatch($message);
-                    }
+                    $userids = User::whereIn('id', $data['user_ids'])->pluck('userid')->toArray();
+                    $app = App::where([
+                        'name' => config('app.name'),
+                        'corp_id' => School::find($this->schoolId())->corp_id
+                    ])->first();
+                    $content = [
+                        'touser'      => implode('|', $userids),
+                        'toparty'     => implode('|', $data['dept_ids']),
+                        'msgtype'     => $data['type'],
+                        'agentid'     => $data['type'] == 'sms' ? 0 : $app->agentid,
+                        $data['type'] => $data[$data['type']],
+                    ];
+                    # 创建需要发送的消息
+                    $message = $this->create([
+                        'comm_type_id' => $data['comm_type_id'],
+                        'app_id'       => $app->id,
+                        'msl_id'       => $data['msl_id'],
+                        'title'        => $data['title'],
+                        'content'      => json_encode($content),
+                        'serviceid'    => $data['serviceid'],
+                        'message_id'   => $data['message_id'],
+                        'message_type_id' => $data['message_type_id'],
+                        'url'          => $data['url'],
+                        'media_ids'    => $data['media_ids'],
+                        's_user_id'    => Auth::id(),
+                        'r_user_id'    => $data['r_user_id'],
+                        'read'         => 1,
+                        'sent'         => 1,
+                    ]);
+                    SendMessage::dispatch($message);
                     # 如果没有设置发送时间，或者设置了发送时间，
                     # 但发送时间早于当前时间, 则立即发送消息
                 } else {

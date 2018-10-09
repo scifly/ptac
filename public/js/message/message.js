@@ -596,7 +596,6 @@
                     $cardBtntxt = $('#card-btntxt'),
                     $smsContent = $('#sms-content'),
 
-                    appIds = [$('#app_ids').val()],
                     targetIds = preview ? 'user-0-' + $('#userId').val() : $('#selected-node-ids').val(),
                     types = $('#message-content').find('.tab-pane.active').attr('id').split('_'),
                     type = types[types.length - 1],
@@ -610,7 +609,6 @@
                 formData = {
                     _token: page.token(),
                     type: type,
-                    app_ids: appIds,
                     targetIds: targetIds,
                     message_type_id: $messageTypeId.val(),
                 };
@@ -678,7 +676,7 @@
                         };
                         break;
                     case 'sms': // 短信
-                        appIds = [0];
+                        // appIds = [0];
                         content = {sms: $smsContent.val()};
                         break;
                     default:

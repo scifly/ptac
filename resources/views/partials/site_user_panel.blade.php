@@ -1,6 +1,6 @@
 <div class="user-panel">
     <div class="pull-left image">
-        <img src="{{ Auth::user()->avatar_url ? Auth::user()->avatar_url : URL::asset('img/user2-160x160.jpg') }}"
+        <img src="{{ Auth::user()->avatar_url ? Auth::user()->avatar_url : asset('img/user2-160x160.jpg') }}"
              class="img-circle" alt="User Image">
     </div>
     <div class="pull-left info">
