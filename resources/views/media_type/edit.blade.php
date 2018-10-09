@@ -1,4 +1,4 @@
-{!! Form::model($at, [
+{!! Form::model($mt, [
     'method' => 'put',
     'id' => 'formMediaType',
     'data-parsley-validate' => 'true'
