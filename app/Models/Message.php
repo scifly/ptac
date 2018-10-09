@@ -178,8 +178,8 @@ class Message extends Model {
                     }
                     if ($row['sent'] != 1) {
                         $type = '(' . (!$row['event_id']
-                                ? sprintf(Snippet::BADGE_RED, ' . 草稿')
-                                : sprintf(Snippet::BADGE_ORANGE, ' . 定时')
+                                ? sprintf(Snippet::BADGE_RED, '草稿')
+                                : sprintf(Snippet::BADGE_ORANGE, '定时')
                             ) . ')';
                     }
                     
