@@ -29,6 +29,7 @@ use Throwable;
  *
  * @property int $id
  * @property int $comm_type_id 通信方式id
+ * @property int $media_type_id 媒体类型id
  * @property int $app_id 应用id
  * @property int $msl_id 消息发送批次id
  * @property string $title 消息标题
@@ -47,6 +48,7 @@ use Throwable;
  * @property int|null $event_id
  * @property-read CommType $commType
  * @property-read MessageType $messageType
+ * @property-read MediaType $mediaType
  * @property-read User $receiver
  * @property-read User $sender
  * @property-read Event|null $event
@@ -55,6 +57,7 @@ use Throwable;
  * @property-read WechatSms $wechatSms
  * @method static Builder|Message whereAppId($value)
  * @method static Builder|Message whereCommTypeId($value)
+ * @method static Builder|Message whereMediaTypeId($value)
  * @method static Builder|Message whereContent($value)
  * @method static Builder|Message whereCreatedAt($value)
  * @method static Builder|Message whereId($value)
@@ -75,7 +78,6 @@ use Throwable;
  */
 class Message extends Model {
     
-    // todo: needs to be optimized
     use ModelTrait;
     
     protected $table = 'messages';
@@ -84,7 +86,7 @@ class Message extends Model {
         'comm_type_id', 'app_id', 'msl_id', 'content',
         'serviceid', 'message_id', 'url', 'media_ids',
         's_user_id', 'r_user_id', 'message_type_id',
-        'read', 'sent', 'title', 'event_id',
+        'read', 'sent', 'title', 'event_id', 'media_type_id'
     ];
     
     /**
@@ -93,6 +95,13 @@ class Message extends Model {
      * @return BelongsTo
      */
     function messageType() { return $this->belongsTo('App\Models\MessageType'); }
+    
+    /**
+     * 返回制定消息所属的媒体类型对象
+     *
+     * @return BelongsTo
+     */
+    function mediaType() { return $this->belongsTo('App\Models\MediaType'); }
     
     /**
      * 返回指定消息所属的用户对象

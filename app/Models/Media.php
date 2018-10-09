@@ -170,23 +170,15 @@ class Media extends Model {
     function upload($file, $remark = '') {
         
         if ($file->isValid()) {
-            # 文件名
             $filename = uniqid() . '-' . $file->getClientOriginalName();
-            # 扩展名
             $ext = $file->getClientOriginalExtension();
-            # 临时文件的绝对路径
             $realPath = $file->getRealPath();
-            # image/jpeg/
-            $type = self::mediaTypeId($file->getClientMimeType());
-            // 上传文件
-            // $filename = uniqid() . '.' . $ext;
-            // 使用新建的uploads本地存储空间（目录）
-            if (
-            Storage::disk('uploads')->put(
+            $type = $this->mediaTypeId($file->getClientMimeType());
+            $stored = Storage::disk('uploads')->put(
                 date('Y/m/d/', time()) . $filename,
                 file_get_contents($realPath)
-            )
-            ) {
+            );
+            if ($stored) {
                 $filePath = $this->uploadedFilePath($filename);
                 $media = $this->create([
                     'path'          => $filePath,
@@ -215,10 +207,14 @@ class Media extends Model {
      */
     private function mediaTypeId($type) {
         
+        $types = [
+            'application', 'example', 'font',
+            'message', 'model', 'multipart',
+        ];
         $name = explode('/', $type)[0];
         if ($name == 'audio') {
             $name = 'voice';
-        } elseif ($name == 'application') {
+        } elseif (in_array($name, $types)) {
             $name = 'file';
         }
         

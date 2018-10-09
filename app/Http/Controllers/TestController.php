@@ -9,6 +9,7 @@ use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Media;
 use App\Models\MediaType;
+use App\Models\Message;
 use App\Models\Student;
 use App\Models\Tab;
 use App\Models\User;
@@ -60,6 +61,23 @@ class TestController extends Controller {
     public function index() {
         
         
+        try {
+            DB::transaction(function() {
+                $messages = Message::all();
+                foreach ($messages as $message) {
+                    $content = json_decode($message->content, true);
+                    $message->media_type_id = MediaType::whereName($content['msgtype'])->first()->id;
+                    if ($message->event_id) {
+                        $message->sent = 2;
+                    }
+                    $message->save();
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        exit;
         try {
             DB::transaction(function () {
                 $medias = Media::all();

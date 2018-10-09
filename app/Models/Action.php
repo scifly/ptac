@@ -10,7 +10,6 @@ use Carbon\Carbon;
 use Doctrine\Common\Inflector\Inflector;
 use Eloquent;
 use Exception;
-use HttpException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -296,7 +295,7 @@ class Action extends Model {
                     $actions = self::whereTabId($ctlr)->get();
                     foreach ($actions as $a) {
                         $removed = $this->remove($a->id);
-                        throw_if(!$removed, new HttpException(__('messages.del_fail')));
+                        throw_if(!$removed, new Exception(__('messages.del_fail')));
                     }
                 }
                 foreach ($controllers as $controller) {
