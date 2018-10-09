@@ -622,7 +622,10 @@ class Message extends Model {
                         'user_id'     => $user->id,
                         'enabled'     => isset($draft) ? 1 : 0,
                     ]);
-                    $message->update(['event_id' => $event->id]);
+                    $message->update([
+                        'event_id' => $event->id,
+                        'sent' => 2 # 2 - 定时
+                    ]);
                 }
             });
         } catch (Exception $e) {
