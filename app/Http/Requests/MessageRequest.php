@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Requests;
 
-use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use App\Models\App;
 use App\Models\CommType;
@@ -68,17 +67,21 @@ class MessageRequest extends FormRequest {
     protected function prepareForValidation() {
         
         if (!($this->method() == 'update' && !Request::route('id'))) {
+            $schoolId = $this->schoolId() ?? session('schoolId');
+            $corp = School::find($schoolId)->corp;
             $input = $this->all();
-            $input['comm_type_id'] = $input['type'] == 'sms'
-                ? CommType::whereName('短信')->first()->id
-                : CommType::whereName('微信')->first()->id;
+            $input['comm_type_id'] = CommType::whereName(
+                $input['type'] == 'sms' ? '短信' : '微信'
+            )->first()->id;
             $input['media_type_id'] = MediaType::whereName(
                 $input['type'] == 'sms' ? 'text' : $input['type']
             )->first()->id;
-            $input['app_id'] = 0;
+            $input['app_id'] = App::where([
+                'name' => config('app.name'),
+                'corp_id' => $corp->id
+            ])->first()->id;
             $input['msl_id'] = 0;
-            $input['title'] = MessageType::find($input['message_type_id'])->name
-                . '(' . Constant::INFO_TYPE[$input['type']] . ')';
+            $input['title'] = MessageType::find($input['message_type_id'])->name;
             $input['serviceid'] = '0';
             $input['message_id'] = 0;
             $input['url'] = "http://";
@@ -104,7 +107,7 @@ class MessageRequest extends FormRequest {
             }
             # 定时发送的日期时间
             if (isset($input['time'])) {
-                $input['time'] = $input['time'] . ':00';
+                $input['time'] .= ':00';
             }
             if (!isset($input['user_ids'])) {
                 $input['user_ids'] = [];
@@ -112,25 +115,23 @@ class MessageRequest extends FormRequest {
             if (!isset($input['dept_ids'])) {
                 $input['dept_ids'] = [];
             }
-            $action = explode('/', Request::path())[1];
-            if ($action != 'send') {
-                # 保存草稿
-                $schoolId = $this->schoolId() ?? session('schoolId');
-                $corp = School::find($schoolId)->corp;
-                # 消息草稿的用户类发送对象只需保存学生和教职员工的userid
-                $userids = User::whereIn('id', $input['user_ids'])
-                    ->pluck('userid')->toArray();
-                $agentid = $input['type'] != 'sms'
-                    ? App::whereCorpId($corp->id)->where('name', '消息中心')->first()->agentid
-                    : 0; # agentid 对短信类消息不适用
-                $input['content'] = json_encode([
-                    'touser'       => implode('|', $userids),
-                    'toparty'      => implode('|', $input['dept_ids']),
-                    'agentid'      => $agentid,
-                    'msgtype'      => $input['type'],
-                    $input['type'] => $input[$input['type']],
-                ]);
-            }
+            // $action = explode('/', Request::path())[1];
+            
+            # 消息草稿的用户类发送对象只需保存学生和教职员工的userid
+            $userids = User::whereIn('id', $input['user_ids'])
+                ->pluck('userid')->toArray();
+            $app = App::where([
+                'corp_id' => $corp->id,
+                'name' => config('app.name')
+            ])->first();
+            $agentid = $input['type'] != 'sms' ? $app->agentid : 0;
+            $input['content'] = json_encode([
+                'touser'       => implode('|', $userids),
+                'toparty'      => implode('|', $input['dept_ids']),
+                'agentid'      => $agentid,
+                'msgtype'      => $input['type'],
+                $input['type'] => $input[$input['type']],
+            ]);
             # 需要立即或定时发送的消息中对应的用户类发送对象，
             # 需在Message表中保存学生对应的监护人userid及教职员工的userid，
             # 学生userid转换成监护人userid的过程将在SendMessage队列任务中进行
