@@ -57,7 +57,7 @@ class TestController extends Controller {
      */
     public function index() {
     
-        dd(URL::asset('img/0.png'));
+        dd(asset('img/0.png'));
         
         return view('user.test', [
             'a' => ['c' => 1, 'b' => 2],
