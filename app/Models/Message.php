@@ -249,7 +249,7 @@ class Message extends Model {
                 'alias'      => 'MediaType',
                 'type'       => 'INNER',
                 'conditions' => [
-                    'MediaType.id = Message.message_type_id',
+                    'MediaType.id = Message.media_type_id',
                 ],
             ],
             [
