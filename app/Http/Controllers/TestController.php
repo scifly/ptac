@@ -66,7 +66,11 @@ class TestController extends Controller {
                 $messages = Message::all();
                 foreach ($messages as $message) {
                     $content = json_decode($message->content, true);
-                    $message->media_type_id = MediaType::whereName($content['msgtype'])->first()->id;
+                    $msgType = $content['msgtype'];
+                    if ($msgType == 'sms') {
+                        $msgType = 'text';
+                    }
+                    $message->media_type_id = MediaType::whereName($msgType)->first()->id;
                     if ($message->event_id) {
                         $message->sent = 2;
                     }
