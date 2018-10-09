@@ -597,18 +597,20 @@
                     $smsContent = $('#sms-content'),
 
                     targetIds = preview ? 'user-0-' + $('#userId').val() : $('#selected-node-ids').val(),
-                    types = $('#message-content').find('.tab-pane.active').attr('id').split('_'),
-                    type = types[types.length - 1],
+                    paths = $('#message-content').find('.tab-pane.active').attr('id').split('_'),
+                    type = paths[paths.length - 1],
                     $container = $('#content_' + type),
                     messageId = $('#id').val(),
                     content = {}, formData,
                     $timer = $('#timing'),
                     $time = $('#time'),
-                    mediaId, path, uploadTypes = ['image', 'audio', 'video', 'file'];
+                    mediaId, path, uploadTypes = ['image', 'audio', 'video', 'file'],
+                    types = { audio: 'voice', card: 'textcard' },
+                    key = $.inArray(type, ['audio', 'card']) === -1 ? type : types[type];
 
                 formData = {
                     _token: page.token(),
-                    type: type,
+                    type: key,
                     targetIds: targetIds,
                     message_type_id: $messageTypeId.val(),
                 };
@@ -618,66 +620,40 @@
                     path = $container.find('.media_id').attr('data-path');
                 }
                 switch (type) {
-                    case 'text':    // 文本
+                    case 'text':
                         $textContent.attr('required', 'true');
-                        content = { text: { content: $textContent.val() }};
+                        content[key] = { content: $textContent.val() };
                         break;
-                    case 'image':   // 图片
-                        content = {
-                            image: {
-                                media_id: mediaId,
-                                path: path
-                            }
+                    case 'image':
+                    case 'audio':
+                    case 'file':
+                    case 'video':
+                        content[key] = {
+                            media_id: mediaId,
+                            path: path
                         };
-                        break;
-                    case 'audio':   // 语音
-                        content = {
-                            voice: {
-                                media_id: mediaId,
-                                path: path
-                            }
-                        };
-                        formData['type'] = 'voice';
-                        break;
-                    case 'video':   // 视频
-                        content = {
-                            video: {
-                                media_id: mediaId,
+                        if (type === 'video') {
+                            $.extend(content[key], {
                                 title: $videoTitle.val(),
-                                description: $videoDescription.val(),
-                                path: path
-                            }
-                        };
-                        break;
-                    case 'file':   // 文件
-                        content = {
-                            file: {
-                                media_id: mediaId,
-                                path: path
-                            }
-                        };
+                                description: $videoDescription.val()
+                            });
+                        }
                         break;
                     case 'card':    // 卡片
-                        content = {
-                            textcard: {
-                                title: $cardTitle.val(),
-                                description: $cardDescription.val(),
-                                url: $cardUrl.val(),
-                                btntxt: $cardBtntxt.val()
-                            }
+                        content[key] = {
+                            title: $cardTitle.val(),
+                            description: $cardDescription.val(),
+                            url: $cardUrl.val(),
+                            btntxt: $cardBtntxt.val()
                         };
-                        formData['type'] = 'textcard';
                         break;
                     case 'mpnews': // 图文
-                        content = {
-                            mpnews: {
-                                articles: message.mpnews['articles']
-                            }
+                        content[key] = {
+                            articles: message.mpnews['articles']
                         };
                         break;
                     case 'sms': // 短信
-                        // appIds = [0];
-                        content = {sms: $smsContent.val()};
+                        content[key] = $smsContent.val();
                         break;
                     default:
                         break;

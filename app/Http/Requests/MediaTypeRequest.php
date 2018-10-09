@@ -14,9 +14,7 @@ class MediaTypeRequest extends FormRequest {
      *
      * @return bool
      */
-    public function authorize() {
-        return false;
-    }
+    public function authorize() { return true; }
     
     /**
      * Get the validation rules that apply to the request.
@@ -24,8 +22,13 @@ class MediaTypeRequest extends FormRequest {
      * @return array
      */
     public function rules() {
+        
         return [
-            //
+            'name'          => 'required|string|between:2,60|unique:media_types,name,' .
+                $this->input('id') . ',id',
+            'remark'        => 'required|string',
+            'enabled'       => 'required|boolean',
         ];
+        
     }
 }
