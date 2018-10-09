@@ -93,11 +93,11 @@ class MediaTypeController extends Controller {
     /**
      * 更新媒体类型
      *
-     * @param MediaType $request
+     * @param MediaTypeRequest $request
      * @param $id
      * @return JsonResponse|string
      */
-    public function update(MediaType $request, $id) {
+    public function update(MediaTypeRequest $request, $id) {
         
         return $this->result(
             $this->mt->modify(
