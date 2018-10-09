@@ -69,7 +69,7 @@ class MessageRequest extends FormRequest {
             $input = $this->all();
             $input['comm_type_id'] = $input['type'] == 'sms'
                 ? CommType::whereName('短信')->first()->id
-                : CommType::whereName('应用')->first()->id;
+                : CommType::whereName('微信')->first()->id;
             $input['app_id'] = 0;
             $input['msl_id'] = 0;
             $input['title'] = MessageType::find($input['message_type_id'])->name
