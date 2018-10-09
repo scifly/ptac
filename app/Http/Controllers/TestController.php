@@ -7,6 +7,7 @@ use App\Helpers\ModelTrait;
 use App\Models\Action;
 use App\Models\Corp;
 use App\Models\Department;
+use App\Models\Media;
 use App\Models\Student;
 use App\Models\Tab;
 use App\Models\User;
@@ -57,7 +58,13 @@ class TestController extends Controller {
      */
     public function index() {
     
-        dd(asset('img/0.png'));
+        $medias = Media::all();
+        $types = [];
+        foreach ($medias as $media) {
+            $paths = explode('.', $media->path);
+            $types[] = $paths[count($paths) - 1];
+        }
+        dd(array_unique($types));
         
         return view('user.test', [
             'a' => ['c' => 1, 'b' => 2],

@@ -215,18 +215,14 @@ class Media extends Model {
      */
     private function mediaTypeId($type) {
         
-        switch (explode('/', $type)[0]) {
-            case 'image':
-                return 1;
-            case 'audio':
-                return 2;
-            case 'video':
-                return 3;
-            case 'application':
-                return 4;
-            default:
-                return 5;
+        $name = explode('/', $type)[0];
+        if ($name == 'audio') {
+            $name = 'voice';
+        } elseif ($name == 'application') {
+            $name = 'file';
         }
+        
+        return MediaType::whereName($name)->first()->id;
         
     }
     
