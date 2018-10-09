@@ -176,7 +176,7 @@ class Message extends Model {
                             ) . ')';
                     }
                     
-                    return CommType::find($d)->name . ($type ?? '');
+                    return $d . ($type ?? '');
                 },
             ],
             ['db' => 'MediaType.remark as mediatyperemark', 'dt' => 2],
