@@ -167,7 +167,7 @@ class Message extends Model {
         $columns = [
             ['db' => 'Message.id', 'dt' => 0],
             [
-                'db'        => 'Message.comm_type_id', 'dt' => 1,
+                'db'        => 'CommType.name as commtypename', 'dt' => 1,
                 'formatter' => function ($d, $row) {
                     if ($row['sent'] != 1) {
                         $type = '(' . (!$row['event_id']
@@ -179,12 +179,7 @@ class Message extends Model {
                     return CommType::find($d)->name . ($type ?? '');
                 },
             ],
-            [
-                'db' => 'Message.media_type_id', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return MediaType::find($d)->remark;
-                }
-            ],
+            ['db' => 'MediaType.remark as mediatyperemark', 'dt' => 2],
             [
                 'db'        => 'Message.msl_id', 'dt' => 3,
                 'formatter' => function ($d) {
@@ -200,12 +195,7 @@ class Message extends Model {
                     return sprintf(Snippet::BADGE_GRAY, ($msl ? $msl->recipient_count : '0') . ' 人');
                 },
             ],
-            [
-                'db' => 'Message.message_type_id', 'dt' => 5,
-                'formatter' => function ($d) {
-                    return MessageType::find($d)->name;
-                }
-            ],
+            ['db' => 'MessageType.name as messagetypename', 'dt' => 5],
             [
                 'db'        => 'Message.created_at', 'dt' => 6, 'dr' => true,
                 'formatter' => function ($d, $row) {
