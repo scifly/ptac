@@ -29,26 +29,26 @@ class MessageIndexComposer {
         foreach ($data as $datum) {
             $apps[$datum['id']] = $datum['name'] . '|' . $datum['square_logo_url'];
         }
-        list($optionAll, $htmlCommType, $htmlApp, $htmlMessageType) = $this->messageFilters();
+        list($optionAll, $htmlCommType, $htmlMediaType, $htmlMessageType) = $this->messageFilters();
         $view->with([
             'titles'       => [
                 '#',
                 ['title' => '通信方式', 'html' => $htmlCommType],
-                ['title' => '应用', 'html' => $htmlApp],
+                ['title' => '媒体类型', 'html' => $htmlMediaType],
                 '消息批次', '接收者',
                 ['title' => '类型', 'html' => $htmlMessageType],
                 ['title' => '发送于', 'html' => $this->inputDateTimeRange('发送于')],
                 [
                     'title' => '状态',
                     'html' => $this->singleSelectList(
-                        array_merge($optionAll, [0 => '未发', 1 => '已发']), 'filter_sent'
+                        array_merge($optionAll, [0 => '草稿', 1 => '已发', 2 => '定时']), 'filter_sent'
                     )
                 ],
             ],
             'rTitles'      => [
                 '#',
                 ['title' => '通信方式', 'html' => $htmlCommType],
-                ['title' => '应用', 'html' => $htmlApp],
+                ['title' => '媒体类型', 'html' => $htmlMediaType],
                 '消息批次', '发送者',
                 ['title' => '类型', 'html' => $htmlMessageType],
                 ['title' => '接收于', 'html' => $this->inputDateTimeRange('接收于')],

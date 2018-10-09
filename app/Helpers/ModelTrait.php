@@ -5,6 +5,7 @@ use App\Models\App;
 use App\Models\CommType;
 use App\Models\Corp;
 use App\Models\Group;
+use App\Models\MediaType;
 use App\Models\Menu;
 use App\Models\MessageType;
 use App\Models\Tab;
@@ -600,27 +601,26 @@ trait ModelTrait {
         $htmlCommType = $this->singleSelectList(
             array_merge(
                 $optionAll,
-                CommType::all()->pluck('name', 'id')->toArray()
+                CommType::pluck('name', 'id')->toArray()
             ), 'filter_commtype'
         );
-        $htmlApp = $this->singleSelectList(
+        $htmlMediaType = $this->singleSelectList(
             array_merge(
                 $optionAll,
-                App::whereCorpId(School::find($this->schoolId())->corp_id)
-                    ->get()->pluck('name', 'id')->toArray()
-            ), 'filter_app'
+                MediaType::pluck('remark', 'id')->toArray()
+            ), 'filter_mediatype'
         );
         $htmlMessageType = $this->singleSelectList(
             array_merge(
                 $optionAll,
-                MessageType::all()->pluck('name', 'id')->toArray()
+                MessageType::pluck('name', 'id')->toArray()
             ), 'filter_message_type'
         );
         
         return [
             $optionAll,
             $htmlCommType,
-            $htmlApp,
+            $htmlMediaType,
             $htmlMessageType
         ];
         

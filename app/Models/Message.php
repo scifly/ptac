@@ -189,12 +189,7 @@ class Message extends Model {
                     return $d . sprintf(Snippet::BADGE_GREEN, $type);
                 },
             ],
-            [
-                'db'        => 'App.name as appname', 'dt' => 2,
-                'formatter' => function ($d) {
-                    return $d ?? sprintf(Snippet::BADGE_GRAY, '(n/a)');
-                },
-            ],
+            ['db' => 'MediaType.remark as mediatype', 'dt' => 2],
             [
                 'db'        => 'Message.msl_id', 'dt' => 3,
                 'formatter' => function ($d) {
@@ -221,11 +216,16 @@ class Message extends Model {
                 'db'        => 'Message.' . ($received ? 'read' : 'sent'), 'dt' => 7,
                 'formatter' => function ($d, $row) use ($received) {
                     $id = $row['id'];
-                    $sent = Snippet::status($d, '已发', '未发');
+                    $sent = sprintf(Snippet::DT_STATUS, 'text-green', '已发');
+                    if ($d == 0) {
+                        $sent = sprintf(Snippet::DT_STATUS, 'text-red', '草稿');
+                    } elseif ($d == 2) {
+                        $sent = sprintf(Snippet::DT_STATUS, 'text-orange', '定时');
+                    }
                     $read = Snippet::status($row['read'], '已读', '未读');
                     $editHtml = '<a id="%s" title="编辑" href="#"><i class="fa fa-edit" style="margin-left: 15px;"></i></a>';
                     $showHtml = '<a id="%s" title="详情" href="#"><i class="fa fa-laptop" style="margin-left: 15px;"></i></a>';
-                    $status = $received ? $read : $sent;;
+                    $status = $received ? $read : $sent;
                     $status .= !$d
                         ? sprintf($editHtml, 'edit_' . $id)
                         : sprintf($showHtml, 'show_' . $id);
@@ -248,11 +248,11 @@ class Message extends Model {
                 ],
             ],
             [
-                'table'      => 'apps',
-                'alias'      => 'App',
-                'type'       => 'LEFT',
+                'table'      => 'media_types',
+                'alias'      => 'MediaType',
+                'type'       => 'INNER',
                 'conditions' => [
-                    'App.id = Message.app_id',
+                    'MediaType.id = Message.message_type_id',
                 ],
             ],
             [
