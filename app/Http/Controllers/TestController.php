@@ -60,7 +60,7 @@ class TestController extends Controller {
      */
     public function index() {
         
-        
+        dd(MediaType::all()->pluck('remark', 'id')->toArray());
         try {
             DB::transaction(function() {
                 $messages = Message::all();

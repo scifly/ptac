@@ -599,22 +599,16 @@ trait ModelTrait {
         $optionAll = [null => '全部'];
     
         $htmlCommType = $this->singleSelectList(
-            array_merge(
-                $optionAll,
-                CommType::all()->pluck('name', 'id')->toArray()
-            ), 'filter_commtype'
+            $optionAll + CommType::all()->pluck('name', 'id')->toArray(),
+            'filter_commtype'
         );
         $htmlMediaType = $this->singleSelectList(
-            array_merge(
-                $optionAll,
-                MediaType::all()->pluck('remark', 'id')->toArray()
-            ), 'filter_mediatype'
+            $optionAll + MediaType::all()->pluck('remark', 'id')->toArray(),
+            'filter_mediatype'
         );
         $htmlMessageType = $this->singleSelectList(
-            array_merge(
-                $optionAll,
-                MessageType::all()->pluck('name', 'id')->toArray()
-            ), 'filter_message_type'
+            $optionAll + MessageType::all()->pluck('name', 'id')->toArray(),
+            'filter_message_type'
         );
         
         return [
