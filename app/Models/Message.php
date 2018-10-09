@@ -574,6 +574,7 @@ class Message extends Model {
                     # 创建需要发送的消息
                     $message = $this->create([
                         'comm_type_id' => $data['comm_type_id'],
+                        'media_type_id' => $data['media_type_id'],
                         'app_id'       => $app->id,
                         'msl_id'       => $data['msl_id'],
                         'title'        => $data['title'],
