@@ -226,7 +226,7 @@ class Message extends Model {
                     $editHtml = '<a id="%s" title="编辑" href="#"><i class="fa fa-edit" style="margin-left: 15px;"></i></a>';
                     $showHtml = '<a id="%s" title="详情" href="#"><i class="fa fa-laptop" style="margin-left: 15px;"></i></a>';
                     $status = $received ? $read : $sent;
-                    $status .= !$d
+                    $status .= $d != 1
                         ? sprintf($editHtml, 'edit_' . $id)
                         : sprintf($showHtml, 'show_' . $id);
                     
