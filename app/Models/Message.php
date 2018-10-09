@@ -176,17 +176,14 @@ class Message extends Model {
                             return $d;
                         }
                     }
-                    $msgType = Constant::INFO_TYPE[$content->{'msgtype'}];
-                    if ($row['sent']) {
-                        $type = '(' . $msgType . ')';
-                    } else {
-                        $type = '(' . $msgType . (!$row['event_id']
+                    if ($row['sent'] != 1) {
+                        $type = '(' . (!$row['event_id']
                                 ? sprintf(Snippet::BADGE_RED, ' . 草稿')
                                 : sprintf(Snippet::BADGE_ORANGE, ' . 定时')
                             ) . ')';
                     }
                     
-                    return $d . sprintf(Snippet::BADGE_GREEN, $type);
+                    return $d . ($type ?? '');
                 },
             ],
             ['db' => 'MediaType.remark as mediatype', 'dt' => 2],
