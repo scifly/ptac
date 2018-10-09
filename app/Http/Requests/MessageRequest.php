@@ -5,6 +5,7 @@ use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use App\Models\App;
 use App\Models\CommType;
+use App\Models\MediaType;
 use App\Models\MessageType;
 use App\Models\School;
 use App\Models\User;
@@ -34,6 +35,7 @@ class MessageRequest extends FormRequest {
         
         $rules = [
             'comm_type_id'    => 'required|integer',
+            'media_type_id'   => 'required|integer',
             'app_id'          => 'required|integer',
             'msl_id'          => 'required|integer',
             'title'           => 'required|string|max:64',
@@ -48,7 +50,7 @@ class MessageRequest extends FormRequest {
             'sent'            => 'required|boolean',
         ];
         $rules = array_merge(
-            $rules,  $this->method() == 'send'
+            $rules, $this->method() == 'send'
             ? [
                 'user_ids' => 'nullable|array',
                 'dept_ids' => 'nullable|array',
@@ -58,18 +60,21 @@ class MessageRequest extends FormRequest {
             ]
         );
         $this->batchRules($rules);
-
+        
         return $rules;
         
     }
     
     protected function prepareForValidation() {
-    
+        
         if (!($this->method() == 'update' && !Request::route('id'))) {
             $input = $this->all();
             $input['comm_type_id'] = $input['type'] == 'sms'
                 ? CommType::whereName('短信')->first()->id
                 : CommType::whereName('微信')->first()->id;
+            $input['media_type_id'] = MediaType::whereName(
+                $input['type'] == 'sms' ? 'text' : $input['type']
+            )->first()->id;
             $input['app_id'] = 0;
             $input['msl_id'] = 0;
             $input['title'] = MessageType::find($input['message_type_id'])->name
