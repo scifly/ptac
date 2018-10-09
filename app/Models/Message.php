@@ -383,36 +383,21 @@ class Message extends Model {
     function detail($id) {
         
         $message = $this->find($id);
-        // $edit = ($user->id == $message->s_user_id ? true : false);
-        $object = json_decode($message->content);
-        if (!is_object($object)) {
-            $object = json_decode($object);
-        }
-        $title = $message->title;
-        $type = array_search(mb_substr($message->title, -3, 2), Constant::INFO_TYPE);
-        if (!$type) {
-            $messageType = MessageType::find($message->message_type_id);
-            $messageTypeName = $messageType ? $messageType->name : '未知消息';
-            if (is_object($object) && property_exists(get_class($object), 'msgtype')) {
-                $type = $object->{'msgtype'};
-                $title = $messageTypeName . '(' . Constant::INFO_TYPE[$type] . ')';
-            } else {
-                $title = $messageTypeName . '(未知)';
-            }
-            $message->update(['title' => $title]);
-        }
-        $type = $type ? $type : 'other';
         $msl = $message->messageSendinglog;
+        $type = MediaType::find($message->media_type_id)->name;
+        if (CommType::find($message->comm_type_id)->name == '短信') {
+            $type = 'sms';
+        }
         
         return [
             'id'         => $message->id,
-            'title'      => $title,
+            'title'      => $message->title,
             'updated_at' => $this->humanDate($message->updated_at),
             'sender'     => User::find($message->s_user_id)->realname,
             'recipients' => $msl ? $msl->recipient_count : 0,
             'msl_id'     => $msl ? $msl->id : 0,
             'type'       => $type,
-            $type        => $type == 'other' ? $message->content : $object,
+            $type        => $message->content,
         ];
         
     }
