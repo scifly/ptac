@@ -8,6 +8,7 @@ use App\Models\Action;
 use App\Models\Corp;
 use App\Models\Department;
 use App\Models\Media;
+use App\Models\MediaType;
 use App\Models\Student;
 use App\Models\Tab;
 use App\Models\User;
@@ -57,19 +58,41 @@ class TestController extends Controller {
      * @throws \Throwable
      */
     public function index() {
-    
-        $medias = Media::all();
-        $types = [];
-        foreach ($medias as $media) {
-            $paths = explode('.', $media->path);
-            $types[] = $paths[count($paths) - 1];
-        }
-        dd(array_unique($types));
         
-        return view('user.test', [
-            'a' => ['c' => 1, 'b' => 2],
-            'b' => 2
-        ]);
+        
+        try {
+            DB::transaction(function () {
+                $medias = Media::all();
+                foreach ($medias as $media) {
+                    $paths = explode('.', $media->path);
+                    $type = $paths[count($paths) - 1];
+                    $mediaType = 'file';
+                    if (in_array($type, ['jpg', 'png'])) {
+                        $mediaType = 'image';
+                    } elseif ($type == 'amr') {
+                        $mediaType = 'voice';
+                    } elseif ($type == 'mp4') {
+                        $mediaType = 'video';
+                    }
+                    $media->media_type_id = MediaType::whereName($mediaType)->first()->id;
+                    $media->save();
+                }
+                
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        // $types = [];
+        // foreach ($medias as $media) {
+        //     $paths = explode('.', $media->path);
+        //     $types[] = $paths[count($paths) - 1];
+        // }
+        // dd(array_unique($types));
+        //
+        // return view('user.test', [
+        //     'a' => ['c' => 1, 'b' => 2],
+        //     'b' => 2
+        // ]);
         exit;
         try {
             DB::transaction(function () {
