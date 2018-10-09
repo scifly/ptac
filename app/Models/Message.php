@@ -167,15 +167,8 @@ class Message extends Model {
         $columns = [
             ['db' => 'Message.id', 'dt' => 0],
             [
-                'db'        => 'CommType.name as commtypename', 'dt' => 1,
+                'db'        => 'Message.comm_type_id', 'dt' => 1,
                 'formatter' => function ($d, $row) {
-                    $content = json_decode($row['content']);
-                    if (!isset($content->{'msgtype'})) {
-                        $content = json_decode($content);
-                        if (!isset($content->{'msgtype'})) {
-                            return $d;
-                        }
-                    }
                     if ($row['sent'] != 1) {
                         $type = '(' . (!$row['event_id']
                                 ? sprintf(Snippet::BADGE_RED, '草稿')
@@ -183,11 +176,11 @@ class Message extends Model {
                             ) . ')';
                     }
                     
-                    return $d . ($type ?? '');
+                    return CommType::find($d)->name . ($type ?? '');
                 },
             ],
             [
-                'db' => 'Message.media_type_id as mediatypename', 'dt' => 2,
+                'db' => 'Message.media_type_id', 'dt' => 2,
                 'formatter' => function ($d) {
                     return MediaType::find($d)->remark;
                 }
@@ -208,7 +201,7 @@ class Message extends Model {
                 },
             ],
             [
-                'db' => 'Message.message_type_id as messagetypename', 'dt' => 5,
+                'db' => 'Message.message_type_id', 'dt' => 5,
                 'formatter' => function ($d) {
                     return MessageType::find($d)->name;
                 }
