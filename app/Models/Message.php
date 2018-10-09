@@ -303,7 +303,7 @@ class Message extends Model {
         
         try {
             $content = $this->detail($id);
-            $message = $content[$content['type']];
+            $message = json_decode($content[$content['type']]);
             $toparty = $message->{'toparty'};
             $touser = $message->{'touser'};
             $targetIds = !empty($toparty) ? explode('|', $toparty) : [];
