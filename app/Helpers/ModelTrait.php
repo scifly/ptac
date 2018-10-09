@@ -601,19 +601,19 @@ trait ModelTrait {
         $htmlCommType = $this->singleSelectList(
             array_merge(
                 $optionAll,
-                CommType::pluck('name', 'id')->toArray()
+                CommType::all()->pluck('name', 'id')->toArray()
             ), 'filter_commtype'
         );
         $htmlMediaType = $this->singleSelectList(
             array_merge(
                 $optionAll,
-                MediaType::pluck('remark', 'id')->toArray()
+                MediaType::all()->pluck('remark', 'id')->toArray()
             ), 'filter_mediatype'
         );
         $htmlMessageType = $this->singleSelectList(
             array_merge(
                 $optionAll,
-                MessageType::pluck('name', 'id')->toArray()
+                MessageType::all()->pluck('name', 'id')->toArray()
             ), 'filter_message_type'
         );
         
