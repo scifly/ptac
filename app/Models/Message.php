@@ -209,7 +209,13 @@ class Message extends Model {
             [
                 'db'        => 'Message.created_at', 'dt' => 6, 'dr' => true,
                 'formatter' => function ($d, $row) {
-                    return $row['sent'] ? $d : sprintf(Snippet::BADGE_GRAY, '(n/a)');
+                    if ($row['sent'] == 1) {
+                        return $d;
+                    } elseif ($row['sent'] == 2) {
+                        return $this->humanDate(Event::find($row['event_id'])->start);
+                    } else {
+                        return sprintf(Snippet::BADGE_GRAY, '(n/a)');
+                    }
                 },
             ],
             [
