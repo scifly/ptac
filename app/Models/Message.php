@@ -456,12 +456,10 @@ class Message extends Model {
             default:
                 break;
         }
-        $m = $this->find($id);
-        $app = $m->app_id ? App::find($m->app_id)->toArray() : null;
         
         return view('message.detail', [
             'msgTitle'   => $detail['title'],
-            'app'        => $app,
+            'commType'   => CommType::find($this->find($id)->comm_type_id)->name,
             'msgBody'    => $msgBody,
             'sentAt'     => $detail['updated_at'],
             'recipients' => implode('; ', $recipients),

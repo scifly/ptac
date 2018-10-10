@@ -12,20 +12,10 @@
             <div class="row">
                 <div class="form-horizontal">
                     <div class="form-group">
-                        {!! Form::label('', '应用：', [
+                        {!! Form::label('', '通信方式：', [
                             'class' => 'col-sm-3 control-label'
                         ]) !!}
-                        <div class="col-sm-6" style="margin-top: 7px;">
-                            @if ($app)
-                                <img style="height: 16px; vertical-align: sub;"
-                                     alt="" src="{!! $app['square_logo_url'] !!}"
-                                     class="img-circle"
-                                />
-                                {!! $app['name'] !!}
-                            @else
-                                【短信】
-                            @endif
-                        </div>
+                        <div class="col-sm-6" style="margin-top: 7px;">{!! $commType !!}</div>
                     </div>
                     <div class="form-group">
                         {!! Form::label('', '发送时间：', [
