@@ -696,8 +696,8 @@ class Message extends Model {
                                 'enabled'     => isset($draft) ? 1 : 0,
                             ]);
                             $data['event_id'] = $event->id;
-                            $data['sent'] = 2;
                         }
+                        $data['sent'] = 2;
                         unset($data['draft']);
                         unset($data['time']);
                     } else {
@@ -707,8 +707,8 @@ class Message extends Model {
                             # 如果指定消息已有对应事件，则删除该事件
                             Event::find($eventId)->delete();
                             $data['event_id'] = null;
-                            $data['sent'] = 0;
                         }
+                        $data['sent'] = 0;
                     }
                     # 更新消息草稿
                     $message->update($data);
