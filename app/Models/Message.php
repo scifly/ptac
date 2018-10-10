@@ -419,7 +419,7 @@ class Message extends Model {
         
         $content = $this->detail($id);
         $type = $content['type'];
-        $message = json_decode($content[$type]->{$type});
+        $message = json_decode($content[$type]);
         $userids = explode('|', $message->{'touser'});
         $deptIds = explode('|', $message->{'toparty'});
         $recipients = array_merge(
