@@ -419,14 +419,14 @@ class Message extends Model {
         
         $content = $this->detail($id);
         $type = $content['type'];
-        $userids = explode('|', $content[$type]->{'touser'});
-        $deptIds = explode('|', $content[$type]->{'toparty'});
+        $message = json_decode($content[$type]->{$type});
+        $userids = explode('|', $message->{'touser'});
+        $deptIds = explode('|', $message->{'toparty'});
         $recipients = array_merge(
             User::whereIn('userid', $userids)->pluck('realname')->toArray(),
             Department::whereIn('id', $deptIds)->pluck('name')->toArray()
         );
         $msgBody = '';
-        $message = $content[$type]->{$type};
         switch ($type) {
             case 'text':
                 $msgBody = $message->{'content'};
