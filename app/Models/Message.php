@@ -489,7 +489,11 @@ class Message extends Model {
             DB::transaction(function () use ($id) {
                 $wechatSms = WechatSms::whereMessageId($id)->first();
                 if ($wechatSms) { $wechatSms->delete(); }
-                $this->find($id)->delete();
+                $message = $this->find($id);
+                if ($message->event_id) {
+                    Event::find($message->event_id)->delete();
+                }
+                $message->delete();
             });
         } catch (Exception $e) {
             throw $e;
@@ -686,6 +690,7 @@ class Message extends Model {
                                 'enabled'     => isset($draft) ? 1 : 0,
                             ]);
                             $data['event_id'] = $event->id;
+                            $data['sent'] = 2;
                         }
                         unset($data['draft']);
                         unset($data['time']);
@@ -696,6 +701,7 @@ class Message extends Model {
                             # 如果指定消息已有对应事件，则删除该事件
                             Event::find($eventId)->delete();
                             $data['event_id'] = null;
+                            $data['sent'] = 0;
                         }
                     }
                     # 更新消息草稿

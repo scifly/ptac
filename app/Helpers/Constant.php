@@ -89,18 +89,6 @@ class Constant {
         'TestController',
     ];
     
-    const INFO_TYPE = [
-        'text'     => '文本',
-        'image'    => '图片',
-        'voice'    => '语音',
-        'video'    => '视频',
-        'file'     => '文件',
-        'textcard' => '卡片',
-        'mpnews'   => '图文',
-        'sms'      => '短信',
-        'other'    => '未知',
-    ];
-    
     const CONTENT_TYPE = [
         'image' => 'image/*',
         'audio' => 'audio/*',

@@ -306,7 +306,7 @@
                 });
                 $schedule.on('ifChecked', function () {
                     $timing.toggle('slow', function() {
-                        $draft.prop('disabled', $timing.is(':visible'));
+                        // $draft.prop('disabled', $timing.is(':visible'));
                     });
                 });
                 $draft.on('click', function () {
@@ -545,6 +545,7 @@
                         uri = $id.val() !== '' ? ('update/' + $id.val()) : 'store';
                         requestType = $id.val() !== '' ? 'PUT' : 'POST';
                         icon = page.success;
+                        delete formData['time'];
                         break;
                     default:
                         break;
