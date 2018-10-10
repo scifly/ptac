@@ -70,16 +70,9 @@ class MessageRequest extends FormRequest {
             $schoolId = $this->schoolId() ?? session('schoolId');
             $corp = School::find($schoolId)->corp;
             $input = $this->all();
-            $input['comm_type_id'] = CommType::whereName(
-                $input['type'] == 'sms' ? '短信' : '微信'
-            )->first()->id;
-            $input['media_type_id'] = MediaType::whereName(
-                $input['type'] == 'sms' ? 'text' : $input['type']
-            )->first()->id;
-            $input['app_id'] = App::where([
-                'name' => config('app.name'),
-                'corp_id' => $corp->id
-            ])->first()->id;
+            $input['comm_type_id'] = CommType::whereName($input['type'] == 'sms' ? '短信' : '微信')->first()->id;
+            $input['media_type_id'] = MediaType::whereName($input['type'] == 'sms' ? 'text' : $input['type'])->first()->id;
+            $input['app_id'] = App::where(['name' => config('app.name'), 'corp_id' => $corp->id])->first()->id;
             $input['msl_id'] = 0;
             $input['title'] = MessageType::find($input['message_type_id'])->name;
             $input['serviceid'] = '0';

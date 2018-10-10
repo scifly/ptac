@@ -306,6 +306,7 @@
                 });
                 $schedule.on('ifChecked', function () {
                     $timing.toggle('slow');
+                    $draft.prop('disabled', $timing.is(':visible'));
                 });
                 $draft.on('click', function () {
                     return message.action('draft');
