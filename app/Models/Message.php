@@ -417,9 +417,9 @@ class Message extends Model {
      */
     function show($id) {
         
-        $content = $this->detail($id);
-        $type = $content['type'];
-        $message = json_decode($content[$type]);
+        $detail = $this->detail($id);
+        $type = $detail['type'];
+        $message = json_decode($detail[$type]);
         $userids = explode('|', $message->{'touser'});
         $deptIds = explode('|', $message->{'toparty'});
         $recipients = array_merge(
@@ -427,30 +427,31 @@ class Message extends Model {
             Department::whereIn('id', $deptIds)->pluck('name')->toArray()
         );
         $msgBody = '';
+        $content = $message->{$type};
         switch ($type) {
             case 'text':
-                $msgBody = $message->{'content'};
+                $msgBody = $content->{'content'};
                 break;
             case 'image':
-                $msgBody = '<img src="' . $message->{'path'} . '" alt="" style="height: 200px;" />';
+                $msgBody = '<img src="' . $content->{'path'} . '" alt="" style="height: 200px;" />';
                 break;
             case 'voice':
-                $msgBody = '<a href="' . $message->{'path'} . '">下载语音</a>';
+                $msgBody = '<a href="' . $content->{'path'} . '">下载语音</a>';
                 break;
             case 'video':
-                $msgBody = view('message.detail_video', ['message' => $message])->render();
+                $msgBody = view('message.detail_video', ['message' => $content])->render();
                 break;
             case 'file':
-                $msgBody = '<a href="' . $message->{'path'} . '">下载文件</a>';
+                $msgBody = '<a href="' . $content->{'path'} . '">下载文件</a>';
                 break;
             case 'textcard':
-                $msgBody = view('message.detail_textcard', ['message' => $message])->render();
+                $msgBody = view('message.detail_textcard', ['message' => $content])->render();
                 break;
             case 'mpnews':
-                $msgBody = view('message.detail_mpnews', ['message' => $message])->render();
+                $msgBody = view('message.detail_mpnews', ['message' => $content])->render();
                 break;
             case 'sms':
-                $msgBody = $message;
+                $msgBody = $content;
                 break;
             default:
                 break;
@@ -459,12 +460,12 @@ class Message extends Model {
         $app = $m->app_id ? App::find($m->app_id)->toArray() : null;
         
         return view('message.detail', [
-            'msgTitle'   => $content['title'],
+            'msgTitle'   => $detail['title'],
             'app'        => $app,
             'msgBody'    => $msgBody,
-            'sentAt'     => $content['updated_at'],
+            'sentAt'     => $detail['updated_at'],
             'recipients' => implode('; ', $recipients),
-            'sender'     => $content['sender'],
+            'sender'     => $detail['sender'],
         ])->render();
         
     }
