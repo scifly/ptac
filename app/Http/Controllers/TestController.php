@@ -7,9 +7,11 @@ use App\Helpers\ModelTrait;
 use App\Models\Action;
 use App\Models\Corp;
 use App\Models\Department;
+use App\Models\Educator;
 use App\Models\Media;
 use App\Models\MediaType;
 use App\Models\Message;
+use App\Models\School;
 use App\Models\Student;
 use App\Models\Tab;
 use App\Models\User;
@@ -17,6 +19,7 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\DetectsApplicationNamespace;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
@@ -60,6 +63,41 @@ class TestController extends Controller {
      */
     public function index() {
         
+        // $d = new Department();
+        // $departmentId = School::find($this->schoolId())->department_id;
+        // $departmentIds = array_merge(
+        //     [$departmentId],
+        //     $d->subDepartmentIds($departmentId)
+        // );
+        $departmentIds = $this->departmentIds(Auth::id());
+        $records = [];
+        $department = new Department();
+        foreach ($departmentIds as $departmentId) {
+            $eUsers = Department::find($departmentId)->users->sortBy('created_at')->filter(
+                function(User $user) {
+                    return $user->educator ? true : false;
+                }
+            );
+            /** @var User $user */
+            foreach ($eUsers as $user) {
+                $path = [];
+                $dept = str_replace(
+                    '部门 . 凌凯科技有限公司 . 成都美视国际学校 . 成都美视国际学校 . ', '',
+                    $department->leafPath($departmentId, $path)
+                );
+                $records[] = [
+                    $user->username,
+                    $user->realname,
+                    $user->mobiles->where('isdefault', 1)->first()->mobile,
+                    $user->position,
+                    $user->created_at,
+                    $user->updated_at,
+                    $dept
+                ];
+            }
+        }
+        dd($records);
+    
         dd(MediaType::all()->pluck('remark', 'id')->toArray());
         try {
             DB::transaction(function() {

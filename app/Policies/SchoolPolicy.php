@@ -45,7 +45,7 @@ class SchoolPolicy {
         $isSchoolAllowed = false;
         $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
         $action = explode('/', Request::path())[1];
-        if (in_array($action, ['index', 'create', 'store', 'edit', 'update', 'delete'])) {
+        if (in_array($action, ['edit', 'show', 'update', 'delete'])) {
             $isSchoolAllowed = in_array($school->id, $this->schoolIds());
         }
         switch ($action) {

@@ -308,8 +308,8 @@ class Message extends Model {
     function edit($id) {
         
         try {
-            $content = $this->detail($id);
-            $message = json_decode($content[$content['type']]);
+            $detail = $this->detail($id);
+            $message = json_decode($detail[$detail['type']]);
             $toparty = $message->{'toparty'};
             $touser = $message->{'touser'};
             $targetIds = !empty($toparty) ? explode('|', $toparty) : [];
@@ -326,7 +326,7 @@ class Message extends Model {
             'selectedTargetIds' => $targetIds,
             'targets'           => $targetsHtml,
             'messageTypeId'     => $this->find($id)->message_type_id,
-            'messageFormat'     => $content['type'],
+            'messageFormat'     => $detail['type'],
             'message'           => $message,
             'timing'            => $timing,
             'time'              => $time,

@@ -784,7 +784,7 @@ class Department extends Model {
      * @param array $path
      * @return string
      */
-    private function leafPath($id, array &$path) {
+    public function leafPath($id, array &$path) {
         
         $department = self::find($id);
         if (!isset($department)) {

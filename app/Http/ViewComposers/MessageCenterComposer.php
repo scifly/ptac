@@ -37,45 +37,46 @@ class MessageCenterComposer {
         
         $user = Auth::user();
         $chosenTargetsHtml = '';
-        $content = $selectedDepartmentIds = $selectedUserIds = null;
+        $detail = $selectedDepartmentIds = $selectedUserIds = null;
         $title = $text = $url = $btntxt = $mediaId = $accept = null;
         $filename = $filepath = $mpnewsList = $timing = null;
         if (Request::route('id')) {
             $messageId = Request::route('id');
-            $content = $this->message->detail($messageId);
+            $detail = $this->message->detail($messageId);
             $timing = $this->message->find($messageId)->event_id;
-            $type = $content['type'];
-            $msg = $content[$type]->{$type};
+            $type = $detail['type'];
+            $message = json_decode($detail[$type]);
+            $content = $message->{$type};
             switch ($type) {
                 case 'text':
-                    $text = $msg->{'content'};
+                    $text = $content->{'content'};
                     break;
                 case 'image':
-                    list($mediaId, $filename, $filepath) = $this->fileAttrs($msg);
+                    list($mediaId, $filename, $filepath) = $this->fileAttrs($content);
                     $accept = 'image/*';
                     break;
                 case 'voice':
-                    list($mediaId, $filename, $filepath) = $this->fileAttrs($msg);
+                    list($mediaId, $filename, $filepath) = $this->fileAttrs($content);
                     $accept = 'audio/*';
                     break;
                 case 'video':
-                    $title = $msg->{'title'};
-                    $text = $msg->{'description'};
-                    list($mediaId, $filename, $filepath) = $this->fileAttrs($msg);
+                    $title = $content->{'title'};
+                    $text = $content->{'description'};
+                    list($mediaId, $filename, $filepath) = $this->fileAttrs($content);
                     $accept = 'video/mp4';
                     break;
                 case 'file':
-                    list($mediaId, $filename, $filepath) = $this->fileAttrs($msg);
+                    list($mediaId, $filename, $filepath) = $this->fileAttrs($content);
                     $accept = '*';
                     break;
                 case 'textcard':
-                    $title = $msg->{'title'};
-                    $text = $msg->{'description'};
-                    $url = $msg->{'url'};
-                    $btntxt = $msg->{'btntxt'};
+                    $title = $content->{'title'};
+                    $text = $content->{'description'};
+                    $url = $content->{'url'};
+                    $btntxt = $content->{'btntxt'};
                     break;
                 case 'mpnews':
-                    $articles = $msg->{'articles'};
+                    $articles = $content->{'articles'};
                     $tpl = <<<HTML
                         <li id="mpnews-%s" class="weui-uploader__file" style="background-image: %s"
                             data-media-id="%s" data-author="%s" data-content="%s" data-digest="%s"
@@ -98,12 +99,11 @@ HTML;
                     }
                     break;
                 case 'sms':
-                    $text = $msg;
+                    $text = $content;
                     break;
                 default:
                     break;
             }
-            $message = $content[$type];
             $selectedDepartmentIds = !empty($message->{'toparty'})
                 ? explode('|', $message->{'toparty'}) : [];
             $touser = !empty($message->{'touser'})
@@ -146,7 +146,7 @@ HTML;
                 'mpnews'   => '图文',
                 'sms'      => '短信',
             ],
-            'selectedMsgTypeId'     => $content ? $content['type'] : null,
+            'selectedMsgTypeId'     => $detail ? $detail['type'] : null,
             'selectedDepartmentIds' => $selectedDepartmentIds,
             'selectedUserIds'       => $selectedUserIds,
             'chosenTargetsHtml'     => $chosenTargetsHtml,
