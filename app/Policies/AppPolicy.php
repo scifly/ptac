@@ -8,6 +8,7 @@ use App\Models\Corp;
 use App\Models\Menu;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Request;
 
 /**
  * Class AppPolicy
@@ -46,13 +47,17 @@ class AppPolicy {
             __('messages.not_found')
         );
         $role = $user->group->name;
+        $action = explode('/', Request::path())[1];
         switch ($role) {
             case '运营':
                 return true;
             case '企业':
-                $rootMenuId = $this->menu->rootMenuId();
-                $corp = Corp::whereMenuId($rootMenuId)->first();
-                return $corp->id == $app->corp_id;
+                if ($action != 'index') {
+                    $rootMenuId = $this->menu->rootMenuId();
+                    $corp = Corp::whereMenuId($rootMenuId)->first();
+                    return $corp->id == $app->corp_id;
+                }
+                return true;
             default:
                 return false;
         }
