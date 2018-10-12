@@ -47,7 +47,7 @@ class StudentIndexComposer {
                 [
                     'title' => '性别',
                     'html' => $this->singleSelectList(
-                        [null => '全部', 0 => '女', 1 => '男'], 'filter_gender'
+                        $optionAll + [0 => '女', 1 => '男'], 'filter_gender'
                     )
                 ],
                 [
@@ -61,7 +61,7 @@ class StudentIndexComposer {
                 [
                     'title' => '住校',
                     'html' => $this->singleSelectList(
-                        [null => '全部', 0 => '否', '是'], 'filter_oncampus'
+                        $optionAll + [0 => '否', 1 => '是'], 'filter_oncampus'
                     )
                 ],
                 [
@@ -79,7 +79,7 @@ class StudentIndexComposer {
                 [
                     'title' => '状态 . 操作',
                     'html' => $this->singleSelectList(
-                        [null => '全部', 0 => '已禁用', 1 => '已启用'], 'filter_enabled'
+                        $optionAll + [0 => '已禁用', 1 => '已启用'], 'filter_enabled'
                     )
                 ]
             ],
