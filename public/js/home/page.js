@@ -140,23 +140,20 @@ var page = {
             '&menuId=' + this.getActiveMenuId() + '&tabId=' + this.getActiveTabId();
     },
     errorHandler: function (e) {
-        var obj = JSON.parse(e.responseText);
-        var message = '';
+        var obj = JSON.parse(e.responseText),
+            message = '', statusCode = obj['statusCode'];
+
         $('.overlay').hide();
-        switch (obj['statusCode']) {
-            case 406:
-                var errors = obj['errors'];
-                $.each(errors, function () {
-                    page.inform(obj['exception'], this, page.failure);
-                });
-                break;
-            case 498:
-                // window.location.reload();
-                break;
-            default:
-                message = obj['message'] + '\n' + obj['file'] + ' : ' + obj['line'];
-                page.inform(obj['exception'] + ' : ' + obj['statusCode'], message, page.failure);
-                break;
+        if (statusCode === 406 && typeof obj['errors'] !== 'undefined') {
+            var errors = obj['errors'];
+            $.each(errors, function () {
+                page.inform(obj['exception'], this, page.failure);
+            });
+        } else if (statusCode === 498) {
+            window.location.reload();
+        } else {
+            message = obj['message'] + '\n' + obj['file'] + ' : ' + obj['line'];
+            page.inform(obj['exception'] + ' : ' + obj['statusCode'], message, page.failure);
         }
     },
     getWrapperContent: function (menuId, menuUrl, tabId, tabUrl) {
