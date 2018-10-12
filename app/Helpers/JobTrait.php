@@ -146,9 +146,9 @@ trait JobTrait {
                             ),
                     ]));
                     # 插入数据
-                    $job->{'insert'}($inserts);
+                    if (!empty($inserts)) { $job->{'insert'}($inserts); }
                     # 更新数据
-                    $job->{'update'}($updates);
+                    if (!empty($updates)) { $job->{'update'}($updates); }
                     # 生成错误数据excel文件
                     if (!empty($illegals)) {
                         $job->{'excel'}($illegals, 'illegals', '错误数据', false);

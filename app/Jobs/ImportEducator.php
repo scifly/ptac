@@ -128,8 +128,14 @@ class ImportEducator implements ShouldQueue {
             }
             $user['departments'] = $departments;
             $user['school_id'] = $school->id;
-            if (Mobile::whereMobile($user['mobile'])->where('isdefault', 1)->first()) {
-                $updates[] = $user;
+            $mobile = Mobile::whereMobile($user['mobile'])->where('isdefault', 1)->first();
+            if ($mobile) {
+                if ($mobile->user->educator) {
+                    $updates[] = $user;
+                } else {
+                    $datum['L'] = '手机号码已存在';
+                    $illegals[] = $datum;
+                }
             } else {
                 $inserts[] = $user;
             }
