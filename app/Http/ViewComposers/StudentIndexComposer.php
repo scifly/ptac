@@ -52,10 +52,8 @@ class StudentIndexComposer {
                 [
                     'title' => '班级',
                     'html' => $this->singleSelectList(
-                        array_merge(
-                            [null => '全部'],
-                            Squad::whereIn('id', $this->classIds())->get()->pluck('name', 'id')->toArray()
-                        ), 'filter_class'
+                        [null => '全部'] + Squad::whereIn('id', $this->classIds())->get()->pluck('name', 'id')->toArray()
+                        , 'filter_class'
                     )
                 ],
                 '学号', '卡号',

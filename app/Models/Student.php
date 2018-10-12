@@ -155,9 +155,9 @@ class Student extends Model {
                 },
             ],
             [
-                'db'        => 'Squad.name as classname', 'dt' => 4,
+                'db'        => 'student.class_id', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return Snippet::squad($d);
+                    return Snippet::squad(Squad::find($d)->name);
                 },
             ],
             ['db' => 'Student.student_number', 'dt' => 5],
