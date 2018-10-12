@@ -28,6 +28,7 @@ class StudentIndexComposer {
             ->where('enabled', 1)
             ->pluck('name', 'id')
             ->toArray();
+        $optionAll = [null => '全部'];
         $view->with([
             'buttons'        => [
                 'import' => [
@@ -52,7 +53,7 @@ class StudentIndexComposer {
                 [
                     'title' => '班级',
                     'html' => $this->singleSelectList(
-                        [null => '全部'] + Squad::whereIn('id', $this->classIds())->get()->pluck('name', 'id')->toArray()
+                         $optionAll + Squad::whereIn('id', $this->classIds())->pluck('name', 'id')->toArray()
                         , 'filter_class'
                     )
                 ],
