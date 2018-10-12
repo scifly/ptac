@@ -193,15 +193,7 @@ class Student extends Model {
                 'conditions' => [
                     'User.id = Student.user_id',
                 ],
-            ],
-            [
-                'table'      => 'classes',
-                'alias'      => 'Squad',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'Squad.id = Student.class_id',
-                ],
-            ],
+            ]
         ];
 
         return Datatable::simple(
