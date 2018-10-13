@@ -46,6 +46,7 @@
 </div>
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>
 <script src="{{ URL::asset('js/jquery-ui.min.js') }}"></script>
+<script src="{{ URL::asset('js/pusher.min.js') }}"></script>
 {{--<script src="{{ URL::asset('js/app.js') }}"></script>--}}
 <script src="{{ URL::asset('js/bootstrap.min.js') }}"></script>
 <script src="{{ URL::asset('js/adminlte.min.js') }}"></script>
