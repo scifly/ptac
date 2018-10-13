@@ -800,6 +800,27 @@ var page = {
         }
         return vars;
     },
+    initBroadcaster: function () {
+        Pusher.logToConsole = true;
+        var pusher = new Pusher($('meta[name="pusher-key"]').attr('content'), {
+                cluster: $('meta[name="pusher-cluster"]').attr('content'),
+                encrypted: true
+            }),
+            channel = pusher.subscribe('channel.' + $('#userId').val());
+
+        channel.bind('broadcast', function (response) {
+            var image = page.success;
+            switch (response['statusCode']) {
+                case 200: break;
+                case 202: image = page.info; break;
+                default: image = page.failure; break;
+            }
+            page.inform(response['title'], response['message'], image);
+            if (typeof response['url'] !== 'undefined') {
+                window.location = page.siteRoot() + response['url'];
+            }
+        });
+    }
     // getScripts: function (scripts, callback) {
     //     var progress = 0;
     //     scripts.forEach(function(script) {
@@ -820,6 +841,8 @@ $.getMultiScripts = function (arr) {
     return $.when.apply($, _arr);
 };
 $(function () {
+    // 初始化广播
+    page.initBroadcaster();
     // 刷新菜单
     page.refreshMenus();
     // 个人信息弹窗
@@ -842,13 +865,14 @@ $(function () {
             return false;
         }
         // 获取目标页面的卡片ID、菜单ID和菜单链接地址
-        var paths = e.state.title.split(',');
-        var targetTabId = paths[0];
-        var targetMenuId = paths[1];
-        var targetMenuUrl = paths[2];
-        var uri = e.state.url;
-        // 获取当前已激活卡片的ID
-        var activeTabId = page.getActiveTabId();
+        var paths = e.state.title.split(','),
+            targetTabId = paths[0],
+            targetMenuId = paths[1],
+            targetMenuUrl = paths[2],
+            uri = e.state.url,
+            // 获取当前已激活卡片的ID
+            activeTabId = page.getActiveTabId();
+
         // 清除当前已激活卡片中的内容
         if (activeTabId) {
             $('a[href="#tab_' + activeTabId + '"]').parent().removeClass();

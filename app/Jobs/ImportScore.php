@@ -21,7 +21,8 @@ use Validator;
  */
 class ImportScore implements ShouldQueue {
     
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait, JobTrait;
+    use Dispatchable, InteractsWithQueue, Queueable,
+        SerializesModels, ModelTrait, JobTrait;
     
     public $data, $userId, $classId;
     

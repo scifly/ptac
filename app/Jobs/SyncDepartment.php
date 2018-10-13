@@ -1,8 +1,8 @@
 <?php
 namespace App\Jobs;
 
-use App\Events\JobResponse;
 use App\Facades\Wechat;
+use App\Helpers\Broadcaster;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\JobTrait;
@@ -15,6 +15,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Pusher\PusherException;
 
 /**
  * 企业号部门管理
@@ -27,7 +28,7 @@ class SyncDepartment implements ShouldQueue {
     use Dispatchable, InteractsWithQueue, Queueable,
         SerializesModels, ModelTrait, JobTrait;
     
-    protected $data, $userId, $action, $response;
+    protected $data, $userId, $action, $response, $broadcaster;
     
     /**
      * Create a new job instance.
@@ -35,6 +36,7 @@ class SyncDepartment implements ShouldQueue {
      * @param array $data
      * @param $userId
      * @param $action
+     * @throws PusherException
      */
     public function __construct(array $data, $userId, $action) {
         
@@ -47,6 +49,8 @@ class SyncDepartment implements ShouldQueue {
             'statusCode' => HttpStatusCode::OK,
             'message'    => __('messages.synced'),
         ];
+        $this->broadcaster = new Broadcaster();
+        
     }
     
     /**
@@ -71,7 +75,11 @@ class SyncDepartment implements ShouldQueue {
         
     }
     
-    /** 同步企业微信部门 */
+    /**
+     * 同步企业微信部门
+     *
+     * @throws PusherException
+     */
     private function sync() {
         
         $corp = Corp::find($this->data['corp_id']);
@@ -103,7 +111,7 @@ class SyncDepartment implements ShouldQueue {
                 $this->response['message'] = Constant::WXERR[$result->{'errcode'}];
             }
         }
-        event(new JobResponse($this->response));
+        $this->broadcaster->broadcast($this->response);
         
     }
     

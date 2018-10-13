@@ -1,8 +1,8 @@
 <?php
 namespace App\Jobs;
 
-use App\Events\JobResponse;
 use App\Facades\Wechat;
+use App\Helpers\Broadcaster;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Models\App;
@@ -19,21 +19,29 @@ use Illuminate\Queue\SerializesModels;
  * @package App\Jobs
  */
 class SyncApp implements ShouldQueue {
-
+    
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     
-    protected $app, $userId;
+    protected $app, $userId, $response, $broadcaster;
     
     /**
      * Create a new job instance.
      *
      * @param App $app
      * @param $userId
+     * @throws \Pusher\PusherException
      */
     public function __construct(App $app, $userId) {
         
         $this->app = $app;
         $this->userId = $userId;
+        $this->response = [
+            'userId' => $this->userId,
+            'title' => __('messages.app.title'),
+            'message' => __('messages.app.app_configured'),
+            'statusCode' => HttpStatusCode::OK,
+        ];
+        $this->broadcaster = new Broadcaster();
         
     }
     
@@ -45,12 +53,6 @@ class SyncApp implements ShouldQueue {
      */
     public function handle() {
         
-        $response = [
-            'userId' => $this->userId,
-            'title' => __('messages.app.title'),
-            'message' => __('messages.app.app_configured'),
-            'statusCode' => HttpStatusCode::OK,
-        ];
         $app = [
             'agentid' => $this->app->agentid,
             'report_location_flag' => $this->app->report_location_flag,
@@ -65,9 +67,9 @@ class SyncApp implements ShouldQueue {
             $this->app->secret
         );
         if ($token['errcode']) {
-            $response['message'] = $token['errmsg'];
-            $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-            event(new JobResponse($response));
+            $this->response['message'] = $token['errmsg'];
+            $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+            $this->broadcaster->broadcast($this->response);
             return false;
         }
         
@@ -75,10 +77,10 @@ class SyncApp implements ShouldQueue {
             Wechat::configApp($token['access_token'], $app)
         );
         if ($result->{'errcode'}) {
-            $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-            $response['message'] = Constant::WXERR[$result->{'errcode'}];
+            $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+            $this->response['message'] = Constant::WXERR[$result->{'errcode'}];
         }
-        event(new JobResponse($response));
+        $this->broadcaster->broadcast($this->response);
         
         return true;
         

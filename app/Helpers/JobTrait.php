@@ -1,7 +1,6 @@
 <?php
 namespace App\Helpers;
 
-use App\Events\JobResponse;
 use App\Models\Corp;
 use App\Models\Message;
 use App\Models\MessageSendingLog;
@@ -130,7 +129,7 @@ trait JobTrait {
         } else {
             try {
                 DB::transaction(function () use ($job, $inserts, $updates, $illegals, $title, &$response) {
-                    event(new JobResponse([
+                    (new Broadcaster)->broadcast([
                         'userId'     => $job->userId,
                         'title'      => __($title),
                         'statusCode' => HttpStatusCode::ACCEPTED,
@@ -144,7 +143,7 @@ trait JobTrait {
                                 __('messages.import_illegals'),
                                 count($inserts), count($updates), count($illegals)
                             ),
-                    ]));
+                    ]);
                     # 插入数据
                     if (!empty($inserts)) { $job->{'insert'}($inserts); }
                     # 更新数据
@@ -167,7 +166,7 @@ trait JobTrait {
                 );
             }
         }
-        event(new JobResponse($response));
+        (new Broadcaster)->broadcast($response);
         
         return true;
         
@@ -221,6 +220,7 @@ trait JobTrait {
      * @param Message $message
      * @param mixed $result
      * @param mixed $targets - 发送对象数量
+     * @throws \Pusher\PusherException
      */
     private function inform(Message $message, $result, $targets) {
         
@@ -262,7 +262,7 @@ trait JobTrait {
                         __($msgTpl), count($targets), count($targets), 0);
                 }
             }
-            event(new JobResponse($response));
+            (new Broadcaster)->broadcast($response);
         }
         
     }

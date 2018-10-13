@@ -1,6 +1,7 @@
 <?php
 namespace App\Jobs;
 
+use App\Helpers\Broadcaster;
 use App\Models\Corp;
 use App\Helpers\JobTrait;
 use App\Helpers\Constant;
@@ -12,6 +13,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Pusher\PusherException;
 
 /**
  * 企业号会员管理
@@ -21,9 +23,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
  */
 class SyncMember implements ShouldQueue {
     
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, JobTrait;
+    use Dispatchable, InteractsWithQueue, Queueable,
+        SerializesModels, JobTrait;
     
-    protected $data, $userId, $action, $response;
+    protected $data, $userId, $action, $response, $broadcaster;
     
     /**
      * Create a new job instance.
@@ -31,6 +34,7 @@ class SyncMember implements ShouldQueue {
      * @param array $data
      * @param $userId - 后台登录用户的id
      * @param $action - create/update/delete操作
+     * @throws PusherException
      */
     public function __construct($data, $userId, $action) {
         
@@ -43,6 +47,7 @@ class SyncMember implements ShouldQueue {
             'statusCode' => HttpStatusCode::OK,
             'message' => __('messages.synced')
         ];
+        $this->broadcaster = new Broadcaster();
         
     }
     
@@ -102,7 +107,7 @@ class SyncMember implements ShouldQueue {
             }
         }
         if ($this->userId) {
-            event(new JobResponse($this->response));
+            $this->broadcaster->broadcast($this->response);
         }
         
     }

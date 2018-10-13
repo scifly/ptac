@@ -1,7 +1,7 @@
 <?php
 namespace App\Jobs;
 
-use App\Events\JobResponse;
+use App\Helpers\Broadcaster;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\JobTrait;
 use App\Helpers\ModelTrait;
@@ -32,7 +32,8 @@ use Validator;
  */
 class ImportStudent implements ShouldQueue {
     
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait, JobTrait;
+    use Dispatchable, InteractsWithQueue, Queueable,
+        SerializesModels, ModelTrait, JobTrait;
     
     const EXCEL_FILE_TITLE = [
         '姓名', '性别', '学校', '生日',
@@ -41,18 +42,25 @@ class ImportStudent implements ShouldQueue {
         '备注', '监护关系',
     ];
     
-    public $data, $userId;
+    public $data, $userId, $response, $broadcaster;
     
     /**
      * Create a new job instance.
      *
      * @param array $data
      * @param integer $userId
+     * @throws \Pusher\PusherException
      */
     function __construct(array $data, $userId) {
         
         $this->data = $data;
         $this->userId = $userId;
+        $this->response = [
+            'userId'     => $this->userId,
+            'title'      => __('messages.student.title'),
+            'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
+        ];
+        $this->broadcaster = new Broadcaster();
         
     }
     
@@ -74,7 +82,6 @@ class ImportStudent implements ShouldQueue {
      */
     function validate(array $data): array {
         
-        // unset($data[0]);
         $rules = [
             'name'           => 'required|string|between:2,60',
             'gender'         => ['required', Rule::in(['男', '女'])],
@@ -304,12 +311,8 @@ class ImportStudent implements ShouldQueue {
                 }
             });
         } catch (Exception $e) {
-            event(new JobResponse([
-                'userId'     => $this->userId,
-                'title'      => __('messages.student.title'),
-                'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
-                'message'    => $e->getMessage(),
-            ]));
+            $this->response['message'] = $e->getMessage();
+            $this->broadcaster->broadcast($this->response);
             throw $e;
         }
         
@@ -461,12 +464,8 @@ class ImportStudent implements ShouldQueue {
                 }
             });
         } catch (Exception $e) {
-            event(new JobResponse([
-                'userId'     => $this->userId,
-                'title'      => __('messages.student.title'),
-                'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
-                'message'    => $e->getMessage(),
-            ]));
+            $this->response['message'] = $e->getMessage();
+            $this->broadcaster->broadcast($this->response);
             throw $e;
         }
         

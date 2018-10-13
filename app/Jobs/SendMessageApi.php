@@ -29,7 +29,8 @@ use Throwable;
  */
 class SendMessageApi implements ShouldQueue {
     
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait, JobTrait;
+    use Dispatchable, InteractsWithQueue, Queueable,
+        SerializesModels, ModelTrait, JobTrait;
     
     protected $mobiles, $schoolId, $content, $partner;
     

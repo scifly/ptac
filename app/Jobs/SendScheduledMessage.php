@@ -19,7 +19,8 @@ use Throwable;
  */
 class SendScheduledMessage implements ShouldQueue {
     
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, JobTrait;
+    use Dispatchable, InteractsWithQueue, Queueable,
+        SerializesModels, JobTrait;
     
     /**
      * Create a new job instance.

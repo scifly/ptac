@@ -1,7 +1,7 @@
 <?php
 namespace App\Jobs;
 
-use App\Events\JobResponse;
+use App\Helpers\Broadcaster;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\JobTrait;
 use App\Helpers\ModelTrait;
@@ -36,18 +36,25 @@ class ImportEducator implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, ModelTrait, JobTrait;
     
-    protected $data, $userId;
+    protected $data, $userId, $response, $broadcaster;
     
     /**
      * Create a new job instance.
      *
      * @param array $data
      * @param $userId
+     * @throws \Pusher\PusherException
      */
     function __construct(array $data, $userId) {
         
         $this->data = $data;
         $this->userId = $userId;
+        $this->response = [
+            'userId'     => $userId,
+            'title'      => __('messages.educator.title'),
+            'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
+        ];
+        $this->broadcaster = new Broadcaster();
         
     }
     
@@ -211,12 +218,8 @@ class ImportEducator implements ShouldQueue {
                 }
             });
         } catch (Exception $e) {
-            event(new JobResponse([
-                'userId'     => $this->userId,
-                'title'      => __('messages.educator.title'),
-                'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
-                'message'    => $e->getMessage(),
-            ]));
+            $this->response['message'] = $e->getMessage();
+            $this->broadcaster->broadcast($this->response);
             throw $e;
         }
         
@@ -280,12 +283,8 @@ class ImportEducator implements ShouldQueue {
                 
             });
         } catch (Exception $e) {
-            event(new JobResponse([
-                'userId'     => $this->userId,
-                'title'      => __('messages.educator.title'),
-                'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
-                'message'    => $e->getMessage(),
-            ]));
+            $this->response['message'] = $e->getMessage();
+            $this->broadcaster->broadcast($this->response);
             throw $e;
         }
         

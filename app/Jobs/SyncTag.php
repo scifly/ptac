@@ -1,8 +1,8 @@
 <?php
 namespace App\Jobs;
 
-use App\Events\JobResponse;
 use App\Facades\Wechat;
+use App\Helpers\Broadcaster;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\JobTrait;
@@ -19,7 +19,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\CssSelector\Exception\InternalErrorException;
+use Pusher\PusherException;
 use Throwable;
 
 /**
@@ -33,7 +33,7 @@ class SyncTag implements ShouldQueue {
     use Dispatchable, InteractsWithQueue, Queueable,
         SerializesModels, ModelTrait, JobTrait;
     
-    protected $data, $userId, $action, $response;
+    protected $data, $userId, $action, $response, $broadcaster;
     
     /**
      * Create a new job instance.
@@ -41,6 +41,7 @@ class SyncTag implements ShouldQueue {
      * @param array $data
      * @param $userId
      * @param $action
+     * @throws PusherException
      */
     public function __construct(array $data, $userId, $action) {
         
@@ -53,6 +54,7 @@ class SyncTag implements ShouldQueue {
             'statusCode' => HttpStatusCode::OK,
             'message'    => __('messages.synced'),
         ];
+        $this->broadcaster = new Broadcaster();
     }
     
     /**
@@ -157,7 +159,7 @@ class SyncTag implements ShouldQueue {
             $this->response['statusCode'] = $e->getCode();
             $this->response['message'] = $e->getMessage();
         }
-        event(new JobResponse($this->response));
+        $this->broadcaster->broadcast($this->response);
         
         return true;
         
@@ -173,7 +175,7 @@ class SyncTag implements ShouldQueue {
     
         throw_if(
             $result->{'errcode'},
-            InternalErrorException::class,
+            Exception::class,
             Constant::WXERR[$result->{'errcode'}]
         );
         

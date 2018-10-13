@@ -1,7 +1,7 @@
 <?php
 namespace App\Jobs;
 
-use App\Events\JobResponse;
+use App\Helpers\Broadcaster;
 use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Models\Action;
@@ -263,17 +263,25 @@ class CreateSchool implements ShouldQueue {
         '消费记录', '考试', '成绩', '成绩统计项', '总成绩', '标签管理',
     ];
     
-    protected $school, $userId;
+    protected $school, $userId, $response, $broadcaster;
     
     /**
      * Create ent job instncent   *
      * @param School $school
      * @param $userId
+     * @throws \Pusher\PusherException
      */
     public function __construct(School $school, $userId) {
         
         $this->school = $school;
         $this->userId = $userId;
+        $this->response = [
+            'userId'     => $userId,
+            'title'      => '创建学校',
+            'statusCode' => HttpStatusCode::OK,
+            'message'    => __('messages.school.menu_created'),
+        ];
+        $this->broadcaster = new Broadcaster();
         
     }
     
@@ -284,12 +292,6 @@ class CreateSchool implements ShouldQueue {
      */
     public function handle() {
         
-        $response = [
-            'userId'     => $this->userId,
-            'title'      => '创建学校',
-            'statusCode' => HttpStatusCode::OK,
-            'message'    => __('messages.school.menu_created'),
-        ];
         try {
             DB::transaction(function () {
                 $position = Menu::all()->max('position');
@@ -349,11 +351,11 @@ class CreateSchool implements ShouldQueue {
                 ]);
             });
         } catch (Exception $e) {
-            $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-            $response['message'] = $e->getMessage();
+            $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+            $this->response['message'] = $e->getMessage();
         }
         if ($this->userId) {
-            event(new JobResponse($response));
+            $this->broadcaster->broadcast($this->response);
         }
         
     }
