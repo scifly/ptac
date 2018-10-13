@@ -31,12 +31,18 @@ Route::get('test/create', 'TestController@create');
 Route::get('test', 'TestController@test');
 /** Broadcasting test */
 Route::get('event', function () {
-    event(new \App\Events\JobResponse([
-        'userId' => 1,
+    (new \App\Helpers\Broadcaster())->broadcast([
+        'userId' => Auth::id() ?? 1,
         'title' => '广播测试',
         'statusCode' => \App\Helpers\HttpStatusCode::OK,
         'message' => '工作正常'
-    ]));
+    ]);
+    // event(new \App\Events\JobResponse([
+    //     'userId' => 1,
+    //     'title' => '广播测试',
+    //     'statusCode' => \App\Helpers\HttpStatusCode::OK,
+    //     'message' => '工作正常'
+    // ]));
 });
 Route::get('listen', 'TestController@listen');
 
