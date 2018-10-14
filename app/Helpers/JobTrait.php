@@ -53,7 +53,7 @@ trait JobTrait {
      * @throws Throwable
      */
     function send(Message $message) {
-        
+        Log::debug('wtf');
         try {
             DB::transaction(function () use ($message) {
                 $content = json_decode($message->content, true);
