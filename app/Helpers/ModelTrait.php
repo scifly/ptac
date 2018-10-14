@@ -607,7 +607,7 @@ trait ModelTrait {
             'filter_mediatype'
         );
         $htmlMessageType = $this->singleSelectList(
-            $optionAll + MessageType::all()->pluck('name', 'id')->toArray(),
+            $optionAll + MessageType::whereEnabled(1)->pluck('name', 'id')->toArray(),
             'filter_message_type'
         );
         
