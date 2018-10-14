@@ -67,6 +67,7 @@ trait JobTrait {
                     $message->log($logUsers, $message, $result);
                     $this->inform($message, $result, $mobiles);
                 } else {
+                    Log::debug('wtf');
                     /**
                      * @var Collection|User[] $wxTargets
                      * @var Collection|User[] $smsLogUsers
