@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 use Throwable;
@@ -769,7 +770,7 @@ class Message extends Model {
         $result = json_decode(
             Wechat::sendMessage($token['access_token'], $message)
         );
-        
+        Log::debug(json_encode($result));
         return [
             'errcode'      => $result->{'errcode'},
             'errmsg'       => Constant::WXERR[$result->{'errcode'}],
