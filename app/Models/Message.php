@@ -770,7 +770,7 @@ class Message extends Model {
         $result = json_decode(
             Wechat::sendMessage($token['access_token'], $message)
         );
-        Log::debug(json_encode($result));
+
         return [
             'errcode'      => $result->{'errcode'},
             'errmsg'       => Constant::WXERR[$result->{'errcode'}],

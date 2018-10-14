@@ -53,7 +53,7 @@ trait JobTrait {
      * @throws Throwable
      */
     function send(Message $message) {
-        Log::debug('wtf');
+        
         try {
             DB::transaction(function () use ($message) {
                 $content = json_decode($message->content, true);
@@ -67,7 +67,6 @@ trait JobTrait {
                     $message->log($logUsers, $message, $result);
                     $this->inform($message, $result, $mobiles);
                 } else {
-                    Log::debug('wtf');
                     /**
                      * @var Collection|User[] $wxTargets
                      * @var Collection|User[] $smsLogUsers
