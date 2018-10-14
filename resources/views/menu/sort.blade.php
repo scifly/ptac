@@ -18,7 +18,7 @@
                         <i class="fa fa-ellipsis-v"></i>
                     </span>
                     <span id="{!! $tab->id !!}" class="text">
-                        {!! $tab->name !!}
+                        {!! $tab->comment !!}
                     </span>
                 </li>
             @endforeach
