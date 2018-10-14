@@ -10,9 +10,10 @@ $tabList.sortable({
 }); // .todoList();
 
 $(document).on('click', '#sort', function () {
-    var $tabs = $('.text');
-    var ranks = {};
-    var $cip = $('#cip');
+    var $tabs = $('.text'),
+        ranks = {},
+        $cip = $('#cip');
+
     $cip.after('<link/>', {
         rel: 'stylesheet', type: 'type/css',
         href: page.siteRoot() + plugins.jqueryui.css
@@ -37,5 +38,5 @@ $(document).on('click', '#sort', function () {
 });
 
 $('#record-list').on('click', function () {
-    page.backToList(table);
+    page.backToList('menus');
 });

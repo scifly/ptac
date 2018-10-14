@@ -144,7 +144,7 @@ class ComposerServiceProvider extends ServiceProvider {
         # 菜单 - Menu
         View::composer('menu.index', $ns . 'MenuIndexComposer');
         View::composer('menu.create_edit', $ns . 'MenuComposer');
-        View::composer('menu.menu_tabs', $ns . 'MenuSortComposer');
+        View::composer('menu.sort', $ns . 'MenuSortComposer');
     
         # 菜单类型 - MenuType
         View::composer('menu_type.index', $ns . 'MenuTypeIndexComposer');

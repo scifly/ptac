@@ -1,6 +1,8 @@
 <?php
 include_once 'common.php';
 
+use App\Helpers\Broadcaster;
+use App\Helpers\HttpStatusCode;
 use App\Models\Corp;
 use Illuminate\Support\Facades\Route;
 
@@ -14,10 +16,6 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-# Route::get('/fireEvent', function() {
-#     event(new eventTrigger());
-# });
-// Route::get('/messages/send', 'MessageController@send');
 Route::auth();
 
 # 关闭注册功能
@@ -31,24 +29,17 @@ Route::get('test/create', 'TestController@create');
 Route::get('test', 'TestController@test');
 /** Broadcasting test */
 Route::get('event', function () {
-    (new \App\Helpers\Broadcaster())->broadcast([
+    (new Broadcaster)->broadcast([
         'userId' => Auth::id() ?? 1,
         'title' => '广播测试',
-        'statusCode' => \App\Helpers\HttpStatusCode::OK,
+        'statusCode' => HttpStatusCode::OK,
         'message' => '工作正常'
     ]);
-    // event(new \App\Events\JobResponse([
-    //     'userId' => 1,
-    //     'title' => '广播测试',
-    //     'statusCode' => \App\Helpers\HttpStatusCode::OK,
-    //     'message' => '工作正常'
-    // ]));
 });
 Route::get('listen', 'TestController@listen');
 
 /** 菜单入口路由 */
 Route::get('pages/{id}', 'HomeController@menu');
-# Route::get('pages/{id}', 'MenuController@page');
 
 /** 用户/通讯录 */
 # 教职员工
