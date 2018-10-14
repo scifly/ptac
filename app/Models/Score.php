@@ -243,6 +243,7 @@ class Score extends Model {
      * 删除指定分数记录的所有数据
      *
      * @param $id
+     * @return bool
      * @throws Throwable
      */
     function purge($id) {
@@ -260,6 +261,8 @@ class Score extends Model {
         } catch (Exception $e) {
             throw $e;
         }
+        
+        return true;
         
     }
     

@@ -161,6 +161,7 @@ class Procedure extends Model {
      * 删除指定审批流程的所有先关数据
      *
      * @param $id
+     * @return bool
      * @throws Throwable
      */
     function purge($id) {
@@ -176,6 +177,8 @@ class Procedure extends Model {
         } catch (Exception $e) {
             throw $e;
         }
+        
+        return true;
         
     }
     

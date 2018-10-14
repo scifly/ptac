@@ -112,6 +112,7 @@ class IconType extends Model {
      * 删除指定图标类型的所有相关数据
      *
      * @param $id
+     * @return bool
      * @throws Throwable
      */
     function purge($id) {
@@ -124,6 +125,8 @@ class IconType extends Model {
         } catch (Exception $e) {
             throw $e;
         }
+        
+        return true;
         
     }
     

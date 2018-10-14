@@ -125,6 +125,7 @@ class Action extends Model {
      * 删除指定功能的所有相关数据
      *
      * @param integer $id
+     * @return bool
      * @throws Throwable
      */
     function purge($id) {
@@ -138,6 +139,8 @@ class Action extends Model {
         } catch (Exception $e) {
             throw $e;
         }
+        
+        return true;
         
     }
     

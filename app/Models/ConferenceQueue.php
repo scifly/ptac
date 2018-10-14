@@ -204,6 +204,7 @@ class ConferenceQueue extends Model {
      * 删除指定会议的所有数据
      *
      * @param $id
+     * @return bool
      * @throws Throwable
      */
     function purge($id) {
@@ -216,6 +217,8 @@ class ConferenceQueue extends Model {
         } catch (Exception $e) {
             throw $e;
         }
+        
+        return true;
         
     }
     

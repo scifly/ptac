@@ -114,6 +114,7 @@ class AttachmentType extends Model {
      * 删除指定附件类型的所有相关数据
      *
      * @param $id
+     * @return bool
      * @throws Throwable
      */
     function purge($id) {
@@ -128,6 +129,8 @@ class AttachmentType extends Model {
         } catch (Exception $e) {
             throw $e;
         }
+        
+        return true;
         
     }
     

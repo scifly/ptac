@@ -84,6 +84,7 @@ class MessageSendingLog extends Model {
      * 删除指定消息批次相关的所有数据
      *
      * @param $id
+     * @return bool
      * @throws Throwable
      */
     function purge($id) {
@@ -99,6 +100,8 @@ class MessageSendingLog extends Model {
         } catch (Exception $e) {
             throw $e;
         }
+        
+        return true;
         
     }
     

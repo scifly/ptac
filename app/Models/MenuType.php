@@ -116,6 +116,7 @@ class MenuType extends Model {
      * 删除指定菜单类型的所有相关数据
      *
      * @param $id
+     * @return bool
      * @throws Throwable
      */
     function purge($id) {
@@ -128,6 +129,8 @@ class MenuType extends Model {
         } catch (Exception $e) {
             throw $e;
         }
+        
+        return true;
         
     }
     

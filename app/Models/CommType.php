@@ -112,6 +112,7 @@ class CommType extends Model {
      * 删除指定通信类型的所有数据
      *
      * @param $id
+     * @return bool
      * @throws Throwable
      */
     function purge($id) {
@@ -126,6 +127,8 @@ class CommType extends Model {
         } catch (Exception $e) {
             throw $e;
         }
+        
+        return true;
         
     }
     

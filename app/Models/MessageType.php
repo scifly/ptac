@@ -125,6 +125,7 @@ class MessageType extends Model {
      * 删除指定消息类型的所有相关数据
      *
      * @param $id
+     * @return bool
      * @throws Throwable
      */
     function purge($id) {
@@ -137,6 +138,8 @@ class MessageType extends Model {
         } catch (Exception $e) {
             throw $e;
         }
+        
+        return true;
         
     }
     
