@@ -58,28 +58,20 @@ class ScoreIndexComposer {
         ];
         $optionAll = [null => '全部'];
         $htmlClass = $this->singleSelectList(
-            array_merge(
-                $optionAll,
-                Squad::whereIn('id', $this->classIds())->get()->pluck('name', 'id')->toArray()
-            ), 'filter_class'
+            $optionAll + Squad::whereIn('id', $this->classIds())->pluck('name', 'id')->toArray(),
+            'filter_class'
         );
         $htmlGrade = $this->singleSelectList(
-            array_merge(
-                $optionAll,
-                Grade::whereIn('id', $this->gradeIds())->get()->pluck('name', 'id')->toArray()
-            ), 'filter_grade'
+            $optionAll + Grade::whereIn('id', $this->gradeIds())->pluck('name', 'id')->toArray(),
+            'filter_grade'
         );
         $htmlSubject = $this->singleSelectList(
-            array_merge(
-                $optionAll,
-                Subject::whereSchoolId($this->schoolId())->get()->pluck('name', 'id')->toArray()
-            ), 'filter_grade'
+            $optionAll + Subject::whereSchoolId($this->schoolId())->pluck('name', 'id')->toArray(),
+            'filter_grade'
         );
         $htmlExam = $this->singleSelectList(
-            array_merge(
-                $optionAll,
-                Exam::whereIn('id', $this->examIds())->get()->pluck('name', 'id')->toArray()
-            ), 'filter_grade'
+            $optionAll + Exam::whereIn('id', $this->examIds())->pluck('name', 'id')->toArray(),
+            'filter_grade'
         );
         $view->with([
             'buttons'        => [

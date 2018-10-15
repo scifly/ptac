@@ -3,6 +3,7 @@ namespace App\Models;
 
 use App\Facades\Datatable;
 use App\Facades\Wechat;
+use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
@@ -99,25 +100,35 @@ class Score extends Model {
      * @return array
      */
     function index() {
-        
+    
         $columns = [
             ['db' => 'Score.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
             ['db' => 'Student.student_number', 'dt' => 2],
             [
-                'db'        => 'Grade.name as gradename', 'dt' => 3,
+                'db'        => 'Grade.id as grade_id', 'dt' => 3,
                 'formatter' => function ($d) {
-                    return Snippet::grade($d);
+                    return Snippet::grade(Grade::find($d)->name);
                 },
             ],
             [
-                'db'        => 'Squad.name', 'dt' => 4,
+                'db'        => 'Squad.id as squad_id', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return Snippet::squad($d);
+                    return Snippet::squad(Squad::find($d)->name);
                 },
             ],
-            ['db' => 'Subject.name as subjectname', 'dt' => 5],
-            ['db' => 'Exam.name as examname', 'dt' => 6],
+            [
+                'db' => 'Score.subject_id', 'dt' => 5,
+                'formatter' => function ($d) {
+                    return Subject::find($d)->name;
+                }
+            ],
+            [
+                'db' => 'Score.exam_id', 'dt' => 6,
+                'formatter' => function ($d) {
+                    return Exam::find($d)->name;
+                }
+            ],
             ['db' => 'Score.score', 'dt' => 7],
             [
                 'db'        => 'Score.grade_rank', 'dt' => 9,
@@ -189,9 +200,21 @@ class Score extends Model {
                     'Grade.id = Squad.grade_id',
                 ],
             ],
+            [
+                'table'      => 'schools',
+                'alias'      => 'School',
+                'type'       => 'INNER',
+                'conditions' => [
+                    'School.id = Grade.school_id'
+                ]
+            ]
         ];
-        $condition = 'Student.id IN (' . implode(',', $this->contactIds('student')) . ')';
-        
+        if (in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
+            $condition = 'School.id = ' . $this->schoolId();
+        } else {
+            $condition = 'Squad.id IN (' . implode(',', $this->classIds()) . ')';
+        }
+    
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition
         );
