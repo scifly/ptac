@@ -98,9 +98,11 @@ class Custodian extends Model {
                 },
             ],
             [
-                'db'        => 'CustodianStudent.student_id', 'dt' => 4,
+                'db'        => 'Custodian.id as students', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return Student::find($d)->user->realname;
+                    $students = $this->find($d)->students;
+                    $studentUserIds = $students->isNotEmpty() ? $students->pluck('user_id')->toArray() : [0];
+                    return implode(',', User::whereIn('id', $studentUserIds)->pluck('realname')->toArray());
                 },
             ],
             ['db' => 'Mobile.mobile', 'dt' => 5],
@@ -132,22 +134,6 @@ class Custodian extends Model {
                 'type'       => 'INNER',
                 'conditions' => [
                     'User.id = Custodian.user_id',
-                ],
-            ],
-            [
-                'table'      => 'custodians_students',
-                'alias'      => 'CustodianStudent',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'CustodianStudent.custodian_id = Custodian.id',
-                ],
-            ],
-            [
-                'table'      => 'students',
-                'alias'      => 'Student',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'Student.id = CustodianStudent.student_id',
                 ],
             ],
             [

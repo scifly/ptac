@@ -692,12 +692,11 @@ trait ModelTrait {
 
         $departmentIds = $this->departmentIds(Auth::id());
         $userIds = array_unique(
-            DepartmentUser::whereIn('department_id', $departmentIds)
-                ->get()->pluck('user_id')->toArray()
+            DepartmentUser::whereIn('department_id', $departmentIds)->pluck('user_id')->toArray()
         );
         $groupIds = $type != ''
             ? [Group::whereName($type)->first()->id]
-            : Group::whereSchoolId($this->schoolId())->get()->pluck('id')->toArray();
+            : Group::whereSchoolId($this->schoolId())->pluck('id')->toArray();
         
         return 'User.group_id IN (' . (empty($groupIds) ? '0' : implode(',', $groupIds)) . ')' .
             ' AND User.id IN (' . (empty($userIds) ? '0' : implode(',', $userIds)) . ')';

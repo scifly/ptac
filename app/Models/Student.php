@@ -182,8 +182,8 @@ class Student extends Model {
                     return Datatable::status($d, $row, false);
                 },
             ],
-            ['db' => 'User.synced', 'dt' => 13],
-            ['db' => 'User.subscribed', 'dt' => 14],
+            ['db' => 'User.synced', 'dt' => 12],
+            ['db' => 'User.subscribed', 'dt' => 13],
         ];
         $joins = [
             [

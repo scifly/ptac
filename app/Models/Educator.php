@@ -176,7 +176,7 @@ class Educator extends Model {
         
         $columns = [
             ['db' => 'Educator.id', 'dt' => 0],
-            ['db' => 'User.realname as username', 'dt' => 1],
+            ['db' => 'User.realname', 'dt' => 1],
             [
                 'db' => 'User.avatar_url', 'dt' => 2,
                 'formatter' => function ($d) {

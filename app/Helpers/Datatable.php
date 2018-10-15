@@ -322,7 +322,7 @@ class Datatable {
             $orderBy = ' ORDER BY ' . implode(', ', $orderBy);
         }
         
-        return $orderBy;
+        return $orderBy === ' ORDER BY ' ? '' : $orderBy;
         
     }
     
