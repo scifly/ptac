@@ -106,7 +106,7 @@ class Squad extends Model {
      * @return array
      */
     function index() {
-        
+    
         $columns = [
             ['db' => 'Squad.id', 'dt' => 0],
             [
@@ -116,17 +116,15 @@ class Squad extends Model {
                 },
             ],
             [
-                'db'        => 'Grade.name as gradename', 'dt' => 2,
+                'db'        => 'Squad.grade_id', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return Snippet::grade($d);
+                    return Snippet::grade(Grade::find($d)->name);
                 },
             ],
             [
                 'db'        => 'Squad.educator_ids', 'dt' => 3,
                 'formatter' => function ($d) {
-                    if (empty($d)) {
-                        return '';
-                    }
+                    if (empty($d)) { return ''; }
                     $educatorIds = explode(',', $d);
                     $educators = [];
                     foreach ($educatorIds as $id) {
@@ -136,16 +134,16 @@ class Squad extends Model {
                                 $educators[] = $educator->user->realname;
                             }
                         }
-                        
-                    }
                     
+                    }
+                
                     return implode(', ', $educators);
                 },
             ],
             ['db' => 'Squad.created_at', 'dt' => 4],
             ['db' => 'Squad.updated_at', 'dt' => 5],
             [
-                'db' => 'Department.synced as synced', 'dt' => 6,
+                'db' => 'Department.synced', 'dt' => 6,
                 'formatter' => function ($d) {
                     return $this->synced($d);
                 }
@@ -159,14 +157,6 @@ class Squad extends Model {
         ];
         $joins = [
             [
-                'table'      => 'grades',
-                'alias'      => 'Grade',
-                'type'       => 'INNER',
-                'conditions' => [
-                    'Grade.id = Squad.grade_id',
-                ],
-            ],
-            [
                 'table'      => 'departments',
                 'alias'      => 'Department',
                 'type'       => 'INNER',
@@ -176,7 +166,7 @@ class Squad extends Model {
             ],
         ];
         $condition = 'Squad.id IN (' . implode(',', $this->classIds()) . ')';
-        
+    
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition
         );
