@@ -391,9 +391,10 @@ class Tab extends Model {
      */
     private function indexActionId($ctlrName) {
         
+        $tab = Tab::whereName($ctlrName)->first();
         $action = (new Action)->where([
             'enabled' => 1,
-            'tab_id' => Tab::whereName($ctlrName)->first()->id,
+            'tab_id' => $tab ? $tab->id : 0,
             'method' => 'index'
         ])->first();
         
