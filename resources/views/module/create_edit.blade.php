@@ -83,6 +83,7 @@
             @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'isfree',
+                'label' => '类型',
                 'value' => $modules['isfree'] ?? null,
                 'options' => ['增值', '基本']
             ])
