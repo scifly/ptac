@@ -5,3 +5,4 @@ var options = [
     {orderable: false, targets: [5]}
 ];
 page.index('modules', options);
+page.initSelect2();
