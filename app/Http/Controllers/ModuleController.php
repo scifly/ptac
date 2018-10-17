@@ -1,37 +1,37 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Http\Requests\WapSiteModuleRequest;
-use App\Models\WapSiteModule;
+use App\Http\Requests\ModuleRequest;
+use App\Models\Module;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
- * 微网站栏目
+ * 应用模块
  *
  * Class WapSiteModuleController
  * @package App\Http\Controllers
  */
-class WapSiteModuleController extends Controller {
+class ModuleController extends Controller {
     
-    protected $wsm;
+    protected $module;
     
     /**
      * WapSiteModuleController constructor.
-     * @param WapSiteModule $wsm
+     * @param Module $module
      */
-    public function __construct(WapSiteModule $wsm) {
+    public function __construct(Module $module) {
         
         $this->middleware(['auth', 'checkrole']);
-        $this->wsm = $wsm;
-        $this->approve($wsm);
+        $this->module = $module;
+        $this->approve($module);
         
     }
     
     /**
-     * 微网站栏目列表
+     * 应用模块列表
      *
      * @return bool|JsonResponse
      * @throws Throwable
@@ -39,12 +39,12 @@ class WapSiteModuleController extends Controller {
     public function index() {
         
         return Request::get('draw')
-            ? response()->json($this->wsm->index())
+            ? response()->json($this->module->index())
             : $this->output();
     }
     
     /**
-     * 创建微网站栏目
+     * 创建应用模块
      *
      * @return bool|JsonResponse
      * @throws Throwable
@@ -52,29 +52,29 @@ class WapSiteModuleController extends Controller {
     public function create() {
         
         return Request::method() == 'POST'
-            ? $this->wsm->upload()
+            ? $this->module->upload()
             : $this->output();
         
     }
     
     /**
-     * 保存微网站栏目
+     * 保存应用模块
      *
-     * @param WapSiteModuleRequest $request
+     * @param ModuleRequest $request
      * @return JsonResponse
      * @throws Exception
      * @throws Throwable
      */
-    public function store(WapSiteModuleRequest $request) {
+    public function store(ModuleRequest $request) {
         
         return $this->result(
-            $this->wsm->store($request->all())
+            $this->module->store($request->all())
         );
         
     }
     
     /**
-     * 编辑微网站栏目
+     * 编辑应用模块
      *
      * @param $id
      * @return bool|JsonResponse
@@ -83,26 +83,26 @@ class WapSiteModuleController extends Controller {
     public function edit($id) {
         
         return Request::method() == 'POST'
-            ? $this->wsm->upload()
+            ? $this->module->upload()
             : $this->output([
-                'wsm' => $this->wsm->find($id)
+                'module' => $this->module->find($id)
             ]);
         
     }
     
     /**
-     * 更新微网站栏目
+     * 更新应用模块
      *
-     * @param WapSiteModuleRequest $request
+     * @param ModuleRequest $request
      * @param $id
      * @return JsonResponse
      * @throws Exception
      * @throws Throwable
      */
-    public function update(WapSiteModuleRequest $request, $id) {
+    public function update(ModuleRequest $request, $id) {
         
         return $this->result(
-            $this->wsm->modify(
+            $this->module->modify(
                 $request->all(), $id
             )
         );
@@ -110,7 +110,7 @@ class WapSiteModuleController extends Controller {
     }
     
     /**
-     * 删除微网站栏目
+     * 删除应用模块
      *
      * @param $id
      * @return JsonResponse
@@ -119,7 +119,7 @@ class WapSiteModuleController extends Controller {
     public function destroy($id) {
         
         return $this->result(
-            $this->wsm->remove($id)
+            $this->module->remove($id)
         );
         
     }

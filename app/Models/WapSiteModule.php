@@ -114,30 +114,24 @@ class WapSiteModule extends Model {
     /**
      * 保存网站栏目
      *
-     * @param WapSiteModuleRequest $request
+     * @param array $data
      * @return bool|mixed
-     * @throws Exception
-     * @throws \Throwable
      */
-    function store(WapSiteModuleRequest $request) {
+    function store(array $data) {
         
-        return $this->create($request->all()) ? true : false;
+        return $this->create($data) ? true : false;
         
     }
     
     /**
-     * @param WapSiteModuleRequest $request
+     * @param array $data
      * @param $id
      * @return bool
-     * @throws Exception
-     * @throws Throwable
      */
-    function modify(WapSiteModuleRequest $request, $id) {
+    function modify(array $data, $id) {
 
-        return $this->find($id)->update(
-            $request->all()
-        );
-    
+        return $this->find($id)->update($data);
+        
     }
     
     /**

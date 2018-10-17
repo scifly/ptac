@@ -364,6 +364,13 @@ Route::group(['prefix' => 'menu_types'], routes('MenuTypeController'));
 Route::group(['prefix' => 'media_types'], routes('MediaTypeController'));
 Route::group(['prefix' => 'attachment_types'], routes('AttachmentTypeController'));
 Route::group(['prefix' => 'school_types'], routes('SchoolTypeController'));
+# 应用模块
+Route::group(['prefix' => 'modules'], routes('ModuleController'));
+Route::group(['prefix' => 'modules'], function () {
+    $c = 'ModuleController';
+    Route::post('create', $c . '@create');
+    Route::post('edit/{id}', $c . '@edit');
+});
 
 /** 微信端路由 -------------------------------------------------------------------------------------------------------- */
 Route::get('sms/{urlcode}', 'Wechat\WechatSmsController@show');    # 未关注的用户查看微信消息详情的链接

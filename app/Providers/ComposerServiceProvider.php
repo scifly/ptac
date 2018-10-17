@@ -163,6 +163,10 @@ class ComposerServiceProvider extends ServiceProvider {
         View::composer('message_type.index', $ns . 'MessageTypeIndexComposer');
         View::composer('message_type.create_edit', $ns . 'MessageTypeIndexComposer');
     
+        # 应用模块 - Module
+        View::composer('module.index', $ns . 'ModuleIndexComposer');
+        View::composer('module.create_edit', $ns . 'ModuleComposer');
+        
         # 超级用户 - Operator
         View::composer('operator.index', $ns . 'OperatorIndexComposer');
         View::composer('operator.create_edit', $ns . 'OperatorComposer');

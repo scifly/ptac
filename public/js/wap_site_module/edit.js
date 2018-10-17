@@ -1,5 +1,8 @@
-page.loadCss('css/wap_site_module/wsm.css');
-page.edit('formWapSiteModule', 'wap_site_modules');
-$.getMultiScripts(['js/wap_site_module/wsm.js']).done(
-    function () { $.wsm().init('edit'); }
+var table = 'wap_site_modules';
+page.loadCss('css/upload.css');
+page.edit('formWapSiteModule', table);
+$.getMultiScripts(['js/upload.js']).done(
+    function () {
+        $.upload().init('edit', table, '微网站模块');
+    }
 );
