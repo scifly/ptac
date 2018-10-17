@@ -14,7 +14,7 @@ use Illuminate\View\View;
  */
 class WechatSmsController extends Controller {
     
-    static $category = 1; # 微信端控制器
+    static $category = 2; # 微信端控制器
     
     protected $wechatSms;
     
