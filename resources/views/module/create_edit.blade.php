@@ -19,9 +19,9 @@
                         </div>
                         {!! Form::text('name', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '不能超过40个汉字',
+                            'placeholder' => '(不得超过6个汉字)',
                             'required' => 'true',
-                            'data-parsley-length' => '[2, 40]'
+                            'data-parsley-length' => '[2, 6]'
                         ]) !!}
                     </div>
                 </div>
@@ -50,8 +50,7 @@
                         @include('partials.icon_addon', ['class' => 'fa fa-link'])
                         {!! Form::text('uri', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '不能超过40个汉字',
-                            'required' => 'true',
+                            'placeholder' => '(请输入链接地址，可选)',
                             'maxlength' => 255
                         ]) !!}
                     </div>
