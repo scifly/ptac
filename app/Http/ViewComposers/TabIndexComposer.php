@@ -23,7 +23,7 @@ class TabIndexComposer {
         $view->with([
             'batch'  => true, # 需要批量操作
             'titles' => [
-                '#', '名称', '控制器',
+                '#', '控制器', '名称',
                 [
                     'title' => '角色',
                     'html' => $this->singleSelectList(
