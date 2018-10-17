@@ -91,7 +91,7 @@
                         {!! Form::text('排', null, [
                             'class' => 'form-control text-blue',
                             'type' => 'number',
-                            'placeholder' => '(不得超过6个汉字)',
+                            'placeholder' => '(请输入一个整数，值越大，排名越靠后)',
                             'required' => 'true'
                         ]) !!}
                     </div>
