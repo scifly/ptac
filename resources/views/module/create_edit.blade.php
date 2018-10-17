@@ -82,6 +82,11 @@
             </div>
             @include('partials.remark')
             @include('partials.enabled', [
+                'id' => 'isfree',
+                'value' => $modules['isfree'] ?? null,
+                'options' => ['增值', '基本']
+            ])
+            @include('partials.enabled', [
                 'id' => 'enabled',
                 'value' => $module['enabled'] ?? null
             ])
