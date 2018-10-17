@@ -14,4 +14,10 @@ class WechatController extends Controller {
      */
     function __construct() { }
     
+    function index() {
+    
+    
+    
+    }
+    
 }
