@@ -94,10 +94,12 @@ class Action extends Model {
         # 获取HTTP请求类型为GET的Action类型ID
         $id = ActionType::whereName('GET')->first()->id;
         foreach ($data as $action) {
+            $tab = Tab::find($action->tab_id);
+            if (!$tab) continue;
             if (
                 in_array($id, explode(',', $action['action_type_ids'])) &&
                 !strpos($action['route'], '{') &&
-                Tab::find($action->tab_id)->category != 2 # 其他类型控制器
+                $tab->category != 2 # 其他类型控制器
             ) {
                 $actions[$action->tab->name][$action->id] = $action['name'] . ' - ' . $action['route'];
             }
