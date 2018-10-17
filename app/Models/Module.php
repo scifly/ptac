@@ -85,9 +85,9 @@ class Module extends Model {
             ['db' => 'Module.id', 'dt' => 0],
             ['db' => 'Module.name', 'dt' => 1],
             [
-                'db' => 'School.name', 'dt' => 2,
+                'db' => 'Module.school_id', 'dt' => 2,
                 'formatter' => function ($d) {
-                    return Snippet::school($d);
+                    return Snippet::school(School::find($d)->name);
                 }
             ],
             [
