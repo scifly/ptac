@@ -46,12 +46,15 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('uri', null, [
-                        'class' => 'form-control text-blue',
-                        'placeholder' => '不能超过40个汉字',
-                        'required' => 'true',
-                        'maxlength' => 255
-                    ]) !!}
+                    <div class="input-group" style="width: 100%;">
+                        @include('partials.icon_addon', ['class' => 'fa fa-link'])
+                        {!! Form::text('uri', null, [
+                            'class' => 'form-control text-blue',
+                            'placeholder' => '不能超过40个汉字',
+                            'required' => 'true',
+                            'maxlength' => 255
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             <!-- 模块图片 -->
