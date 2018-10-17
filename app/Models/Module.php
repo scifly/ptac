@@ -105,7 +105,7 @@ class Module extends Model {
             [
                 'db' => 'Media.path', 'dt' => 5,
                 'formatter' => function ($d) {
-                    return $d ? config('app.url') . '/' . Snippet::avatar($d) : '-';
+                    return $d ? Snippet::avatar('/' . $d) : '-';
                 }
             ],
             [
