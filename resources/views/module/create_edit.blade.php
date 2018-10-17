@@ -14,7 +14,9 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
-                        @include('partials.icon_addon', ['class' => 'fa-folder-o'])
+                        <div class="input-group-addon" style="width: 45px;">
+                            <strong>名</strong>
+                        </div>
                         {!! Form::text('name', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '不能超过40个汉字',
@@ -35,6 +37,7 @@
             @include('partials.single_select', [
                 'label' => '控制器',
                 'id' => 'tab_id',
+                'icon' => 'fa fa-folder-o',
                 'items' => $tabs
             ])
             <!-- uri -->
