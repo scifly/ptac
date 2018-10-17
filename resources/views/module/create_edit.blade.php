@@ -89,7 +89,7 @@
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
                         @include('partials.icon_addon', ['class' => 'fa fa-sort-numeric-asc'])
-                        {!! Form::text('order', null, [
+                        {!! Form::number('order', null, [
                             'class' => 'form-control text-blue',
                             'type' => 'number',
                             'placeholder' => '(请输入一个整数，值越大，排名越靠后)',
