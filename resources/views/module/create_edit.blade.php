@@ -4,10 +4,10 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($module['id']))
-                {{ Form::hidden('id', $module['id'], ['id' => 'id']) }}
-            @endif
-            <!-- 名称 -->
+        @if (!empty($module['id']))
+            {{ Form::hidden('id', $module['id'], ['id' => 'id']) }}
+        @endif
+        <!-- 名称 -->
             <div class="form-group">
                 {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
@@ -51,7 +51,8 @@
                         {!! Form::text('uri', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请输入链接地址，可选)',
-                            'maxlength' => 255
+                            'type' => 'url',
+                            'maxlength' => '255'
                         ]) !!}
                     </div>
                 </div>
@@ -88,7 +89,7 @@
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
                         @include('partials.icon_addon', ['class' => 'fa fa-sort-numeric-asc'])
-                        {!! Form::text('排', null, [
+                        {!! Form::text('order', null, [
                             'class' => 'form-control text-blue',
                             'type' => 'number',
                             'placeholder' => '(请输入一个整数，值越大，排名越靠后)',
