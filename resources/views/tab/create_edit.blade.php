@@ -12,9 +12,12 @@
                     'class' => 'col-sm-3 control-label',
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('name', null, [
-                        'class' => 'form-control text-blue'
-                    ]) !!}
+                    <div class="input-group">
+                        @include('partials.icon_addon', ['class' => 'fa-folder-o'])
+                        {!! Form::text('name', null, [
+                            'class' => 'form-control text-blue'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             @include('partials.single_select', [
