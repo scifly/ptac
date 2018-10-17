@@ -29,7 +29,7 @@
             <!-- 所属学校 -->
             @include('partials.single_select', [
                 'label' => '所属学校',
-                'id' => 'wap_site_id',
+                'id' => 'school_id',
                 'icon' => 'fa fa-university text-purple',
                 'items' => $schools
             ])
@@ -78,6 +78,23 @@
                         'accept' => 'image/*',
                         'class' => 'file-upload',
                     ]) !!}
+                </div>
+            </div>
+            <!-- 排序 -->
+            <div class="form-group">
+                {!! Form::label('order', '排序', [
+                    'class' => 'col-sm-3 control-label'
+                ]) !!}
+                <div class="col-sm-6">
+                    <div class="input-group" style="width: 100%;">
+                        @include('partials.icon_addon', ['class' => 'fa fa-sort-numeric-asc'])
+                        {!! Form::text('排', null, [
+                            'class' => 'form-control text-blue',
+                            'type' => 'number',
+                            'placeholder' => '(不得超过6个汉字)',
+                            'required' => 'true'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             @include('partials.remark')

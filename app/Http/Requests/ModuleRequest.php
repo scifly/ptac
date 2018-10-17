@@ -48,11 +48,7 @@ class ModuleRequest extends FormRequest {
     
     protected function prepareForValidation() {
         
-        if (!Request::has('ids')) {
-            $input = $this->all();
-            $input['school_id'] = $this->schoolId();
-            $this->replace($input);
-        }
+        //
         
     }
     
