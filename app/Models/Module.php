@@ -96,11 +96,16 @@ class Module extends Model {
                     return $d ? Tab::find($d)->comment : '-';
                 }
             ],
-            ['db' => 'Module.uri', 'dt' => 4],
+            [
+                'db' => 'Module.uri', 'dt' => 4,
+                'formatter' => function ($d) {
+                    return $d ?? '-';
+                }
+            ],
             [
                 'db' => 'Media.path', 'dt' => 5,
                 'formatter' => function ($d) {
-                    return $d ? Snippet::avatar($d) : '-';
+                    return $d ? config('app.url') . Snippet::avatar($d) : '-';
                 }
             ],
             [
