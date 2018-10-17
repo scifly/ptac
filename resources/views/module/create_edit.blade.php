@@ -13,18 +13,22 @@
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
-                    {!! Form::text('name', null, [
-                        'class' => 'form-control text-blue',
-                        'placeholder' => '不能超过40个汉字',
-                        'required' => 'true',
-                        'data-parsley-length' => '[2, 40]'
-                    ]) !!}
+                    <div class="input-group" style="width: 100%;">
+                        @include('partials.icon_addon', ['class' => 'fa-folder-o'])
+                        {!! Form::text('name', null, [
+                            'class' => 'form-control text-blue',
+                            'placeholder' => '不能超过40个汉字',
+                            'required' => 'true',
+                            'data-parsley-length' => '[2, 40]'
+                        ]) !!}
+                    </div>
                 </div>
             </div>
             <!-- 所属学校 -->
             @include('partials.single_select', [
                 'label' => '所属学校',
                 'id' => 'wap_site_id',
+                'icon' => 'fa fa-university text-purple',
                 'items' => $schools
             ])
             <!-- 控制器 -->
@@ -47,7 +51,7 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.remark')
+            <!-- 模块图片 -->
             <div class="form-group">
                 {!! Form::label('media_id', '模块图片', [
                     'class' => 'col-sm-3 control-label'
@@ -71,6 +75,7 @@
                     ]) !!}
                 </div>
             </div>
+            @include('partials.remark')
             @include('partials.enabled', [
                 'id' => 'enabled',
                 'value' => $module['enabled'] ?? null
