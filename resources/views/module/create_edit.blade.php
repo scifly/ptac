@@ -109,7 +109,7 @@
                 'id' => 'isfree',
                 'label' => '类型',
                 'value' => $modules['isfree'] ?? null,
-                'options' => ['增值', '基本']
+                'options' => ['基本', '增值']
             ])
             @include('partials.enabled', [
                 'id' => 'enabled',

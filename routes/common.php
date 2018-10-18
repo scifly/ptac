@@ -24,7 +24,7 @@ function routes($ctlr) {
  */
 function app_routes($acronym) {
     
-    Route::get($acronym . '/schools', 'HomeController@wIndex');
+    Route::get($acronym . '/schools', 'Wechat\WechatController@schools');
     Route::get($acronym . '/sync', 'Wechat\SyncController@sync');
     Route::post($acronym . '/sync', 'Wechat\SyncController@sync');
     

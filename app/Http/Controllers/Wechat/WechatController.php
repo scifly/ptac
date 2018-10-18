@@ -1,11 +1,15 @@
 <?php
 namespace App\Http\Controllers\Wechat;
 
+use App\Helpers\Constant;
 use App\Http\Controllers\Controller;
 use App\Models\Action;
 use App\Models\Module;
+use App\Models\School;
 use App\Models\Tab;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 
 /**
@@ -37,7 +41,7 @@ class WechatController extends Controller {
      * @return Factory|View
      */
     function index() {
-    
+
         $modules = $this->module->where([
             'enabled' => 1,
             'school_id' => session('schoolId')
@@ -55,6 +59,25 @@ class WechatController extends Controller {
             'modules' => $modules
         ]);
 
+    }
+    
+    /**
+     * 选择学校
+     *
+     * @return Factory|View
+     */
+    public function schools() {
+        
+        $app = Request::query('app');
+        $user = Auth::user();
+        $schoolIds = $user->schoolIds($user->id, session('corpId'));
+        
+        return view('wechat.schools', [
+            'app'     => Constant::APPS[$app],
+            'schools' => School::whereIn('id', $schoolIds)->pluck('name', 'id'),
+            'url'     => $app . '?schoolId=',
+        ]);
+        
     }
     
 }
