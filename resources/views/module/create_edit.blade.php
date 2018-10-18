@@ -33,6 +33,12 @@
                 'icon' => 'fa fa-university text-purple',
                 'items' => $schools
             ])
+            @include('partials.single_select', [
+                'label' => '所属角色',
+                'id' => 'group_id',
+                'icon' => 'fa fa-meh-o',
+                'items' => $groups
+            ])
             <!-- 控制器 -->
             @include('partials.single_select', [
                 'label' => '控制器',

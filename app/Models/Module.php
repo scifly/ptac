@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 
@@ -51,8 +52,9 @@ class Module extends Model {
     
     protected $fillable = [
         'name', 'remark', 'tab_id',
-        'media_id', 'uri', 'isfree',
-        'school_id', 'order', 'enabled'
+        'media_id', 'group_id', 'uri',
+        'isfree', 'school_id', 'order',
+        'enabled'
     ];
     
     /**
@@ -70,9 +72,25 @@ class Module extends Model {
     function media() { return $this->belongsTo('App\Models\Media'); }
     
     /**
+     * 返回指定模块所属的学校对象
+     *
      * @return BelongsTo
      */
     function school() { return $this->belongsTo('App\Models\School'); }
+    
+    /**
+     * 返回指定模块所属的角色对象
+     *
+     * @return BelongsTo
+     */
+    function group() { return $this->belongsTo('App\Models\Group'); }
+    
+    /**
+     * 返回订阅了指定增值应用模块的所有学生对象
+     *
+     * @return BelongsToMany
+     */
+    function students() { return $this->belongsToMany('App\Models\Student', 'modules_students'); }
     
     /**
      * 应用模块列表
@@ -103,9 +121,9 @@ class Module extends Model {
                 }
             ],
             [
-                'db' => 'Media.path', 'dt' => 5,
+                'db' => 'Module.group_id', 'dt' => 5,
                 'formatter' => function ($d) {
-                    return $d ? Snippet::avatar('/' . $d) : '-';
+                    return !empty($d) ? Group::find($d)->name : '公用';
                 }
             ],
             [

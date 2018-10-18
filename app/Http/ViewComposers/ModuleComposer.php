@@ -3,6 +3,7 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use App\Models\Corp;
+use App\Models\Group;
 use App\Models\Module;
 use App\Models\School;
 use App\Models\Tab;
@@ -41,6 +42,7 @@ class ModuleComposer {
                     ->pluck('name', 'id')->toArray();
                 break;
         }
+        $groups = [0 => '公用'] + Group::whereIn('name', ['监护人', '教职员工'])->pluck('name', 'id')->toArray();
         $tabs = Tab::where(['enabled' => 1, 'category' => 1])->pluck('comment', 'id')->toArray();
         if (Route::has('id')) {
             $media = Module::find(Request::route('id'))->media;
@@ -48,6 +50,7 @@ class ModuleComposer {
         
         $view->with([
             'schools' => $schools,
+            'groups' => $groups,
             'tabs' => $tabs,
             'media' => $media ?? null
         ]);

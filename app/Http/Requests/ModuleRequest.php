@@ -37,6 +37,7 @@ class ModuleRequest extends FormRequest {
             'uri'       => 'nullable|string',
             'order'     => 'required|integer',
             'media_id'  => 'required|integer',
+            'group_id'  => 'nullable|integer',
             'isfree'    => 'required|boolean',
             'enabled'   => 'required|boolean',
         ];

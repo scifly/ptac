@@ -3,6 +3,7 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
 use App\Models\Corp;
+use App\Models\Group;
 use App\Models\School;
 use App\Models\Tab;
 use Illuminate\Contracts\View\View;
@@ -41,6 +42,8 @@ class ModuleIndexComposer {
                 ->pluck('comment', 'id')->toArray();
         $types = $optionAll + [0 => '基本', 1 => '增值'];
         $statuses = $optionAll + [0 => '未启用', 1 => '已启用'];
+        $groups = $optionAll + [0 => '公用'] +
+            Group::whereIn('name', ['监护人', '教职员工'])->pluck('name', 'id')->toArray();
         $view->with([
             'titles' => [
                 '#', '名称',
@@ -52,7 +55,11 @@ class ModuleIndexComposer {
                     'title' => '控制器',
                     'html' => $this->singleSelectList($tabs, 'filter_tab_id')
                 ],
-                'uri', '图标',
+                'uri',
+                [
+                    'title' => '所属角色',
+                    'html' => $this->singleSelectList($groups, 'filter_group_id')
+                ],
                 [
                     'title' => '类型',
                     'html' => $this->singleSelectList($types, 'filter_isfree')

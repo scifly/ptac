@@ -133,6 +133,13 @@ class Student extends Model {
     function consumptions() { return $this->hasMany('App\Models\Consumption'); }
     
     /**
+     * 返回指定学生订阅的所有增值应用模块
+     *
+     * @return BelongsToMany
+     */
+    function modules() { return $this->belongsToMany('App\Models\Module', 'modules_students'); }
+    
+    /**
      * 学生列表
      *
      * @return array
