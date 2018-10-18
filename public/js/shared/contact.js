@@ -361,7 +361,7 @@
                     case 'educators':
                         formId = 'formEducator';
                         contact.onAddClassClick();
-                        $.getMultiScripts(['js/tree.js']).done(
+                        $.getMultiScripts(['js/shared/tree.js']).done(
                             function() { $.tree().list('educators/create', 'department'); }
                         );
                         break;
@@ -392,7 +392,7 @@
                     case 'educators':
                         formId = 'formEducator';
                         contact.onAddClassClick();
-                        $.getMultiScripts(['js/tree.js']).done(
+                        $.getMultiScripts(['js/shared/tree.js']).done(
                             function() { $.tree().list('educators/edit/' + id, 'department'); }
                         );
                         break;

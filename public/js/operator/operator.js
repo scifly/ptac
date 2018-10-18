@@ -69,7 +69,7 @@
                 });
             },
             loadJs: function (action) {
-                $.getMultiScripts(['js/contact.js']).done(
+                $.getMultiScripts(['js/shared/contact.js']).done(
                     function () {
                         var cr = $.contact();
                         switch (action) {

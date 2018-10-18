@@ -1,4 +1,4 @@
 page.create('formExam', 'exams');
-$.getMultiScripts(['js/dtrange.js']).done(
+$.getMultiScripts(['js/shared/dtrange.js']).done(
     function () { $.dtrange().init('.drange'); }
 );

@@ -1,4 +1,4 @@
 //# sourceURL=create.js
-$.getMultiScripts(['js/wapsite.js']).done(
+$.getMultiScripts(['js/shared/wapsite.js']).done(
     function () { $.wapsite().init('create', 'wsm_articles'); }
 );

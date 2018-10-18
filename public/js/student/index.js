@@ -5,13 +5,13 @@ page.index('students', [
     {searchable: false, targets: [2]},
     {orderable: false, targets: [2]}
 ]);
-$.getMultiScripts(['js/dtrange.js']).done(
+$.getMultiScripts(['js/shared/dtrange.js']).done(
     function () {
         $.dtrange().init('.dtrange');
         $.dtrange().init('.drange');
     }
 );
 /** 初始化学籍首页功能 */
-$.getMultiScripts(['js/contact.js']).done(function () {
+$.getMultiScripts(['js/shared/contact.js']).done(function () {
     $.contact().index('students');
 });

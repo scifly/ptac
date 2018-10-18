@@ -1,4 +1,4 @@
-$.getMultiScripts(['js/atsettings.js']).done(
+$.getMultiScripts(['js/shared/atsettings.js']).done(
     function () {
         $.atsettings().init(
             'edit',

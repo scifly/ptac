@@ -39,7 +39,7 @@
                     $.each(files, function (index, file) {
                         $preview.append(
                             '<div class="img-item">' +
-                            '<img src="../../' + file.path + '" id="' + file.id + '">' +
+                            '<img src=' + file.path + '"../../.." id="' + file.id + '">' +
                             '<div class="del-mask">' +
                             '<i class="delete glyphicon glyphicon-trash text-red"></i>' +
                             '</div>' +

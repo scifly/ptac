@@ -90,7 +90,7 @@
             },
             initTargets: function () {
                 // 加载联系人树
-                $.getMultiScripts(['js/tree.js']).done(
+                $.getMultiScripts(['js/shared/tree.js']).done(
                     function () { $.tree().list('messages/index', 'contact'); }
                 );
             },
@@ -335,7 +335,7 @@
                 // 重新加载datatable
                 $tabSent.on('click', function () {message.loadDt('data-table');});
                 $tabReceived.on('click', function () {message.loadDt('data-table-r');});
-                $.getMultiScripts(['js/dtrange.js']).done(
+                $.getMultiScripts(['js/shared/dtrange.js']).done(
                     function () {
                         $.dtrange().init('.dtrange');
                         page.initSelect2();

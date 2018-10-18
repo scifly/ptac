@@ -13,7 +13,7 @@ page.initDateRangePicker();
 $.getMultiScripts(['js/common/attendance/common.js']);
 
 /** 初始化年级选择事件监听 */
-$.getMultiScripts(['js/contact.js']).done(
+$.getMultiScripts(['js/shared/contact.js']).done(
     function () {
         $.contact().onGradeChange(table, 'stat');
     }

@@ -5,10 +5,10 @@ page.index('educators', [
     {searchable: false, targets: [2]},
     {orderable: false, targets: [2]}
 ]);
-$.getMultiScripts(['js/dtrange.js']).done(
+$.getMultiScripts(['js/shared/dtrange.js']).done(
     function () { $.dtrange().init('.dtrange'); }
 );
 /** 初始化教职员工首页功能 */
-$.getMultiScripts(['js/contact.js']).done(
+$.getMultiScripts(['js/shared/contact.js']).done(
     function () { $.contact().index('educators'); }
 );
