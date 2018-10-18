@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{!! asset('/css/wechat/weui.min.css') !!}">
     <link rel="stylesheet" href="{!! asset('/css/wechat/jquery-weui.min.css') !!}">
     <link rel="stylesheet" href="{!! asset('/css/wechat/iconfont.css') !!}">
+    <link rel="stylesheet" href="{!! asset('/css/wechat/wechat.css') !!}">
     @yield('css')
 </head>
 <body ontouchstart>
