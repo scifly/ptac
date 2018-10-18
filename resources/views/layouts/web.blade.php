@@ -53,7 +53,7 @@
 <script src="{{ URL::asset('js/plugins/parsley/parsley.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/parsley/i18n/zh_cn.extra.js') }}"></script>
-<script src="{{ URL::asset('js/home/plugins.js') }}"></script>
-<script src="{{ URL::asset('js/home/page.js') }}"></script>
+<script src="{{ URL::asset('js/shared/plugins.js') }}"></script>
+<script src="{{ URL::asset('js/shared/page.js') }}"></script>
 </body>
 </html>
