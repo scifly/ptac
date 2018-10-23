@@ -511,7 +511,7 @@ class Educator extends Model {
      */
     function compose() {
         
-        $classes = $this->whereIn('id', $this->classIds())->where('enabled', 1)->get();
+        $classes = Squad::whereIn('id', $this->classIds())->where('enabled', 1)->get();
         $gradeIds = Grade::whereIn('id', array_unique($classes->pluck('grade_id')->toArray()))->pluck('id')->toArray();
         $subjects = Subject::where(['enabled' => 1, 'school_id' => $this->schoolId()])->get()->filter(
             function (Subject $subject) use ($gradeIds) {
