@@ -159,6 +159,13 @@
             @include('partials.mobile')
             <!-- 所属班级 -->
             @include('educator.class_subject')
+            <!-- 单角色 -->
+            @include('partials.enabled', [
+                'id' => 'singular',
+                'value' => $educator['singular'] ?? null,
+                'label' => '单角色',
+                'options' => ['是', '否']
+            ])
             <!-- 所属部门 -->
             <div class="form-group depart">
                 {!! Form::label('departmentId', '所属部门', [

@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
+use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
@@ -153,7 +154,7 @@ class ConferenceQueue extends Model {
             ],
         ];
         $condition = 'ConferenceRoom.school_id = ' . $this->schoolId();
-        if (!in_array(Auth::user()->group->name, ['运营', '企业', '学校'])) {
+        if (!in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
             $condition .= ' AND ConferenceQueue.user_id = ' . Auth::id();
         }
         

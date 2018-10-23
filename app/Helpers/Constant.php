@@ -18,6 +18,8 @@ class Constant {
     
     const SUPER_ROLES = ['运营', '企业', '学校'];
     
+    const NON_EDUCATOR = ['运营', '企业', '监护人', '学生'];
+    
     const BATCH_OPERATIONS = ['enable', 'disable', 'delete'];
     
     # 企业管理员可访问的运营类功能

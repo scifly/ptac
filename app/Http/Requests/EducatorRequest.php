@@ -28,7 +28,7 @@ class EducatorRequest extends FormRequest {
     public function rules() {
     
         $rules = [
-            'educator.school_id'         => 'required|integer',
+            'school_id'         => 'required|integer',
             'user.group_id'              => 'required|integer',
             'user.realname'              => 'required|string',
             'user.gender'                => 'required|boolean',
@@ -48,27 +48,9 @@ class EducatorRequest extends FormRequest {
     protected function prepareForValidation() {
         
         if (!Request::has('ids')) {
-            $input = $this->all();
-            if (isset($input['mobile'])) {
-                $index = $input['mobile']['isdefault'];
-                unset($input['mobile']['isdefault']);
-                foreach ($input['mobile'] as $i => $m) {
-                    $input['mobile'][$i]['user_id'] = $input['user_id'] ?? 0;
-                    if ($i == $index) {
-                        $input['mobile'][$i]['isdefault'] = 1;
-                    } else {
-                        $input['mobile'][$i]['isdefault'] = 0;
-                    }
-                    if (!isset($m['enabled'])) {
-                        $input['mobile'][$i]['enabled'] = 0;
-                    } else {
-                        $input['mobile'][$i]['enabled'] = 1;
-                    }
-                }
-            }
-            $input['educator']['school_id'] = $this->schoolId();
-            $input['user']['synced'] = 0;
-            $this->replace($input);
+            $this->replace(
+                $this->contactInput($this, 'educator')
+            );
         }
         
     }

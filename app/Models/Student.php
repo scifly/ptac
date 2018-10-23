@@ -222,46 +222,14 @@ class Student extends Model {
         try {
             DB::transaction(function () use ($data) {
                 # 创建用户
-                $userid = uniqid('student_');
-                $user = User::create([
-                    'username'     => $userid,
-                    'userid'       => $userid,
-                    'group_id'     => $data['user']['group_id'],
-                    'password'     => bcrypt('student8888'),
-                    'email'        => $data['user']['email'],
-                    'realname'     => $data['user']['realname'],
-                    'gender'       => $data['user']['gender'],
-                    'english_name' => $data['user']['english_name'],
-                    'telephone'    => $data['user']['telephone'],
-                    'enabled'      => $data['user']['enabled'],
-                    'avatar_url'   => '',
-                    'isleader'     => 0,
-                    'synced'       => 0,
-                    'subscribed'   => 0,
-                ]);
+                $user = User::create($data['user']);
                 # 创建学籍
-                $student = $this->create([
-                    'user_id'        => $user->id,
-                    'class_id'       => $data['class_id'],
-                    'student_number' => $data['student_number'],
-                    'card_number'    => $data['card_number'],
-                    'oncampus'       => $data['oncampus'],
-                    'birthday'       => $data['birthday'],
-                    'remark'         => $data['remark'],
-                    'enabled'        => $user->enabled,
-                ]);
+                $data['user_id'] = $user->id;
+                $student = $this->create($data);
                 # 保存手机号码
-                $mobile = new Mobile();
-                $mobile->store($data['mobile'], $user);
-                unset($mobile);
+                (new Mobile)->store($data['mobile'], $user->id);
                 # 保存用户所处部门
-                $du = new DepartmentUser();
-                $du->store([
-                    'department_id' => $student->squad->department_id,
-                    'user_id'       => $student->user_id,
-                    'enabled'       => Constant::ENABLED,
-                ]);
-                unset($du);
+                (new DepartmentUser)->store($student->user_id, $student->squad->department_id);
                 # 创建企业号成员
                 $user->createWechatUser($user->id);
             });
@@ -288,45 +256,16 @@ class Student extends Model {
         try {
             DB::transaction(function () use ($data, $id) {
                 $student = $this->find($id);
-                $user = User::find($data['user_id']);
                 # 更新用户
-                $user->update([
-                    'group_id'     => $data['user']['group_id'],
-                    'email'        => $data['user']['email'],
-                    'realname'     => $data['user']['realname'],
-                    'gender'       => $data['user']['gender'],
-                    'isleader'     => 0,
-                    'english_name' => $data['user']['english_name'],
-                    'telephone'    => $data['user']['telephone'],
-                    'enabled'      => $data['user']['enabled'],
-                ]);
+                User::find($student->user_id)->update($data['user']);
                 # 更新学籍
-                $student->update([
-                    'user_id'        => $data['user_id'],
-                    'class_id'       => $data['class_id'],
-                    'student_number' => $data['student_number'],
-                    'card_number'    => $data['card_number'],
-                    'oncampus'       => $data['oncampus'],
-                    'birthday'       => $data['birthday'],
-                    'remark'         => $data['remark'],
-                    'enabled'        => $data['user']['enabled'],
-                ]);
+                $student->update($data);
                 # 更新手机号码
-                Mobile::whereUserId($user->id)->delete();
-                $mobile = new Mobile();
-                $mobile->store($data['mobile'], $student->user);
-                unset($mobile);
+                (new Mobile)->store($data['mobile'], $student->user_id);
                 # 更新用户所在部门
-                DepartmentUser::whereUserId($user->id)->delete();
-                $du = new DepartmentUser();
-                $du->store([
-                    'department_id' => $student->squad->department_id,
-                    'user_id'       => $student->user_id,
-                    'enabled'       => Constant::ENABLED,
-                ]);
-                unset($du);
+                (new DepartmentUser)->store($student->user_id, $student->squad->department_id);
                 # 更新企业号成员
-                $user->UpdateWechatUser($user->id);
+                $student->user->UpdateWechatUser($student->user_id);
             });
         } catch (Exception $e) {
             throw $e;

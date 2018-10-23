@@ -48,6 +48,7 @@ class CheckRole {
         $route = trim($request->route()->uri());
         $user = Auth::user();
         $groupId = $user->group_id;
+        # todo -
         $role = $user->group->name;
         $menuId = session('menuId');
     

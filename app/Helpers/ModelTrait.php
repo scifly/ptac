@@ -1,7 +1,6 @@
 <?php
 namespace App\Helpers;
 
-use App\Models\App;
 use App\Models\CommType;
 use App\Models\Corp;
 use App\Models\Group;
@@ -11,12 +10,14 @@ use App\Models\MessageType;
 use App\Models\Tab;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use ReflectionClass;
 use App\Models\Squad;
 use App\Models\Action;
 use App\Models\School;
 use App\Policies\Route;
+use Illuminate\Support\Facades\Route as HttpRoute;
 use ReflectionException;
 use App\Models\Department;
 use App\Models\DepartmentUser;
@@ -223,6 +224,7 @@ trait ModelTrait {
     function schoolIds($userId = null, $corpId = null) {
         
         $user = !$userId ? Auth::user() : User::find($userId);
+        # todo -
         $role = $user->group->name;
         switch ($role) {
             case '运营':
@@ -265,6 +267,7 @@ trait ModelTrait {
         
         $user = !$userId ? Auth::user() : User::find($userId);
         $schoolId = $schoolId ?? $this->schoolId();
+        # todo -
         $role = $user->group->name;
         if (in_array($role, Constant::SUPER_ROLES)) {
             $gradeIds = School::find($schoolId)
@@ -295,6 +298,7 @@ trait ModelTrait {
     
         $user = !$userId ? Auth::user() : User::find($userId);
         $schoolId = $schoolId ?? $this->schoolId();
+        # todo -
         $role = $user->group->name;
         if (in_array($role, Constant::SUPER_ROLES)) {
             $grades = School::find($schoolId)->grades;
@@ -331,6 +335,7 @@ trait ModelTrait {
     
         $user = !$userId ? Auth::user() : User::find($userId);
         $schoolId = $schoolId ?? $this->schoolId();
+        # todo -
         $role = $user->group->name;
         if (in_array($role, Constant::SUPER_ROLES)) {
             $examIds = School::find($schoolId)->exams->pluck('id')->toArray();
@@ -361,6 +366,7 @@ trait ModelTrait {
         
         $user = $user ?? Auth::user();
         $schoolId = $schoolId ?? ($this->schoolId() ?? session('schoolId'));
+        # todo -
         $role = $user->group->name;
         $method = $type . 'Ids';
         if (method_exists($this, $method)) {
@@ -785,6 +791,90 @@ trait ModelTrait {
         
     }
     
+    /**
+     * 返回指定角色的表单数据过滤结果
+     *
+     * @param FormRequest $request
+     * @param null $role
+     * @return array
+     */
+    function contactInput(FormRequest $request, $role) {
+    
+        $input = $request->all();
+        if (isset($input['mobile'])) {
+            $default = $input['mobile']['isdefault'];
+            unset($input['mobile']['isdefault']);
+            foreach ($input['mobile'] as $i => $m) {
+                $input['mobile'][$i]['user_id'] = $input['user_id'] ?? 0;
+                $input['mobile'][$i]['enabled'] = isset($m['enabled']) ? 1 : 0;
+                $input['mobile'][$i]['isdefault'] = $i == $default ? 1 : 0;
+            }
+        }
+        $input['user']['isleader'] = 0;
+        switch ($role) {
+            case 'student':
+            case 'custodian':
+                if (!isset($input['remark']) && $role == 'student') {
+                    $input['remark'] = 'student';
+                }
+                $input['enabled'] = $input['user']['enabled'];
+                $position = $role == 'student' ? '学生' : '监护人';
+                $input['user']['position'] = $position;
+                if (!HttpRoute::has('id')) {
+                    $userid = uniqid($role . '_');
+                    $input['user'] += [
+                        'username' => $userid,
+                        'userid' => $userid,
+                        'password' => bcrypt($role . '8888'),
+                        'group_id' => Group::whereName($position)->first()->id,
+                        'avatar_url' => '',
+                        'synced' => 0,
+                        'subscribed' => 0
+                    ];
+                }
+                break;
+            case 'educator':
+            case 'operator':
+                $input['user']['position'] = Group::find($input['user']['group_id'])->name;
+                if ($role == 'educator') {
+                    $input['enabled'] = $input['user']['enabled'];
+                    $input['school_id'] = $this->schoolId();
+                    if (!HttpRoute::has('id')) {
+                        $input['user'] += [
+                            'avatar_url' => '',
+                            'synced' => 0,
+                            'subscribed' => 0
+                        ];
+                    }
+                } else {
+                    if (!HttpRoute::has('id')) {
+                        $input['user'] += [
+                            'avatar_url' => '',
+                            'synced'     => 0,
+                            'subscribed' => 0,
+                        ];
+                    }
+                    if (Group::find($input['group_id'])->name == '学校') {
+                        $input += [
+                            'school_id' => $input['school_id'],
+                            'enabled'   => $input['enabled'],
+                        ];
+                        if (!isset($input['id'])) {
+                            $input += [
+                                'singular'  => 1,
+                                'sms_quote' => 0,
+                            ];
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        
+        return $input;
+        
+    }
     
 }
 

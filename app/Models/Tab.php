@@ -410,6 +410,7 @@ class Tab extends Model {
     function allowedTabIds() {
         
         $user = Auth::user();
+        # todo -
         $role = $user->group->name;
         switch ($role) {
             case '运营':

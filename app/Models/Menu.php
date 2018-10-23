@@ -453,6 +453,7 @@ class Menu extends Model {
                 ->orderBy('position')
                 ->get()->toArray();
         } else {
+            # todo -
             if (!in_array($role, Constant::SUPER_ROLES)) {
                 $data = GroupMenu::with('menu')
                     ->where('group_id', $user->group_id)

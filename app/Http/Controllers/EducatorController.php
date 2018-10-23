@@ -78,7 +78,9 @@ class EducatorController extends Controller {
     public function store(EducatorRequest $request) {
         
         return $this->result(
-            $this->educator->store($request)
+            $this->educator->store(
+                $request->all()
+            )
         );
         
     }
@@ -112,7 +114,7 @@ class EducatorController extends Controller {
         
         return $this->result(
             $this->educator->modify(
-                $request, $id
+                $request->all(), $id
             )
         );
         

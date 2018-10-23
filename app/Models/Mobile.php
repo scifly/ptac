@@ -49,19 +49,19 @@ class Mobile extends Model {
      * 保存手机号码
      *
      * @param array $mobiles
-     * @param User $user
+     * @param $userId
      * @return bool
      * @throws Throwable
      */
-    function store(array $mobiles, User $user) {
+    function store(array $mobiles, $userId) {
         
         try {
-            DB::transaction(function () use ($mobiles, $user) {
-                self::whereUserId($user->id)->delete();
+            DB::transaction(function () use ($mobiles, $userId) {
+                $this->find($userId)->delete();
                 $records = [];
                 foreach ($mobiles as $mobile) {
                     $records[] = [
-                        'user_id'   => $user->id,
+                        'user_id'   => $userId,
                         'mobile'    => $mobile['mobile'],
                         'isdefault' => $mobile['isdefault'],
                         'enabled'   => $mobile['enabled'],

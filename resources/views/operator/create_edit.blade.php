@@ -11,13 +11,13 @@
             @endif
             <!-- 用户名 -->
             <div class="form-group">
-                {!! Form::label('username', '用户名', [
+                {!! Form::label('user[username]', '用户名', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('partials.icon_addon', ['class' => 'fa-user'])
-                        {!! Form::text('username', null, [
+                        {!! Form::text('user[username]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(用户名不能为空)',
                             'required' => 'true',
@@ -29,13 +29,13 @@
             @if (!isset($user['id']))
                 <!-- 密码 -->
                 <div class="form-group">
-                    {!! Form::label('password', '密码', [
+                    {!! Form::label('user[password]', '密码', [
                         'class' => 'col-sm-3 control-label'
                     ]) !!}
                     <div class="col-sm-6">
                         <div class="input-group">
                             @include('partials.icon_addon', ['class' => 'fa-lock'])
-                            {{ Form::password('password', [
+                            {{ Form::password('user[password]', [
                                 'id' => 'password',
                                 'class' => 'form-control text-blue',
                                 'required' => 'true'
@@ -45,13 +45,13 @@
                 </div>
                 <!-- 确认密码 -->
                 <div class="form-group">
-                    {!! Form::label('password-confirm', '确认密码', [
+                    {!! Form::label('user[password_confirmation]', '确认密码', [
                         'class' => 'col-sm-3 control-label'
                     ]) !!}
                     <div class="col-sm-6">
                         <div class="input-group">
                             @include('partials.icon_addon', ['class' => 'fa-lock'])
-                            {{ Form::password('password_confirmation', [
+                            {{ Form::password('user[password_confirmation]', [
                                 'id' => 'password_confirm',
                                 'class' => 'form-control text-blue',
                                 'required' => 'true',
@@ -64,7 +64,7 @@
             <!-- 角色 -->
             @include('partials.single_select', [
                 'label' => '角色',
-                'id' => 'group_id',
+                'id' => 'user[group_id]',
                 'items' => $groups,
                 'icon' => 'fa fa-meh-o'
             ])
@@ -116,13 +116,13 @@
             @endif
             <!-- 真实姓名 -->
             <div class="form-group">
-                {!! Form::label('realname', '真实姓名', [
+                {!! Form::label('user[realname]', '真实姓名', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('partials.icon_addon', ['class' => 'fa-user-o'])
-                        {!! Form::text('realname', null, [
+                        {!! Form::text('user[realname]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(不超过60个汉字)',
                             'required' => 'true',
@@ -133,13 +133,13 @@
             </div>
             <!-- 英文名 -->
             <div class="form-group">
-                {!! Form::label('english_name', '英文名', [
+                {!! Form::label('user[english_name]', '英文名', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('partials.icon_addon', ['class' => 'fa-language'])
-                        {!! Form::text('english_name', null, [
+                        {!! Form::text('user[english_name]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(可选)',
                             'data-parsley-length' => '[2, 64]',
@@ -149,7 +149,7 @@
             </div>
             <!-- 性别 -->
             @include('partials.enabled', [
-                'id' => 'gender',
+                'id' => 'user[gender]',
                 'label' => '性别',
                 'value' => $user['gender'] ?? null,
                 'options' => ['男', '女']
@@ -158,13 +158,13 @@
             @include('partials.mobile')
             <!-- 电子邮箱 -->
             <div class="form-group">
-                {{ Form::label('email', '邮箱', [
+                {{ Form::label('user[email]', '邮箱', [
                     'class' => 'col-sm-3 control-label'
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('partials.icon_addon', ['class' => 'fa-envelope-o'])
-                        {{ Form::text('email', null, [
+                        {{ Form::text('user[email]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请输入电子邮件地址, 可选)',
                             'type' => 'email',
@@ -176,13 +176,13 @@
             </div>
             <!-- 座机号码 -->
             <div class="form-group">
-                {{ Form::label('telephone', '座机', [
+                {{ Form::label('user[telephone]', '座机', [
                     'class' => 'col-sm-3 control-label'
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('partials.icon_addon', ['class' => 'fa-phone'])
-                        {{ Form::text('telephone', null, [
+                        {{ Form::text('user[telephone]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请输入座机号码, 可选)',
                         ]) }}
@@ -191,7 +191,7 @@
             </div>
             <!-- 状态 -->
             @include('partials.enabled', [
-                'id' => 'enabled',
+                'id' => 'user[enabled]',
                 'value' => $user['enabled'] ?? null
             ])
         </div>

@@ -51,52 +51,33 @@ class OperatorRequest extends FormRequest {
     public function rules() {
         
         $rules = [
-            'username'              => 'required|string|between:6,255|unique:users,username,' .
+            'user.username'              => 'required|string|between:6,255|unique:users,username,' .
                 $this->input('id') . ',id',
-            'group_id'              => 'required|integer',
-            'corp_id'               => 'nullable|integer',
-            'school_id'             => 'nullable|integer',
-            'realname'              => 'required|string',
-            'english_name'          => 'nullable|string|between:2,64',
-            'gender'                => 'required|boolean',
-            'user.email'            => ['nullable', 'email', new Email],
-            'password'              => 'string|min:6|confirmed',
-            'password_confirmation' => 'string|min:6',
-            'mobile.*'              => ['required', new Mobile],
-            'enabled'               => 'required|boolean',
-            'synced'                => 'required|boolean',
+            'user.group_id'              => 'required|integer',
+            'corp_id'                    => 'nullable|integer',
+            'school_id'                  => 'nullable|integer',
+            'user.realname'              => 'required|string',
+            'user.english_name'          => 'nullable|string|between:2,64',
+            'user.gender'                => 'required|boolean',
+            'user.email'                 => ['nullable', 'email', new Email],
+            'user.password'              => 'string|min:6|confirmed',
+            'user.password_confirmation' => 'string|min:6',
+            'mobile.*'                   => ['required', new Mobile],
+            'user.enabled'               => 'required|boolean',
+            'user.synced'                => 'required|boolean',
         ];
         $this->batchRules($rules);
         
         return $rules;
-        
         
     }
     
     protected function prepareForValidation() {
         
         if (!Request::has('ids')) {
-            $input = $this->all();
-            if (isset($input['mobile'])) {
-                $defaultIndex = $input['mobile']['isdefault'];
-                unset($input['mobile']['isdefault']);
-                for ($i = 0; $i < count($input['mobile']); $i++) {
-                    if (($i == $defaultIndex)) {
-                        $input['mobile'][$i]['isdefault'] = 1;
-                    } else {
-                        $input['mobile'][$i]['isdefault'] = 0;
-                    }
-                    if (!isset($input['mobile'][$i]['enabled'])) {
-                        $input['mobile'][$i]['enabled'] = 0;
-                    } else {
-                        $input['mobile'][$i]['enabled'] = 1;
-                    }
-                }
-            }
-            $input['avatar_url'] = '';
-            $input['synced'] = 0;
-    
-            $this->replace($input);
+            $this->replace(
+                $this->contactInput($this, 'operator')
+            );
         }
         
     }

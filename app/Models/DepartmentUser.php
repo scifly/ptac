@@ -42,21 +42,30 @@ class DepartmentUser extends Model {
      *
      * @param $userId
      * @param array $departmentIds
+     * @param null $custodian
      * @return bool
-     * @throws Exception
      * @throws Throwable
      */
-    function storeByUserId($userId, array $departmentIds) {
+    function storeByUserId($userId, array $departmentIds, $custodian = null) {
         
         try {
-            DB::transaction(function () use ($userId, $departmentIds) {
+            DB::transaction(function () use ($userId, $departmentIds, $custodian) {
+                $schoolDepartmentId = School::find($this->schoolId())->department_id;
+                $schoolGroupId = Group::whereName('学校')->first()->id;
                 $records = [];
+                $enabled = isset($custodian) && $custodian ? Constant::DISABLED : Constant::ENABLED;
+                $this->where(['user_id' => $userId, 'enabled' => $enabled])->delete();
+                $record = ['user_id' => $userId, 'enabled' => $enabled];
                 foreach ($departmentIds as $departmentId) {
-                    $records[] = [
-                        'user_id'       => $userId,
-                        'department_id' => $departmentId,
-                        'enabled'       => Constant::ENABLED,
-                    ];
+                    $record['department_id'] = $departmentId;
+                    $records[] = $record;
+                }
+                if (
+                    User::find($userId)->group_id == $schoolGroupId &&
+                    !in_array($schoolDepartmentId, $departmentIds)
+                ) {
+                    $record['department_id'] = $schoolDepartmentId;
+                    $records[] = $record;
                 }
                 $this->insert($records);
             });
@@ -113,12 +122,27 @@ class DepartmentUser extends Model {
     /**
      * 保存用户部门数据
      *
-     * @param array $data
+     * @param integer $userId
+     * @param integer $departmentId
      * @return bool
+     * @throws Throwable
      */
-    function store(array $data): bool {
+    function store($userId, $departmentId): bool {
         
-        return $this->create($data) ? true : false;
+        try {
+            DB::transaction(function () use($userId, $departmentId) {
+                $this->where('user_id', $userId)->delete();
+                $this->create([
+                    'user_id' => $userId,
+                    'department_id' => $departmentId,
+                    'enabled' => Constant::ENABLED
+                ]);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
         
     }
     

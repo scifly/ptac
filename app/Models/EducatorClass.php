@@ -5,7 +5,9 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use Throwable;
 
 /**
  * App\Models\EducatorClass 教职员工与班级关系
@@ -66,6 +68,49 @@ class EducatorClass extends Model {
     function store(array $data) {
         
         return $this->create($data) ? true : false;
+        
+    }
+    
+    /**
+     * 保存指定教职员工的班级科目绑定关系
+     *
+     * @param $educatorId
+     * @param array $data
+     * @return bool
+     * @throws Exception
+     * @throws Throwable
+     */
+    function storeByEducatorId($educatorId, array $data) {
+    
+        try {
+            DB::transaction(function () use ($educatorId, $data) {
+                $educator = Educator::find($educatorId);
+                if ($educator->user->group->name != '学校') {
+                    $this->where('educator_id', $educatorId)->delete();
+                    $classIds = $data['class_ids'];
+                    $subjectIds = $data['subject_ids'];
+                    for ($i = 0; $i < sizeof($classIds); $i++) {
+                        $ec = $this->where([
+                            'educator_id' => $educatorId,
+                            'class_id' => $classIds[$i],
+                            'subject_id' => $subjectIds[$i]
+                        ])->first();
+                        if (!$ec) {
+                            $this->create([
+                                'educator_id' => $educatorId,
+                                'class_id' => $classIds[$i],
+                                'subject_id' => $subjectIds[$i],
+                                'enabled' => 1
+                            ]);
+                        }
+                    }
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+    
+        return true;
         
     }
     

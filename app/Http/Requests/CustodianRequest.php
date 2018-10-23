@@ -2,7 +2,6 @@
 namespace App\Http\Requests;
 
 use App\Helpers\ModelTrait;
-use App\Models\Group;
 use App\Rules\Email;
 use App\Rules\Mobile;
 use Illuminate\Foundation\Http\FormRequest;
@@ -35,6 +34,7 @@ class CustodianRequest extends FormRequest {
             'user.group_id' => 'required|integer',
             'user.email'    => ['nullable', 'email', new Email],
             'mobile.*'      => ['required', new Mobile],
+            'singular'      => 'required|boolean',
             'student_ids'   => 'required',
         ];
         $this->batchRules($rules);
@@ -46,18 +46,9 @@ class CustodianRequest extends FormRequest {
     protected function prepareForValidation() {
         
         if (!Request::has('ids')) {
-            $input = $this->all();
-            if (isset($input['mobile'])) {
-                $defaultIndex = $input['mobile']['isdefault'];
-                unset($input['mobile']['isdefault']);
-                foreach ($input['mobile'] as $index => $mobile) {
-                    $input['mobile'][$index]['user_id'] = isset($input['user_id']) ? $input['user_id'] : 0;
-                    $input['mobile'][$index]['enabled'] = isset($mobile['enabled']) ? 1 : 0;
-                    $input['mobile'][$index]['isdefault'] = $index == $defaultIndex ? 1 : 0;
-                }
-            }
-            $input['user']['group_id'] = Group::whereName('监护人')->first()->id;
-            $this->replace($input);
+            $this->replace(
+                $this->contactInput($this, 'custodian')
+            );
         }
     }
     

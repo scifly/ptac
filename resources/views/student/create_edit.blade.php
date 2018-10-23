@@ -13,7 +13,6 @@
                 <!-- 学生头像 -->
                 @include('partials.avatar', ['user' => $student->user])
             @endif
-            <!-- 学生姓名 -->
             <!-- 真实姓名 -->
             <div class="form-group">
                 {{ Form::label('user[realname]', '姓名', [

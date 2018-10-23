@@ -5,7 +5,6 @@ use App\Facades\Datatable;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
-use App\Http\Requests\CustodianRequest;
 use App\Http\Requests\EducatorRequest;
 use App\Jobs\ImportEducator;
 use Carbon\Carbon;
@@ -60,7 +59,7 @@ class Educator extends Model {
     ];
     
     protected $fillable = [
-        'user_id', 'team_ids', 'school_id',
+        'user_id', 'team_ids', 'school_id', 'singular',
         'position', 'sms_quote', 'enabled',
     ];
     
@@ -246,94 +245,27 @@ class Educator extends Model {
     /**
      * 保存新创建的教职员工记录
      *
-     * @param EducatorRequest|CustodianRequest $request
+     * @param array $data
      * @return bool|mixed
-     * @throws Exception
      * @throws Throwable
      */
-    function store(EducatorRequest $request) {
+    function store(array $data) {
         
         try {
-            DB::transaction(function () use ($request) {
+            DB::transaction(function () use ($data) {
                 # 创建用户
-                $user = $request->input('user');
-                $u = User::create([
-                    'username'     => $user['username'],
-                    'group_id'     => $user['group_id'],
-                    'password'     => bcrypt($user['password']),
-                    'email'        => $user['email'],
-                    'realname'     => $user['realname'],
-                    'gender'       => $user['gender'],
-                    'userid'       => 'user_' . uniqid(),
-                    'isleader'     => 0,
-                    'english_name' => $user['english_name'],
-                    'telephone'    => $user['telephone'],
-                    'enabled'      => $user['enabled'],
-                    'position'     => $user['position'],
-                    'synced'       => 0,
-                    'subscribed'   => 0,
-                ]);
-                # 创建教职员工(当角色选择学校管理员时，也同时创建教职员工数据20180207 by wenw)
-                $educatorInputData = $request->input('educator');
-                $educator = self::create([
-                    'user_id'   => $u->id,
-                    'school_id' => $educatorInputData['school_id'],
-                    'sms_quote' => 0,
-                    'enabled'   => $user['enabled'],
-                ]);
-                if ($u->group_id != Group::whereName('学校')->first()->id) {
-                    # 保存班级科目绑定关系
-                    $classSubjectData = $request->input('classSubject');
-                    if ($classSubjectData['class_ids'] && $classSubjectData['subject_ids']) {
-                        $uniqueArray = [];
-                        foreach ($classSubjectData['class_ids'] as $index => $class) {
-                            $uniqueArray[] = [
-                                'class_id'   => $class,
-                                'subject_id' => $classSubjectData['subject_ids'][$index],
-                            ];
-                        }
-                        $classSubjects = self::array_unique_fb($uniqueArray);
-                        foreach ($classSubjects as $key => $row) {
-                            if ($row['class_id'] != 0 && $row['class_id'] != 0) {
-                                EducatorClass::create([
-                                    'educator_id' => $educator->id,
-                                    'class_id'    => $row['class_id'],
-                                    'subject_id'  => $row['subject_id'],
-                                    'enabled'     => $user['enabled'],
-                                ]);
-                            }
-                        }
-                    }
-                }
-                # 创建部门用户绑定关系
-                (new DepartmentUser)->storeByUserId(
-                    $u->id, $request->input('selectedDepartments')
-                );
-                # 当选择了学校角色没有选择学校部门时
-                $schoolId = $this->schoolId();
-                $schoolDeptId = School::find($schoolId)->department_id;
-                $deptUser = DepartmentUser::whereDepartmentId($schoolDeptId)
-                    ->where('user_id', $u->id)->first();
-                if ($u->group_id == Group::whereName('学校')->first()->id && empty($deptUser)) {
-                    DepartmentUser::create([
-                        'user_id'       => $u->id,
-                        'department_id' => School::find($schoolId)->department_id,
-                        'enabled'       => $user['enabled'],
-                    ]);
-                }
-                $mobiles = $request->input('mobile');
-                if ($mobiles) {
-                    foreach ($mobiles as $k => $mobile) {
-                        Mobile::create([
-                            'user_id'   => $u->id,
-                            'mobile'    => $mobile['mobile'],
-                            'isdefault' => $mobile['isdefault'],
-                            'enabled'   => $mobile['enabled'],
-                        ]);
-                    }
-                }
-                // # 创建企业号成员
-                $u->createWechatUser($u->id);
+                $user = User::create($data['user']);
+                # 创建教职员工
+                $data['educator']['user_id'] = $user->id;
+                $educator = $this->create($data);
+                # 保存班级科目绑定关系
+                (new EducatorClass)->storeByEducatorId($educator->id, $data['cs']);
+                # 保存部门用户绑定关系
+                (new DepartmentUser)->storeByUserId($user->id, $data['selectedDepartments'], false);
+                # 保存手机号码
+                (new Mobile)->store($data['mobile'], $user->id);
+                # 创建企业号成员
+                $user->createWechatUser($user->id);
             });
         } catch (Exception $e) {
             throw $e;
@@ -346,102 +278,29 @@ class Educator extends Model {
     /**
      * 修改教职员工
      *
-     * @param EducatorRequest $request
+     * @param array $data
      * @param $id
      * @return bool|mixed
-     * @throws Exception
      * @throws Throwable
      */
-    function modify(EducatorRequest $request, $id = null) {
+    function modify(array $data, $id = null) {
         
         if (!$id) { return $this->batchUpdateContact($this); }
         try {
-            DB::transaction(function () use ($request) {
-                $user = $request->input('user');
-                User::find($request->input('user_id'))->update([
-                    'username'     => $user['username'],
-                    'group_id'     => $user['group_id'],
-                    'email'        => $user['email'],
-                    'realname'     => $user['realname'],
-                    'gender'       => $user['gender'],
-                    'isleader'     => 0,
-                    'english_name' => $user['english_name'],
-                    'telephone'    => $user['telephone'],
-                    'position'     => $user['position'],
-                    'enabled'      => $user['enabled'],
-                ]);
-                $selectedDepartments = $request->input('selectedDepartments');
-                if (!empty($selectedDepartments)) {
-                    DepartmentUser::whereUserId($request->input('user_id'))->delete();
-                    foreach ($selectedDepartments as $department) {
-                        DepartmentUser::create([
-                            'user_id'       => $request->input('user_id'),
-                            'department_id' => $department,
-                            'enabled'       => $user['enabled'],
-                        ]);
-                        
-                    }
-                }
-                # 当选择了学校角色没有选择学校部门时
-                $schoolId = $this->schoolId();
-                $schoolDeptId = School::find($schoolId)->department_id;
-                $deptUser = DepartmentUser::whereDepartmentId($schoolDeptId)
-                    ->where('user_id', $request->input('user_id'))
-                    ->first();
-                if ($user['group_id'] == Group::whereName('学校')->first()->id && empty($deptUser)) {
-                    DepartmentUser::create([
-                        'user_id'       => $request->input('user_id'),
-                        'department_id' => School::find($schoolId)->department_id,
-                        'enabled'       => $user['enabled'],
-                    ]);
-                }
-                $educator = $request->input('educator');
-                self::find($request->input('id'))->update([
-                    'user_id'   => $request->input('user_id'),
-                    'school_id' => $educator['school_id'],
-                    'sms_quote' => 0,
-                    'enabled'   => $user['enabled'],
-                ]);
-                if ($user['group_id'] != Group::whereName('学校')->first()->id) {
-                    $classSubjectData = $request->input('classSubject');
-                    if ($classSubjectData) {
-                        EducatorClass::whereEducatorId($request->input('id'))->delete();
-                        $uniqueArray = [];
-                        foreach ($classSubjectData['class_ids'] as $index => $class) {
-                            $uniqueArray[] = [
-                                'class_id'   => $class,
-                                'subject_id' => $classSubjectData['subject_ids'][$index],
-                            ];
-                        }
-                        $classSubjects = self::array_unique_fb($uniqueArray);
-                        foreach ($classSubjects as $key => $row) {
-                            if ($row['class_id'] != 0 && $row['subject_id'] != 0) {
-                                EducatorClass::create([
-                                    'educator_id' => $request->input('id'),
-                                    'class_id'    => $row['class_id'],
-                                    'subject_id'  => $row['subject_id'],
-                                    'enabled'     => $user['enabled'],
-                                ]);
-                            }
-                        }
-                    } else {
-                        EducatorClass::whereEducatorId($request->input('id'))->delete();
-                    }
-                }
-                $mobiles = $request->input('mobile');
-                if ($mobiles) {
-                    Mobile::whereUserId($request->input('user_id'))->delete();
-                    foreach ($mobiles as $k => $mobile) {
-                        Mobile::create([
-                            'user_id'   => $request->input('user_id'),
-                            'mobile'    => $mobile['mobile'],
-                            'isdefault' => $mobile['isdefault'],
-                            'enabled'   => $mobile['enabled'],
-                        ]);
-                    }
-                }
+            DB::transaction(function () use ($data, $id) {
+                $educator = $this->find($id);
+                # 更新用户
+                User::find($educator->user_id)->update($data['user']);
+                # 更新教职员工
+                $educator->update($data['educator']);
+                # 保存班级科目绑定关系
+                (new EducatorClass)->storeByEducatorId($educator->id, $data['cs']);
+                # 更新教职员工&部门绑定关系
+                (new DepartmentUser)->storeByUserId($educator->user_id, $data['selectedDepartments']);
+                # 保存手机号码
+                (new Mobile)->store($data['mobile'], $educator->user_id);
                 # 更新企业号成员
-                (new User)->UpdateWechatUser($request->input('user_id'));
+                (new User)->UpdateWechatUser($educator->user_id);
             });
         } catch (Exception $e) {
             throw $e;

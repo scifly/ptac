@@ -3,55 +3,46 @@
     <div class="col-sm-6">
         <table id="classes" class="table-bordered table-responsive" style="width: 100%;">
             <thead>
-			<tr class="bg-info">
+            <tr class="bg-info">
                 <td class="text-center">班级</td>
                 <td class="text-center">科目</td>
                 <td class="text-center">+/-</td>
             </tr>
             </thead>
             <tbody>
-
-            @if(isset($educator->educatorClasses) && count($educator->educatorClasses) !=0 )
-                @foreach($educator->educatorClasses  as $index=> $educatorClass)
+            @if (isset($educator->educatorClasses) && count($educator->educatorClasses) != 0 )
+                @foreach ($educator->educatorClasses  as $index=> $ec)
                     <tr>
                         <td class="text-left">
-                            <label for="classSubject[class_ids][]"></label>
-                            <select name="classSubject[class_ids][]"
-                                    id="classSubject[class_ids][]"
-                                    class="select2"
-                                    style="width: 98%;"
-                            >
-                                @foreach($squads as $key => $squad )
-                                    <option value='{{$key}}'
-                                            @if($key == $educatorClass->class_id) selected @endif>{{$squad}}</option>
+                            <select name="cs[class_ids][]" class="select2" title="班级">
+                                @foreach ($squads as $id => $squad )
+                                    <option value="{!! $id !!}" @if ($id == $ec->class_id) selected @endif>
+                                        {!! $squad !!}
+                                    </option>
                                 @endforeach
                             </select>
                         </td>
                         <td class="text-left">
-                            <label for="classSubject[subject_ids][]"></label>
-                            <select name="classSubject[subject_ids][]"
-                                    id="classSubject[subject_ids][]"
-                                    class="select2"
-                                    style="width: 98%;"
-                            >
-                                @foreach($subjects as $key => $subject )
-                                    <option value='{{$key}}'
-                                            @if($key == $educatorClass->subject_id) selected @endif>{{$subject}}</option>
+                            <select name="cs[subject_ids][]" class="select2" title="科目">
+                                @foreach($subjects as $id => $subject )
+                                    <option value='{!! $id !!}' @if ($id == $ec->subject_id) selected @endif>
+                                        {!! $subject !!}
+                                    </option>
                                 @endforeach
                             </select>
                         </td>
                         <td class="text-center">
-                            @if($index == sizeof($educator->educatorClasses) - 1)
+                            @if ($index == sizeof($educator->educatorClasses) - 1)
                                 <span class="input-group-btn">
-                                            <button class="btn btn-box-tool  btn-class-add btn-add" type="button">
-                                                <i class="fa fa-plus text-blue"></i>
-                                            </button>
-                                        </span>
+                                    <button class="btn btn-box-tool btn-class-add btn-add">
+                                        <i class="fa fa-plus text-blue"></i>
+                                    </button>
+                                </span>
                             @else
                                 <span class="input-group-btn">
-                                            <button class="btn btn-box-tool  btn-class-remove btn-remove" type="button">
-                                                <i class="fa fa-minus text-blue"></i>
-                                            </button>
+                                    <button class="btn btn-box-tool  btn-class-remove btn-remove">
+                                        <i class="fa fa-minus text-blue"></i>
+                                    </button>
                                 </span>
                             @endif
                         </td>
@@ -60,32 +51,22 @@
             @else
                 <tr>
                     <td class="text-left">
-                    <label for="classSubject[class_ids][]"></label>
-                        <select name="classSubject[class_ids][]"
-                                id="classSubject[class_ids][]"
-                                class="select2"
-                                style="width: 98%;"
-                        >
-                            @foreach($squads as $key => $squad )
-                                <option value='{{$key}}'>{{$squad}}</option>
+                        <select name="cs[class_ids][]" class="select2" title="班级">
+                            @foreach ($squads as $id => $squad )
+                                <option value='{!! $id !!}'>{!! $squad !!}</option>
                             @endforeach
                         </select>
                     </td>
                     <td class="text-left">
-                        <label for="classSubject[subject_ids][]"></label>
-                        <select name="classSubject[subject_ids][]"
-                                id="classSubject[subject_ids][]"
-                                class="select2"
-                                style="width: 98%;"
-                        >
-                            @foreach($subjects as $key => $subject )
-                                <option value='{{$key}}'>{{$subject}}</option>
+                        <select name="cs[subject_ids][]" class="select2" title="科目">
+                            @foreach ($subjects as $id => $subject )
+                                <option value='{!! $id !!}'>{!! $subject !!}</option>
                             @endforeach
                         </select>
                     </td>
                     <td class="text-center">
                         <span class="input-group-btn">
-                            <button class="btn btn-box-tool btn-class-add" type="button">
+                            <button class="btn btn-box-tool btn-class-add">
                                 <i class="fa fa-plus text-blue"></i>
                             </button>
                         </span>

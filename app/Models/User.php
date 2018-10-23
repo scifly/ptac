@@ -395,39 +395,16 @@ class User extends Authenticatable {
         try {
             DB::transaction(function () use ($data) {
                 # 创建用户
-                $user = $this->create([
-                    'username'     => $data['username'],
-                    'userid'       => uniqid('manager_'),
-                    'password'     => bcrypt($data['password']),
-                    'group_id'     => $data['group_id'],
-                    'email'        => $data['email'],
-                    'realname'     => $data['realname'],
-                    'gender'       => $data['gender'],
-                    'english_name' => $data['english_name'],
-                    'telephone'    => $data['telephone'],
-                    'enabled'      => $data['enabled'],
-                    'synced'       => $data['synced'],
-                    'avatar_url'   => '',
-                    'isleader'     => 0,
-                    'subscribed'   => 0,
-                ]);
-                if (!in_array($user->group->name, ['运营', '企业'])) {
-                    # 创建教职员工
-                    Educator::create([
-                        'user_id'   => $user->id,
-                        'school_id' => $this->schoolId() ?? $data['school_id'],
-                        'sms_quote' => 0,
-                        'enabled'   => 1,
-                    ]);
+                $user = $this->create($data['user']);
+                # 创建教职员工
+                if (!in_array($user->group->name, Constant::NON_EDUCATOR)) {
+                    $data['user_id'] = $user->id;
+                    Educator::create($data);
                 }
                 # 保存手机号码
-                (new Mobile)->store($data['mobile'], $user);
+                (new Mobile)->store($data['mobile'], $user->id);
                 # 保存用户&部门绑定关系
-                (new DepartmentUser)->store([
-                    'department_id' => $this->departmentId($data),
-                    'user_id'       => $user->id,
-                    'enabled'       => $data['enabled'],
-                ]);
+                (new DepartmentUser)->storeByUserId($user->id, [$this->departmentId($data)]);
                 # 创建企业号成员
                 $this->createWechatUser($user->id);
             });
@@ -609,43 +586,21 @@ class User extends Authenticatable {
             return $this->batch($this);
         }
         try {
-            # 更新用户数据
             DB::transaction(function () use ($data, $id) {
                 $user = $this->find($id);
+                $user->update($data);
+                if (Group::find($data['group_id'])->name == '学校') {
+                    $user->educator->update($data['educator']);
+                }
                 if (isset($data['enabled'])) {
-                    $user->update([
-                        'username'     => $data['username'],
-                        'group_id'     => $data['group_id'],
-                        'email'        => $data['email'],
-                        'realname'     => $data['realname'],
-                        'gender'       => $data['gender'],
-                        'english_name' => $data['english_name'],
-                        'telephone'    => $data['telephone'],
-                        'enabled'      => $data['enabled'],
-                    ]);
                     # 更新手机号码
-                    Mobile::whereUserId($user->id)->delete();
-                    (new Mobile)->store($data['mobile'], $user);
+                    (new Mobile)->store($data['mobile'], $user->id);
                     # 更新部门数据
-                    DepartmentUser::whereUserId($user->id)->delete();
-                    (new DepartmentUser)->store([
-                        'department_id' => $this->departmentId($data),
-                        'user_id'       => $user->id,
-                        'enabled'       => Constant::ENABLED,
-                    ]);
+                    (new DepartmentUser)->store($user->id, $this->departmentId($data));
                 } else {
-                    $user->update([
-                        'username'     => $data['username'],
-                        'email'        => $data['email'],
-                        'realname'     => $data['realname'],
-                        'gender'       => $data['gender'],
-                        'english_name' => $data['english_name'],
-                        'telephone'    => $data['telephone'],
-                    ]);
                     # 更新手机号码
-                    Mobile::whereUserId($user->id)->where('isdefault', 1)->update([
-                        'mobile' => $data['mobile'],
-                    ]);
+                    Mobile::where(['user_id' => $user->id, 'isdefault' => 1])
+                        ->update(['mobile' => $data['mobile']]);
                 }
                 # 更新企业号成员记录
                 $this->updateWechatUser($user->id);

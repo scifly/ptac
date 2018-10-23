@@ -85,7 +85,14 @@
                     </div>
                 </div>
             </div>
-            <!-- 被监护人列表 -->
+            <!-- 单角色 -->
+            @include('partials.enabled', [
+                'id' => 'singular',
+                'value' => $custodian['singular'] ?? null,
+                'label' => '单角色',
+                'options' => ['是', '否']
+            ])
+            <!-- 监护关系 -->
             <div class="form-group">
                 <label class="col-sm-3 control-label">被监护人</label>
                 <div class="col-sm-6" style="padding-top: 3px;">
