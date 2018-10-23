@@ -225,11 +225,11 @@
                 }
                 items++;
                 var html = '<tr>' +
-                        '<td>' +
+                        '<td class="text-center">' +
                             student[0] + '<input type="hidden" value="' + studentId + '" name="student_ids[' + items + ']">' +
                         '</td>' +
-                        '<td>' + student[1] + '</td>' +
-                        '<td>' +
+                        '<td class="text-center">' + student[1] + '</td>' +
+                        '<td class="text-center">' +
                             '<input type="text" ' +
                                     'name="relationships[' + items + ']" ' +
                                     'id="" readonly class="no-border" ' +
@@ -237,7 +237,7 @@
                                     'value="' + relationship + '"' +
                             '>' +
                         '</td>' +
-                        '<td>' +
+                        '<td class="text-center">' +
                             '<a href="javascript:" class="delete">' +
                                 '<i class="fa fa-trash-o text-blue"></i>' +
                             '</a>' +
@@ -356,7 +356,7 @@
                 switch (table) {
                     case 'students':
                         formId = 'formStudent';
-                        contact.onGradeChange(table, 'edit', null, id);
+                        contact.onGradeChange(table, type, null, id);
                         break;
                     case 'custodians':
                     case 'educators':
@@ -371,7 +371,7 @@
                         formId = table === 'custodians' ? 'formCustodian' : 'formEducator';
                         if (table === 'educators') {
                             $.getMultiScripts(['js/shared/tree.js']).done(
-                                function() { $.tree().list('educators/edit/' + id, 'department'); }
+                                function() { $.tree().list('educators/' + type + '/' + id, 'department'); }
                             );
                         }
                         break;
