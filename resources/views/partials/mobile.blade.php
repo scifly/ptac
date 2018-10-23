@@ -1,7 +1,7 @@
 <div class="form-group">
     <label for="mobile" class="col-sm-3 control-label">手机</label>
     <div class="col-sm-6">
-        <div style="display: block; overflow-x: auto; clear: both; width: 100%; margin-top: 10px;">
+        <div style="display: block; overflow-x: auto; clear: both; width: 100%;">
             <table id="mobiles" class="table-bordered table-responsive"
                    style="white-space: nowrap; width: 100%;">
                 <thead>
