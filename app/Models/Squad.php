@@ -344,6 +344,4 @@ class Squad extends Model {
         
     }
     
-    
-    
 }

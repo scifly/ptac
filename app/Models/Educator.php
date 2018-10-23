@@ -6,7 +6,6 @@ use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
-use App\Http\Requests\EducatorRequest;
 use App\Jobs\ImportEducator;
 use Carbon\Carbon;
 use Eloquent;

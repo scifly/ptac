@@ -51,14 +51,14 @@
             @else
                 <tr>
                     <td class="text-left">
-                        <select name="cs[class_ids][]" class="select2" title="班级">
+                        <select name="cs[class_ids][]" class="select2" title="班级" style="width: 98%;">
                             @foreach ($squads as $id => $squad )
                                 <option value="{!! $id !!}">{!! $squad !!}</option>
                             @endforeach
                         </select>
                     </td>
                     <td class="text-left">
-                        <select name="cs[subject_ids][]" class="select2" title="科目">
+                        <select name="cs[subject_ids][]" class="select2" title="科目" style="width: 98%;">
                             @foreach ($subjects as $id => $subject )
                                 <option value="{!! $id !!}">{!! $subject !!}</option>
                             @endforeach
