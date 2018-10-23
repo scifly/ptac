@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EducatorRequest;
+use App\Models\Custodian;
 use App\Models\Department;
 use App\Models\Educator;
 use App\Models\School;
@@ -18,20 +19,27 @@ use Throwable;
  */
 class EducatorController extends Controller {
     
-    protected $educator, $department, $school;
+    protected $educator, $department, $school, $custodian;
     
     /**
      * EducatorController constructor.
      * @param Educator $educator
      * @param Department $department
      * @param School $school
+     * @param Custodian $custodian
      */
-    public function __construct(Educator $educator, Department $department, School $school) {
+    public function __construct(
+        Educator $educator,
+        Department $department,
+        School $school,
+        Custodian $custodian
+    ) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->educator = $educator;
         $this->department = $department;
         $this->school = $school;
+        $this->custodian = $custodian;
         if (!Request::has('ids')) {
             $this->approve($educator);
         }
@@ -63,7 +71,11 @@ class EducatorController extends Controller {
     public function create() {
         
         return Request::method() === 'POST'
-            ? $this->department->contacts(false)
+            ? (
+                Request::has('field')
+                ? $this->custodian->csList()
+                : $this->department->contacts(false)
+            )
             : $this->output();
         
     }
@@ -95,7 +107,11 @@ class EducatorController extends Controller {
     public function edit($id) {
         
         return Request::method() === 'POST'
-            ? $this->department->contacts(false)
+            ? (
+                Request::has('field')
+                ? $this->custodian->csList()
+                : $this->department->contacts(false)
+            )
             : $this->output([
                 'educator' => $this->educator->find($id),
             ]);
