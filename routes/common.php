@@ -11,7 +11,7 @@ function routes($ctlr) {
         Route::get('index', $ctlr . '@index');
         Route::get('create', $ctlr . '@create');
         Route::post('store', $ctlr . '@store');
-        Route::get('edit/{id}', $ctlr . '@edit');
+        Route::get('edit/{id?}', $ctlr . '@edit');
         Route::put('update/{id?}', $ctlr . '@update');
         Route::delete('delete/{id?}', $ctlr . '@destroy');
     };
