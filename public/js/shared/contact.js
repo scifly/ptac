@@ -350,42 +350,7 @@
                         break;
                 }
             },
-            create: function (table) {
-                var formId = '';
-                switch (table) {
-                    case 'students':
-                        formId = 'formStudent';
-                        contact.onGradeChange(table, 'create');
-                        break;
-                    case 'custodians':
-                        formId = 'formCustodian';
-                        $('#' + contact.options.relationship).val('');
-                        contact.onAddClick();
-                        contact.onAddClassClick();
-                        contact.onSingularChange(table);
-                        contact.onRelationshipDelete();
-                        contact.onGradeChange(table, 'create', true);
-                        contact.onClassChange(table, 'create');
-                        contact.onConfirmClick(table, true);
-                        break;
-                    case 'educators':
-                        formId = 'formEducator';
-                        contact.onAddClick();
-                        contact.onAddClassClick();
-                        contact.onSingularChange(table);
-                        $.getMultiScripts(['js/shared/tree.js']).done(
-                            function() { $.tree().list('educators/create', 'department'); }
-                        );
-                        break;
-                    case 'operators':
-                        formId = 'formOperator';
-                        break;
-                    default:
-                        break;
-                }
-                contact.mobile(formId, 0, 'POST', table + '/store');
-            },
-            edit: function (table) {
+            action: function (table, type) {
                 var formId = '',
                     id = $('#id').val();
                 switch (table) {
@@ -403,8 +368,8 @@
                         contact.onGradeChange(table, 'edit', true, id);
                         contact.onClassChange(table, 'edit', id);
                         contact.onConfirmClick(table, true);
+                        formId = table === 'custodians' ? 'formCustodian' : 'formEducator';
                         if (table === 'educators') {
-                            formId = 'formEducator';
                             $.getMultiScripts(['js/shared/tree.js']).done(
                                 function() { $.tree().list('educators/edit/' + id, 'department'); }
                             );
@@ -416,14 +381,18 @@
                     default:
                         break;
                 }
-                contact.mobile(formId, $('#count').val(), 'PUT', table + '/update/' +id);
+                contact.mobile(
+                    formId,
+                    type === 'create' ? 0 : $('#count').val(),
+                    type === 'create' ? 'POST' : 'PUT',
+                    table + (type === 'create' ? '/store' : '/update/' + id)
+                );
             }
         };
 
         return {
             index: contact.index,
-            create: contact.create,
-            edit: contact.edit,
+            action: contact.action,
             onGradeChange: contact.onGradeChange
         }
     }
