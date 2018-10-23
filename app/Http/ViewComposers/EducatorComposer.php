@@ -47,7 +47,6 @@ class EducatorComposer {
             'classes'               => $classes,
             'students'              => $students,
             'relations'             => $relations,
-            'title'                 => '新增监护关系',
             'relationship'          => true,
         ]);
         
