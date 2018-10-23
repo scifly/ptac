@@ -8,5 +8,5 @@ $.getMultiScripts(['js/shared/contact.js']).done(
     }
 );
 $('input[name=singular]').on('ifClicked', function () {
-    $('#relationships').toggle(this.value === 0);
+    $('#relationships').toggle(parseInt(this.value) === 0);
 });
