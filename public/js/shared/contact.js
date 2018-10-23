@@ -232,7 +232,7 @@
                         '<td class="text-center">' +
                             '<input type="text" ' +
                                     'name="relationships[' + items + ']" ' +
-                                    'id="" readonly class="no-border" ' +
+                                    'id="" readonly class="no-border text-center" ' +
                                     'style="background: none" ' +
                                     'value="' + relationship + '"' +
                             '>' +
