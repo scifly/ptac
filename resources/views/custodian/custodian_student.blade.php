@@ -2,7 +2,7 @@
     <label class="col-sm-3 control-label">被监护人</label>
     <div class="col-sm-6" style="padding-top: 3px;">
         <div style="display: block; overflow-x: auto; clear: both; width: 100%;">
-            <table class="table table-striped table-bordered table-hover table-condensed"
+            <table class="table-bordered table-responsive"
                    style="white-space: nowrap; width: 100%;">
                 <thead>
                 <tr class="bg-info">
