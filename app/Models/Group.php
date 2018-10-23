@@ -268,4 +268,18 @@ class Group extends Model {
         
     }
     
+    /**
+     * 返回指定学校的角色列表
+     *
+     * @return array
+     */
+    function groupList() {
+        
+        return $this->where([
+            'school_id' => $this->schoolId(),
+            'enabled'   => 1,
+        ])->pluck('name', 'id')->toArray();
+        
+    }
+    
 }

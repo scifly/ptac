@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
+use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
@@ -505,30 +506,60 @@ class Educator extends Model {
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
-     * 去掉二维数组中的重复值
+     * 返回对当前登录用户可见的班级与科目列表
      *
-     * @param $array2D
      * @return array
      */
-    private function array_unique_fb($array2D) {
+    function compose() {
         
-        $temp = [];
-        foreach ($array2D as $v) {
-            # 降维,也可以用implode,将一维数组转换为用逗号连接的字符串
-            $v = join(',', $v);
-            $temp[] = $v;
+        $classes = $this->whereIn('id', $this->classIds())->where('enabled', 1)->get();
+        $gradeIds = Grade::whereIn('id', array_unique($classes->pluck('grade_id')->toArray()))->pluck('id')->toArray();
+        $subjects = Subject::where(['enabled' => 1, 'school_id' => $this->schoolId()])->get()->filter(
+            function (Subject $subject) use ($gradeIds) {
+                return !empty(array_intersect($gradeIds, explode(',', $subject->grade_ids)));
+            }
+        );
+        if (Request::route('id')) {
+            $educator = $this->find(Request::route('id'));
+            $mobiles = $educator->user->mobiles;
+            $selectedDepartmentIds = $educator->user->departments->pluck('id')->toArray();
+            $selectedDepartments = $this->selectedNodes($selectedDepartmentIds);
         }
-        # 去掉重复的字符串,也就是重复的一维数组
-        $tempUnique = array_unique($temp);
-        $csArray = [];
-        foreach ($tempUnique as $k => $v) {
-            # 再将拆开的数组重新组装
-            $tempArray = explode(',', $v);
-            $csArray[$k]['class_id'] = $tempArray[0];
-            $csArray[$k]['subject_id'] = $tempArray[1];
+        return [
+            $classes->pluck('name', 'id')->toArray(),
+            $subjects->pluck('name', 'id')->toArray(),
+            (new Group)->groupList(),
+            implode(',', $selectedDepartmentIds ?? []),
+            $selectedDepartments ?? [],
+            $mobiles ?? []
+        ];
+        
+    }
+    
+    /**
+     * 选中的部门节点
+     *
+     * @param $departmentIds
+     * @return array
+     */
+    private function selectedNodes($departmentIds) {
+        
+        $departments = Department::whereIn('id', $departmentIds)->get()->toArray();
+        $nodes = [];
+        foreach ($departments as $department) {
+            $parentId = isset($department['parent_id']) ? $department['parent_id'] : '#';
+            $text = $department['name'];
+            $departmentType = DepartmentType::find($department['department_type_id'])->name;
+            $nodes[] = [
+                'id'     => $department['id'],
+                'parent' => $parentId,
+                'text'   => $text,
+                'icon'   => Constant::NODE_TYPES[$departmentType]['icon'],
+                'type'   => Constant::NODE_TYPES[$departmentType]['type'],
+            ];
         }
         
-        return $csArray;
+        return $nodes;
         
     }
     

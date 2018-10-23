@@ -347,6 +347,39 @@ class Custodian extends Model {
     }
     
     /**
+     * 返回create/edit view使用的数据
+     *
+     * @return array
+     */
+    function compose() {
+    
+        $grades = Grade::whereIn('id', $this->gradeIds())
+            ->where('enabled', 1)
+            ->pluck('name', 'id')
+            ->toArray();
+        reset($grades);
+        $classes = Squad::where(['grade_id' => key($grades), 'enabled' => 1])
+            ->pluck('name', 'id')->toArray();
+        reset($classes);
+        $records = Student::with('user:id,realname')
+            ->where(['class_id' => key($classes), 'enabled' => 1])
+            ->get()->toArray();
+        foreach ($records as $record) {
+            if (!isset($record['user'])) continue;
+            $students[$record['id']] = $record['user']['realname'] . '-' . $record['card_number'];
+        }
+        if (Request::route('id') && Request::method() == 'GET') {
+            $mobiles = $this->find(Request::route('id'))->user->mobiles;
+            $relations = CustodianStudent::whereCustodianId(Request::route('id'))->get();
+        }
+        
+        return [
+            $grades, $classes, $students ?? [], $relations ?? [], $mobiles ?? []
+        ];
+        
+    }
+    
+    /**
      * 析取家长&学生 、家长&部门绑定关系数据
      *
      * @param Custodian $custodian

@@ -93,9 +93,9 @@
                 'options' => ['是', '否']
             ])
             <!-- 班级、科目绑定关系 -->
-            @include('educator.educator_class')
+            @include('educator.educator_class', ['visible' => false])
             <!-- 监护关系 -->
-            @include('custodian.custodian_student')
+            @include('custodian.custodian_student', ['visible' => true])
             <!-- 监护人状态 -->
             @include('partials.enabled', [
                 'id' => 'user[enabled]',

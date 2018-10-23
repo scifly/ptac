@@ -1,4 +1,4 @@
-<div class="form-group" id="class-subjects">
+<div class="form-group" id="class-subjects" style="display: {!! $visible ? 'block' : 'none' !!};">
     <label class="col-sm-3 control-label">班级科目关系</label>
     <div class="col-sm-6">
         <table id="classes" class="table-bordered table-responsive" style="width: 100%;">
@@ -11,7 +11,7 @@
             </thead>
             <tbody>
             @if (isset($educator->educatorClasses) && count($educator->educatorClasses) != 0 )
-                @foreach ($educator->educatorClasses  as $index=> $ec)
+                @foreach ($educator->educatorClasses  as $index => $ec)
                     <tr>
                         <td class="text-left">
                             <select name="cs[class_ids][]" class="select2" title="班级">
@@ -25,7 +25,7 @@
                         <td class="text-left">
                             <select name="cs[subject_ids][]" class="select2" title="科目">
                                 @foreach($subjects as $id => $subject )
-                                    <option value='{!! $id !!}' @if ($id == $ec->subject_id) selected @endif>
+                                    <option value="{!! $id !!}" @if ($id == $ec->subject_id) selected @endif>
                                         {!! $subject !!}
                                     </option>
                                 @endforeach
@@ -53,14 +53,14 @@
                     <td class="text-left">
                         <select name="cs[class_ids][]" class="select2" title="班级">
                             @foreach ($squads as $id => $squad )
-                                <option value='{!! $id !!}'>{!! $squad !!}</option>
+                                <option value="{!! $id !!}">{!! $squad !!}</option>
                             @endforeach
                         </select>
                     </td>
                     <td class="text-left">
                         <select name="cs[subject_ids][]" class="select2" title="科目">
                             @foreach ($subjects as $id => $subject )
-                                <option value='{!! $id !!}'>{!! $subject !!}</option>
+                                <option value="{!! $id !!}">{!! $subject !!}</option>
                             @endforeach
                         </select>
                     </td>

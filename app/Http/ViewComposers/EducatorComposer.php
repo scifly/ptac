@@ -1,16 +1,10 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Helpers\Constant;
 use App\Helpers\ModelTrait;
-use App\Models\Department;
-use App\Models\DepartmentType;
+use App\Models\Custodian;
 use App\Models\Educator;
-use App\Models\Group;
-use App\Models\Squad;
-use App\Models\Subject;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Request;
 
 /**
  * Class EducatorComposer
@@ -20,15 +14,17 @@ class EducatorComposer {
     
     use ModelTrait;
     
-    protected $department;
+    protected $educator, $custodian;
     
     /**
      * EducatorComposer constructor.
-     * @param Department $department
+     * @param Educator $educator
+     * @param Custodian $custodian
      */
-    function __construct(Department $department) {
+    function __construct(Educator $educator, Custodian $custodian) {
         
-        $this->department = $department;
+        $this->educator = $educator;
+        $this->custodian = $custodian;
         
     }
     
@@ -37,73 +33,23 @@ class EducatorComposer {
      */
     public function compose(View $view) {
         
-        $schoolId = $this->schoolId();
-        $squads = Squad::whereIn('id', $this->classIds())
-            ->where('enabled', 1)->pluck('name', 'id')
-            ->toArray();
-        $gradeIds = [];
-        foreach ($squads as $id => $name) {
-            $gradeIds[] = Squad::find($id)->grade_id;
-        }
-        $gradeIds = array_unique($gradeIds);
-        $squads[0] = '(请选择)';
-        ksort($squads);
-        $subjects = Subject::whereSchoolId($schoolId)
-            ->where('enabled', 1)->get();
-        $subjectList = [];
-        foreach ($subjects as $subject) {
-            $intersect = array_intersect($gradeIds, explode(',', $subject->grade_ids));
-            if (!empty($intersect)) {
-                $subjectList[$subject->id] = $subject->name;
-            }
-        }
-        $groups = Group::whereSchoolId($schoolId)
-            ->where('enabled', 1)
-            ->pluck('name', 'id')->toArray();
-        $subjectList[0] = '(请选择)';
-        ksort($subjectList);
-        $mobiles = $selectedTags = $selectedDepartmentIds = $selectedDepartments = [];
-        if (Request::route('id')) {
-            $educator = Educator::find(Request::route('id'));
-            $mobiles = $educator->user->mobiles;
-            $selectedDepartmentIds = $educator->user->departments->pluck('id')->toArray();
-            $selectedDepartments = $this->selectedNodes($selectedDepartmentIds);
-        }
+        list($squads, $subjects, $groups, $departmentIds, $departments, $mobiles) = $this->educator->compose();
+        list($grades, $classes, $students, $relations) = $this->custodian->compose();
+        $firstOption = [0 => '(请选择)'];
         $view->with([
-            'squads'                => $squads,
-            'subjects'              => $subjectList,
-            'groups'                => $groups,
+            'squads'                => $firstOption + $squads,
+            'subjects'              => $firstOption + $subjects,
+            'groups'                => $firstOption + $groups,
             'mobiles'               => $mobiles,
-            'selectedDepartmentIds' => implode(',', $selectedDepartmentIds),
-            'selectedDepartments'   => $selectedDepartments,
+            'selectedDepartmentIds' => $departmentIds,
+            'selectedDepartments'   => $departments,
+            'grades'                => $grades,
+            'classes'               => $classes,
+            'students'              => $students,
+            'relations'             => $relations,
+            'title'                 => '新增监护关系',
+            'relationship'          => true,
         ]);
-        
-    }
-    
-    /**
-     * 选中的部门节点
-     *
-     * @param $departmentIds
-     * @return array
-     */
-    private function selectedNodes($departmentIds) {
-        
-        $departments = Department::whereIn('id', $departmentIds)->get()->toArray();
-        $nodes = [];
-        foreach ($departments as $department) {
-            $parentId = isset($department['parent_id']) ? $department['parent_id'] : '#';
-            $text = $department['name'];
-            $departmentType = DepartmentType::find($department['department_type_id'])->name;
-            $nodes[] = [
-                'id'     => $department['id'],
-                'parent' => $parentId,
-                'text'   => $text,
-                'icon'   => Constant::NODE_TYPES[$departmentType]['icon'],
-                'type'   => Constant::NODE_TYPES[$departmentType]['type'],
-            ];
-        }
-        
-        return $nodes;
         
     }
     
