@@ -7,6 +7,3 @@ $.getMultiScripts(['js/shared/contact.js']).done(
         $.contact().create('educators');
     }
 );
-$('input[name=singular]').on('ifClicked', function () {
-    $('#relationships').toggle(parseInt(this.value) === 0);
-});

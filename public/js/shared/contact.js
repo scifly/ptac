@@ -8,7 +8,8 @@
                 classId: 'class_id',
                 gradeId: 'grade_id',
                 departmentId: 'department_id',
-                range: 'input[name="range"]',
+                range: 'input[name=range]',
+                singular: 'input[name=singular]',
                 output: 'export',
                 confirm: 'confirm',
                 relationship: 'relationship',
@@ -112,6 +113,13 @@
                         return false;
                     });
                 }
+            },
+            onSingularChange: function (table) {
+                page.initICheck();
+                $(contact.options.singular).on('ifClicked', function () {
+                    $(table === 'educator' ? '#relationships' : '#class-subjects')
+                        .toggle(parseInt(this.value) === 0);
+                });
             },
             onGradeChange: function (table, action, relationship, id) {
                 $(document).off('change', '#' + contact.options.gradeId);
@@ -353,6 +361,8 @@
                         formId = 'formCustodian';
                         $('#' + contact.options.relationship).val('');
                         contact.onAddClick();
+                        contact.onAddClassClick();
+                        contact.onSingularChange(table);
                         contact.onRelationshipDelete();
                         contact.onGradeChange(table, 'create', true);
                         contact.onClassChange(table, 'create');
@@ -360,7 +370,9 @@
                         break;
                     case 'educators':
                         formId = 'formEducator';
+                        contact.onAddClick();
                         contact.onAddClassClick();
+                        contact.onSingularChange(table);
                         $.getMultiScripts(['js/shared/tree.js']).done(
                             function() { $.tree().list('educators/create', 'department'); }
                         );
@@ -384,6 +396,8 @@
                     case 'custodians':
                         $('#' + contact.options.relationship).val('');
                         contact.onAddClick();
+                        contact.onAddClassClick();
+                        contact.onSingularChange(table);
                         contact.onRelationshipDelete();
                         contact.onGradeChange(table, 'edit', true, id);
                         contact.onClassChange(table, 'edit', id);
@@ -391,7 +405,9 @@
                         break;
                     case 'educators':
                         formId = 'formEducator';
+                        contact.onAddClick();
                         contact.onAddClassClick();
+                        contact.onSingularChange(table);
                         $.getMultiScripts(['js/shared/tree.js']).done(
                             function() { $.tree().list('educators/edit/' + id, 'department'); }
                         );
