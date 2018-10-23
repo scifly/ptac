@@ -158,7 +158,7 @@
             <!-- 手机号码 -->
             @include('partials.mobile')
             <!-- 班级、科目绑定关系 -->
-            @include('educator.educator_class', ['show' => true])
+            @include('educator.educator_class', ['visible' => true])
             <!-- 单角色 -->
             @include('partials.enabled', [
                 'id' => 'singular',
@@ -167,7 +167,7 @@
                 'options' => ['是', '否']
             ])
             <!-- 监护关系 -->
-            @include('custodian.custodian_student', ['show' => false])
+            @include('custodian.custodian_student', ['visible' => false])
             <!-- 所属部门 -->
             <div class="form-group depart">
                 {!! Form::label('departmentId', '所属部门', [
