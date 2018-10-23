@@ -140,7 +140,7 @@
                     </div>
                 </div>
             </div>
-            <!--职务-->
+            <!-- 职务 -->
             <div class="form-group">
                 {!! Form::label('user[position]', '职务', [
                     'class' => 'col-sm-3 control-label'
@@ -157,8 +157,8 @@
             </div>
             <!-- 手机号码 -->
             @include('partials.mobile')
-            <!-- 所属班级 -->
-            @include('educator.class_subject')
+            <!-- 班级、科目绑定关系 -->
+            @include('educator.educator_class')
             <!-- 单角色 -->
             @include('partials.enabled', [
                 'id' => 'singular',
@@ -166,6 +166,8 @@
                 'label' => '单角色',
                 'options' => ['是', '否']
             ])
+            <!-- 监护关系 -->
+            @include('custodian.custodian_student')
             <!-- 所属部门 -->
             <div class="form-group depart">
                 {!! Form::label('departmentId', '所属部门', [
@@ -175,7 +177,8 @@
                     <div id="checked-nodes">
                         @if (isset($selectedDepartments))
                             @foreach($selectedDepartments as $key => $department)
-                                <button type="button" class="btn btn-flat" style="margin-right: 5px; margin-bottom: 5px">
+                                <button type="button" class="btn btn-flat"
+                                        style="margin-right: 5px; margin-bottom: 5px">
                                     <i class="{{ $department['icon'] }}"></i>
                                     {{ $department['text'] }}
                                     <i class="fa fa-close remove-selected" style="margin-left: 5px;"></i>
@@ -184,11 +187,7 @@
                             @endforeach
                         @endif
                     </div>
-                    @if(isset($selectedDepartmentIds))
-                        <input type="hidden" id="selected-node-ids" value="{{ $selectedDepartmentIds }}"/>
-                    @else
-                        <input type="hidden" id="selected-node-ids" value=""/>
-                    @endif
+                    <input type="hidden" id="selected-node-ids" value="{{ $selectedDepartmentIds ?? '' }}"/>
                     <a id="choose" href="#"><i class="fa fa-sitemap"></i>&nbsp; 选择</a>
                 </div>
             </div>
