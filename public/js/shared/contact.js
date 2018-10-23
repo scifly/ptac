@@ -117,7 +117,7 @@
             onSingularChange: function (table) {
                 page.initICheck();
                 $(contact.options.singular).on('ifClicked', function () {
-                    $(table === 'educator' ? '#relationships' : '#class-subjects')
+                    $(table === 'educators' ? '#relationships' : '#class-subjects')
                         .toggle(parseInt(this.value) === 0);
                 });
             },
