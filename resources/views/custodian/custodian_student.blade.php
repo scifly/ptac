@@ -1,15 +1,15 @@
 <div class="form-group" id="relationships" style="display: {!! $visible ? 'block' : 'none' !!};">
     <label class="col-sm-3 control-label">被监护人</label>
-    <div class="col-sm-6" style="padding-top: 3px;">
+    <div class="col-sm-6">
         <div style="display: block; overflow-x: auto; clear: both; width: 100%;">
             <table class="table-bordered table-responsive"
                    style="white-space: nowrap; width: 100%;">
                 <thead>
                 <tr class="bg-info">
-                    <th>学生</th>
-                    <th>学号</th>
-                    <th>监护关系</th>
-                    <th>操作</th>
+                    <th class="text-center">学生</th>
+                    <th class="text-center">学号</th>
+                    <th class="text-center">监护关系</th>
+                    <th class="text-center">操作</th>
                 </tr>
                 </thead>
                 <tbody id="tBody">
