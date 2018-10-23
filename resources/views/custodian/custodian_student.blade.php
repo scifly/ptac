@@ -6,10 +6,10 @@
                    style="white-space: nowrap; width: 100%;">
                 <thead>
                 <tr class="bg-info">
-                    <th class="text-center">学生</th>
-                    <th class="text-center">学号</th>
-                    <th class="text-center">监护关系</th>
-                    <th class="text-center">操作</th>
+                    <td class="text-center">学生</td>
+                    <td class="text-center">学号</td>
+                    <td class="text-center">监护关系</td>
+                    <td class="text-center">操作</td>
                 </tr>
                 </thead>
                 <tbody id="tBody">
