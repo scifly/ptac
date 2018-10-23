@@ -365,8 +365,8 @@
                         contact.onAddClassClick();
                         contact.onSingularChange(table);
                         contact.onRelationshipDelete();
-                        contact.onGradeChange(table, 'edit', true, id);
-                        contact.onClassChange(table, 'edit', id);
+                        contact.onGradeChange(table, type, true, id);
+                        contact.onClassChange(table, type, id);
                         contact.onConfirmClick(table, true);
                         formId = table === 'custodians' ? 'formCustodian' : 'formEducator';
                         if (table === 'educators') {
