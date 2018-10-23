@@ -1,7 +1,7 @@
 <div class="form-group" id="relationships" style="display: {!! $visible ? 'block' : 'none' !!};">
     <label class="col-sm-3 control-label">被监护人</label>
     <div class="col-sm-6" style="padding-top: 3px;">
-        <div style="display: block; overflow-x: auto; clear: both; width: 100%; margin-top: 10px;">
+        <div style="display: block; overflow-x: auto; clear: both; width: 100%;">
             <table class="table table-striped table-bordered table-hover table-condensed"
                    style="white-space: nowrap; width: 100%;">
                 <thead>
