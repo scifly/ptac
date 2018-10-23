@@ -104,6 +104,8 @@ class ComposerServiceProvider extends ServiceProvider {
         # 通讯录.教职员工 - Educator
         View::composer('educator.index', $ns . 'EducatorIndexComposer');
         View::composer('educator.create_edit', $ns . 'EducatorComposer');
+        View::composer('educator.edit', $ns . 'EducatorComposer');
+        View::composer('educator.create', $ns . 'EducatorComposer');
         View::composer('educator.recharge', $ns . 'EducatorRechargeComposer');
     
         # 日历 - Event
