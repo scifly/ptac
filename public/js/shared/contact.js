@@ -47,7 +47,7 @@
                                         '<i class="fa fa-mobile" style="width: 20px;"></i>' +
                                     '</div>' +
                                     '<input class="form-control" ' +
-                                            'placeholder="（请输入手机号码）" ' +
+                                            'placeholder="(请输入手机号码)" ' +
                                             'name="mobile[' + size + '][mobile]" ' +
                                             'value="" style="width: 100%"' +
                                     '>' +
@@ -394,6 +394,7 @@
                         contact.onGradeChange(table, 'edit', null, id);
                         break;
                     case 'custodians':
+                    case 'educators':
                         $('#' + contact.options.relationship).val('');
                         contact.onAddClick();
                         contact.onAddClassClick();
@@ -402,15 +403,12 @@
                         contact.onGradeChange(table, 'edit', true, id);
                         contact.onClassChange(table, 'edit', id);
                         contact.onConfirmClick(table, true);
-                        break;
-                    case 'educators':
-                        formId = 'formEducator';
-                        contact.onAddClick();
-                        contact.onAddClassClick();
-                        contact.onSingularChange(table);
-                        $.getMultiScripts(['js/shared/tree.js']).done(
-                            function() { $.tree().list('educators/edit/' + id, 'department'); }
-                        );
+                        if (table === 'educators') {
+                            formId = 'formEducator';
+                            $.getMultiScripts(['js/shared/tree.js']).done(
+                                function() { $.tree().list('educators/edit/' + id, 'department'); }
+                            );
+                        }
                         break;
                     case 'operators':
                         formId = 'formOperator';
