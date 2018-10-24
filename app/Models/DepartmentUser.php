@@ -53,9 +53,10 @@ class DepartmentUser extends Model {
                 $schoolDepartmentId = School::find($this->schoolId())->department_id;
                 $schoolGroupId = Group::whereName('学校')->first()->id;
                 $records = [];
-                $enabled = isset($custodian) && $custodian ? Constant::DISABLED : Constant::ENABLED;
+                $enabled = $custodian ? Constant::DISABLED : Constant::ENABLED;
                 $this->where(['user_id' => $userId, 'enabled' => $enabled])->delete();
                 $record = ['user_id' => $userId, 'enabled' => $enabled];
+                $departmentIds = array_unique($departmentIds);
                 foreach ($departmentIds as $departmentId) {
                     $record['department_id'] = $departmentId;
                     $records[] = $record;

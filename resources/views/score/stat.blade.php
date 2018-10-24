@@ -4,7 +4,7 @@
 	</div>
 	<div class="box-body">
 		<div class="form-horizontal">
-			@include('partials.enabled', [
+			@include('partials.switch', [
 				'id' => 'type',
 				'label' => '分析类型',
 				'options' => ['按考次', '按学生'],

@@ -57,13 +57,13 @@
                     </div>
                 </div>
             </div>
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'label' => '进或出',
                 'id' => 'inorout',
                 'value' => $eas['inorout'] ?? null,
                 'options' => ['进', '出']
             ])
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'enabled',
                 'value' => $eas['enabled'] ?? null
             ])

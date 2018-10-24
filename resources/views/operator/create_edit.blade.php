@@ -148,7 +148,7 @@
                 </div>
             </div>
             <!-- 性别 -->
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'user[gender]',
                 'label' => '性别',
                 'value' => $user['gender'] ?? null,
@@ -190,7 +190,7 @@
                 </div>
             </div>
             <!-- 状态 -->
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'user[enabled]',
                 'value' => $user['enabled'] ?? null
             ])

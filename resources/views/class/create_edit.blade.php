@@ -38,7 +38,7 @@
             @if (isset($class['department_id']))
                 {!! Form::hidden('department_id', $class['department_id']) !!}
             @endif
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'enabled',
                 'value' => $class['enabled'] ?? null
             ])

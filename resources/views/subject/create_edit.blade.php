@@ -73,13 +73,13 @@
                 'icon' => 'fa fa-graduation-cap',
                 'selectedItems' => $selectedMajors ?? null
             ])
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'label' => '是否为副科',
                 'id' => 'isaux',
                 'options' => ['是', '否'],
                 'value' => $_subject['isaux'] ?? null
             ])
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'enabled',
                 'value' => $_subject['enabled'] ?? null
             ])

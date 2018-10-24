@@ -53,7 +53,7 @@
                 'items' => $subjects,
                 'selectedItems' => $selectedSubjects ?? []
             ])
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'enabled',
                 'value' => $sr['enabled'] ?? null
             ])

@@ -7,6 +7,7 @@ use App\Models\Group;
 use App\Models\MediaType;
 use App\Models\Menu;
 use App\Models\MessageType;
+use App\Models\Student;
 use App\Models\Tab;
 use App\Models\User;
 use Carbon\Carbon;
@@ -17,7 +18,6 @@ use App\Models\Squad;
 use App\Models\Action;
 use App\Models\School;
 use App\Policies\Route;
-use Illuminate\Support\Facades\Route as HttpRoute;
 use ReflectionException;
 use App\Models\Department;
 use App\Models\DepartmentUser;
@@ -48,7 +48,7 @@ trait ModelTrait {
         $action = Request::input('action');
         
         return $model->whereIn('id', $ids)->update([
-            'enabled' => $action == 'enable' ? Constant::ENABLED : Constant::DISABLED
+            'enabled' => $action == 'enable' ? Constant::ENABLED : Constant::DISABLED,
         ]);
         
     }
@@ -61,12 +61,12 @@ trait ModelTrait {
      * @throws Throwable
      */
     function batchUpdateContact(Model $model) {
-    
+        
         $this->batch($model);
         $ids = Request::input('ids');
         $userIds = $model->whereIn('id', array_values($ids))->pluck('user_id')->toArray();
         Request::replace(['ids' => $userIds]);
-    
+        
         return (new User)->modify(Request::all());
         
     }
@@ -84,12 +84,14 @@ trait ModelTrait {
         if (!$id) {
             $ids = Request::input('ids');
             DB::transaction(function () use ($ids, $model) {
-                foreach ($ids as $id) { $model->{'purge'}($id); }
+                foreach ($ids as $id) {
+                    $model->{'purge'}($id);
+                }
             });
-    
+            
             return true;
         }
-    
+        
         return $model->{'purge'}($id);
         
     }
@@ -103,13 +105,13 @@ trait ModelTrait {
      * @return mixed
      */
     function delRelated($key, $class, $value) {
-    
+        
         /** @var Model $model */
         $class = '\\App\\Models\\' . $class;
         $model = new $class;
         $ids = $model->where($key, $value)->pluck('id')->toArray();
         Request::merge(['ids' => $ids]);
-    
+        
         return $model->{'remove'}();
         
     }
@@ -138,7 +140,9 @@ trait ModelTrait {
         foreach ($relations as $relation) {
             if ($model->{$relation}) {
                 if (get_class($model->{$relation}) == 'Illuminate\Database\Eloquent\Collection') {
-                    if (count($model->{$relation})) { return false; }
+                    if (count($model->{$relation})) {
+                        return false;
+                    }
                 } else {
                     return false;
                 }
@@ -156,10 +160,10 @@ trait ModelTrait {
      * @return string
      */
     function synced($value) {
-    
+        
         $color = $value ? 'text-green' : 'text-gray';
         $title = $value ? '已同步' : '未同步';
-    
+        
         return sprintf(Snippet::ICON, 'fa-weixin ' . $color, $title);
         
     }
@@ -171,10 +175,10 @@ trait ModelTrait {
      * @return string
      */
     function subscribed($value) {
-    
+        
         $color = $value ? 'text-green' : 'text-gray';
         $title = $value ? '已关注' : '未关注';
-    
+        
         return sprintf(Snippet::ICON, 'fa-registered ' . $color, $title);
         
     }
@@ -186,7 +190,9 @@ trait ModelTrait {
      */
     function uris() {
         
-        if (!Request::route()) { return null; }
+        if (!Request::route()) {
+            return null;
+        }
         $controller = class_basename(Request::route()->controller);
         $routes = Action::whereTabId(Tab::whereName($controller)->first()->id)
             ->where('route', '<>', null)
@@ -209,7 +215,7 @@ trait ModelTrait {
     function schoolId() {
         
         $schoolMenuId = (new Menu)->menuId(session('menuId'));
-    
+        
         return $schoolMenuId ? School::whereMenuId($schoolMenuId)->first()->id : null;
         
     }
@@ -234,19 +240,24 @@ trait ModelTrait {
             case '企业':
                 $departmentId = head($user->departments->pluck('id')->toArray());
                 $corp = Corp::whereDepartmentId($departmentId)->first();
+                
                 return $corp->schools->pluck('id')->toArray();
             case '学校':
                 $departmentId = head($user->departments->pluck('id')->toArray());
+                
                 return [School::whereDepartmentId($departmentId)->first()->id];
             case '监护人':
                 $classes = Squad::whereIn('department_id', $user->departments->pluck('id')->toArray())->get();
                 $schoolIds = [];
-                if (!isset($corpId)) { return $schoolIds; }
+                if (!isset($corpId)) {
+                    return $schoolIds;
+                }
                 foreach ($classes as $class) {
                     if ($class->grade->school->corp_id == $corpId) {
                         $schoolIds[] = $class->grade->school_id;
                     }
                 }
+                
                 return array_unique($schoolIds);
             case '学生':
                 return [$user->student->squad->grade->school_id];
@@ -295,7 +306,7 @@ trait ModelTrait {
      * @return array
      */
     function classIds($schoolId = null, $userId = null) {
-    
+        
         $user = !$userId ? Auth::user() : User::find($userId);
         $schoolId = $schoolId ?? $this->schoolId();
         # todo -
@@ -332,7 +343,7 @@ trait ModelTrait {
      * @return array
      */
     function examIds($schoolId = null, $userId = null) {
-    
+        
         $user = !$userId ? Auth::user() : User::find($userId);
         $schoolId = $schoolId ?? $this->schoolId();
         # todo -
@@ -501,7 +512,7 @@ trait ModelTrait {
      * @return array
      */
     function menuIds(Menu $menu, $userId = null) {
-    
+        
         $user = !$userId ? Auth::user() : User::find($userId);
         $role = $user->group->name;
         switch ($role) {
@@ -511,11 +522,13 @@ trait ModelTrait {
                 $departmentId = head($user->departments->pluck('id')->toArray());
                 $corp = Corp::whereDepartmentId($departmentId)->first();
                 $menuIds = $menu->subMenuIds($corp->menu_id);
+                
                 return $menuIds;
             case '学校':
                 $departmentId = head($user->departments->pluck('id')->toArray());
                 $school = School::whereDepartmentId($departmentId)->first();
                 $menuIds = $menu->subMenuIds($school->menu_id);
+                
                 return $menuIds;
             default:
                 return [];
@@ -572,6 +585,7 @@ trait ModelTrait {
             header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
             header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
             header('Pragma: public'); // HTTP/1.0
+            
             return $writer->save('php://output');
         }
         $dir = public_path() . '/uploads/' . date('Y/m/d/');
@@ -601,9 +615,8 @@ trait ModelTrait {
      * @return array
      */
     function messageFilters() {
-    
+        
         $optionAll = [null => '全部'];
-    
         $htmlCommType = $this->singleSelectList(
             $optionAll + CommType::all()->pluck('name', 'id')->toArray(),
             'filter_commtype'
@@ -621,7 +634,7 @@ trait ModelTrait {
             $optionAll,
             $htmlCommType,
             $htmlMediaType,
-            $htmlMessageType
+            $htmlMessageType,
         ];
         
     }
@@ -636,7 +649,7 @@ trait ModelTrait {
     function singleSelectList(array $items, $id) {
         
         $html = '<select class="form-control select2" id="%s" name="%s" style="width: %s"' .
-            (sizeof($items) <=1 ? ' disabled ' : '') . '>';
+            (sizeof($items) <= 1 ? ' disabled ' : '') . '>';
         foreach ($items as $key => $value) {
             $html .= '<option value="' . $key . '">' . $value . '</option>';
         }
@@ -683,7 +696,7 @@ trait ModelTrait {
         
         return [
             $corp->corpid,
-            $corp->contact_sync_secret
+            $corp->contact_sync_secret,
         ];
         
     }
@@ -695,8 +708,14 @@ trait ModelTrait {
      * @return string - sql查询条件
      */
     function contactCondition($type = '') {
-
-        $departmentIds = $this->departmentIds(Auth::id());
+        
+        if (in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
+            $school = School::find($this->schoolId());
+            $departmentId = $school->department_id;
+            $departmentIds = [$departmentId] + (new Department)->subDepartmentIds($departmentId);
+        } else {
+            $departmentIds = $this->departmentIds(Auth::id());
+        }
         $userIds = array_unique(
             DepartmentUser::whereIn('department_id', $departmentIds)->pluck('user_id')->toArray()
         );
@@ -752,7 +771,7 @@ trait ModelTrait {
      * @return string
      */
     function humanDate($date) {
-    
+        
         Carbon::setLocale('zh');
         
         return isset($date)
@@ -767,7 +786,7 @@ trait ModelTrait {
      * @return mixed
      */
     function method() {
-    
+        
         return explode('/', Request::path())[1];
         
     }
@@ -778,14 +797,14 @@ trait ModelTrait {
      * @param $rules
      */
     function batchRules(&$rules) {
-    
+        
         if ($this->method() == 'update' && !Request::route('id')) {
             $rules = [
-                'ids' => 'required|array',
+                'ids'    => 'required|array',
                 'action' => [
-                    'required', Rule::in(Constant::BATCH_OPERATIONS)
+                    'required', Rule::in(Constant::BATCH_OPERATIONS),
                 ],
-                'field' => 'required|string'
+                'field'  => 'required|string',
             ];
         }
         
@@ -799,38 +818,38 @@ trait ModelTrait {
      * @return array
      */
     function contactInput(FormRequest $request, $role) {
-    
+        
         $input = $request->all();
         if (isset($input['mobile'])) {
-            $default = $input['mobile']['isdefault'];
+            $isdefault = $input['mobile']['isdefault'];
             unset($input['mobile']['isdefault']);
             foreach ($input['mobile'] as $i => $m) {
                 $input['mobile'][$i]['user_id'] = $input['user_id'] ?? 0;
                 $input['mobile'][$i]['enabled'] = isset($m['enabled']) ? 1 : 0;
-                $input['mobile'][$i]['isdefault'] = $i == $default ? 1 : 0;
+                $input['mobile'][$i]['isdefault'] = $i == $isdefault ? 1 : 0;
             }
         }
         $input['user']['isleader'] = 0;
         switch ($role) {
             case 'student':
             case 'custodian':
-                if (!isset($input['remark']) && $role == 'student') {
-                    $input['remark'] = 'student';
-                }
                 $input['enabled'] = $input['user']['enabled'];
                 $position = $role == 'student' ? '学生' : '监护人';
                 $input['user']['position'] = $position;
-                if (!HttpRoute::has('id')) {
-                    $userid = uniqid($role . '_');
+                if (!Request::route('id')) {
+                    $userid = uniqid('ptac_');
                     $input['user'] += [
-                        'username' => $userid,
-                        'userid' => $userid,
-                        'password' => bcrypt($role . '8888'),
-                        'group_id' => Group::whereName($position)->first()->id,
+                        'username'   => $userid,
+                        'userid'     => $userid,
+                        'password'   => bcrypt('12345678'),
+                        'group_id'   => Group::whereName($position)->first()->id,
                         'avatar_url' => '',
-                        'synced' => 0,
-                        'subscribed' => 0
+                        'synced'     => 0,
+                        'subscribed' => 0,
                     ];
+                }
+                if ($role == 'student' && !isset($input['remark'])) {
+                    $input['remark'] = 'student';
                 }
                 break;
             case 'educator':
@@ -839,15 +858,16 @@ trait ModelTrait {
                 if ($role == 'educator') {
                     $input['enabled'] = $input['user']['enabled'];
                     $input['school_id'] = $this->schoolId();
-                    if (!HttpRoute::has('id')) {
+                    if (!Request::route('id')) {
+                        $input['sms_quote'] = 0;
                         $input['user'] += [
                             'avatar_url' => '',
-                            'synced' => 0,
-                            'subscribed' => 0
+                            'synced'     => 0,
+                            'subscribed' => 0,
                         ];
                     }
                 } else {
-                    if (!HttpRoute::has('id')) {
+                    if (!Request::route('id')) {
                         $input['user'] += [
                             'avatar_url' => '',
                             'synced'     => 0,
@@ -870,6 +890,47 @@ trait ModelTrait {
                 break;
             default:
                 break;
+        }
+        if (in_array($role, ['custodian', 'educator'])) {
+            $input['singular'] = 1;
+            if (!empty($input['student_ids'])) {
+                foreach ($input['student_ids'] as $key => $studentId) {
+                    $student = Student::find($studentId);
+                    abort_if(
+                        !$student || !in_array($studentId, $this->contactIds('student')),
+                        HttpStatusCode::NOT_FOUND,
+                        __('messages.student.not_found') . ':' . $studentId
+                    );
+                    $departmentIds[] = $student->squad->department_id;
+                    $rses[$studentId] = $input['relationships'][$key];
+                }
+                $input['relationships'] = $rses ?? [];
+                $input['deparmtentIds'] = $departmentIds ?? [];
+                if ($role == 'educator' && isset($rses, $departmentIds)) {
+                    $input['singular'] = 0;
+                }
+            }
+            if (!empty($input['cs'])) {
+                foreach ($input['cs']['class_ids'] as $classId) {
+                    $class = Squad::find($classId);
+                    abort_if(
+                        !$class || !in_array($class->id, $this->classIds()),
+                        HttpStatusCode::NOT_FOUND,
+                        __('messages.class.not_found') . ':' . $classId
+                    );
+                    $classDeptIds[] = $class->department_id;
+                }
+                $input['selectedDepartments'] += $classDeptIds ?? [];
+                if ($role == 'custodian') {
+                    $schoolId = $this->schoolId();
+                    $group = Group::where(['school_id' => $schoolId, 'name' => '教职员工'])->first();
+                    abort_if(!$role, HttpStatusCode::NOT_FOUND, __('messages.group.not_found'));
+                    $input['user']['group_id'] = $group->id;
+                    $input['singular'] = 0;
+                    $input['school_id'] = $schoolId;
+                    $input['enabled'] = $input['user']['enabled'];
+                }
+            }
         }
         
         return $input;

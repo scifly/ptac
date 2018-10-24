@@ -52,7 +52,7 @@
                 'selectedItems' => $selectedMenus ?? null
             ])
             @include('partials.remark')
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'enabled',
                 'value' => $tab['enabled'] ?? null
             ])

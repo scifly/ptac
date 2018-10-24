@@ -72,7 +72,7 @@
             <!-- 备注 -->
             @include('partials.remark')
             <!-- 状态 -->
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'enabled',
                 'value' => $menu['enabled'] ?? null
             ])

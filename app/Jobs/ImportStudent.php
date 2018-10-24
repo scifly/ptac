@@ -169,14 +169,15 @@ class ImportStudent implements ShouldQueue {
                 foreach ($inserts as $insert) {
                     $relationship = str_replace(['，', '：'], [',', ':'], $insert['relationship']);
                     $relationships = explode(',', $relationship);
+                    $userid = uniqid('ptac_');
                     # 创建用户
                     $u = User::create([
-                        'username'   => uniqid('student_'),
+                        'username'   => $userid,
                         'group_id'   => Group::whereName('学生')->first()->id,
                         'password'   => bcrypt('student8888'),
                         'realname'   => $insert['name'],
                         'gender'     => $insert['gender'] == '男' ? '1' : '0',
-                        'userid'     => uniqid('student_'),
+                        'userid'     => $userid,
                         'isleader'   => 0,
                         'enabled'    => 1,
                         'synced'     => 0,
@@ -202,14 +203,15 @@ class ImportStudent implements ShouldQueue {
                                 if (!empty($m)) { continue; }
                                 # 手机号码不存在时 增加监护人用户 如果存在则更新
                                 if (empty($m)) {
+                                    $userid = uniqid('ptac_');
                                     # 创建监护人用户
                                     $user = User::create([
-                                        'username'   => uniqid('custodian_'),
+                                        'username'   => $userid,
+                                        'userid'     => $userid,
                                         'group_id'   => Group::whereName('监护人')->first()->id,
-                                        'password'   => bcrypt('custodian8888'),
+                                        'password'   => bcrypt('12345678'),
                                         'realname'   => $paths[1],
                                         'gender'     => $paths[2] == '男' ? '1' : '0',
-                                        'userid'     => uniqid('custodian_'),
                                         'isleader'   => 0,
                                         'enabled'    => 1,
                                         'synced'     => 0,
@@ -360,14 +362,15 @@ class ImportStudent implements ShouldQueue {
                                 $m = Mobile::whereMobile($paths[3])->first();
                                 # 手机号码不存在时 增加监护人用户 如果存在则更新
                                 if (empty($m)) {
+                                    $userid = uniqid('ptac_');
                                     # 创建监护人用户
                                     $user = User::create([
-                                        'username'   => uniqid('custodian_'),
+                                        'username'   => $userid,
+                                        'userid'     => $userid,
                                         'group_id'   => Group::whereName('监护人')->first()->id,
-                                        'password'   => bcrypt('custodian8888'),
+                                        'password'   => bcrypt('12345678'),
                                         'realname'   => $paths[1],
                                         'gender'     => $paths[2] == '男' ? '1' : '0',
-                                        'userid'     => uniqid('custodian_'),
                                         'isleader'   => 0,
                                         'enabled'    => 1,
                                         'synced'     => 0,

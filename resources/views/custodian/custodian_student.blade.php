@@ -13,7 +13,7 @@
                 </tr>
                 </thead>
                 <tbody id="tBody">
-                @if(!empty($relations))
+                @if (!empty($relations))
                     @foreach($relations as $key => $relation)
                         <tr>
                             <td>
@@ -26,10 +26,9 @@
                                 {!! $relation->student->student_number !!}
                             </td>
                             <td>
-                                <label for=""></label>
-                                <input type="text" name="relationships[{!! $key !!}]" id="" readonly
-                                       class="no-border" style="background: none;"
-                                       value="{!! $relation->relationship !!}"
+                                <input type="text" name="relationships[{!! $key !!}]"
+                                       class="no-border text-center" style="background: none;"
+                                       title="监护关系" value="{!! $relation->relationship !!}"
                                 >
                             </td>
                             <td>

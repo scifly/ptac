@@ -32,7 +32,7 @@
             @if (isset($grade['department_id']))
                 {!! Form::hidden('department_id', $grade['department_id']) !!}
             @endif
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'enabled',
                 'value' => $grade['enabled'] ?? null
             ])

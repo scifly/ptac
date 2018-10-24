@@ -44,7 +44,7 @@
                 </div>
             </div>
             <!-- 性别 -->
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'user[gender]',
                 'label' => '性别',
                 'value' => $educator->user->gender ?? null,
@@ -160,7 +160,7 @@
             <!-- 班级、科目绑定关系 -->
             @include('educator.educator_class', ['visible' => true])
             <!-- 单角色 -->
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'singular',
                 'value' => $educator['singular'] ?? null,
                 'label' => '单角色',
@@ -192,7 +192,7 @@
                 </div>
             </div>
             <!-- 状态 -->
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'user[enabled]',
                 'value' => $educator['enabled'] ?? null
             ])

@@ -2,7 +2,6 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
@@ -57,6 +56,7 @@ use Throwable;
  * @method static Builder|Student whereUpdatedAt($value)
  * @method static Builder|Student whereUserId($value)
  * @mixin Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Module[] $modules
  */
 class Student extends Model {
     

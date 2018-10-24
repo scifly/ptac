@@ -31,7 +31,7 @@
                 'icon' => 'fa fa-book'
             ])
             @include('partials.remark')
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'enabled',
                 'value' => $major['enabled'] ?? null
             ])

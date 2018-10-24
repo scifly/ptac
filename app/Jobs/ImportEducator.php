@@ -174,14 +174,15 @@ class ImportEducator implements ShouldQueue {
                 $group = Group::whereName('教职员工')->where('school_id', $schoolId)->first();
                 throw_if(!$group, new NotFoundHttpException(__('messages.group.not_found')));
                 foreach ($inserts as $insert) {
+                    $userid = uniqid('ptac_');
                     # 创建用户
                     $user = User::create([
-                        'username'   => uniqid('educator_'),
+                        'username'   => $userid,
+                        'userid'     => $userid,
                         'group_id'   => $group->id,
                         'password'   => bcrypt('12345678'),
                         'realname'   => $insert['name'],
                         'gender'     => $insert['gender'] == '男' ? '0' : '1',
-                        'userid'     => uniqid('educator_'),
                         'isleader'   => 0,
                         'enabled'    => 1,
                         'synced'     => 0,

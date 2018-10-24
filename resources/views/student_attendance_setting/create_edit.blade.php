@@ -78,13 +78,13 @@
                 'label' => '考勤消息模板',
                 'placeholder' => '尊敬的{name}家长, 你的孩子于{time}在校打卡, 打卡规则：{rule}, 状态：{status}'
             ])
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'label' => '是否为公用',
                 'id' => 'ispublic',
                 'value' => $sas['ispublic'] ?? null,
                 'options' => ['是', '否']                
             ])
-            @include('partials.enabled', [
+            @include('partials.switch', [
               'label' => '进或出',
               'id' => 'inorout',
               'value' => $sas['inorout'] ?? null,

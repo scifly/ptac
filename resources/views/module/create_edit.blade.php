@@ -105,13 +105,13 @@
                 </div>
             </div>
             @include('partials.remark')
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'isfree',
                 'label' => '类型',
                 'value' => $modules['isfree'] ?? null,
                 'options' => ['基本', '增值']
             ])
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'enabled',
                 'value' => $module['enabled'] ?? null
             ])

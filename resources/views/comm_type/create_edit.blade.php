@@ -24,7 +24,7 @@
                 </div>
             </div>
             @include('partials.remark')
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'enabled',
                 'value' => $ct['enabled'] ?? null
             ])

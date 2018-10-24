@@ -35,7 +35,9 @@ use Throwable;
  * @method static Builder|Custodian whereUpdatedAt($value)
  * @method static Builder|Custodian whereUserId($value)
  * @method static Builder|Custodian whereEnabled($value)
+ * @method static Builder|Custodian whereSingular($value)
  * @mixin Eloquent
+ * @property int $singular 是否为单角色
  */
 class Custodian extends Model {
     
@@ -96,7 +98,11 @@ class Custodian extends Model {
             [
                 'db'        => 'Custodian.id as students', 'dt' => 4,
                 'formatter' => function ($d) {
-                    $students = $this->find($d)->students;
+                    $students = $this->find($d)->students->filter(
+                        function (Student $student) {
+                            return $student->squad->grade->school_id == $this->schoolId();
+                        }
+                    );
                     $studentUserIds = $students->isNotEmpty() ? $students->pluck('user_id')->toArray() : [0];
                     return implode(',', User::whereIn('id', $studentUserIds)->pluck('realname')->toArray());
                 },
@@ -167,7 +173,16 @@ class Custodian extends Model {
                 $data['user_id'] = $user->id;
                 $custodian = $this->create($data);
                 # 保存监护人用户&部门绑定关系、监护关系、手机号码
-                $this->updateProperties($custodian, $data);
+                $this->storeProperties($custodian, $data);
+                # 如果同时也是教职员工
+                if (!$custodian->singular) {
+                    # 创建教职员工(Educator)记录
+                    $educator = Educator::create($data);
+                    # 保存教职员工班级科目绑定关系
+                    (new EducatorClass)->storeByEducatorId($educator->id, $data['cs']);
+                    # 保存教职员工用户&部门绑定关系
+                    (new DepartmentUser)->storeByUserId($user->id, $data['selectedDepartments']);
+                }
                 # 创建企业号成员
                 $user->createWechatUser($user->id);
             });
@@ -199,7 +214,16 @@ class Custodian extends Model {
                 # 更新监护人记录
                 $custodian->update($data);
                 # 更新监护人用户&部门绑定关系、监护关系、手机号码
-                $this->updateProperties($custodian, $data);
+                $this->storeProperties($custodian, $data);
+                # 如果同时也是教职员工
+                $educator = Educator::whereUserId($custodian->user_id)->first();
+                if (!$custodian->singular) {
+                    $educator ? $educator->update($data) : $educator = Educator::create($data);
+                    (new EducatorClass)->storeByEducatorId($educator->id, $data['cs']);
+                    (new DepartmentUser)->storeByUserId($educator->user_id, $data['selectedDepartments']);
+                } else {
+                    if ($educator) (new Educator)->purge($educator->id);
+                }
                 # 更新企业号会员数据
                 $custodian->user->UpdateWechatUser($custodian->user_id);
             });
@@ -238,9 +262,22 @@ class Custodian extends Model {
         try {
             DB::transaction(function () use ($id, $broadcast) {
                 $custodian = $this->find($id);
-                CustodianStudent::whereCustodianId($id)->delete();
-                (new User)->remove($custodian->user_id, $broadcast);
-                $custodian->delete();
+                $cses = CustodianStudent::whereCustodianId($id)->get();
+                $schoolId = $this->schoolId();
+                $schoolCses = $cses->filter(function (CustodianStudent $cs) use ($schoolId) {
+                    return $cs->student->squad->grade->school_id == $schoolId;
+                });
+                if ($cses->count() <= 1 || $schoolCses->count() == $cses->count()) {
+                    CustodianStudent::whereCustodianId($id)->delete();
+                    if ($custodian->singular) {
+                        (new User)->remove($custodian->user_id, $broadcast);
+                    }
+                    $custodian->delete();
+                } else {
+                    CustodianStudent::whereCustodianId($id)
+                        ->whereIn('student_id', $schoolCses->pluck('student_id')->toArray())
+                        ->delete();
+                }
             });
         } catch (Exception $e) {
             throw $e;
@@ -380,31 +417,30 @@ class Custodian extends Model {
     }
     
     /**
-     * 析取家长&学生 、家长&部门绑定关系数据
+     * 保存家长&学生 、家长&部门绑定关系数据
      *
      * @param Custodian $custodian
      * @param array $data
      * @throws Throwable
      */
-    private function updateProperties(Custodian $custodian, array $data) {
+    function storeProperties(Custodian $custodian, array $data) {
     
-        $mobiles = $data['mobile'];
-        $rses = $departmentIds = [];
-        foreach ($data['student_ids'] as $key => $sId) {
-            $student = Student::find($sId);
-            abort_if(!$student, HttpStatusCode::NOT_FOUND, '找不到学生id: ' . $sId . '对应的记录');
-            (new DepartmentUser)->store(
-                $custodian->user_id,
-                $student->squad->department_id
-            );
-            $rses[$sId] = $data['relationships'][$key];
-        }
         # 更新监护人&部门绑定关系
-        (new DepartmentUser)->storeByUserId($custodian->user_id, $departmentIds);
+        (new DepartmentUser)->storeByUserId(
+            $custodian->user_id,
+            $data['departmentIds'] ?? [],
+            true
+        );
         # 更新监护人&学生关系
-        (new CustodianStudent)->storeByCustodianId($custodian->id, $rses);
+        (new CustodianStudent)->storeByCustodianId(
+            $custodian->id,
+            $data['relationships'] ?? []
+        );
         # 更新监护人手机号码
-        (new Mobile)->store($mobiles, $custodian->user->id);
+        (new Mobile)->store(
+            $data['mobile'],
+            $custodian->user->id
+        );
         
     }
     

@@ -49,7 +49,7 @@
                 </div>
             </div>
             <!-- 性别 -->
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'user[gender]',
                 'label' => '性别',
                 'value' => $user['gender'] ?? null,
@@ -91,7 +91,7 @@
                     </div>
                 </div>
             </div>
-            <!-- 所属年级 -->
+            <!-- 所属年级/班级 -->
             @include('partials.single_select', [
                 'label' => '所属年级',
                 'id' => 'grade_id',
@@ -161,7 +161,7 @@
                 </div>
             </div>
             <!-- 是否住校 -->
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'label' => '住校',
                 'id' => 'oncampus',
                 'value' => $student['oncampus'] ?? null,
@@ -172,7 +172,7 @@
                 'field' => 'remark'
             ])
             <!-- 状态 -->
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'user[enabled]',
                 'value' => $student['enabled'] ?? null
             ])

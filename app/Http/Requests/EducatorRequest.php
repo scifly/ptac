@@ -26,16 +26,23 @@ class EducatorRequest extends FormRequest {
      * @return array
      */
     public function rules() {
-    
+        
         $rules = [
-            'school_id'         => 'required|integer',
-            'user.group_id'              => 'required|integer',
-            'user.realname'              => 'required|string',
+            'user.realname'              => 'required|string|between:2,255',
+            'user.english_name'          => 'required|string|between:2,64',
             'user.gender'                => 'required|boolean',
-            'user.enabled'               => 'required|boolean',
-            'user.email'                 => ['nullable', 'email', new Email],
+            'user.group_id'              => 'required|integer',
+            'user.username'              => 'required|string|between:2,255',
             'user.password'              => 'string|min:8|confirmed',
             'user.password_confirmation' => 'string|min:8',
+            'user.telephone'             => 'nullable|string|between:2,64',
+            'user.email'                 => ['nullable', 'email', new Email],
+            'user.position'              => 'nullable|string|between:2,64',
+            'user.enabled'               => 'required|boolean',
+            'singular'                   => 'required|boolean',
+            'school_id'                  => 'required|integer',
+            'sms_quote'                  => 'nullable|integer',
+            'enabled'                    => 'required|boolean',
             'mobile.*'                   => ['required', new Mobile],
             'selectedDepartments'        => 'required|array',
         ];

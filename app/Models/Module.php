@@ -45,6 +45,10 @@ use Illuminate\Support\Facades\Request;
  * @method static Builder|Module whereUpdatedAt($value)
  * @method static Builder|Module whereUri($value)
  * @mixin \Eloquent
+ * @property int|null $group_id 应用模块所属角色id
+ * @property-read \App\Models\Group|null $group
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Student[] $students
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Module whereGroupId($value)
  */
 class Module extends Model {
 

@@ -19,7 +19,7 @@
                 </div>
             </div>
             @include('partials.wapsite.preview')
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'enabled',
                 'value' => $ws['enabled'] ?? null
             ])

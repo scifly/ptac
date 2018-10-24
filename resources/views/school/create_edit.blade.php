@@ -82,7 +82,7 @@
                 ])
             @endif
 
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'enabled',
                 'value' => $school['enabled'] ?? null
             ])

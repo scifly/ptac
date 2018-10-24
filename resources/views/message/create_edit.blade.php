@@ -201,7 +201,7 @@
             </div>
         </div>
     </div>
-    @include('partials.enabled', [
+    @include('partials.switch', [
         'id' => 'schedule',
         'label' => '发送时间',
         'value' => 0,

@@ -81,7 +81,7 @@ class EducatorClass extends Model {
      * @throws Throwable
      */
     function storeByEducatorId($educatorId, array $data) {
-    
+        
         try {
             DB::transaction(function () use ($educatorId, $data) {
                 $educator = Educator::find($educatorId);
@@ -90,19 +90,13 @@ class EducatorClass extends Model {
                     $classIds = $data['class_ids'];
                     $subjectIds = $data['subject_ids'];
                     for ($i = 0; $i < sizeof($classIds); $i++) {
-                        $ec = $this->where([
+                        $record = [
                             'educator_id' => $educatorId,
                             'class_id' => $classIds[$i],
-                            'subject_id' => $subjectIds[$i]
-                        ])->first();
-                        if (!$ec) {
-                            $this->create([
-                                'educator_id' => $educatorId,
-                                'class_id' => $classIds[$i],
-                                'subject_id' => $subjectIds[$i],
-                                'enabled' => 1
-                            ]);
-                        }
+                            'subject_id' => $subjectIds[$i],
+                            'enabled' => 1
+                        ];
+                        $this->where($record)->first() ?: $this->create($record);
                     }
                 }
             });

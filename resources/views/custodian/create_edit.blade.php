@@ -45,7 +45,7 @@
                 </div>
             </div>
             <!-- 监护人性别 -->
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'label' => '性别',
                 'id' => 'user[gender]',
                 'value' => $custodian->user->gender ?? null,
@@ -85,8 +85,10 @@
                     </div>
                 </div>
             </div>
+            <!-- 监护关系 -->
+            @include('custodian.custodian_student', ['visible' => true])
             <!-- 单角色 -->
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'singular',
                 'value' => $custodian['singular'] ?? null,
                 'label' => '单角色',
@@ -94,10 +96,8 @@
             ])
             <!-- 班级、科目绑定关系 -->
             @include('educator.educator_class', ['visible' => false])
-            <!-- 监护关系 -->
-            @include('custodian.custodian_student', ['visible' => true])
             <!-- 监护人状态 -->
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'user[enabled]',
                 'value' => $custodian->user->enabled ?? null
             ])

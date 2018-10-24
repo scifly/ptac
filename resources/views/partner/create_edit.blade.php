@@ -112,7 +112,7 @@
                 </div>
             </div>
             <!-- 状态 -->
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'enabled',
                 'value' => $partner['enabled'] ?? null
             ])

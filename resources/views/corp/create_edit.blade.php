@@ -171,7 +171,7 @@
             @if (isset($corp['menu_id']))
                 {!! Form::hidden('menu_id', $corp['menu_id']) !!}
             @endif
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'enabled',
                 'value' => $corp['enabled'] ?? null
             ])

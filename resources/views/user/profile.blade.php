@@ -90,7 +90,7 @@
                             </div>
                         </div>
                         <!-- 性别 -->
-                        @include('partials.enabled', [
+                        @include('partials.switch', [
                             'id' => 'gender',
                             'label' => '性别',
                             'value' => $user->gender ?? null,

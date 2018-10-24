@@ -39,7 +39,7 @@
                     </div>
                 </div>
             </div>
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'enabled',
                 'value' => $at['enabled'] ?? null
             ])

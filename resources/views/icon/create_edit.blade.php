@@ -27,7 +27,7 @@
                 'items' => $iconTypes
             ])
             @include('partials.remark')
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'enabled',
                 'value' => $icon['enabled'] ?? null
             ])

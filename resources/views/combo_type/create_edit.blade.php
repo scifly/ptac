@@ -63,7 +63,7 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'enabled',
                 'value' => $comboType['enabled'] ?? null
             ])

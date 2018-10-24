@@ -30,17 +30,23 @@ class StudentRequest extends FormRequest {
     public function rules() {
     
         $rules = [
-            'card_number'    => 'required|alphanum|between:2,32|unique:students,card_number,' .
-                $this->input('user_id') . ',user_id',
-            'user.realname'  => 'required|string',
+            'user.realname'  => 'required|string|between:2,255',
+            'user.english_name'  => 'nullable|string|between:2,64',
             'user.gender'    => 'required|boolean',
             'user.group_id'  => 'required|integer',
+            'user.telephone' => 'nullable|string|between:2,64',
             'user.email'     => ['nullable', 'email', new Email],
-            'mobile.*'       => ['nullable', new Mobile],
-            'remark'         => 'required|string',
+            'user.enabled'   => 'required|boolean',
+            'class_id'       => 'required|integer',
+            'card_number'    => 'required|alphanum|between:2,32|unique:students,card_number,' .
+                $this->input('user_id') . ',user_id',
             'student_number' => 'required|alphanum|between:2,32|unique:students,student_number,' .
                 $this->input('user_id') . ',user_id',
+            'oncampus'       => 'required|boolean',
             'birthday'       => 'required',
+            'remark'         => 'required|string',
+            'enabled'        => 'required|boolean',
+            'mobile.*'       => ['nullable', new Mobile],
         ];
         $this->batchRules($rules);
         

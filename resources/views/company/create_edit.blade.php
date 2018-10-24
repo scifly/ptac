@@ -30,7 +30,7 @@
                 {!! Form::hidden('menu_id', $op['menu_id']) !!}
             @endif
             @include('partials.remark')
-            @include('partials.enabled', [
+            @include('partials.switch', [
                 'id' => 'enabled',
                 'value' => $op['enabled'] ?? null
             ])

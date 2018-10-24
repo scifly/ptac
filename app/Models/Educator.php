@@ -47,7 +47,9 @@ use Throwable;
  * @method static Builder|Educator whereSmsQuote($value)
  * @method static Builder|Educator whereUpdatedAt($value)
  * @method static Builder|Educator whereUserId($value)
+ * @method static Builder|Educator whereSingular($value)
  * @mixin Eloquent
+ * @property int $singular 是否为单角色
  */
 class Educator extends Model {
     
@@ -243,7 +245,7 @@ class Educator extends Model {
     }
     
     /**
-     * 保存新创建的教职员工记录
+     * 保存职员工
      *
      * @param array $data
      * @return bool|mixed
@@ -256,14 +258,23 @@ class Educator extends Model {
                 # 创建用户
                 $user = User::create($data['user']);
                 # 创建教职员工
-                $data['educator']['user_id'] = $user->id;
+                $data['user_id'] = $user->id;
                 $educator = $this->create($data);
                 # 保存班级科目绑定关系
                 (new EducatorClass)->storeByEducatorId($educator->id, $data['cs']);
                 # 保存部门用户绑定关系
-                (new DepartmentUser)->storeByUserId($user->id, $data['selectedDepartments'], false);
+                (new DepartmentUser)->storeByUserId($user->id, $data['selectedDepartments']);
                 # 保存手机号码
                 (new Mobile)->store($data['mobile'], $user->id);
+                # 如果同时也是监护人
+                if (!$educator->singular) {
+                    # 创建监护人(Custodian)记录
+                    $custodian = $this->create($data);
+                    # 更新监护人&部门绑定关系
+                    (new DepartmentUser)->storeByUserId($custodian->user_id, $data['departmentIds'], true);
+                    # 更新监护人&学生关系
+                    (new CustodianStudent)->storeByCustodianId($custodian->id, $data['relationships']);
+                }
                 # 创建企业号成员
                 $user->createWechatUser($user->id);
             });
@@ -276,7 +287,7 @@ class Educator extends Model {
     }
     
     /**
-     * 修改教职员工
+     * 更新教职员工
      *
      * @param array $data
      * @param $id
@@ -299,6 +310,17 @@ class Educator extends Model {
                 (new DepartmentUser)->storeByUserId($educator->user_id, $data['selectedDepartments']);
                 # 保存手机号码
                 (new Mobile)->store($data['mobile'], $educator->user_id);
+                # 如果同时也是监护人
+                $custodian = $educator->user->custodian;
+                if (!$educator->singular) {
+                    $custodian ? $custodian->update($data) : $custodian = Custodian::create($data);
+                    # 更新监护人&部门绑定关系
+                    (new DepartmentUser)->storeByUserId($custodian->user_id, $data['departmentIds'], true);
+                    # 更新监护人&学生关系
+                    (new CustodianStudent)->storeByCustodianId($custodian->id, $data['relationships']);
+                } else {
+                    if ($custodian) (new Custodian)->purge($custodian->id);
+                }
                 # 更新企业号成员
                 (new User)->UpdateWechatUser($educator->user_id);
             });
@@ -378,7 +400,9 @@ class Educator extends Model {
                 Event::whereEducatorId($id)->delete();
                 (new Grade)->removeEducator($id);
                 (new Squad)->removeEducator($id);
-                (new User)->remove($educator->user_id, $broadcast);
+                if ($educator->singular) {
+                    (new User)->remove($educator->user_id, $broadcast);
+                }
                 $educator->delete();
             });
         } catch (Exception $e) {

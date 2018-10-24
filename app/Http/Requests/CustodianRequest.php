@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Request;
 class CustodianRequest extends FormRequest {
     
     use ModelTrait;
+    
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -27,15 +28,19 @@ class CustodianRequest extends FormRequest {
      * @return array
      */
     public function rules() {
-    
-        $rules =  [
-            'user.realname' => 'required|string',
-            'user.gender'   => 'required|boolean',
-            'user.group_id' => 'required|integer',
-            'user.email'    => ['nullable', 'email', new Email],
-            'mobile.*'      => ['required', new Mobile],
-            'singular'      => 'required|boolean',
-            'student_ids'   => 'required',
+        
+        $rules = [
+            'user.group_id'     => 'required|integer',
+            'user.realname'     => 'required|string|between:2,255',
+            'user.english_name' => 'nullable|string|between:2,64',
+            'user.gender'       => 'required|boolean',
+            'user.telephone'    => 'nullable|string|between:2,64',
+            'user.email'        => ['nullable', 'email', new Email],
+            'user.enabled'      => 'required|boolean',
+            'singular'          => 'required|boolean',
+            'enabled'           => 'required|boolean',
+            'mobile.*'          => ['required', new Mobile],
+            'student_ids'       => 'required',
         ];
         $this->batchRules($rules);
         
