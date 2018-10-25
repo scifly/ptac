@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.list_header')
+        @include('shared.list_header')
     </div>
     <div class="box-body">
         {!! Form::open([
@@ -119,5 +119,5 @@
         </table>
         </div>
     </div>
-    @include('partials.form_overlay')
+    @include('shared.form_overlay')
 </div>

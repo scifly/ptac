@@ -1,8 +1,8 @@
-@include('partials.modal_delete')
-@include('partials.modal_show')
+@include('shared.modal_delete')
+@include('shared.modal_show')
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.list_header')
+        @include('shared.list_header')
     </div>
     <div class="box-body">
         <div class="nav-tabs-custom">

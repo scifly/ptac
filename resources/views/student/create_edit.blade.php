@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
@@ -11,7 +11,7 @@
                 <!-- 学生UserID -->
                 {{ Form::hidden('user_id', $student['user_id'], ['id' => 'user_id']) }}
                 <!-- 学生头像 -->
-                @include('partials.avatar', ['user' => $student->user])
+                @include('shared.avatar', ['user' => $student->user])
             @endif
             <!-- 真实姓名 -->
             <div class="form-group">
@@ -20,7 +20,7 @@
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-child'])
+                        @include('shared.icon_addon', ['class' => 'fa-child'])
                         {{ Form::text('user[realname]', null, [
                             'class' => 'form-control text-blue',
                             'required' => 'true',
@@ -37,7 +37,7 @@
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-language'])
+                        @include('shared.icon_addon', ['class' => 'fa-language'])
                         {{ Form::text('user[english_name]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(可选)',
@@ -49,14 +49,14 @@
                 </div>
             </div>
             <!-- 性别 -->
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'id' => 'user[gender]',
                 'label' => '性别',
                 'value' => $user['gender'] ?? null,
                 'options' => ['男', '女']
             ])
             <!-- 手机号码 -->
-            @include('partials.mobile')
+            @include('shared.mobile')
             <!-- 座机号码 -->
             <div class="form-group">
                 {{ Form::label('user[telephone]', '座机', [
@@ -64,7 +64,7 @@
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-phone'])
+                        @include('shared.icon_addon', ['class' => 'fa-phone'])
                         {{ Form::text('user[telephone]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(可选)',
@@ -79,7 +79,7 @@
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-envelope-o'])
+                        @include('shared.icon_addon', ['class' => 'fa-envelope-o'])
                         {{ Form::text('user[email]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请输入电子邮件地址)',
@@ -92,13 +92,13 @@
                 </div>
             </div>
             <!-- 所属年级/班级 -->
-            @include('partials.single_select', [
+            @include('shared.single_select', [
                 'label' => '所属年级',
                 'id' => 'grade_id',
                 'items' => $grades,
                 'icon' => 'fa fa-object-group',
             ])
-            @include('partials.single_select', [
+            @include('shared.single_select', [
                 'label' => '所属班级',
                 'id' => 'class_id',
                 'items' => $classes,
@@ -151,7 +151,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa fa-calendar'])
+                        @include('shared.icon_addon', ['class' => 'fa fa-calendar'])
                         {!! Form::date('birthday', isset($student) ? date('Y-m-d', strtotime($student->birthday)) : null, [
                             'required' => 'true',
                             'class' => 'form-control text-blue',
@@ -161,22 +161,22 @@
                 </div>
             </div>
             <!-- 是否住校 -->
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'label' => '住校',
                 'id' => 'oncampus',
                 'value' => $student['oncampus'] ?? null,
                 'options' => ['是', '否']
             ])
             <!-- 备注 -->
-            @include('partials.remark', [
+            @include('shared.remark', [
                 'field' => 'remark'
             ])
             <!-- 状态 -->
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'id' => 'user[enabled]',
                 'value' => $student['enabled'] ?? null
             ])
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>

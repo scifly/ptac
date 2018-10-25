@@ -6,7 +6,7 @@
 <div class="box box-default box-solid">
     @if (isset($breadcrumb))
         <div class="box-header with-border">
-            @include('partials.form_header')
+            @include('shared.form_header')
         </div>
     @endif
     <div class="box-body">
@@ -18,7 +18,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-user'])
+                        @include('shared.icon_addon', ['class' => 'fa-user'])
                         {!! Form::text('username', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(用户名不能为空)',
@@ -35,7 +35,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-user-o'])
+                        @include('shared.icon_addon', ['class' => 'fa-user-o'])
                         {!! Form::text('realname', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(不超过10个汉字)',
@@ -52,7 +52,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-language'])
+                        @include('shared.icon_addon', ['class' => 'fa-language'])
                         {!! Form::text('english_name', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(可选)',
@@ -68,7 +68,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-mobile'])
+                        @include('shared.icon_addon', ['class' => 'fa-mobile'])
                         {!! Form::text('mobile', $mobile, [
                             'class' => 'form-control text-blue',
                             'data-parsley-length' => '[11, 11]',
@@ -83,7 +83,7 @@
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-envelope-o'])
+                        @include('shared.icon_addon', ['class' => 'fa-envelope-o'])
                         {{ Form::text('email', null, [
                             'class' => 'form-control text-blue',
                             'type' => 'email',
@@ -100,7 +100,7 @@
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-phone'])
+                        @include('shared.icon_addon', ['class' => 'fa-phone'])
                         {{ Form::text('telephone', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(选填)'
@@ -109,7 +109,7 @@
                 </div>
             </div>
             <!-- 性别 -->
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'id' => 'gender',
                 'label' => '性别',
                 'value' => $user['gender'],
@@ -117,6 +117,6 @@
             ])
         </div>
     </div>
-    @include('partials.form_buttons', ['id' => 'store'])
+    @include('shared.form_buttons', ['id' => 'store'])
 </div>
 {!! Form::close() !!}

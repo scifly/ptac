@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
@@ -20,18 +20,18 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.single_select', [
+            @include('shared.single_select', [
                  'label' => '所属年级',
                  'id' => 'grade_id',
                  'items' => $grades,
                  'icon' => 'fa fa-object-group'
              ])
-            @include('partials.single_select', [
+            @include('shared.single_select', [
                 'label' => '所属学期',
                 'id' => 'semester_id',
                 'items' => $semesters,
             ])
-            @include('partials.single_select', [
+            @include('shared.single_select', [
                 'label' => '星期几',
                 'id' => 'day',
                 'items' => $days,
@@ -44,7 +44,7 @@
                 <div class="col-sm-6">
                     <div class="bootstrap-timepicker">
                         <div class="input-group">
-                            @include('partials.icon_addon', ['class' => 'fa-clock-o'])
+                            @include('shared.icon_addon', ['class' => 'fa-clock-o'])
                             {!! Form::text('start', null, [
                                 'class' => 'form-control start-time timepicker',
                                 'required' => 'true',
@@ -62,7 +62,7 @@
                 <div class="col-sm-6">
                     <div class="bootstrap-timepicker">
                         <div class="input-group">
-                            @include('partials.icon_addon', ['class' => 'fa-clock-o'])
+                            @include('shared.icon_addon', ['class' => 'fa-clock-o'])
                             {!! Form::text('end', null, [
                                 'class' => 'form-control end-time timepicker',
                                 'required' => 'true',
@@ -73,18 +73,18 @@
                     </div>
                 </div>
             </div>
-            @include('partials.remark', [
+            @include('shared.remark', [
                 'field' => 'msg_template',
                 'label' => '考勤消息模板',
                 'placeholder' => '尊敬的{name}家长, 你的孩子于{time}在校打卡, 打卡规则：{rule}, 状态：{status}'
             ])
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'label' => '是否为公用',
                 'id' => 'ispublic',
                 'value' => $sas['ispublic'] ?? null,
                 'options' => ['是', '否']                
             ])
-            @include('partials.switch', [
+            @include('shared.switch', [
               'label' => '进或出',
               'id' => 'inorout',
               'value' => $sas['inorout'] ?? null,
@@ -92,5 +92,5 @@
           ])
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>

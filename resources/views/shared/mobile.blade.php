@@ -18,7 +18,7 @@
                         <tr>
                             <td class="text-center">
                                 <div class="input-group">
-                                    @include('partials.icon_addon', ['class' => 'fa-mobile'])
+                                    @include('shared.icon_addon', ['class' => 'fa-mobile'])
                                     <input class="form-control"
                                            name="mobile[{!! $key !!}][mobile]"
                                            placeholder="(请输入手机号码)"
@@ -78,7 +78,7 @@
                     <tr>
                         <td class="text-center">
                             <div class="input-group">
-                                @include('partials.icon_addon', ['class' => 'fa-mobile'])
+                                @include('shared.icon_addon', ['class' => 'fa-mobile'])
                                 <input class="form-control"
                                        name="mobile[0][mobile]"
                                        placeholder="(请输入手机号码)"

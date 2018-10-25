@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
@@ -21,17 +21,17 @@
 
                 </div>
             </div>
-            @include('partials.single_select', [
+            @include('shared.single_select', [
                 'label' => 'icon类型',
                 'id' => 'icon_type_id',
                 'items' => $iconTypes
             ])
-            @include('partials.remark')
-            @include('partials.switch', [
+            @include('shared.remark')
+            @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $icon['enabled'] ?? null
             ])
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>

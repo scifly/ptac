@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
@@ -13,7 +13,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', [
+                        @include('shared.icon_addon', [
                             'class' => 'fa-university text-purple'
                         ])
                         {!! Form::text('name', null, [
@@ -60,20 +60,20 @@
                 </div>
             </div>
             @if (in_array(Auth::user()->group->name, ['运营', '企业']))
-                @include('partials.single_select', [
+                @include('shared.single_select', [
                     'label' => '学校类型',
                     'id' => 'school_type_id',
                     'items' => $schoolTypes
                 ])
             @endif
             @if (Auth::user()->group->name == '运营')
-                @include('partials.single_select', [
+                @include('shared.single_select', [
                     'label' => '所属企业',
                     'id' => 'corp_id',
                     'items' => $corps,
                     'icon' => 'fa fa-weixin text-green'
                 ])
-                @include('partials.multiple_select', [
+                @include('shared.multiple_select', [
                     'label' => '第三方同步接口',
                     'id' => 'user_ids',
                     'icon' => 'fa fa-link',
@@ -82,11 +82,11 @@
                 ])
             @endif
 
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $school['enabled'] ?? null
             ])
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>

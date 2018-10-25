@@ -1,7 +1,7 @@
 <div class="box box-default box-solid">
     {{ Form::hidden('id', $ws['id'], ['id' => 'id']) }}
     <div class="box-header with-border">
-        @include('partials.form_header', ['disabled' => true])
+        @include('shared.form_header', ['disabled' => true])
     </div>
     <div class="box box-primary" style="margin-top:10px;">
         <div class="box-body box-profile" style="position: relative;padding: 20px;text-align: center;">

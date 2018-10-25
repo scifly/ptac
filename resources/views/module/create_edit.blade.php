@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
@@ -27,20 +27,20 @@
                 </div>
             </div>
             <!-- 所属学校 -->
-            @include('partials.single_select', [
+            @include('shared.single_select', [
                 'label' => '所属学校',
                 'id' => 'school_id',
                 'icon' => 'fa fa-university text-purple',
                 'items' => $schools
             ])
-            @include('partials.single_select', [
+            @include('shared.single_select', [
                 'label' => '所属角色',
                 'id' => 'group_id',
                 'icon' => 'fa fa-meh-o',
                 'items' => $groups
             ])
             <!-- 控制器 -->
-            @include('partials.single_select', [
+            @include('shared.single_select', [
                 'label' => '控制器',
                 'id' => 'tab_id',
                 'icon' => 'fa fa-folder-o',
@@ -53,7 +53,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
-                        @include('partials.icon_addon', ['class' => 'fa fa-link'])
+                        @include('shared.icon_addon', ['class' => 'fa fa-link'])
                         {!! Form::text('uri', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请输入链接地址，可选)',
@@ -94,7 +94,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
-                        @include('partials.icon_addon', ['class' => 'fa fa-sort-numeric-asc'])
+                        @include('shared.icon_addon', ['class' => 'fa fa-sort-numeric-asc'])
                         {!! Form::number('order', null, [
                             'class' => 'form-control text-blue',
                             'type' => 'number',
@@ -104,18 +104,18 @@
                     </div>
                 </div>
             </div>
-            @include('partials.remark')
-            @include('partials.switch', [
+            @include('shared.remark')
+            @include('shared.switch', [
                 'id' => 'isfree',
                 'label' => '类型',
                 'value' => $modules['isfree'] ?? null,
                 'options' => ['基本', '增值']
             ])
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $module['enabled'] ?? null
             ])
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>

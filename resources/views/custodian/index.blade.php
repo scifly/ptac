@@ -1,3 +1,3 @@
-@include('partials.index')
+@include('shared.index')
 <!-- 导出excel -->
-@include('partials.contact_export')
+@include('shared.contact_export')

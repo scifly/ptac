@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
@@ -9,18 +9,18 @@
                 {{ Form::hidden('subject', $score['subject_id'], ['id' => 'subject']) }}
                 {{ Form::hidden('student', $score['student_id'], ['id' => 'student']) }}
             @endif
-            @include('partials.single_select', [
+            @include('shared.single_select', [
                 'label' => '考试名称',
                 'id' => 'exam_id',
                 'items' => $exams
             ])
-            @include('partials.single_select', [
+            @include('shared.single_select', [
                'label' => '科目名称',
                'id' => 'subject_id',
                'items' => $subjects,
                'icon' => 'fa fa-book'
             ])
-            @include('partials.single_select', [
+            @include('shared.single_select', [
                 'label' => '学号',
                 'id' => 'student_id',
                 'items' => $students,
@@ -40,11 +40,11 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $score['enabled'] ?? null
             ])
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>

@@ -7,12 +7,12 @@
 			</div>
 			<div class="modal-body with-border">
 				<div class="form-horizontal">
-					@include('partials.single_select', [
+					@include('shared.single_select', [
 						'label' => '考试名称',
 						'id' => 'send_exam_id',
 						'items' => $exams
 					])
-					@include('partials.single_select', [
+					@include('shared.single_select', [
 						'label' => '参与班级',
 						'id' => 'send_class_id',
 						'items' => $classes,
@@ -33,7 +33,7 @@
 							@endforeach
 						</div>
 					</div>
-					@include('partials.multiple_select', [
+					@include('shared.multiple_select', [
 						'id' => 'items',
 						'label' => '发布项目',
 						'items' => $items,

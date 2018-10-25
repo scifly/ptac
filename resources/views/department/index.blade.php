@@ -18,5 +18,5 @@
     <div class="box-body">
         <div id="tree" class="col-md-12"></div>
     </div>
-    @include('partials.form_overlay')
+    @include('shared.form_overlay')
 </div>

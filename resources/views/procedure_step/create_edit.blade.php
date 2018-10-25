@@ -1,13 +1,13 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
             @if (!empty($ps['id']))
                 {{ Form::hidden('id', $ps['id'], ['id' => 'id']) }}
             @endif
-            @include('partials.single_select', [
+            @include('shared.single_select', [
                 'label' => '流程',
                 'id' => 'procedure_id',
                 'items' => $procedures
@@ -49,12 +49,12 @@
                     </select>
                 </div>
             </div>
-            @include('partials.remark')
-            @include('partials.switch', [
+            @include('shared.remark')
+            @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $ps['enabled'] ?? null
             ])
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>

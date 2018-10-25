@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header', [ 'buttons' => [
+        @include('shared.form_header', [ 'buttons' => [
             'sort' => [
                 'id' => 'sort',
                 'label' => '保存排序',
@@ -24,5 +24,5 @@
             @endforeach
         </ul>
     </div>
-    @include('partials.form_overlay')
+    @include('shared.form_overlay')
 </div>

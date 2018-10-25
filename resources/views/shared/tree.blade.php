@@ -13,7 +13,7 @@
         <div class="col-xs-8">
             {{--searchBox--}}
             <div class="input-group">
-                @include('partials.icon_addon', ['class' => 'fa-search'])
+                @include('shared.icon_addon', ['class' => 'fa-search'])
                 {!! Form::text('search', null, [
                     'id' => 'search',
                     'class' => 'form-control',

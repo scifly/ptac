@@ -30,18 +30,18 @@
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
     <!-- 页面头部 -->
-    @include('partials.site_header')
+    @include('shared.site_header')
     <!-- 页面左侧边栏 -->
-    @include('partials.site_main_sidebar')
+    @include('shared.site_main_sidebar')
     <!-- 页面内容 -->
     <div class="content-wrapper">
-        @include('partials.site_content_header')
+        @include('shared.site_content_header')
         <div class="content clearfix">
-            @include('partials.site_content')
+            @include('shared.site_content')
         </div>
     </div>
     <!-- 页面尾部 -->
-    @include('partials.site_footer')
+    @include('shared.site_footer')
     @include('home.profile')
 </div>
 <script src="{{ URL::asset('js/jquery.min.js') }}"></script>

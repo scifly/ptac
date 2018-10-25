@@ -1,4 +1,4 @@
-@include('partials.index')
+@include('shared.index')
 @include('score.modal_send')
 @include('score.modal_import')
 @include('score.modal_rank')

@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
@@ -36,11 +36,11 @@
                     {!! Form::text('end', null, ['class' => 'form-control datepicker']) !!}
                 </div>
             </div>
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $pq['enabled'] ?? null
             ])
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>

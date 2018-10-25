@@ -5,7 +5,7 @@
 ]) !!}
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
@@ -36,7 +36,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-weixin text-green'])
+                        @include('shared.icon_addon', ['class' => 'fa-weixin text-green'])
                         {!! Form::text('name', null, [
                             'class' => 'form-control text-blue',
                             'required' => 'true',
@@ -52,7 +52,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-location-arrow text-purple'])
+                        @include('shared.icon_addon', ['class' => 'fa-location-arrow text-purple'])
                         {!! Form::text('redirect_domain', null, [
                             'class' => 'form-control text-blue',
                             'required' => 'true',
@@ -68,7 +68,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-link'])
+                        @include('shared.icon_addon', ['class' => 'fa-link'])
                         {!! Form::text('home_url', null, [
                             'class' => 'form-control text-blue',
                             'required' => 'true',
@@ -78,17 +78,17 @@
                     </div>
                 </div>
             </div>
-            @include('partials.remark', [
+            @include('shared.remark', [
                 'label' => '应用详情',
                 'field' => 'description',
             ])
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'label' => '打开地理位置上报',
                 'id' => 'report_location_flag',
                 'value' => $app['report_location_flag'] ?? null,
                 'options' => ['是', '否']
             ])
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'label' => '上报用户进入应用事件',
                 'id' => 'isreportenter',
                 'value' => $app['isreportenter'] ?? null,
@@ -96,6 +96,6 @@
             ])
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>
 {!! Form::close() !!}

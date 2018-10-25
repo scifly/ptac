@@ -5,11 +5,11 @@
 ]) !!}
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @include('partials.single_select', [
+            @include('shared.single_select', [
                 'label' => '选择申请项目',
                 'id' => 'procedure_id',
                 'items' => $procedure_id
@@ -33,7 +33,7 @@
             </div>
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>
 <div class="modal fade" id="modalPic">
     <div class="modal-dialog">

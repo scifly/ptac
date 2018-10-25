@@ -1,5 +1,5 @@
 <!--content-->
-@include('partials.modal_delete')
+@include('shared.modal_delete')
 {{--@yield('content')--}}
 @if(!empty($tabs))
     <div class="box box-default box-solid">

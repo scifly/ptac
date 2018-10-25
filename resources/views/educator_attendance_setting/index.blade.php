@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.list_header')
+        @include('shared.list_header')
     </div>
     <div class="box-body">
         <table id="data-table" style="width: 100%"
@@ -20,5 +20,5 @@
             <tbody></tbody>
         </table>
     </div>
-    @include('partials.form_overlay')
+    @include('shared.form_overlay')
 </div>

@@ -4,7 +4,7 @@
     ]) !!}
     <div class="col-sm-6">
         <div class="input-group">
-            @include('partials.icon_addon', ['class' => 'fa-comment-o'])
+            @include('shared.icon_addon', ['class' => 'fa-comment-o'])
             {!! Form::textarea(!isset($field) ? 'remark' : $field, null, [
                 'id' => !isset($field) ? 'remark' : $field,
                 'class' => 'form-control text-blue',

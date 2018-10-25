@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
@@ -20,7 +20,7 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.single_select', [
+            @include('shared.single_select', [
                 'label' => '所属科目',
                 'id' => 'subject_id',
                 'items' => $subjects
@@ -39,11 +39,11 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $sm['enabled'] ?? null
             ])
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>

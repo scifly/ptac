@@ -1,13 +1,13 @@
 <div class="box box-default box-solid" style="padding: 10px;">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="row" style="margin-top: 10px;">
             <div class="form-horizontal">
                 @if (isset($grades, $classes))
                     <div class="col-md-3">
-                        @include('partials.single_select', [
+                        @include('shared.single_select', [
                             'id' => 'grade_id',
                             'label' => '年级',
                             'items' => $grades,
@@ -15,7 +15,7 @@
                         ])
                     </div>
                     <div class="col-md-3">
-                        @include('partials.single_select', [
+                        @include('shared.single_select', [
                             'id' => 'class_id',
                             'label' => '班级',
                             'items' => $classes,
@@ -60,7 +60,7 @@
             </tbody>
         </table>
     </div>
-    @include('partials.form_overlay')
+    @include('shared.form_overlay')
 </div>
 
 <div class="modal fade in" id="detail" style="padding-right: 17px;">

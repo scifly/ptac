@@ -5,7 +5,7 @@
 ]) !!}
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
@@ -18,7 +18,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-lock'])
+                        @include('shared.icon_addon', ['class' => 'fa-lock'])
                         {!! Form::password('old_password', [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请在此输入原密码)',
@@ -34,7 +34,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-lock'])
+                        @include('shared.icon_addon', ['class' => 'fa-lock'])
                         {!! Form::password('password', [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请输入新密码)',
@@ -50,7 +50,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-lock'])
+                        @include('shared.icon_addon', ['class' => 'fa-lock'])
                         {!! Form::password('password_confirmation', [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请再次输入新密码)',
@@ -64,7 +64,7 @@
 
         </div>
     </div>
-    @include('partials.form_buttons', ['label' => '重置'])
+    @include('shared.form_buttons', ['label' => '重置'])
 </div>
 {!! Form::close() !!}
 

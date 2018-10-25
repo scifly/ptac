@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
@@ -28,7 +28,7 @@
                 <div class="col-sm-6">
                     <div class="bootstrap-timepicker">
                         <div class="input-group">
-                            @include('partials.icon_addon', ['class' => 'fa-clock-o'])
+                            @include('shared.icon_addon', ['class' => 'fa-clock-o'])
                             {!! Form::text('start', null, [
                                 'class' => 'form-control start-time timepicker',
                                 'required' => 'true',
@@ -46,7 +46,7 @@
                 <div class="col-sm-6">
                     <div class="bootstrap-timepicker">
                         <div class="input-group">
-                            @include('partials.icon_addon', ['class' => 'fa-clock-o'])
+                            @include('shared.icon_addon', ['class' => 'fa-clock-o'])
                             {!! Form::text('end', null, [
                                 'class' => 'form-control end-time timepicker',
                                 'required' => 'true',
@@ -57,17 +57,17 @@
                     </div>
                 </div>
             </div>
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'label' => '进或出',
                 'id' => 'inorout',
                 'value' => $eas['inorout'] ?? null,
                 'options' => ['进', '出']
             ])
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $eas['enabled'] ?? null
             ])
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>

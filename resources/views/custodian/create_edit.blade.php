@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
@@ -8,7 +8,7 @@
             @if (!empty($custodian['id']))
                 {{ Form::hidden('id', $custodian['id'], ['id' => 'id']) }}
                 {{ Form::hidden('user_id', $custodian['user_id'], ['id' => 'user_id']) }}
-                @include('partials.avatar', ['user' => $custodian->user])
+                @include('shared.avatar', ['user' => $custodian->user])
             @endif
             <!-- 监护人姓名 -->
             <div class="form-group">
@@ -17,7 +17,7 @@
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-user'])
+                        @include('shared.icon_addon', ['class' => 'fa-user'])
                         {{ Form::text('user[realname]', null, [
                             'class' => 'form-control text-blue',
                             'required' => 'true',
@@ -34,7 +34,7 @@
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-language'])
+                        @include('shared.icon_addon', ['class' => 'fa-language'])
                         {{ Form::text('user[english_name]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请填写英文名, 可选)',
@@ -45,14 +45,14 @@
                 </div>
             </div>
             <!-- 监护人性别 -->
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'label' => '性别',
                 'id' => 'user[gender]',
                 'value' => $custodian->user->gender ?? null,
                 'options' => ['男', '女']
             ])
             <!-- 监护人手机列表 -->
-            @include('partials.mobile')
+            @include('shared.mobile')
             <!-- 监护人座机号码 -->
             <div class="form-group">
                 {{ Form::label('user[telephone]', '座机', [
@@ -60,7 +60,7 @@
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-phone'])
+                        @include('shared.icon_addon', ['class' => 'fa-phone'])
                         {{ Form::text('user[telephone]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请输入座机号码, 可选)',
@@ -75,7 +75,7 @@
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-envelope-o'])
+                        @include('shared.icon_addon', ['class' => 'fa-envelope-o'])
                         {{ Form::text('user[email]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请输入电子邮件地址)',
@@ -88,7 +88,7 @@
             <!-- 监护关系 -->
             @include('custodian.custodian_student', ['visible' => true])
             <!-- 单角色 -->
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'id' => 'singular',
                 'value' => $custodian['singular'] ?? null,
                 'label' => '单角色',
@@ -97,11 +97,11 @@
             <!-- 班级、科目绑定关系 -->
             @include('educator.educator_class', ['visible' => false])
             <!-- 监护人状态 -->
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'id' => 'user[enabled]',
                 'value' => $custodian->user->enabled ?? null
             ])
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>

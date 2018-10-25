@@ -10,13 +10,13 @@
                 <div class="modal-body with-border">
                     <div class="form-horizontal">
                         <!-- 选择考试 -->
-                        @include('partials.single_select', [
+                        @include('shared.single_select', [
                             'id' => 'export_exam_id',
                             'label' => '考试',
                             'items' => $exams
                         ])
                         <!-- 班级 -->
-                        @include('partials.single_select', [
+                        @include('shared.single_select', [
                             'id' => 'export_class_id',
                             'label' => '班级',
                             'items' => $classes

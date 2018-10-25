@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
@@ -13,7 +13,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-warning'])
+                        @include('shared.icon_addon', ['class' => 'fa-warning'])
                         {!! Form::text('name', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请输入警告类型名称)',
@@ -29,7 +29,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-language'])
+                        @include('shared.icon_addon', ['class' => 'fa-language'])
                         {!! Form::text('english_name', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请输入英文名称)',
@@ -39,11 +39,11 @@
                     </div>
                 </div>
             </div>
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $at['enabled'] ?? null
             ])
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>

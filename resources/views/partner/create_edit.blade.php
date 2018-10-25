@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
@@ -15,7 +15,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-user-o'])
+                        @include('shared.icon_addon', ['class' => 'fa-user-o'])
                         {!! Form::text('realname', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(不超过60个汉字)',
@@ -32,7 +32,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-user'])
+                        @include('shared.icon_addon', ['class' => 'fa-user'])
                         {!! Form::text('username', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(必填)',
@@ -49,7 +49,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-lock'])
+                        @include('shared.icon_addon', ['class' => 'fa-lock'])
                         {!! Form::text('english_name', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(必填)',
@@ -85,7 +85,7 @@
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-phone'])
+                        @include('shared.icon_addon', ['class' => 'fa-phone'])
                         {{ Form::text('telephone', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请输入联系人及电话, 可选)',
@@ -100,7 +100,7 @@
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-envelope-o'])
+                        @include('shared.icon_addon', ['class' => 'fa-envelope-o'])
                         {{ Form::text('email', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请输入电子邮件地址, 可选)',
@@ -112,11 +112,11 @@
                 </div>
             </div>
             <!-- 状态 -->
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $partner['enabled'] ?? null
             ])
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>

@@ -1,4 +1,4 @@
-@include('partials.form_overlay')
+@include('shared.form_overlay')
 <div class="box-footer">
     <div class="form-group">
         <div class="col-sm-6 col-sm-offset-3">

@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
@@ -46,7 +46,7 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.single_select', [
+            @include('shared.single_select', [
                 'label' => '控制器',
                 'id' => 'tab_id',
                 'items' => $tabs,
@@ -76,18 +76,18 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.multiple_select', [
+            @include('shared.multiple_select', [
                 'label' => 'HTTP请求类型',
                 'id' => 'action_type_ids',
                 'items' => $actionTypes,
                 'selectedItems' => $selectedActionTypes ?? null
             ])
-            @include('partials.remark')
-            @include('partials.switch', [
+            @include('shared.remark')
+            @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $action['enabled'] ?? null
             ])
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>

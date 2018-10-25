@@ -1,6 +1,6 @@
 <div class="box box-default box-solid main-form">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
@@ -14,7 +14,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-tag'])
+                        @include('shared.icon_addon', ['class' => 'fa-tag'])
                         {!! Form::text('name', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(不得超过32个汉字)',
@@ -41,12 +41,12 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.remark')
-            @include('partials.switch', [
+            @include('shared.remark')
+            @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $tag['enabled'] ?? null
             ])
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>

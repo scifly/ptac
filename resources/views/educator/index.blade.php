@@ -1,7 +1,7 @@
-@include('partials.index')
+@include('shared.index')
 
 <!-- 导入excel -->
-@include('partials.contact_import')
+@include('shared.contact_import')
 
 <!-- 导出excel -->
-@include('partials.contact_export')
+@include('shared.contact_export')

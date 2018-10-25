@@ -5,24 +5,24 @@
 ]) !!}
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @include('partials.single_select', [
+            @include('shared.single_select', [
                 'label' => '统计范围',
                 'id' => 'range_id',
                 'items' => $ranges,
                 'icon' => 'fa fa-bar-chart'
             ])
-            @include('partials.single_select', [
+            @include('shared.single_select', [
                 'label' => '学生',
                 'id' => 'student_id',
                 'divId' => 'students',
                 'items' => $students,
                 'icon' => 'fa fa-child'
             ])
-            @include('partials.single_select', [
+            @include('shared.single_select', [
                 'label' => '班级',
                 'id' => 'class_id',
                 'divId' => 'classes',
@@ -30,7 +30,7 @@
                 'items' => $classes,
                 'icon' => 'fa fa-users'
             ])
-            @include('partials.single_select', [
+            @include('shared.single_select', [
                 'label' => '年级',
                 'id' => 'grade_id',
                 'divId' => 'grades',
@@ -89,7 +89,7 @@
             </div>
         </div>
     </div>
-    @include('partials.form_buttons', [
+    @include('shared.form_buttons', [
         'id' => 'stat',
         'label' => '开始统计'
     ])

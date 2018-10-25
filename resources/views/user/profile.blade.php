@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="{{ URL::asset('js/plugins/parsley/parsley.css') }}">
 {!! Form::model(Auth::user(), [ 'method' => 'PUT', 'id' => 'formUser', 'data-parsley-validate' => 'true']) !!}
 <section class="content clearfix">
-    @include('partials.modal_delete')
+    @include('shared.modal_delete')
     <div class="col-lg-12">
         <div class="nav-tabs-custom">
             <div class="box box-default box-solid">
@@ -33,7 +33,7 @@
                             ]) !!}
                             <div class="col-sm-6">
                                 <div class="input-group">
-                                    @include('partials.icon_addon', ['class' => 'fa-user'])
+                                    @include('shared.icon_addon', ['class' => 'fa-user'])
                                     {!! Form::text('realname', null, [
                                         'class' => 'form-control text-blue',
                                         'placeholder' => '(请输入真实姓名)',
@@ -50,7 +50,7 @@
                             ]) !!}
                             <div class="col-sm-6">
                                 <div class="input-group">
-                                    @include('partials.icon_addon', ['class' => 'fa-user-o'])
+                                    @include('shared.icon_addon', ['class' => 'fa-user-o'])
                                     {!! Form::text('username', null, [
                                         'class' => 'form-control text-blue',
                                         'placeholder' => '(请输入用户名)',
@@ -73,7 +73,7 @@
                             ]) }}
                             <div class="col-sm-6">
                                 <div class="input-group">
-                                    @include('partials.icon_addon', ['class' => 'fa-language'])
+                                    @include('shared.icon_addon', ['class' => 'fa-language'])
                                     {{ Form::text('english_name', null, [
                                         'class' => 'form-control text-blue',
                                         'placeholder' => '请填写英文名(可选)',
@@ -90,7 +90,7 @@
                             </div>
                         </div>
                         <!-- 性别 -->
-                        @include('partials.switch', [
+                        @include('shared.switch', [
                             'id' => 'gender',
                             'label' => '性别',
                             'value' => $user->gender ?? null,
@@ -103,7 +103,7 @@
                             ]) }}
                             <div class="col-sm-6">
                                 <div class="input-group">
-                                    @include('partials.icon_addon', ['class' => 'fa-phone'])
+                                    @include('shared.icon_addon', ['class' => 'fa-phone'])
                                     {{ Form::text('telephone', null, [
                                         'class' => 'form-control text-blue',
                                         'placeholder' => '请输入座机号码(可选}',
@@ -123,7 +123,7 @@
                             ]) !!}
                             <div class="col-sm-6">
                                 <div class="input-group">
-                                    @include('partials.icon_addon', ['class' => 'fa-envelope-o'])
+                                    @include('shared.icon_addon', ['class' => 'fa-envelope-o'])
                                     {!! Form::email('email', null, [
                                         'class' => 'form-control text-blue',
                                         'placeholder' => '(请输入电子邮件地址)',

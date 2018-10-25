@@ -1,1 +1,1 @@
-@include('partials.attendance.stat')
+@include('shared.attendance.stat')

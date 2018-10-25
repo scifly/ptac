@@ -8,7 +8,7 @@
             <div class="modal-body with-border">
                 <div class="form-horizontal">
                     <!-- 选择考试 -->
-                    @include('partials.single_select', [
+                    @include('shared.single_select', [
                         'id' => 'rank_exam_id',
                         'label' => '选择考试',
                         'items' => $exams

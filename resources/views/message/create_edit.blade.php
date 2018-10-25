@@ -1,4 +1,4 @@
-@include('partials.tree', [
+@include('shared.tree', [
     'title' => '发送对象',
     'selectedTitle' => '已选择的发送对象'
 ])
@@ -30,7 +30,7 @@
         </div>
     </div>
     <!-- 消息类型 -->
-    @include('partials.single_select', [
+    @include('shared.single_select', [
         'label' => '消息类型',
         'id' => 'message_type_id',
         'items' => $messageTypes
@@ -201,7 +201,7 @@
             </div>
         </div>
     </div>
-    @include('partials.switch', [
+    @include('shared.switch', [
         'id' => 'schedule',
         'label' => '发送时间',
         'value' => 0,
@@ -212,7 +212,7 @@
         <div class="col-sm-3"></div>
         <div class="col-sm-6">
             <div class="input-group">
-                @include('partials.icon_addon', ['class' => 'fa-clock-o'])
+                @include('shared.icon_addon', ['class' => 'fa-clock-o'])
                 {!! Form::text('time', null, [
                     'id' => 'time',
                     'title' => '发送时间',

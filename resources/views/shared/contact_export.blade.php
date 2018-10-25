@@ -32,7 +32,7 @@
                     @endif
                     @if (isset($departments))
                         <!-- 所属部门 -->
-                        @include('partials.single_select', [
+                        @include('shared.single_select', [
                             'id' => 'department_id',
                             'label' => '所属部门',
                             'icon' => 'fa fa-sitemap',
@@ -40,14 +40,14 @@
                         ])
                     @else
                         <!-- 所属年级 -->
-                        @include('partials.single_select', [
+                        @include('shared.single_select', [
                             'id' => 'grade_id',
                             'label' => '所属年级',
                             'icon' => 'fa fa-object-group',
                             'items' => $grades
                         ])
                         <!-- 所属班级 -->
-                        @include('partials.single_select', [
+                        @include('shared.single_select', [
                             'id' => 'class_id',
                             'label' => '所属班级',
                             'icon' => 'fa fa-users',
@@ -55,7 +55,7 @@
                         ])
                         @if (isset($relationship))
                             <!-- 学生列表 -->
-                            @include('partials.single_select', [
+                            @include('shared.single_select', [
                                 'id' => 'student_id',
                                 'label' => '被监护人',
                                 'icon' => 'fa fa-child',
@@ -68,7 +68,7 @@
                                 ]) }}
                                 <div class="col-sm-6">
                                     <div class="input-group">
-                                        @include('partials.icon_addon', ['class' => 'fa-link'])
+                                        @include('shared.icon_addon', ['class' => 'fa-link'])
                                         {{ Form::text('relationship', null, [
                                             'id' => 'relationship',
                                             'class' => 'form-control text-blue',

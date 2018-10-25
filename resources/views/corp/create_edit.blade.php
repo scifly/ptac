@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
@@ -13,7 +13,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', [
+                        @include('shared.icon_addon', [
                             'class' => 'fa-weixin text-green'
                         ])
                         {!! Form::text('name', null, [
@@ -31,7 +31,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', [
+                        @include('shared.icon_addon', [
                             'class' => 'fa-weixin text-green'
                         ])
                         {!! Form::text('acronym', null, [
@@ -44,7 +44,7 @@
                 </div>
             </div>
             @if (Auth::user()->group->name == '运营')
-                @include('partials.single_select', [
+                @include('shared.single_select', [
                     'label' => '所属运营者',
                     'id' => 'company_id',
                     'items' => $companies,
@@ -94,7 +94,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
-                        @include('partials.icon_addon', ['class' => 'fa-key'])
+                        @include('shared.icon_addon', ['class' => 'fa-key'])
                         {!! Form::text('encoding_aes_key', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请从企业微信后台复制粘贴到此处)',
@@ -109,7 +109,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
-                        @include('partials.icon_addon', ['class' => 'fa-key'])
+                        @include('shared.icon_addon', ['class' => 'fa-key'])
                         {!! Form::text('token', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请从企业微信后台复制粘贴到此处)',
@@ -124,7 +124,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
-                        @include('partials.icon_addon', ['class' => 'fa-sitemap'])
+                        @include('shared.icon_addon', ['class' => 'fa-sitemap'])
                         {!! Form::text('departmentid', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请从企业微信后台复制粘贴到此处)',
@@ -156,7 +156,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group" style="width: 100%;">
-                        @include('partials.icon_addon', ['class' => 'fa-key'])
+                        @include('shared.icon_addon', ['class' => 'fa-key'])
                         {!! Form::text('apikey', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请从微信商户平台复制粘贴到此处)',
@@ -171,11 +171,11 @@
             @if (isset($corp['menu_id']))
                 {!! Form::hidden('menu_id', $corp['menu_id']) !!}
             @endif
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $corp['enabled'] ?? null
             ])
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>

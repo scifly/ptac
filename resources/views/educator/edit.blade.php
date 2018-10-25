@@ -5,5 +5,5 @@
 ]) !!}
 @include('educator.create_edit')
 {!! Form::close() !!}
-@include('partials.tree')
-@include('partials.contact_export')
+@include('shared.tree')
+@include('shared.contact_export')

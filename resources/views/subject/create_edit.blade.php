@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
@@ -13,7 +13,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-book'])
+                        @include('shared.icon_addon', ['class' => 'fa-book'])
                         {!! Form::text('name', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '不能超过20个汉字',
@@ -29,7 +29,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-hand-o-up'])
+                        @include('shared.icon_addon', ['class' => 'fa-hand-o-up'])
                         {!! Form::text('max_score', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(不超过6个数字含小数点)',
@@ -47,7 +47,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-hand-o-down'])
+                        @include('shared.icon_addon', ['class' => 'fa-hand-o-down'])
                         {!! Form::text('pass_score', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(不超过5个数字含小数点)',
@@ -59,31 +59,31 @@
                     </div>
                 </div>
             </div>
-            @include('partials.multiple_select', [
+            @include('shared.multiple_select', [
                 'label' => '所属年级',
                 'id' => 'grade_ids',
                 'items' => $grades,
                 'icon' => 'fa fa-object-group',
                 'selectedItems' => $selectedGrades ?? null
             ])
-            @include('partials.multiple_select', [
+            @include('shared.multiple_select', [
                 'label' => '包含专业',
                 'id' => 'major_ids',
                 'items' => $majors,
                 'icon' => 'fa fa-graduation-cap',
                 'selectedItems' => $selectedMajors ?? null
             ])
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'label' => '是否为副科',
                 'id' => 'isaux',
                 'options' => ['是', '否'],
                 'value' => $_subject['isaux'] ?? null
             ])
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $_subject['enabled'] ?? null
             ])
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>

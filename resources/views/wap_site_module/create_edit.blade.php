@@ -1,13 +1,13 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
             @if (!empty($wsm['id']))
                 {{ Form::hidden('id', $wsm['id'], ['id' => 'id']) }}
             @endif
-            @include('partials.single_select', [
+            @include('shared.single_select', [
                 'label' => '所属网站',
                 'id' => 'wap_site_id',
                 'items' => $wapSites
@@ -48,11 +48,11 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $wsm['enabled'] ?? null
             ])
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>

@@ -5,5 +5,5 @@
 ]) !!}
 @include('educator.create_edit')
 {!! Form::close() !!}
-@include('partials.tree', ['title' => '所属部门'])
-@include('partials.contact_export', ['title' => '新增监护关系'])
+@include('shared.tree', ['title' => '所属部门'])
+@include('shared.contact_export', ['title' => '新增监护关系'])

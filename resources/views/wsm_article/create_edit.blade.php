@@ -1,13 +1,13 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
             @if (isset($article) && !empty($article['id']))
                 {{ Form::hidden('id', $article['id'], ['id' => 'id']) }}
             @endif
-            @include('partials.single_select', [
+            @include('shared.single_select', [
                 'label' => '所属网站模块',
                 'id' => 'wsm_id',
                 'items' => $wsms
@@ -38,7 +38,7 @@
                     ]) !!}
                 </div>
             </div>
-            @include('partials.wapsite.preview')
+            @include('shared.wapsite.preview')
             <div class="form-group">
                 {!! Form::label('content', '文章内容', [
                     'class' => 'control-label col-sm-3'
@@ -53,12 +53,12 @@
                     </div>
                 </div>
             </div>
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $article['enabled'] ?? null
             ])
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>
-@include('partials.wapsite.modal_uploader')
+@include('shared.wapsite.modal_uploader')

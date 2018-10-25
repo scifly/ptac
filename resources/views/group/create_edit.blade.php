@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="nav-tabs-custom">
@@ -36,7 +36,7 @@
                             ]) !!}
                             <div class="col-sm-6">
                                 <div class="input-group">
-                                    @include('partials.icon_addon', ['class' => 'fa-meh-o'])
+                                    @include('shared.icon_addon', ['class' => 'fa-meh-o'])
                                     {!! Form::text('name', null, [
                                         'class' => 'form-control text-blue',
                                         'placeholder' => '(不得超过20个汉字)',
@@ -47,16 +47,16 @@
                             </div>
                         </div>
                         <!-- 角色所属学校 -->
-                        @include('partials.single_select', [
+                        @include('shared.single_select', [
                             'id' => 'school_id',
                             'label' => '所属学校',
                             'icon' => 'fa fa-university text-purple',
                             'items' => $schools
                         ])
                         <!-- 角色备注 -->
-                        @include('partials.remark')
+                        @include('shared.remark')
                         <!-- 状态 -->
-                        @include('partials.switch', [
+                        @include('shared.switch', [
                             'id' => 'enabled',
                             'value' => $group['enabled'] ?? null
                         ])
@@ -121,5 +121,5 @@
             </div>
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>

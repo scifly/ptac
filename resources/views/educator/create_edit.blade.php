@@ -1,13 +1,13 @@
 <div class="box box-default box-solid main-form">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
             @if (isset($educator['id']))
                 {{ Form::hidden('id', $educator['id'], ['id' => 'id']) }}
                 {{ Form::hidden('user_id', $educator['user_id'], ['id' => 'user_id']) }}
-                @include('partials.avatar', ['user' => $educator->user])
+                @include('shared.avatar', ['user' => $educator->user])
             @endif
             <!-- 真实姓名 -->
             <div class="form-group">
@@ -16,7 +16,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-user'])
+                        @include('shared.icon_addon', ['class' => 'fa-user'])
                         {!! Form::text('user[realname]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请输入真实姓名)',
@@ -33,7 +33,7 @@
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-language'])
+                        @include('shared.icon_addon', ['class' => 'fa-language'])
                         {{ Form::text('user[english_name]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请填写英文名, 可选)',
@@ -44,14 +44,14 @@
                 </div>
             </div>
             <!-- 性别 -->
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'id' => 'user[gender]',
                 'label' => '性别',
                 'value' => $educator->user->gender ?? null,
                 'options' => ['男', '女']
             ])
             <!-- 角色 -->
-            @include('partials.single_select', [
+            @include('shared.single_select', [
                 'label' => '角色',
                 'id' => 'user[group_id]',
                 'items' => $groups,
@@ -64,7 +64,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-user-o'])
+                        @include('shared.icon_addon', ['class' => 'fa-user-o'])
                         {!! Form::text('user[username]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请输入用户名)',
@@ -82,7 +82,7 @@
                     ]) !!}
                     <div class="col-sm-6">
                         <div class="input-group">
-                            @include('partials.icon_addon', ['class' => 'fa-lock'])
+                            @include('shared.icon_addon', ['class' => 'fa-lock'])
                             {!! Form::password('user[password]', [
                                 'class' => 'form-control text-blue',
                                 'placeholder' => '(请输入密码)',
@@ -99,7 +99,7 @@
                     ]) !!}
                     <div class="col-sm-6">
                         <div class="input-group">
-                            @include('partials.icon_addon', ['class' => 'fa-lock'])
+                            @include('shared.icon_addon', ['class' => 'fa-lock'])
                             {!! Form::password('user[password_confirmation]', [
                                 'class' => 'form-control text-blue',
                                 'placeholder' => '(请确认密码)',
@@ -117,7 +117,7 @@
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-phone'])
+                        @include('shared.icon_addon', ['class' => 'fa-phone'])
                         {{ Form::text('user[telephone]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请输入座机号码, 可选)',
@@ -132,7 +132,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-envelope-o'])
+                        @include('shared.icon_addon', ['class' => 'fa-envelope-o'])
                         {!! Form::email('user[email]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请输入电子邮件地址)',
@@ -147,7 +147,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-briefcase'])
+                        @include('shared.icon_addon', ['class' => 'fa-briefcase'])
                         {!! Form::text('user[position]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请输入职务)',
@@ -156,11 +156,11 @@
                 </div>
             </div>
             <!-- 手机号码 -->
-            @include('partials.mobile')
+            @include('shared.mobile')
             <!-- 班级、科目绑定关系 -->
             @include('educator.educator_class', ['visible' => true])
             <!-- 单角色 -->
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'id' => 'singular',
                 'value' => $educator['singular'] ?? null,
                 'label' => '单角色',
@@ -192,11 +192,11 @@
                 </div>
             </div>
             <!-- 状态 -->
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'id' => 'user[enabled]',
                 'value' => $educator['enabled'] ?? null
             ])
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>

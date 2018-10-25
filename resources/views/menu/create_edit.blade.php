@@ -1,6 +1,6 @@
 <div class="box box-default box-solid">
     <div class="box-header with-border">
-        @include('partials.form_header')
+        @include('shared.form_header')
     </div>
     <div class="box-body">
         <div class="form-horizontal">
@@ -18,7 +18,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-list-ul'])
+                        @include('shared.icon_addon', ['class' => 'fa-list-ul'])
                         {!! Form::text('name', null, [
                             'id' => 'name',
                             'class' => 'form-control text-blue',
@@ -36,7 +36,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-fonticons'])
+                        @include('shared.icon_addon', ['class' => 'fa-fonticons'])
                         {{ Form::select('icon_id', $icons, null, [
                             'id' => 'icon_id',
                             'style' => 'width: 100%;'
@@ -51,7 +51,7 @@
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
-                        @include('partials.icon_addon', ['class' => 'fa-link'])
+                        @include('shared.icon_addon', ['class' => 'fa-link'])
                         {!! Form::text('uri', null, [
                             'id' => 'uri',
                             'class' => 'form-control text-blue',
@@ -62,7 +62,7 @@
                 </div>
             </div>
             <!-- 包含的卡片 -->
-            @include('partials.multiple_select', [
+            @include('shared.multiple_select', [
                 'label' => '包含卡片',
                 'id' => 'tab_ids',
                 'icon' => 'fa fa-calendar-check-o',
@@ -70,13 +70,13 @@
                 'selectedItems' => $selectedTabs ?? null
             ])
             <!-- 备注 -->
-            @include('partials.remark')
+            @include('shared.remark')
             <!-- 状态 -->
-            @include('partials.switch', [
+            @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $menu['enabled'] ?? null
             ])
         </div>
     </div>
-    @include('partials.form_buttons')
+    @include('shared.form_buttons')
 </div>
