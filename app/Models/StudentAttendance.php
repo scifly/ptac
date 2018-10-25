@@ -609,7 +609,7 @@ class StudentAttendance extends Model {
         $user = Auth::user();
         # 禁止学生学生访问考勤记录
         abort_if(
-            !$user || $user->group->name == '学生',
+            !$user || $user->role() == '学生',
             HttpStatusCode::UNAUTHORIZED,
             __('messages.unauthorized')
         );
@@ -765,7 +765,7 @@ class StudentAttendance extends Model {
         # 角色判断
         $user = Auth::user();
         abort_if(
-            !$user || $user->group->name == '学生',
+            !$user || $user->role() == '学生',
             HttpStatusCode::UNAUTHORIZED,
             __('messages.unauthorized')
         );

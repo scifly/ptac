@@ -43,9 +43,10 @@ class ScoreRangePolicy {
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        if ($user->group->name == '运营') { return true; }
+        $role = $user->role();
+        if ($role == '运营') { return true; }
         $isSrAllowed = $isSubjectAllowed = false;
-        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
+        $isSuperRole = in_array($role, Constant::SUPER_ROLES);
         $action = explode('/', Request::path())[1];
         if (in_array($action, ['store', 'update'])) {
             $subjectIds = Request::input('subject_ids');

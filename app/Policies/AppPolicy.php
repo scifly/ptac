@@ -46,9 +46,8 @@ class AppPolicy {
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        $role = $user->group->name;
         $action = explode('/', Request::path())[1];
-        switch ($role) {
+        switch ($user->role()) {
             case '运营':
                 return true;
             case '企业':

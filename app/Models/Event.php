@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
+use App\Helpers\Constant;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Eloquent;
@@ -264,26 +265,12 @@ class Event extends Model {
             return response()->json($pubEvents);
         }
         //如果是管理员
-        if ($this->getRole($userId)) {
+        if (in_array(User::find($userId)->role(), Constant::SUPER_ROLES)) {
             return response()->json(array_merge($pubEvents, $perEvents));
         }
         
         //如果是用户
         return response()->json(array_merge($pubNoCourseEvents, $perEvents, $pubCourEvents));
-    }
-    
-    /**
-     * 判断当前用户权限
-     * @param $user
-     * @return bool
-     */
-    function getRole($user) {
-        $role = $user->group->name;
-        if ($role == '运营' || $role == '企业' || $role == '学校') {
-            return true;
-        } else {
-            return false;
-        }
     }
     
     /**
@@ -298,7 +285,7 @@ class Event extends Model {
      */
     function isValidateTime($userId, $educator_id, $start, $end, $id = null) {
         
-        if (!$this->getRole($userId)) {
+        if (!in_array(User::find($userId)->role(), Constant::SUPER_ROLES)) {
             return $this->isRepeatTimeUser($userId, $start, $end, $id);
         } else {
             if ($educator_id != 0) {

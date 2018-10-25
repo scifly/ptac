@@ -17,7 +17,7 @@ class ProcedureTypeRequest extends FormRequest {
      */
     public function authorize() {
         
-        return Auth::user()->group->name == '运营';
+        return Auth::user()->role() == '运营';
         
     }
     

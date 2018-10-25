@@ -34,8 +34,7 @@ class PollQuestionnaireSubjectPolicy {
      */
     public function cs(User $user) {
         
-        $role = $user->group->name;
-        switch ($role) {
+        switch ($user->role()) {
             case '运营':
                 return true;
             case '企业':
@@ -60,9 +59,10 @@ class PollQuestionnaireSubjectPolicy {
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        if ($user->group->name == '运营') { return true; }
+        $role = $user->role();
+        if ($role == '运营') { return true; }
         $isPqsAllowed = $isPqAllowed = false;
-        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
+        $isSuperRole = in_array($role, Constant::SUPER_ROLES);
         $action = explode('/', Request::path())[1];
         if (in_array($action, ['store', 'update'])) {
             $pqId = Request::input('pq_id');

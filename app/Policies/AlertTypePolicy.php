@@ -39,7 +39,7 @@ class AlertTypePolicy {
             __('messages.not_found')
         );
         
-        return $user->group->name == '运营';
+        return $user->role() == '运营';
         
     }
     

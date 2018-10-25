@@ -54,10 +54,11 @@ class OperatorComposer {
             case '根':
                 $groups = groups(['运营', '企业', '学校']);
                 if (Request::route('id')) {
-                    if ($operator->group->name != '运营') {
+                    $role = $operator->role();
+                    if ($role != '运营') {
                         $corps = Corp::all()->pluck('name', 'id')->toArray();
                     }
-                    if ($operator->group->name == '学校') {
+                    if ($role == '学校') {
                         $schools = School::whereCorpId($operator->educator->school->corp_id)
                             ->pluck('name', 'id')->toArray();
                     }
@@ -67,7 +68,7 @@ class OperatorComposer {
                 $groups = groups(['企业', '学校']);
                 $corp = null;
                 if (Request::route('id')) {
-                    switch ($operator->group->name) {
+                    switch ($operator->role()) {
                         case '企业':
                             $corp = Corp::whereDepartmentId($departmentId)->first();
                             break;

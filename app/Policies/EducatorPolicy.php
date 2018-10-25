@@ -42,17 +42,16 @@ class EducatorPolicy {
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        
-        if ($user->group->name == '运营') { return true; }
-        
+        $role = $user->role();
+        if ($role == '运营') return true;
         $action = explode('/', Request::path())[1];
-        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
+        $isSuperRole = in_array($role, Constant::SUPER_ROLES);
         $isGroupAllowed = $isDepartmentAllowed = $isEducatorAllowed = false;
         
         if (in_array($action, ['store', 'update'])) {
             $groupId = Request::input('user')['group_id'];
             $selectedDepartmentIds = Request::input('selectedDepartments');
-            switch ($user->group->name) {
+            switch ($role) {
                 case '企业':
                     $allowedGroupIds = Group::whereEnabled(1)
                         ->whereIn('name', ['企业', '学校'])

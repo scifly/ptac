@@ -39,7 +39,7 @@ class MethodPolicy {
      */
     public function act(User $user, Route $route) {
     
-        $role = $user->group->name;
+        $role = $user->role();
         if (!in_array($role, Constant::SUPER_ROLES)) {
             return $this->action($user);
         }

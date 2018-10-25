@@ -410,9 +410,7 @@ class Tab extends Model {
     function allowedTabIds() {
         
         $user = Auth::user();
-        # todo -
-        $role = $user->group->name;
-        switch ($role) {
+        switch ($user->role()) {
             case '运营':
                 return self::whereEnabled(Constant::ENABLED)
                     ->pluck('id')

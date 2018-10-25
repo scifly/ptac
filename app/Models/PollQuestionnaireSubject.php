@@ -43,8 +43,8 @@ use Throwable;
  * @property-read PollQuestionnaire $pollQuestionnaire
  * @property-read PollQuestionnaireAnswer $pollQuestionnaireAnswer
  * @property-read Collection|PollQuestionnaireSubjectChoice[] $pollQuestionnaireSubjectChoices
- * @property-read \App\Models\PollQuestionnaireAnswer $pqAnswer
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PollQuestionnaireSubjectChoice[] $pqsChoices
+ * @property-read PollQuestionnaireAnswer $pqAnswer
+ * @property-read Collection|PollQuestionnaireSubjectChoice[] $pqsChoices
  */
 class PollQuestionnaireSubject extends Model {
     
@@ -144,7 +144,7 @@ class PollQuestionnaireSubject extends Model {
         ];
         $condition = 'School.id = ' . $this->schoolId();
         $user = Auth::user();
-        if (!in_array($user->group->name, Constant::SUPER_ROLES)) {
+        if (!in_array($user->role(), Constant::SUPER_ROLES)) {
             $condition .= ' AND PollQuestionnaire.user_id = ' . $user->id;
         }
         

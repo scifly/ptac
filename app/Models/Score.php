@@ -209,7 +209,7 @@ class Score extends Model {
                 ]
             ]
         ];
-        if (in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
+        if (in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
             $condition = 'School.id = ' . $this->schoolId();
         } else {
             $condition = 'Squad.id IN (' . implode(',', $this->classIds()) . ')';
@@ -1204,7 +1204,7 @@ class Score extends Model {
         $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
         $exam = new Exam();
         abort_if(
-            $user->group->name == '学生',
+            $user->role() == '学生',
             HttpStatusCode::UNAUTHORIZED,
             __('messages.unauthorized')
         );
@@ -1248,7 +1248,7 @@ class Score extends Model {
         
         $user = Auth::user();
         abort_if(
-            $user->group->name == '学生',
+            $user->role() == '学生',
             HttpStatusCode::UNAUTHORIZED,
             __('messages.unauthorized')
         );

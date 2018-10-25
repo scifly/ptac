@@ -364,7 +364,7 @@ class Department extends Model {
                 # 更新被删除部门所包含用户对应的企业微信会员信息
                 array_map(
                     function ($userId) use ($user) {
-                        $action = User::find($userId)->departments->count() ? 'update' : 'delete';
+                        $action = User::find($userId)->depts()->count() ? 'update' : 'delete';
                         $user->sync($userId, $action);
                     }, $userIds
                 );
@@ -500,7 +500,7 @@ class Department extends Model {
     function tree($rootId = null) {
         
         $user = Auth::user();
-        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
+        $isSuperRole = in_array($user->role(), Constant::SUPER_ROLES);
         if (isset($rootId)) {
             $departments = $this->nodes($rootId);
         } else {
@@ -584,7 +584,6 @@ class Department extends Model {
     private function rootDepartmentId($subRoot = false) {
         
         $user = Auth::user();
-        $role = $user->group->name;
         $rootDepartmentTypeId = DepartmentType::whereName('根')->first()->id;
         $rootDId = Department::whereDepartmentTypeId($rootDepartmentTypeId)->first()->id;
         # 当前菜单id
@@ -598,7 +597,7 @@ class Department extends Model {
         $cmId = $menu->menuId($menuId, '企业');
         # 企业的根部门id
         $cdId = $cmId ? Corp::whereMenuId($cmId)->first()->department_id : null;
-        switch ($role) {
+        switch ($user->role()) {
             case '运营':
                 return !$subRoot ? $rootDId : ($sdId ?? ($cdId ?? $rootDId));
             case '企业':
@@ -619,7 +618,7 @@ class Department extends Model {
     private function topDeptId() {
         
         $user = Auth::user();
-        $ids = $user->departments->pluck('id')->toArray();
+        $ids = $user->depts()->pluck('id')->toArray();
         $levels = [];
         foreach ($ids as $id) {
             $level = 0;
@@ -810,7 +809,7 @@ class Department extends Model {
         
         $user = Auth::user();
         $contacts = [];
-        if (in_array($user->group->name, Constant::SUPER_ROLES)) {
+        if (in_array($user->role(), Constant::SUPER_ROLES)) {
             $departmentId = School::find($this->schoolId())->department_id;
             $visibleNodes = $this->tree($departmentId);
         } else {

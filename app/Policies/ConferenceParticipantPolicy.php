@@ -45,7 +45,7 @@ class ConferenceParticipantPolicy {
             __('messages.not_found')
         );
         $action = explode('/', Request::path())[1];
-        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
+        $isSuperRole = in_array($user->role(), Constant::SUPER_ROLES);
         switch ($action) {
             case 'index':
                 return $isSuperRole ? true : $this->action($user);

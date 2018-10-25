@@ -114,7 +114,7 @@ class Tag extends Model {
         ];
         $condition = 'Tag.school_id = ' . $this->schoolId();
         # 非超级用户(运营、企业、学校)只能查看编辑自己创建的标签
-        if (!in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
+        if (!in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
             $condition .= ' AND Tag.user_id = ' . Auth::id();
         }
         

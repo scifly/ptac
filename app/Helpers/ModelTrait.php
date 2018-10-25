@@ -230,9 +230,7 @@ trait ModelTrait {
     function schoolIds($userId = null, $corpId = null) {
         
         $user = !$userId ? Auth::user() : User::find($userId);
-        # todo -
-        $role = $user->group->name;
-        switch ($role) {
+        switch ($user->role()) {
             case '运营':
                 return $corpId
                     ? School::whereCorpId($corpId)->pluck('id')->toArray()
@@ -247,18 +245,16 @@ trait ModelTrait {
                 
                 return [School::whereDepartmentId($departmentId)->first()->id];
             case '监护人':
-                $classes = Squad::whereIn('department_id', $user->departments->pluck('id')->toArray())->get();
-                $schoolIds = [];
-                if (!isset($corpId)) {
-                    return $schoolIds;
-                }
+                $departmentIds = $user->depts()->pluck('department_id')->toArray();
+                $classes = Squad::whereIn('department_id', $departmentIds)->get();
+                if (!isset($corpId)) return $schoolIds ?? [];
                 foreach ($classes as $class) {
                     if ($class->grade->school->corp_id == $corpId) {
                         $schoolIds[] = $class->grade->school_id;
                     }
                 }
                 
-                return array_unique($schoolIds);
+                return array_unique($schoolIds ?? []);
             case '学生':
                 return [$user->student->squad->grade->school_id];
             default:
@@ -266,6 +262,8 @@ trait ModelTrait {
         }
         
     }
+    
+    
     
     /**
      * 返回对当前用户可见的所有年级Id
@@ -278,9 +276,7 @@ trait ModelTrait {
         
         $user = !$userId ? Auth::user() : User::find($userId);
         $schoolId = $schoolId ?? $this->schoolId();
-        # todo -
-        $role = $user->group->name;
-        if (in_array($role, Constant::SUPER_ROLES)) {
+        if (in_array($user->role(), Constant::SUPER_ROLES)) {
             $gradeIds = School::find($schoolId)
                 ->grades->pluck('id')->toArray();
         } else {
@@ -309,9 +305,7 @@ trait ModelTrait {
         
         $user = !$userId ? Auth::user() : User::find($userId);
         $schoolId = $schoolId ?? $this->schoolId();
-        # todo -
-        $role = $user->group->name;
-        if (in_array($role, Constant::SUPER_ROLES)) {
+        if (in_array($user->role(), Constant::SUPER_ROLES)) {
             $grades = School::find($schoolId)->grades;
             $classIds = [];
             foreach ($grades as $grade) {
@@ -346,9 +340,7 @@ trait ModelTrait {
         
         $user = !$userId ? Auth::user() : User::find($userId);
         $schoolId = $schoolId ?? $this->schoolId();
-        # todo -
-        $role = $user->group->name;
-        if (in_array($role, Constant::SUPER_ROLES)) {
+        if (in_array($user->role(), Constant::SUPER_ROLES)) {
             $examIds = School::find($schoolId)->exams->pluck('id')->toArray();
         } else {
             $classIds = $this->classIds($schoolId);
@@ -377,16 +369,14 @@ trait ModelTrait {
         
         $user = $user ?? Auth::user();
         $schoolId = $schoolId ?? ($this->schoolId() ?? session('schoolId'));
-        # todo -
-        $role = $user->group->name;
         $method = $type . 'Ids';
         if (method_exists($this, $method)) {
-            if (in_array($role, Constant::SUPER_ROLES)) {
+            if (in_array($user->role(), Constant::SUPER_ROLES)) {
                 $contactIds = $this->$method(
                     School::find($schoolId)->department_id
                 );
             } else {
-                $departments = $user->departments;
+                $departments = $user->depts();
                 $contactIds = [];
                 foreach ($departments as $d) {
                     $contactIds = array_merge(
@@ -477,11 +467,11 @@ trait ModelTrait {
         
         $departmentIds = [];
         $user = User::find($userId);
-        if (in_array($user->group->name, Constant::SUPER_ROLES)) {
+        if (in_array($user->role(), Constant::SUPER_ROLES)) {
             $schoolId = $schoolId ?? $this->schoolId();
             $department = $schoolId
                 ? School::find($schoolId)->department
-                : Department::find($user->group->name == '运营' ? 1 : $this->head($user));
+                : Department::find($user->role() == '运营' ? 1 : $this->head($user));
             $departmentIds[] = $department->id;
             
             return array_unique(
@@ -491,7 +481,7 @@ trait ModelTrait {
                 )
             );
         }
-        $departments = $user->departments;
+        $departments = $user->depts();
         foreach ($departments as $d) {
             $departmentIds[] = $d->id;
             $departmentIds = array_merge(
@@ -514,8 +504,7 @@ trait ModelTrait {
     function menuIds(Menu $menu, $userId = null) {
         
         $user = !$userId ? Auth::user() : User::find($userId);
-        $role = $user->group->name;
-        switch ($role) {
+        switch ($user->role) {
             case '运营':
                 return $menu::all()->pluck('id')->toArray();
             case '企业':
@@ -544,7 +533,7 @@ trait ModelTrait {
      */
     function head(User $user) {
         
-        return head($user->departments->pluck('id')->toArray());
+        return head($user->depts()->pluck('id')->toArray());
         
     }
     
@@ -709,7 +698,7 @@ trait ModelTrait {
      */
     function contactCondition($type = '') {
         
-        if (in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
+        if (in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
             $school = School::find($this->schoolId());
             $departmentId = $school->department_id;
             $departmentIds = [$departmentId] + (new Department)->subDepartmentIds($departmentId);
@@ -829,7 +818,6 @@ trait ModelTrait {
                 $input['mobile'][$i]['isdefault'] = $i == $isdefault ? 1 : 0;
             }
         }
-        $input['user']['isleader'] = 0;
         switch ($role) {
             case 'student':
             case 'custodian':
@@ -842,10 +830,7 @@ trait ModelTrait {
                         'username'   => $userid,
                         'userid'     => $userid,
                         'password'   => bcrypt('12345678'),
-                        'group_id'   => Group::whereName($position)->first()->id,
-                        'avatar_url' => '',
-                        'synced'     => 0,
-                        'subscribed' => 0,
+                        'group_id'   => Group::whereName($position)->first()->id
                     ];
                 }
                 if ($role == 'student' && !isset($input['remark'])) {
@@ -858,22 +843,8 @@ trait ModelTrait {
                 if ($role == 'educator') {
                     $input['enabled'] = $input['user']['enabled'];
                     $input['school_id'] = $this->schoolId();
-                    if (!Request::route('id')) {
-                        $input['sms_quote'] = 0;
-                        $input['user'] += [
-                            'avatar_url' => '',
-                            'synced'     => 0,
-                            'subscribed' => 0,
-                        ];
-                    }
+                    if (!Request::route('id')) $input['sms_quote'] = 0;
                 } else {
-                    if (!Request::route('id')) {
-                        $input['user'] += [
-                            'avatar_url' => '',
-                            'synced'     => 0,
-                            'subscribed' => 0,
-                        ];
-                    }
                     if (Group::find($input['group_id'])->name == '学校') {
                         $input += [
                             'school_id' => $input['school_id'],

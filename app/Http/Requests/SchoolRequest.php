@@ -77,7 +77,7 @@ class SchoolRequest extends FormRequest {
             if (!isset($input['corp_id'])) {
                 $user = Auth::user();
                 $departmentId = $this->head(Auth::user());
-                if ($user->group->name == '企业') {
+                if ($user->role() == '企业') {
                     $input['corp_id'] = Corp::whereDepartmentId($departmentId)->first()->id;
                 } else {
                     $input['corp_id'] = School::whereDepartmentId($departmentId)->first()->corp_id;

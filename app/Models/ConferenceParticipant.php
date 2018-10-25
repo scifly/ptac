@@ -110,7 +110,7 @@ class ConferenceParticipant extends Model {
         $condition = 'Educator.school_id = ' . $this->schoolId();
         $user = Auth::user();
         # 普通角色用户只能查看自己发起会议的与会者列表
-        if (!in_array($user->group->name, Constant::SUPER_ROLES)) {
+        if (!in_array($user->role(), Constant::SUPER_ROLES)) {
             $condition .= ' AND ConferenceQueue.user_id = ' . $user->id;
         }
         

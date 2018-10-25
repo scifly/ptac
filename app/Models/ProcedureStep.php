@@ -69,14 +69,14 @@ class ProcedureStep extends Model {
             ['db' => 'Procedures.name as procedurename', 'dt' => 1],
             [
                 'db'        => 'ProcedureStep.approver_user_ids', 'dt' => 2,
-                'formatter' => function ($row) {
-                    return $this->approverUsers($row['id']);
+                'formatter' => function ($d) {
+                    return $this->userList($d);
                 },
             ],
             [
                 'db'        => 'ProcedureStep.related_user_ids', 'dt' => 3,
-                'formatter' => function ($row) {
-                    return $this->relatedUsers($row['id']);
+                'formatter' => function ($d) {
+                    return $this->userList($d);
                 },
             ],
             ['db' => 'ProcedureStep.name', 'dt' => 4],
@@ -108,40 +108,14 @@ class ProcedureStep extends Model {
     /**
      * 返回指定审批流程步骤相关的审批者用户
      *
-     * @param $id
+     * @param string $d
      * @return string
      */
-    private function approverUsers($id) {
-        
-        return self::users($id, 'approver_user_ids');
-        
-    }
+    private function userList($d) {
     
-    /**
-     * 根据流程步骤ID获取审批者/相关人用户列表
-     *
-     * @param $id integer 流程步骤ID
-     * @param $field string (用户ID)字段名称
-     * @return string
-     */
-    private function users($id, $field) {
-        
-        $userIds = Auth::user()->userList(explode(',', $this->find($id)->{$field}));
-        $userList = collect($userIds)->flatten()->toArray();
+        $userList = User::whereIn('id', explode(',', $d))->pluck('realname')->toArray();
         
         return implode(',', $userList);
-        
-    }
-    
-    /**
-     * 返回相关人用户列表
-     *
-     * @param $id
-     * @return string
-     */
-    private function relatedUsers($id) {
-        
-        return $this->users($id, 'related_user_ids');
         
     }
     

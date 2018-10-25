@@ -51,7 +51,7 @@ class ConferenceQueuePolicy {
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        switch ($user->group->name) {
+        switch ($user->role()) {
             case '运营':
                 return true;
             case '企业':

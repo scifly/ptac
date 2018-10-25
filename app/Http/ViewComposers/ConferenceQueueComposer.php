@@ -27,7 +27,7 @@ class ConferenceQueueComposer {
             ->pluck('name', 'id')
             ->toArray();
         $user = Auth::user();
-        switch ($user->group->name) {
+        switch ($user->role()) {
             case '运营':
             case '企业':
             case '学校':

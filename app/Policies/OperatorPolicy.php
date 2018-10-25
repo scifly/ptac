@@ -44,9 +44,10 @@ class OperatorPolicy {
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        if ($user->group->name == '运营') { return true; }
+        $role = $user->role();
+        if ($role == '运营') { return true; }
         $action = explode('/', Request::path())[1];
-        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
+        $isSuperRole = in_array($role, Constant::SUPER_ROLES);
         $isOperatorAllowed = $isGroupAllowed = $isCorpAllowed = $isSchoolAllowed = true;
     
         # 对当前用户可见的超级用户ids
@@ -66,12 +67,12 @@ class OperatorPolicy {
                 $groupId = Request::input('group_id');
                 $corpId = Request::input('corp_id');
                 $schoolId = Request::input('school_id');
-                $isGroupAllowed = $user->group->name == '企业'
+                $isGroupAllowed = $role == '企业'
                     ? in_array($groupId, [$corpGroupId, $schoolGroupId])
                     : $groupId == $schoolGroupId;
                 if ($corpId) {
                     $departmentId = $this->head($user);
-                    if ($user->group->name == '企业') {
+                    if ($role == '企业') {
                         $corp = Corp::whereDepartmentId($departmentId)->first();
                     } else {
                         $corp = School::whereDepartmentId($departmentId)->first()->corp;

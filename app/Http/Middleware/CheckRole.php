@@ -48,8 +48,7 @@ class CheckRole {
         $route = trim($request->route()->uri());
         $user = Auth::user();
         $groupId = $user->group_id;
-        # todo -
-        $role = $user->group->name;
+        $role = $user->role();
         $menuId = session('menuId');
     
         # 超级用户直接访问所有功能, 如果访问的是首页，则直接通过并进入下个请求

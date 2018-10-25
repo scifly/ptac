@@ -25,8 +25,7 @@ class ModuleComposer {
      */
     public function compose(View $view) {
         
-        $role = Auth::user()->group->name;
-        switch ($role) {
+        switch (Auth::user()->role()) {
             case '运营':
                 $schools = School::whereEnabled(1)
                         ->pluck('name', 'id')->toArray();

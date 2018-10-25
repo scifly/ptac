@@ -150,7 +150,7 @@ class Kinder {
             case '13':      # 新增人员
             case '14':      # 编辑人员
                 $user = User::find($data['id']);
-                $departmentId = head($user->departments->pluck('id')->toArray());
+                $departmentId = head($user->depts()->pluck('id')->toArray());
                 $did = $departmentId + (!$user->custodian ? 10000 : 50000);
                 $cnumber = $data['userid'];
                 if ($user->student) {
@@ -169,7 +169,7 @@ class Kinder {
                     'post'    => $user->group_id,
                     'status'  => $user->enabled,
                     'address' => 'n/a',
-                    'ishome'  => $user->group->name == '学生' ? $data['remark'] : 0,
+                    'ishome'  => $user->role() == '学生' ? $data['remark'] : 0,
                     'remark'  => $data['remark'],
                     'bank'    => $user->custodian ? 'custodian' : 'n/a',
                 ];

@@ -33,7 +33,7 @@ trait JobTrait {
         $results = [];
         foreach ($corps as $corp) {
             $member = User::whereUserid($data['userid'])->first();
-            if ($member && in_array($member->group->name, ['运营', '企业'])) {
+            if ($member && in_array($member->role(), ['运营', '企业'])) {
                 $data['department'] = [$corp->departmentid];
             }
             $results[$corp->id] = $this->operate(

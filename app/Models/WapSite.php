@@ -252,7 +252,7 @@ class WapSite extends Model {
         $user = Auth::user();
         # 禁止学生访问微网站
         abort_if(
-            !$user || $user->group->name == '学生',
+            !$user || $user->role() == '学生',
             HttpStatusCode::UNAUTHORIZED,
             __('messages.unauthorized')
         );

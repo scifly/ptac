@@ -46,8 +46,7 @@ class CorpPolicy {
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        $role = $user->group->name;
-        switch ($role) {
+        switch ($user->role()) {
             case '运营':
                 return true;
             case '企业':

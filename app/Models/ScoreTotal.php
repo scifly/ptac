@@ -261,7 +261,7 @@ class ScoreTotal extends Model {
             __('messages.not_found')
         );
         $exam = Exam::find($examId);
-        $role = Auth::user()->group->name;
+        $role = Auth::user()->role();
         if ($role != '运营') {
             # 对当前用户可见的学生Id
             $allowedStudentIds = $this->contactIds('student');

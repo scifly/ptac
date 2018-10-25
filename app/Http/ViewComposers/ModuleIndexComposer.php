@@ -22,9 +22,8 @@ class ModuleIndexComposer {
      */
     public function compose(View $view) {
         
-        $role = Auth::user()->group->name;
         $optionAll = [null => '全部'];
-        switch ($role) {
+        switch (Auth::user()->role()) {
             case '运营':
                 $schools = $optionAll + School::whereEnabled(1)
                         ->pluck('name', 'id')->toArray();

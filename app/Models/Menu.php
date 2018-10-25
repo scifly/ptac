@@ -447,14 +447,12 @@ class Menu extends Model {
         
         $menus = [];
         $user = Auth::user();
-        $role = $user->group->name;
         if ($rootId == 1) {
             $data = self::where('id', '<>', 1)
                 ->orderBy('position')
                 ->get()->toArray();
         } else {
-            # todo -
-            if (!in_array($role, Constant::SUPER_ROLES)) {
+            if (!in_array($user->role(), Constant::SUPER_ROLES)) {
                 $data = GroupMenu::with('menu')
                     ->where('group_id', $user->group_id)
                     ->get()->pluck('menu')
@@ -508,7 +506,7 @@ class Menu extends Model {
         $menuId = session('menuId') != '0' ? session('menuId') : $rootMId;
         $smId = self::menuId($menuId);
         $cmId = self::menuId($menuId, '企业');
-        switch ($user->group->name) {
+        switch ($user->role()) {
             case '运营':
                 return !$subRoot ? $rootMId : ($smId ?? ($cmId ?? $rootMId));
             case '企业':
@@ -561,12 +559,9 @@ class Menu extends Model {
      */
     private function movable($id, $parentId) {
         
-        if (!isset($id, $parentId)) {
-            return false;
-        }
+        if (!isset($id, $parentId)) return false;
         $user = Auth::user();
-        $role = $user->group->name;
-        if ($role != '运营') {
+        if ($user->role() != '运营') {
             $menuIds = $this->menuIds($this);
             abort_if(
                 !in_array($id, $menuIds) || !in_array($parentId, $menuIds),
@@ -574,9 +569,8 @@ class Menu extends Model {
                 __('messages.forbidden')
             );
         }
-        $type = $this->find($id)->menuType->name;
         $parentType = $this->find($parentId)->menuType->name;
-        switch ($type) {
+        switch ($this->find($id)->menuType->name) {
             case '运营':
                 return $parentType == '根';
             case '企业':

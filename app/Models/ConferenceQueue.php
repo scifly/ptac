@@ -154,7 +154,7 @@ class ConferenceQueue extends Model {
             ],
         ];
         $condition = 'ConferenceRoom.school_id = ' . $this->schoolId();
-        if (!in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
+        if (!in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
             $condition .= ' AND ConferenceQueue.user_id = ' . Auth::id();
         }
         

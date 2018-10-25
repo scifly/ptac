@@ -32,7 +32,7 @@ class EducatorAttendancePolicy {
      */
     function operation(User $user) {
     
-        return in_array($user->group->name, Constant::SUPER_ROLES)
+        return in_array($user->role(), Constant::SUPER_ROLES)
             ? true : $this->action($user);
         
     }

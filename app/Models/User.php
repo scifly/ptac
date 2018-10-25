@@ -68,6 +68,13 @@ use Throwable;
  * @property-read Collection|PollQuestionnaireParticipant[] $pollQuestionnairePartcipants
  * @property-read Collection|PollQuestionnaire[] $pollQuestionnaires
  * @property-read Student $student
+ * @property-read Collection|Client[] $clients
+ * @property-read Collection|Token[] $tokens
+ * @property-read Collection|Event[] $events
+ * @property-read Collection|PollQuestionnaireAnswer[] $pqAnswers
+ * @property-read Collection|PollQuestionnaireParticipant[] $pqParticipants
+ * @property-read Collection|Tag[] $tags
+ * @property-read Collection|Tag[] $_tags
  * @method static Builder|User whereAvatarMediaid($value)
  * @method static Builder|User whereAvatarUrl($value)
  * @method static Builder|User whereCreatedAt($value)
@@ -90,13 +97,6 @@ use Throwable;
  * @method static Builder|User whereSynced($value)
  * @method static Builder|User whereUsername($value)
  * @mixin Eloquent
- * @property-read Collection|Client[] $clients
- * @property-read Collection|Token[] $tokens
- * @property-read Collection|Event[] $events
- * @property-read Collection|PollQuestionnaireAnswer[] $pqAnswers
- * @property-read Collection|PollQuestionnaireParticipant[] $pqParticipants
- * @property-read Collection|Tag[] $tags
- * @property-read Collection|Tag[] $_tags
  */
 class User extends Authenticatable {
     
@@ -296,11 +296,8 @@ class User extends Authenticatable {
         $rootGId = Group::whereName('运营')->first()->id;
         $corpGId = Group::whereName('企业')->first()->id;
         $schoolGId = Group::whereName('学校')->first()->id;
-        $condition = '';
-        $menu = new Menu();
-        $rootMenu = Menu::find($menu->rootMenuId(true));
+        $rootMenu = Menu::find((new Menu)->rootMenuId(true));
         $menuType = $rootMenu->menuType->name;
-        unset($menu);
         switch ($menuType) {
             case '根':
                 $allowedGIds = [$rootGId, $corpGId, $schoolGId];
@@ -336,7 +333,7 @@ class User extends Authenticatable {
         }
         
         return Datatable::simple(
-            $this->getModel(), $columns, $joins, $condition
+            $this->getModel(), $columns, $joins, $condition ?? ''
         );
         
     }
@@ -396,15 +393,17 @@ class User extends Authenticatable {
             DB::transaction(function () use ($data) {
                 # 创建用户
                 $user = $this->create($data['user']);
-                # 创建教职员工
-                if (!in_array($user->group->name, Constant::NON_EDUCATOR)) {
+                # 如果角色为校级管理员，则同时创建教职员工记录
+                if (!in_array($user->role(), Constant::NON_EDUCATOR)) {
                     $data['user_id'] = $user->id;
                     Educator::create($data);
                 }
                 # 保存手机号码
                 (new Mobile)->store($data['mobile'], $user->id);
                 # 保存用户&部门绑定关系
-                (new DepartmentUser)->storeByUserId($user->id, [$this->departmentId($data)]);
+                (new DepartmentUser)->storeByUserId(
+                    $user->id, [$this->departmentId($data)]
+                );
                 # 创建企业号成员
                 $this->createWechatUser($user->id);
             });
@@ -413,29 +412,6 @@ class User extends Authenticatable {
         }
         
         return true;
-        
-    }
-    
-    /**
-     * 获取超级用户所处的部门id
-     *
-     * @param $data
-     * @return int|mixed|null
-     */
-    private function departmentId($data) {
-        
-        switch (Group::find($data['group_id'])->name) {
-            case '运营':
-                return Department::whereDepartmentTypeId(
-                    DepartmentType::whereName('根')->first()->id
-                )->first()->id;
-            case '企业':
-                return Corp::find($data['corp_id'])->department_id;
-            case '学校':
-                return School::find($data['school_id'])->department_id;
-            default:
-                return null;
-        }
         
     }
     
@@ -464,7 +440,7 @@ class User extends Authenticatable {
         
         $user = $this->find($id);
         $corpIds = $schoolIds = [];
-        switch ($user->group->name) {
+        switch ($user->role()) {
             case '运营':
                 $corpIds = Corp::pluck('id')->toArray();
                 break;
@@ -494,7 +470,7 @@ class User extends Authenticatable {
         $data = [
             'id'        => $user->id,
             'userid'    => $user->userid,
-            'position'  => $user->group->name,
+            'position'  => $user->position ?? $this->role(),
             'corpIds'   => $corpIds,
             'schoolIds' => $schoolIds,
         ];
@@ -522,8 +498,8 @@ class User extends Authenticatable {
                             ->pluck('mobile')->toArray()
                     ),
                     'email'        => $user->email,
-                    'department'   => in_array($user->group->name, ['运营', '企业'])
-                        ? [1] : $user->departments->pluck('id')->toArray(),
+                    'department'   => in_array($user->role(), ['运营', '企业'])
+                        ? [1] : $user->depts()->pluck('id')->toArray(),
                     'gender'       => $user->gender,
                     'remark'       => $remark,
                     'enable'       => $user->enabled,
@@ -866,41 +842,21 @@ class User extends Authenticatable {
     }
     
     /**
-     * 返回指定用户所属的所有部门id
+     * 返回对指定用户可见的所有部门id
      *
      * @param integer $id 用户id
      * @return array
      */
     function departmentIds($id) {
         
-        $departments = self::find($id)->departments;
-        $departmentIds = [];
-        foreach ($departments as $d) {
+        foreach ($this->find($id)->depts() as $d) {
             $departmentIds[] = $d->id;
             $departmentIds = array_merge(
                 $departmentIds, $d->subDepartmentIds($d->id)
             );
         }
         
-        return array_unique($departmentIds);
-        
-    }
-    
-    /**
-     * 返回用户列表(id, name)
-     *
-     * @param array $ids
-     * @return array
-     */
-    function userList(array $ids) {
-        
-        $list = [];
-        foreach ($ids as $id) {
-            $user = self::find($id);
-            $list[$user->id] = $user->realname;
-        }
-        
-        return $list;
+        return array_unique($departmentIds ?? []);
         
     }
     
@@ -935,12 +891,82 @@ class User extends Authenticatable {
         } else {
             $corpId = $value;
         }
-        $schools = $corpId ? School::whereCorpId($corpId)
-            ->where('enabled', 1)->get()
-            ->pluck('name', 'id')->toArray() : [];
+        $schools = $corpId
+            ? School::where(['corp_id' => $corpId, 'enabled' => 1])->pluck('name', 'id')->toArray()
+            : [];
         $result['schoolList'] = $this->selectList($schools, 'school_id');
         
         return response()->json($result);
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+    /**
+     * 根据部门id获取部门所属学校的部门id
+     *
+     * @param $deptId
+     * @return int|mixed
+     */
+    function schoolDeptId(&$deptId) {
+        
+        $dept = Department::find($deptId);
+        
+        return $dept->departmentType->name != '学校'
+            ? $this->schoolDeptId($dept->parent_id)
+            : $deptId;
+        
+    }
+    
+    /**
+     * 返回当前登录用户的角色名称
+     *
+     * @return string
+     */
+    function role() {
+        
+        $user = Auth::user();
+        $role = $user->group->name;
+        $isEducator = session('is_educator');
+        
+        return (!$user->educator || !isset($isEducator))
+            ? $role : ($isEducator ? $role : '监护人');
+        
+    }
+    
+    /**
+     * 返回当前登录用户直属的部门集合
+     *
+     * @return Department[]|Collection
+     */
+    function depts() {
+
+        $user = Auth::user();
+        $role = $this->role();
+        if (in_array($role, Constant::NON_EDUCATOR) && $role != '监护人') {
+            return $user->departments;
+        }
+        $departmentIds = DepartmentUser::where([
+            'user_id' => $user->id,
+            'enabled' => $role == '监护人' ? 0 : 1,
+        ])->pluck('department_id')->toArray();
+    
+        return Department::whereIn('id', $departmentIds)->get();
+    
+    }
+
+    /**
+     * 返回指定用户所属的所有企业id
+     *
+     * @param $id
+     * @return array
+     */
+    function corpIds($id) {
+        
+        $user = $this->find($id);
+        
+        return $user->role() == '运营'
+            ? Corp::pluck('id')->toArray()
+            : [(new Department)->corpId($this->head($user) ?? 1)];
         
     }
     
@@ -950,7 +976,7 @@ class User extends Authenticatable {
     private function corps() {
         
         $user = Auth::user();
-        switch ($user->group->name) {
+        switch ($user->role()) {
             case '运营':
                 return Corp::whereEnabled(1)->pluck('name', 'id')->toArray();
             case '企业':
@@ -982,40 +1008,24 @@ class User extends Authenticatable {
         
     }
     
-    /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
-     * 根据部门id获取部门所属学校的部门id
+     * 获取超级用户所处的部门id
      *
-     * @param $deptId
-     * @return int|mixed
+     * @param $data
+     * @return int|mixed|null
      */
-    function schoolDeptId(&$deptId) {
+    private function departmentId($data) {
         
-        $dept = Department::find($deptId);
-        $typeId = DepartmentType::whereName('学校')->first()->id;
-        if ($dept->department_type_id != $typeId) {
-            $deptId = $dept->parent_id;
-            
-            return self::schoolDeptId($deptId);
-        } else {
-            return $deptId;
+        switch (Group::find($data['user']['group_id'])->name) {
+            case '运营':
+                return Department::whereParentId(null)->first()->id;
+            case '企业':
+                return Corp::find($data['corp_id'])->department_id;
+            case '学校':
+                return School::find($data['school_id'])->department_id;
+            default:
+                return null;
         }
-        
-    }
-    
-    /**
-     * 返回指定用户所属的所有企业id
-     *
-     * @param $id
-     * @return array
-     */
-    function corpIds($id) {
-        
-        $user = $this->find($id);
-        
-        return $user->group->name == '运营'
-            ? Corp::pluck('id')->toArray()
-            : [(new Department)->corpId($this->head($user) ?? 1)];
         
     }
     

@@ -22,7 +22,7 @@ class TagComposer {
         
         if (Request::route('id')) {
             $tag = Tag::find(Request::route('id'));
-            $targetIds = $tag->departments->pluck('id')->toArray();
+            $targetIds = $tag->depts()->pluck('id')->toArray();
             $targetsHtml = (new Message)->targetsHtml($tag->users, $targetIds);
         }
         

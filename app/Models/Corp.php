@@ -299,7 +299,7 @@ class Corp extends Model {
             return null;
         }
         $user = Auth::user();
-        switch ($user->group->name) {
+        switch ($user->role()) {
             case '运营':
             case '企业':
                 $corpMenuId = (new Menu)->menuId(session('menuId'), '企业');

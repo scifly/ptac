@@ -25,15 +25,16 @@ class OperatorRequest extends FormRequest {
      */
     public function authorize() {
         
-        $role = Auth::user()->group->name;
+        $role = Auth::user()->role();
         if (in_array($role, Constant::SUPER_ROLES)) {
+            $groupId = Request::input('user.group_id');
             switch ($role) {
                 case '运营':
                     return true;
                 case '企业':
-                    return Group::find(Request::input('group_id'))->name != '运营';
+                    return Group::find($groupId)->name != '运营';
                 case '学校':
-                    return Group::find(Request::input('group_id'))->name == '学校';
+                    return Group::find($groupId)->name == '学校';
                 default:
                     break;
             }
@@ -53,18 +54,18 @@ class OperatorRequest extends FormRequest {
         $rules = [
             'user.username'              => 'required|string|between:6,255|unique:users,username,' .
                 $this->input('id') . ',id',
+            'user.password'              => 'string|min:6|confirmed',
+            'user.password_confirmation' => 'string|min:6',
             'user.group_id'              => 'required|integer',
-            'corp_id'                    => 'nullable|integer',
-            'school_id'                  => 'nullable|integer',
-            'user.realname'              => 'required|string',
+            'user.realname'              => 'required|string|between:2,60',
             'user.english_name'          => 'nullable|string|between:2,64',
             'user.gender'                => 'required|boolean',
             'user.email'                 => ['nullable', 'email', new Email],
-            'user.password'              => 'string|min:6|confirmed',
-            'user.password_confirmation' => 'string|min:6',
-            'mobile.*'                   => ['required', new Mobile],
+            'user.telephone'             => 'nullabel|string|between:2,64',
             'user.enabled'               => 'required|boolean',
-            'user.synced'                => 'required|boolean',
+            'corp_id'                    => 'nullable|integer',
+            'school_id'                  => 'nullable|integer',
+            'mobile.*'                   => ['required', new Mobile],
         ];
         $this->batchRules($rules);
         

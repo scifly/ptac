@@ -151,7 +151,7 @@ class StudentAttendanceSetting extends Model {
         ];
         $condition = 'Semester.school_id = ' . $this->schoolId();
         $user = Auth::user();
-        if (!in_array($user->group->name, Constant::SUPER_ROLES)) {
+        if (!in_array($user->role(), Constant::SUPER_ROLES)) {
             $condition .= ' AND StudentAttendanceSetting.grade_id IN (' . implode(',', $this->gradeIds()) . ')';
         }
         

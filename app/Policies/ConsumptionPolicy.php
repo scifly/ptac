@@ -36,7 +36,7 @@ class ConsumptionPolicy {
      */
     public function show(User $user) {
         
-        if (in_array($user->group->name, Constant::SUPER_ROLES)) {
+        if (in_array($user->role(), Constant::SUPER_ROLES)) {
             return true;
         }
         $actionId = Action::whereRoute(trim(Request::route()->uri()))->first()->id;
@@ -71,7 +71,7 @@ class ConsumptionPolicy {
         }
         $dateRange = explode(' - ', $cs->dateRange);
         
-        if (in_array($user->group->name, Constant::SUPER_ROLES)) {
+        if (in_array($user->role(), Constant::SUPER_ROLES)) {
             return empty(array_diff($studentIds, $this->contactIds('student')))
                 && ($dateRange[1] >= $dateRange[0]);
         }
@@ -88,11 +88,8 @@ class ConsumptionPolicy {
      */
     function export(User $user) {
     
-        if (in_array($user->group->name, Constant::SUPER_ROLES)) {
-            return true;
-        }
-        
-        return $this->action($user);
+        return in_array($user->role(), Constant::SUPER_ROLES)
+            ? true : $this->action($user);
         
     }
     

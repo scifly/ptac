@@ -41,9 +41,10 @@ class SchoolPolicy {
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        if ($user->group->name == '运营') { return true; }
+        $role = $user->role();
+        if ($role == '运营') { return true; }
         $isSchoolAllowed = false;
-        $isSuperRole = in_array($user->group->name, Constant::SUPER_ROLES);
+        $isSuperRole = in_array($role, Constant::SUPER_ROLES);
         $action = explode('/', Request::path())[1];
         if (in_array($action, ['edit', 'show', 'update', 'delete'])) {
             $isSchoolAllowed = in_array($school->id, $this->schoolIds());
@@ -52,13 +53,13 @@ class SchoolPolicy {
             case 'index':
             case 'create':
             case 'store':
-                return $user->group->name == '企业';
+                return $role == '企业';
             case 'show':
             case 'edit':
             case 'update':
                 return $isSuperRole && $isSchoolAllowed;
             case 'delete':
-                return $user->group->name == '企业' && $isSchoolAllowed;
+                return $role == '企业' && $isSchoolAllowed;
             default:
                 return false;
         }

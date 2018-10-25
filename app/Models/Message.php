@@ -86,7 +86,7 @@ class Message extends Model {
         'comm_type_id', 'app_id', 'msl_id', 'content',
         'serviceid', 'message_id', 'url', 'media_ids',
         's_user_id', 'r_user_id', 'message_type_id',
-        'read', 'sent', 'title', 'event_id', 'media_type_id'
+        'read', 'sent', 'title', 'event_id', 'media_type_id',
     ];
     
     /**
@@ -183,7 +183,7 @@ class Message extends Model {
                 'db' => 'Message.media_type_id', 'dt' => 2,
                 'formatter' => function ($d) {
                     return MediaType::find($d)->remark;
-                }
+                },
             ],
             [
                 'db'        => 'Message.msl_id', 'dt' => 3,
@@ -204,7 +204,7 @@ class Message extends Model {
                 'db' => 'Message.message_type_id', 'dt' => 5,
                 'formatter' => function ($d) {
                     return MessageType::find($d)->name;
-                }
+                },
             ],
             [
                 'db'        => 'Message.created_at', 'dt' => 6, 'dr' => true,
@@ -282,7 +282,7 @@ class Message extends Model {
         ];
         $user = Auth::user();
         $userIds = [$user->id];
-        if (in_array($user->group->name, Constant::SUPER_ROLES)) {
+        if (in_array($user->role(), Constant::SUPER_ROLES)) {
             $userIds = array_unique(
                 array_merge(
                     $this->userIds(School::find($this->schoolId())->department_id),
@@ -346,11 +346,12 @@ class Message extends Model {
     function targetsHtml($users, &$targetIds) {
     
         $allowedDeptIds = $this->departmentIds(Auth::id());
+        /** @var User $user */
         foreach ($users as $user) {
             $departmentId = head(
                 array_intersect(
                     $allowedDeptIds,
-                    $user->departments->pluck('id')->toArray()
+                    $user->depts()->pluck('id')->toArray()
                 )
             );
             $targetIds[] = 'user-' . $departmentId . '-' . $user->id;

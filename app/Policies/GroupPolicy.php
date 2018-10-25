@@ -49,9 +49,10 @@ class GroupPolicy {
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        if ($user->group->name == '运营') { return true; }
+        $role = $user->role();
+        if ($role == '运营') { return true; }
         # 仅超级用户（运营/企业/学校）才能进行角色/权限管理
-        if (!in_array($user->group->name, Constant::SUPER_ROLES)) { return false; }
+        if (!in_array($role, Constant::SUPER_ROLES)) { return false; }
         $action = explode('/', Request::path())[1];
         $isGroupAllowed = $isMenuAllowed = $isTabAllowed = $isActionAllowed = false;
         if (in_array($action, ['store', 'update'])) {

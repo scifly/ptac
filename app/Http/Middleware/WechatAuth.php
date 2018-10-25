@@ -73,7 +73,7 @@ class WechatAuth {
         # 学校列表。如果用户仅可见到一所学校，则直接进入需要访问的页面。
         $user = Auth::user();
         abort_if(
-            $user->group->name == '学生',
+            $user->role() == '学生',
             HttpStatusCode::UNAUTHORIZED,
             __('messages.unauthorized')
         );

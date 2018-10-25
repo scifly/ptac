@@ -85,7 +85,7 @@ class EducatorClass extends Model {
         try {
             DB::transaction(function () use ($educatorId, $data) {
                 $educator = Educator::find($educatorId);
-                if ($educator->user->group->name != '学校') {
+                if ($educator->user->role() != '学校') {
                     $this->where('educator_id', $educatorId)->delete();
                     $classIds = $data['class_ids'];
                     $subjectIds = $data['subject_ids'];

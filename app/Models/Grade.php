@@ -178,7 +178,7 @@ class Grade extends Model {
             ],
         ];
         $condition = 'School.id = ' . $this->schoolId();
-        if (!in_array(Auth::user()->group->name, Constant::SUPER_ROLES)) {
+        if (!in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
             $condition .= ' AND Grade.id IN (' . implode(',', $this->gradeIds()) . ')';
         }
         
