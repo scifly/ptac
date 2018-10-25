@@ -920,11 +920,12 @@ class User extends Authenticatable {
     /**
      * 返回当前登录用户的角色名称
      *
+     * @param null $id
      * @return string
      */
-    function role() {
+    function role($id = null) {
         
-        $user = Auth::user();
+        $user = $id ? $this->find($id) : Auth::user();
         $role = $user->group->name;
         $isEducator = session('is_educator');
         
