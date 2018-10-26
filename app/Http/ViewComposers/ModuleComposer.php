@@ -24,32 +24,41 @@ class ModuleComposer {
      */
     public function compose(View $view) {
         
+        
+        $groups = [
+            0 => '公用',
+            Group::whereName('监护人')->first()->id => '监护人',
+        ];
+        $superGroups = [
+            Group::whereName('运营')->first()->id => '运营',
+            Group::whereName('企业')->first()->id => '企业',
+            Group::whereName('学校')->first()->id => '学校',
+        ];
         switch (Auth::user()->role()) {
             case '运营':
-                $schools = School::whereEnabled(1)
-                        ->pluck('name', 'id')->toArray();
+                $schools = School::whereEnabled(1)->get();
                 break;
             case '企业':
-                $schools = School::where([
-                    'enabled' => 1,
-                    'corp_id' => (new Corp)->corpId()
-                ])->pluck('name', 'id')->toArray();
+                $schools = School::where(['corp_id' => (new Corp)->corpId(), 'enabled' => 1])->get();
                 break;
             default:
-                $schools = School::find($this->schoolId())
-                    ->pluck('name', 'id')->toArray();
+                $schools = School::find($this->schoolId());
                 break;
         }
-        $groups = [null => '公用'] + Group::whereIn('name', ['监护人', '教职员工'])->pluck('name', 'id')->toArray();
-        $tabs = [null => ''] + Tab::where(['enabled' => 1, 'category' => 1])->pluck('comment', 'id')->toArray();
+        $schoolList = $schools->pluck('name', 'id')->toArray();
+        ksort($schoolList);
+        $groups += Group::where(['enabled' => 1, 'school_id' => key($schoolList)])
+            ->pluck('name', 'id')->toArray();
+        $groups += $superGroups;
+        $tabs = Tab::where(['enabled' => 1, 'category' => 1])->get();
         if (Request::route('id')) {
             $media = Module::find(Request::route('id'))->media;
         }
         
         $view->with([
-            'schools' => $schools,
+            'schools' => $schoolList,
             'groups' => $groups,
-            'tabs' => $tabs,
+            'tabs' => [null => ''] + $tabs->pluck('comment', 'id')->toArray(),
             'media' => $media ?? null
         ]);
         

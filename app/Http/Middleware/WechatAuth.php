@@ -77,7 +77,10 @@ class WechatAuth {
             HttpStatusCode::UNAUTHORIZED,
             __('messages.unauthorized')
         );
-        if (!Request::query('schoolId') && stripos(Request::path(), 'schools') === false) {
+        if (
+            !Request::query('schoolId') &&
+            stripos(Request::path(), 'schools') === false
+        ) {
             if (!session('schoolId')) {
                 $schoolIds = $user->schoolIds($user->id, session('corpId'));
                 if (count($schoolIds) > 1) {

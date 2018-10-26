@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -224,6 +225,29 @@ class Module extends Model {
         
         return response()->json($uploadedFile);
         
+    }
+    
+    function wIndex() {
+    
+        $modules = $this->orderBy('order')->where([
+            'school_id' => session('schoolId'), 'enabled' => 1,
+        ])->get()->filter(function (Module $module) {
+            $role = Auth::user()->role();
+            $groupId = $role == '监护人'
+                ? Group::whereName($role)->first()->id
+                : Group::where
+            return in_array($module->group_id, [0, ]);
+        });
+        
+        
+        if ($role == '监护人') {
+            $groupId = Group::whereName($role)->first()->id;
+            $modules = $modules->filter(
+                function
+            );
+        }
+    
+    
     }
     
 }
