@@ -24,9 +24,15 @@ function routes($ctlr) {
  */
 function app_routes($acronym) {
     
-    Route::get($acronym . '/schools', 'Wechat\WechatController@schools');
     Route::get($acronym . '/sync', 'Wechat\SyncController@sync');
     Route::post($acronym . '/sync', 'Wechat\SyncController@sync');
+    
+    /** 应用入口 */
+    $c = 'Wechat\WechatController';
+    $p = $acronym . '/wechat/';
+    Route::get($p, $c . '@index');
+    Route::get($p . 'schools', $c . '@schools');
+    Route::get($p . 'roles', $c . '@roles');
     
     /** 消息中心 */
     $c = 'Wechat\MessageCenterController';

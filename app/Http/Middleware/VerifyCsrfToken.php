@@ -15,23 +15,27 @@ class VerifyCsrfToken extends BaseVerifier {
      * @var array
      */
     protected $except = [
-        'wlrj/mc',
-        'wlrj/ws',
-        'wlrj/at',
-        'wlrj/sc',
+        'wlrj/wechat',
+        'wlrj/mobile_sites',
+        'wlrj/attendances',
+        'wlrj/message_centers',
+        'wlrj/score_centers',
+        'wlrj/home_works',
         'wlrj/sync',
-        'wlrj/homework',
         'wlrj/notify',
+        
         'lkrj/mc',
         'lkrj/ws',
         'lkrj/at',
         'lkrj/sc',
         'lkrj/sync',
+        
         'zhjyaqpt/mc',
         'zhjyaqpt/ws',
         'zhjyaqpt/at',
         'zhjyaqpt/sc',
         'zhjyaqpt/sync',
+        
         'cdmsgjxx/mc',
         'cdmsgjxx/ws',
         'cdmsgjxx/at',
