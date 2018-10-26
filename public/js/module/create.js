@@ -1,3 +1,4 @@
+//# sourceURL=create.js
 var table = 'modules',
     $schoolId = $('#school_id'),
     $groupId = $('#group_id');
