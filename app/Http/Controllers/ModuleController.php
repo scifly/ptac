@@ -52,7 +52,13 @@ class ModuleController extends Controller {
     public function create() {
         
         return Request::method() == 'POST'
-            ? $this->module->upload()
+            ? (
+            Request::has('school_id')
+                ? response()->json(
+                    $this->module->groupList(Request::input('school_id'), true)
+                )
+                : $this->module->upload()
+            )
             : $this->output();
         
     }
@@ -83,9 +89,15 @@ class ModuleController extends Controller {
     public function edit($id) {
         
         return Request::method() == 'POST'
-            ? $this->module->upload()
+            ? (
+            Request::has('school_id')
+                ? response()->json(
+                    $this->module->groupList(Request::input('school_id'), true)
+                )
+                : $this->module->upload()
+            )
             : $this->output([
-                'module' => $this->module->find($id)
+                'module' => $this->module->find($id),
             ]);
         
     }

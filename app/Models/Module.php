@@ -291,4 +291,64 @@ class Module extends Model {
         
     }
     
+    /**
+     * 返回创建/编辑view使用的数据
+     *
+     * @return array
+     */
+    function compose() {
+    
+        switch (Auth::user()->role()) {
+            case '运营':
+                $schools = School::whereEnabled(1)->get();
+                break;
+            case '企业':
+                $schools = School::where(['corp_id' => (new Corp)->corpId(), 'enabled' => 1])->get();
+                break;
+            default:
+                $schools = School::find($this->schoolId());
+                break;
+        }
+        $schoolList = $schools->pluck('name', 'id')->toArray();
+        ksort($schoolList);
+        $groups = $this->groupList(key($schoolList));
+        
+        $tabs = Tab::where(['enabled' => 1, 'category' => 1])->get();
+        if (Request::route('id')) {
+            $media = $this->find(Request::route('id'))->media;
+        }
+        
+        return [
+            $schoolList, $groups,
+            [null => ''] + $tabs->pluck('comment', 'id')->toArray(),
+            $media ?? null
+        ];
+        
+    }
+    
+    /**
+     * 返回指定学校的角色列表
+     *
+     * @param $schoolId
+     * @param bool $html - 是否返回html字符串
+     * @return array|string
+     */
+    function groupList($schoolId, $html = false) {
+    
+        $groups = [
+            0 => '公用',
+            Group::whereName('监护人')->first()->id => '监护人',
+        ];
+        $superGroups = [
+            Group::whereName('运营')->first()->id => '运营',
+            Group::whereName('企业')->first()->id => '企业',
+            Group::whereName('学校')->first()->id => '学校',
+        ];
+        $groups += Group::where(['enabled' => 1, 'school_id' => $schoolId])
+            ->pluck('name', 'id')->toArray() + $superGroups;
+        
+        return $html ? $this->singleSelectList($groups, 'group_id') : $groups;
+        
+    }
+    
 }
