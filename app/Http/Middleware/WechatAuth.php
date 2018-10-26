@@ -33,7 +33,7 @@ class WechatAuth {
         if (!Auth::id()) {
             $acronym = $paths[0];
             $corp = Corp::whereAcronym($acronym)->first();
-            $app = App::whereCorpId($corp->id)->where('name', Constant::APPS[$paths[1]])->first();
+            $app = App::whereCorpId($corp->id)->where('name', config('app.name'))->first();
             $agentid = $app->agentid;
             $secret = $app->secret;
             $code = Request::input('code');
