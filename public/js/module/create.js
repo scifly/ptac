@@ -16,7 +16,7 @@ $schoolId.on('change', function () {
     $.ajax({
         type: 'POST',
         dataType: 'json',
-        url: page.siteRoot() + 'create',
+        url: page.siteRoot() + 'modules/create',
         data: {
             _token: page.token(),
             school_id: $(this).val(),
