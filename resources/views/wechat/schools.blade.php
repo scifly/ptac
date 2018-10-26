@@ -9,7 +9,7 @@
     <div class="weui-cells__title">请选择</div>
     <div class="weui-cells" style="margin-top: 0;">
         @foreach ($schools as $id => $value)
-            <a class="weui-cell weui-cell_access" href="{!! 'wechat?schoolId=' . $id !!}">
+            <a class="weui-cell weui-cell_access" href="{!! '?schoolId=' . $id !!}">
                 <div class="weui-cell__bd">
                     <p>{!! $value !!}</p>
                 </div>
