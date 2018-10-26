@@ -42,7 +42,7 @@ class ModuleComposer {
                 break;
         }
         $groups = [null => '公用'] + Group::whereIn('name', ['监护人', '教职员工'])->pluck('name', 'id')->toArray();
-        $tabs = [null => '请选择'] + Tab::where(['enabled' => 1, 'category' => 1])->pluck('comment', 'id')->toArray();
+        $tabs = [null => ''] + Tab::where(['enabled' => 1, 'category' => 1])->pluck('comment', 'id')->toArray();
         if (Route::has('id')) {
             $media = Module::find(Request::route('id'))->media;
         }
