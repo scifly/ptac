@@ -1,7 +1,6 @@
 //# sourceURL=create.js
 var table = 'modules',
-    $schoolId = $('#school_id'),
-    $groupId = $('#group_id');
+    $schoolId = $('#school_id');
 
 page.loadCss('css/upload.css');
 page.create('formModule', table);
@@ -11,7 +10,8 @@ $.getMultiScripts(['js/shared/upload.js']).done(
     }
 );
 $schoolId.on('change', function () {
-    var $next = $groupId.next(),
+    var $groupId = $('#group_id'),
+        $next = $groupId.next(),
         $prev = $groupId.prev();
 
     $('.overlay').show();
