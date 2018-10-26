@@ -81,7 +81,6 @@ class WechatAuth {
             if (!session('schoolId')) {
                 $schoolIds = $user->schoolIds($user->id, session('corpId'));
                 if (count($schoolIds) > 1) {
-                    session(['schools' => true]);   # schools - 可访问多所学校
                     return redirect($paths[0] . '/wechat/schools?app=' . $paths[1]);
                 }
                 session(['schoolId' => $schoolIds[0]]);

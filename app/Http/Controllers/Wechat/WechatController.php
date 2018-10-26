@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers\Wechat;
 
-use App\Helpers\Constant;
 use App\Http\Controllers\Controller;
 use App\Models\Action;
 use App\Models\Module;
@@ -9,7 +8,6 @@ use App\Models\School;
 use App\Models\Tab;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 
 /**
@@ -30,7 +28,7 @@ class WechatController extends Controller {
      */
     function __construct(Module $module) {
     
-        $this->middleware('wechat');
+        $this->middleware('wechat')->except(['schools', 'roles']);
         $this->module = $module;
         
     }
