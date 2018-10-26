@@ -13,6 +13,7 @@ $schoolId.on('change', function () {
     var $next = $groupId.next(),
         $prev = $groupId.prev();
 
+    $('.overlay').show();
     $.ajax({
         type: 'POST',
         dataType: 'json',
@@ -26,6 +27,7 @@ $schoolId.on('change', function () {
             $groupId.remove();
             $prev.after(result);
             page.initSelect2();
+            $('.overlay').hide();
         },
         error: function (e) {
             page.errorHandler(e);
