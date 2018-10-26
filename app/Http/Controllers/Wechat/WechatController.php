@@ -1,14 +1,9 @@
 <?php
 namespace App\Http\Controllers\Wechat;
 
-use App\Helpers\HttpStatusCode;
 use App\Http\Controllers\Controller;
-use App\Models\Action;
 use App\Models\Module;
-use App\Models\School;
-use App\Models\Tab;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 /**
@@ -40,26 +35,8 @@ class WechatController extends Controller {
      * @return Factory|View
      */
     function index() {
-
-        $modules = $this->module->orderBy('order')->where([
-            'enabled' => 1,
-            'school_id' => session('schoolId')
-        ])->get();
-        foreach ($modules as &$module) {
-            if ($module->tab_id) {
-                $tab = Tab::find($module->tab_id);
-                if ($tab->action_id) {
-                    $module->uri = str_replace(
-                        '{acronym}', session('acronym'),
-                        Action::find($tab->action_id)->route
-                    );
-                }
-            }
-        }
         
-        return view('wechat.wechat.index', [
-            'modules' => $modules
-        ]);
+        return $this->module->wIndex();
 
     }
     
@@ -70,12 +47,7 @@ class WechatController extends Controller {
      */
     function schools() {
         
-        $user = Auth::user();
-        $schoolIds = $user->schoolIds($user->id, session('corpId'));
-        
-        return view('wechat.schools', [
-            'schools' => School::whereIn('id', $schoolIds)->pluck('name', 'id')
-        ]);
+        return $this->module->schools();
         
     }
     

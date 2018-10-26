@@ -2,11 +2,13 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
+use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -15,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
+use Illuminate\View\View;
 
 /**
  * App\Models\Module - 应用模块
@@ -227,27 +230,65 @@ class Module extends Model {
         
     }
     
+    /**
+     * 返回应用首页
+     *
+     * @return Factory|View
+     */
     function wIndex() {
     
+        $role = Auth::user()->role();
+        $custodianGroupId = Group::whereName('监护人')->first()->id;
+        $schoolId = session('schoolId');
         $modules = $this->orderBy('order')->where([
-            'school_id' => session('schoolId'), 'enabled' => 1,
-        ])->get()->filter(function (Module $module) {
-            $role = Auth::user()->role();
-            $groupId = $role == '监护人'
-                ? Group::whereName($role)->first()->id
-                : Group::where
-            return in_array($module->group_id, [0, ]);
-        });
-        
-        
-        if ($role == '监护人') {
-            $groupId = Group::whereName($role)->first()->id;
-            $modules = $modules->filter(
-                function
-            );
+            'school_id' => $schoolId, 'enabled' => 1,
+        ])->get()->filter(
+            function (Module $module) use ($role, $schoolId, $custodianGroupId) {
+                $moduleGroupId = $module->group_id;
+                if (in_array($role, Constant::SUPER_ROLES)) {
+                    return $moduleGroupId != $custodianGroupId;
+                } elseif ($role == '监护人') {
+                    return in_array($moduleGroupId, [0, $custodianGroupId]);
+                } else {
+                    $userGroupId = Group::where([
+                        'enabled' => 1, 'school_id' => $schoolId, 'name' => $role,
+                    ])->first()->id;
+                    return in_array($moduleGroupId, [0, $userGroupId]);
+                }
+            }
+        );
+        foreach ($modules as &$module) {
+            if ($module->tab_id) {
+                $tab = Tab::find($module->tab_id);
+                if ($tab->action_id) {
+                    $module->uri = str_replace(
+                        '{acronym}', session('acronym'),
+                        Action::find($tab->action_id)->route
+                    );
+                }
+            }
         }
     
+        return view('wechat.wechat.index', [
+            'modules' => $modules
+        ]);
+        
+    }
     
+    /**
+     * 返回对当前用户可见的学校列表
+     *
+     * @return Factory|View
+     */
+    function schools() {
+    
+        $user = Auth::user();
+        $schoolIds = $user->schoolIds($user->id, session('corpId'));
+    
+        return view('wechat.schools', [
+            'schools' => School::whereIn('id', $schoolIds)->pluck('name', 'id')
+        ]);
+        
     }
     
 }
