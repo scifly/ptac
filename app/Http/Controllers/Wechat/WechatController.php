@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Wechat;
 
+use App\Helpers\HttpStatusCode;
 use App\Http\Controllers\Controller;
 use App\Models\Action;
 use App\Models\Module;
@@ -28,7 +29,7 @@ class WechatController extends Controller {
      */
     function __construct(Module $module) {
     
-        $this->middleware('wechat')->except(['schools', 'roles']);
+        $this->middleware('wechat'); // ->except(['schools', 'roles']);
         $this->module = $module;
         
     }
@@ -70,6 +71,10 @@ class WechatController extends Controller {
     function schools() {
         
         $user = Auth::user();
+        abort_if(
+            !$user, HttpStatusCode::UNAUTHORIZED,
+            __('messages.unauthorized')
+        );
         $schoolIds = $user->schoolIds($user->id, session('corpId'));
         
         return view('wechat.schools', [
@@ -85,6 +90,11 @@ class WechatController extends Controller {
      */
     function roles() {
     
+        abort_if(
+            !Auth::id(), HttpStatusCode::UNAUTHORIZED,
+            __('messages.unauthorized')
+        );
+        
         return view('wechat.roles');
     
     }
