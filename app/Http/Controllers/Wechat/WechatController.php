@@ -48,7 +48,10 @@ class WechatController extends Controller {
             if ($module->tab_id) {
                 $tab = Tab::find($module->tab_id);
                 if ($tab->action_id) {
-                    $module->uri = Action::find($tab->action_id)->route;
+                    $module->uri = str_replace(
+                        '{acronym}', session('acronym'),
+                        Action::find($tab->action_id)->route
+                    );
                 }
             }
         }
