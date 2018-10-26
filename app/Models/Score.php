@@ -1210,7 +1210,7 @@ class Score extends Model {
         );
         if (Request::method() == 'POST') {
             $targetId = Request::input('target_id');
-            $classId = $user->custodian ? Student::find($targetId)->class_id : $targetId;
+            $classId = $user->role() == '监护人' ? Student::find($targetId)->class_id : $targetId;
             $keyword = Request::has('keyword') ? Request::input('keyword') : null;
             $exams = array_slice($exam->examsByClassId($classId, $keyword), $start, $pageSize);
 
@@ -1218,7 +1218,7 @@ class Score extends Model {
                 'exams' => $exams,
             ]);
         }
-        if ($user->custodian) {
+        if ($user->role() == '监护人') {
             $targets = $user->custodian->myStudents();
             reset($targets);
             $exams = array_slice((new Student)->exams(key($targets)), $start, $pageSize);

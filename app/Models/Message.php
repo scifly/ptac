@@ -1077,7 +1077,7 @@ class Message extends Model {
         # 搜索已发或收到的消息
         $user = Auth::user();
         $userIds = [$user->id];
-        if ($user->custodian) {
+        if ($user->role() == '监护人') {
             $userIds = array_merge(
                 $userIds, $user->custodian->students->pluck('user_id')->toArray()
             );
@@ -1137,7 +1137,7 @@ class Message extends Model {
         if (Request::has('departmentId')) {
             # 返回指定部门下的所有学生及教职员工
             $targets = Department::find(Request::input('departmentId'))->users->filter(
-                function (User $user) { return !$user->custodian; }
+                function (User $user) { return $user->role() != '监护人'; }
             );
             $type = 'user';
         } else {
@@ -1160,7 +1160,7 @@ class Message extends Model {
                     $userIds = Department::find(Request::input('deptId'))->users->pluck('id')->toArray();
                     $targets = User::whereIn('id', $userIds)
                         ->where('realname', 'like', '%' . $keyword . '%')->get()->filter(
-                            function (User $user) { return !$user->custodian; }
+                            function (User $user) { return $user->role() != '监护人'; }
                         );
                     break;
                 default:

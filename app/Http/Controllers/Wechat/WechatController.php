@@ -66,18 +66,26 @@ class WechatController extends Controller {
      *
      * @return Factory|View
      */
-    public function schools() {
+    function schools() {
         
-        $app = Request::query('app');
         $user = Auth::user();
         $schoolIds = $user->schoolIds($user->id, session('corpId'));
         
         return view('wechat.schools', [
-            'app'     => Constant::APPS[$app],
-            'schools' => School::whereIn('id', $schoolIds)->pluck('name', 'id'),
-            'url'     => $app . '?schoolId=',
+            'schools' => School::whereIn('id', $schoolIds)->pluck('name', 'id')
         ]);
         
+    }
+    
+    /**
+     * 选择角色
+     *
+     * @return Factory|View
+     */
+    function roles() {
+    
+        return view('wechat.roles');
+    
     }
     
 }

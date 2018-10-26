@@ -17,11 +17,11 @@ a {
 }
 
 ::-webkit-scrollbar {
-    width: 0em;
+    width: 0;
 }
 
 ::-webkit-scrollbar:horizontal {
-    height: 0em;
+    height: 0;
 }
 
 .multi-role {

@@ -2,6 +2,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Corp;
+use App\Models\Group;
 use Closure;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -28,10 +29,16 @@ class WechatRole {
             $user->custodian && $user->educator &&
             $user->educator->school_id == session('schoolId')
         ) {
-            session(['roles' => true]);
-            return redirect(Corp::find(session('corpId'))->acronym . '/roles');
+            if (!Request::query('is_educator')) {
+                if (!session('is_educator')) {
+                    $acronym = Corp::find(session('corpId'))->acronym;
+                    return redirect($acronym . '/roles');
+                }
+            } else {
+                session(['is_educator' => Request::query('is_educator')]);
+            }
         }
-    
+        
         return $next($request);
         
     }

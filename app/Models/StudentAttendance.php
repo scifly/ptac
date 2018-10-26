@@ -607,15 +607,16 @@ class StudentAttendance extends Model {
     function wIndex() {
         
         $user = Auth::user();
+        $role = $user->role();
         # 禁止学生学生访问考勤记录
         abort_if(
-            !$user || $user->role() == '学生',
+            !$user || $role == '学生',
             HttpStatusCode::UNAUTHORIZED,
             __('messages.unauthorized')
         );
         
         return view(
-            self::VIEW_NS . ($user->custodian ? 'custodian' : 'educator')
+            self::VIEW_NS . ($role == '监护人' ? 'custodian' : 'educator')
         );
         
     }
@@ -628,7 +629,6 @@ class StudentAttendance extends Model {
      */
     function wDetail($studentId = null) {
         
-        $user = Auth::user();
         if (Request::method() == 'POST') {
             $studentId = Request::input('id');
             $type = Request::input('type');
@@ -639,7 +639,7 @@ class StudentAttendance extends Model {
                 'date' => 'required|date',
             ]);
             abort_if(
-                $result->failed() || !in_array($studentId, $this->contactIds('student', $user)),
+                $result->failed() || !in_array($studentId, $this->contactIds('student', Auth::user())),
                 HttpStatusCode::NOT_ACCEPTABLE,
                 __('messages.invalid_argument')
             );
