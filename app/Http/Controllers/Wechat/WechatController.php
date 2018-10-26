@@ -40,7 +40,7 @@ class WechatController extends Controller {
      */
     function index() {
 
-        $modules = $this->module->where([
+        $modules = $this->module->orderBy('order')->where([
             'enabled' => 1,
             'school_id' => session('schoolId')
         ])->get();
