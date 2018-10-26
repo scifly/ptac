@@ -11,7 +11,7 @@ $.getMultiScripts(['js/shared/upload.js']).done(
 );
 $schoolId.on('change', function () {
     var $next = $groupId.next(),
-        $prev = $groupId.prev;
+        $prev = $groupId.prev();
 
     $.ajax({
         type: 'POST',
