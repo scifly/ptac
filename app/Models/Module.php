@@ -8,6 +8,7 @@ use App\Helpers\Snippet;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -29,9 +30,12 @@ use Illuminate\Support\Facades\Request;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property int|null $group_id 应用模块所属角色id
  * @property-read Media $media
  * @property-read School $school
  * @property-read Tab|null $tab
+ * @property-read Group|null $group
+ * @property-read Collection|Student[] $students
  * @method static Builder|Module whereCreatedAt($value)
  * @method static Builder|Module whereEnabled($value)
  * @method static Builder|Module whereId($value)
@@ -44,11 +48,8 @@ use Illuminate\Support\Facades\Request;
  * @method static Builder|Module whereTabId($value)
  * @method static Builder|Module whereUpdatedAt($value)
  * @method static Builder|Module whereUri($value)
+ * @method static Builder|Module whereGroupId($value)
  * @mixin \Eloquent
- * @property int|null $group_id 应用模块所属角色id
- * @property-read \App\Models\Group|null $group
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Student[] $students
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Module whereGroupId($value)
  */
 class Module extends Model {
 
@@ -133,7 +134,7 @@ class Module extends Model {
             [
                 'db' => 'Module.isfree', 'dt' => 6,
                 'formatter' => function ($d) {
-                    return $d ? '增值' : '基本';
+                    return $d ? '基本' : '增值';
                 }
             ],
             ['db' => 'Module.created_at', 'dt' => 7, 'dr' => true],
