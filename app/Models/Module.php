@@ -143,8 +143,9 @@ class Module extends Model {
             ],
             ['db' => 'Module.created_at', 'dt' => 7, 'dr' => true],
             ['db' => 'Module.updated_at', 'dt' => 8, 'dr' => true],
+            ['db' => 'Module.order', 'dt' => 9],
             [
-                'db' => 'Module.enabled', 'dt' => 9,
+                'db' => 'Module.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
                     return Datatable::status($d, $row, false);
                 }

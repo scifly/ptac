@@ -71,6 +71,7 @@ class ModuleIndexComposer {
                     'title' => '更新于',
                     'html' => $this->inputDateTimeRange('更新于')
                 ],
+                '排序',
                 [
                     'title' => '状态 . 操作',
                     'html' => $this->singleSelectList($statuses, 'filter_enabled')
