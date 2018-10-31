@@ -703,6 +703,7 @@ trait ModelTrait {
             $school = School::find($this->schoolId());
             $departmentId = $school->department_id;
             $departmentIds = [$departmentId] + $school->department->subDepartmentIds($departmentId);
+            Log::debug(json_encode($departmentIds));
         } else {
             $departmentIds = $this->departmentIds(Auth::id());
         }
