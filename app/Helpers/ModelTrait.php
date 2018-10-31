@@ -819,6 +819,7 @@ trait ModelTrait {
                 $input['mobile'][$i]['isdefault'] = $i == $isdefault ? 1 : 0;
             }
         }
+        $userid = uniqid('ptac_');
         switch ($role) {
             case 'student':
             case 'custodian':
@@ -826,10 +827,8 @@ trait ModelTrait {
                 $position = $role == 'student' ? '学生' : '监护人';
                 $input['user']['position'] = $position;
                 if (!Request::route('id')) {
-                    $userid = uniqid('ptac_');
                     $input['user'] += [
                         'username'   => $userid,
-                        'userid'     => $userid,
                         'password'   => bcrypt('12345678'),
                         'group_id'   => Group::whereName($position)->first()->id
                     ];
@@ -863,6 +862,7 @@ trait ModelTrait {
             default:
                 break;
         }
+        $input['user']['userid'] = $userid;
         if (in_array($role, ['custodian', 'educator'])) {
             $input['singular'] = 1;
             if (!empty($input['student_ids'])) {
