@@ -407,9 +407,11 @@ class Custodian extends Model {
             if (!isset($record['user'])) continue;
             $students[$record['id']] = $record['user']['realname'] . '-' . $record['card_number'];
         }
-        if (($id ?? Request::route('id')) && Request::method() == 'GET') {
-            $mobiles = $this->find(Request::route('id'))->user->mobiles;
-            $relations = CustodianStudent::whereCustodianId(Request::route('id'))->get();
+        $custodianId = $id ?? Request::route('id');
+        if ($custodianId && Request::method() == 'GET') {
+            $custodian = $this->find($custodianId);
+            $mobiles = $custodian ? $custodian->user->mobiles : null;
+            $relations = CustodianStudent::whereCustodianId($custodianId)->get();
         }
         
         return [
