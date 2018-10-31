@@ -100,7 +100,8 @@ class Custodian extends Model {
                 'formatter' => function ($d) {
                     $students = $this->find($d)->students->filter(
                         function (Student $student) {
-                            return $student->squad->grade->school_id == $this->schoolId();
+                            return $student
+                                ? $student->squad->grade->school_id == $this->schoolId() : false;
                         }
                     );
                     $studentUserIds = $students->isNotEmpty() ? $students->pluck('user_id')->toArray() : [0];
