@@ -371,7 +371,9 @@
                         formId = table === 'custodians' ? 'formCustodian' : 'formEducator';
                         if (table === 'educators') {
                             $.getMultiScripts(['js/shared/tree.js']).done(
-                                function() { $.tree().list('educators/' + type + '/' + id, 'department'); }
+                                function() { $.tree().list(
+                                    'educators/' + type + '/' + id !== 'undefined' ? id : '', 'department');
+                                }
                             );
                         }
                         break;

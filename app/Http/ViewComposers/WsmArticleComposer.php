@@ -34,9 +34,9 @@ class WsmArticleComposer {
     public function compose(View $view) {
         
         if (Request::route('id')) {
-            $medias = $this->media->medias(
-                explode(',', WsmArticle::find(Request::route('id'))->media_ids)
-            );
+            $medias = $this->media->whereIn(
+                'id', explode(',', WsmArticle::find(Request::route('id'))->media_ids)
+            )->get();
         }
         
         $view->with([

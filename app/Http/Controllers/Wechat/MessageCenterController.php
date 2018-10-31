@@ -29,7 +29,7 @@ class MessageCenterController extends Controller {
      */
     public function __construct(Message $message) {
         
-        $this->middleware('wechat');
+        $this->middleware(['wechat.auth', 'wechat.role']);
         $this->message = $message;
         
     }

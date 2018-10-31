@@ -26,7 +26,7 @@ class AttendanceController extends Controller {
      */
     function __construct(StudentAttendance $sa) {
         
-        $this->middleware('wechat');
+        $this->middleware(['wechat.auth', 'wechat.role']);
         $this->sa = $sa;
         
     }

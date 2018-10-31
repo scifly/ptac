@@ -31,9 +31,7 @@ class WapSiteComposer {
         
         if (Request::route('id')) {
             $ws = WapSite::find(Request::route('id'));
-            if (!empty($ws->media_ids)) {
-                $medias = $this->media->medias(explode(',', $ws->media_ids));
-            }
+            $medias = $this->media->whereIn('id', explode(',', $ws->media_ids))->get();
         }
         
         $view->with([

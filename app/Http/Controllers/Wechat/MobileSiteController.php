@@ -30,7 +30,7 @@ class MobileSiteController extends Controller {
      */
     function __construct(WapSite $ws, WapSiteModule $wsm, WsmArticle $wsma) {
         
-        $this->middleware('wechat');
+        $this->middleware(['wechat.auth', 'wechat.role']);
         $this->ws = $ws;
         $this->wsm = $wsm;
         $this->wsma = $wsma;

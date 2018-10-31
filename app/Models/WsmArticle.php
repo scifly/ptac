@@ -263,8 +263,8 @@ class WsmArticle extends Model {
         
         return view('wechat.mobile_site.article', [
             'article' => $article,
-            'medias'  => $this->media->medias(
-                explode(',', $article->media_ids)
+            'medias'  => $this->media->whereIn(
+                'id', explode(',', $article->media_ids)
             ),
         ]);
         

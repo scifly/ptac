@@ -24,7 +24,7 @@ class WechatController extends Controller {
      */
     function __construct(Module $module) {
     
-        $this->middleware('wechat');
+        $this->middleware(['wechat.auth', 'wechat.role']);
         $this->module = $module;
         
     }

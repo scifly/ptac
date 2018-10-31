@@ -81,23 +81,6 @@ class Media extends Model {
     function menus() { return $this->hasMany('App\Models\Menu'); }
     
     /**
-     * 根据媒体ID返回媒体对象
-     *
-     * @param array $ids
-     * @return array|null
-     */
-    function medias(array $ids) {
-        
-        $medias = null;
-        foreach ($ids as $id) {
-            $medias[] = $this->find($id);
-        }
-        
-        return $medias;
-        
-    }
-    
-    /**
      * 保存媒体
      *
      * @param array $data

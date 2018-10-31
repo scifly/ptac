@@ -33,7 +33,7 @@ class HomeWorkController extends Controller {
     
     function __construct() {
         
-        $this->middleware('wechat');
+        $this->middleware(['wechat.auth', 'wechat.role']);
         
     }
     

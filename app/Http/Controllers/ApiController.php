@@ -124,7 +124,8 @@ class ApiController extends Controller {
         SendMessageApi::dispatch(
             Request::input('mobiles'),
             Request::input('school_id'),
-            Request::input('content')
+            Request::input('content'),
+            Auth::user()
         );
         
         return response()->json([

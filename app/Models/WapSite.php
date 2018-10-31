@@ -257,6 +257,7 @@ class WapSite extends Model {
             __('messages.unauthorized')
         );
         $wapSite = WapSite::whereSchoolId(session('schoolId'))->first();
+        $medias = Media::whereIn('id', explode(',', $wapSite->media_ids))->get();
         abort_if(
             !$wapSite,
             HttpStatusCode::NOT_FOUND,
@@ -265,9 +266,7 @@ class WapSite extends Model {
         
         return view('wechat.mobile_site.home', [
             'wapsite' => $wapSite,
-            'medias'  => (new Media())->medias(
-                explode(',', $wapSite->media_ids)
-            ),
+            'medias'  => $medias,
         ]);
         
     }

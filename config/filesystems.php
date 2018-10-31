@@ -10,7 +10,7 @@ return [
     | based disks are available to your application. Just store away!
     |
     */
-    'default' => env('FILESYSTEM_DRIVER', 'local'),
+    'default' => env('FILESYSTEM_DRIVER', 'public'),
     /*
     |--------------------------------------------------------------------------
     | Default Cloud Filesystem Disk
@@ -41,8 +41,13 @@ return [
         ],
         'public'  => [
             'driver'     => 'local',
-            'root'       => public_path('app/public/' . date('Y') . '/' . date('m') . '/' . date('d')),
+            'root'       => storage_path('app/public/'),
             'url'        => env('APP_URL') . '/storage',
+            'visibility' => 'public',
+        ],
+        'uploads' => [
+            'driver' => 'local',
+            'root'   =>  public_path('uploads/'),
             'visibility' => 'public',
         ],
         's3'      => [
@@ -51,11 +56,6 @@ return [
             'secret' => env('AWS_SECRET'),
             'region' => env('AWS_REGION'),
             'bucket' => env('AWS_BUCKET'),
-        ],
-        'uploads' => [
-            'driver' => 'local',
-            'root'   =>  public_path('uploads/'),
-            'visibility' => 'public',
         ],
     ],
 ];
