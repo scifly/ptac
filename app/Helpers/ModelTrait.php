@@ -842,7 +842,9 @@ trait ModelTrait {
             case 'educator':
             case 'operator':
                 $input['user']['position'] = Group::find($input['user']['group_id'])->name;
-                $input['user']['password'] = bcrypt($input['user']['password']);
+                if (isset($input['user']['password'])) {
+                    $input['user']['password'] = bcrypt($input['user']['password']);
+                }
                 if ($role == 'educator') {
                     $input['enabled'] = $input['user']['enabled'];
                     $input['school_id'] = $this->schoolId();
