@@ -842,7 +842,7 @@ trait ModelTrait {
             case 'educator':
             case 'operator':
                 $input['user']['position'] = Group::find($input['user']['group_id'])->name;
-                if (isset($input['user']['password'])) {
+                if (!Request::route('id')) {
                     $input['user']['password'] = bcrypt($input['user']['password']);
                 }
                 if ($role == 'educator') {
@@ -867,7 +867,9 @@ trait ModelTrait {
             default:
                 break;
         }
-        $input['user']['userid'] = $userid;
+        if (!Request::route('id')) {
+            $input['user']['userid'] = $userid;
+        }
         if (in_array($role, ['custodian', 'educator'])) {
             $input['singular'] = 1;
             if (!empty($input['student_ids'])) {
