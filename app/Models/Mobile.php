@@ -57,7 +57,7 @@ class Mobile extends Model {
         
         try {
             DB::transaction(function () use ($mobiles, $userId) {
-                $this->find($userId)->delete();
+                $this->where('user_id', $userId)->delete();
                 $records = [];
                 foreach ($mobiles as $mobile) {
                     $records[] = [
