@@ -706,6 +706,7 @@ trait ModelTrait {
         } else {
             $departmentIds = $this->departmentIds(Auth::id());
         }
+        Log::debug(json_encode($departmentIds));
         $userIds = array_unique(
             DepartmentUser::whereIn('department_id', $departmentIds)->pluck('user_id')->toArray()
         );
@@ -840,6 +841,7 @@ trait ModelTrait {
             case 'educator':
             case 'operator':
                 $input['user']['position'] = Group::find($input['user']['group_id'])->name;
+                $input['user']['password'] = bcrypt($input['user']['password']);
                 if ($role == 'educator') {
                     $input['enabled'] = $input['user']['enabled'];
                     $input['school_id'] = $this->schoolId();
