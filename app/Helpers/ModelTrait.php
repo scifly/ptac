@@ -702,9 +702,7 @@ trait ModelTrait {
         if (in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
             $school = School::find($this->schoolId());
             $departmentId = $school->department_id;
-            $departmentIds = [$departmentId] + (new Department)->subDepartmentIds($departmentId);
-            Log::debug(json_encode($departmentIds));
-    
+            $departmentIds = [$departmentId] + $school->department->subDepartmentIds($departmentId);
         } else {
             $departmentIds = $this->departmentIds(Auth::id());
         }
