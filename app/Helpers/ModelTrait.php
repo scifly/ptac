@@ -12,6 +12,7 @@ use App\Models\Tab;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use ReflectionClass;
 use App\Models\Squad;
@@ -711,7 +712,8 @@ trait ModelTrait {
         $groupIds = $type != ''
             ? [Group::whereName($type)->first()->id]
             : Group::whereSchoolId($this->schoolId())->pluck('id')->toArray();
-        
+        Log::debug('userIds' . implode(',', $userIds));
+        Log::debug('groupIds' . implode(',', $groupIds));
         return 'User.group_id IN (' . (empty($groupIds) ? '0' : implode(',', $groupIds)) . ')' .
             ' AND User.id IN (' . (empty($userIds) ? '0' : implode(',', $userIds)) . ')';
         
