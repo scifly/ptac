@@ -303,7 +303,7 @@ class Educator extends Model {
                 # 更新用户
                 User::find($educator->user_id)->update($data['user']);
                 # 更新教职员工
-                $educator->update($data['educator']);
+                $educator->update($data);
                 # 保存班级科目绑定关系
                 (new EducatorClass)->storeByEducatorId($educator->id, $data['cs']);
                 # 更新教职员工&部门绑定关系
