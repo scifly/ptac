@@ -546,7 +546,7 @@ class Educator extends Model {
         if ($id ?? Request::route('id')) {
             $educator = $this->find(Request::route('id'));
             $mobiles = $educator->user->mobiles;
-            $selectedDepartmentIds = $educator->user->depts()->pluck('id')->toArray();
+            $selectedDepartmentIds = $educator->user->depts($educator->user_id)->pluck('id')->toArray();
             $selectedDepartments = $this->selectedNodes($selectedDepartmentIds);
         }
         return [

@@ -935,14 +935,15 @@ class User extends Authenticatable {
     }
     
     /**
-     * 返回当前登录用户直属的部门集合
+     * 返回指定用户直属的部门集合
      *
+     * @param null $id
      * @return Department[]|Collection
      */
-    function depts() {
+    function depts($id = null) {
 
-        $user = Auth::user();
-        $role = $this->role();
+        $user = $id ? $this->find($id) : Auth::user();
+        $role = $this->role($id ?? Auth::id());
         if (in_array($role, Constant::NON_EDUCATOR) && $role != '监护人') {
             return $user->departments;
         }
