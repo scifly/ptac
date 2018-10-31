@@ -41,7 +41,7 @@ class EducatorComposer {
             }
         }
         list($squads, $subjects, $groups, $departmentIds, $departments, $mobiles) = $this->educator->compose();
-        list($grades, $classes, $students, $relations) = $this->custodian->compose($custodianId ?? null);
+        list($title, $grades, $classes, $students, $relations) = $this->custodian->compose($custodianId ?? null);
         $firstOption = [0 => '(请选择)'];
         $view->with([
             'squads'                => $firstOption + $squads,
@@ -55,6 +55,7 @@ class EducatorComposer {
             'students'              => $students,
             'relations'             => $relations,
             'relationship'          => true,
+            'title'                 => $title
         ]);
         
     }

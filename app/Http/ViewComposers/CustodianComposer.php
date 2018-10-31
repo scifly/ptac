@@ -38,7 +38,7 @@ class CustodianComposer {
      */
     public function compose(View $view) {
         
-        list($grades, $classes, $students, $relations, $mobiles) = $this->custodian->compose();
+        list($title, $grades, $classes, $students, $relations, $mobiles) = $this->custodian->compose();
         list($squads, $subjects) = $this->educator->compose();
         $firstOption = [0 => '(请选择)'];
         
@@ -50,7 +50,7 @@ class CustodianComposer {
             'relations'    => $relations,
             'squads'       => $firstOption + $squads,
             'subjects'     => $firstOption + $subjects,
-            'title'        => '新增监护关系',
+            'title'        => $title,
             'relationship' => true,
         ]);
         
