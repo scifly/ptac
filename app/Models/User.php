@@ -440,7 +440,7 @@ class User extends Authenticatable {
         
         $user = $this->find($id);
         $corpIds = $schoolIds = [];
-        switch ($user->role()) {
+        switch ($user->role($id)) {
             case '运营':
                 $corpIds = Corp::pluck('id')->toArray();
                 break;
