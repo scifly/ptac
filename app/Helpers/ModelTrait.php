@@ -703,10 +703,11 @@ trait ModelTrait {
             $school = School::find($this->schoolId());
             $departmentId = $school->department_id;
             $departmentIds = [$departmentId] + (new Department)->subDepartmentIds($departmentId);
+            Log::debug(json_encode($departmentIds));
+    
         } else {
             $departmentIds = $this->departmentIds(Auth::id());
         }
-        Log::debug(json_encode($departmentIds));
         $userIds = array_unique(
             DepartmentUser::whereIn('department_id', $departmentIds)->pluck('user_id')->toArray()
         );
