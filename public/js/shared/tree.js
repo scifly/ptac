@@ -500,7 +500,8 @@
                 });
             },
             choose: function (uri, type) {
-                $('#choose').on('click', function () {
+                $('#choose').on('click', function (e) {
+                    e.preventDefault();
                     tree.contact(uri, type);
                 });
             },
