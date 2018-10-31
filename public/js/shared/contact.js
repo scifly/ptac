@@ -372,7 +372,7 @@
                         if (table === 'educators') {
                             $.getMultiScripts(['js/shared/tree.js']).done(
                                 function() { $.tree().list(
-                                    'educators/' + type + '/' + (id !== 'undefined' ? id : ''), 'department');
+                                    'educators/' + type + '/' + (typeof id !== 'undefined' ? id : ''), 'department');
                                 }
                             );
                         }
