@@ -531,9 +531,10 @@ class Educator extends Model {
     /**
      * 返回对当前登录用户可见的班级与科目列表
      *
+     * @param null $id
      * @return array
      */
-    function compose() {
+    function compose($id = null) {
         
         $classes = Squad::whereIn('id', $this->classIds())->where('enabled', 1)->get();
         $gradeIds = Grade::whereIn('id', array_unique($classes->pluck('grade_id')->toArray()))->pluck('id')->toArray();
@@ -542,7 +543,7 @@ class Educator extends Model {
                 return !empty(array_intersect($gradeIds, explode(',', $subject->grade_ids)));
             }
         );
-        if (Request::route('id')) {
+        if ($id ?? Request::route('id')) {
             $educator = $this->find(Request::route('id'));
             $mobiles = $educator->user->mobiles;
             $selectedDepartmentIds = $educator->user->depts()->pluck('id')->toArray();

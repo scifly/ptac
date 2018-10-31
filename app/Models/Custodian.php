@@ -387,9 +387,10 @@ class Custodian extends Model {
     /**
      * 返回create/edit view使用的数据
      *
+     * @param null $id
      * @return array
      */
-    function compose() {
+    function compose($id = null) {
     
         $grades = Grade::whereIn('id', $this->gradeIds())
             ->where('enabled', 1)
@@ -406,7 +407,7 @@ class Custodian extends Model {
             if (!isset($record['user'])) continue;
             $students[$record['id']] = $record['user']['realname'] . '-' . $record['card_number'];
         }
-        if (Request::route('id') && Request::method() == 'GET') {
+        if (($id ?? Request::route('id')) && Request::method() == 'GET') {
             $mobiles = $this->find(Request::route('id'))->user->mobiles;
             $relations = CustodianStudent::whereCustodianId(Request::route('id'))->get();
         }

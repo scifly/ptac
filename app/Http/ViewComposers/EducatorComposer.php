@@ -5,6 +5,7 @@ use App\Helpers\ModelTrait;
 use App\Models\Custodian;
 use App\Models\Educator;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Request;
 
 /**
  * Class EducatorComposer
@@ -33,8 +34,14 @@ class EducatorComposer {
      */
     public function compose(View $view) {
         
+        if (Request::route('id')) {
+            $educator = $this->educator->find(Request::route('id'));
+            if (!$educator->singular) {
+                $custodianId = $this->custodian->where('user_id', $educator->user_id)->first()->id;
+            }
+        }
         list($squads, $subjects, $groups, $departmentIds, $departments, $mobiles) = $this->educator->compose();
-        list($grades, $classes, $students, $relations) = $this->custodian->compose();
+        list($grades, $classes, $students, $relations) = $this->custodian->compose($custodianId ?? null);
         $firstOption = [0 => '(请选择)'];
         $view->with([
             'squads'                => $firstOption + $squads,
