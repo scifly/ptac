@@ -1,25 +1,16 @@
 <?php
 namespace App\Jobs;
 
-use App\Helpers\Broadcaster;
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
-use App\Models\Action;
-use App\Models\Group;
-use App\Models\Icon;
-use App\Models\Menu;
-use App\Models\MenuTab;
-use App\Models\MenuType;
-use App\Models\School;
-use App\Models\Tab;
-use App\Models\WapSite;
+use App\Helpers\{Broadcaster, Constant, HttpStatusCode, JobTrait};
+use App\Models\{Action, Group, Icon, Menu, MenuTab, MenuType, School, Tab, WapSite};
 use Exception;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
+use Illuminate\{Bus\Queueable,
+    Contracts\Queue\ShouldQueue,
+    Foundation\Bus\Dispatchable,
+    Queue\InteractsWithQueue,
+    Queue\SerializesModels,
+    Support\Facades\DB};
+use Pusher\PusherException;
 use Throwable;
 
 /**
@@ -28,7 +19,7 @@ use Throwable;
  */
 class CreateSchool implements ShouldQueue {
     
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, JobTrait;
     
     protected $parentMenu, $menuNameTab, $menu, $menuTab;
     
@@ -263,25 +254,27 @@ class CreateSchool implements ShouldQueue {
         '消费记录', '考试', '成绩', '成绩统计项', '总成绩', '标签管理',
     ];
     
-    protected $school, $userId, $response, $broadcaster;
+    protected $school, $userId, $response;
+    
+    protected $broadcaster;
     
     /**
      * Create ent job instncent   *
      * @param School $school
      * @param $userId
-     * @throws \Pusher\PusherException
+     * @throws PusherException
      */
-    public function __construct(School $school, $userId) {
+    function __construct(School $school, $userId) {
         
         $this->school = $school;
         $this->userId = $userId;
+        $this->broadcaster = new Broadcaster();
         $this->response = [
-            'userId'     => $userId,
+            'userId'     => $this->userId,
             'title'      => '创建学校',
             'statusCode' => HttpStatusCode::OK,
             'message'    => __('messages.school.menu_created'),
         ];
-        $this->broadcaster = new Broadcaster();
         
     }
     
@@ -290,7 +283,7 @@ class CreateSchool implements ShouldQueue {
      *
      * @throws Throwable
      */
-    public function handle() {
+    function handle() {
         
         try {
             DB::transaction(function () {
@@ -308,7 +301,7 @@ class CreateSchool implements ShouldQueue {
                     if ($data['uri'] == 'schools/edit/') {
                         $data['uri'] .= $this->school->id;
                     }
-                    # 创建
+                    # 创建菜单
                     $menu = Menu::create([
                         'parent_id'    => !$data['parent_id']
                             ? $this->school->menu_id
@@ -334,7 +327,6 @@ class CreateSchool implements ShouldQueue {
                     }
                 }
                 # 创建“教职员工”基本角色
-                $menuIds = $tabIds = $actionIds = [];
                 foreach ($this->educatorMenus as $name) {
                     $menuIds[] = $this->menus[$name]['id'];
                 }
@@ -345,18 +337,30 @@ class CreateSchool implements ShouldQueue {
                     'remark'     => '基本角色',
                     'school_id'  => $this->school->id,
                     'enabled'    => Constant::ENABLED,
-                    'menu_ids'   => $menuIds,
+                    'menu_ids'   => $menuIds ?? [],
                     'tab_ids'    => $tabIds,
                     'action_ids' => $actionIds,
                 ]);
             });
         } catch (Exception $e) {
-            $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-            $this->response['message'] = $e->getMessage();
+            $this->eHandler($e, $this->response);
+            throw $e;
         }
         if ($this->userId) {
             $this->broadcaster->broadcast($this->response);
         }
+        
+    }
+    
+    /**
+     * 任务异常处理
+     *
+     * @param Exception $exception
+     * @throws PusherException
+     */
+    function failed(Exception $exception) {
+        
+        $this->eHandler($exception, $this->response);
         
     }
     

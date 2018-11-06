@@ -43,7 +43,6 @@
                             'placeholder' => '(可选)',
                             'type' => 'string',
                             'data-parsley-length' => '[2, 255]',
-                            'data-parsley-type' => 'alphanum',
                         ]) }}
                     </div>
                 </div>
@@ -83,7 +82,6 @@
                         {{ Form::text('user[email]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请输入电子邮件地址)',
-                            'required' => 'true',
                             'type' => 'email',
                             'maxlength' => '255',
                             'data-parsley-type'=>"email"

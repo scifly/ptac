@@ -41,6 +41,7 @@ class ModuleController extends Controller {
         return Request::get('draw')
             ? response()->json($this->module->index())
             : $this->output();
+        
     }
     
     /**

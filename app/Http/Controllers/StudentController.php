@@ -2,9 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StudentRequest;
-use App\Models\Grade;
-use App\Models\Squad;
-use App\Models\Student;
+use App\Models\{Grade, Squad, Student};
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -44,13 +42,9 @@ class StudentController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->student->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->student->index())
+            : $this->output();
         
     }
     
@@ -62,11 +56,9 @@ class StudentController extends Controller {
      */
     public function create() {
         
-        if (Request::method() === 'POST') {
-            return $this->student->classList();
-        }
-        
-        return $this->output();
+        return Request::method() == 'POST'
+            ? $this->student->classList()
+            : $this->output();
         
     }
     
@@ -104,7 +96,7 @@ class StudentController extends Controller {
         $student->grade_id = Squad::find($student->class_id)->grade_id;
         
         return $this->output([
-            'student' => $student
+            'student' => $student,
         ]);
         
     }

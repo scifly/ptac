@@ -18,7 +18,7 @@ class Constant {
     
     const SUPER_ROLES = ['运营', '企业', '学校'];
     
-    const NON_EDUCATOR = ['运营', '企业', '监护人', '学生'];
+    const NON_EDUCATOR = ['运营', '企业', '监护人', '学生', 'api'];
     
     const BATCH_OPERATIONS = ['enable', 'disable', 'delete'];
     
@@ -95,15 +95,15 @@ class Constant {
         'image' => 'image/*',
         'audio' => 'audio/*',
         'video' => 'video/*',
-        'file'  => '*'
+        'file'  => '*',
     ];
     
     const APPS = [
-        'attendances' => '考勤中心',
+        'attendances'     => '考勤中心',
         'message_centers' => '消息中心',
-        'score_centers' => '成绩中心',
-        'mobile_sites' => '微网站',
-        'home_works' => '应用测试'
+        'score_centers'   => '成绩中心',
+        'mobile_sites'    => '微网站',
+        'home_works'      => '应用测试',
     ];
     
     # 错误代码 & 消息

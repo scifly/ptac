@@ -225,19 +225,19 @@
                 }
                 items++;
                 var html = '<tr>' +
-                        '<td class="text-center">' +
+                        '<td>' +
                             student[0] + '<input type="hidden" value="' + studentId + '" name="student_ids[' + items + ']">' +
                         '</td>' +
-                        '<td class="text-center">' + student[1] + '</td>' +
-                        '<td class="text-center">' +
+                        '<td>' + student[1] + '</td>' +
+                        '<td>' +
                             '<input type="text" ' +
                                     'name="relationships[' + items + ']" ' +
-                                    'id="" readonly class="no-border text-center" ' +
+                                    'id="" readonly class="no-border" ' +
                                     'style="background: none" ' +
                                     'value="' + relationship + '"' +
                             '>' +
                         '</td>' +
-                        '<td class="text-center">' +
+                        '<td>' +
                             '<a href="javascript:" class="delete">' +
                                 '<i class="fa fa-trash-o text-blue"></i>' +
                             '</a>' +

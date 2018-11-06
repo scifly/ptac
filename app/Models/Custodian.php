@@ -25,6 +25,7 @@ use Throwable;
  *
  * @property int $id
  * @property int $user_id 监护人用户ID
+ * @property int $singular 是否为单角色
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property boolean $enabled
@@ -37,7 +38,6 @@ use Throwable;
  * @method static Builder|Custodian whereEnabled($value)
  * @method static Builder|Custodian whereSingular($value)
  * @mixin Eloquent
- * @property int $singular 是否为单角色
  */
 class Custodian extends Model {
     
@@ -124,7 +124,7 @@ class Custodian extends Model {
                 }
             ],
             [
-                'db'        => 'User.enabled', 'dt' => 10,
+                'db'        => 'Custodian.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
                     return Datatable::status($d, $row, false);
                 },
@@ -309,15 +309,18 @@ class Custodian extends Model {
             default:
                 break;
         }
-        $custodianIds = $departmentId
-            ? $this->custodianIds($departmentId)
-            : $this->contactIds('custodian');
+        if ($departmentId) {
+            $groupId = Group::whereName('监护人')->first()->id;
+            $userIds = $this->userIds($departmentId, $groupId);
+            $custodianIds = User::whereIn('id', $userIds)->with('custodian')
+                ->get()->pluck('custodian.id')->toArray();
+        } else {
+            $custodianIds = $this->contactIds('custodian');
+        }
         $custodians = $this->whereIn('id', $custodianIds)->get();
         $records = [self::EXCEL_EXPORT_TITLE];
         foreach ($custodians as $custodian) {
-            if (!$custodian->user) {
-                continue;
-            }
+            if (!$custodian->user) continue;
             $records[] = [
                 $custodian->user->realname,
                 $custodian->user->gender == Constant::ENABLED ? '男' : '女',

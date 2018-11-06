@@ -2,8 +2,7 @@
 namespace App\Http\Requests;
 
 use App\Helpers\ModelTrait;
-use App\Rules\Email;
-use App\Rules\Mobile;
+use App\Rules\{Email, Mobile};
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Request;
 

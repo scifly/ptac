@@ -68,6 +68,7 @@ class CustodianStudent extends Model {
         
         try {
             DB::transaction(function () use ($custodianId, $studentIds) {
+                $this->where('custodian_id', $custodianId)->delete();
                 $records = [];
                 foreach ($studentIds as $studentId => $relationship) {
                     $records[] = [

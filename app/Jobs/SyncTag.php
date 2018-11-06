@@ -2,23 +2,15 @@
 namespace App\Jobs;
 
 use App\Facades\Wechat;
-use App\Helpers\Broadcaster;
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\JobTrait;
-use App\Helpers\ModelTrait;
-use App\Models\Corp;
-use App\Models\DepartmentTag;
-use App\Models\Tag;
-use App\Models\TagUser;
-use App\Models\User;
+use App\Helpers\{Broadcaster, Constant, HttpStatusCode, JobTrait, ModelTrait};
+use App\Models\{Corp, DepartmentTag, Tag, TagUser, User};
 use Exception;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
+use Illuminate\{Bus\Queueable,
+    Contracts\Queue\ShouldQueue,
+    Foundation\Bus\Dispatchable,
+    Queue\InteractsWithQueue,
+    Queue\SerializesModels,
+    Support\Facades\DB};
 use Pusher\PusherException;
 use Throwable;
 
@@ -43,7 +35,7 @@ class SyncTag implements ShouldQueue {
      * @param $action
      * @throws PusherException
      */
-    public function __construct(array $data, $userId, $action) {
+    function __construct(array $data, $userId, $action) {
         
         $this->data = $data;
         $this->action = $action;
@@ -55,6 +47,7 @@ class SyncTag implements ShouldQueue {
             'message'    => __('messages.synced'),
         ];
         $this->broadcaster = new Broadcaster();
+        
     }
     
     /**
@@ -63,8 +56,8 @@ class SyncTag implements ShouldQueue {
      * @return bool
      * @throws Throwable
      */
-    public function handle() {
-    
+    function handle() {
+        
         try {
             DB::transaction(function () {
                 $corp = Corp::find($this->data['corp_id']);
@@ -154,14 +147,26 @@ class SyncTag implements ShouldQueue {
                         }
                     }
                 }
+                $this->broadcaster->broadcast($this->response);
             });
         } catch (Exception $e) {
-            $this->response['statusCode'] = $e->getCode();
-            $this->response['message'] = $e->getMessage();
+            $this->eHandler($e, $this->response);
+            throw $e;
         }
-        $this->broadcaster->broadcast($this->response);
         
         return true;
+        
+    }
+    
+    /**
+     * 任务异常处理
+     *
+     * @param Exception $exception
+     * @throws PusherException
+     */
+    function failed(Exception $exception) {
+        
+        $this->eHandler($exception, $this->response);
         
     }
     
@@ -172,7 +177,7 @@ class SyncTag implements ShouldQueue {
      * @throws Throwable
      */
     private function throw_if($result) {
-    
+        
         throw_if(
             $result->{'errcode'},
             Exception::class,

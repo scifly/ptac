@@ -2,25 +2,19 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
 use App\Jobs\ImportEducator;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\{Builder,
+    Collection,
+    Model,
+    Relations\BelongsTo,
+    Relations\BelongsToMany,
+    Relations\HasMany};
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\{Auth, DB, Request, Storage};
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use ReflectionException;
 use Throwable;
@@ -32,6 +26,7 @@ use Throwable;
  * @property int $user_id 教职员工用户ID
  * @property int $school_id 所属学校ID
  * @property int $sms_quote 可用短信条数
+ * @property int $singular 是否为单角色
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
@@ -49,11 +44,15 @@ use Throwable;
  * @method static Builder|Educator whereUserId($value)
  * @method static Builder|Educator whereSingular($value)
  * @mixin Eloquent
- * @property int $singular 是否为单角色
  */
 class Educator extends Model {
     
     use ModelTrait;
+    
+    const IMPORT_TITLES = [
+        '姓名', '性别', '生日', '员工编号', '职务', '部门',
+        '学校', '手机号码', '年级主任', '班级主任', '班级科目'
+    ];
     
     const EXPORT_TITLES = [
         '#', '姓名', '所属学校', '手机号码', '职务',
@@ -118,14 +117,11 @@ class Educator extends Model {
      */
     function gradeDeans($gradeId) {
         
-        $educatorIds = Grade::whereEnabled(1)
-            ->where('id', $gradeId)
-            ->first()
-            ->educator_ids;
+        $conditions = ['id' => $gradeId, 'enabled' => 1];
+        $educatorIds = Grade::where($conditions)->first()->educator_ids;
         
-        return self::whereIn('id', explode(',', $educatorIds))
-            ->where('enabled', 1)
-            ->get();
+        return $this->whereIn('id', explode(',', $educatorIds))
+            ->where('enabled', 1)->get();
         
     }
     
@@ -136,15 +132,12 @@ class Educator extends Model {
      * @return Collection|static[]
      */
     function classDeans($classId) {
-        
-        $educatorIds = Squad::whereEnabled(1)
-            ->where('id', $classId)
-            ->first()
-            ->educator_ids;
+    
+        $conditions = ['id' => $classId, 'enabled' => 1];
+        $educatorIds = Squad::where($conditions)->first()->educator_ids;
         
         return self::whereIn('id', explode(',', $educatorIds))
-            ->where('enabled', 1)
-            ->get();
+            ->where('enabled', 1)->get();
         
     }
     
@@ -156,15 +149,10 @@ class Educator extends Model {
      */
     function educatorList(array $ids) {
         
-        $educators = [];
-        foreach ($ids as $id) {
-            $educator = self::find($id);
-            if ($educator) {
-                $educators[$id] = $educator->user->realname;
-            }
-        }
-        
-        return $educators;
+        return $this->with('user')
+            ->whereIn('id', $ids)
+            ->pluck('user.realname', 'id')
+            ->toArray();
         
     }
     
@@ -222,7 +210,7 @@ class Educator extends Model {
             [
                 'table'      => 'users',
                 'alias'      => 'User',
-                'type'       => 'INNER',
+                'type'       => 'LEFT',
                 'conditions' => [
                     'User.id = Educator.user_id',
                 ],
@@ -230,7 +218,7 @@ class Educator extends Model {
             [
                 'table' => 'mobiles',
                 'alias' => 'Mobile',
-                'type' => 'INNER',
+                'type' => 'LEFT',
                 'conditions' => [
                     'User.id = Mobile.user_id',
                     'Mobile.isdefault = 1'
@@ -402,6 +390,10 @@ class Educator extends Model {
                 (new Squad)->removeEducator($id);
                 if ($educator->singular) {
                     (new User)->remove($educator->user_id, $broadcast);
+                } else {
+                    (new User)->find($educator->user_id)->update([
+                        'group_id' => Group::whereName('监护人')->first()->id
+                    ]);
                 }
                 $educator->delete();
             });
@@ -468,8 +460,8 @@ class Educator extends Model {
             null, true, true, true
         );
         abort_if(
-            $this->checkFileFormat(
-                self::EXPORT_TITLES,
+            !$this->checkFileFormat(
+                self::IMPORT_TITLES,
                 array_values($educators[1])
             ),
             HttpStatusCode::NOT_ACCEPTABLE,
@@ -501,9 +493,14 @@ class Educator extends Model {
         
         $range = Request::query('range');
         $departmentId = Request::query('id');
-        $educatorIds = $range
-            ? $this->educatorIds($departmentId)
-            : $this->contactIds('educator');
+        if ($range) {
+            $groupId = Group::where(['name' => '教职员工', 'school_id' => $this->schoolId()])->first()->id;
+            $userIds = $this->userIds($departmentId, $groupId);
+            $educatorIds = User::whereIn('id', $userIds)->with('educator')
+                ->get()->pluck('educator.id')->toArray();
+        } else {
+            $educatorIds = $this->contactIds('educator');
+        }
         $educators = $this->whereIn('id', $educatorIds)
             ->where('school_id', $this->schoolId())->get();
         $records = [self::EXPORT_TITLES];
@@ -543,12 +540,15 @@ class Educator extends Model {
                 return !empty(array_intersect($gradeIds, explode(',', $subject->grade_ids)));
             }
         );
-        if ($id ?? Request::route('id')) {
-            $educator = $this->find(Request::route('id'));
-            $mobiles = $educator->user->mobiles;
-            $selectedDepartmentIds = $educator->user->depts($educator->user_id)->pluck('id')->toArray();
+        $educatorId = $id ?? Request::route('id');
+        if ($educatorId && Request::method() == 'GET') {
+            $educator = $this->find($educatorId);
+            $mobiles = $educator ? $educator->user->mobiles : null;
+            $selectedDepartmentIds = $educator
+                ? $educator->user->depts($educator->user_id)->pluck('id')->toArray() : [];
             $selectedDepartments = $this->selectedNodes($selectedDepartmentIds);
         }
+    
         return [
             $classes->pluck('name', 'id')->toArray(),
             $subjects->pluck('name', 'id')->toArray(),

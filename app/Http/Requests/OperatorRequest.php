@@ -1,14 +1,11 @@
 <?php
 namespace App\Http\Requests;
 
-use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
+use App\Helpers\{Constant, ModelTrait};
 use App\Models\Group;
-use App\Rules\Email;
-use App\Rules\Mobile;
+use App\Rules\{Email, Mobile};
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\{Auth, Request};
 
 /**
  * Class OperatorRequest

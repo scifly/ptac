@@ -1,7 +1,8 @@
 <?php
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Eloquent;
+use Illuminate\Database\Eloquent\{Builder, Model};
 
 /**
  * App\Models\ModuleStudent 学生应用模块订阅
@@ -12,13 +13,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at 创建于
  * @property \Carbon\Carbon|null $updated_at 更新于
  * @property int|null $expired_at 到期时间
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ModuleStudent whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ModuleStudent whereExpiredAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ModuleStudent whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ModuleStudent whereModuleId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ModuleStudent whereStudentId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\ModuleStudent whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @method static Builder|ModuleStudent whereCreatedAt($value)
+ * @method static Builder|ModuleStudent whereExpiredAt($value)
+ * @method static Builder|ModuleStudent whereId($value)
+ * @method static Builder|ModuleStudent whereModuleId($value)
+ * @method static Builder|ModuleStudent whereStudentId($value)
+ * @method static Builder|ModuleStudent whereUpdatedAt($value)
+ * @mixin Eloquent
  */
 class ModuleStudent extends Model {
     

@@ -1,16 +1,12 @@
 <?php
 namespace App\Helpers;
 
-use App\Models\Corp;
-use App\Models\Message;
-use App\Models\MessageSendingLog;
-use App\Models\School;
-use App\Models\User;
+use App\Models\{Corp, Message, MessageSendingLog, School, User};
 use App\Facades\Wechat;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\{DB};
+use Pusher\PusherException;
 use Throwable;
 
 /**
@@ -49,13 +45,14 @@ trait JobTrait {
      * 发送消息（微信、短信）
      *
      * @param Message $message
+     * @param array $response
      * @return bool
      * @throws Throwable
      */
-    function send(Message $message) {
+    function send(Message $message, array $response = []) {
         
         try {
-            DB::transaction(function () use ($message) {
+            DB::transaction(function () use ($message, $response) {
                 $content = json_decode($message->content, true);
                 $userIds = User::whereIn('userid', explode('|', $content['touser']))
                     ->pluck('id')->toArray();
@@ -65,7 +62,7 @@ trait JobTrait {
                     list($logUsers, $mobiles) = $message->smsTargets($userIds, $departmentIds);
                     $result = $message->sendSms($mobiles, $content['sms']);
                     $message->log($logUsers, $message, $result);
-                    $this->inform($message, $result, $mobiles);
+                    $this->inform($message, $result, $mobiles, $response);
                 } else {
                     /**
                      * @var Collection|User[] $wxTargets
@@ -83,7 +80,7 @@ trait JobTrait {
                         $content['touser'] = implode('|', $userids);
                         $result = $message->sendWx($message->app, $content);
                         $message->log($wxLogUsers, $message, $result);
-                        $this->inform($message, $result, $subscribedTargets);
+                        $this->inform($message, $result, $subscribedTargets, $response);
                     }
                     # step 2: 向未关注的用户（监护人、教职员工）发送短信
                     if (!empty($smsMobiles)) {
@@ -93,11 +90,12 @@ trait JobTrait {
                             : config('app.url') . '/sms/' . $urlcode;
                         $result = $message->sendSms($smsMobiles, $sms);
                         $message->log($smsLogUsers, $message, $result, $urlcode);
-                        $this->inform($message, $result, $smsMobiles);
+                        $this->inform($message, $result, $smsMobiles, $response);
                     }
                 }
             });
         } catch (Exception $e) {
+            $this->eHandler($e, $response);
             throw $e;
         }
         
@@ -109,18 +107,13 @@ trait JobTrait {
      * 批量导入
      *
      * @param $job
-     * @param $title
+     * @param array $response
      * @return bool
+     * @throws PusherException
      * @throws Throwable
      */
-    function import($job, $title) {
+    function import($job, array $response) {
         
-        $response = [
-            'userId'     => $job->userId,
-            'title'      => __($title),
-            'statusCode' => HttpStatusCode::OK,
-            'message'    => __('messages.import_succeeded'),
-        ];
         list($inserts, $updates, $illegals) = $job->{'validate'}($job->data);
         if (empty($updates) && empty($inserts)) {
             # 数据格式不正确，中止任务
@@ -128,22 +121,19 @@ trait JobTrait {
             $response['message'] = __('messages.invalid_data_format');
         } else {
             try {
-                DB::transaction(function () use ($job, $inserts, $updates, $illegals, $title, &$response) {
-                    (new Broadcaster)->broadcast([
-                        'userId'     => $job->userId,
-                        'title'      => __($title),
-                        'statusCode' => HttpStatusCode::ACCEPTED,
-                        'message'    => !count($illegals)
-                            ? sprintf(
-                                __('messages.import_request_submitted'),
-                                count($inserts), count($updates)
-                            )
-                            : sprintf(
-                                __('messages.import_request_submitted') .
-                                __('messages.import_illegals'),
-                                count($inserts), count($updates), count($illegals)
-                            ),
-                    ]);
+                DB::transaction(function () use ($job, $inserts, $updates, $illegals, &$response) {
+                    $response['statusCode'] = HttpStatusCode::ACCEPTED;
+                    $response['message'] = !count($illegals)
+                        ? sprintf(
+                            __('messages.import_request_submitted'),
+                            count($inserts), count($updates)
+                        )
+                        : sprintf(
+                            __('messages.import_request_submitted') .
+                            __('messages.import_illegals'),
+                            count($inserts), count($updates), count($illegals)
+                        );
+                    (new Broadcaster)->broadcast($response);
                     # 插入数据
                     if (!empty($inserts)) { $job->{'insert'}($inserts); }
                     # 更新数据
@@ -153,20 +143,13 @@ trait JobTrait {
                         $job->{'excel'}($illegals, 'illegals', '错误数据', false);
                         $response['url'] = 'uploads/' . date('Y/m/d/') . 'illegals.xlsx';
                     }
+                    (new Broadcaster)->broadcast($response);
                 });
             } catch (Exception $e) {
-                $response['statusCode'] = $e->getCode();
-                $response['message'] = $e->getMessage();
-                Log::error(
-                    get_class($e) .
-                    '(code: ' . $e->getCode() . '): ' .
-                    $e->getMessage() . ' at ' .
-                    $e->getFile() . ' on line ' .
-                    $e->getLine()
-                );
+                $this->eHandler($e, $response);
+                throw $e;
             }
         }
-        (new Broadcaster)->broadcast($response);
         
         return true;
         
@@ -215,25 +198,37 @@ trait JobTrait {
     }
     
     /**
+     * 任务失败处理器
+     *
+     * @param array $response
+     * @param Exception $exception
+     * @throws PusherException
+     */
+    function eHandler(Exception $exception, array $response = []) {
+        
+        if (!empty($response)) {
+            $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+            $response['message'] = $exception->getMessage();
+            (new Broadcaster)->broadcast($response);
+        }
+        
+    }
+    
+    /**
      * 生成并发送广播消息
      *
      * @param Message $message
      * @param mixed $result
      * @param mixed $targets - 发送对象数量
-     * @throws \Pusher\PusherException
+     * @param array $response
+     * @throws PusherException
      */
-    private function inform(Message $message, $result, $targets) {
+    private function inform(Message $message, $result, $targets, array $response = []) {
         
-        $userId = $message->s_user_id;
-        if ($userId) {
-            $response = [
-                'userId'     => $userId,
-                'title'      => __('messages.message.title'),
-                'statusCode' => HttpStatusCode::OK,
-            ];
+        if ($message->s_user_id && !empty($response)) {
             $msgTpl = 'messages.message.sent';
             if (isset($result['errcode'])) {
-                $response['title'] = $response['title'] . '(微信)';
+                $response['title'] .= '(微信)';
                 if ($result['errcode']) {
                     $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
                     $response['message'] = $result['errmsg'];
@@ -243,15 +238,14 @@ trait JobTrait {
                     $succeeded = $total - count($failed);
                     if (!$succeeded) {
                         $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-                    }
-                    if ($succeeded > 0 && $succeeded < $total) {
+                    } else if ($succeeded > 0 && $succeeded < $total) {
                         $response['statusCode'] = HttpStatusCode::ACCEPTED;
                     }
                     $response['message'] = sprintf(
                         __($msgTpl), $total, $succeeded, count($failed));
                 }
             } else {
-                $response['title'] = $response['title'] . '(短信)';
+                $response['title'] .= '(短信)';
                 if ($result > 0) {
                     $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
                     $response['message'] = sprintf(
@@ -280,18 +274,12 @@ trait JobTrait {
     private function operate($corpid, $secret, $data, $action) {
         
         # 角色为‘学生’的用户无需同步到企业微信
-        if ($data['position'] == '学生') {
-            return ['errcode' => 0, 'errmsg' => __('messages.ok')];
-        }
+        if ($data['position'] == '学生') return ['errcode' => 0, 'errmsg' => __('messages.ok')];
         # 获取access_token
         $token = Wechat::getAccessToken($corpid, $secret, true);
-        if ($token['errcode']) {
-            return $token;
-        }
+        if ($token['errcode']) return $token;
         $accessToken = $token['access_token'];
-        if ($action != 'delete') {
-            unset($data['corpIds']);
-        }
+        if ($action != 'delete') unset($data['corpIds']);
         $action .= 'User';
         $result = json_decode(Wechat::$action($accessToken, $action == 'deleteUser' ? $data['userid'] : $data));
         # 企业微信通讯录不存在指定的会员，则创建该会员

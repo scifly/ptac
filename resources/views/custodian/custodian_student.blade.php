@@ -9,7 +9,7 @@
                     <td class="text-center">学生</td>
                     <td class="text-center">学号</td>
                     <td class="text-center">监护关系</td>
-                    <td class="text-center">操作</td>
+                    <td class="text-center">删除</td>
                 </tr>
                 </thead>
                 <tbody id="tBody">

@@ -1,34 +1,31 @@
 <?php
 namespace App\Helpers;
 
-use App\Models\CommType;
-use App\Models\Corp;
-use App\Models\Group;
-use App\Models\MediaType;
-use App\Models\Menu;
-use App\Models\MessageType;
-use App\Models\Student;
-use App\Models\Tab;
-use App\Models\User;
+use App\Models\{CommType,
+    Corp,
+    Exam,
+    Grade,
+    Group,
+    MediaType,
+    Menu,
+    MessageType,
+    Student,
+    Tab,
+    User,
+    Squad,
+    Action,
+    School,
+    Department,
+    DepartmentUser};
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use ReflectionClass;
-use App\Models\Squad;
-use App\Models\Action;
-use App\Models\School;
 use App\Policies\Route;
 use ReflectionException;
-use App\Models\Department;
-use App\Models\DepartmentUser;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\{Facades\DB, Facades\Auth, Facades\Request};
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Request;
-use PhpOffice\PhpSpreadsheet\Exception;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\{Exception, IOFactory, Spreadsheet};
 use Throwable;
 
 /**
@@ -231,7 +228,7 @@ trait ModelTrait {
     function schoolIds($userId = null, $corpId = null) {
         
         $user = !$userId ? Auth::user() : User::find($userId);
-        switch ($user->role()) {
+        switch ($user->role($user->id)) {
             case '运营':
                 return $corpId
                     ? School::whereCorpId($corpId)->pluck('id')->toArray()
@@ -264,8 +261,6 @@ trait ModelTrait {
         
     }
     
-    
-    
     /**
      * 返回对当前用户可见的所有年级Id
      *
@@ -277,21 +272,11 @@ trait ModelTrait {
         
         $user = !$userId ? Auth::user() : User::find($userId);
         $schoolId = $schoolId ?? $this->schoolId();
-        if (in_array($user->role(), Constant::SUPER_ROLES)) {
-            $gradeIds = School::find($schoolId)
-                ->grades->pluck('id')->toArray();
-        } else {
-            $departmentIds = $this->departmentIds($user->id, $schoolId);
-            $gradeIds = [];
-            foreach ($departmentIds as $id) {
-                $department = Department::find($id);
-                if ($department->departmentType->name == '年级') {
-                    $gradeIds[] = $department->grade->id;
-                }
-            }
-        }
-        
-        return empty($gradeIds) ? [0] : $gradeIds;
+        $grades = in_array($user->role($user->id), Constant::SUPER_ROLES)
+            ? School::find($schoolId)->grades
+            : Grade::whereIn('department_id', $this->departmentIds($user->id, $schoolId))->get();
+
+        return $grades->isEmpty() ? [0] : $grades->pluck('id')->toArray();
         
     }
     
@@ -306,27 +291,11 @@ trait ModelTrait {
         
         $user = !$userId ? Auth::user() : User::find($userId);
         $schoolId = $schoolId ?? $this->schoolId();
-        if (in_array($user->role(), Constant::SUPER_ROLES)) {
-            $grades = School::find($schoolId)->grades;
-            $classIds = [];
-            foreach ($grades as $grade) {
-                $classes = $grade->classes;
-                foreach ($classes as $class) {
-                    $classIds[] = $class->id;
-                }
-            }
-        } else {
-            $departmentIds = $this->departmentIds($user->id, $schoolId);
-            $classIds = [];
-            foreach ($departmentIds as $id) {
-                $department = Department::find($id);
-                if ($department->departmentType->name == '班级') {
-                    $classIds[] = $department->squad->id;
-                }
-            }
-        }
+        $classes = in_array($user->role($user->id), Constant::SUPER_ROLES)
+            ? School::find($schoolId)->classes
+            : Squad::whereIn('department_id', $this->departmentIds($user->id, $schoolId))->get();
         
-        return empty($classIds) ? [0] : $classIds;
+        return $classes->isEmpty() ? [0] : $classes->pluck('id')->toArray();
         
     }
     
@@ -341,17 +310,16 @@ trait ModelTrait {
         
         $user = !$userId ? Auth::user() : User::find($userId);
         $schoolId = $schoolId ?? $this->schoolId();
-        if (in_array($user->role(), Constant::SUPER_ROLES)) {
+        if (in_array($user->role($user->id), Constant::SUPER_ROLES)) {
             $examIds = School::find($schoolId)->exams->pluck('id')->toArray();
         } else {
             $classIds = $this->classIds($schoolId);
-            $exams = School::find($schoolId)->exams->pluck('class_ids', 'id');
-            $examIds = [];
-            foreach ($exams as $key => $value) {
-                if (!empty(array_intersect($classIds, explode(',', $value)))) {
-                    $examIds[] = $key;
+            $examIds = School::find($schoolId)->exams->filter(
+                function (Exam $exam) use ($classIds) {
+                    $class_ids = explode(',', $exam->class_ids);
+                    return !empty(array_intersect($classIds, $class_ids));
                 }
-            }
+            )->pluck('id')->toArray();
         }
         
         return $examIds;
@@ -364,33 +332,39 @@ trait ModelTrait {
      * @param string $type - 联系人类型: custodian, student, educator
      * @param User|null $user
      * @param null $schoolId
-     * @return array
+     * @return array|null
      */
     function contactIds($type, User $user = null, $schoolId = null) {
         
         $user = $user ?? Auth::user();
         $schoolId = $schoolId ?? ($this->schoolId() ?? session('schoolId'));
-        $method = $type . 'Ids';
-        if (method_exists($this, $method)) {
-            if (in_array($user->role(), Constant::SUPER_ROLES)) {
-                $contactIds = $this->$method(
-                    School::find($schoolId)->department_id
-                );
-            } else {
-                $departments = $user->depts();
-                $contactIds = [];
-                foreach ($departments as $d) {
-                    $contactIds = array_merge(
-                        $this->$method($d->id), $contactIds
-                    );
-                }
-                $contactIds = array_unique($contactIds);
-            }
-        } else {
-            return [0];
+        switch ($type) {
+            case 'student':
+                $condition = ['name' => '学生'];
+                break;
+            case 'custodian':
+                $condition = ['name' => '监护人'];
+                break;
+            case 'educator':
+                $condition = ['name' => '教职员工', 'school_id' => $schoolId];
+                break;
+            default:
+                break;
         }
+        $groupId = isset($condition) ? Group::where($condition)->first()->id : 0;
+        $userIds = [];
+        if (in_array($user->role($user->id), Constant::SUPER_ROLES)) {
+            $userIds = $this->userIds(School::find($schoolId)->department_id, $groupId);
+        } else {
+            $departments = $user->depts();
+            foreach ($departments as $d) {
+                $userIds = array_merge($this->userIds($d->id, $groupId), $userIds);
+            }
+        }
+        $userIds = array_unique($userIds);
         
-        return empty($contactIds) ? [0] : $contactIds;
+        return empty($userIds) ? [0]
+            : User::whereIn('id', $userIds)->with($type)->get()->pluck($type . '.id')->toArray();
         
     }
     
@@ -398,62 +372,17 @@ trait ModelTrait {
      * 返回指定部门(含子部门）下的所有用户id
      *
      * @param $departmentId
+     * @param null $groupId - 角色id
      * @return array
      */
-    function userIds($departmentId): array {
+    function userIds($departmentId, $groupId = null): array {
         
-        $departmentIds[] = $departmentId;
-        $department = new Department();
-        $departmentIds = array_unique(
-            array_merge(
-                $department->subDepartmentIds($departmentId), $departmentIds
-            )
-        );
-        $userIds = [];
-        foreach ($departmentIds as $id) {
-            $userIds = array_merge(
-                DepartmentUser::whereDepartmentId($id)->pluck('user_id')->toArray(),
-                $userIds
-            );
-        }
+        $departmentIds = [$departmentId] + (new Department)->subDepartmentIds($departmentId);
+        $userIds = DepartmentUser::whereIn('department_id', $departmentIds)->pluck('user_id')->toArray();
         
-        return array_unique($userIds);
-        
-    }
-    
-    /**
-     * 返回指定部门(含子部门）下的所有学生Id
-     *
-     * @param $departmentId
-     * @return array
-     */
-    function studentIds($departmentId): array {
-        
-        return $this->getIds($departmentId, 'student');
-        
-    }
-    
-    /**
-     * 返回指定部门(含子部门）下的所有监护人Id
-     *
-     * @param $departmentId
-     * @return array
-     */
-    function custodianIds($departmentId): array {
-        
-        return $this->getIds($departmentId, 'custodian');
-        
-    }
-    
-    /**
-     * 返回指定部门(含子部门）下的所有教职员工Id
-     *
-     * @param $departmentId
-     * @return array
-     */
-    function educatorIds($departmentId): array {
-        
-        return $this->getIds($departmentId, 'educator');
+        return !$groupId
+            ? array_unique($userIds)
+            : array_unique(User::whereIn('id', $userIds)->where('group_id', $groupId)->pluck('id')->toArray());
         
     }
     
@@ -468,11 +397,12 @@ trait ModelTrait {
         
         $departmentIds = [];
         $user = User::find($userId);
-        if (in_array($user->role(), Constant::SUPER_ROLES)) {
+        $role = $user->role($userId);
+        if (in_array($role, Constant::SUPER_ROLES)) {
             $schoolId = $schoolId ?? $this->schoolId();
             $department = $schoolId
                 ? School::find($schoolId)->department
-                : Department::find($user->role() == '运营' ? 1 : $this->head($user));
+                : Department::find($role == '运营' ? 1 : $this->head($user));
             $departmentIds[] = $department->id;
             
             return array_unique(
@@ -505,7 +435,7 @@ trait ModelTrait {
     function menuIds(Menu $menu, $userId = null) {
         
         $user = !$userId ? Auth::user() : User::find($userId);
-        switch ($user->role) {
+        switch ($user->role($user->id)) {
             case '运营':
                 return $menu::all()->pluck('id')->toArray();
             case '企业':
@@ -534,7 +464,7 @@ trait ModelTrait {
      */
     function head(User $user) {
         
-        return head($user->depts()->pluck('id')->toArray());
+        return head($user->depts($user->id)->pluck('id')->toArray());
         
     }
     
@@ -714,45 +644,9 @@ trait ModelTrait {
         $groupIds = $type != ''
             ? [Group::whereName($type)->first()->id]
             : Group::whereSchoolId($this->schoolId())->pluck('id')->toArray();
-
+        
         return 'User.group_id IN (' . (empty($groupIds) ? '0' : implode(',', $groupIds)) . ')' .
             ' AND User.id IN (' . (empty($userIds) ? '0' : implode(',', $userIds)) . ')';
-        
-    }
-    
-    /**
-     * 检查上传文件格式
-     *
-     * @param array $titles
-     * @param array $format
-     * @return bool
-     */
-    private function checkFileFormat(array $titles, array $format) {
-        
-        return empty(array_diff($titles, $format));
-        
-    }
-    
-    /**
-     * 获取指定部门的联系人Id
-     *
-     * @param $departmentId
-     * @param $type
-     * @return array
-     */
-    private function getIds($departmentId, $type): array {
-        
-        $ids = [];
-        $userIds = $this->userIds($departmentId);
-        foreach ($userIds as $id) {
-            $user = User::find($id);
-            $$type = $user ? $user->{$type} : null;
-            if ($$type) {
-                $ids[] = $$type->id;
-            }
-        }
-        
-        return $ids;
         
     }
     
@@ -828,11 +722,12 @@ trait ModelTrait {
                 $input['enabled'] = $input['user']['enabled'];
                 $position = $role == 'student' ? '学生' : '监护人';
                 $input['user']['position'] = $position;
+                $input['user']['group_id'] = Group::whereName($position)->first()->id;
                 if (!Request::route('id')) {
                     $input['user'] += [
-                        'username'   => $userid,
-                        'password'   => bcrypt('12345678'),
-                        'group_id'   => Group::whereName($position)->first()->id
+                        'username' => $userid,
+                        'password' => bcrypt('12345678'),
+                        'group_id' => Group::whereName($position)->first()->id,
                     ];
                 }
                 if ($role == 'student' && !isset($input['remark'])) {
@@ -884,13 +779,18 @@ trait ModelTrait {
                     $rses[$studentId] = $input['relationships'][$key];
                 }
                 $input['relationships'] = $rses ?? [];
-                $input['deparmtentIds'] = $departmentIds ?? [];
+                $input['departmentIds'] = $departmentIds ?? [];
                 if ($role == 'educator' && isset($rses, $departmentIds)) {
                     $input['singular'] = 0;
                 }
             }
-            if (!empty($input['cs'])) {
+            if (
+                !array_key_exists(0, $input['cs']['class_ids']) &&
+                !array_key_exists(0, $input['cs']['subject_ids'])
+            ) {
+                if (!isset($input['selectedDepartments'])) $input['selectedDepartments'] = [];
                 foreach ($input['cs']['class_ids'] as $classId) {
+                    if (!$classId) continue;
                     $class = Squad::find($classId);
                     abort_if(
                         !$class || !in_array($class->id, $this->classIds()),
@@ -907,12 +807,26 @@ trait ModelTrait {
                     $input['user']['group_id'] = $group->id;
                     $input['singular'] = 0;
                     $input['school_id'] = $schoolId;
+                    $input['sms_quote'] = 0;
                     $input['enabled'] = $input['user']['enabled'];
                 }
             }
         }
         
         return $input;
+        
+    }
+    
+    /**
+     * 检查上传文件格式
+     *
+     * @param array $titles
+     * @param array $format
+     * @return bool
+     */
+    private function checkFileFormat(array $titles, array $format) {
+        
+        return empty(array_diff($titles, $format));
         
     }
     

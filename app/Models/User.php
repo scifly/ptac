@@ -2,33 +2,23 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
 use App\Jobs\SyncMember;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\{Builder,
+    Collection,
+    Model,
+    Relations\BelongsTo,
+    Relations\BelongsToMany,
+    Relations\HasMany,
+    Relations\HasOne};
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Notifications\DatabaseNotification;
-use Illuminate\Notifications\DatabaseNotificationCollection;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Request;
-use Laravel\Passport\Client;
-use Laravel\Passport\HasApiTokens;
-use Laravel\Passport\Token;
+use Illuminate\Notifications\{DatabaseNotification, DatabaseNotificationCollection, Notifiable};
+use Illuminate\Support\Facades\{Auth, DB, Hash, Request};
+use Laravel\Passport\{Client, HasApiTokens, Token};
 use ReflectionClass;
 use ReflectionException;
 use Throwable;
@@ -293,9 +283,10 @@ class User extends Authenticatable {
             ],
         ];
         $sql = 'User.group_id IN (%s)';
-        $rootGId = Group::whereName('运营')->first()->id;
-        $corpGId = Group::whereName('企业')->first()->id;
-        $schoolGId = Group::whereName('学校')->first()->id;
+        list($rootGId, $corpGId, $schoolGId) = array_map(
+            function ($name) { return Group::whereName($name)->first()->id; },
+            ['运营', '企业', '学校']
+        );
         $rootMenu = Menu::find((new Menu)->rootMenuId(true));
         $menuType = $rootMenu->menuType->name;
         switch ($menuType) {
@@ -394,7 +385,7 @@ class User extends Authenticatable {
                 # 创建用户
                 $user = $this->create($data['user']);
                 # 如果角色为校级管理员，则同时创建教职员工记录
-                if (!in_array($user->role(), Constant::NON_EDUCATOR)) {
+                if (!in_array($this->role($user->id), Constant::NON_EDUCATOR)) {
                     $data['user_id'] = $user->id;
                     Educator::create($data);
                 }
@@ -440,7 +431,8 @@ class User extends Authenticatable {
         
         $user = $this->find($id);
         $corpIds = $schoolIds = [];
-        switch ($user->role($id)) {
+        $role = $this->role($id);
+        switch ($role) {
             case '运营':
                 $corpIds = Corp::pluck('id')->toArray();
                 break;
@@ -470,7 +462,8 @@ class User extends Authenticatable {
         $data = [
             'id'        => $user->id,
             'userid'    => $user->userid,
-            'position'  => $user->position ?? $this->role(),
+            'username'  => $user->username,
+            'position'  => $user->position ?? $role,
             'corpIds'   => $corpIds,
             'schoolIds' => $schoolIds,
         ];
@@ -498,8 +491,8 @@ class User extends Authenticatable {
                             ->pluck('mobile')->toArray()
                     ),
                     'email'        => $user->email,
-                    'department'   => in_array($user->role(), ['运营', '企业'])
-                        ? [1] : $user->depts()->pluck('id')->toArray(),
+                    'department'   => in_array($role, ['运营', '企业'])
+                        ? [1] : $this->depts($id)->pluck('id')->toArray(),
                     'gender'       => $user->gender,
                     'remark'       => $remark,
                     'enable'       => $user->enabled,
@@ -849,7 +842,7 @@ class User extends Authenticatable {
      */
     function departmentIds($id) {
         
-        foreach ($this->find($id)->depts() as $d) {
+        foreach ($this->depts($id) as $d) {
             $departmentIds[] = $d->id;
             $departmentIds = array_merge(
                 $departmentIds, $d->subDepartmentIds($d->id)
@@ -941,7 +934,7 @@ class User extends Authenticatable {
      * @return Department[]|Collection
      */
     function depts($id = null) {
-
+        
         $user = $id ? $this->find($id) : Auth::user();
         $role = $this->role($id ?? Auth::id());
         if (in_array($role, Constant::NON_EDUCATOR) && $role != '监护人') {
@@ -951,11 +944,11 @@ class User extends Authenticatable {
             'user_id' => $user->id,
             'enabled' => $role == '监护人' ? 0 : 1,
         ])->pluck('department_id')->toArray();
-    
+        
         return Department::whereIn('id', $departmentIds)->get();
-    
+        
     }
-
+    
     /**
      * 返回指定用户所属的所有企业id
      *
@@ -966,29 +959,88 @@ class User extends Authenticatable {
         
         $user = $this->find($id);
         
-        return $user->role() == '运营'
+        return $this->role($id) == '运营'
             ? Corp::pluck('id')->toArray()
             : [(new Department)->corpId($this->head($user) ?? 1)];
         
     }
     
     /**
+     * 返回create/edit view所需数据
+     *
      * @return array
      */
-    private function corps() {
-        
-        $user = Auth::user();
-        switch ($user->role()) {
-            case '运营':
-                return Corp::whereEnabled(1)->pluck('name', 'id')->toArray();
-            case '企业':
-                $departmentId = $this->head($user);
-                $corp = Corp::whereDepartmentId($departmentId)->first();
-                
-                return [$corp->id => $corp->name];
-            default:
-                return [];
+    function compose() {
+    
+        /**
+         * @param array $names
+         * @return array
+         */
+        function groups(array $names) {
+            return Group::whereIn('name', $names)->pluck('name', 'id')->toArray();
         }
+    
+        $operator = $departmentId = $corps = $schools = null;
+        $rootMenu = Menu::find((new Menu)->rootMenuId(true));
+        if (Request::route('id')) {
+            $operator = $this->find(Request::route('id'));
+            $departmentId = $this->head($operator);
+        }
+        switch ($rootMenu->menuType->name) {
+            case '根':
+                $groups = groups(['运营', '企业', '学校']);
+                if (Request::route('id')) {
+                    $role = $operator->role($operator->id);
+                    if ($role != '运营') {
+                        $corps = Corp::all()->pluck('name', 'id')->toArray();
+                    }
+                    if ($role == '学校') {
+                        $schools = School::whereCorpId($operator->educator->school->corp_id)
+                            ->pluck('name', 'id')->toArray();
+                    }
+                }
+                break;
+            case '企业':
+                $groups = groups(['企业', '学校']);
+                $corp = null;
+                if (Request::route('id')) {
+                    switch ($operator->role($operator->id)) {
+                        case '企业':
+                            $corp = Corp::whereDepartmentId($departmentId)->first();
+                            break;
+                        case '学校':
+                            $corpId = $operator->educator->school->corp_id;
+                            $corp = Corp::find($corpId);
+                            $schools = School::whereCorpId($corpId)
+                                ->pluck('name', 'id')->toArray();
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+                    $corp = Corp::whereMenuId($rootMenu->id)->first();
+                }
+                $corps = [$corp->id => $corp->name];
+                break;
+            case '学校':
+                $groups = groups(['学校']);
+                if (Request::route('id')) {
+                    $school = School::whereDepartmentId($departmentId)->first();
+                } else {
+                    $school = School::whereMenuId($rootMenu->id)->first();
+                }
+                $corp = Corp::find($school->corp_id);
+                $corps = [$corp->id => $corp->name];
+                $schools = [$school->id => $school->name];
+                break;
+            default:
+                break;
+        }
+        
+        return [
+            Request::route('id') ? $this->find(Request::route('id'))->mobiles : [],
+            $groups ?? [], $corps, $schools
+        ];
         
     }
     
@@ -1027,6 +1079,26 @@ class User extends Authenticatable {
                 return School::find($data['school_id'])->department_id;
             default:
                 return null;
+        }
+        
+    }
+    
+    /**
+     * @return array
+     */
+    private function corps() {
+        
+        $user = Auth::user();
+        switch ($user->role()) {
+            case '运营':
+                return Corp::whereEnabled(1)->pluck('name', 'id')->toArray();
+            case '企业':
+                $departmentId = $this->head($user);
+                $corp = Corp::whereDepartmentId($departmentId)->first();
+                
+                return [$corp->id => $corp->name];
+            default:
+                return [];
         }
         
     }

@@ -2,11 +2,8 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
-use App\Models\Grade;
-use App\Models\Squad;
 use App\Models\Student;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Request;
 
 /**
  * Class StudentComposer
@@ -29,36 +26,13 @@ class StudentComposer {
      */
     public function compose(View $view) {
         
-        $grades = Grade::whereIn('id', $this->gradeIds())
-            ->where('enabled', 1)
-            ->pluck('name', 'id')
-            ->toArray();
-        if (Request::route('id')) {
-            $gradeId = Student::find(Request::route('id'))->squad->grade_id;
-        } else {
-            reset($grades);
-            $gradeId = key($grades);
-        }
-        if (empty($grades)) {
-            $classes = Squad::whereIn('id', $this->classIds())
-                ->pluck('name', 'id')
-                ->toArray();
-        } else {
-            $classes = Squad::whereGradeId($gradeId)
-                ->where('enabled', 1)
-                ->pluck('name', 'id')
-                ->toArray();
-        }
-        if (Request::route('id')) {
-            $student = Student::find(Request::route('id'));
-            $user = $student->user;
-            $mobiles = $student->user->mobiles;
-        }
+        list($grades, $classes, $user, $mobiles) = $this->student->compose();
+        
         $view->with([
             'grades'  => $grades,
             'classes' => $classes,
-            'user'    => $user ?? null,
-            'mobiles' => $mobiles ?? null,
+            'user'    => $user,
+            'mobiles' => $mobiles
         ]);
         
     }

@@ -173,7 +173,7 @@ class School extends Model {
     function tags() { return $this->hasMany('App\Models\Tag'); }
     
     /**
-     * 获取指定学校所有的年级对象
+     * 获取指定学校的所有年级对象
      *
      * @return HasMany
      */

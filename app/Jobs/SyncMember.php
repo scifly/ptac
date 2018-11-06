@@ -1,18 +1,14 @@
 <?php
 namespace App\Jobs;
 
-use App\Helpers\Broadcaster;
 use App\Models\Corp;
-use App\Helpers\JobTrait;
-use App\Helpers\Constant;
-use App\Events\JobResponse;
+use App\Helpers\{Broadcaster, JobTrait, Constant, HttpStatusCode};
 use Exception;
-use Illuminate\Bus\Queueable;
-use App\Helpers\HttpStatusCode;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\{Bus\Queueable,
+    Queue\SerializesModels,
+    Queue\InteractsWithQueue,
+    Foundation\Bus\Dispatchable,
+    Contracts\Queue\ShouldQueue};
 use Pusher\PusherException;
 
 /**
@@ -36,7 +32,7 @@ class SyncMember implements ShouldQueue {
      * @param $action - create/update/delete操作
      * @throws PusherException
      */
-    public function __construct($data, $userId, $action) {
+    function __construct($data, $userId, $action) {
         
         $this->data = $data;
         $this->userId = $userId;
@@ -53,12 +49,12 @@ class SyncMember implements ShouldQueue {
     
     /**
      * Execute the job.
-     *p
+     *
      * @return bool
      * @throws Exception
      */
-    public function handle() {
-    
+    function handle() {
+        
         # 同步至企业微信通讯录
         $this->sync();
         # 同步至第三方合作伙伴通讯录(人员)
@@ -73,12 +69,24 @@ class SyncMember implements ShouldQueue {
     }
     
     /**
+     * 任务异常处理
+     *
+     * @param Exception $exception
+     * @throws PusherException
+     */
+    function failed(Exception $exception) {
+        
+        $this->eHandler($exception, $this->response);
+        
+    }
+    
+    /**
      * 同步企业微信会员
      *
      * @throws Exception
      */
     private function sync() {
-    
+        
         $results = $this->syncMember($this->data, $this->action);
         $this->response['title'] .= '企业微信会员';
         if (sizeof($results) == 1) {

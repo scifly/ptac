@@ -1,26 +1,25 @@
 <?php
 namespace App\Jobs;
 
-use App\Helpers\JobTrait;
-use App\Helpers\ModelTrait;
-use App\Models\ApiMessage;
-use App\Models\App;
-use App\Models\CommType;
-use App\Models\Department;
-use App\Models\DepartmentUser;
-use App\Models\Message;
-use App\Models\MessageSendingLog;
-use App\Models\MessageType;
-use App\Models\Mobile;
-use App\Models\School;
-use App\Models\User;
+use App\Helpers\{JobTrait, ModelTrait};
+use App\Models\{ApiMessage,
+    App,
+    CommType,
+    Department,
+    DepartmentUser,
+    Message,
+    MessageSendingLog,
+    MessageType,
+    Mobile,
+    School,
+    User};
 use Exception;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
+use Illuminate\{Bus\Queueable,
+    Contracts\Queue\ShouldQueue,
+    Foundation\Bus\Dispatchable,
+    Queue\InteractsWithQueue,
+    Queue\SerializesModels,
+    Support\Facades\DB};
 use Throwable;
 
 /**
@@ -42,27 +41,27 @@ class SendMessageApi implements ShouldQueue {
      * @param $content
      * @param User $partner
      */
-    public function __construct($mobiles, $schoolId, $content, User $partner) {
-    
+    function __construct($mobiles, $schoolId, $content, User $partner) {
+        
         $this->mobiles = $mobiles;
         $this->schoolId = $schoolId;
         $this->content = $content;
         $this->partner = $partner;
-    
+        
     }
     
     /**
      * @throws Exception
      * @throws Throwable
      */
-    public function handle() {
-    
+    function handle() {
+        
         try {
             DB::transaction(function () {
                 $message = new Message;
                 $apiMessage = new ApiMessage;
                 $department = new Department;
-    
+                
                 $messageType = MessageType::whereUserId($this->partner->id)->first();
                 $school = School::find($this->schoolId);
                 $departmentIds = array_merge(
@@ -79,14 +78,14 @@ class SendMessageApi implements ShouldQueue {
                     ->whereIn('user_id', $userIds)
                     ->pluck('user_id', 'mobile')
                     ->toArray();
-    
+                
                 # 创建发送日志
                 $msl = (new MessageSendingLog)->store([
                     'read_count'     => 0,
                     'received_count' => 0,
                     'recipients'     => 0,
                 ]);
-    
+                
                 # 发送短信
                 $mobiles = array_diff($targets, array_keys($contacts));
                 $result = $message->sendSms(
@@ -101,7 +100,7 @@ class SendMessageApi implements ShouldQueue {
                     'sent' => $result > 0 ? 0 : 1
                 ];
                 $apiMessage->log($mobiles, $data);
-    
+                
                 # 发送微信
                 $app = App::whereName('消息中心')->where('corp_id', $school->corp_id)->first();
                 $users = User::whereIn('id', array_values($contacts))->get();
@@ -136,6 +135,16 @@ class SendMessageApi implements ShouldQueue {
         }
         
         return true;
+        
+    }
+    
+    /**
+     * 任务异常处理
+     *
+     * @param Exception $exception
+     */
+    function failed(Exception $exception) {
+    
     
     }
     

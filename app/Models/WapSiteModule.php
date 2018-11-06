@@ -4,7 +4,6 @@ namespace App\Models;
 use App\Facades\Datatable;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
-use App\Http\Requests\WapSiteModuleRequest;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;

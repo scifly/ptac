@@ -2,15 +2,14 @@
 namespace App\Jobs;
 
 use App\Helpers\JobTrait;
-use App\Models\Event;
-use App\Models\Message;
+use App\Models\{Event, Message};
 use Exception;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
+use Illuminate\{Bus\Queueable,
+    Contracts\Queue\ShouldQueue,
+    Foundation\Bus\Dispatchable,
+    Queue\InteractsWithQueue,
+    Queue\SerializesModels,
+    Support\Facades\DB};
 use Throwable;
 
 /**
@@ -27,7 +26,7 @@ class SendScheduledMessage implements ShouldQueue {
      *
      * @return void
      */
-    public function __construct() {
+    function __construct() {
         //
     }
     
@@ -37,8 +36,8 @@ class SendScheduledMessage implements ShouldQueue {
      * @return bool
      * @throws Throwable
      */
-    public function handle() {
-
+    function handle() {
+        
         try {
             DB::transaction(function () {
                 $events = Event::whereEnabled(1)
@@ -46,9 +45,9 @@ class SendScheduledMessage implements ShouldQueue {
                     ->take(500)->get();
                 foreach ($events as $event) {
                     $message = Message::whereEventId($event->id)->first();
-                    if (!$message) { continue; }
-                    $sent = $this->send($message);
-                    if ($sent) { $event->update(['enabled' => 0]); }
+                    if (!$message) continue;
+                    $sent = $this->send($message, []);
+                    if ($sent) $event->update(['enabled' => 0]);
                 }
             });
         } catch (Exception $e) {
@@ -57,6 +56,13 @@ class SendScheduledMessage implements ShouldQueue {
         
         return true;
         
+    }
+    
+    /**
+     * @param Exception $exception
+     */
+    function failed(Exception $exception) {
+    
     }
     
 }

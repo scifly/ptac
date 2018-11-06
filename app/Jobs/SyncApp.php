@@ -2,17 +2,15 @@
 namespace App\Jobs;
 
 use App\Facades\Wechat;
-use App\Helpers\Broadcaster;
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
-use App\Models\App;
-use App\Models\Corp;
+use App\Helpers\{Broadcaster, Constant, HttpStatusCode, JobTrait};
+use App\Models\{App, Corp};
 use Exception;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\{Bus\Queueable,
+    Contracts\Queue\ShouldQueue,
+    Foundation\Bus\Dispatchable,
+    Queue\InteractsWithQueue,
+    Queue\SerializesModels};
+use Pusher\PusherException;
 
 /**
  * Class SyncApp
@@ -20,7 +18,7 @@ use Illuminate\Queue\SerializesModels;
  */
 class SyncApp implements ShouldQueue {
     
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, JobTrait;
     
     protected $app, $userId, $response, $broadcaster;
     
@@ -29,9 +27,9 @@ class SyncApp implements ShouldQueue {
      *
      * @param App $app
      * @param $userId
-     * @throws \Pusher\PusherException
+     * @throws PusherException
      */
-    public function __construct(App $app, $userId) {
+    function __construct(App $app, $userId) {
         
         $this->app = $app;
         $this->userId = $userId;
@@ -51,7 +49,7 @@ class SyncApp implements ShouldQueue {
      * @return mixed
      * @throws Exception
      */
-    public function handle() {
+    function handle() {
         
         $app = [
             'agentid' => $this->app->agentid,
@@ -83,6 +81,16 @@ class SyncApp implements ShouldQueue {
         $this->broadcaster->broadcast($this->response);
         
         return true;
+        
+    }
+    
+    /**
+     * @param Exception $exception
+     * @throws PusherException
+     */
+    function failed(Exception $exception) {
+        
+        $this->eHandler($exception, $this->response);
         
     }
     

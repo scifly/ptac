@@ -18,8 +18,13 @@ trait PolicyTrait {
      */
     function action(User $user) {
     
-        $actionId = Action::whereRoute(trim(Request::route()->uri()))->first()->id;
-        $ag = ActionGroup::whereGroupId($user->group_id)->where('action_id', $actionId)->first();
+        $actionId = Action::whereRoute(
+            trim(Request::route()->uri())
+        )->first()->id;
+        $ag = ActionGroup::where([
+            'group_id' => $user->group_id,
+            'action_id' => $actionId
+        ])->first();
         
         return $ag ? true : false;
         

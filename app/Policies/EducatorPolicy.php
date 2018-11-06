@@ -2,13 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\User;
-use App\Models\Group;
-use App\Models\Educator;
-use App\Helpers\Constant;
-use App\Helpers\ModelTrait;
-use App\Helpers\PolicyTrait;
-use App\Helpers\HttpStatusCode;
+use App\Models\{User, Group, Educator};
+use App\Helpers\{Constant, ModelTrait, PolicyTrait, HttpStatusCode};
 use Illuminate\Support\Facades\Request;
 use Illuminate\Auth\Access\HandlesAuthorization;
 

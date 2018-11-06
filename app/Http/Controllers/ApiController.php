@@ -1,18 +1,16 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\HttpStatusCode;
-use App\Jobs\SendMessageApi;
-use App\Models\Consumption;
-use App\Models\EducatorAttendance;
-use App\Models\Group;
-use App\Models\Message;
-use App\Models\StudentAttendance;
-use App\Models\User;
+use App\{Helpers\HttpStatusCode,
+    Jobs\SendMessageApi,
+    Models\Consumption,
+    Models\EducatorAttendance,
+    Models\Group,
+    Models\Message,
+    Models\StudentAttendance,
+    Models\User};
 use Exception;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
+use Illuminate\{Http\JsonResponse, Support\Facades\Auth, Support\Facades\Request};
 use Throwable;
 
 /**

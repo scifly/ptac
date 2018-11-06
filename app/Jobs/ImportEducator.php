@@ -1,29 +1,27 @@
 <?php
 namespace App\Jobs;
 
-use App\Helpers\Broadcaster;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\JobTrait;
-use App\Helpers\ModelTrait;
-use App\Models\Department;
-use App\Models\DepartmentUser;
-use App\Models\Educator;
-use App\Models\EducatorClass;
-use App\Models\Grade;
-use App\Models\Group;
-use App\Models\Mobile;
-use App\Models\School;
-use App\Models\Squad;
-use App\Models\Subject;
-use App\Models\User;
+use App\Helpers\{Broadcaster, HttpStatusCode, JobTrait, ModelTrait};
+use App\Models\{Department,
+    DepartmentUser,
+    Educator,
+    EducatorClass,
+    Grade,
+    Group,
+    Mobile,
+    School,
+    Squad,
+    Subject,
+    User};
 use Exception;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
+use Illuminate\{Bus\Queueable,
+    Contracts\Queue\ShouldQueue,
+    Foundation\Bus\Dispatchable,
+    Queue\InteractsWithQueue,
+    Queue\SerializesModels,
+    Support\Facades\DB,
+    Validation\Rule};
+use Pusher\PusherException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 use Validator;
@@ -52,7 +50,8 @@ class ImportEducator implements ShouldQueue {
         $this->response = [
             'userId'     => $userId,
             'title'      => __('messages.educator.title'),
-            'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
+            'statusCode' => HttpStatusCode::OK,
+            'message'    => __('messages.educator.import_completed')
         ];
         $this->broadcaster = new Broadcaster();
         
@@ -65,7 +64,19 @@ class ImportEducator implements ShouldQueue {
      */
     function handle() {
         
-        return $this->import($this, __('messages.educator.title'));
+        return $this->import($this, $this->response);
+        
+    }
+    
+    /**
+     * 任务异常处理
+     *
+     * @param Exception $exception
+     * @throws PusherException
+     */
+    function failed(Exception $exception) {
+        
+        $this->eHandler($exception, $this->response);
         
     }
     
@@ -219,8 +230,7 @@ class ImportEducator implements ShouldQueue {
                 }
             });
         } catch (Exception $e) {
-            $this->response['message'] = $e->getMessage();
-            $this->broadcaster->broadcast($this->response);
+            $this->eHandler($e, $this->response);
             throw $e;
         }
         
@@ -281,11 +291,9 @@ class ImportEducator implements ShouldQueue {
                     # 更新企业号成员
                     $user->updateWechatUser($user->id, false);
                 }
-                
             });
         } catch (Exception $e) {
-            $this->response['message'] = $e->getMessage();
-            $this->broadcaster->broadcast($this->response);
+            $this->eHandler($e, $this->response);
             throw $e;
         }
         

@@ -265,7 +265,7 @@ class Event extends Model {
             return response()->json($pubEvents);
         }
         //如果是管理员
-        if (in_array(User::find($userId)->role(), Constant::SUPER_ROLES)) {
+        if (in_array(User::find($userId)->role($userId), Constant::SUPER_ROLES)) {
             return response()->json(array_merge($pubEvents, $perEvents));
         }
         
@@ -285,7 +285,7 @@ class Event extends Model {
      */
     function isValidateTime($userId, $educator_id, $start, $end, $id = null) {
         
-        if (!in_array(User::find($userId)->role(), Constant::SUPER_ROLES)) {
+        if (!in_array(User::find($userId)->role($userId), Constant::SUPER_ROLES)) {
             return $this->isRepeatTimeUser($userId, $start, $end, $id);
         } else {
             if ($educator_id != 0) {

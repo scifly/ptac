@@ -2,25 +2,20 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
+use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
 use App\Jobs\ImportStudent;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\{Builder,
+    Collection,
+    Model,
+    Relations\BelongsTo,
+    Relations\BelongsToMany,
+    Relations\HasMany};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\{Facades\Auth, Facades\DB, Facades\Request, Facades\Storage};
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Throwable;
 
@@ -44,6 +39,7 @@ use Throwable;
  * @property-read Squad $squad
  * @property-read User $user
  * @property-read Collection|Consumption[] $consumptions
+ * @property-read Collection|Module[] $modules
  * @method static Builder|Student whereBirthday($value)
  * @method static Builder|Student whereCardNumber($value)
  * @method static Builder|Student whereClassId($value)
@@ -56,13 +52,12 @@ use Throwable;
  * @method static Builder|Student whereUpdatedAt($value)
  * @method static Builder|Student whereUserId($value)
  * @mixin Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Module[] $modules
  */
 class Student extends Model {
     
     use ModelTrait;
     
-    const EXCEL_FILE_TITLE = [
+    const IMPORT_TITLES = [
         '姓名', '性别', '生日', '学校',
         '年级', '班级', '手机号码',
         '学号', '卡号', '住校',
@@ -372,7 +367,7 @@ class Student extends Model {
             null, true, true, true
         );
         abort_if(
-            !empty(array_diff(self::EXCEL_FILE_TITLE, $students[1])),
+            !empty(array_diff(self::IMPORT_TITLES, $students[1])),
             HttpStatusCode::NOT_ACCEPTABLE,
             __('messages.invalid_file_format')
         );
@@ -499,6 +494,45 @@ class Student extends Model {
         return (new Exam())->where('enabled', 1)->orderBy('start_date', 'desc')
             ->whereRaw('FIND_IN_SET(' . $student->class_id . ', class_ids)')
             ->get()->toArray();
+        
+    }
+    
+    /**
+     * 返回create/edit view所需数据
+     *
+     * @return array
+     */
+    function compose() {
+    
+        $grades = Grade::whereIn('id', $this->gradeIds())
+            ->where('enabled', 1)
+            ->pluck('name', 'id')
+            ->toArray();
+        if (Request::route('id')) {
+            $gradeId = $this->find(Request::route('id'))->squad->grade_id;
+        } else {
+            reset($grades);
+            $gradeId = key($grades);
+        }
+        if (empty($grades)) {
+            $classes = Squad::whereIn('id', $this->classIds())
+                ->pluck('name', 'id')
+                ->toArray();
+        } else {
+            $classes = Squad::whereGradeId($gradeId)
+                ->where('enabled', 1)
+                ->pluck('name', 'id')
+                ->toArray();
+        }
+        if (Request::route('id')) {
+            $student = $this->find(Request::route('id'));
+            $user = $student->user;
+            $mobiles = $student->user->mobiles;
+        }
+        
+        return [
+            $grades, $classes, $user ?? null, $mobiles ?? null
+        ];
         
     }
     

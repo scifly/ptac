@@ -1,7 +1,7 @@
 <?php
 namespace App\Apis;
 
-use App\Events\JobResponse;
+use App\Helpers\Broadcaster;
 use App\Helpers\HttpStatusCode;
 use App\Models\Department;
 use App\Models\User;
@@ -33,7 +33,7 @@ class Kinder {
         'delete' => '删除'
     ];
     
-    protected $type, $action, $data, $response;
+    protected $type, $action, $data, $response, $broadcaster;
     
     /**
      * Kinder constructor.
@@ -42,6 +42,7 @@ class Kinder {
      * @param $action
      * @param $data
      * @param $response
+     * @throws \Pusher\PusherException
      */
     function __construct($type, $action, $data, $response) {
     
@@ -49,6 +50,7 @@ class Kinder {
         $this->action = $action;
         $this->data = $data;
         $this->response = $response;
+        $this->broadcaster = new Broadcaster();
         
     }
     
@@ -62,6 +64,7 @@ class Kinder {
         $name = self::ACTION_NAME[$this->action];
         $this->response['title'] = $name . '卡德' . $this->type;
         $this->response['message'] = __('messages.synced') . '卡德';
+        $this->response['statusCode'] = HttpStatusCode::OK;
         $result = json_decode(
             $this->call($name . $this->type, $this->data), true
         );
@@ -70,7 +73,7 @@ class Kinder {
             $this->response['message'] = '同步失败';
         }
         if ($this->response['userId']) {
-            event(new JobResponse($this->response));
+            $this->broadcaster->broadcast($this->response);
         }
 
         return $result;
@@ -134,14 +137,17 @@ class Kinder {
         switch ($method) {
             case '10':      # 新增部门
             case '11':      # 编辑部门
-                $departmentTypeName = Department::find($data['id'])->departmentType->name;
+                $id = $data['id'];
+                $parentId = $data['parentid'];
+                $department = Department::find($id);
+                $dtName = $department->departmentType->name;
                 $params = [
-                    'did'         => $data['id'] + 10000,
+                    'did'         => $id + 10000,
                     'dname'       => $data['name'],
-                    'dfather'     => $data['parentid'] == 33 ? 10000 : $data['parentid'] + 10000,
+                    'dfather'     => $parentId == 33 ? 10000 : $parentId + 10000,
                     'dexpiration' => '2020-09-01 23:59:59',
-                    'dnumber'     => Department::find($data['id'])->users->count(),
-                    'dtel'        => in_array($departmentTypeName, ['年级', '班级']) ? $departmentTypeName : 'n/a',
+                    'dnumber'     => $department->users->count(),
+                    'dtel'        => in_array($dtName, ['年级', '班级']) ? $dtName : 'n/a',
                 ];
                 break;
             case '12':      # 删除部门
@@ -149,17 +155,18 @@ class Kinder {
                 break;
             case '13':      # 新增人员
             case '14':      # 编辑人员
-                $user = User::find($data['id']);
-                $departmentId = head($user->depts()->pluck('id')->toArray());
+                $id = $data['id'];
+                $user = User::find($id);
+                $departmentId = head($user->depts($id)->pluck('id')->toArray());
                 $did = $departmentId + (!$user->custodian ? 10000 : 50000);
-                $cnumber = $data['userid'];
+                $cnumber = $data['username'];
                 if ($user->student) {
                     $cnumber = $user->student->student_number;
                 } elseif ($user->custodian) {
-                    $cnumber = head($user->custodian->students->pluck('student_number')->toArray()) . $data['id'];
+                    $cnumber = head($user->custodian->students->pluck('student_number')->toArray()) . $id;
                 }
                 $params = [
-                    'cid'     => $data['id'] + 10000,
+                    'cid'     => $id + 10000,
                     'cnumber' => $cnumber,
                     'cname'   => $data['name'],
                     'did'     => $did,
@@ -169,7 +176,7 @@ class Kinder {
                     'post'    => $user->group_id,
                     'status'  => $user->enabled,
                     'address' => 'n/a',
-                    'ishome'  => $user->role() == '学生' ? $data['remark'] : 0,
+                    'ishome'  => $user->role($id) == '学生' ? $data['remark'] : 0,
                     'remark'  => $data['remark'],
                     'bank'    => $user->custodian ? 'custodian' : 'n/a',
                 ];

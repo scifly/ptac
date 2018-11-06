@@ -1,17 +1,16 @@
 <?php
 namespace App\Jobs;
 
-use App\Helpers\JobTrait;
-use App\Helpers\ModelTrait;
-use App\Models\Score;
-use App\Models\Student;
+use App\Helpers\{HttpStatusCode, JobTrait, ModelTrait};
+use App\Models\{Score, Student};
 use Exception;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
+use Illuminate\{Bus\Queueable,
+    Contracts\Queue\ShouldQueue,
+    Foundation\Bus\Dispatchable,
+    Queue\InteractsWithQueue,
+    Queue\SerializesModels,
+    Support\Facades\DB};
+use Pusher\PusherException;
 use Throwable;
 use Validator;
 
@@ -24,7 +23,7 @@ class ImportScore implements ShouldQueue {
     use Dispatchable, InteractsWithQueue, Queueable,
         SerializesModels, ModelTrait, JobTrait;
     
-    public $data, $userId, $classId;
+    public $data, $userId, $classId, $response;
     
     /**
      * Create a new job instance.
@@ -38,6 +37,12 @@ class ImportScore implements ShouldQueue {
         $this->data = $data;
         $this->userId = $userId;
         $this->classId = $classId;
+        $this->response = [
+            'userId' => $userId,
+            'title' => __('messages.score.title'),
+            'statusCode' => HttpStatusCode::OK,
+            'message' => __('messages.score.import_completed')
+        ];
         
     }
     
@@ -48,7 +53,17 @@ class ImportScore implements ShouldQueue {
      */
     function handle() {
         
-        return $this->import($this, 'messages.score.title');
+        return $this->import($this, $this->response);
+        
+    }
+    
+    /**
+     * @param Exception $exception
+     * @throws PusherException
+     */
+    function failed(Exception $exception) {
+        
+        $this->eHandler($exception, $this->response);
         
     }
     
@@ -141,6 +156,7 @@ class ImportScore implements ShouldQueue {
                 }
             });
         } catch (Exception $e) {
+            $this->eHandler($e, $this->response);
             throw $e;
         }
         
@@ -178,6 +194,7 @@ class ImportScore implements ShouldQueue {
                 }
             });
         } catch (Exception $e) {
+            $this->eHandler($e, $this->response);
             throw $e;
         }
         

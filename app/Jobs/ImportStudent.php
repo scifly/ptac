@@ -1,28 +1,17 @@
 <?php
 namespace App\Jobs;
 
-use App\Helpers\Broadcaster;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\JobTrait;
-use App\Helpers\ModelTrait;
-use App\Models\Custodian;
-use App\Models\CustodianStudent;
-use App\Models\DepartmentUser;
-use App\Models\Grade;
-use App\Models\Group;
-use App\Models\Mobile;
-use App\Models\School;
-use App\Models\Squad;
-use App\Models\Student;
-use App\Models\User;
+use App\Helpers\{Broadcaster, HttpStatusCode, JobTrait, ModelTrait};
+use App\Models\{Custodian, CustodianStudent, DepartmentUser, Grade, Group, Mobile, School, Squad, Student, User};
 use Exception;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
+use Illuminate\{Bus\Queueable,
+    Contracts\Queue\ShouldQueue,
+    Foundation\Bus\Dispatchable,
+    Queue\InteractsWithQueue,
+    Queue\SerializesModels,
+    Support\Facades\DB,
+    Validation\Rule};
+use Pusher\PusherException;
 use Throwable;
 use Validator;
 
@@ -49,7 +38,7 @@ class ImportStudent implements ShouldQueue {
      *
      * @param array $data
      * @param integer $userId
-     * @throws \Pusher\PusherException
+     * @throws PusherException
      */
     function __construct(array $data, $userId) {
         
@@ -58,7 +47,8 @@ class ImportStudent implements ShouldQueue {
         $this->response = [
             'userId'     => $this->userId,
             'title'      => __('messages.student.title'),
-            'statusCode' => HttpStatusCode::INTERNAL_SERVER_ERROR,
+            'statusCode' => HttpStatusCode::OK,
+            'message'    => __('messages.student.import_completed')
         ];
         $this->broadcaster = new Broadcaster();
         
@@ -70,12 +60,24 @@ class ImportStudent implements ShouldQueue {
      */
     function handle() {
         
-        return $this->import($this, 'messages.student.title');
+        return $this->import($this, $this->response);
         
     }
     
     /**
-     * 检查每行数据 是否符合导入数据
+     * 任务异常处理
+     *
+     * @param Exception $exception
+     * @throws PusherException
+     */
+    function failed(Exception $exception) {
+        
+        $this->eHandler($exception, $this->response);
+        
+    }
+    
+    /**
+     * 验证导入数据
      *
      * @param array $data
      * @return array
@@ -169,15 +171,14 @@ class ImportStudent implements ShouldQueue {
                 foreach ($inserts as $insert) {
                     $relationship = str_replace(['，', '：'], [',', ':'], $insert['relationship']);
                     $relationships = explode(',', $relationship);
-                    $userid = uniqid('ptac_');
                     # 创建用户
                     $u = User::create([
-                        'username'   => $userid,
+                        'username'   => uniqid('ptac_'),
                         'group_id'   => Group::whereName('学生')->first()->id,
-                        'password'   => bcrypt('student8888'),
+                        'password'   => bcrypt('12345678'),
                         'realname'   => $insert['name'],
                         'gender'     => $insert['gender'] == '男' ? '1' : '0',
-                        'userid'     => $userid,
+                        'userid'     => uniqid('student_'),
                         'isleader'   => 0,
                         'enabled'    => 1,
                         'synced'     => 0,
@@ -203,15 +204,14 @@ class ImportStudent implements ShouldQueue {
                                 if (!empty($m)) { continue; }
                                 # 手机号码不存在时 增加监护人用户 如果存在则更新
                                 if (empty($m)) {
-                                    $userid = uniqid('ptac_');
                                     # 创建监护人用户
                                     $user = User::create([
-                                        'username'   => $userid,
-                                        'userid'     => $userid,
+                                        'username'   => uniqid('ptac_'),
                                         'group_id'   => Group::whereName('监护人')->first()->id,
                                         'password'   => bcrypt('12345678'),
                                         'realname'   => $paths[1],
                                         'gender'     => $paths[2] == '男' ? '1' : '0',
+                                        'userid'     => uniqid('custodian_'),
                                         'isleader'   => 0,
                                         'enabled'    => 1,
                                         'synced'     => 0,
@@ -313,8 +313,7 @@ class ImportStudent implements ShouldQueue {
                 }
             });
         } catch (Exception $e) {
-            $this->response['message'] = $e->getMessage();
-            $this->broadcaster->broadcast($this->response);
+            $this->eHandler($e, $this->response);
             throw $e;
         }
         
@@ -362,15 +361,14 @@ class ImportStudent implements ShouldQueue {
                                 $m = Mobile::whereMobile($paths[3])->first();
                                 # 手机号码不存在时 增加监护人用户 如果存在则更新
                                 if (empty($m)) {
-                                    $userid = uniqid('ptac_');
                                     # 创建监护人用户
                                     $user = User::create([
-                                        'username'   => $userid,
-                                        'userid'     => $userid,
+                                        'username'   => uniqid('custodian_'),
                                         'group_id'   => Group::whereName('监护人')->first()->id,
-                                        'password'   => bcrypt('12345678'),
+                                        'password'   => bcrypt('custodian8888'),
                                         'realname'   => $paths[1],
                                         'gender'     => $paths[2] == '男' ? '1' : '0',
+                                        'userid'     => uniqid('custodian_'),
                                         'isleader'   => 0,
                                         'enabled'    => 1,
                                         'synced'     => 0,
@@ -467,8 +465,7 @@ class ImportStudent implements ShouldQueue {
                 }
             });
         } catch (Exception $e) {
-            $this->response['message'] = $e->getMessage();
-            $this->broadcaster->broadcast($this->response);
+            $this->eHandler($e, $this->response);
             throw $e;
         }
         

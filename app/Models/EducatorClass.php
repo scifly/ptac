@@ -1,12 +1,11 @@
 <?php
 namespace App\Models;
 
+use Carbon\Carbon;
+use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Database\{Eloquent\Builder, Eloquent\Model, Eloquent\Relations\BelongsTo};
+use Illuminate\Support\{Facades\DB, Facades\Request};
 use Throwable;
 
 /**
@@ -16,8 +15,8 @@ use Throwable;
  * @property int $educator_id 教职员工ID
  * @property int $class_id 班级ID
  * @property int $subject_id 科目ID
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int $enabled 是否启用
  * @method static Builder|EducatorClass whereClassId($value)
  * @method static Builder|EducatorClass whereCreatedAt($value)
@@ -25,7 +24,7 @@ use Throwable;
  * @method static Builder|EducatorClass whereId($value)
  * @method static Builder|EducatorClass whereSubjectId($value)
  * @method static Builder|EducatorClass whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  * @property-read Educator $educator
  * @property-read Squad $squad
  * @property-read Subject $subject
