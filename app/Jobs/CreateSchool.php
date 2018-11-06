@@ -341,14 +341,15 @@ class CreateSchool implements ShouldQueue {
                     'tab_ids'    => $tabIds,
                     'action_ids' => $actionIds,
                 ]);
+                if ($this->userId) {
+                    $this->broadcaster->broadcast($this->response);
+                }
             });
         } catch (Exception $e) {
             $this->eHandler($e, $this->response);
             throw $e;
         }
-        if ($this->userId) {
-            $this->broadcaster->broadcast($this->response);
-        }
+        
         
     }
     

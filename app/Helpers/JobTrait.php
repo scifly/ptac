@@ -114,6 +114,7 @@ trait JobTrait {
      */
     function import($job, array $response) {
         
+        $broadcaster = new Broadcaster();
         list($inserts, $updates, $illegals) = $job->{'validate'}($job->data);
         if (empty($updates) && empty($inserts)) {
             # 数据格式不正确，中止任务
@@ -121,19 +122,22 @@ trait JobTrait {
             $response['message'] = __('messages.invalid_data_format');
         } else {
             try {
-                DB::transaction(function () use ($job, $inserts, $updates, $illegals, &$response) {
-                    $response['statusCode'] = HttpStatusCode::ACCEPTED;
-                    $response['message'] = !count($illegals)
-                        ? sprintf(
-                            __('messages.import_request_submitted'),
-                            count($inserts), count($updates)
-                        )
-                        : sprintf(
-                            __('messages.import_request_submitted') .
-                            __('messages.import_illegals'),
-                            count($inserts), count($updates), count($illegals)
-                        );
-                    (new Broadcaster)->broadcast($response);
+                DB::transaction(function () use ($job, $inserts, $updates, $illegals, &$response, $broadcaster) {
+                    $broadcaster->broadcast([
+                        'title' => $response['title'],
+                        'userId' => $job->{'userId'},
+                        'statusCode' => HttpStatusCode::ACCEPTED,
+                        'message' => !count($illegals)
+                            ? sprintf(
+                                __('messages.import_request_submitted'),
+                                count($inserts), count($updates)
+                            )
+                            : sprintf(
+                                __('messages.import_request_submitted') .
+                                __('messages.import_illegals'),
+                                count($inserts), count($updates), count($illegals)
+                            )
+                    ]);
                     # 插入数据
                     if (!empty($inserts)) { $job->{'insert'}($inserts); }
                     # 更新数据
@@ -143,13 +147,13 @@ trait JobTrait {
                         $job->{'excel'}($illegals, 'illegals', '错误数据', false);
                         $response['url'] = 'uploads/' . date('Y/m/d/') . 'illegals.xlsx';
                     }
-                    (new Broadcaster)->broadcast($response);
                 });
             } catch (Exception $e) {
                 $this->eHandler($e, $response);
                 throw $e;
             }
         }
+        $broadcaster->broadcast($response);
         
         return true;
         
@@ -274,12 +278,18 @@ trait JobTrait {
     private function operate($corpid, $secret, $data, $action) {
         
         # 角色为‘学生’的用户无需同步到企业微信
-        if ($data['position'] == '学生') return ['errcode' => 0, 'errmsg' => __('messages.ok')];
+        if ($data['position'] == '学生') {
+            return ['errcode' => 0, 'errmsg' => __('messages.ok')];
+        }
         # 获取access_token
         $token = Wechat::getAccessToken($corpid, $secret, true);
-        if ($token['errcode']) return $token;
+        if ($token['errcode']) {
+            return $token;
+        }
         $accessToken = $token['access_token'];
-        if ($action != 'delete') unset($data['corpIds']);
+        if ($action != 'delete') {
+            unset($data['corpIds']);
+        }
         $action .= 'User';
         $result = json_decode(Wechat::$action($accessToken, $action == 'deleteUser' ? $data['userid'] : $data));
         # 企业微信通讯录不存在指定的会员，则创建该会员
