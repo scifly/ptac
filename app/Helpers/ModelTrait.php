@@ -18,6 +18,7 @@ use App\Models\{CommType,
     Department,
     DepartmentUser};
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use ReflectionClass;
@@ -228,36 +229,35 @@ trait ModelTrait {
     function schoolIds($userId = null, $corpId = null) {
         
         $user = !$userId ? Auth::user() : User::find($userId);
+        $schools = Collect([]);
         switch ($user->role($user->id)) {
             case '运营':
-                return $corpId
-                    ? School::whereCorpId($corpId)->pluck('id')->toArray()
-                    : School::all()->pluck('id')->toArray();
+                $schools = School::all();
+                break;
             case '企业':
                 $departmentId = head($user->departments->pluck('id')->toArray());
                 $corp = Corp::whereDepartmentId($departmentId)->first();
-                
-                return $corp->schools->pluck('id')->toArray();
-            case '学校':
-                $departmentId = head($user->departments->pluck('id')->toArray());
-                
-                return [School::whereDepartmentId($departmentId)->first()->id];
+                $schools = $corp->schools;
+                break;
             case '监护人':
-                $departmentIds = $user->depts()->pluck('department_id')->toArray();
-                $classes = Squad::whereIn('department_id', $departmentIds)->get();
-                if (!isset($corpId)) return $schoolIds ?? [];
-                foreach ($classes as $class) {
-                    if ($class->grade->school->corp_id == $corpId) {
-                        $schoolIds[] = $class->grade->school_id;
-                    }
+                foreach ($user->custodian->students as $student) {
+                    $schoolIds[] = $student->squad->grade->school_id;
                 }
-                
-                return array_unique($schoolIds ?? []);
+                $schoolIds = array_unique($schoolIds ?? []);
+                $schools = School::whereIn('id', $schoolIds)->get();
+                break;
             case '学生':
-                return [$user->student->squad->grade->school_id];
-            default:
-                return [$user->educator->school_id];
+                $schools->push($user->student->squad->grade->school);
+                break;
+            default: # 学校、教职员工或其他校级角色
+                $schools->push($user->educator->school);
+                break;
         }
+        
+        return $schools->when(
+            $corpId, function (Collection $schools) use ($corpId) {
+            return $schools->where('corp_id', $corpId);
+        })->pluck('id')->toArray();
         
     }
     
@@ -275,7 +275,7 @@ trait ModelTrait {
         $grades = in_array($user->role($user->id), Constant::SUPER_ROLES)
             ? School::find($schoolId)->grades
             : Grade::whereIn('department_id', $this->departmentIds($user->id, $schoolId))->get();
-
+        
         return $grades->isEmpty() ? [0] : $grades->pluck('id')->toArray();
         
     }
@@ -317,6 +317,7 @@ trait ModelTrait {
             $examIds = School::find($schoolId)->exams->filter(
                 function (Exam $exam) use ($classIds) {
                     $class_ids = explode(',', $exam->class_ids);
+                    
                     return !empty(array_intersect($classIds, $class_ids));
                 }
             )->pluck('id')->toArray();

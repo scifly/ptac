@@ -89,6 +89,22 @@ class Student extends Model {
     function squad() { return $this->belongsTo('App\Models\Squad', 'class_id', 'id'); }
     
     /**
+     * 返回指定学生所属的年级对象
+     *
+     * @param $id
+     * @return Grade
+     */
+    function grade($id) { return $this->find($id)->squad->grade; }
+    
+    /**
+     * 返回指定学生所属的学校对象
+     *
+     * @param $id
+     * @return School
+     */
+    function school($id) { return $this->find($id)->squad->grade->school; }
+    
+    /**
      * 获取指定学生的所有监护人对象
      *
      * @return BelongsToMany
