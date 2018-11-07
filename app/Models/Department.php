@@ -275,7 +275,7 @@ class Department extends Model {
                 ->get();
             if (!empty($users)) {
                 (new DepartmentUser())->storeByDepartmentId(
-                    $department->id, $users->pluck('user.id')
+                    $department->id, $users->pluck('user.id')->toArray()
                 );
             }
         }
