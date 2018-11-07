@@ -116,7 +116,7 @@ class Controller extends BaseController {
                 $params['breadcrumb'] = $action->name;
                 
                 return view('layouts.web', [
-                    'menu'       => $menu->menuHtml($menu->rootMenuId()),
+                    'menu'       => $menu->htmlTree($menu->rootId()),
                     'tabs'       => [],
                     'content'    => view($view, $params)->render(),
                     'menuId'     => session('menuId'),

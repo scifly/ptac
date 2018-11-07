@@ -66,7 +66,7 @@ class SendMessageApi implements ShouldQueue {
                 $school = School::find($this->schoolId);
                 $departmentIds = array_merge(
                     [$school->department_id],
-                    $department->subDepartmentIds($school->department_id)
+                    $department->subIds($school->department_id)
                 );
                 $userIds = array_unique(
                     DepartmentUser::whereIn('department_id', $departmentIds)->pluck('user_id')->toArray()

@@ -56,11 +56,11 @@ class CheckRole {
             return $next($request);
         }
     
-        $rootMenuId = $this->menu->rootMenuId();
+        $rootMenuId = $this->menu->rootId();
         # 菜单权限判断
         if (stripos($route, 'pages') > -1) {
             if (in_array($role, ['企业', '学校'])) {
-                $menuIds = $this->menu->subMenuIds($rootMenuId);
+                $menuIds = $this->menu->subIds($rootMenuId);
                 $abort = !in_array($menuId, $menuIds) ?? false;
             } else {
                 $groupMenu = GroupMenu::whereMenuId($menuId)

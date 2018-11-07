@@ -322,7 +322,7 @@ class School extends Model {
             ],
         ];
         # 仅在企业级显示学校列表
-        $rootMenuId = (new Menu)->rootMenuId(true);
+        $rootMenuId = (new Menu)->rootId(true);
         $condition = 'Corp.id = ' . Corp::whereMenuId($rootMenuId)->first()->id;
         
         return Datatable::simple(
@@ -345,8 +345,8 @@ class School extends Model {
             DB::transaction(function () use ($request, &$school) {
                 # 创建学校、对应的部门和菜单
                 $school = $this->create($request->all());
-                $department = (new Department)->storeDepartment($school, 'corp');
-                $menu = (new Menu)->storeMenu($school, 'corp');
+                $department = (new Department)->stow($school, 'corp');
+                $menu = (new Menu)->stow($school, 'corp');
                 # 更新学校的部门id和菜单id
                 $school->update([
                     'department_id' => $department->id,
@@ -388,8 +388,8 @@ class School extends Model {
                 );
                 if (!$corpChanged) {
                     $school->update($request->all());
-                    (new Department)->modifyDepartment($school, 'corp');
-                    (new Menu)->modifyMenu($school, 'corp');
+                    (new Department)->alter($school, 'corp');
+                    (new Menu)->alter($school, 'corp');
                 } else {
                     $school = $this->create($request->except('id'));
                     $this->remove($id);

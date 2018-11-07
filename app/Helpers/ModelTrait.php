@@ -377,7 +377,7 @@ trait ModelTrait {
      */
     function userIds($departmentId, $groupId = null): array {
         
-        $departmentIds = [$departmentId] + (new Department)->subDepartmentIds($departmentId);
+        $departmentIds = [$departmentId] + (new Department)->subIds($departmentId);
         $userIds = DepartmentUser::whereIn('department_id', $departmentIds)->pluck('user_id')->toArray();
         
         return !$groupId
@@ -408,7 +408,7 @@ trait ModelTrait {
             return array_unique(
                 array_merge(
                     $departmentIds,
-                    $department->subDepartmentIds($department->id)
+                    $department->subIds($department->id)
                 )
             );
         }
@@ -416,7 +416,7 @@ trait ModelTrait {
         foreach ($departments as $d) {
             $departmentIds[] = $d->id;
             $departmentIds = array_merge(
-                $d->subDepartmentIds($d->id),
+                $d->subIds($d->id),
                 $departmentIds
             );
         }
@@ -441,13 +441,13 @@ trait ModelTrait {
             case '企业':
                 $departmentId = head($user->departments->pluck('id')->toArray());
                 $corp = Corp::whereDepartmentId($departmentId)->first();
-                $menuIds = $menu->subMenuIds($corp->menu_id);
+                $menuIds = $menu->subIds($corp->menu_id);
                 
                 return $menuIds;
             case '学校':
                 $departmentId = head($user->departments->pluck('id')->toArray());
                 $school = School::whereDepartmentId($departmentId)->first();
-                $menuIds = $menu->subMenuIds($school->menu_id);
+                $menuIds = $menu->subIds($school->menu_id);
                 
                 return $menuIds;
             default:
@@ -633,7 +633,7 @@ trait ModelTrait {
             $school = School::find($this->schoolId());
             $departmentId = $school->department_id;
             $departmentIds = array_merge(
-                [$departmentId], $school->department->subDepartmentIds($departmentId)
+                [$departmentId], $school->department->subIds($departmentId)
             );
         } else {
             $departmentIds = $this->departmentIds(Auth::id());

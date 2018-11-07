@@ -201,7 +201,7 @@ class Grade extends Model {
             DB::transaction(function () use ($request, &$grade) {
                 # 创建年级及对应的部门
                 $grade = $this->create($request->all());
-                $department = (new Department)->storeDepartment($grade, 'school');
+                $department = (new Department)->stow($grade, 'school');
                 # 更新年级的部门id
                 $grade->update(['department_id' => $department->id]);
             });
@@ -228,7 +228,7 @@ class Grade extends Model {
             DB::transaction(function () use ($request, $id, &$grade) {
                 $grade = $this->find($id);
                 $grade->update($request->all());
-                (new Department)->modifyDepartment($this->find($id));
+                (new Department)->alter($this->find($id));
             });
         } catch (Exception $e) {
             throw $e;

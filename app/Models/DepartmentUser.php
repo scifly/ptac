@@ -6,10 +6,8 @@ use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\{Builder, Model};
+use Illuminate\Support\Facades\{Auth, DB};
 use Throwable;
 
 /**
@@ -50,11 +48,11 @@ class DepartmentUser extends Model {
         
         try {
             DB::transaction(function () use ($userId, $departmentIds, $custodian) {
-                $schoolDepartmentId = School::find($this->schoolId())->department_id;
-                $schoolGroupId = Group::whereName('学校')->first()->id;
-                $records = [];
+                $sDepartmentId = School::find($this->schoolId())->department_id;
+                $sGroupId = Group::whereName('学校')->first()->id;
                 $enabled = $custodian ? Constant::DISABLED : Constant::ENABLED;
                 $this->where(['user_id' => $userId, 'enabled' => $enabled])->delete();
+                $records = [];
                 $record = ['user_id' => $userId, 'enabled' => $enabled];
                 $departmentIds = array_unique($departmentIds);
                 foreach ($departmentIds as $departmentId) {
@@ -62,10 +60,10 @@ class DepartmentUser extends Model {
                     $records[] = $record;
                 }
                 if (
-                    User::find($userId)->group_id == $schoolGroupId &&
-                    !in_array($schoolDepartmentId, $departmentIds)
+                    User::find($userId)->group_id == $sGroupId &&
+                    !in_array($sDepartmentId, $departmentIds)
                 ) {
-                    $record['department_id'] = $schoolDepartmentId;
+                    $record['department_id'] = $sDepartmentId;
                     $records[] = $record;
                 }
                 $this->insert($records);

@@ -55,7 +55,7 @@ class CorpPolicy {
                     return false;
                 }
                 # userCorp - the Corp to which the user belongs
-                $rootMenuId = $this->menu->rootMenuId();
+                $rootMenuId = $this->menu->rootId();
                 $userCorp = Corp::whereMenuId($rootMenuId)->first();
                 if ($paths[1] == 'edit') {
                     return $userCorp->id == $corp->id;

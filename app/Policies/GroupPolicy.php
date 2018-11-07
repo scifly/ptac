@@ -60,7 +60,7 @@ class GroupPolicy {
             $tabIds = explode(',', Request::input('tab_ids'));
             $actionIds = explode(',', Request::input('action_ids'));
             $schoolId = Request::input('school_id');
-            $allowedMenuIds = $this->menu->subMenuIds(School::find($schoolId)->menu_id);
+            $allowedMenuIds = $this->menu->subIds(School::find($schoolId)->menu_id);
             $isMenuAllowed = empty(array_diff($menuIds, $allowedMenuIds));
             $allowedTabIds = Tab::whereIn('group_id', [0, Group::whereName('学校')->first()->id])
                 ->pluck('id')->toArray();

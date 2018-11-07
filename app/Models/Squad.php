@@ -189,7 +189,7 @@ class Squad extends Model {
             DB::transaction(function () use ($request, &$class) {
                 # 创建班级、对应的部门
                 $class = $this->create($request->all());
-                $department = (new Department)->storeDepartment($class, 'grade');
+                $department = (new Department)->stow($class, 'grade');
                 # 更新“班级”的部门id
                 $class->update([
                     'department_id' => $department->id,
@@ -221,7 +221,7 @@ class Squad extends Model {
             DB::transaction(function () use ($request, $id, &$class) {
                 $class = $this->find($id);
                 $class->update($request->all());
-                (new Department)->modifyDepartment($this->find($id));
+                (new Department)->alter($this->find($id));
             });
         } catch (Exception $e) {
             throw $e;

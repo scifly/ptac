@@ -51,7 +51,7 @@ class HomeController extends Controller {
         
         $menuId = Request::query('menuId');
         if (!$menuId) {
-            $menuId = Menu::whereParentId($this->menu->rootMenuId())
+            $menuId = Menu::whereParentId($this->menu->rootId())
                 ->whereIn('uri', ['home', '/'])
                 ->first()->id;
             session(['menuId' => $menuId]);
@@ -78,7 +78,7 @@ class HomeController extends Controller {
         }
         
         return view('layouts.web', [
-            'menu'       => $this->menu->menuHtml($this->menu->rootMenuId()),
+            'menu'       => $this->menu->htmlTree($this->menu->rootId()),
             'menuId'     => $menuId,
             'content'    => view('home.home'),
             'department' => $department,
@@ -154,7 +154,7 @@ class HomeController extends Controller {
         }
         
         return view('layouts.web', [
-            'menu'       => $this->menu->menuHtml($this->menu->rootMenuId()),
+            'menu'       => $this->menu->htmlTree($this->menu->rootId()),
             'tabs'       => $tabArray,
             'menuId'     => $id,
             'department' => $this->menu->department($id),

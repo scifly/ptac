@@ -201,10 +201,10 @@ class Corp extends Model {
             DB::transaction(function () use ($request, &$corp) {
                 # 创建企业微信、对应部门及菜单
                 $corp = $this->create($request->all());
-                $department = (new Department)->storeDepartment(
+                $department = (new Department)->stow(
                     $corp, 'company'
                 );
-                $menu = (new Menu)->storeMenu(
+                $menu = (new Menu)->stow(
                     $corp, 'company'
                 );
                 # 更新“企业微信”的部门id和菜单id
@@ -236,8 +236,8 @@ class Corp extends Model {
             DB::transaction(function () use ($request, $id, &$corp) {
                 $corp = $this->find($id);
                 $corp->update($request->all());
-                (new Department())->modifyDepartment($corp, 'company');
-                (new Menu())->modifyMenu($corp, 'company');
+                (new Department())->alter($corp, 'company');
+                (new Menu())->alter($corp, 'company');
             });
         } catch (Exception $e) {
             throw $e;

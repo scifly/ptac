@@ -44,7 +44,7 @@ class MethodPolicy {
             return $this->action($user);
         }
 
-        $rootMenuId = $this->menu->rootMenuId();
+        $rootMenuId = $this->menu->rootId();
         
         if ($role == '企业' && stripos($route->uri, 'corps') > -1) {
             $corpId = Corp::whereMenuId($rootMenuId)->first()->id;

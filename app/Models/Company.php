@@ -130,8 +130,8 @@ class Company extends Model {
             DB::transaction(function () use ($request, &$company) {
                 # 创建运营者、对应部门及菜单
                 $company = $this->create($request->all());
-                $department = (new Department)->storeDepartment($company);
-                $menu = (new Menu)->storeMenu($company);
+                $department = (new Department)->stow($company);
+                $menu = (new Menu)->stow($company);
                 # 更新“运营者”的部门id和菜单id
                 $company->update([
                     'department_id' => $department->id,
@@ -161,8 +161,8 @@ class Company extends Model {
             DB::transaction(function () use ($request, $id, &$company) {
                 $company = $this->find($id);
                 $company->update($request->all());
-                (new Department)->modifyDepartment($company);
-                (new Menu)->modifyMenu($company);
+                (new Department)->alter($company);
+                (new Menu)->alter($company);
             });
         } catch (Exception $e) {
             throw $e;

@@ -287,7 +287,7 @@ class User extends Authenticatable {
             function ($name) { return Group::whereName($name)->first()->id; },
             ['运营', '企业', '学校']
         );
-        $rootMenu = Menu::find((new Menu)->rootMenuId(true));
+        $rootMenu = Menu::find((new Menu)->rootId(true));
         $menuType = $rootMenu->menuType->name;
         switch ($menuType) {
             case '根':
@@ -845,7 +845,7 @@ class User extends Authenticatable {
         foreach ($this->depts($id) as $d) {
             $departmentIds[] = $d->id;
             $departmentIds = array_merge(
-                $departmentIds, $d->subDepartmentIds($d->id)
+                $departmentIds, $d->subIds($d->id)
             );
         }
         
@@ -981,7 +981,7 @@ class User extends Authenticatable {
         }
     
         $operator = $departmentId = $corps = $schools = null;
-        $rootMenu = Menu::find((new Menu)->rootMenuId(true));
+        $rootMenu = Menu::find((new Menu)->rootId(true));
         if (Request::route('id')) {
             $operator = $this->find(Request::route('id'));
             $departmentId = $this->head($operator);

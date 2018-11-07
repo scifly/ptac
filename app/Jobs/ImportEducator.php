@@ -125,7 +125,7 @@ class ImportEducator implements ShouldQueue {
             $departments = explode(',', $user['departments']);
             $schoolDepartmentIds = array_merge(
                 [$school->department_id],
-                (new Department)->subDepartmentIds($school->department_id)
+                (new Department)->subIds($school->department_id)
             );
             $isDepartmentValid = true;
             foreach ($departments as $d) {
@@ -180,7 +180,7 @@ class ImportEducator implements ShouldQueue {
                 $schoolDepartmentId = $school->department_id;
                 $schoolDepartmentIds = array_merge(
                     [$schoolDepartmentId],
-                    (new Department())->subDepartmentIds($schoolDepartmentId)
+                    (new Department())->subIds($schoolDepartmentId)
                 );
                 $group = Group::whereName('教职员工')->where('school_id', $schoolId)->first();
                 throw_if(!$group, new NotFoundHttpException(__('messages.group.not_found')));
@@ -255,7 +255,7 @@ class ImportEducator implements ShouldQueue {
                 $schoolDepartmentId = $school->department_id;
                 $schoolDepartmentIds = array_merge(
                     [$schoolDepartmentId],
-                    (new Department)->subDepartmentIds($schoolDepartmentId)
+                    (new Department)->subIds($schoolDepartmentId)
                 );
                 $group = Group::whereName('教职员工')->where('school_id', $schoolId)->first();
                 throw_if(!$group, new NotFoundHttpException(__('messages.group.not_found')));

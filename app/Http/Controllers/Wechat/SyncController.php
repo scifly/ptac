@@ -390,7 +390,7 @@ class SyncController extends Controller {
         foreach ($this->schoolDepartmentIds as $schoolDepartmentId) {
             $schoolDepartmentIds = array_merge(
                 $schoolDepartmentId,
-                $department->subDepartmentIds($schoolDepartmentId)
+                $department->subIds($schoolDepartmentId)
             );
             $diffs = array_diff($departmentIds, $schoolDepartmentIds);
             if (empty($diffs)) {

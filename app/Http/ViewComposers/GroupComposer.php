@@ -30,7 +30,7 @@ class GroupComposer {
             ->where('category', 0)->get();
         $schools = [];
         $menu = new Menu();
-        $rootMenuId = $menu->rootMenuId(true);
+        $rootMenuId = $menu->rootId(true);
         switch (Menu::find($rootMenuId)->menuType->name) {
             case '根':
                 $schools = School::whereEnabled(1)

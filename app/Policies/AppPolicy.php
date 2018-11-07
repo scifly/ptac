@@ -52,7 +52,7 @@ class AppPolicy {
                 return true;
             case '企业':
                 if ($action != 'index') {
-                    $rootMenuId = $this->menu->rootMenuId();
+                    $rootMenuId = $this->menu->rootId();
                     $corp = Corp::whereMenuId($rootMenuId)->first();
                     return $corp->id == $app->corp_id;
                 }
