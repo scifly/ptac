@@ -2,21 +2,17 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
-use App\Http\Requests\SquadRequest;
+use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\{Builder,
+    Collection,
+    Model,
+    Relations\BelongsTo,
+    Relations\BelongsToMany,
+    Relations\HasMany};
+use Illuminate\Support\Facades\{Auth, DB};
 use Throwable;
 
 /**
@@ -124,22 +120,8 @@ class Squad extends Model {
             [
                 'db'        => 'Squad.educator_ids', 'dt' => 3,
                 'formatter' => function ($d) {
-                    if (empty($d)) {
-                        return '';
-                    }
-                    $educatorIds = explode(',', $d);
-                    $educators = [];
-                    foreach ($educatorIds as $id) {
-                        $educator = Educator::find($id);
-                        if ($educator) {
-                            if ($educator->user) {
-                                $educators[] = $educator->user->realname;
-                            }
-                        }
-                        
-                    }
-                    
-                    return implode(', ', $educators);
+                    return implode(', ', Educator::whereIn('id', explode(',', $d))
+                        ->with('user')->get()->pluck('user.realname')->toArray());
                 },
             ],
             ['db' => 'Squad.created_at', 'dt' => 4],
@@ -178,56 +160,53 @@ class Squad extends Model {
     /**
      * 保存班级
      *
-     * @param SquadRequest $request
+     * @param array $data
      * @return bool
      * @throws Throwable
      */
-    function store(SquadRequest $request) {
+    function store(array $data) {
         
-        $class = null;
         try {
-            DB::transaction(function () use ($request, &$class) {
+            DB::transaction(function () use ($data) {
                 # 创建班级、对应的部门
-                $class = $this->create($request->all());
+                $class = $this->create($data);
                 $department = (new Department)->stow($class, 'grade');
                 # 更新“班级”的部门id
-                $class->update([
-                    'department_id' => $department->id,
-                ]);
+                $class->update(['department_id' => $department->id]);
             });
         } catch (Exception $e) {
             throw $e;
         }
         
-        return $class;
+        return true;
         
     }
     
     /**
      * 更新班级
      *
-     * @param SquadRequest $request
+     * @param array $data
      * @param $id
      * @return bool
      * @throws Throwable
      */
-    function modify(SquadRequest $request, $id = null) {
+    function modify(array $data, $id = null) {
         
-        if (!$id) {
-            return $this->batch($this);
-        }
-        $class = null;
         try {
-            DB::transaction(function () use ($request, $id, &$class) {
-                $class = $this->find($id);
-                $class->update($request->all());
-                (new Department)->alter($this->find($id));
+            DB::transaction(function () use ($data, $id) {
+                if ($id) {
+                    $class = $this->find($id);
+                    $class->update($data);
+                    (new Department)->alter($this->find($id));
+                } else {
+                    $this->batch($this);
+                }
             });
         } catch (Exception $e) {
             throw $e;
         }
         
-        return $class ? $this->find($id) : null;
+        return true;
         
     }
     

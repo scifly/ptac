@@ -93,7 +93,7 @@ class StudentController extends Controller {
             return $this->student->classList();
         }
         $student = $this->student->find($id);
-        $student->grade_id = Squad::find($student->class_id)->grade_id;
+        $student->{'grade_id'} = Squad::find($student->class_id)->grade_id;
         
         return $this->output([
             'student' => $student,

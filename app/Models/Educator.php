@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\{Builder,
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\{Auth, DB, Request, Storage};
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use ReflectionException;
 use Throwable;
 
 /**
@@ -227,7 +226,8 @@ class Educator extends Model {
         ];
         
         return Datatable::simple(
-            $this->getModel(), $columns, $joins, $this->contactCondition()
+            $this->getModel(), $columns, $joins,
+            'Educator.user_id IN (' . $this->visibleUserIds() . ')'
         );
         
     }
@@ -264,7 +264,7 @@ class Educator extends Model {
                     (new CustodianStudent)->storeByCustodianId($custodian->id, $data['relationships']);
                 }
                 # 创建企业号成员
-                $user->createWechatUser($user->id);
+                $user->sync($user->id, 'create');
             });
         } catch (Exception $e) {
             throw $e;
@@ -310,7 +310,7 @@ class Educator extends Model {
                     if ($custodian) (new Custodian)->purge($custodian->id);
                 }
                 # 更新企业号成员
-                (new User)->UpdateWechatUser($educator->user_id);
+                (new User)->sync($educator->user_id, 'update');
             });
         } catch (Exception $e) {
             throw $e;
@@ -358,11 +358,10 @@ class Educator extends Model {
      * @param $id
      * @return bool
      * @throws Throwable
-     * @throws ReflectionException
      */
     function remove($id = null) {
         
-        return (new User)->removeContact($this, $id);
+        return (new User)->clean($this, $id);
         
     }
     
@@ -389,7 +388,7 @@ class Educator extends Model {
                 (new Grade)->removeEducator($id);
                 (new Squad)->removeEducator($id);
                 if ($educator->singular) {
-                    (new User)->remove($educator->user_id, $broadcast);
+                    (new User)->remove($educator->user_id);
                 } else {
                     (new User)->find($educator->user_id)->update([
                         'group_id' => Group::whereName('监护人')->first()->id

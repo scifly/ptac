@@ -2,18 +2,13 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Http\Requests\WsmArticleRequest;
+use App\Helpers\{HttpStatusCode, ModelTrait};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\BelongsTo};
+use Illuminate\Support\Facades\{DB, Request};
 use Illuminate\View\View;
 use Throwable;
 
@@ -144,33 +139,25 @@ class WsmArticle extends Model {
     /**
      * 保存新建的网站文章
      *
-     * @param WsmArticleRequest $request
+     * @param array $data
      * @return bool|mixed
-     * @throws Exception
-     * @throws Throwable
      */
-    function store(WsmArticleRequest $request) {
+    function store(array $data) {
     
-        $wsma = $this->create($request->all());
+        return $this->create($data) ? true : false;
         
-        return  $wsma ? true : false;
-    
     }
     
     /**
      * 更新网站文章
      *
-     * @param WsmArticleRequest $request
+     * @param array $data
      * @param $id
      * @return bool|mixed
-     * @throws Exception
-     * @throws Throwable
      */
-    function modify(WsmArticleRequest $request, $id) {
+    function modify(array $data, $id) {
     
-        return $this->find($id)->update(
-            $request->all()
-        );
+        return $this->find($id)->update($data);
     
     }
     

@@ -6,7 +6,6 @@ use App\Helpers\Constant;
 use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
-use App\Http\Requests\WapSiteRequest;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -169,17 +168,13 @@ class WapSite extends Model {
     /**
      * 更新微网站
      *
-     * @param WapSiteRequest $request
+     * @param array $data
      * @param $id
      * @return bool|mixed
-     * @throws Exception
-     * @throws Throwable
      */
-    function modify(WapSiteRequest $request, $id) {
+    function modify(array $data, $id) {
     
-        return $this->find($id)->update(
-            $request->all()
-        );
+        return $this->find($id)->update($data);
         
     }
     

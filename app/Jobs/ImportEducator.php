@@ -226,7 +226,7 @@ class ImportEducator implements ShouldQueue {
                     # 更新绑定关系
                     $this->binding($insert, $educator);
                     # 创建企业号成员
-                    $user->createWechatUser($user->id, false);
+                    $user->sync($user->id, 'create', false);
                 }
             });
         } catch (Exception $e) {
@@ -289,7 +289,7 @@ class ImportEducator implements ShouldQueue {
                     # 更新绑定关系
                     $this->binding($update, $educator);
                     # 更新企业号成员
-                    $user->updateWechatUser($user->id, false);
+                    $user->sync($user->id, 'update', false);
                 }
             });
         } catch (Exception $e) {
@@ -390,7 +390,7 @@ class ImportEducator implements ShouldQueue {
                 'department_id' => $departmentId,
                 'enabled'       => 1,
             ]);
-            $user->updateWechatUser($user->id);
+            $user->sync($user->id, 'update');
         }
         
     }

@@ -20,7 +20,6 @@ use Illuminate\Notifications\{DatabaseNotification, DatabaseNotificationCollecti
 use Illuminate\Support\Facades\{Auth, DB, Hash, Request};
 use Laravel\Passport\{Client, HasApiTokens, Token};
 use ReflectionClass;
-use ReflectionException;
 use Throwable;
 
 /**
@@ -93,7 +92,9 @@ class User extends Authenticatable {
     use HasApiTokens, Notifiable, ModelTrait;
     
     const SELECT_HTML = '<select class="form-control select2" style="width: 100%;" id="ID" name="ID">';
+    
     protected $table = 'users';
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -107,6 +108,7 @@ class User extends Authenticatable {
         'order', 'mobile', 'enabled', 'synced',
         'subscribed',
     ];
+    
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -114,6 +116,7 @@ class User extends Authenticatable {
      */
     protected $hidden = ['password', 'remember_token'];
     
+    /** properties -------------------------------------------------------------------------------------------------- */
     /**
      * 返回指定用户所属的角色对象
      *
@@ -221,6 +224,7 @@ class User extends Authenticatable {
         
     }
     
+    /** crud -------------------------------------------------------------------------------------------------------- */
     /**
      * 用户列表
      *
@@ -334,7 +338,7 @@ class User extends Authenticatable {
      *
      * @return array
      */
-    function partnerIndex() {
+    function partners() {
         
         $columns = [
             ['db' => 'User.id', 'dt' => 0],
@@ -382,21 +386,15 @@ class User extends Authenticatable {
         
         try {
             DB::transaction(function () use ($data) {
-                # 创建用户
                 $user = $this->create($data['user']);
                 # 如果角色为校级管理员，则同时创建教职员工记录
                 if (!in_array($this->role($user->id), Constant::NON_EDUCATOR)) {
                     $data['user_id'] = $user->id;
                     Educator::create($data);
                 }
-                # 保存手机号码
                 (new Mobile)->store($data['mobile'], $user->id);
-                # 保存用户&部门绑定关系
-                (new DepartmentUser)->storeByUserId(
-                    $user->id, [$this->departmentId($data)]
-                );
-                # 创建企业号成员
-                $this->createWechatUser($user->id);
+                (new DepartmentUser)->storeByUserId($user->id, [$this->departmentId($data)]);
+                $this->sync($user->id, 'create');
             });
         } catch (Exception $e) {
             throw $e;
@@ -407,18 +405,269 @@ class User extends Authenticatable {
     }
     
     /**
-     * 创建企业号会员
+     * 保存合作伙伴
+     *
+     * @param array $data
+     * @return bool
+     * @throws Throwable
+     */
+    function pStore(array $data) {
+        
+        try {
+            DB::transaction(function () use ($data) {
+                $partner = $this->create($data);
+                MessageType::create([
+                    'name'    => $partner->realname,
+                    'user_id' => $partner->id,
+                    'remark'  => $partner->realname . '接口消息',
+                    'enabled' => 0 # 不会显示在消息中心“消息类型”下拉列表中
+                ]);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
+    /**
+     * 更新超级用户
+     *
+     * @param array $data
+     * @param $id
+     * @return bool
+     * @throws Throwable
+     */
+    function modify(array $data, $id = null) {
+        
+        try {
+            DB::transaction(function () use ($data, $id) {
+                if ($id) {
+                    $user = $this->find($id);
+                    $user->update($data);
+                    $role = isset($data['group_id']) ? Group::find($data['group_id'])->name : null;
+                    !($role && $role == '学校') ?: $user->educator->update($data['educator']);
+                    if (isset($data['enabled'])) {
+                        (new Mobile)->store($data['mobile'], $user->id);
+                        (new DepartmentUser)->store($user->id, $this->departmentId($data));
+                    } else {
+                        Mobile::where(['user_id' => $user->id, 'isdefault' => 1])
+                            ->update(['mobile' => $data['mobile']]);
+                    }
+                } else {
+                    # 批量更新(启用或禁用)
+                    $this->batch($this);
+                }
+                # 同步企业微信会员
+                $userIds = $id ? [$id] : array_values(Request::input('ids'));
+                $broadcast = sizeof($userIds) == 1;
+                foreach ($userIds as $userId) {
+                    $this->sync($userId, 'update', $broadcast);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
+    /**
+     * 更新合作伙伴
+     *
+     * @param array $data
+     * @param null $id
+     * @return bool
+     * @throws Throwable
+     */
+    function pModify(array $data, $id = null) {
+        
+        try {
+            DB::transaction(function () use ($data, $id) {
+                if ($id) {
+                    $this->find($id)->update($data);
+                    $messageType = MessageType::whereUserId($id)->first();
+                    $messageType->update([
+                        'name'    => $data['realname'],
+                        'remark'  => $data['realname'] . '接口消息',
+                        'enabled' => 0,
+                    ]);
+                } else {
+                    $this->batch($this);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
+    /**
+     * 重置密码
+     *
+     * @return bool
+     */
+    function reset() {
+        
+        $user = $this->find(Auth::id());
+        abort_if(
+            !Hash::check(Request::input('old_password'), $user->password),
+            HttpStatusCode::BAD_REQUEST,
+            __('messages.bad_request')
+        );
+        
+        return $user->update([
+            'password' => bcrypt(Request::input('password')),
+        ]);
+        
+    }
+    
+    /**
+     * 删除用户
      *
      * @param $id
      * @param bool $broadcast
      * @return bool
+     * @throws Throwable
      */
-    function createWechatUser($id, $broadcast = true) {
+    function remove($id = null, $broadcast = null) {
         
-        return $this->sync($id, 'create', $broadcast);
+        try {
+            DB::transaction(function () use ($id, $broadcast) {
+                $userIds = $id ? [$id] : array_values(Request::input('ids'));
+                $broadcast = $broadcast ?? sizeof($userIds) == 1;
+                foreach ($userIds as $userId) $this->purge($userId, $broadcast);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
         
     }
     
+    /**
+     * 删除指定用户的所有数据
+     *
+     * @param $id
+     * @param bool $broadcast - 是否发送广播消息，默认情况下发送，如果是批量操作则不发送
+     * @return bool
+     * @throws Throwable
+     */
+    function purge($id, $broadcast = true): bool {
+        
+        try {
+            DB::transaction(function () use ($id, $broadcast) {
+                $user = $this->find($id);
+                $this->sync($id, 'delete', $broadcast);
+                DepartmentUser::whereUserId($id)->delete();
+                TagUser::whereUserId($id)->delete();
+                Tag::whereUserId($id)->delete();
+                Mobile::whereUserId($id)->delete();
+                (new Order)->removeUser($id);
+                PollQuestionnaire::whereUserId($id)->update(['user_id' => 0]);
+                PollQuestionnaireAnswer::whereUserId($id)->delete();
+                PollQuestionnaireParticipant::whereUserId($id)->delete();
+                (new ProcedureStep)->removeUser($id);
+                (new ProcedureLog)->removeUser($id);
+                (new Event)->removeUser($id);
+                (new Message)->removeUser($id);
+                MessageReply::whereUserId($id)->delete();
+                $user->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
+    /**
+     * 删除合作伙伴
+     *
+     * @param null $id
+     * @return bool
+     * @throws Throwable
+     */
+    function pRemove($id = null) {
+        
+        try {
+            DB::transaction(function () use ($id) {
+                $userIds = $id ? [$id] : array_values(Request::input('ids'));
+                foreach ($userIds as $userId) $this->pPurge($userId);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
+    /**
+     * 删除指定合作伙伴的所有数据
+     *
+     * @param $id
+     * @return bool
+     * @throws Throwable
+     */
+    function pPurge($id) {
+    
+        try {
+            DB::transaction(function () use ($id) {
+                $messageType = MessageType::whereUserId($id)->first();
+                $messages = Message::whereMessageTypeId($messageType->id)->get();
+                !$messages->count() ?: Message::whereMessageTypeId($messageType->id)->update(['message_type_id' => 0]);
+                $messageType->delete();
+                $this->find($id)->delete();
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+    
+        return true;
+        
+    }
+    
+    /**
+     * 删除联系人(学生、监护人、教职员工）及所有相关数据
+     *
+     * @param Model $contact
+     * @param null $id
+     * @return bool
+     * @throws Throwable
+     */
+    function clean(Model $contact, $id = null) {
+        
+        try {
+            DB::transaction(function () use ($contact, $id) {
+                $ids = $id ? [$id] : Request::input('ids');
+                $broadcast = sizeof($ids) == 1;
+                $type = lcfirst((new ReflectionClass($contact))->getShortName());
+                abort_if(
+                    !empty($ids) && empty(array_intersect(
+                        array_values($ids),
+                        array_map('strval', $this->contactIds($type))
+                    )),
+                    HttpStatusCode::UNAUTHORIZED,
+                    __('messages.unauthorized')
+                );
+                foreach ($ids as $id) $contact->{'purge'}($id, $broadcast);
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
+        
+        return true;
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
     /**
      * 同步企业微信会员
      *
@@ -471,8 +720,7 @@ class User extends Authenticatable {
             $remark = '';
             if ($user->student) {
                 $remark = $user->student->oncampus;
-            }
-            if ($user->custodian) {
+            } elseif ($user->custodian) {
                 $students = $user->custodian->students;
                 $remarks = [];
                 foreach ($students as $student) {
@@ -506,350 +754,6 @@ class User extends Authenticatable {
         SyncMember::dispatch($data, $broadcast ? Auth::id() : null, $action);
         
         return true;
-        
-    }
-    
-    /**
-     * 保存合作伙伴
-     *
-     * @param array $data
-     * @return bool
-     * @throws Throwable
-     */
-    function partnerStore(array $data) {
-        
-        try {
-            DB::transaction(function () use ($data) {
-                $partner = $this->create($data);
-                MessageType::create([
-                    'name'    => $partner->realname,
-                    'user_id' => $partner->id,
-                    'remark'  => $partner->realname . '接口消息',
-                    'enabled' => 0 # 不会显示在消息中心“消息类型”下拉列表中
-                ]);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    
-    /**
-     * 更新超级用户
-     *
-     * @param array $data
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function modify(array $data, $id = null) {
-        
-        if (!$id) {
-            $ids = Request::input('ids');
-            foreach ($ids as $id) {
-                $this->updateWechatUser($id, false);
-            }
-            
-            return $this->batch($this);
-        }
-        try {
-            DB::transaction(function () use ($data, $id) {
-                $user = $this->find($id);
-                $user->update($data);
-                if (Group::find($data['group_id'])->name == '学校') {
-                    $user->educator->update($data['educator']);
-                }
-                if (isset($data['enabled'])) {
-                    # 更新手机号码
-                    (new Mobile)->store($data['mobile'], $user->id);
-                    # 更新部门数据
-                    (new DepartmentUser)->store($user->id, $this->departmentId($data));
-                } else {
-                    # 更新手机号码
-                    Mobile::where(['user_id' => $user->id, 'isdefault' => 1])
-                        ->update(['mobile' => $data['mobile']]);
-                }
-                # 更新企业号成员记录
-                $this->updateWechatUser($user->id);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    
-    /**
-     * 更新企业号会员
-     *
-     * @param $id
-     * @param bool $broadcast 是否发送广播消息，默认情况下发送，如果是批量操作则不发送
-     * @return bool
-     */
-    function updateWechatUser($id, $broadcast = true) {
-        
-        return $this->sync($id, 'update', $broadcast);
-        
-    }
-    
-    /**
-     * 更新合作伙伴
-     *
-     * @param array $data
-     * @param null $id
-     * @return bool
-     * @throws Throwable
-     */
-    function partnerModify(array $data, $id = null) {
-        
-        if (!$id) {
-            return $this->batch($this);
-        }
-        try {
-            DB::transaction(function () use ($data, $id) {
-                $this->find($id)->update($data);
-                $messageType = MessageType::whereUserId($id)->first();
-                $messageType->update([
-                    'name'    => $data['realname'],
-                    'remark'  => $data['realname'] . '接口消息',
-                    'enabled' => 0,
-                ]);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    
-    /**
-     * 批量更新企业号会员
-     *
-     * @param $ids
-     */
-    function batchUpdateWechatUsers($ids) {
-        
-        foreach ($ids as $id) {
-            $this->updateWechatUser($id);
-        }
-        
-    }
-    
-    /**
-     * 重置密码
-     *
-     * @return bool
-     */
-    function reset() {
-        
-        $user = $this->find(Auth::id());
-        abort_if(
-            !Hash::check(Request::input('old_password'), $user->password),
-            HttpStatusCode::BAD_REQUEST,
-            __('messages.bad_request')
-        );
-        
-        return $user->update([
-            'password' => bcrypt(Request::input('password')),
-        ]);
-        
-    }
-    
-    /**
-     * 删除用户
-     *
-     * @param $id
-     * @param bool $broadcast
-     * @return bool
-     * @throws Throwable
-     */
-    function remove($id = null, $broadcast = true) {
-        
-        if (!$id) {
-            try {
-                DB::transaction(function () {
-                    array_map(
-                        function ($id) { $this->purge($id, false); },
-                        Request::input('ids')
-                    );
-                });
-            } catch (Exception $e) {
-                throw $e;
-            }
-            
-            return true;
-        }
-        
-        return $this->purge($id, $broadcast);
-        
-    }
-    
-    /**
-     * 删除指定用户的所有数据
-     *
-     * @param $id
-     * @param bool $broadcast - 是否发送广播消息，默认情况下发送，如果是批量操作则不发送
-     * @return bool
-     * @throws Throwable
-     */
-    function purge($id, $broadcast = true): bool {
-        
-        try {
-            DB::transaction(function () use ($id, $broadcast) {
-                $user = $this->find($id);
-                $this->deleteWechatUser($id, $broadcast);
-                DepartmentUser::whereUserId($id)->delete();
-                TagUser::whereUserId($id)->delete();
-                Tag::whereUserId($id)->delete();
-                Mobile::whereUserId($id)->delete();
-                (new Order)->removeUser($id);
-                PollQuestionnaire::whereUserId($id)->update(['user_id' => 0]);
-                PollQuestionnaireAnswer::whereUserId($id)->delete();
-                PollQuestionnaireParticipant::whereUserId($id)->delete();
-                (new ProcedureStep)->removeUser($id);
-                (new ProcedureLog)->removeUser($id);
-                (new Event)->removeUser($id);
-                (new Message)->removeUser($id);
-                MessageReply::whereUserId($id)->delete();
-                $user->delete();
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    
-    /**
-     * 删除企业号会员
-     *
-     * @param $id
-     * @param bool $broadcast 是否发送广播消息，默认情况下发送，如果是批量操作则不发送
-     * @return bool
-     */
-    function deleteWechatUser($id, $broadcast = true) {
-        
-        return $this->sync($id, 'delete', $broadcast);
-        
-    }
-    
-    /**
-     * 删除合作伙伴
-     *
-     * @param null $id
-     * @return bool
-     * @throws Throwable
-     */
-    function partnerRemove($id = null) {
-        
-        if (!$id) {
-            try {
-                DB::transaction(function () {
-                    array_map(
-                        function ($id) { $this->partnerPurge($id); },
-                        Request::input('ids')
-                    );
-                });
-            } catch (Exception $e) {
-                throw $e;
-            }
-            
-            return true;
-        }
-        
-        return $this->partnerPurge($id);
-        
-    }
-    
-    /**
-     * 删除指定合作伙伴的所有数据
-     *
-     * @param $id
-     * @return bool
-     * @throws Throwable
-     */
-    function partnerPurge($id) {
-        
-        try {
-            DB::transaction(function () use ($id) {
-                $messageType = MessageType::whereUserId($id)->first();
-                $messages = Message::whereMessageTypeId($messageType->id)->get();
-                if ($messages->count()) {
-                    Message::whereMessageTypeId($messageType->id)->update([
-                        'message_type_id' => 0,
-                    ]);
-                }
-                $messageType->delete();
-                $this->find($id)->delete();
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-        return true;
-        
-    }
-    
-    /**
-     * 删除联系人(学生、监护人、教职员工）及所有相关数据
-     *
-     * @param Model $contact
-     * @param null $id
-     * @return bool
-     * @throws ReflectionException
-     * @throws Throwable
-     */
-    function removeContact(Model $contact, $id = null) {
-        
-        if (!$id) {
-            $ids = Request::input('ids');
-            $type = lcfirst((new ReflectionClass($contact))->getShortName());
-            abort_if(
-                !empty($ids) && empty(array_intersect(
-                    array_values($ids),
-                    array_map('strval', $this->contactIds($type))
-                )),
-                HttpStatusCode::UNAUTHORIZED,
-                __('messages.unauthorized')
-            );
-            try {
-                DB::transaction(function () use ($contact, $ids) {
-                    foreach ($ids as $id) {
-                        $contact->{'purge'}($id, false);
-                    }
-                });
-            } catch (Exception $e) {
-                throw $e;
-            }
-            
-            return true;
-        }
-        
-        return $contact->{'purge'}($id);
-        
-    }
-    
-    /**
-     * 返回对指定用户可见的所有部门id
-     *
-     * @param integer $id 用户id
-     * @return array
-     */
-    function departmentIds($id) {
-        
-        foreach ($this->depts($id) as $d) {
-            $departmentIds[] = $d->id;
-            $departmentIds = array_merge(
-                $departmentIds, $d->subIds($d->id)
-            );
-        }
-        
-        return array_unique($departmentIds ?? []);
         
     }
     
@@ -890,23 +794,6 @@ class User extends Authenticatable {
         $result['schoolList'] = $this->selectList($schools, 'school_id');
         
         return response()->json($result);
-        
-    }
-    
-    /** Helper functions -------------------------------------------------------------------------------------------- */
-    /**
-     * 根据部门id获取部门所属学校的部门id
-     *
-     * @param $deptId
-     * @return int|mixed
-     */
-    function schoolDeptId(&$deptId) {
-        
-        $dept = Department::find($deptId);
-        
-        return $dept->departmentType->name != '学校'
-            ? $this->schoolDeptId($dept->parent_id)
-            : $deptId;
         
     }
     
@@ -971,7 +858,7 @@ class User extends Authenticatable {
      * @return array
      */
     function compose() {
-    
+        
         /**
          * @param array $names
          * @return array
@@ -979,7 +866,7 @@ class User extends Authenticatable {
         function groups(array $names) {
             return Group::whereIn('name', $names)->pluck('name', 'id')->toArray();
         }
-    
+        
         $operator = $departmentId = $corps = $schools = null;
         $rootMenu = Menu::find((new Menu)->rootId(true));
         if (Request::route('id')) {
@@ -1039,7 +926,7 @@ class User extends Authenticatable {
         
         return [
             Request::route('id') ? $this->find(Request::route('id'))->mobiles : [],
-            $groups ?? [], $corps, $schools
+            $groups ?? [], $corps, $schools,
         ];
         
     }

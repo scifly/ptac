@@ -68,7 +68,9 @@ class WapSiteModuleController extends Controller {
     public function store(WapSiteModuleRequest $request) {
         
         return $this->result(
-            $this->wsm->store($request->all())
+            $this->wsm->store(
+                $request->all()
+            )
         );
         
     }

@@ -71,7 +71,9 @@ class SubjectController extends Controller {
     public function store(SubjectRequest $request) {
         
         return $this->result(
-            $this->subject->store($request)
+            $this->subject->store(
+                $request->all()
+            )
         );
         
     }
@@ -103,7 +105,9 @@ class SubjectController extends Controller {
     public function update(SubjectRequest $request, $id) {
         
         return $this->result(
-            $this->subject->modify($request, $id)
+            $this->subject->modify(
+                $request->all(), $id
+            )
         );
         
     }

@@ -2,18 +2,16 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
-use App\Http\Requests\CompanyRequest;
+use App\Helpers\{ModelTrait, Snippet};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\{Builder,
+    Collection,
+    Model,
+    Relations\BelongsTo,
+    Relations\HasMany,
+    Relations\HasManyThrough};
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -119,17 +117,16 @@ class Company extends Model {
     /**
      * 保存运营者
      *
-     * @param CompanyRequest $request
-     * @return mixed|bool|null
+     * @param array $data
+     * @return bool
      * @throws Throwable
      */
-    function store(CompanyRequest $request) {
+    function store(array $data) {
         
-        $company = null;
         try {
-            DB::transaction(function () use ($request, &$company) {
+            DB::transaction(function () use ($data) {
                 # 创建运营者、对应部门及菜单
-                $company = $this->create($request->all());
+                $company = $this->create($data);
                 $department = (new Department)->stow($company);
                 $menu = (new Menu)->stow($company);
                 # 更新“运营者”的部门id和菜单id
@@ -142,25 +139,24 @@ class Company extends Model {
             throw $e;
         }
         
-        return $company;
+        return true;
         
     }
     
     /**
      * 更新运营者
      *
-     * @param CompanyRequest $request
+     * @param array $data
      * @param $id
-     * @return mixed|bool|null
+     * @return bool
      * @throws Throwable
      */
-    function modify(CompanyRequest $request, $id) {
+    function modify(array $data, $id) {
         
-        $company = null;
         try {
-            DB::transaction(function () use ($request, $id, &$company) {
+            DB::transaction(function () use ($data, $id) {
                 $company = $this->find($id);
-                $company->update($request->all());
+                $company->update($data);
                 (new Department)->alter($company);
                 (new Menu)->alter($company);
             });
@@ -168,7 +164,7 @@ class Company extends Model {
             throw $e;
         }
         
-        return $company ? $this->find($id) : null;
+        return true;
         
     }
     

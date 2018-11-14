@@ -215,7 +215,8 @@ class Student extends Model {
         ];
 
         return Datatable::simple(
-            $this->getModel(), $columns, $joins, $this->contactCondition('学生')
+            $this->getModel(), $columns, $joins,
+            'Student.user_id IN (' . $this->visibleUserIds() . ')'
         );
         
     }
@@ -242,7 +243,7 @@ class Student extends Model {
                 # 保存用户所处部门
                 (new DepartmentUser)->store($student->user_id, $student->squad->department_id);
                 # 创建企业号成员
-                $user->createWechatUser($user->id);
+                $user->sync($user->id, 'create');
             });
         } catch (Exception $e) {
             throw $e;
@@ -276,7 +277,7 @@ class Student extends Model {
                 # 更新用户所在部门
                 (new DepartmentUser)->store($student->user_id, $student->squad->department_id);
                 # 更新企业号成员
-                $student->user->UpdateWechatUser($student->user_id);
+                $student->user->sync($student->user_id, 'update');
             });
         } catch (Exception $e) {
             throw $e;
@@ -296,7 +297,7 @@ class Student extends Model {
      */
     function remove($id = null) {
         
-        return (new User)->removeContact($this, $id);
+        return (new User)->clean($this, $id);
         
     }
     
@@ -318,7 +319,7 @@ class Student extends Model {
                 ScoreTotal::whereStudentId($id)->delete();
                 Score::whereStudentId($id)->delete();
                 StudentAttendance::whereStudentId($id)->delete();
-                (new User)->remove($student->user_id, $broadcast);
+                (new User)->remove($student->user_id);
                 $student->delete();
             });
         } catch (Exception $e) {

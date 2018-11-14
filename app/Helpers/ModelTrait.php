@@ -46,7 +46,7 @@ trait ModelTrait {
         $ids = array_values(Request::input('ids'));
         $action = Request::input('action');
         
-        return $model->whereIn('id', $ids)->update([
+        return $model->{'whereIn'}('id', $ids)->update([
             'enabled' => $action == 'enable' ? Constant::ENABLED : Constant::DISABLED,
         ]);
         
@@ -63,7 +63,7 @@ trait ModelTrait {
         
         $this->batch($model);
         $ids = Request::input('ids');
-        $userIds = $model->whereIn('id', array_values($ids))->pluck('user_id')->toArray();
+        $userIds = $model->{'whereIn'}('id', array_values($ids))->pluck('user_id')->toArray();
         Request::replace(['ids' => $userIds]);
         
         return (new User)->modify(Request::all());
@@ -80,18 +80,16 @@ trait ModelTrait {
      */
     function del(Model $model, $id) {
         
-        if (!$id) {
-            $ids = Request::input('ids');
-            DB::transaction(function () use ($ids, $model) {
-                foreach ($ids as $id) {
-                    $model->{'purge'}($id);
-                }
+        try {
+            DB::transaction(function () use ($model, $id) {
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
+                foreach ($ids as $id) $model->{'purge'}($id);
             });
-            
-            return true;
+        } catch (\Exception $e) {
+            throw $e;
         }
         
-        return $model->{'purge'}($id);
+        return true;
         
     }
     
@@ -108,7 +106,7 @@ trait ModelTrait {
         /** @var Model $model */
         $class = '\\App\\Models\\' . $class;
         $model = new $class;
-        $ids = $model->where($key, $value)->pluck('id')->toArray();
+        $ids = $model->{'where'}($key, $value)->pluck('id')->toArray();
         Request::merge(['ids' => $ids]);
         
         return $model->{'remove'}();
@@ -394,11 +392,10 @@ trait ModelTrait {
      * @param null $schoolId
      * @return array
      */
-    function departmentIds($userId, $schoolId = null) {
+    function departmentIds($userId = null, $schoolId = null) {
         
-        $departmentIds = [];
-        $user = User::find($userId);
-        $role = $user->role($userId);
+        $user = $userId ? User::find($userId) : Auth::user();
+        $role = $user->role($userId ?? Auth::id());
         if (in_array($role, Constant::SUPER_ROLES)) {
             $schoolId = $schoolId ?? $this->schoolId();
             $department = $schoolId
@@ -422,7 +419,7 @@ trait ModelTrait {
             );
         }
         
-        return array_unique($departmentIds);
+        return array_unique($departmentIds ?? []);
         
     }
     
@@ -623,13 +620,12 @@ trait ModelTrait {
     }
     
     /**
-     * 返回指定类型联系人对应的datatable过滤条件
+     * 返回对当前登录用户可见的所有用户id
      *
-     * @param string $type - 学生/监护人，如果为空，则为教职员工及其他类型
-     * @return string - sql查询条件
+     * @return array
      */
-    function contactCondition($type = '') {
-        
+    function visibleUserIds() {
+    
         if (in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
             $school = School::find($this->schoolId());
             $departmentId = $school->department_id;
@@ -637,17 +633,14 @@ trait ModelTrait {
                 [$departmentId], $school->department->subIds($departmentId)
             );
         } else {
-            $departmentIds = $this->departmentIds(Auth::id());
+            $departmentIds = $this->departmentIds();
         }
-        $userIds = array_unique(
-            DepartmentUser::whereIn('department_id', $departmentIds)->pluck('user_id')->toArray()
+    
+        return implode(',', array_unique(
+                DepartmentUser::whereIn('department_id', array_unique($departmentIds))
+                    ->pluck('user_id')->toArray()
+            )
         );
-        $groupIds = $type != ''
-            ? [Group::whereName($type)->first()->id]
-            : Group::whereSchoolId($this->schoolId())->pluck('id')->toArray();
-        
-        return 'User.group_id IN (' . (empty($groupIds) ? '0' : implode(',', $groupIds)) . ')' .
-            ' AND User.id IN (' . (empty($userIds) ? '0' : implode(',', $userIds)) . ')';
         
     }
     
@@ -705,7 +698,7 @@ trait ModelTrait {
      * @return array
      */
     function contactInput(FormRequest $request, $role) {
-        
+    
         $input = $request->all();
         if (isset($input['mobile'])) {
             $isdefault = $input['mobile']['isdefault'];
@@ -720,42 +713,66 @@ trait ModelTrait {
         switch ($role) {
             case 'student':
             case 'custodian':
-                $input['enabled'] = $input['user']['enabled'];
-                $position = $role == 'student' ? '学生' : '监护人';
-                $input['user']['position'] = $position;
-                $input['user']['group_id'] = Group::whereName($position)->first()->id;
                 if (!Request::route('id')) {
                     $input['user'] += [
                         'username' => $userid,
                         'password' => bcrypt('12345678'),
-                        'group_id' => Group::whereName($position)->first()->id,
                     ];
                 }
                 if ($role == 'student' && !isset($input['remark'])) {
                     $input['remark'] = 'student';
                 }
+                $position = $role == 'student' ? '学生' : '监护人';
+                $input['user']['position'] = $position;
+                $input['user']['group_id'] = Group::whereName($position)->first()->id;
+                $input['enabled'] = $input['user']['enabled'];
+                if (!empty($input['student_ids'])) {
+                    foreach ($input['student_ids'] as $key => $studentId) {
+                        $student = Student::find($studentId);
+                        abort_if(
+                            !$student || !in_array($studentId, $this->contactIds('student')),
+                            HttpStatusCode::NOT_FOUND,
+                            __('messages.student.not_found') . ':' . $studentId
+                        );
+                        $departmentIds[] = $student->squad->department_id;
+                        $rses[$studentId] = $input['relationships'][$key];
+                    }
+                    $input['relationships'] = $rses ?? [];
+                    $input['departmentIds'] = $departmentIds ?? [];
+                }
                 break;
             case 'educator':
             case 'operator':
+                if (!Request::route('id')) $input['user']['password'] = bcrypt($input['user']['password']);
                 $input['user']['position'] = Group::find($input['user']['group_id'])->name;
-                if (!Request::route('id')) {
-                    $input['user']['password'] = bcrypt($input['user']['password']);
-                }
                 if ($role == 'educator') {
                     $input['enabled'] = $input['user']['enabled'];
                     $input['school_id'] = $this->schoolId();
-                    if (!Request::route('id')) $input['sms_quote'] = 0;
+                    $input['selectedDepartments'] = $input['selectedDepartments'] ?? [];
+                    if (
+                        !array_key_exists(0, $input['cs']['class_ids']) &&
+                        !array_key_exists(0, $input['cs']['subject_ids'])
+                    ) {
+                        foreach ($input['cs']['class_ids'] as $classId) {
+                            if (!$classId) continue;
+                            $class = Squad::find($classId);
+                            abort_if(
+                                !$class || !in_array($class->id, $this->classIds()),
+                                HttpStatusCode::NOT_FOUND,
+                                __('messages.class.not_found') . ':' . $classId
+                            );
+                            $classDeptIds[] = $class->department_id;
+                        }
+                        $input['selectedDepartments'] += $classDeptIds ?? [];
+                    }
                 } else {
                     if (Group::find($input['group_id'])->name == '学校') {
                         $input += [
                             'school_id' => $input['school_id'],
-                            'enabled'   => $input['enabled'],
+                            'enabled'   => $input['user']['enabled'],
                         ];
                         if (!isset($input['id'])) {
-                            $input += [
-                                'singular'  => 1,
-                                'sms_quote' => 0,
-                            ];
+                            $input += ['singular'  => 1];
                         }
                     }
                 }
@@ -763,59 +780,10 @@ trait ModelTrait {
             default:
                 break;
         }
-        if (!Request::route('id')) {
-            $input['user']['userid'] = $userid;
-        }
-        if (in_array($role, ['custodian', 'educator'])) {
-            $input['singular'] = 1;
-            if (!empty($input['student_ids'])) {
-                foreach ($input['student_ids'] as $key => $studentId) {
-                    $student = Student::find($studentId);
-                    abort_if(
-                        !$student || !in_array($studentId, $this->contactIds('student')),
-                        HttpStatusCode::NOT_FOUND,
-                        __('messages.student.not_found') . ':' . $studentId
-                    );
-                    $departmentIds[] = $student->squad->department_id;
-                    $rses[$studentId] = $input['relationships'][$key];
-                }
-                $input['relationships'] = $rses ?? [];
-                $input['departmentIds'] = $departmentIds ?? [];
-                if ($role == 'educator' && isset($rses, $departmentIds)) {
-                    $input['singular'] = 0;
-                }
-            }
-            if (
-                !array_key_exists(0, $input['cs']['class_ids']) &&
-                !array_key_exists(0, $input['cs']['subject_ids'])
-            ) {
-                if (!isset($input['selectedDepartments'])) $input['selectedDepartments'] = [];
-                foreach ($input['cs']['class_ids'] as $classId) {
-                    if (!$classId) continue;
-                    $class = Squad::find($classId);
-                    abort_if(
-                        !$class || !in_array($class->id, $this->classIds()),
-                        HttpStatusCode::NOT_FOUND,
-                        __('messages.class.not_found') . ':' . $classId
-                    );
-                    $classDeptIds[] = $class->department_id;
-                }
-                $input['selectedDepartments'] += $classDeptIds ?? [];
-                if ($role == 'custodian') {
-                    $schoolId = $this->schoolId();
-                    $group = Group::where(['school_id' => $schoolId, 'name' => '教职员工'])->first();
-                    abort_if(!$role, HttpStatusCode::NOT_FOUND, __('messages.group.not_found'));
-                    $input['user']['group_id'] = $group->id;
-                    $input['singular'] = 0;
-                    $input['school_id'] = $schoolId;
-                    $input['sms_quote'] = 0;
-                    $input['enabled'] = $input['user']['enabled'];
-                }
-            }
-        }
-        
+        Request::route('id') ?: $input['user']['userid'] = $userid;
+    
         return $input;
-        
+    
     }
     
     /**

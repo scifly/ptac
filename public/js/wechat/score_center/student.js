@@ -5,7 +5,6 @@ var $subjectId = $('#subject_id'),
     $scores = $('#scores'),
     $avgs = $('#avgs');
 
-FastClick.attach(document.body);
 if ($.trim($('.score').html()) !== '(成绩未录入)') {
     showtable(
         $scores.val().split(','),

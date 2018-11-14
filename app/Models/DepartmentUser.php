@@ -7,7 +7,7 @@ use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model};
-use Illuminate\Support\Facades\{Auth, DB};
+use Illuminate\Support\Facades\{DB};
 use Throwable;
 
 /**
@@ -89,11 +89,11 @@ class DepartmentUser extends Model {
         
         try {
             DB::transaction(function () use ($departmentId, $userIds) {
-                $records = [];
-                $userids = [];
                 foreach ($userIds as $userId) {
-                    $du = $this::whereDepartmentId($departmentId)
-                        ->where('user_id', $userId)->first();
+                    $du = $this->where([
+                        'department_id' => $departmentId,
+                        'user_id' => $userId
+                    ])->first();
                     if (!$du) {
                         $records[] = [
                             'user_id'       => $userId,
@@ -102,12 +102,14 @@ class DepartmentUser extends Model {
                             'updated_at'    => now()->toDateTimeString(),
                             'enabled'       => Constant::ENABLED,
                         ];
-                        $userids[] = $userId;
                     }
                 }
                 if (!empty($records)) {
                     $this->insert($records);
-                    Auth::user()->batchUpdateWechatUsers($userids);
+                    $user = new User;
+                    foreach (array_pluck($records, 'user_id') as $userId) {
+                        $user->sync($userId, 'update');
+                    }
                 }
             });
         } catch (Exception $e) {

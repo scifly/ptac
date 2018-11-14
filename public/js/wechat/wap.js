@@ -4,7 +4,6 @@ var wap = {
             statusCode = result['statusCode'],
             message = result['message'];
         $('#notification').hide();
-
         $.toptip(message, statusCode <= 300 ? 'warning' : 'error');
     },
     token: function () {
@@ -16,12 +15,8 @@ var wap = {
             mm = today.getMonth() + 1, //January is 0!
             yyyy = today.getFullYear();
 
-        if (dd < 10) {
-            dd = '0' + dd;
-        }
-        if (mm < 10) {
-            mm = '0' + mm;
-        }
+        if (dd < 10) dd = '0' + dd;
+        if (mm < 10) mm = '0' + mm;
 
         return yyyy + '-' + mm + '-' + dd;
     }
@@ -35,3 +30,4 @@ var pusherKey = $('#pusher_key').attr('content'),
 channel.bind('broadcast', function (data) {
     $.toptip(data['message'], 'success');
 });
+$(function() { FastClick.attach(document.body); });

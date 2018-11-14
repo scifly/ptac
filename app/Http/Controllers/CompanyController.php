@@ -66,7 +66,9 @@ class CompanyController extends Controller {
     public function store(CompanyRequest $request) {
         
         return $this->result(
-            $this->company->store($request)
+            $this->company->store(
+                $request->all()
+            )
         );
         
     }
@@ -97,7 +99,9 @@ class CompanyController extends Controller {
     public function update(CompanyRequest $request, $id) {
         
         return $this->result(
-            $this->company->modify($request, $id)
+            $this->company->modify(
+                $request->all(), $id
+            )
         );
         
     }

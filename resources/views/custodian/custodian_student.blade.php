@@ -1,4 +1,4 @@
-<div class="form-group" id="relationships" style="display: {!! $visible ? 'block' : 'none' !!};">
+<div class="form-group" id="relationships">
     <label class="col-sm-3 control-label">被监护人</label>
     <div class="col-sm-6">
         <div style="display: block; overflow-x: auto; clear: both; width: 100%;">
@@ -16,22 +16,21 @@
                 @if (!empty($relations))
                     @foreach($relations as $key => $relation)
                         <tr>
-                            <td>
-                                <input type="hidden" value="{!! $relation->student_id !!}"
-                                       name="student_ids[{!! $key !!}]" id="student_ids"
-                                >
+                            <td class="text-center">
+                                {!! Form::hidden('student_ids[]', $relation->student_id) !!}
                                 {!! $relation->student->user->realname !!}
                             </td>
-                            <td>
+                            <td class="text-center">
                                 {!! $relation->student->student_number !!}
                             </td>
-                            <td>
-                                <input type="text" name="relationships[{!! $key !!}]"
-                                       class="no-border text-center" style="background: none;"
-                                       title="监护关系" value="{!! $relation->relationship !!}"
-                                >
+                            <td class="text-center">
+                                {!! Form::text('relationships[]', $relation->relationship, [
+                                    'class' => 'no-border text-center',
+                                    'style' => 'background: none;',
+                                    'title' => '监护关系'
+                                ]) !!}
                             </td>
-                            <td>
+                            <td class="text-center">
                                 <a href="javascript:" class="delete">
                                     <i class="fa fa-trash-o text-blue"></i>
                                 </a>

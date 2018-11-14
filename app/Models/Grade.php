@@ -2,22 +2,17 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
-use App\Http\Requests\GradeRequest;
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\{Builder,
+    Collection,
+    Model,
+    Relations\BelongsTo,
+    Relations\HasMany,
+    Relations\HasManyThrough};
+use Illuminate\Support\Facades\{Auth, DB};
 use Throwable;
 
 /**
@@ -190,17 +185,16 @@ class Grade extends Model {
     /**
      * 保存年级
      *
-     * @param GradeRequest $request
+     * @param array $data
      * @return bool
      * @throws Throwable
      */
-    function store(GradeRequest $request) {
+    function store(array $data) {
         
-        $grade = null;
         try {
-            DB::transaction(function () use ($request, &$grade) {
+            DB::transaction(function () use ($data) {
                 # 创建年级及对应的部门
-                $grade = $this->create($request->all());
+                $grade = $this->create($data);
                 $department = (new Department)->stow($grade, 'school');
                 # 更新年级的部门id
                 $grade->update(['department_id' => $department->id]);
@@ -209,32 +203,35 @@ class Grade extends Model {
             throw $e;
         }
         
-        return $grade;
+        return true;
         
     }
     
     /**
      * 更新年级
      *
-     * @param GradeRequest $request
+     * @param array $data
      * @param $id
      * @return bool
      * @throws Throwable
      */
-    function modify(GradeRequest $request, $id) {
+    function modify(array $data, $id = null) {
         
-        $grade = null;
         try {
-            DB::transaction(function () use ($request, $id, &$grade) {
-                $grade = $this->find($id);
-                $grade->update($request->all());
-                (new Department)->alter($this->find($id));
+            DB::transaction(function () use ($data, $id) {
+                if ($id) {
+                    $grade = $this->find($id);
+                    $grade->update($data);
+                    (new Department)->alter($this->find($id));
+                } else {
+                    $this->batch($this);
+                }
             });
         } catch (Exception $e) {
             throw $e;
         }
         
-        return $grade ? $this->find($id) : null;
+        return true;
         
     }
     

@@ -2,7 +2,6 @@
 namespace App\Models;
 
 use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
-use App\Http\Requests\MenuRequest;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
@@ -213,28 +212,24 @@ class Menu extends Model {
     /**
      * 创建菜单
      *
-     * @param MenuRequest $request
+     * @param array $data
      * @return bool|mixed
-     * @throws Exception
      * @throws Throwable
      */
-    function store(MenuRequest $request) {
+    function store(array $data) {
         
-        $menu = null;
-        # 创建新的Menu记录及卡片绑定记录
         try {
-            DB::transaction(function () use ($request, &$menu) {
-                $data = $request->all();
+            DB::transaction(function () use ($data) {
                 $data['position'] = $this->all()->max('position') + 1;
                 $menu = $this->create($data);
-                $tabIds = $request->input('tab_ids', []);
+                $tabIds = $data['tab_ids'] ?? [];
                 (new MenuTab)->storeByMenuId($menu->id, $tabIds);
             });
         } catch (Exception $e) {
             throw $e;
         }
         
-        return $menu;
+        return true;
         
     }
     
@@ -267,29 +262,26 @@ class Menu extends Model {
     /**
      * 更新菜单
      *
-     * @param MenuRequest $request
+     * @param array $data
      * @param $id
      * @return bool|mixed
      * @throws Throwable
      */
-    function modify(MenuRequest $request, $id) {
+    function modify(array $data, $id) {
         
-        $menu = null;
         try {
-            DB::transaction(function () use ($request, $id, &$menu) {
+            DB::transaction(function () use ($data, $id) {
                 $menu = $this->find($id);
                 # 更新指定Menu记录
-                $menu->update($request->all());
+                $menu->update($data);
                 # 更新与指定Menu记录绑定的卡片记录
                 $menuTab = new MenuTab();
                 $menuTab::whereMenuId($id)->delete();
-                $tabIds = $request->input('tab_ids', []);
-                $uri = $request->input('uri', '');
+                $tabIds = $data['tab_ids'] ?? [];
+                $uri = $data['uri'] ?? '';
                 if (empty($uri)) {
                     if (!empty($tabIds)) {
-                        if ($menu->children->count() == 0) {
-                            $menuTab->storeByMenuId($id, $tabIds);
-                        }
+                        $menu->children->count() ?: $menuTab->storeByMenuId($id, $tabIds);
                     } else {
                         $enabledSubMenus = $menu->children->filter(
                             function (Menu $menu) { return $menu->enabled; }
@@ -302,7 +294,7 @@ class Menu extends Model {
             throw $e;
         }
         
-        return $menu ? $this->find($id) : null;
+        return true;
         
     }
     

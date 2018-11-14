@@ -217,7 +217,7 @@ class Controller extends BaseController {
             $args = [get_class($model)];
             /** @var \Illuminate\Http\Request $request */
             if ($request->route('id')) {
-                $args = [$model->find($request->route('id')), true];
+                $args = [$model->{'find'}($request->route('id')), true];
             }
             $this->authorize($action, $args);
             

@@ -6,8 +6,8 @@ use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\TrimStrings;
 use App\Http\Middleware\VerifyCsrfToken;
-use App\Http\Middleware\WechatAuth;
-use App\Http\Middleware\WechatRole;
+use App\Http\Middleware\CorpAuth;
+use App\Http\Middleware\CorpRole;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
 use Illuminate\Auth\Middleware\Authorize;
@@ -73,14 +73,14 @@ class Kernel extends HttpKernel {
      * @var array
      */
     protected $routeMiddleware = [
-        'auth'        => Authenticate::class,
-        'auth.basic'  => AuthenticateWithBasicAuth::class,
-        'bindings'    => SubstituteBindings::class,
-        'can'         => Authorize::class,
-        'guest'       => RedirectIfAuthenticated::class,
-        'throttle'    => ThrottleRequests::class,
-        'checkrole'   => CheckRole::class,
-        'wechat.auth' => WechatAuth::class,
-        'wechat.role' => WechatRole::class,
+        'auth'       => Authenticate::class,
+        'auth.basic' => AuthenticateWithBasicAuth::class,
+        'bindings'   => SubstituteBindings::class,
+        'can'        => Authorize::class,
+        'guest'      => RedirectIfAuthenticated::class,
+        'throttle'   => ThrottleRequests::class,
+        'checkrole'  => CheckRole::class,
+        'corp.auth'  => CorpAuth::class,
+        'corp.role'  => CorpRole::class,
     ];
 }

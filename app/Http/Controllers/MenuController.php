@@ -73,7 +73,9 @@ class MenuController extends Controller {
     public function store(MenuRequest $request) {
         
         return $this->result(
-            $this->menu->store($request)
+            $this->menu->store(
+                $request->all()
+            )
         );
         
     }
@@ -106,7 +108,7 @@ class MenuController extends Controller {
         
         return $this->result(
             $this->menu->modify(
-                $request, $id
+                $request->all(), $id
             )
         );
         

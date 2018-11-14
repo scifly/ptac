@@ -75,7 +75,9 @@ class WsmArticleController extends Controller {
     public function store(WsmArticleRequest $request) {
         
         return $this->result(
-            $this->wsma->store($request)
+            $this->wsma->store(
+                $request->all()
+            )
         );
         
     }
@@ -111,7 +113,7 @@ class WsmArticleController extends Controller {
         
         return $this->result(
             $this->wsma->modify(
-                $request, $id
+                $request->all(), $id
             )
         );
         

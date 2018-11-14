@@ -2,21 +2,17 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
-use App\Http\Requests\CorpRequest;
+use App\Helpers\{ModelTrait, Snippet};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Database\Eloquent\{Builder,
+    Collection,
+    Model,
+    Relations\BelongsTo,
+    Relations\HasMany,
+    Relations\HasManyThrough};
+use Illuminate\Support\Facades\{Auth, DB, Session};
 use Throwable;
 
 /**
@@ -190,23 +186,18 @@ class Corp extends Model {
     /**
      * 保存企业
      *
-     * @param CorpRequest $request
+     * @param array $data
      * @return mixed|bool|null
      * @throws Throwable
      */
-    function store(CorpRequest $request) {
+    function store(array $data) {
         
-        $corp = null;
         try {
-            DB::transaction(function () use ($request, &$corp) {
+            DB::transaction(function () use ($data) {
                 # 创建企业微信、对应部门及菜单
-                $corp = $this->create($request->all());
-                $department = (new Department)->stow(
-                    $corp, 'company'
-                );
-                $menu = (new Menu)->stow(
-                    $corp, 'company'
-                );
+                $corp = $this->create($data);
+                $department = (new Department)->stow($corp, 'company');
+                $menu = (new Menu)->stow($corp, 'company');
                 # 更新“企业微信”的部门id和菜单id
                 $corp->update([
                     'department_id' => $department->id,
@@ -217,25 +208,24 @@ class Corp extends Model {
             throw $e;
         };
         
-        return $corp;
+        return true;
         
     }
     
     /**
      * 更新企业
      *
-     * @param CorpRequest $request
+     * @param array $data
      * @param $id
      * @return mixed|bool|null
      * @throws Throwable
      */
-    function modify(CorpRequest $request, $id) {
+    function modify(array $data, $id) {
         
-        $corp = null;
         try {
-            DB::transaction(function () use ($request, $id, &$corp) {
+            DB::transaction(function () use ($data, $id) {
                 $corp = $this->find($id);
-                $corp->update($request->all());
+                $corp->update($data);
                 (new Department())->alter($corp, 'company');
                 (new Menu())->alter($corp, 'company');
             });
@@ -243,7 +233,7 @@ class Corp extends Model {
             throw $e;
         }
         
-        return $corp ? $this->find($id) : null;
+        return true;
         
     }
     

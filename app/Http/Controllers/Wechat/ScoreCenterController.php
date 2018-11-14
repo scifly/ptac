@@ -29,7 +29,7 @@ class ScoreCenterController extends Controller {
      */
     public function __construct(Score $score, Exam $exam) {
         
-        $this->middleware(['wechat.auth', 'wechat.role']);
+        $this->middleware(['corp.auth', 'corp.role']);
         $this->score = $score;
         $this->exam = $exam;
         

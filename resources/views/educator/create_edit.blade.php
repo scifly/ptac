@@ -157,16 +157,14 @@
             <!-- 手机号码 -->
             @include('shared.mobile')
             <!-- 班级、科目绑定关系 -->
-            @include('educator.educator_class', ['visible' => true])
-            <!-- 单角色 -->
+            @include('educator.educator_class')
+            <!-- 也是监护人 -->
             @include('shared.switch', [
                 'id' => 'singular',
-                'value' => $educator['singular'] ?? null,
-                'label' => '单角色',
-                'options' => ['是', '否']
+                'value' => isset($educator) ? ($educator->user->custodian ? 0 : 1) : null,
+                'label' => '也是监护人',
+                'options' => ['否', '是']
             ])
-            <!-- 监护关系 -->
-            @include('custodian.custodian_student', ['visible' => false])
             <!-- 所属部门 -->
             <div class="form-group depart">
                 {!! Form::label('departmentId', '所属部门', [

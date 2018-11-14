@@ -73,7 +73,9 @@ class SquadController extends Controller {
     public function store(SquadRequest $request) {
         
         return $this->result(
-            $this->class->store($request)
+            $this->class->store(
+                $request->all()
+            )
         );
         
     }
@@ -101,10 +103,12 @@ class SquadController extends Controller {
      * @return JsonResponse
      * @throws Throwable
      */
-    public function update(SquadRequest $request, $id) {
+    public function update(SquadRequest $request, $id = null) {
         
         return $this->result(
-            $this->class->modify($request, $id)
+            $this->class->modify(
+                $request->all(), $id
+            )
         );
         
     }

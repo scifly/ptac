@@ -72,7 +72,9 @@ class SchoolController extends Controller {
     public function store(SchoolRequest $request) {
         
         return $this->result(
-            $this->school->store($request)
+            $this->school->store(
+                $request->all()
+            )
         );
         
     }
@@ -103,7 +105,9 @@ class SchoolController extends Controller {
     public function update(SchoolRequest $request, $id = null) {
         
         return $this->result(
-            $this->school->modify($request, $id)
+            $this->school->modify(
+                $request->all(), $id
+            )
         );
         
     }

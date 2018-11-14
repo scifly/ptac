@@ -61,16 +61,16 @@ class CustodianStudent extends Model {
      * 按监护人ID保存记录
      *
      * @param $custodianId
-     * @param array $studentIds
+     * @param array $relationships
      * @throws Throwable
      */
-    function storeByCustodianId($custodianId, array $studentIds) {
+    function storeByCustodianId($custodianId, array $relationships) {
         
         try {
-            DB::transaction(function () use ($custodianId, $studentIds) {
+            DB::transaction(function () use ($custodianId, $relationships) {
                 $this->where('custodian_id', $custodianId)->delete();
                 $records = [];
-                foreach ($studentIds as $studentId => $relationship) {
+                foreach ($relationships as $studentId => $relationship) {
                     $records[] = [
                         'custodian_id' => $custodianId,
                         'student_id'   => $studentId,
@@ -78,34 +78,6 @@ class CustodianStudent extends Model {
                         'relationship' => $relationship,
                         'created_at'   => now()->toDateTimeString(),
                         'updated_at'   => now()->toDateTimeString(),
-                    ];
-                }
-                $this->insert($records);
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
-        
-    }
-    
-    /**
-     * 按学生ID保存记录
-     *
-     * @param $studentId
-     * @param array $custodianIds
-     * @throws Throwable
-     */
-    function storeByStudentId($studentId, array $custodianIds) {
-        
-        try {
-            DB::transaction(function () use ($studentId, $custodianIds) {
-                $records = [];
-                foreach ($custodianIds as $custodianId => $relationship) {
-                    $records = [
-                        'student_id'   => $studentId,
-                        'custodian_id' => $custodianId,
-                        'relationship' => $relationship,
-                        'enabled'      => Constant::ENABLED,
                     ];
                 }
                 $this->insert($records);

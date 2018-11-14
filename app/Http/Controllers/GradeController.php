@@ -72,7 +72,9 @@ class GradeController extends Controller {
     public function store(GradeRequest $request) {
         
         return $this->result(
-            $this->grade->store($request)
+            $this->grade->store(
+                $request->all()
+            )
         );
         
     }
@@ -100,10 +102,12 @@ class GradeController extends Controller {
      * @return JsonResponse
      * @throws Throwable
      */
-    public function update(GradeRequest $request, $id) {
+    public function update(GradeRequest $request, $id = null) {
         
         return $this->result(
-            $this->grade->modify($request, $id)
+            $this->grade->modify(
+                $request->all(), $id
+            )
         );
         
     }

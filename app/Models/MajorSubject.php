@@ -43,6 +43,7 @@ class MajorSubject extends Model {
         
         try {
             DB::transaction(function () use ($majorId, $subjectIds) {
+                $this->whereMajorId($majorId)->delete();
                 $records = [];
                 foreach ($subjectIds as $subjectId) {
                     $records[] = [
@@ -71,6 +72,7 @@ class MajorSubject extends Model {
         
         try {
             DB::transaction(function () use ($subjectId, $majorIds) {
+                $this->whereSubjectId($subjectId)->delete();
                 $records = [];
                 foreach ($majorIds as $majorId) {
                     $records[] = [

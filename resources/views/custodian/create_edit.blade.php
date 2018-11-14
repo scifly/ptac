@@ -86,16 +86,14 @@
                 </div>
             </div>
             <!-- 监护关系 -->
-            @include('custodian.custodian_student', ['visible' => true])
-            <!-- 单角色 -->
+            @include('custodian.custodian_student')
+            <!-- 也是教职员工 -->
             @include('shared.switch', [
                 'id' => 'singular',
-                'value' => $custodian['singular'] ?? null,
-                'label' => '单角色',
-                'options' => ['是', '否']
+                'value' => isset($custodian) ? ($custodian->user->educator ? 0 : 1) : null,
+                'label' => '也是教职员工',
+                'options' => ['否', '是']
             ])
-            <!-- 班级、科目绑定关系 -->
-            @include('educator.educator_class', ['visible' => false])
             <!-- 监护人状态 -->
             @include('shared.switch', [
                 'id' => 'user[enabled]',

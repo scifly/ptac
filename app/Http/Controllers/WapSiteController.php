@@ -71,7 +71,9 @@ class WapSiteController extends Controller {
     public function update(WapSiteRequest $request, $id) {
         
         return $this->result(
-            $this->ws->modify($request, $id)
+            $this->ws->modify(
+                $request->all(), $id
+            )
         );
         
     }

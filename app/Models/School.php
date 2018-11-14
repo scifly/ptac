@@ -2,23 +2,19 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
-use App\Http\Requests\SchoolRequest;
+use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
 use App\Jobs\CreateSchool;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\{Builder,
+    Collection,
+    Model,
+    Relations\BelongsTo,
+    Relations\HasMany,
+    Relations\HasManyThrough,
+    Relations\HasOne};
+use Illuminate\Support\Facades\{Auth, DB};
 use Throwable;
 
 /**
@@ -334,17 +330,16 @@ class School extends Model {
     /**
      * 保存学校
      *
-     * @param SchoolRequest $request
+     * @param array $data
      * @return mixed|bool|null
      * @throws Throwable
      */
-    function store(SchoolRequest $request) {
+    function store(array $data) {
         
-        $school = null;
         try {
-            DB::transaction(function () use ($request, &$school) {
+            DB::transaction(function () use ($data) {
                 # 创建学校、对应的部门和菜单
-                $school = $this->create($request->all());
+                $school = $this->create($data);
                 $department = (new Department)->stow($school, 'corp');
                 $menu = (new Menu)->stow($school, 'corp');
                 # 更新学校的部门id和菜单id
@@ -359,48 +354,48 @@ class School extends Model {
             throw $e;
         }
         
-        return $school;
+        return true;
         
     }
     
     /**
      * 更新学校
      *
-     * @param SchoolRequest $request
+     * @param array $data
      * @param $id
-     * @return mixed|bool|null
+     * @return bool
      * @throws Throwable
      */
-    function modify(SchoolRequest $request, $id = null) {
+    function modify(array $data, $id = null) {
         
-        if (!$id) {
-            return $this->batch($this);
-        }
-        $school = null;
         try {
-            DB::transaction(function () use ($request, &$id, &$school) {
-                $school = $this->find($id);
-                $corpChanged = $school->corp_id != $request->input('corp_id');
-                abort_if(
-                    $corpChanged && !$this->removable($school),
-                    HttpStatusCode::INTERNAL_SERVER_ERROR,
-                    __('messages.school.corp_changed')
-                );
-                if (!$corpChanged) {
-                    $school->update($request->all());
-                    (new Department)->alter($school, 'corp');
-                    (new Menu)->alter($school, 'corp');
+            DB::transaction(function () use ($data, $id) {
+                if ($id) {
+                    $school = $this->find($id);
+                    $corpChanged = $school->corp_id != $data['corp_id'];
+                    abort_if(
+                        $corpChanged && !$this->removable($school),
+                        HttpStatusCode::INTERNAL_SERVER_ERROR,
+                        __('messages.school.corp_changed')
+                    );
+                    if (!$corpChanged) {
+                        $school->update($data);
+                        (new Department)->alter($school, 'corp');
+                        (new Menu)->alter($school, 'corp');
+                    } else {
+                        unset($data['id']);
+                        $this->create($data);
+                        $this->remove($id);
+                    }
                 } else {
-                    $school = $this->create($request->except('id'));
-                    $this->remove($id);
-                    $id = $school->id;
+                    $this->batch($this);
                 }
             });
         } catch (Exception $e) {
             throw $e;
         }
         
-        return $school ? $this->find($id) : null;
+        return true;
         
     }
     

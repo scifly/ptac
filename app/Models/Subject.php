@@ -4,16 +4,15 @@ namespace App\Models;
 use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
-use App\Http\Requests\SubjectRequest;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\{Builder,
+    Collection,
+    Model,
+    Relations\BelongsTo,
+    Relations\BelongsToMany,
+    Relations\HasMany};
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -193,29 +192,18 @@ class Subject extends Model {
     /**
      * 保存新的科目记录
      *
-     * @param SubjectRequest $request
+     * @param array $data
      * @return bool
-     * @throws Exception
-     * @throws \Throwable
+     * @throws Throwable
      */
-    function store(SubjectRequest $request) {
+    function store(array $data) {
         
         try {
-            DB::transaction(function () use ($request) {
-                $subject = self::create([
-                    'name'       => $request->input('name'),
-                    'school_id'  => $request->input('school_id'),
-                    'max_score'  => $request->input('max_score'),
-                    'pass_score' => $request->input('pass_score'),
-                    'grade_ids'  => $request->input('grade_ids'),
-                    'isaux'      => $request->input('isaux'),
-                    'enabled'    => $request->input('enabled'),
-                ]);
-                if (!empty($request->input('major_ids'))) {
-                    (new MajorSubject)->storeBySubjectId(
-                        $subject->id, $request->input('major_ids')
-                    );
-                }
+            DB::transaction(function () use ($data) {
+                $subject = $this->create($data);
+                (new MajorSubject)->storeBySubjectId(
+                    $subject->id, $data['major_ids'] ?? []
+                );
             });
         } catch (Exception $e) {
             throw $e;
@@ -228,32 +216,19 @@ class Subject extends Model {
     /**
      * 更新指定的科目记录
      *
-     * @param SubjectRequest $request
+     * @param array $data
      * @param $id
      * @return bool|mixed
-     * @throws Exception
      * @throws Throwable
      */
-    function modify(SubjectRequest $request, $id) {
+    function modify(array $data, $id) {
         
         try {
-            DB::transaction(function () use ($request, $id) {
-                $subject = $this->find($id);
-                $subject->update([
-                    'name'       => $request->input('name'),
-                    'school_id'  => $request->input('school_id'),
-                    'max_score'  => $request->input('max_score'),
-                    'pass_score' => $request->input('pass_score'),
-                    'grade_ids'  => $request->input('grade_ids'),
-                    'isaux'      => $request->input('isaux'),
-                    'enabled'    => $request->input('enabled'),
-                ]);
-                MajorSubject::whereSubjectId($id)->delete();
-                if (!empty($request->input('major_ids'))) {
-                    (new MajorSubject)->storeBySubjectId(
-                        $id, $request->input('major_ids')
-                    );
-                }
+            DB::transaction(function () use ($data, $id) {
+                $this->find($id)->update($data);
+                (new MajorSubject)->storeBySubjectId(
+                    $id, $data['major_ids'] ?? []
+                );
             });
             
         } catch (Exception $e) {

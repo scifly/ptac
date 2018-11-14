@@ -71,7 +71,9 @@ class MajorController extends Controller {
     public function store(MajorRequest $request) {
         
         return $this->result(
-            $this->major->store($request)
+            $this->major->store(
+                $request->all()
+            )
         );
         
     }
@@ -104,7 +106,7 @@ class MajorController extends Controller {
         
         return $this->result(
             $this->major->modify(
-                $request, $id
+                $request->all(), $id
             )
         );
         

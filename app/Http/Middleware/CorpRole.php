@@ -8,10 +8,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
 /**
- * Class WechatAuth
+ * Class CorpAuth
  * @package App\Http\Middleware
  */
-class WechatRole {
+class CorpRole {
     
     /**
      * Handle an incoming request.

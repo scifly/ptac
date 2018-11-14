@@ -4,7 +4,7 @@ var $targetId = $('#target_id'),
     $examList = $('.weui-cells'),
     // $examLink = $('.exam-link'),
     start = 0;
-FastClick.attach(document.body);
+
 $targetId.on('change', function () { examList(false); });
 $search.on('input', function () { examList(false) });
 $loadMore.click(function () { start++; examList(true); });
@@ -38,7 +38,7 @@ function examList(more) {
                 more ? $examList.append(html) : $examList.html(html);
             } else {
                 $loadMore.hide();
-                if (!more) { $examList.html('暂无数据'); }
+                if (!more) $examList.html('暂无数据');
             }
         },
         error: function (e) {

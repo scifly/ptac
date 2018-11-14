@@ -114,13 +114,13 @@
                     });
                 }
             },
-            onSingularChange: function (table) {
-                page.initICheck();
-                $(contact.options.singular).on('ifClicked', function () {
-                    $(table === 'educators' ? '#relationships' : '#class-subjects')
-                        .toggle(parseInt(this.value) === 0);
-                });
-            },
+            // onSingularChange: function (table) {
+            //     page.initICheck();
+            //     $(contact.options.singular).on('ifClicked', function () {
+            //         $(table === 'educators' ? '#relationships' : '#class-subjects')
+            //             .toggle(parseInt(this.value) === 0);
+            //     });
+            // },
             onGradeChange: function (table, action, relationship, id) {
                 $(document).off('change', '#' + contact.options.gradeId);
                 $(document).on('change', '#' + contact.options.gradeId, function () {
@@ -202,17 +202,18 @@
                     $('#' + contact.options.ranges).modal({backdrop: true});
                 });
             },
-            saveRelationship: function(items) {
+            saveRelationship: function() {
                 var relationship = $('#' + contact.options.relationship).val(),
                     $studentId = $('#' + contact.options.studentId),
                     student = $studentId.find("option:selected").text().split('-'),
-                    studentId = $studentId.val();
+                    studentId = $studentId.val(),
+                    $studentIds = [],
+                    $tbody = $('#tBody');
+
                 if (!$.trim(relationship) || !$.trim(student) || !$.trim(studentId)) {
                     page.inform('保存监护关系', '监护关系不能为空', page.failure);
                     return false
                 }
-                var $studentIds = [];
-                var $tbody = $('#tBody');
                 $tbody.find(":input[type='hidden']").each(function () {
                     $studentIds.push(this.value);
                 });
@@ -223,26 +224,24 @@
                         return false;
                     }
                 }
-                items++;
                 var html = '<tr>' +
-                        '<td>' +
-                            student[0] + '<input type="hidden" value="' + studentId + '" name="student_ids[' + items + ']">' +
-                        '</td>' +
-                        '<td>' + student[1] + '</td>' +
-                        '<td>' +
-                            '<input type="text" ' +
-                                    'name="relationships[' + items + ']" ' +
-                                    'id="" readonly class="no-border" ' +
-                                    'style="background: none" ' +
-                                    'value="' + relationship + '"' +
-                            '>' +
-                        '</td>' +
-                        '<td>' +
-                            '<a href="javascript:" class="delete">' +
-                                '<i class="fa fa-trash-o text-blue"></i>' +
-                            '</a>' +
-                        '</td>' +
-                    '</tr>';
+                    '<td class="text-center">' +
+                        student[0] + '<input type="hidden" value="' + studentId + '" name="student_ids[]">' +
+                    '</td>' +
+                    '<td class="text-center">' + student[1] + '</td>' +
+                    '<td class="text-center">' +
+                        '<input type="text" name="relationships[]" ' +
+                                'readonly class="no-border text-center" ' +
+                                'style="background: none;" ' +
+                                'value="' + relationship + '"' +
+                        '>' +
+                    '</td>' +
+                    '<td class="text-center">' +
+                        '<a href="javascript:" class="delete">' +
+                            '<i class="fa fa-trash-o text-blue"></i>' +
+                        '</a>' +
+                    '</td>' +
+                '</tr>';
                 $tbody.append(html);
             },
             onImportClick: function (table) {
@@ -252,11 +251,12 @@
                 });
             },
             onConfirmClick: function (table, relationship) {
-                var $ranges = $('#' + contact.options.ranges);
+                // var $ranges = $('#' + contact.options.ranges);
+                var confirm = '#' + contact.options.confirm;
 
                 $(document).off('click', '#' + contact.options.output);
-                $(document).off('click', '#' + contact.options.confirm);
-                $(document).on('click', '#' + contact.options.confirm, function () {
+                $(document).off('click', confirm);
+                $(document).on('click', confirm, function () {
                     if (typeof relationship === 'undefined') {
                         var range = parseInt($($('.checked').children()[0]).val()),
                             url = page.siteRoot() + table + '/export?range=' + range,
@@ -270,8 +270,7 @@
                     } else {
                         contact.saveRelationship(0)
                     }
-
-                    $ranges.modal('hide');
+                    // $ranges.modal('hide');
                 });
             },
             onConfirmImportClick: function (table) {
@@ -363,7 +362,7 @@
                         $('#' + contact.options.relationship).val('');
                         contact.onAddClick();
                         contact.onAddClassClick();
-                        contact.onSingularChange(table);
+                        // contact.onSingularChange(table);
                         contact.onRelationshipDelete();
                         contact.onGradeChange(table, type, true, id);
                         contact.onClassChange(table, type, id);

@@ -2,17 +2,11 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
-use App\Http\Requests\MajorRequest;
+use App\Helpers\{ModelTrait, Snippet};
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -128,17 +122,18 @@ class Major extends Model {
     /**
      * 保存专业
      *
-     * @param MajorRequest $request
+     * @param array $data
      * @return bool|mixed
      * @throws Throwable
      */
-    function store(MajorRequest $request) {
+    function store(array $data) {
         
         try {
-            DB::transaction(function () use ($request) {
-                $major = $this->create($request->all());
-                $subjectIds = $request->input('subject_ids', []);
-                (new MajorSubject)->storeByMajorId($major->id, $subjectIds);
+            DB::transaction(function () use ($data) {
+                $major = $this->create($data);
+                (new MajorSubject)->storeByMajorId(
+                    $major->id, $data['subject_ids'] ?? []
+                );
             });
         } catch (Exception $e) {
             throw $e;
@@ -151,19 +146,19 @@ class Major extends Model {
     /**
      * 更新专业
      *
-     * @param MajorRequest $request
+     * @param array $data
      * @param $id
      * @return bool|mixed
      * @throws Throwable
      */
-    function modify(MajorRequest $request, $id) {
+    function modify(array $data, $id) {
         
         try {
-            DB::transaction(function () use ($request, $id) {
-                $this->find($id)->update($request->all());
-                $subjectIds = $request->input('subject_ids', []);
-                MajorSubject::whereMajorId($id)->delete();
-                (new MajorSubject)->storeByMajorId($id, $subjectIds);
+            DB::transaction(function () use ($data, $id) {
+                $this->find($id)->update($data);
+                (new MajorSubject)->storeByMajorId(
+                    $id, $data['subject_ids'] ?? []
+                );
             });
         } catch (Exception $e) {
             throw $e;

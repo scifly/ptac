@@ -38,7 +38,7 @@ class PartnerController extends Controller {
         
         if (Request::get('draw')) {
             return response()->json(
-                $this->partner->partnerIndex()
+                $this->partner->partners()
             );
         }
         
@@ -68,7 +68,7 @@ class PartnerController extends Controller {
     public function store(PartnerRequest $request) {
         
         return $this->result(
-            $this->partner->partnerStore(
+            $this->partner->pStore(
                 $request->all()
             )
         );
@@ -101,7 +101,7 @@ class PartnerController extends Controller {
     public function update(PartnerRequest $request, $id = null) {
         
         return $this->result(
-            $this->partner->partnerModify(
+            $this->partner->pModify(
                 $request->all(), $id
             )
         );
@@ -118,7 +118,7 @@ class PartnerController extends Controller {
     public function destroy($id = null) {
         
         return $this->result(
-            $this->partner->partnerRemove($id)
+            $this->partner->pRemove($id)
         );
         
     }

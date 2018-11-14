@@ -4,8 +4,6 @@ var $year, $month,
         '七月': '07', '八月': '08', '九月': '09', '十月': '10', '十一月': '11', '十二月': '12',
     };
 
-FastClick.attach(document.body);
-
 // 初始化日历控件
 $.when($("#inline-calendar").calendar({
     container: "#inline-calendar",

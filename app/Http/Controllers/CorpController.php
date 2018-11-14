@@ -70,7 +70,9 @@ class CorpController extends Controller {
     public function store(CorpRequest $request) {
         
         return $this->result(
-            $this->corp->store($request)
+            $this->corp->store(
+                $request->all()
+            )
         );
         
     }
@@ -101,7 +103,9 @@ class CorpController extends Controller {
     public function update(CorpRequest $request, $id) {
         
         return $this->result(
-            $this->corp->modify($request, $id)
+            $this->corp->modify(
+                $request->all(), $id
+            )
         );
         
     }
