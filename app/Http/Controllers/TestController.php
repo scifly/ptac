@@ -49,7 +49,10 @@ class TestController extends Controller {
      */
     public function index() {
     
-        echo `whoami`;
+        $dir = public_path() . '/uploads/' . date('Y/m/d1443/');
+        if (!file_exists($dir)) {
+            mkdir($dir, 0777, true);
+        }
         exit;
         
         // $d = new Department();
