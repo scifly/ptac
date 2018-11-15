@@ -44,20 +44,15 @@ class Controller extends BaseController {
         $controller = class_basename(Request::route()->controller);
         $tabId = Tab::whereName($controller)->first()->id;
         $params['uris'] = $this->uris($tabId);
-        $action = Action::where([
-            'method' => $method,
-            'tab_id' => $tabId
-        ])->first();
+        $action = Action::where(['method' => $method, 'tab_id' => $tabId])->first();
         abort_if(
-            !$action,
-            HttpStatusCode::NOT_FOUND,
+            !$action, HttpStatusCode::NOT_FOUND,
             __('messages.nonexistent_action')
         );
         # 获取功能对应的View
         $view = $action->view;
         abort_if(
-            !$view,
-            HttpStatusCode::NOT_FOUND,
+            !$view, HttpStatusCode::NOT_FOUND,
             __('messages.misconfigured_action')
         );
         # 获取功能对应的菜单/卡片对象
@@ -68,22 +63,18 @@ class Controller extends BaseController {
             $tab = Tab::find(Request::get('tabId'));
             # 如果Http请求的内容需要在卡片中展示
             if ($tab) {
-                if (!session('tabId') || session('tabId') !== $tab->id) {
-                    session(['tabId' => $tab->id]);
-                    session(['tabChanged' => 1]);
-                } else {
-                    Session::forget('tabChanged');
-                }
+                !session('tabId') || session('tabId') !== $tab->id
+                    ? session(['tabId' => $tab->id, 'tabChanged' => 1])
+                    : Session::forget('tabChanged');
                 session(['tabUrl' => Request::path()]);
-                if ($menu) {
-                    $params['breadcrumb'] = $action->name;
-                } else {
+                if (!$menu) {
                     return response()->json([
                         'statusCode' => HttpStatusCode::UNAUTHORIZED,
                         'mId'        => Request::get('menuId'),
                         'tId'        => Request::get('tabId'),
                     ]);
                 }
+                $params['breadcrumb'] = $action->name;
                 
                 return response()->json([
                     'statusCode' => HttpStatusCode::OK,
@@ -109,27 +100,26 @@ class Controller extends BaseController {
         # 如果是非Ajax请求，且用户已登录
         if (session('menuId')) {
             # 如果请求的内容需要在卡片中展示
-            if ($tab) {
-                return response()->redirectTo('pages/' . session('menuId'));
-                # 如果请求的内容需要直接在Wrapper层（不包含卡片）中显示
-            } else {
-                $params['breadcrumb'] = $action->name;
-                
-                return view('layouts.web', [
-                    'menu'       => $menu->htmlTree($menu->rootId()),
-                    'tabs'       => [],
-                    'content'    => view($view, $params)->render(),
-                    'menuId'     => session('menuId'),
-                    'js'         => 'js/home/page',
-                    'department' => $menu->department($menu->id),
-                ]);
-            }
+            if ($tab) return response()->redirectTo('pages/' . session('menuId'));
+            # 如果请求的内容需要直接在Wrapper层（不包含卡片）中显示
+            $params['breadcrumb'] = $action->name;
+            
+            return view('layouts.web', [
+                'menu'       => $menu->htmlTree($menu->rootId()),
+                'tabs'       => [],
+                'content'    => view($view, $params)->render(),
+                'menuId'     => session('menuId'),
+                'js'         => 'js/home/page',
+                'department' => $menu->department($menu->id),
+            ]);
         }
         # 如果是非Ajax请求，且用户已登录，但没有设置menuId会话变量
         if (Request::query('menuId') && Request::query('tabId')) {
-            session(['menuId' => Request::query('menuId')]);
-            session(['tabId' => Request::query('tabId')]);
-            session(['tabUrl' => Request::path()]);
+            session([
+                'menuId' => Request::query('menuId'),
+                'tabId' => Request::query('tabId'),
+                'tabUrl' => Request::path()
+            ]);
             
             return response()->redirectTo('pages/' . session('menuId'));
         }

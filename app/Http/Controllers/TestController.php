@@ -48,6 +48,12 @@ class TestController extends Controller {
      * @throws \Throwable
      */
     public function index() {
+    
+        $dir = public_path() . '/uploads/' . date('Y/m/d/');
+        if (!file_exists($dir)) {
+            mkdir($dir, 0777, true);
+        }
+        exit;
         
         // $d = new Department();
         // $departmentId = School::find($this->schoolId())->department_id;
