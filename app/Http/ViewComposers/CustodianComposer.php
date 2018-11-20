@@ -33,15 +33,7 @@ class CustodianComposer {
      */
     public function compose(View $view) {
     
-        if (Request::route('id')) {
-            $custodian = $this->custodian->find(Request::route('id'));
-            if (!$custodian->singular) {
-                $educatorId = $this->educator->where('user_id', $custodian->user_id)->first()->id;
-            }
-        }
         list($title, $grades, $classes, $students, $relations, $mobiles) = $this->custodian->compose();
-        list($squads, $subjects) = $this->educator->compose($educatorId ?? null);
-        $firstOption = [0 => '(请选择)'];
         
         $view->with([
             'grades'       => $grades,
@@ -49,8 +41,6 @@ class CustodianComposer {
             'students'     => $students,
             'mobiles'      => $mobiles,
             'relations'    => $relations,
-            'squads'       => $firstOption + $squads,
-            'subjects'     => $firstOption + $subjects,
             'title'        => $title,
             'relationship' => true,
         ]);

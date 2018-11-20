@@ -1,5 +1,5 @@
 <div class="form-group" id="class-subjects">
-    <label class="col-sm-3 control-label">班级科目关系</label>
+    <label class="col-sm-3 control-label">任教班级&科目</label>
     <div class="col-sm-6">
         <table id="classes" class="table-bordered table-responsive" style="width: 100%;">
             <thead>

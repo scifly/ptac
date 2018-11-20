@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
+use ReflectionException;
 
 /**
  * App\Models\ScoreTotal 总分
@@ -93,6 +94,7 @@ class ScoreTotal extends Model {
      * 总成绩记录列表
      *
      * @return array
+     * @throws ReflectionException
      */
     function index() {
         

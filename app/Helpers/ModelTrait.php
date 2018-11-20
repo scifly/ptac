@@ -332,37 +332,28 @@ trait ModelTrait {
      * @param User|null $user
      * @param null $schoolId
      * @return array|null
+     * @throws ReflectionException
      */
     function contactIds($type, User $user = null, $schoolId = null) {
         
         $user = $user ?? Auth::user();
         $schoolId = $schoolId ?? ($this->schoolId() ?? session('schoolId'));
-        switch ($type) {
-            case 'student':
-                $condition = ['name' => '学生'];
-                break;
-            case 'custodian':
-                $condition = ['name' => '监护人'];
-                break;
-            case 'educator':
-                $condition = ['name' => '教职员工', 'school_id' => $schoolId];
-                break;
-            default:
-                break;
-        }
-        $groupId = isset($condition) ? Group::where($condition)->first()->id : 0;
         $userIds = [];
         if (in_array($user->role($user->id), Constant::SUPER_ROLES)) {
-            $userIds = $this->userIds(School::find($schoolId)->department_id, $groupId);
+            $userIds = $this->userIds(
+                School::find($schoolId)->department_id, $type
+            );
         } else {
             $departments = $user->depts();
             foreach ($departments as $d) {
-                $userIds = array_merge($this->userIds($d->id, $groupId), $userIds);
+                $userIds = array_merge(
+                    $this->userIds($d->id, $type), $userIds
+                );
             }
         }
         $userIds = array_unique($userIds);
         
-        return empty($userIds) ? [0]
+        return (empty($userIds)) ? [0]
             : User::whereIn('id', $userIds)->with($type)->get()->pluck($type . '.id')->toArray();
         
     }
@@ -371,17 +362,22 @@ trait ModelTrait {
      * 返回指定部门(含子部门）下的所有用户id
      *
      * @param $departmentId
-     * @param null $groupId - 角色id
+     * @param null $type
      * @return array
+     * @throws ReflectionException
      */
-    function userIds($departmentId, $groupId = null): array {
+    function userIds($departmentId, $type = null): array {
         
         $departmentIds = [$departmentId] + (new Department)->subIds($departmentId);
-        $userIds = DepartmentUser::whereIn('department_id', $departmentIds)->pluck('user_id')->toArray();
+        $userIds = DepartmentUser::whereIn('department_id', $departmentIds)
+            ->pluck('user_id')->toArray();
         
-        return !$groupId
-            ? array_unique($userIds)
-            : array_unique(User::whereIn('id', $userIds)->where('group_id', $groupId)->pluck('id')->toArray());
+        if (!$type) return array_unique($userIds);
+        $contact = (new ReflectionClass('App\\Models\\' . ucfirst($type)))->newInstance();
+        
+        return array_unique(
+            $contact->whereIn('user_id', $userIds)->pluck('user_id')->toArray()
+        );
         
     }
     
@@ -696,6 +692,7 @@ trait ModelTrait {
      * @param FormRequest $request
      * @param null $role
      * @return array
+     * @throws ReflectionException
      */
     function contactInput(FormRequest $request, $role) {
     
@@ -743,7 +740,6 @@ trait ModelTrait {
                 break;
             case 'educator':
             case 'operator':
-                if (!Request::route('id')) $input['user']['password'] = bcrypt($input['user']['password']);
                 $input['user']['position'] = Group::find($input['user']['group_id'])->name;
                 if ($role == 'educator') {
                     $input['enabled'] = $input['user']['enabled'];

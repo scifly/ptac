@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use ReflectionException;
 use Throwable;
 
 /**
@@ -1073,6 +1074,7 @@ class Score extends Model {
      * 学生成绩分析
      *
      * @return mixed
+     * @throws ReflectionException
      */
     private function studentStat() {
         

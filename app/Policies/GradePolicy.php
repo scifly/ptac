@@ -10,6 +10,7 @@ use App\Models\Menu;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
+use ReflectionException;
 
 /**
  * Class GradePolicy
@@ -39,6 +40,7 @@ class GradePolicy {
      * @param Grade|null $grade
      * @param bool $abort
      * @return bool
+     * @throws ReflectionException
      */
     function operation(User $user, Grade $grade = null, $abort = false) {
     

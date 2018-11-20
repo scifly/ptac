@@ -12,6 +12,7 @@ use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
+use ReflectionException;
 
 /**
  * Class ConsumptionPolicy
@@ -50,6 +51,7 @@ class ConsumptionPolicy {
      * @param User $user
      * @param ConsumptionStat $cs
      * @return bool
+     * @throws ReflectionException
      */
     public function stat(User $user, ConsumptionStat $cs) {
         

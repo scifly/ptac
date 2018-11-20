@@ -9,6 +9,7 @@ use App\Models\ProcedureStep;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
+use ReflectionException;
 
 /**
  * Class ProcedureStepPolicy
@@ -34,6 +35,7 @@ class ProcedureStepPolicy {
      * @param ProcedureStep $ps
      * @param bool $abort
      * @return bool
+     * @throws ReflectionException
      */
     function opertion(User $user, ProcedureStep $ps, $abort = false) {
         

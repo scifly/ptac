@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\{Auth, DB, Request};
+use ReflectionException;
 use Throwable;
 
 /**
@@ -275,7 +276,7 @@ class Custodian extends Model {
                 });
                 if ($cses->count() <= 1 || $schoolCses->count() == $cses->count()) {
                     CustodianStudent::whereCustodianId($id)->delete();
-                    if ($custodian->singular) {
+                    if (!$custodian->user->educator) {
                         (new User)->remove($custodian->user_id);
                     }
                     $custodian->delete();
@@ -299,6 +300,7 @@ class Custodian extends Model {
      * @return array|bool
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws ReflectionException
      */
     function export() {
         

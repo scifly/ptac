@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use ReflectionException;
 use Throwable;
 use Validator;
 
@@ -113,6 +114,7 @@ class StudentAttendance extends Model {
      * 学生考勤记录列表
      *
      * @return array
+     * @throws ReflectionException
      */
     function index() {
         
@@ -626,6 +628,7 @@ class StudentAttendance extends Model {
      *
      * @param null $studentId
      * @return JsonResponse|View
+     * @throws ReflectionException
      */
     function wDetail($studentId = null) {
         

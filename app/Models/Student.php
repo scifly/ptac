@@ -17,6 +17,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\{Facades\Auth, Facades\DB, Facades\Request, Facades\Storage};
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use ReflectionException;
 use Throwable;
 
 /**
@@ -408,6 +409,7 @@ class Student extends Model {
      * @return mixed
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws ReflectionException
      */
     function export() {
         

@@ -6,6 +6,7 @@ use App\Models\Grade;
 use App\Models\Squad;
 use App\Models\Student;
 use Illuminate\Contracts\View\View;
+use ReflectionException;
 
 /**
  * Class ConsumptionStatComposer
@@ -17,6 +18,7 @@ class ConsumptionStatComposer {
     
     /**
      * @param View $view
+     * @throws ReflectionException
      */
     public function compose(View $view) {
         

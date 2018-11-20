@@ -7,6 +7,7 @@ use App\Models\Grade;
 use App\Models\Squad;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Request;
+use ReflectionException;
 
 /**
  * Class SquadComposer
@@ -30,6 +31,7 @@ class SquadComposer {
     
     /**
      * @param View $view
+     * @throws ReflectionException
      */
     public function compose(View $view) {
         

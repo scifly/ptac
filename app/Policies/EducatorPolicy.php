@@ -6,6 +6,7 @@ use App\Models\{User, Group, Educator};
 use App\Helpers\{Constant, ModelTrait, PolicyTrait, HttpStatusCode};
 use Illuminate\Support\Facades\Request;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use ReflectionException;
 
 /**
  * Class EducatorPolicy
@@ -21,7 +22,7 @@ class EducatorPolicy {
      * @return void
      */
     public function __construct() { }
-
+    
     /**
      * 权限判断
      *
@@ -29,6 +30,7 @@ class EducatorPolicy {
      * @param Educator|null $educator
      * @param bool $abort
      * @return bool
+     * @throws ReflectionException
      */
     function operation(User $user, Educator $educator = null, $abort = false) {
     

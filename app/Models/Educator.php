@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\{Builder,
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\{Auth, DB, Request, Storage};
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use ReflectionException;
 use Throwable;
 
 /**
@@ -244,6 +245,7 @@ class Educator extends Model {
         try {
             DB::transaction(function () use ($data) {
                 # 创建用户
+                $data['user']['password'] = bcrypt($data['user']['password']);
                 $user = User::create($data['user']);
                 # 创建教职员工
                 $data['user_id'] = $user->id;
@@ -387,7 +389,7 @@ class Educator extends Model {
                 Event::whereEducatorId($id)->delete();
                 (new Grade)->removeEducator($id);
                 (new Squad)->removeEducator($id);
-                if ($educator->singular) {
+                if (!$educator->user->custodian) {
                     (new User)->remove($educator->user_id);
                 } else {
                     (new User)->find($educator->user_id)->update([
@@ -487,6 +489,7 @@ class Educator extends Model {
      * @return bool
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws ReflectionException
      */
     function export() {
         

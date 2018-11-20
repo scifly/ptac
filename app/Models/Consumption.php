@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use ReflectionException;
 use Throwable;
 use Validator;
 
@@ -74,6 +75,7 @@ class Consumption extends Model {
      * 消费记录列表
      *
      * @return array
+     * @throws ReflectionException
      */
     function index() {
         

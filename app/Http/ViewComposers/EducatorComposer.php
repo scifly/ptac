@@ -34,14 +34,7 @@ class EducatorComposer {
      */
     public function compose(View $view) {
         
-        if (Request::route('id')) {
-            $educator = $this->educator->find(Request::route('id'));
-            if (!$educator->singular) {
-                $custodianId = $this->custodian->where('user_id', $educator->user_id)->first()->id;
-            }
-        }
         list($squads, $subjects, $groups, $departmentIds, $departments, $mobiles) = $this->educator->compose();
-        list($title, $grades, $classes, $students, $relations) = $this->custodian->compose($custodianId ?? null);
         $firstOption = [0 => '(请选择)'];
         $view->with([
             'squads'                => $firstOption + $squads,
@@ -50,12 +43,6 @@ class EducatorComposer {
             'mobiles'               => $mobiles,
             'selectedDepartmentIds' => $departmentIds,
             'selectedDepartments'   => $departments,
-            'grades'                => $grades,
-            'classes'               => $classes,
-            'students'              => $students,
-            'relations'             => $relations,
-            'relationship'          => true,
-            'title'                 => $title
         ]);
         
     }

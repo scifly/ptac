@@ -9,6 +9,7 @@ use App\Models\Squad;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
+use ReflectionException;
 
 /**
  * Class SquadPolicy
@@ -48,6 +49,7 @@ class SquadPolicy {
      * @param Squad|null $class
      * @param bool $abort
      * @return bool
+     * @throws ReflectionException
      */
     public function operation(User $user, Squad $class = null, $abort = false) {
         

@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
+use ReflectionException;
 use Throwable;
 use Validator;
 
@@ -81,6 +82,7 @@ class EducatorAttendance extends Model {
      * 教职员工考勤记录列表
      *
      * @return array
+     * @throws ReflectionException
      */
     function index() {
         
