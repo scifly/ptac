@@ -198,7 +198,7 @@ class Educator extends Model {
                 'db'        => 'Educator.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
-                    $user = Auth::user();
+                    $user = User::find(Auth::id());
                     $rechargeLink = sprintf(Snippet::DT_LINK_RECHARGE, 'recharge_' . $id);
                     
                     return Datatable::status($d, $row, false) .
@@ -468,14 +468,22 @@ class Educator extends Model {
             HttpStatusCode::NOT_ACCEPTABLE,
             __('messages.invalid_file_format')
         );
-        array_shift($educators);
-        $educators = array_values($educators);
-        # 去除表格的空数据
-        foreach ($educators as $key => $value) {
-            if ((array_filter($value)) == null) {
-                unset($educators[$key]);
-            }
+        $educators = array_filter(
+            array_values(
+                array_shift($educators)
+            ), 'sizeof'
+        );
+        $mobiles = array_count_values(
+            array_pluck($educators, 'H')
+        );
+        foreach ($mobiles as $mobile => $count) {
+            if ($count > 1) { $duplicates[] = $mobile; }
         }
+        abort_if(
+            isset($duplicates),
+            HttpStatusCode::NOT_ACCEPTABLE,
+            '手机号码: ' . implode(',', $duplicates ?? []) . '有重复，请检查后重试。'
+        );
         ImportEducator::dispatch($educators, Auth::id());
         Storage::disk('uploads')->delete($filename);
         

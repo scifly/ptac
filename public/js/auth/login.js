@@ -39,9 +39,8 @@ $(function() {
             error: function(e) {
                 $('.overlay').hide();
                 var obj = JSON.parse(e.responseText);
-                if (obj['statusCode'] === 498) {
-                    window.location.reload();
-                }
+
+                if (e.status === 498) window.location.reload();
                 $.gritter.add({
                     title: '登录',
                     text: obj['message'],

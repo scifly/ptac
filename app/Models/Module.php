@@ -7,6 +7,7 @@ use App\Helpers\HttpStatusCode;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Builder;
@@ -53,7 +54,7 @@ use Illuminate\View\View;
  * @method static Builder|Module whereUpdatedAt($value)
  * @method static Builder|Module whereUri($value)
  * @method static Builder|Module whereGroupId($value)
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class Module extends Model {
 
@@ -238,7 +239,7 @@ class Module extends Model {
      */
     function wIndex() {
     
-        $role = Auth::user()->role();
+        $role = User::find(Auth::id())->role();
         $custodianGroupId = Group::whereName('监护人')->first()->id;
         $schoolId = session('schoolId');
         $modules = $this->orderBy('order')->where([
@@ -283,7 +284,7 @@ class Module extends Model {
      */
     function schools() {
     
-        $user = Auth::user();
+        $user = User::find(Auth::id());
         $schoolIds = $user->schoolIds($user->id, session('corpId'));
     
         return view('wechat.schools', [
@@ -299,7 +300,7 @@ class Module extends Model {
      */
     function compose() {
     
-        switch (Auth::user()->role()) {
+        switch (User::find(Auth::id())->role()) {
             case '运营':
                 $schools = School::whereEnabled(1)->get();
                 break;

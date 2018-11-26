@@ -49,7 +49,7 @@ class EventController extends Controller {
         return $this->output([
             'events'  => $events,
             'userId'  => Auth::id(),
-            'isAdmin' => Auth::user()->role() == '运营',
+            'isAdmin' => User::find(Auth::id())->role() == '运营',
             'show'    => true,
         ]);
         
@@ -97,7 +97,7 @@ class EventController extends Controller {
         $event = $this->event->find($id);
         $row = Request::all();
         abort_if(
-            !in_array(Auth::user()->role(), Constant::SUPER_ROLES) && $row['ispublic'] == 1,
+            !in_array(User::find(Auth::id())->role(), Constant::SUPER_ROLES) && $row['ispublic'] == 1,
             HttpStatusCode::NOT_ACCEPTABLE,
             '此事件只有管理员可编辑！'
         );

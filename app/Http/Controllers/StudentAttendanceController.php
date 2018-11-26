@@ -63,9 +63,10 @@ class StudentAttendanceController extends Controller {
                 list($classes) = $this->grade->classList(
                     Request::input('id')
                 );
-                $this->result['html']['classes'] = $classes;
                 
-                return response()->json($this->result);
+                return response()->json([
+                    'html' => ['classes' => $classes]
+                ]);
             }
             
             return response()->json(

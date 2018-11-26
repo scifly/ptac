@@ -6,6 +6,7 @@ use App\Models\Action;
 use App\Models\Menu;
 use App\Models\MenuTab;
 use App\Models\Tab;
+use App\Models\User;
 use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
@@ -68,7 +69,6 @@ class HomeController extends Controller {
             $view = view('home.home', $params);
             if (Request::ajax()) {
                 return response()->json([
-                    'statusCode' => HttpStatusCode::OK,
                     'title'      => '首页',
                     'uri'        => Request::path(),
                     'html'       => $view->render(),
@@ -82,7 +82,7 @@ class HomeController extends Controller {
             'menuId'     => $menuId,
             'content'    => view('home.home'),
             'department' => $department,
-            'user'       => Auth::user(),
+            'user'       => User::find(Auth::id()),
         ]);
         
     }
@@ -146,11 +146,11 @@ class HomeController extends Controller {
         }
         # 获取并返回wrapper-content层中的html内容
         if (Request::ajax()) {
-            $this->result['html'] = view('shared.site_content', ['tabs' => $tabArray])->render();
-            $this->result['department'] = $this->menu->department($id);
-            $this->result['title'] = $this->menu->find(session('menuId'))->name;
-            
-            return response()->json($this->result);
+            return response()->json([
+                'html' => view('shared.site_content', ['tabs' => $tabArray])->render(),
+                'department' => $this->menu->department($id),
+                'title' => $this->menu->find(session('menuId'))->name
+            ]);
         }
         
         return view('layouts.web', [

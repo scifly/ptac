@@ -6,6 +6,7 @@ use App\Models\Group;
 use App\Rules\{Email, Mobile};
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\{Auth, Request};
+use ReflectionException;
 
 /**
  * Class OperatorRequest
@@ -22,7 +23,7 @@ class OperatorRequest extends FormRequest {
      */
     public function authorize() {
         
-        $role = Auth::user()->role();
+        $role = User::find(Auth::id())->role();
         if (in_array($role, Constant::SUPER_ROLES)) {
             $groupId = Request::input('user.group_id');
             switch ($role) {
@@ -70,6 +71,9 @@ class OperatorRequest extends FormRequest {
         
     }
     
+    /**
+     * @throws ReflectionException
+     */
     protected function prepareForValidation() {
         
         if (!Request::has('ids')) {

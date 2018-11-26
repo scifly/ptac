@@ -42,9 +42,7 @@ class UserController extends Controller {
      */
     public function edit() {
         
-        return $this->output([
-            'user' => $this->user->find(Auth::id())
-        ]);
+        return $this->output();
 
     }
     
@@ -57,7 +55,7 @@ class UserController extends Controller {
      */
     public function update(UserRequest $request) {
         
-        $user = Auth::user();
+        $user = User::find(Auth::id());
         
         return $this->result(
             $user->modify($request->all(), $user->id)

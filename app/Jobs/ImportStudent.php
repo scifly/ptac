@@ -91,7 +91,7 @@ class ImportStudent implements ShouldQueue {
             'school'         => 'required|string|between:4,20',
             'grade'          => 'required|string|between:3,20',
             'class'          => 'required|string|between:2,20',
-            'mobile'         => 'required', new Mobile(),
+            'mobile'         => 'required|regex:/^1[3456789][0-9]{9}$/',
             'student_number' => 'required|alphanum|between:2,32',
             'card_number'    => 'required|alphanum|between:2,32',
             'oncampus'       => ['required', Rule::in(['住读', '走读'])],

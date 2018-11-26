@@ -288,7 +288,7 @@ class Corp extends Model {
         if (!Session::exists('menuId')) {
             return null;
         }
-        $user = Auth::user();
+        $user = User::find(Auth::id());
         switch ($user->role()) {
             case '运营':
             case '企业':

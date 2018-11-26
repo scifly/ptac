@@ -210,7 +210,7 @@ class Score extends Model {
                 ]
             ]
         ];
-        if (in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
+        if (in_array(User::find(Auth::id())->role(), Constant::SUPER_ROLES)) {
             $condition = 'School.id = ' . $this->schoolId();
         } else {
             $condition = 'Squad.id IN (' . implode(',', $this->classIds()) . ')';
@@ -1200,7 +1200,7 @@ class Score extends Model {
      */
     function wIndex() {
         
-        $user = Auth::user();
+        $user = User::find(Auth::id());
         $schoolId = session('schoolId');
         $pageSize = 4;
         $start = Request::get('start') ? Request::get('start') * $pageSize : 0;
@@ -1248,7 +1248,7 @@ class Score extends Model {
      */
     function detail() {
         
-        $user = Auth::user();
+        $user = User::find(Auth::id());
         abort_if(
             $user->role() == '学生',
             HttpStatusCode::UNAUTHORIZED,

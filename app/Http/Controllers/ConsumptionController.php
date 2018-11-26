@@ -79,17 +79,17 @@ class ConsumptionController extends Controller {
             list($consumption, $charge) = $this->consumption->stat(
                 $request::all()
             );
-            $this->result['consumption'] = $consumption;
-            $this->result['charge'] = $charge;
         } else {
-            $this->result['details'] = $this->consumption->stat(
+            $details = $this->consumption->stat(
                 $request::all(), Request::query('detail')
             );
         }
         
-        return response()->json(
-            $this->result
-        );
+        return response()->json([
+            'consumption' => $consumption ?? null,
+            'charge' => $charge ?? null,
+            'details' => $details ?? null
+        ]);
         
     }
     

@@ -608,7 +608,7 @@ class StudentAttendance extends Model {
      */
     function wIndex() {
         
-        $user = Auth::user();
+        $user = User::find(Auth::id());
         $role = $user->role();
         # 禁止学生学生访问考勤记录
         abort_if(
@@ -642,7 +642,7 @@ class StudentAttendance extends Model {
                 'date' => 'required|date',
             ]);
             abort_if(
-                $result->failed() || !in_array($studentId, $this->contactIds('student', Auth::user())),
+                $result->failed() || !in_array($studentId, $this->contactIds('student', User::find(Auth::id()))),
                 HttpStatusCode::NOT_ACCEPTABLE,
                 __('messages.invalid_argument')
             );
@@ -766,7 +766,7 @@ class StudentAttendance extends Model {
                 : $this->wCheck();
         }
         # 角色判断
-        $user = Auth::user();
+        $user = User::find(Auth::id());
         abort_if(
             !$user || $user->role() == '学生',
             HttpStatusCode::UNAUTHORIZED,

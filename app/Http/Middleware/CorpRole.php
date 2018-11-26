@@ -23,7 +23,7 @@ class CorpRole {
      */
     public function handle($request, Closure $next) {
         
-        $user = Auth::user();
+        $user = User::find(Auth::id());
         if (
             $user->custodian && $user->educator &&
             $user->educator->school_id == session('schoolId')

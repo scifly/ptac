@@ -249,6 +249,7 @@ class EducatorAttendance extends Model {
      * 考勤统计
      *
      * @return array
+     * @throws ReflectionException
      */
     function stat() {
         

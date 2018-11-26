@@ -226,7 +226,7 @@ trait ModelTrait {
      */
     function schoolIds($userId = null, $corpId = null) {
         
-        $user = !$userId ? Auth::user() : User::find($userId);
+        $user = User::find($userId ?? Auth::id());
         $schools = Collect([]);
         switch ($user->role($user->id)) {
             case '运营':
@@ -268,7 +268,7 @@ trait ModelTrait {
      */
     function gradeIds($schoolId = null, $userId = null) {
         
-        $user = !$userId ? Auth::user() : User::find($userId);
+        $user = User::find($userId ?? Auth::id());
         $schoolId = $schoolId ?? $this->schoolId();
         $grades = in_array($user->role($user->id), Constant::SUPER_ROLES)
             ? School::find($schoolId)->grades
@@ -287,7 +287,7 @@ trait ModelTrait {
      */
     function classIds($schoolId = null, $userId = null) {
         
-        $user = !$userId ? Auth::user() : User::find($userId);
+        $user = User::find($userId ?? Auth::id());
         $schoolId = $schoolId ?? $this->schoolId();
         $classes = in_array($user->role($user->id), Constant::SUPER_ROLES)
             ? School::find($schoolId)->classes
@@ -306,7 +306,7 @@ trait ModelTrait {
      */
     function examIds($schoolId = null, $userId = null) {
         
-        $user = !$userId ? Auth::user() : User::find($userId);
+        $user = User::find($userId ?? Auth::id());
         $schoolId = $schoolId ?? $this->schoolId();
         if (in_array($user->role($user->id), Constant::SUPER_ROLES)) {
             $examIds = School::find($schoolId)->exams->pluck('id')->toArray();
@@ -336,7 +336,7 @@ trait ModelTrait {
      */
     function contactIds($type, User $user = null, $schoolId = null) {
         
-        $user = $user ?? Auth::user();
+        $user = $user ?? User::find(Auth::id());
         $schoolId = $schoolId ?? ($this->schoolId() ?? session('schoolId'));
         $userIds = [];
         if (in_array($user->role($user->id), Constant::SUPER_ROLES)) {
@@ -390,7 +390,7 @@ trait ModelTrait {
      */
     function departmentIds($userId = null, $schoolId = null) {
         
-        $user = $userId ? User::find($userId) : Auth::user();
+        $user = User::find($userId ?? Auth::id());
         $role = $user->role($userId ?? Auth::id());
         if (in_array($role, Constant::SUPER_ROLES)) {
             $schoolId = $schoolId ?? $this->schoolId();
@@ -428,7 +428,7 @@ trait ModelTrait {
      */
     function menuIds(Menu $menu, $userId = null) {
         
-        $user = !$userId ? Auth::user() : User::find($userId);
+        $user = User::find($userId ?? Auth::id());
         switch ($user->role($user->id)) {
             case '运营':
                 return $menu::all()->pluck('id')->toArray();
@@ -475,7 +475,7 @@ trait ModelTrait {
      */
     function excel(array $records, $fileName = 'export', $sheetTitle = '导出数据', $download = true) {
         
-        $user = Auth::user();
+        $user = User::find(Auth::id());
         $spreadsheet = new Spreadsheet();
         $spreadsheet->getProperties()->setCreator($user ? $user->realname : 'ptac')
             ->setLastModifiedBy($user ? $user->realname : 'ptac')
@@ -622,7 +622,7 @@ trait ModelTrait {
      */
     function visibleUserIds() {
     
-        if (in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
+        if (in_array(User::find(Auth::id())->role(), Constant::SUPER_ROLES)) {
             $school = School::find($this->schoolId());
             $departmentId = $school->department_id;
             $departmentIds = array_merge(

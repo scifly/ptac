@@ -9,6 +9,7 @@ use App\Models\School;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use ReflectionException;
 use Throwable;
 
 /**
@@ -190,6 +191,7 @@ class EducatorController extends Controller {
      * @return mixed
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws ReflectionException
      */
     public function export() {
         

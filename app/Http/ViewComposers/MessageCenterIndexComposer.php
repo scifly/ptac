@@ -24,7 +24,7 @@ class MessageCenterIndexComposer {
      */
     public function compose(View $view) {
         
-        $user = Auth::user();
+        $user = User::find(Auth::id());
         # 当前用户能否发送消息
         $canSend = !$user->custodian && !$user->student;
         # 当前用户发送的消息

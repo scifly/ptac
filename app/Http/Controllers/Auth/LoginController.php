@@ -59,15 +59,8 @@ class LoginController extends Controller {
         if (!$request->ajax() && Auth::id()) {
             return response()->redirectTo($request->server('HTTP_REFERER'));
         }
-        $returnUrl = null;
-        if ($request->get('returnUrl')) {
-            $returnUrl = urldecode($request->get('returnUrl'));
-        }
-        if (Auth::id()) {
-            $this->result['url'] = $returnUrl ? $returnUrl : '/';
-            
-            return response()->json($this->result);
-        }
+        if ($request->get('returnUrl')) $returnUrl = urldecode($request->get('returnUrl'));
+        if (Auth::id()) return response()->json(['url' => $returnUrl ?? '/']);
         $input = $request->input('input');
         $password = $request->input('password');
         $rememberMe = $request->input('rememberMe') == 'true' ? true : false;
@@ -97,20 +90,11 @@ class LoginController extends Controller {
             HttpStatusCode::NOT_ACCEPTABLE,
             __('4327891')
         );
-        # 登录(用户名或邮箱)
-        if (Auth::attempt(
-            [$field => $input, 'password' => $password],
-            $rememberMe
-        )) {
-            $this->result['url'] = $returnUrl ? $returnUrl : '/';
-            
-            return response()->json($this->result);
-        }
         
-        return abort(
-            HttpStatusCode::NOT_ACCEPTABLE,
-            __('messages.invalid_credentials')
-        );
+        # 登录(用户名或邮箱)
+        return Auth::attempt([$field => $input, 'password' => $password], $rememberMe)
+            ? response()->json(['url' => $returnUrl ?? '/'])
+            : abort(HttpStatusCode::NOT_ACCEPTABLE, __('messages.invalid_credentials'));
         
     }
     

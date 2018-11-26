@@ -21,7 +21,7 @@ use Throwable;
  */
 class ApiController extends Controller {
     
-    protected $consumption, $sa, $ea, $message;
+    protected $consumption, $sa, $ea, $message, $reaction;
     
     /**
      * ApiController constructor.
@@ -41,6 +41,10 @@ class ApiController extends Controller {
         $this->sa = $sa;
         $this->ea = $ea;
         $this->message = $message;
+        $this->reaction = [
+            'statusCode' => HttpStatusCode::OK,
+            'message' => __('messages.ok')
+        ];
         
     }
     
@@ -61,16 +65,16 @@ class ApiController extends Controller {
             'group_id' => Group::whereName('api')->first()->id
         ])->first();
         if ($apiUser && (Auth::id() || Auth::attempt($credential))) {
-            $user = Auth::user();
-            $this->result['token'] = $user->createToken('ptac')->accessToken;
+            $user = User::find(Auth::id());
+            $this->reaction['token'] = $user->createToken('ptac')->accessToken;
         } else {
-            $this->result['message'] = __('messages.forbidden');
-            $this->result['statusCode'] = HttpStatusCode::UNAUTHORIZED;
+            $this->reaction['message'] = __('messages.forbidden');
+            $this->reaction['statusCode'] = HttpStatusCode::UNAUTHORIZED;
         }
         
         return response()->json(
-            $this->result,
-            $this->result['statusCode']
+            $this->reaction,
+            $this->reaction['statusCode']
         );
         
     }
@@ -123,7 +127,7 @@ class ApiController extends Controller {
             Request::input('mobiles'),
             Request::input('school_id'),
             Request::input('content'),
-            Auth::user()
+            User::find(Auth::id())
         );
         
         return response()->json([

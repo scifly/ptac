@@ -5,7 +5,9 @@ use App\Helpers\HttpStatusCode;
 use App\Models\Action;
 use App\Models\Menu;
 use App\Models\Tab;
+use App\Models\User;
 use App\Policies\Route;
+use Auth;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -25,11 +27,6 @@ class Controller extends BaseController {
     
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
     
-    protected $result = [
-        'statusCode' => HttpStatusCode::OK,
-        'message'    => '操作成功',
-    ];
-    
     /**
      * 输出view
      *
@@ -44,11 +41,13 @@ class Controller extends BaseController {
         $controller = class_basename(Request::route()->controller);
         $tabId = Tab::whereName($controller)->first()->id;
         $params['uris'] = $this->uris($tabId);
+        $params['user'] = User::find(Auth::id());
         $action = Action::where(['method' => $method, 'tab_id' => $tabId])->first();
         abort_if(
             !$action, HttpStatusCode::NOT_FOUND,
             __('messages.nonexistent_action')
         );
+        $params['breadcrumb'] = $action->name;
         # 获取功能对应的View
         $view = $action->view;
         abort_if(
@@ -60,24 +59,15 @@ class Controller extends BaseController {
         $tab = Tab::find(session('tabId'));
         # 如果请求类型为Ajax
         if (Request::ajax()) {
-            $tab = Tab::find(Request::get('tabId'));
             # 如果Http请求的内容需要在卡片中展示
-            if ($tab) {
+            if ($tab = Tab::find(Request::get('tabId'))) {
+                abort_if(!$menu, HttpStatusCode::UNAUTHORIZED);
                 !session('tabId') || session('tabId') !== $tab->id
                     ? session(['tabId' => $tab->id, 'tabChanged' => 1])
                     : Session::forget('tabChanged');
                 session(['tabUrl' => Request::path()]);
-                if (!$menu) {
-                    return response()->json([
-                        'statusCode' => HttpStatusCode::UNAUTHORIZED,
-                        'mId'        => Request::get('menuId'),
-                        'tId'        => Request::get('tabId'),
-                    ]);
-                }
-                $params['breadcrumb'] = $action->name;
                 
                 return response()->json([
-                    'statusCode' => HttpStatusCode::OK,
                     'html'       => view($view, $params)->render(),
                     'js'         => $action->js,
                     'breadcrumb' => $params['breadcrumb'],
@@ -86,10 +76,8 @@ class Controller extends BaseController {
             # 如果Http请求的内容需要直接在Wrapper层（不包含卡片）中显示
             session(['menuId' => Request::query('menuId')]);
             Session::forget('tabId');
-            $params['breadcrumb'] = $action->name;
             
             return response()->json([
-                'statusCode' => HttpStatusCode::OK,
                 'title'      => $params['breadcrumb'],
                 'uri'        => Request::path(),
                 'html'       => view($view, $params)->render(),
@@ -101,8 +89,8 @@ class Controller extends BaseController {
         if (session('menuId')) {
             # 如果请求的内容需要在卡片中展示
             if ($tab) return response()->redirectTo('pages/' . session('menuId'));
+            
             # 如果请求的内容需要直接在Wrapper层（不包含卡片）中显示
-            $params['breadcrumb'] = $action->name;
             
             return view('layouts.web', [
                 'menu'       => $menu->htmlTree($menu->rootId()),
@@ -130,27 +118,6 @@ class Controller extends BaseController {
     }
     
     /**
-     * 返回指定控制器对应的所有路由
-     *
-     * @param integer $tabId - 控制器id
-     * @return array
-     */
-    private function uris($tabId) {
-        
-        $routes = Action::whereTabId($tabId)
-            ->where('route', '<>', null)
-            ->pluck('route', 'method')
-            ->toArray();
-        $uris = [];
-        foreach ($routes as $key => $value) {
-            $uris[$key] = new Route($value);
-        }
-        
-        return $uris;
-        
-    }
-    
-    /**
      * 返回操作结果提示信息
      *
      * @param mixed $result
@@ -159,39 +126,30 @@ class Controller extends BaseController {
      * @return JsonResponse|string
      */
     protected function result($result, String $success = null, String $failure = null) {
-        
+    
         # 获取功能名称
         $e = new Exception();
         $method = $e->getTrace()[1]['function'];
-        $path = explode('\\', get_called_class());
-        $controller = $path[sizeof($path) - 1];
+        $paths = explode('\\', get_called_class());
+        $controller = $paths[sizeof($paths) - 1];
         unset($e);
         $action = Action::where([
             'tab_id' => Tab::whereName($controller)->first()->id,
             'method' => $method
         ])->first();
-        # 获取Http状态码
-        $statusCode = $result
-            ? HttpStatusCode::OK
-            : HttpStatusCode::INTERNAL_SERVER_ERROR;
         # 获取状态消息
         $message = $result
             ? ($success ?? __('messages.ok'))
             : ($failure ?? __('messages.fail'));
+        # 获取Http状态码
+        $statusCode = $result
+            ? HttpStatusCode::OK
+            : HttpStatusCode::INTERNAL_SERVER_ERROR;
+    
         # 输出状态码及消息
-        if (Request::ajax()) {
-            return $result
-                ? response()->json([
-                    'statusCode' => $statusCode,
-                    'message'    => $message,
-                    'title'      => $action ? $action->name : '',
-                ])
-                : abort($statusCode, $message);
-        }
-        
-        return $result
-            ? $statusCode . ' : ' . $message
-            : abort($statusCode, $message);
+        return Request::ajax()
+            ? response()->json(['title' => $action ? $action->name : '', 'message' => $message], $statusCode)
+            : $statusCode . ' : ' . $message;
         
     }
     
@@ -213,6 +171,27 @@ class Controller extends BaseController {
             
             return $next($request);
         });
+        
+    }
+    
+    /**
+     * 返回指定控制器对应的所有路由
+     *
+     * @param integer $tabId - 控制器id
+     * @return array
+     */
+    private function uris($tabId) {
+        
+        $routes = Action::whereTabId($tabId)
+            ->where('route', '<>', null)
+            ->pluck('route', 'method')
+            ->toArray();
+        $uris = [];
+        foreach ($routes as $key => $value) {
+            $uris[$key] = new Route($value);
+        }
+        
+        return $uris;
         
     }
     

@@ -6,6 +6,7 @@ use App\Models\{Grade, Squad, Student};
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
+use ReflectionException;
 use Throwable;
 
 /**
@@ -156,8 +157,10 @@ class StudentController extends Controller {
     /**
      * 导出学籍
      *
+     * @return JsonResponse|mixed
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws ReflectionException
      */
     public function export() {
         

@@ -93,7 +93,7 @@ class ImportEducator implements ShouldQueue {
             'gender'           => ['required', Rule::in(['男', '女'])],
             'birthday'         => 'required|date',
             'school'           => 'required|string|between:4,20',
-            'mobile'           => 'required', new Mobile(),
+            'mobile'           => 'required|regex:/^1[3456789][0-9]{9}$/',
             'grades'           => 'nullable|string',
             'classes'          => 'nullable|string',
             'classes_subjects' => 'nullable|string',
@@ -146,7 +146,7 @@ class ImportEducator implements ShouldQueue {
             }
             $user['departments'] = $departments;
             $user['school_id'] = $school->id;
-            $mobile = Mobile::whereMobile($user['mobile'])->where('isdefault', 1)->first();
+            $mobile = Mobile::where(['mobile' => $user['mobile'], 'isdefault' => 1])->first();
             if ($mobile) {
                 if ($mobile->user->educator) {
                     $updates[] = $user;

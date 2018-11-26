@@ -15,7 +15,7 @@ class UserEditComposer {
      */
     public function compose(View $view) {
     
-        $user = Auth::user();
+        $user = User::find(Auth::id());
         $view->with([
             'mobile' => $user->mobiles->isNotEmpty()
                 ? $user->mobiles->where('isdefault', 1)->first()->mobile

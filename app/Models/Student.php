@@ -389,13 +389,29 @@ class Student extends Model {
             HttpStatusCode::NOT_ACCEPTABLE,
             __('messages.invalid_file_format')
         );
-        array_shift($students);
-        $students = array_values($students);
-        foreach ($students as $key => $value) {
-            if ((array_filter($value)) == null) {
-                unset($students[$key]);
-            }
-        }
+        $students = array_filter(
+            array_values(
+                array_shift($students)
+            ), 'sizeof'
+        );
+        list($sns, $cns) = array_map(
+            function ($ns) {
+                foreach ($ns as $n => $count) { if ($count > 1) { $ds[] = $n; } }
+                return $ds ?? [];
+            }, array_map(
+                function ($students, $col) {
+                    return array_count_values(array_pluck($students, $col));
+                }, [$students, $students], ['H', 'I']
+            )
+        );
+        abort_if(
+            !empty($sns) || !empty($cns),
+            HttpStatusCode::NOT_ACCEPTABLE,
+            (!empty($sns) ? ('学号: ' . implode(',', $sns)) : '') .
+            (!empty($cns) ? ('卡号: ' . implode(',', $cns)) : '') .
+            '有重复，请检查后重试'
+        );
+        
         ImportStudent::dispatch($students, Auth::id());
         Storage::disk('uploads')->delete($filename);
         
@@ -436,9 +452,7 @@ class Student extends Model {
         }
         $records = [self::EXPORT_TITLES];
         foreach ($students as $student) {
-            if (!$student->user) {
-                continue;
-            }
+            if (!$student->user) continue;
             $records[] = [
                 $student->user->realname,
                 $student->user->gender ? '男' : '女',
@@ -465,7 +479,7 @@ class Student extends Model {
      */
     function classList() {
         
-        list($classes) = (new Grade())->classList(
+        list($classes) = (new Grade)->classList(
             Request::input('id')
         );
         $result['html']['classes'] = $classes;

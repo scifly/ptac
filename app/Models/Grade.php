@@ -172,7 +172,7 @@ class Grade extends Model {
             ],
         ];
         $condition = 'School.id = ' . $this->schoolId();
-        if (!in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
+        if (!in_array(User::find(Auth::id())->role(), Constant::SUPER_ROLES)) {
             $condition .= ' AND Grade.id IN (' . implode(',', $this->gradeIds()) . ')';
         }
         
@@ -332,7 +332,7 @@ class Grade extends Model {
      */
     function departments($userId = null) {
         
-        $user = $userId ? User::find($userId) : Auth::user();
+        $user = User::find($userId ?? Auth::id());
         // abort_if(
         //     !$user->educator,
         //     HttpStatusCode::UNAUTHORIZED,

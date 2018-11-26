@@ -47,6 +47,7 @@ class AttendanceController extends Controller {
      *
      * @param null $studentId
      * @return Factory|JsonResponse|View
+     * @throws \ReflectionException
      */
     public function detail($studentId = null) {
         

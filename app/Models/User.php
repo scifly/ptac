@@ -805,7 +805,7 @@ class User extends Authenticatable {
      */
     function role($id = null) {
         
-        $user = $id ? $this->find($id) : Auth::user();
+        $user = $id ? $this->find($id) : User::find(Auth::id());
         $role = $user->group->name;
         $isEducator = session('is_educator');
         
@@ -822,7 +822,7 @@ class User extends Authenticatable {
      */
     function depts($id = null) {
         
-        $user = $id ? $this->find($id) : Auth::user();
+        $user = $id ? $this->find($id) : User::find(Auth::id());
         $role = $this->role($id ?? Auth::id());
         if (in_array($role, Constant::NON_EDUCATOR) && $role != '监护人') {
             return $user->departments;
@@ -975,7 +975,7 @@ class User extends Authenticatable {
      */
     private function corps() {
         
-        $user = Auth::user();
+        $user = User::find(Auth::id());
         switch ($user->role()) {
             case '运营':
                 return Corp::whereEnabled(1)->pluck('name', 'id')->toArray();

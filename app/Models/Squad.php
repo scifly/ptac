@@ -310,7 +310,7 @@ class Squad extends Model {
      */
     function departments($userId = null) {
         
-        $user = $userId ? User::find($userId) : Auth::user();
+        $user = User::find($userId ?? Auth::id());
         // abort_if(
         //     !$user->educator,
         //     HttpStatusCode::UNAUTHORIZED,

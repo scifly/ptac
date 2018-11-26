@@ -58,7 +58,7 @@ class CorpRequest extends FormRequest {
             $input['menu_id'] = 0;
         }
         if (!isset($input['company_id'])) {
-            $user = Auth::user();
+            $user = User::find(Auth::id());
             $departmentId = $this->head($user);
             $input['company_id'] = Corp::whereDepartmentId($departmentId)->first()->company_id;
         }

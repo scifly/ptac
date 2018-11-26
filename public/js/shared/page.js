@@ -83,22 +83,22 @@ var page = {
             "style='vertical-align: middle;'/>"
     },
     formatState: function (state) {
-        if (!state.id) {
-            return state.text;
-        }
-        return $('<span><i class="' + state.text + '" style="width: 20px;"></i>' + state.text + '</span>');
+        return !state.id
+            ? state.text
+            : $('<span><i class="' + state.text + '" style="width: 20px;"></i>' + state.text + '</span>');
     },
     formatStateImg: function (state) {
-        var paths = state.text.split('|');
-        if (!state.id) {
-            return paths[0];
-        }
-        var style = "height: 18px; vertical-align: text-bottom; margin-right: 5px;";
-        return $('<span><img src="' + paths[1] + '" style="' + style + '">&nbsp;' + paths[0] + '</span>');
+        var paths = state.text.split('|'),
+            style = "height: 18px; vertical-align: text-bottom; margin-right: 5px;";
+
+        return !state.id
+            ? paths[0]
+            : $('<span><img src="' + paths[1] + '" style="' + style + '" alt="">&nbsp;' + paths[0] + '</span>');
     },
     refreshMenus: function () {
-        var $active = $('.sidebar-menu li.active');
-        var parents = $active.parentsUntil('.sidebar-menu');
+        var $active = $('.sidebar-menu li.active'),
+            parents = $active.parentsUntil('.sidebar-menu');
+
         if (typeof parents !== 'undefined') {
             $(parents[parents.length - 1]).addClass('active');
             for (var i = 0; i < parents.length; i++) {
@@ -141,23 +141,26 @@ var page = {
     },
     errorHandler: function (e) {
         var obj = JSON.parse(e.responseText),
-            message = '', statusCode = obj['statusCode'];
+            message = '', status = e.status; // obj['statusCode'];
 
         $('.overlay').hide();
-        if (statusCode === 406 && typeof obj['errors'] !== 'undefined') {
+        if (status === 406 && typeof obj['errors'] !== 'undefined') {
             var errors = obj['errors'];
             $.each(errors, function () {
                 page.inform(obj['exception'], this, page.failure);
             });
-        } else if (statusCode === 498) {
+        } else if (status === 498) {
             window.location.reload();
+        } else if (status === 401) {
+            window.location = page.siteRoot() + 'login?returnUrl=' + page.getMenuUrl()
         } else {
             message = obj['message'] + '\n' + obj['file'] + ' : ' + obj['line'];
-            page.inform(obj['exception'] + ' : ' + obj['statusCode'], message, page.failure);
+            page.inform(obj['exception'] + ' : ' + status, message, page.failure);
         }
     },
     getWrapperContent: function (menuId, menuUrl, tabId, tabUrl) {
         var $wrapper = $('.content.clearfix');
+
         $('.overlay').show();
         $.ajax({
             type: 'GET',
@@ -165,81 +168,72 @@ var page = {
             url: menuUrl,
             data: {menuId: menuId},
             success: function (result) {
-                switch (result.statusCode) {
-                    case 200:
-                        var dIcon = result['department']['icon'] ? result['department']['icon'] : 'fa fa-send-o',
-                            dName = result['department']['name'] ? result['department']['name'] : '运营';
+                var dIcon = result['department']['icon'] ? result['department']['icon'] : 'fa fa-send-o',
+                    dName = result['department']['name'] ? result['department']['name'] : '运营';
 
-                        $('.d_icon').removeClass().addClass('fa ' + dIcon + ' d_icon');
-                        $('.d_name').html(dName);
-                        // $wrapper.html(result.html);
-                        $wrapper.html(result.html);
-                        $('#head-breadcrumb').html(result['title']);
-                        $('.overlay').hide();
-                        // 获取状态为active的卡片内容
-                        var $tab = null;
-                        var tabUri = $('.nav-tabs .active a').attr('data-uri');
-                        if (typeof tabUri !== 'undefined') {
-                            // Wrapper中的Html包含卡片，获取卡片中的Html
-                            if (typeof tabId !== 'undefined') {
-                                var $tabPanes = $('.card');
-                                $.each($tabPanes, function () {
-                                    $(this).html('');
-                                });
-                                $('.nav-tabs .active').removeClass('active');
-                                $('.active .card').removeClass('active');
-                                $('a[href="#tab_' + tabId + '"]').parent().addClass('active');
-                                $tab = $('#tab_' + tabId);
-                                $tab.addClass('active');
-                                page.refreshTabs();
-                            } else {
-                                tabId = page.getActiveTabId();
-                                $tab = $('#tab_' + tabId);
+                $('.d_icon').removeClass().addClass('fa ' + dIcon + ' d_icon');
+                $('.d_name').html(dName);
+                // $wrapper.html(result.html);
+                $wrapper.html(result.html);
+                $('#head-breadcrumb').html(result['title']);
+                $('.overlay').hide();
+                // 获取状态为active的卡片内容
+                var $tab = null;
+                var tabUri = $('.nav-tabs .active a').attr('data-uri');
+                if (typeof tabUri !== 'undefined') {
+                    // Wrapper中的Html包含卡片，获取卡片中的Html
+                    if (typeof tabId !== 'undefined') {
+                        var $tabPanes = $('.card');
+                        $.each($tabPanes, function () {
+                            $(this).html('');
+                        });
+                        $('.nav-tabs .active').removeClass('active');
+                        $('.active .card').removeClass('active');
+                        $('a[href="#tab_' + tabId + '"]').parent().addClass('active');
+                        $tab = $('#tab_' + tabId);
+                        $tab.addClass('active');
+                        page.refreshTabs();
+                    } else {
+                        tabId = page.getActiveTabId();
+                        $tab = $('#tab_' + tabId);
+                    }
+                    if (typeof tabUrl !== 'undefined') {
+                        tabUri = tabUrl;
+                    }
+                    // 初始化鼠标悬停特效
+                    $('.tab').hover(
+                        function () {
+                            $(this).removeClass('text-gray').addClass('text-blue');
+                        },
+                        function () {
+                            if (!($(this).parent().hasClass('active'))) {
+                                $(this).removeClass('text-blue').addClass('text-gray');
                             }
-                            if (typeof tabUrl !== 'undefined') {
-                                tabUri = tabUrl;
-                            }
-                            // 初始化鼠标悬停特效
-                            $('.tab').hover(
-                                function () {
-                                    $(this).removeClass('text-gray').addClass('text-blue');
-                                },
-                                function () {
-                                    if (!($(this).parent().hasClass('active'))) {
-                                        $(this).removeClass('text-blue').addClass('text-gray');
-                                    }
-                                }
-                            );
-                            // 获取当前卡片中的HTML
-                            page.getTabContent($tab, tabUri);
-                        } else {
-                            if (typeof result.js !== 'undefined') {
-                                $.getScript(page.siteRoot() + result.js, function () {
-                                    $('#ajaxLoader').remove();
-                                    $('.overlay').hide();
-                                });
-                            }
-                            // Wrapper中的Html不含卡片，更新浏览器History
-                            document.title = result['title'];
-                            // 0 - tabId, 1 - menuId, 2 - menuUrl
-                            oPage.title = '0,' + page.getActiveMenuId() + ',' + page.getMenuUrl();
-                            oPage.url = page.siteRoot() + result['uri'];
-                            if (updateHistory) {
-                                if (replaceState) {
-                                    history.replaceState(oPage, oPage.title, oPage.url);
-                                } else {
-                                    history.pushState(oPage, oPage.title, oPage.url);
-                                }
-                            }
-                            replaceState = false;
-                            updateHistory = true;
                         }
-                        break;
-                    case 401:
-                        window.location = page.siteRoot() + 'login?returnUrl=' + page.getMenuUrl();
-                        break;
-                    default:
-                        break;
+                    );
+                    // 获取当前卡片中的HTML
+                    page.getTabContent($tab, tabUri);
+                } else {
+                    if (typeof result.js !== 'undefined') {
+                        $.getScript(page.siteRoot() + result.js, function () {
+                            $('#ajaxLoader').remove();
+                            $('.overlay').hide();
+                        });
+                    }
+                    // Wrapper中的Html不含卡片，更新浏览器History
+                    document.title = result['title'];
+                    // 0 - tabId, 1 - menuId, 2 - menuUrl
+                    oPage.title = '0,' + page.getActiveMenuId() + ',' + page.getMenuUrl();
+                    oPage.url = page.siteRoot() + result['uri'];
+                    if (updateHistory) {
+                        if (replaceState) {
+                            history.replaceState(oPage, oPage.title, oPage.url);
+                        } else {
+                            history.pushState(oPage, oPage.title, oPage.url);
+                        }
+                    }
+                    replaceState = false;
+                    updateHistory = true;
                 }
             },
             error: function (e) {
@@ -266,42 +260,38 @@ var page = {
             url: page.siteRoot() + url,
             data: {tabId: tabId, menuId: menuId},
             success: function (result) {
-                if (result.statusCode === 200) {
-                    // 在当前已激活卡片中加载服务器返回的HTML
-                    $tabPane.html(result.html);
-                    $('#head-breadcrumb').html(result['breadcrumb']);
-                    $('.overlay').show();
-                    // $('#ajaxLoader').after(result.html);
-                    // 动态加载服务器返回的链接地址指向的js脚本
-                    $.getScript(page.siteRoot() + result.js, function () {
-                        $('#ajaxLoader').remove();
-                        $('.overlay').hide();
-                        // 移除当前页面的datatable.css
-                        // if (!$('#data-table').length) {
-                        //     $('link[href="' + page.siteRoot() + plugins.datatable.css +'"]').remove();
-                        // }
-                    });
-                    // 更新浏览器抬头
-                    document.title = $('#breadcrumb').html();
-                    // 更新浏览器访问历史
-                    // 0 - tabId, 1 - menuId, 2 - menuUrl
-                    oPage.title = tabId + ',' + page.getActiveMenuId() + ',' + page.getMenuUrl();
-                    oPage.url = page.siteRoot() + url;
-                    // 如果需要更新浏览器历史
-                    if (updateHistory) {
-                        if (replaceState) {
-                            // 替换当前会话中的第一条访问记录
-                            history.replaceState(oPage, oPage.title, oPage.url);
-                        } else {
-                            // 新增一条浏览器访问记录
-                            history.pushState(oPage, oPage.title, oPage.url);
-                        }
+                // 在当前已激活卡片中加载服务器返回的HTML
+                $tabPane.html(result.html);
+                $('#head-breadcrumb').html(result['breadcrumb']);
+                $('.overlay').show();
+                // $('#ajaxLoader').after(result.html);
+                // 动态加载服务器返回的链接地址指向的js脚本
+                $.getScript(page.siteRoot() + result.js, function () {
+                    $('#ajaxLoader').remove();
+                    $('.overlay').hide();
+                    // 移除当前页面的datatable.css
+                    // if (!$('#data-table').length) {
+                    //     $('link[href="' + page.siteRoot() + plugins.datatable.css +'"]').remove();
+                    // }
+                });
+                // 更新浏览器抬头
+                document.title = $('#breadcrumb').html();
+                // 更新浏览器访问历史
+                // 0 - tabId, 1 - menuId, 2 - menuUrl
+                oPage.title = tabId + ',' + page.getActiveMenuId() + ',' + page.getMenuUrl();
+                oPage.url = page.siteRoot() + url;
+                // 如果需要更新浏览器历史
+                if (updateHistory) {
+                    if (replaceState) {
+                        // 替换当前会话中的第一条访问记录
+                        history.replaceState(oPage, oPage.title, oPage.url);
+                    } else {
+                        // 新增一条浏览器访问记录
+                        history.pushState(oPage, oPage.title, oPage.url);
                     }
-                    replaceState = false;
-                    updateHistory = true;
-                } else {
-                    window.location = page.siteRoot() + 'login';
                 }
+                replaceState = false;
+                updateHistory = true;
             },
             error: function (e) {
                 page.errorHandler(e);

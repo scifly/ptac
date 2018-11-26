@@ -20,7 +20,7 @@ class UserComposer {
         $corpGroupId = Group::whereName('企业')->first()->id;
         $schoolGroupId = Group::whereName('学校')->first()->id;
         $groups = [];
-        switch (Auth::user()->role()) {
+        switch (User::find(Auth::id())->role()) {
             case '运营':
                 $groups = [
                     $rootGroupId   => '运营',

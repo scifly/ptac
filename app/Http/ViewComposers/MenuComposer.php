@@ -29,7 +29,7 @@ class MenuComposer {
     public function compose(View $view) {
         
         $groupIds = Group::whereIn('name', ['运营', '企业', '学校'])->pluck('id', 'name')->toArray();
-        switch (Auth::user()->role()) {
+        switch (User::find(Auth::id())->role()) {
             case '运营':
                 $tabs = Tab::whereEnabled(1)
                     ->pluck('comment', 'id');

@@ -5,6 +5,7 @@ use App\Helpers\ModelTrait;
 use App\Rules\{Email, Mobile};
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Request;
+use ReflectionException;
 
 /**
  * Class CustodianRequest
@@ -47,6 +48,9 @@ class CustodianRequest extends FormRequest {
         
     }
     
+    /**
+     * @throws ReflectionException
+     */
     protected function prepareForValidation() {
         
         if (!Request::has('ids')) {

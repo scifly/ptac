@@ -22,7 +22,7 @@ class PartnerRequest extends FormRequest {
      */
     public function authorize() {
         
-        return Auth::user()->role() == '运营';
+        return User::find(Auth::id())->role() == '运营';
         
     }
     

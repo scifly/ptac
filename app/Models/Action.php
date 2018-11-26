@@ -536,6 +536,7 @@ class Action extends Model {
      * @param ReflectionClass $controllerObj
      * @param ReflectionMethod $method
      * @return mixed|string
+     * @throws \ReflectionException
      */
     private function methodComment(ReflectionClass $controllerObj, ReflectionMethod $method) {
         

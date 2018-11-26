@@ -136,6 +136,7 @@ class CustodianController extends Controller {
      * @return array|JsonResponse
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws \ReflectionException
      */
     public function export() {
         
