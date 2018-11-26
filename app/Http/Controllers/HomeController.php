@@ -2,17 +2,11 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\HttpStatusCode;
-use App\Models\Action;
-use App\Models\Menu;
-use App\Models\MenuTab;
-use App\Models\Tab;
-use App\Models\User;
+use App\Models\{Action, Menu, MenuTab, Tab, User};
 use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\{Auth, Request, Session};
 use Illuminate\View\View;
 use Throwable;
 
@@ -23,8 +17,6 @@ use Throwable;
  * @package App\Http\Controllers
  */
 class HomeController extends Controller {
-    
-    const ROOT_MENU_ID = 1;
     
     protected $tab, $mt, $menu;
     
@@ -53,30 +45,24 @@ class HomeController extends Controller {
         $menuId = Request::query('menuId');
         if (!$menuId) {
             $menuId = Menu::whereParentId($this->menu->rootId())
-                ->whereIn('uri', ['home', '/'])
-                ->first()->id;
+                ->whereIn('uri', ['home', '/'])->first()->id;
             session(['menuId' => $menuId]);
             $department = $this->menu->department($menuId);
         } else {
-            if (!session('menuId') || session('menuId') !== $menuId) {
-                session(['menuId' => $menuId]);
-                session(['menuChanged' => true]);
-            } else {
-                Session::forget('menuChanged');
-            }
+            !session('menuId') || session('menuId') !== $menuId
+                ? session(['menuId' => $menuId, 'menuChanged' => true])
+                : Session::forget('menuChanged');
             $department = $this->menu->department($menuId);
-            $params = ['department' => $department];
-            $view = view('home.home', $params);
-            if (Request::ajax()) {
-                return response()->json([
-                    'title'      => '首页',
-                    'uri'        => Request::path(),
-                    'html'       => $view->render(),
-                    'department' => $department,
-                ]);
-            }
         }
-        
+        if (Request::ajax()) {
+            return response()->json([
+                'title'      => '首页',
+                'uri'        => Request::path(),
+                'html'       => view('home.home', ['department' => $department])->render(),
+                'department' => $department,
+            ]);
+        }
+    
         return view('layouts.web', [
             'menu'       => $this->menu->htmlTree($this->menu->rootId()),
             'menuId'     => $menuId,
@@ -96,13 +82,11 @@ class HomeController extends Controller {
      * @throws Throwable
      */
     public function menu($id) {
-        
-        if (!session('menuId') || session('menuId') !== $id) {
-            session(['menuId' => $id]);
-            session(['menuChanged' => true]);
-        } else {
-            Session::forget('menuChanged');
-        }
+    
+        !session('menuId') || session('menuId') !== $id
+            ? session(['menuId' => $id, 'menuChanged' => true])
+            : Session::forget('menuChanged');
+    
         # 获取卡片列表
         $tabIds = $this->mt->tabIdsByMenuId($id);
         $isTabLegit = !empty($tabIds) ?? false;
@@ -111,9 +95,7 @@ class HomeController extends Controller {
         # 封装当前用户可以访问的卡片数组
         $tabArray = [];
         foreach ($tabIds as $tabId) {
-            if (!in_array($tabId, $allowedTabIds)) {
-                continue;
-            }
+            if (!in_array($tabId, $allowedTabIds)) continue;
             $tab = Tab::find($tabId);
             $action = Action::find($tab->action_id);
             if (!empty($action->route)) {
