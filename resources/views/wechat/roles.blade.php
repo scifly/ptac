@@ -1,7 +1,5 @@
 @extends('layouts.wap')
-@section('title')
-    <title>{!! config('app.name') !!}</title>
-@endsection
+@section('title') {!! config('app.name') !!} @endsection
 @section('css')
     <link rel="stylesheet" href="{!! asset('/css/wechat/list.css') !!}">
 @endsection

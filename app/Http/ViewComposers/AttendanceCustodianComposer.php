@@ -19,7 +19,7 @@ class AttendanceCustodianComposer {
      */
     public function compose(View $view) {
     
-        $students = User::find(Auth::id())->custodian->students;
+        $students = Auth::user()->custodian->students;
         foreach ($students as $student) {
             $data = (new StudentAttendance)->wStat($student->id);
             $student->abnormal = count($data['aDays']);

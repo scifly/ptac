@@ -3,7 +3,7 @@
         <div>
             <div class="user_info">
                 <strong class="nickname">{!! $reply['realname'] !!}</strong>
-                <img class="avatar" src="{!! $reply['avatar_url'] !!}">
+                <img class="avatar" src="{!! $reply['avatar_url'] !!}" alt="">
                 <p class="discuss_extra_info">{!! $reply['replied_at'] !!}</p>
             </div>
             <div class="discuss_message">

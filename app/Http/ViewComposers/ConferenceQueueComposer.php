@@ -26,7 +26,7 @@ class ConferenceQueueComposer {
         $conferenceRooms = ConferenceRoom::whereSchoolId($schoolId)
             ->pluck('name', 'id')
             ->toArray();
-        $user = User::find(Auth::id());
+        $user = Auth::user();
         switch ($user->role()) {
             case '运营':
             case '企业':

@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\HttpStatusCode;
-use App\Models\{Action, Menu, MenuTab, Tab, User};
+use App\Models\{Action, Menu, MenuTab, Tab};
 use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\JsonResponse;
@@ -47,29 +47,27 @@ class HomeController extends Controller {
             $menuId = Menu::whereParentId($this->menu->rootId())
                 ->whereIn('uri', ['home', '/'])->first()->id;
             session(['menuId' => $menuId]);
-            $department = $this->menu->department($menuId);
         } else {
             !session('menuId') || session('menuId') !== $menuId
                 ? session(['menuId' => $menuId, 'menuChanged' => true])
                 : Session::forget('menuChanged');
-            $department = $this->menu->department($menuId);
         }
-        if (Request::ajax()) {
-            return response()->json([
+        $department = $this->menu->department($menuId);
+    
+        return Request::ajax()
+            ? response()->json([
                 'title'      => '首页',
                 'uri'        => Request::path(),
                 'html'       => view('home.home', ['department' => $department])->render(),
                 'department' => $department,
+            ])
+            : view('layouts.web', [
+                'menu'       => $this->menu->htmlTree($this->menu->rootId()),
+                'menuId'     => $menuId,
+                'content'    => view('home.home'),
+                'department' => $department,
+                'user'       => Auth::user(),
             ]);
-        }
-    
-        return view('layouts.web', [
-            'menu'       => $this->menu->htmlTree($this->menu->rootId()),
-            'menuId'     => $menuId,
-            'content'    => view('home.home'),
-            'department' => $department,
-            'user'       => User::find(Auth::id()),
-        ]);
         
     }
     

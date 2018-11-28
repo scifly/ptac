@@ -1,7 +1,6 @@
 <?php
 namespace App\Helpers;
 
-use App\Models\User;
 use DateTime;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -183,7 +182,7 @@ class Datatable {
      */
     function status($active, $row, $show = true, $edit = true, $del = true) {
         
-        $user = User::find(Auth::id());
+        $user = Auth::user();
         $id = $row['id'];
         $showLink = sprintf(Snippet::DT_LINK_SHOW, 'show_' . $id);
         $editLink = sprintf(Snippet::DT_LINK_EDIT, 'edit_' . $id);

@@ -21,7 +21,7 @@ class TabRequest extends FormRequest {
      */
     public function authorize() {
         
-        return User::find(Auth::id())->role() == '运营';
+        return Auth::user()->role() == '运营';
         
     }
     

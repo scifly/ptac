@@ -6,7 +6,7 @@
 	<meta id="csrf_token" name="csrf_token" content="{!! csrf_token() !!}">
 	<meta id="pusher_key" content="{!! config('broadcasting.connections.pusher.key') !!}">
 	<meta id="pusher_cluster" content="{!! config('broadcasting.connections.pusher.options.cluster') !!}">
-    @yield('title')
+    <title>@yield('title')</title>
     <link rel="stylesheet" href="{!! asset('/css/wechat/weui.min.css') !!}">
     <link rel="stylesheet" href="{!! asset('/css/wechat/jquery-weui.min.css') !!}">
     <link rel="stylesheet" href="{!! asset('/css/wechat/iconfont.css') !!}">

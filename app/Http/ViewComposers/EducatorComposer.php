@@ -5,7 +5,6 @@ use App\Helpers\ModelTrait;
 use App\Models\Custodian;
 use App\Models\Educator;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Request;
 
 /**
  * Class EducatorComposer

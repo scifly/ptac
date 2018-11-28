@@ -189,7 +189,7 @@ class HomeWorkController extends Controller {
             HttpStatusCode::INTERNAL_SERVER_ERROR,
             $token['errmsg']
         );
-        $user = User::find(Auth::id());
+        $user = Auth::user();
         $result = json_decode(
             Wechat::convertToOpenid($token['access_token'], $user->userid), true
         );

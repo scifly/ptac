@@ -244,7 +244,7 @@ class WapSite extends Model {
      */
     function wIndex() {
         
-        $user = User::find(Auth::id());
+        $user = Auth::user();
         # 禁止学生访问微网站
         abort_if(
             !$user || $user->role() == '学生',

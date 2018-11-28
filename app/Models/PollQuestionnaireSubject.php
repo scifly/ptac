@@ -143,7 +143,7 @@ class PollQuestionnaireSubject extends Model {
             ],
         ];
         $condition = 'School.id = ' . $this->schoolId();
-        $user = User::find(Auth::id());
+        $user = Auth::user();
         if (!in_array($user->role(), Constant::SUPER_ROLES)) {
             $condition .= ' AND PollQuestionnaire.user_id = ' . $user->id;
         }

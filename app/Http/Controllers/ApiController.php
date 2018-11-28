@@ -65,7 +65,7 @@ class ApiController extends Controller {
             'group_id' => Group::whereName('api')->first()->id
         ])->first();
         if ($apiUser && (Auth::id() || Auth::attempt($credential))) {
-            $user = User::find(Auth::id());
+            $user = Auth::user();
             $this->reaction['token'] = $user->createToken('ptac')->accessToken;
         } else {
             $this->reaction['message'] = __('messages.forbidden');
@@ -127,7 +127,7 @@ class ApiController extends Controller {
             Request::input('mobiles'),
             Request::input('school_id'),
             Request::input('content'),
-            User::find(Auth::id())
+            Auth::user()
         );
         
         return response()->json([

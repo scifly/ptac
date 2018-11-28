@@ -112,7 +112,7 @@ class Exam extends Model {
             ],
         ];
         $condition = 'ExamType.school_id = ' . $this->schoolId();
-        if (!in_array(User::find(Auth::id())->role(), Constant::SUPER_ROLES)) {
+        if (!in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
             $condition .= ' AND class_ids IN (' . implode(',', $this->classIds()) . ')';
         }
         

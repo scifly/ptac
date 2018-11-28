@@ -358,9 +358,9 @@ class EducatorAttendance extends Model {
     }
     
     /** Helper functions -------------------------------------------------------------------------------------------- */
-
     /**
      * @return array
+     * @throws ReflectionException
      */
     private function details(): array {
         
@@ -407,9 +407,7 @@ class EducatorAttendance extends Model {
                 case 'normal':
                     $eaIds = [];
                     foreach ($attendances as $a) {
-                        if ($a->latest) {
-                            $eaIds[] = $a->id;
-                        }
+                        !$a->latest ?: $eaIds[] = $a->id;
                     }
                     $eas = $this->whereIn('id', $eaIds)->get();
                     foreach ($eas as $ea) {
@@ -425,9 +423,7 @@ class EducatorAttendance extends Model {
                 case 'abnormal':
                     $eaIds = [];
                     foreach ($attendances as $a) {
-                        if ($a->latest == 0) {
-                            $eaIds[] = $a->id;
-                        }
+                        $a->latest != 0 ?: $eaIds = $a->id;
                     }
                     $eas = $this->whereIn('id', $eaIds)->get();
                     foreach ($eas as $ea) {

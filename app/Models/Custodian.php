@@ -381,7 +381,7 @@ class Custodian extends Model {
      */
     function myStudents($userId = null, $corpId = null) {
         
-        $custodian = isset($userId) ? User::find($userId)->custodian : User::find(Auth::id())->custodian;
+        $custodian = isset($userId) ? User::find($userId)->custodian : Auth::user()->custodian;
         $corpId = $corpId ?? session('corpId');
         $students = [];
         foreach ($custodian->students as $student) {

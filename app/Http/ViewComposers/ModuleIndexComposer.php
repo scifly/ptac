@@ -23,7 +23,7 @@ class ModuleIndexComposer {
     public function compose(View $view) {
         
         $optionAll = [null => '全部'];
-        switch (User::find(Auth::id())->role()) {
+        switch (Auth::user()->role()) {
             case '运营':
                 $schools = $optionAll + School::whereEnabled(1)
                         ->pluck('name', 'id')->toArray();

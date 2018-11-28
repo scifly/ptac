@@ -35,7 +35,7 @@ class MessageCenterComposer {
      */
     public function compose(View $view) {
         
-        $user = User::find(Auth::id());
+        $user = Auth::user();
         $chosenTargetsHtml = '';
         $detail = $selectedDepartmentIds = $selectedUserIds = null;
         $title = $text = $url = $btntxt = $mediaId = $accept = null;

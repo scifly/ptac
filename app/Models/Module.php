@@ -239,7 +239,7 @@ class Module extends Model {
      */
     function wIndex() {
     
-        $role = User::find(Auth::id())->role();
+        $role = Auth::user()->role();
         $custodianGroupId = Group::whereName('监护人')->first()->id;
         $schoolId = session('schoolId');
         $modules = $this->orderBy('order')->where([
@@ -284,7 +284,7 @@ class Module extends Model {
      */
     function schools() {
     
-        $user = User::find(Auth::id());
+        $user = Auth::user();
         $schoolIds = $user->schoolIds($user->id, session('corpId'));
     
         return view('wechat.schools', [
@@ -300,7 +300,7 @@ class Module extends Model {
      */
     function compose() {
     
-        switch (User::find(Auth::id())->role()) {
+        switch (Auth::user()->role()) {
             case '运营':
                 $schools = School::whereEnabled(1)->get();
                 break;

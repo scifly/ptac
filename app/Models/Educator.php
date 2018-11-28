@@ -198,7 +198,7 @@ class Educator extends Model {
                 'db'        => 'Educator.enabled', 'dt' => 10,
                 'formatter' => function ($d, $row) {
                     $id = $row['id'];
-                    $user = User::find(Auth::id());
+                    $user = Auth::user();
                     $rechargeLink = sprintf(Snippet::DT_LINK_RECHARGE, 'recharge_' . $id);
                     
                     return Datatable::status($d, $row, false) .

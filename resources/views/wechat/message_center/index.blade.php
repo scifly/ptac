@@ -1,7 +1,5 @@
 @extends('layouts.wap')
-@section('title')
-    <title>消息中心</title>
-@endsection
+@section('title') 消息中心 @endsection
 @section('css')
     <link rel="stylesheet" href="{!! asset('/css/wechat/message_center/index.css') !!}">
 @endsection

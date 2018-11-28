@@ -4,7 +4,6 @@ namespace App\Http\ViewComposers;
 use App\Helpers\ModelTrait;
 use App\Models\{Custodian, Educator};
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Request;
 
 /**
  * Class CustodianComposer

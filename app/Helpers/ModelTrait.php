@@ -336,7 +336,7 @@ trait ModelTrait {
      */
     function contactIds($type, User $user = null, $schoolId = null) {
         
-        $user = $user ?? User::find(Auth::id());
+        $user = $user ?? Auth::user();
         $schoolId = $schoolId ?? ($this->schoolId() ?? session('schoolId'));
         $userIds = [];
         if (in_array($user->role($user->id), Constant::SUPER_ROLES)) {
@@ -475,7 +475,7 @@ trait ModelTrait {
      */
     function excel(array $records, $fileName = 'export', $sheetTitle = '导出数据', $download = true) {
         
-        $user = User::find(Auth::id());
+        $user = Auth::user();
         $spreadsheet = new Spreadsheet();
         $spreadsheet->getProperties()->setCreator($user ? $user->realname : 'ptac')
             ->setLastModifiedBy($user ? $user->realname : 'ptac')
@@ -622,7 +622,7 @@ trait ModelTrait {
      */
     function visibleUserIds() {
     
-        if (in_array(User::find(Auth::id())->role(), Constant::SUPER_ROLES)) {
+        if (in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
             $school = School::find($this->schoolId());
             $departmentId = $school->department_id;
             $departmentIds = array_merge(

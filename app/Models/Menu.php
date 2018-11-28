@@ -434,7 +434,7 @@ class Menu extends Model {
      */
     function rootId($subRoot = false) {
         
-        $user = User::find(Auth::id());
+        $user = Auth::user();
         $rootMTId = MenuType::whereName('根')->first()->id;
         $rootMId = Menu::whereMenuTypeId($rootMTId)->first()->id;
         $menuId = session('menuId') != '0' ? session('menuId') : $rootMId;
@@ -617,7 +617,7 @@ class Menu extends Model {
     private function movable($id, $parentId) {
         
         if (!isset($id, $parentId)) return false;
-        $user = User::find(Auth::id());
+        $user = Auth::user();
         if ($user->role() != '运营') {
             $menuIds = $this->menuIds($this);
             abort_if(
@@ -757,7 +757,7 @@ class Menu extends Model {
      */
     private function subs($rootId, $childrenIds = null, $disabled = false) {
         
-        $user = User::find(Auth::id());
+        $user = Auth::user();
         if ($rootId == 1) {
             $menus = $this->where('id', '<>', 1)
                 ->orderBy('position')

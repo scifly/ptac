@@ -1,7 +1,5 @@
 @extends('layouts.wap')
-@section('title')
-    <title>成绩中心</title>
-@endsection
+@section('title') 成绩中心 @endsection
 @section('css')
     <link rel="stylesheet" href="{!! asset('css/wechat/score_center/analyze.css') !!}">
 @endsection

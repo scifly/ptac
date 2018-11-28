@@ -1,7 +1,5 @@
 @extends('layouts.wap')
-@section('title')
-	<title>微网站</title>
-@endsection
+@section('title') 微网站 @endsection
 @section('css')
 	<link rel="stylesheet" href="{!! asset('css/wechat/mobile_site/module.css') !!}">
 @endsection

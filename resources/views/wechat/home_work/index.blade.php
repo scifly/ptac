@@ -1,7 +1,5 @@
 @extends('layouts.wap')
-@section('title')
-    <title>微信h5支付测试</title>
-@endsection
+@section('title') 微信h5支付测试 @endsection
 @section('css')
     <link rel="stylesheet" href="{!! asset('/css/wechat/home_work/index.css') !!}">
 @endsection

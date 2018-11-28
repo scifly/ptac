@@ -1,7 +1,5 @@
 @extends('layouts.wap')
-@section('title')
-    <title>{!! config('app.name') !!}</title>
-@endsection
+@section('title') {!! config('app.name') !!} @endsection
 @section('content')
     <header class="wechat-header">
         <h1 class="wechat-title">{!! config('app.name') !!}</h1>

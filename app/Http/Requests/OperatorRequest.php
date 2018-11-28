@@ -23,7 +23,7 @@ class OperatorRequest extends FormRequest {
      */
     public function authorize() {
         
-        $role = User::find(Auth::id())->role();
+        $role = Auth::user()->role();
         if (in_array($role, Constant::SUPER_ROLES)) {
             $groupId = Request::input('user.group_id');
             switch ($role) {

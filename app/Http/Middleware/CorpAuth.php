@@ -71,7 +71,7 @@ class CorpAuth {
             Auth::loginUsingId($user->id);
         }
         # 学校列表。如果用户仅可见到一所学校，则直接进入需要访问的页面。
-        $user = User::find(Auth::id());
+        $user = Auth::user();
         abort_if(
             $user->role() == '学生',
             HttpStatusCode::UNAUTHORIZED,

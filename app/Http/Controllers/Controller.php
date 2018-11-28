@@ -5,7 +5,6 @@ use App\Helpers\HttpStatusCode;
 use App\Models\Action;
 use App\Models\Menu;
 use App\Models\Tab;
-use App\Models\User;
 use App\Policies\Route;
 use Auth;
 use Exception;
@@ -41,7 +40,7 @@ class Controller extends BaseController {
         $controller = class_basename(Request::route()->controller);
         $tabId = Tab::whereName($controller)->first()->id;
         $params['uris'] = $this->uris($tabId);
-        $params['user'] = User::find(Auth::id());
+        $params['user'] = Auth::user();
         $action = Action::where(['method' => $method, 'tab_id' => $tabId])->first();
         abort_if(
             !$action, HttpStatusCode::NOT_FOUND,

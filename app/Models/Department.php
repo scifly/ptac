@@ -316,7 +316,7 @@ class Department extends Model {
         try {
             DB::transaction(function () use ($id, $department) {
                 $du = new DepartmentUser;
-                $user = User::find(Auth::id());
+                $user = Auth::user();
                 $ids = array_merge([$id], $this->subIds($id));
                 $userIds = array_unique(
                     $du->whereIn('department_id', $ids)->pluck('user_id')->toArray()
@@ -365,7 +365,7 @@ class Department extends Model {
      */
     function tree($rootId = null) {
         
-        $user = User::find(Auth::id());
+        $user = Auth::user();
         $isSuperRole = in_array($user->role(), Constant::SUPER_ROLES);
         if (isset($rootId)) {
             $departments = $this->nodes($rootId);
@@ -471,7 +471,7 @@ class Department extends Model {
      */
     function contacts($contact = true) {
         
-        $user = User::find(Auth::id());
+        $user = Auth::user();
         $contacts = [];
         if (in_array($user->role(), Constant::SUPER_ROLES)) {
             $departmentId = School::find($this->schoolId())->department_id;
@@ -739,7 +739,7 @@ class Department extends Model {
      */
     private function rootId($subRoot = false) {
         
-        $user = User::find(Auth::id());
+        $user = Auth::user();
         $rootDepartmentTypeId = DepartmentType::whereName('根')->first()->id;
         $rootDId = Department::whereDepartmentTypeId($rootDepartmentTypeId)->first()->id;
         # 当前菜单id
@@ -773,7 +773,7 @@ class Department extends Model {
      */
     private function topId() {
         
-        $user = User::find(Auth::id());
+        $user = Auth::user();
         $ids = $user->depts()->pluck('id')->toArray();
         $levels = [];
         foreach ($ids as $id) {

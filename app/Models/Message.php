@@ -282,7 +282,7 @@ class Message extends Model {
                 ],
             ],
         ];
-        $user = User::find(Auth::id());
+        $user = Auth::user();
         $userIds = [$user->id];
         if (in_array($user->role(), Constant::SUPER_ROLES)) {
             $userIds = array_unique(
@@ -603,7 +603,7 @@ class Message extends Model {
                 $message = $this->create($data);
                 # 如果是定时消息，则创建对应的事件
                 if ($time) {
-                    $user = User::find(Auth::id());
+                    $user = Auth::user();
                     $event = Event::create([
                         'title'       => '定时消息',
                         'remark'      => '定时消息',
@@ -679,7 +679,7 @@ class Message extends Model {
                             ]);
                         } else {
                             # 如果指定消息没有对应事件，则创建对应事件
-                            $user = User::find(Auth::id());
+                            $user = Auth::user();
                             $time = $data['time'];
                             $draft = $data['draft'] ?? null;
                             $event = Event::create([
@@ -1077,7 +1077,7 @@ class Message extends Model {
     private function searchMessage() {
         
         # 搜索已发或收到的消息
-        $user = User::find(Auth::id());
+        $user = Auth::user();
         $userIds = [$user->id];
         if ($user->role() == '监护人') {
             $userIds = array_merge(
@@ -1133,7 +1133,7 @@ class Message extends Model {
     private function searchTarget() {
         
         # 搜索发送对象
-        $user = User::find(Auth::id());
+        $user = Auth::user();
         $schoolId = $user->educator ? $user->educator->school_id : session('schoolId');
         $targets = Collect([]);
         if (Request::has('departmentId')) {
@@ -1365,7 +1365,7 @@ class Message extends Model {
      */
     function replies($id, $mslId) {
         
-        $user = User::find(Auth::id());
+        $user = Auth::user();
         $message = $this->find($id);
         $replies = MessageReply::whereMslId($mslId)->get();
         if ($user->id != $message->s_user_id) {
