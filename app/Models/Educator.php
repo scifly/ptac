@@ -149,8 +149,8 @@ class Educator extends Model {
      */
     function educatorList(array $ids) {
         
-        return $this->with('user')
-            ->whereIn('id', $ids)
+        return $this->whereIn('id', $ids)
+            ->with('user')->get()
             ->pluck('user.realname', 'id')
             ->toArray();
         
