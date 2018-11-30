@@ -32,17 +32,16 @@ class EducatorComposer {
      * @param View $view
      */
     public function compose(View $view) {
-        
-        list($squads, $subjects, $groups, $departmentIds, $departments, $mobiles) = $this->educator->compose();
-        $firstOption = [0 => '(请选择)'];
-        $view->with([
-            'squads'                => $firstOption + $squads,
-            'subjects'              => $firstOption + $subjects,
-            'groups'                => $firstOption + $groups,
-            'mobiles'               => $mobiles,
-            'selectedDepartmentIds' => $departmentIds,
-            'selectedDepartments'   => $departments,
-        ]);
+    
+        $view->with(
+            array_combine(
+                [
+                    'squads', 'subjects', 'groups', 'selectedDepartmentIds',
+                    'selectedDepartments', 'mobiles'
+                ],
+                $this->educator->compose()
+            )
+        );
         
     }
     

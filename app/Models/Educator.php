@@ -558,16 +558,16 @@ class Educator extends Model {
                 ? $educator->user->depts($educator->user_id)->pluck('id')->toArray() : [];
             $selectedDepartments = $this->selectedNodes($selectedDepartmentIds);
         }
+        $firstOption = [0 => '(请选择)'];
     
         return [
-            $classes->pluck('name', 'id')->toArray(),
-            $subjects->pluck('name', 'id')->toArray(),
+            $firstOption + $classes->pluck('name', 'id')->toArray(),
+            $firstOption + $subjects->pluck('name', 'id')->toArray(),
             (new Group)->groupList(),
             implode(',', $selectedDepartmentIds ?? []),
             $selectedDepartments ?? [],
             $mobiles ?? []
         ];
-        
     }
     
     /**

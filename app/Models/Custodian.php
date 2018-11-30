@@ -380,17 +380,15 @@ class Custodian extends Model {
      * @return array
      */
     function myStudents($userId = null, $corpId = null) {
-        
-        $custodian = isset($userId) ? User::find($userId)->custodian : Auth::user()->custodian;
+    
+        $custodian = User::find($userId ?? Auth::id())->custodian;
         $corpId = $corpId ?? session('corpId');
-        $students = [];
-        foreach ($custodian->students as $student) {
-            if ($student->squad->grade->school->corp_id == $corpId) {
-                $students[$student->id] = $student->user->realname;
+    
+        return $custodian->students->filter(
+            function (Student $student) use ($corpId) {
+                return $student->squad->grade->school->corp_id == $corpId;
             }
-        }
-        
-        return $students;
+        )->pluck('user.realname', 'id')->toArray();
         
     }
     

@@ -4,8 +4,9 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (isset($grade) && !empty($grade['id']))
-                {{ Form::hidden('id', $grade['id'], ['id' => 'id']) }}
+            @if (isset($grade))
+                {!! Form::hidden('id', $grade['id'], ['id' => 'id']) !!}
+                {!! Form::hidden('department_id', $grade['department_id']) !!}
             @endif
             <div class="form-group">
                 {!! Form::label('name', '名称', [
@@ -29,9 +30,6 @@
                 'items' => $educators,
                 'selectedItems' => $selectedEducators ?? []
             ])
-            @if (isset($grade['department_id']))
-                {!! Form::hidden('department_id', $grade['department_id']) !!}
-            @endif
             @include('shared.switch', [
                 'id' => 'enabled',
                 'value' => $grade['enabled'] ?? null

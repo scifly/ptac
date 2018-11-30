@@ -13,17 +13,15 @@ use Illuminate\Support\Facades\Request;
  */
 class SubjectComposer {
     
-    protected $major, $grade;
+    protected $subject;
     
     /**
      * SubjectComposer constructor.
-     * @param Major $major
-     * @param Grade $grade
+     * @param Subject $subject
      */
-    function __construct(Major $major, Grade $grade) {
+    function __construct(Subject $subject) {
         
-        $this->major = $major;
-        $this->grade = $grade;
+        $this->subject = $subject;
         
     }
     
@@ -31,20 +29,13 @@ class SubjectComposer {
      * @param View $view
      */
     public function compose(View $view) {
-        
-        $selectedGrades = $selectedMajors = [];
-        if (Request::route('id')) {
-            $subject = Subject::find(Request::route('id'));
-            $selectedMajors = $subject->majors->pluck('name', 'id')->toArray();
-            $gradeIds = explode(',', $subject->grade_ids);
-            $selectedGrades = empty($gradeIds) ? [] : Grade::whereIn('id', $gradeIds)->pluck('name', 'id')->toArray();
-        }
-        $view->with([
-            'grades'         => $this->grade->gradeList(),
-            'majors'         => $this->major->majorList(),
-            'selectedGrades' => $selectedGrades,
-            'selectedMajors' => $selectedMajors,
-        ]);
+    
+        $view->with(
+            array_combine(
+                ['grades', 'majors', 'selectedGrades', 'selectedMajors'],
+                $this->subject->compose()
+            )
+        );
         
     }
     

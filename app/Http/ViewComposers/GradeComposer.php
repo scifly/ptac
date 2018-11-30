@@ -31,26 +31,18 @@ class GradeComposer {
      * @param View $view
      */
     public function compose(View $view) {
-        
-        $schoolId = $this->schoolId();
-        $educators = Educator::whereSchoolId($schoolId)
-            ->where('enabled', 1)->get();
-        $educatorUsers = [];
-        foreach ($educators as $educator) {
-            if ($educator->user) {
-                $educatorUsers[$educator->id] = $educator->user->realname;
-            }
-        }
-        $selectedEducators = [];
+    
+        $educators = Educator::where(['school_id' => $this->schoolId(), 'enabled' => 1])
+            ->with('user')->get()->pluck('user.realname', 'id')->toArray();
         if (Request::route('id')) {
             $grade = Grade::find(Request::route('id'));
             $selectedEducators = $this->educator->educatorList(
-                explode(",", rtrim($grade->educator_ids, ","))
+                explode(',', rtrim($grade->educator_ids, ','))
             );
         }
         $view->with([
-            'educators'         => $educatorUsers,
-            'selectedEducators' => $selectedEducators,
+            'educators'         => $educators,
+            'selectedEducators' => $selectedEducators ?? null,
         ]);
         
     }

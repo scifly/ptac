@@ -34,27 +34,22 @@ class SquadComposer {
      * @throws ReflectionException
      */
     public function compose(View $view) {
-        
+    
         $grades = Grade::whereIn('id', $this->gradeIds())
             ->where('enabled', 1)
             ->pluck('name', 'id');
         $educators = Educator::whereIn('id', $this->contactIds('educator'))
-            ->where('enabled', 1)->get();
-        $educatorList = [];
-        foreach ($educators as $educator) {
-            $educatorList[$educator->id] = $educator->user->realname;
-        }
+            ->where('enabled', 1)->with('user')
+            ->get()->pluck('user.realname', 'id');
         if (Request::route('id')) {
             $educatorIds = Squad::find(Request::route('id'))->educator_ids;
-            if ($educatorIds != '0') {
-                $selectedEducators = $this->educator->educatorList(
-                    explode(',', $educatorIds)
-                );
-            }
+            $educatorIds == '0' ?: $selectedEducators = $this->educator->educatorList(
+                explode(',', $educatorIds)
+            );
         }
         $view->with([
             'grades'            => $grades,
-            'educators'         => $educatorList,
+            'educators'         => $educators,
             'selectedEducators' => $selectedEducators ?? null,
         ]);
         

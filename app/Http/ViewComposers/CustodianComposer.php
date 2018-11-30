@@ -32,17 +32,15 @@ class CustodianComposer {
      */
     public function compose(View $view) {
     
-        list($title, $grades, $classes, $students, $relations, $mobiles) = $this->custodian->compose();
-        
-        $view->with([
-            'grades'       => $grades,
-            'classes'      => $classes,
-            'students'     => $students,
-            'mobiles'      => $mobiles,
-            'relations'    => $relations,
-            'title'        => $title,
-            'relationship' => true,
-        ]);
+        $view->with(
+            array_combine(
+                [
+                    'title', 'grades', 'classes', 'students',
+                    'relations', 'mobiles', 'relationship'
+                ],
+                array_merge($this->custodian->compose(), [true])
+            )
+        );
         
     }
     

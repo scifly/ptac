@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\ViewComposers;
 
+use App\Helpers\Constant;
 use App\Models\Group;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -15,31 +16,23 @@ class UserComposer {
      * @param View $view
      */
     public function compose(View $view) {
-        
-        $rootGroupId = Group::whereName('运营')->first()->id;
-        $corpGroupId = Group::whereName('企业')->first()->id;
-        $schoolGroupId = Group::whereName('学校')->first()->id;
-        $groups = [];
-        switch (Auth::user()->role()) {
-            case '运营':
-                $groups = [
-                    $rootGroupId   => '运营',
-                    $corpGroupId   => '企业',
-                    $schoolGroupId => '学校',
-                ];
-                break;
-            case '企业':
-                $groups = [
-                    $corpGroupId   => '企业',
-                    $schoolGroupId => '学校',
-                ];
-                break;
-            default:
-                break;
+    
+        $values = Constant::SUPER_ROLES;
+        $ids = array_map(
+            function ($name) {
+                return Group::whereName($name)->first()->id;
+            }, $values
+        );
+        $role = Auth::user()->role();
+        if ($role == '运营') {
+            $groups = array_combine($ids, $values);
+        } elseif ($role == '企业') {
+            $groups = array_combine(
+                [$ids[1], $ids[2]],
+                [$values[1], $values[2]]
+            );
         }
-        $view->with([
-            'groups' => $groups,
-        ]);
+        $view->with(['groups' => $groups ?? []]);
         
     }
     

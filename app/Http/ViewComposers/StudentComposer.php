@@ -25,15 +25,13 @@ class StudentComposer {
      * @param View $view
      */
     public function compose(View $view) {
-        
-        list($grades, $classes, $user, $mobiles) = $this->student->compose();
-        
-        $view->with([
-            'grades'  => $grades,
-            'classes' => $classes,
-            'user'    => $user,
-            'mobiles' => $mobiles
-        ]);
+    
+        $view->with(
+            array_combine(
+                ['grades', 'classes', 'user', 'mobiles'],
+                $this->student->compose()
+            )
+        );
         
     }
     

@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsToMany,
     Relations\HasMany};
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Throwable;
 
 /**
@@ -302,6 +303,29 @@ class Subject extends Model {
         }
         
         return true;
+        
+    }
+    
+    /**
+     * @return array
+     */
+    function compose() {
+        
+        if (Request::route('id')) {
+            $subject = Subject::find(Request::route('id'));
+            $selectedMajors = $subject->majors->pluck('name', 'id')->toArray();
+            $gradeIds = $subject->grade_ids;
+            $selectedGrades = empty($gradeIds) ? []
+                : Grade::whereIn('id', explode(',', $gradeIds))
+                    ->pluck('name', 'id')->toArray();
+        }
+        
+        return [
+            (new Grade)->gradeList(),
+            (new Major)->majorList(),
+            $selectedMajors ?? null,
+            $selectedGrades ?? null
+        ];
         
     }
     
