@@ -251,7 +251,7 @@ trait ModelTrait {
                 $schools->push($user->educator->school);
                 break;
         }
-        
+        dd($schools);
         return $schools->when(
             $corpId, function (Collection $schools) use ($corpId) {
             return $schools->where('corp_id', $corpId);
