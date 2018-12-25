@@ -8,6 +8,7 @@ use App\Models\Menu;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Request;
+use ReflectionException;
 
 /**
  * Class MenuPolicy
@@ -37,6 +38,7 @@ class MenuPolicy {
      * @param Menu $menu
      * @param bool $abort
      * @return bool
+     * @throws ReflectionException
      */
     public function operation(User $user, Menu $menu = null, $abort = false) {
         
@@ -53,7 +55,7 @@ class MenuPolicy {
             return $isSuperRole;
         }
         if (in_array($action, ['edit', 'update', 'delete', 'sort'])) {
-            $isMenuAllowed = in_array($menu->id, $this->menuIds($this->menu));
+            $isMenuAllowed = in_array($menu->id, $this->menuIds());
             return $isSuperRole && $isMenuAllowed;
         }
         

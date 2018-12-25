@@ -403,9 +403,9 @@ class Educator extends Model {
                 (new Grade)->removeEducator($id);
                 (new Squad)->removeEducator($id);
                 if (!$educator->user->custodian) {
-                    (new User)->purge($educator->user_id);
+                    $educator->user->purge($educator->user_id);
                 } else {
-                    (new User)->find($educator->user_id)->update([
+                    $educator->user->find($educator->user_id)->update([
                         'group_id' => Group::whereName('监护人')->first()->id
                     ]);
                 }
@@ -454,9 +454,8 @@ class Educator extends Model {
      */
     function upload(UploadedFile $file) {
         
-        $ext = $file->getClientOriginalExtension();     // 扩展名//xls
-        $realPath = $file->getRealPath();   //临时文件的绝对路径
-        // 上传文件
+        $ext = $file->getClientOriginalExtension();
+        $realPath = $file->getRealPath();
         $filename = date('His') . uniqid() . '.' . $ext;
         $stored = Storage::disk('uploads')->put(
             date('Y/m/d/', time()) . $filename,
@@ -528,9 +527,7 @@ class Educator extends Model {
             ->where('school_id', $this->schoolId())->get();
         $records = [self::EXPORT_TITLES];
         foreach ($educators as $educator) {
-            if (!$educator->user) {
-                continue;
-            }
+            if (!$educator->user) continue;
             $records[] = [
                 $educator->id,
                 $educator->user->realname,

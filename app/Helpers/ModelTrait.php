@@ -394,9 +394,10 @@ trait ModelTrait {
         $role = $user->role($userId ?? Auth::id());
         if (in_array($role, Constant::SUPER_ROLES)) {
             $schoolId = $schoolId ?? $this->schoolId();
+            
             $department = $schoolId
                 ? School::find($schoolId)->department
-                : Department::find($role == '运营' ? 1 : $this->head($user));
+                : Department::find($role == '运营' ? 1 : head($user->departments->pluck('id')->toArray()));
             $departmentIds[] = $department->id;
             
             return array_unique(
@@ -422,43 +423,26 @@ trait ModelTrait {
     /**
      * 返回指定用户可管理的所有菜单id（校级以下角色没有管理菜单的权限）
      *
-     * @param Menu $menu
      * @param null $userId
      * @return array
+     * @throws ReflectionException
      */
-    function menuIds(Menu $menu, $userId = null) {
+    function menuIds($userId = null) {
         
         $user = User::find($userId ?? Auth::id());
-        switch ($user->role($user->id)) {
-            case '运营':
-                return $menu::all()->pluck('id')->toArray();
-            case '企业':
-                $departmentId = head($user->departments->pluck('id')->toArray());
-                $corp = Corp::whereDepartmentId($departmentId)->first();
-                $menuIds = $menu->subIds($corp->menu_id);
-                
-                return $menuIds;
-            case '学校':
-                $departmentId = head($user->departments->pluck('id')->toArray());
-                $school = School::whereDepartmentId($departmentId)->first();
-                $menuIds = $menu->subIds($school->menu_id);
-                
-                return $menuIds;
-            default:
-                return [];
+        $role = $user->role($user->id);
+        if ($role == '运营') {
+            $menuIds = Menu::all()->pluck('id')->toArray();
+        } elseif (in_array($role, ['企业', '学校'])) {
+            $className = 'App\\Models\\' . ($role == '企业' ? 'Corp' : 'School');
+            $model = (new ReflectionClass($className))->newInstance();
+            $departmentId = head($user->departments->pluck('id')->toArray());
+            $menuIds = (new Menu)->subIds(
+                $model::whereDepartmentId($departmentId)->first()->menu_id
+            );
         }
         
-    }
-    
-    /**
-     * 返回指定用户所属的第一个部门id
-     *
-     * @param User $user
-     * @return mixed
-     */
-    function head(User $user) {
-        
-        return head($user->depts($user->id)->pluck('id')->toArray());
+        return $menuIds ?? [];
         
     }
     

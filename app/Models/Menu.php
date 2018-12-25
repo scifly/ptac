@@ -444,12 +444,12 @@ class Menu extends Model {
             case '运营':
                 return !$subRoot ? $rootMId : ($smId ?? ($cmId ?? $rootMId));
             case '企业':
-                $departmentId = $this->head($user);
+                $departmentId = head($user->departments->pluck('id')->toArray());
                 $cmId = $cmId ?? Corp::whereDepartmentId($departmentId)->first()->menu_id;
                 
                 return !$subRoot ? $cmId : ($smId ?? $cmId);
             case '学校':
-                $departmentId = $this->head($user);
+                $departmentId = head($user->departments->pluck('id')->toArray());
                 
                 return $smId ?? School::whereDepartmentId($departmentId)->first()->menu_id;
             default:
@@ -613,13 +613,14 @@ class Menu extends Model {
      * @param $id
      * @param $parentId
      * @return bool
+     * @throws ReflectionException
      */
     private function movable($id, $parentId) {
         
         if (!isset($id, $parentId)) return false;
         $user = Auth::user();
         if ($user->role() != '运营') {
-            $menuIds = $this->menuIds($this);
+            $menuIds = $this->menuIds();
             abort_if(
                 !in_array($id, $menuIds) || !in_array($parentId, $menuIds),
                 HttpStatusCode::UNAUTHORIZED,
@@ -633,15 +634,10 @@ class Menu extends Model {
             case '企业':
                 return $parentType == '运营';
             case '学校':
+                # 如果学校所属企业发生变化，则不允许移动
                 $school = School::whereMenuId($id)->first();
-                if ($parentType !== '企业') {
-                    return false;
-                } else {
-                    $corp = Corp::whereMenuId($parentId)->first();
-                    
-                    # 如果学校所属企业发生变化，则不允许移动
-                    return $school->corp_id == $corp->id;
-                }
+                return $parentType !== '企业' ? false
+                    : $school->corp_id == Corp::whereMenuId($parentId)->first()->id;
             case '其他':
                 return true;
             default:
@@ -724,22 +720,17 @@ class Menu extends Model {
                 Snippet::NODE_TEXT,
                 $sub['enabled'] ? $color : 'text-gray', '', $name, ''
             );
-            switch ($type) {
-                case '企业':
-                    $corp_id = Corp::whereMenuId($key)->first()->id;
-                    break;
-                case '学校':
-                    $corp_id = School::whereMenuId($key)->first()->corp_id;
-                    break;
-                default:
-                    break;
+            if ($type == '企业') {
+                $corpId = Corp::whereMenuId($key)->first()->id;
+            } elseif ($type == '学校') {
+                $corpId = School::whereMenuId($key)->first()->corp_id;
             }
             $tree[] = [
                 'id'      => $key,
                 'parent'  => $sub['parent_id'] ?? '#',
                 'text'    => $text,
                 'type'    => $type,
-                'corp_id' => $corp_id ?? null,
+                'corp_id' => $corpId ?? null,
             ];
         }
         
