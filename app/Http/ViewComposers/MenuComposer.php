@@ -39,7 +39,7 @@ class MenuComposer {
                 ->pluck('comment', 'id')->toArray();
         }
         $view->with([
-            'tabs'         => $tabs,
+            'tabs'         => $tabs->pluck('comment', 'id')->toArray(),
             'icons'        => $this->icon->icons(),
             'selectedTabs' => $selectedTabs ?? null,
         ]);
