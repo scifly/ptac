@@ -349,7 +349,7 @@
                         contextmenu: {
                             items: function (node) {
                                 return tree.customMenu(
-                                    node, table, $('#modal-dialog'),
+                                    node, table, $('#modal-delete'),
                                     $('#tab_' + page.getActiveTabId())
                                 );
                             }
