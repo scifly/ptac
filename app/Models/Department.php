@@ -322,16 +322,16 @@ class Department extends Model {
                     $du->whereIn('department_id', $ids)->pluck('user_id')->toArray()
                 );
                 # 删除部门&用户绑定关系
-                (new DepartmentUser)->whereIn('department_id', $ids)->delete();
+                $du->whereIn('department_id', $ids)->delete();
                 # 删除部门&标签绑定关系
                 (new DepartmentTag)->whereIn('department_id', $ids)->delete();
-                # 更新被删除部门所包含用户对应的企业微信会员信息
-                array_map(
+                # 更新被删除部门所包含用户对应的企业微信会员信息 todo
+                $contacts = array_map(
                     function ($userId) use ($user) {
-                        $action = User::find($userId)->depts()->count() ? 'update' : 'delete';
-                        $user->sync($userId, $action);
+                        return [$userId, '', User::find($userId)->depts()->count() ? 'update' : 'delete'];
                     }, $userIds
                 );
+                $user->sync($contacts);
                 # 删除指定企业微信部门及其子部门
                 $syncIds = [];
                 foreach ($ids as $id) {

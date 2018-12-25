@@ -1,7 +1,8 @@
 <?php
 namespace App\Jobs;
 
-use App\Helpers\{HttpStatusCode, JobTrait, ModelTrait};
+use App\Apis\MassImport;
+use App\Helpers\{Constant, HttpStatusCode, JobTrait, ModelTrait};
 use App\Models\{Score, Student};
 use Exception;
 use Illuminate\{Bus\Queueable,
@@ -18,12 +19,13 @@ use Validator;
  * Class ImportScore
  * @package App\Jobs
  */
-class ImportScore implements ShouldQueue {
+class ImportScore implements ShouldQueue, MassImport {
     
     use Dispatchable, InteractsWithQueue, Queueable,
         SerializesModels, ModelTrait, JobTrait;
     
     public $data, $userId, $classId, $response;
+    const CONDITION_FIELDS = ['student_id', 'subject_id', 'exam_id', 'enabled'];
     
     /**
      * Create a new job instance.
@@ -37,12 +39,10 @@ class ImportScore implements ShouldQueue {
         $this->data = $data;
         $this->userId = $userId;
         $this->classId = $classId;
-        $this->response = [
-            'userId' => $userId,
-            'title' => __('messages.score.title'),
-            'statusCode' => HttpStatusCode::OK,
-            'message' => __('messages.score.import_completed')
-        ];
+        $this->response = array_combine(Constant::BROADCAST_FIELDS, [
+            $userId, __('messages.score.title'),
+            HttpStatusCode::OK, __('messages.score.import_completed'),
+        ]);
         
     }
     
@@ -73,31 +73,22 @@ class ImportScore implements ShouldQueue {
      * @param $data
      * @return array
      */
-    function validate($data) {
+    function validate(array $data) {
         
-        $rules = [
-            'student_number' => 'required',
-            'subject_id'     => 'required|integer',
-            'exam_id'        => 'required|integer',
-            'score'          => 'required|numeric',
-        ];
-        # 非法数据
-        $illegals = [];
-        # 需要更新的数据
-        $updates = [];
-        # 需要添加的数据
-        $inserts = [];
+        $fields = ['student_number', 'subject_id', 'exam_id', 'score'];
+        $rules = array_combine($fields, [
+            'required', 'required|integer',
+            'required|integer', 'required|numeric'
+        ]);
         for ($i = 0; $i < count($data); $i++) {
             $datum = $data[$i];
-            $score = [
-                'student_number' => $datum['student_number'],
-                'subject_id'     => $datum['subject_id'],
-                'exam_id'        => $datum['exam_id'],
-                'score'          => $datum['score'],
-            ];
+            $score = array_combine($fields, [
+                $datum['student_number'], $datum['subject_id'],
+                $datum['exam_id'], $datum['score']
+            ]);
             $result = Validator::make($score, $rules);
             if ($result->fails()) {
-                $datum['error'] = json_encode($result->errors());
+                $datum['error'] = json_encode($result->errors(), JSON_UNESCAPED_UNICODE);
                 $illegals[] = array_values($datum);
                 continue;
             }
@@ -114,20 +105,15 @@ class ImportScore implements ShouldQueue {
                 $illegals[] = array_values($datum);
                 continue;
             }
-            $scoreExists = Score::where([
-                'exam_id'    => $score['exam_id'],
-                'student_id' => $student->id,
-                'subject_id' => $score['subject_id'],
-                'enabled'    => 1,
-            ])->first();
-            if ($scoreExists) {
-                $updates[] = $score;
-            } else {
-                $inserts[] = $score;
-            }
+            $condition = array_combine(self::CONDITION_FIELDS, [
+                $student->id, $score['subject_id'], $score['exam_id'], 1
+            ]);
+            Score::where($condition)->first()
+                ? $updates[] = $score
+                : $inserts[] = $score;
         }
         
-        return [$inserts, $updates, $illegals];
+        return [$inserts ?? [], $updates ?? [], $illegals ?? []];
         
     }
     
@@ -144,15 +130,13 @@ class ImportScore implements ShouldQueue {
             DB::transaction(function () use ($inserts) {
                 foreach ($inserts as $insert) {
                     $student = Student::whereStudentNumber($insert['student_number'])->first();
-                    Score::create([
-                        'student_id' => $student->id,
-                        'subject_id' => $insert['subject_id'],
-                        'exam_id'    => $insert['exam_id'],
-                        'score'      => $insert['score'],
-                        'class_rank' => 0,
-                        'grade_rank' => 0,
-                        'enabled'    => 1,
-                    ]);
+                    if (!$student) continue;
+                    Score::create(
+                        array_combine(Constant::SCORE_FIELDS, [
+                            $student->id, $insert['subject_id'],
+                            $insert['exam_id'], 0, 0, $insert['score'], 1
+                        ])
+                    );
                 }
             });
         } catch (Exception $e) {
@@ -177,20 +161,16 @@ class ImportScore implements ShouldQueue {
             DB::transaction(function () use ($updates) {
                 foreach ($updates as $update) {
                     $student = Student::whereStudentNumber($update['student_number'])->first();
-                    $score = Score::whereEnabled(1)
-                        ->whereExamId($update['exam_id'])
-                        ->whereStudentId($student->id)
-                        ->whereSubjectId($update['subject_id'])
-                        ->first();
-                    $score->update([
-                        'student_id' => $student->id,
-                        'subject_id' => $update['subject_id'],
-                        'exam_id'    => $update['exam_id'],
-                        'score'      => $update['score'],
-                        'class_rank' => 0,
-                        'grade_rank' => 0,
-                        'enabled'    => 1,
+                    if (!$student) continue;
+                    $condition = array_combine(self::CONDITION_FIELDS, [
+                        $student->id, $update['subject_id'], $update['exam_id'], 1
                     ]);
+                    Score::where($condition)->first()->update(
+                        array_combine(Constant::SCORE_FIELDS, [
+                            $student->id, $update['subject_id'],
+                            $update['exam_id'], 0, 0, $update['score'], 1
+                        ])
+                    );
                 }
             });
         } catch (Exception $e) {

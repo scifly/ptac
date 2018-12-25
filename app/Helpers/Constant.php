@@ -9,19 +9,12 @@ class Constant {
     # 状态
     const DISABLED = 0;
     const ENABLED = 1;
-    
-    # 角色Id
-    const SHARED = 0;
-    const ROOT = 1;
-    const CORP = 2;
-    const SCHOOL = 3;
+    # 广播消息属性列表
+    const BROADCAST_FIELDS = ['userId', 'title', 'statusCode', 'message'];
     
     const SUPER_ROLES = ['运营', '企业', '学校'];
-    
     const NON_EDUCATOR = ['运营', '企业', '监护人', '学生', 'api'];
-    
     const BATCH_OPERATIONS = ['enable', 'disable', 'delete'];
-    
     # 企业管理员可访问的运营类功能
     const ALLOWED_CORP_ACTIONS = [
         'corps/edit/%s',
@@ -38,20 +31,16 @@ class Constant {
         'wap_sites/edit/%s',
         'wap_sites/update/%s',
     ];
-    
     const WEEK_DAYS = [
         '星期日', '星期一', '星期二', '星期三',
         '星期四', '星期五', '星期六',
     ];
-    
     const SYNC_ACTIONS = [
         'create' => '创建',
         'update' => '更新',
         'delete' => '删除',
     ];
-    
     const ROOT_DEPARTMENT_ID = 1;
-    
     const DEPARTMENT_TYPES = [
         '根'  => 'root',
         '运营' => 'company',
@@ -61,7 +50,6 @@ class Constant {
         '班级' => 'class',
         '其他' => 'other',
     ];
-    
     const MENU_TYPES = [
         '根'  => 'root',
         '运营' => 'company',
@@ -69,7 +57,6 @@ class Constant {
         '学校' => 'school',
         '其他' => 'other',
     ];
-    
     const NODE_TYPES = [
         '根'  => ['color' => 'text-gray', 'type' => 'root', 'icon' => 'fa fa-sitemap'],
         '运营' => ['color' => 'text-blue', 'type' => 'company', 'icon' => 'fa fa-building'],
@@ -79,10 +66,9 @@ class Constant {
         '班级' => ['color' => 'text-black', 'type' => 'class', 'icon' => 'fa fa-users'],
         '其他' => ['color' => 'text-black', 'type' => 'other', 'icon' => 'fa fa-folder'],
     ];
-    
     # 控制器相对路径
     const CONTROLLER_DIR = 'app/Http/Controllers';
-    
+    # 无需扫描的控制器
     const EXCLUDED_CONTROLLERS = [
         'Controller',
         'HomeController',
@@ -90,14 +76,12 @@ class Constant {
         'ApiController',
         'TestController',
     ];
-    
     const CONTENT_TYPE = [
         'image' => 'image/*',
         'audio' => 'audio/*',
         'video' => 'video/*',
         'file'  => '*',
     ];
-    
     const APPS = [
         'attendances'     => '考勤中心',
         'message_centers' => '消息中心',
@@ -105,7 +89,6 @@ class Constant {
         'mobile_sites'    => '微网站',
         'home_works'      => '应用测试',
     ];
-    
     # 错误代码 & 消息
     const WXERR = [
         -1      => '系统繁忙',
@@ -302,4 +285,17 @@ class Constant {
         2000002 => 'CorpId参数无效',
     ];
     
+    # field names
+    const USER_FIELDS = ['username', 'group_id', 'password', 'realname', 'gender', 'userid', 'position', 'enabled'];
+    const EDUCATOR_FIELDS = ['user_id', 'school_id', 'sms_quote', 'enabled'];
+    const STUDENT_FIELDS = [
+        'user_id', 'class_id', 'student_number', 'card_number', 'oncampus', 'birthday', 'remark', 'enabled',
+    ];
+    const CUSTODIAN_FIELDS = ['user_id', 'enabled'];
+    const MOBILE_FIELDS = ['user_id', 'mobile', 'isdefault', 'enabled'];
+    const SCORE_FIELDS = ['student_id', 'subject_id', 'exam_id', 'class_rank', 'grade_rank', 'score', 'enabled'];
+    const CS_FIELDS = ['custodian_id', 'student_id', 'relationship', 'enabled'];
+    const DU_FIELDS = ['department_id', 'user_id', 'enabled'];
+    const EC_FIELDS = ['educator_id', 'class_id', 'subject_id', 'enabled'];
+    const MEMBER_FIELDS = ['user_id', 'type', 'method'];
 }

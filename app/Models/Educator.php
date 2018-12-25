@@ -266,7 +266,7 @@ class Educator extends Model {
                     (new CustodianStudent)->storeByCustodianId($custodian->id, $data['relationships']);
                 }
                 # 创建企业号成员
-                $user->sync($user->id, 'create');
+                $user->sync([[$user->id, '', 'create']]);
             });
         } catch (Exception $e) {
             throw $e;
@@ -289,30 +289,43 @@ class Educator extends Model {
         if (!$id) { return $this->batchUpdateContact($this); }
         try {
             DB::transaction(function () use ($data, $id) {
-                $educator = $this->find($id);
-                # 更新用户
-                User::find($educator->user_id)->update($data['user']);
-                # 更新教职员工
-                $educator->update($data);
-                # 保存班级科目绑定关系
-                (new EducatorClass)->storeByEducatorId($educator->id, $data['cs']);
-                # 更新教职员工&部门绑定关系
-                (new DepartmentUser)->storeByUserId($educator->user_id, $data['selectedDepartments']);
-                # 保存手机号码
-                (new Mobile)->store($data['mobile'], $educator->user_id);
-                # 如果同时也是监护人
-                $custodian = $educator->user->custodian;
-                if (!$educator->singular) {
-                    $custodian ? $custodian->update($data) : $custodian = Custodian::create($data);
-                    # 更新监护人&部门绑定关系
-                    (new DepartmentUser)->storeByUserId($custodian->user_id, $data['departmentIds'], true);
-                    # 更新监护人&学生关系
-                    (new CustodianStudent)->storeByCustodianId($custodian->id, $data['relationships']);
+                if ($id) {
+                    $educator = $this->find($id);
+                    # 更新用户
+                    $educator->user->update($data['user']);
+                    # 更新教职员工
+                    $educator->update($data);
+                    # 保存班级科目绑定关系
+                    (new EducatorClass)->storeByEducatorId($educator->id, $data['cs']);
+                    # 更新教职员工&部门绑定关系
+                    (new DepartmentUser)->storeByUserId($educator->user_id, $data['selectedDepartments']);
+                    # 保存手机号码
+                    (new Mobile)->store($data['mobile'], $educator->user_id);
+                    # 如果同时也是监护人
+                    $custodian = $educator->user->custodian;
+                    if (!$educator->singular) {
+                        $custodian ? $custodian->update($data) : $custodian = Custodian::create($data);
+                        # 更新监护人&部门绑定关系
+                        (new DepartmentUser)->storeByUserId($custodian->user_id, $data['departmentIds'], true);
+                        # 更新监护人&学生关系
+                        (new CustodianStudent)->storeByCustodianId($custodian->id, $data['relationships']);
+                    } else {
+                        !$custodian ?: (new Custodian)->purge($custodian->id);
+                    }
+                    $userIds = [$educator->user_id];
                 } else {
-                    if ($custodian) (new Custodian)->purge($custodian->id);
+                    $this->batchUpdateContact($this);
+                    $ids = array_values(Request::input('ids'));
+                    $userIds = $this->whereIn('id', $ids)->pluck('user_id')->toArray();
                 }
-                # 更新企业号成员
-                (new User)->sync($educator->user_id, 'update');
+                # 同步企业微信
+                (new User)->sync(
+                    array_map(
+                        function ($userId) {
+                            return [$userId, '', 'update'];
+                        }, $userIds
+                    )
+                );
             });
         } catch (Exception $e) {
             throw $e;
@@ -390,7 +403,7 @@ class Educator extends Model {
                 (new Grade)->removeEducator($id);
                 (new Squad)->removeEducator($id);
                 if (!$educator->user->custodian) {
-                    (new User)->remove($educator->user_id);
+                    (new User)->purge($educator->user_id);
                 } else {
                     (new User)->find($educator->user_id)->update([
                         'group_id' => Group::whereName('监护人')->first()->id
@@ -474,7 +487,7 @@ class Educator extends Model {
             ), 'sizeof'
         );
         $mobiles = array_count_values(
-            array_pluck($educators, 'H')
+            array_map('strval', array_pluck($educators, 'H'))
         );
         foreach ($mobiles as $mobile => $count) {
             if ($count > 1) { $duplicates[] = $mobile; }

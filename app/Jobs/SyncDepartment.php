@@ -38,12 +38,10 @@ class SyncDepartment implements ShouldQueue {
         $this->data = $data;
         $this->action = $action;
         $this->userId = $userId;
-        $this->response = [
-            'userId'     => $userId,
-            'title'      => Constant::SYNC_ACTIONS[$action],
-            'statusCode' => HttpStatusCode::OK,
-            'message'    => __('messages.synced'),
-        ];
+        $this->response = array_combine(Constant::BROADCAST_FIELDS, [
+            $userId, Constant::SYNC_ACTIONS[$action],
+            HttpStatusCode::OK, __('messages.synced'),
+        ]);
         $this->broadcaster = new Broadcaster();
         
     }
@@ -116,7 +114,7 @@ class SyncDepartment implements ShouldQueue {
                 $this->response['message'] = Constant::WXERR[$result->{'errcode'}];
             }
         }
-        $this->broadcaster->broadcast($this->response);
+        !$this->userId ?: $this->broadcaster->broadcast($this->response);
         
     }
     

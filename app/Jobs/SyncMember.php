@@ -1,15 +1,19 @@
 <?php
 namespace App\Jobs;
 
+use App\Facades\Wechat;
+use App\Helpers\{Broadcaster, Constant, HttpStatusCode, JobTrait, ModelTrait};
 use App\Models\Corp;
-use App\Helpers\{Broadcaster, JobTrait, Constant, HttpStatusCode};
+use App\Models\User;
 use Exception;
 use Illuminate\{Bus\Queueable,
-    Queue\SerializesModels,
-    Queue\InteractsWithQueue,
+    Contracts\Queue\ShouldQueue,
     Foundation\Bus\Dispatchable,
-    Contracts\Queue\ShouldQueue};
+    Queue\InteractsWithQueue,
+    Queue\SerializesModels,
+    Support\Facades\DB};
 use Pusher\PusherException;
+use Throwable;
 
 /**
  * 企业号会员管理
@@ -20,29 +24,25 @@ use Pusher\PusherException;
 class SyncMember implements ShouldQueue {
     
     use Dispatchable, InteractsWithQueue, Queueable,
-        SerializesModels, JobTrait;
+        SerializesModels, ModelTrait, JobTrait;
     
-    protected $data, $userId, $action, $response, $broadcaster;
+    protected $members, $userId, $response, $broadcaster;
     
     /**
      * Create a new job instance.
      *
-     * @param array $data
-     * @param $userId - 后台登录用户的id
-     * @param $action - create/update/delete操作
+     * @param array $members
+     * @param integer $userId - 当前登录用户id
      * @throws PusherException
      */
-    function __construct($data, $userId, $action) {
+    function __construct(array $members, $userId) {
         
-        $this->data = $data;
+        $this->members = $members;
         $this->userId = $userId;
-        $this->action = $action;
-        $this->response = [
-            'userId' => $userId,
-            'title' => Constant::SYNC_ACTIONS[$this->action],
-            'statusCode' => HttpStatusCode::OK,
-            'message' => __('messages.synced')
-        ];
+        $this->response = array_combine(Constant::BROADCAST_FIELDS, [
+            $userId, '企业微信通讯录同步',
+            HttpStatusCode::OK, __('messages.synced'),
+        ]);
         $this->broadcaster = new Broadcaster();
         
     }
@@ -50,21 +50,35 @@ class SyncMember implements ShouldQueue {
     /**
      * Execute the job.
      *
-     * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function handle() {
         
-        # 同步至企业微信通讯录
-        $this->sync();
-        # 同步至第三方合作伙伴通讯录(人员)
-        $this->apiSync(
-            $this->action,
-            $this->data,
-            $this->response
-        );
-        
-        return true;
+        try {
+            DB::transaction(function () {
+                $results = [];
+                foreach ($this->members as $member) {
+                    list($params, $action) = $member;
+                    $corps = Corp::whereIn('id', $params['corpIds'])->get();
+                    foreach ($corps as $corp) {
+                        !in_array($params['position'], ['运营', '企业'])
+                            ?: $params['department'] = [$corp->departmentid];
+                        list($errcode, $errmsg) = $this->sync($corp, $params, $action);
+                        !$errcode ?: $results[] = array_merge($params, ['result' => $errmsg]);
+                    }
+                }
+                if (sizeof($results) > 0) {
+                    $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+                    $this->response['message'] = __('messages.sync_failed');
+                    $this->response['url'] = 'uploads/' . date('Y/m/d/') . 'failed_syncs.xlsx';
+                    $this->excel($results, 'failed_syncs', '同步失败记录', false);
+                }
+            });
+        } catch (Throwable $e) {
+            $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+            $this->response['message'] = $e->getMessage();
+        }
+        !$this->userId ?: $this->broadcaster->broadcast($this->response);
         
     }
     
@@ -81,42 +95,57 @@ class SyncMember implements ShouldQueue {
     }
     
     /**
-     * 同步企业微信会员
+     * 同步会员信息
      *
-     * @throws Exception
+     * @param Corp $corp
+     * @param mixed $params
+     * @param string $action
+     * @return bool|mixed
      */
-    private function sync() {
+    private function sync(Corp $corp, $params, $action) {
         
-        $results = $this->syncMember($this->data, $this->action);
-        $this->response['title'] .= '企业微信会员';
-        if (sizeof($results) == 1) {
-            if ($results[key($results)]['errcode']) {
-                $this->response['message'] = $results[key($results)]['errmsg'];
-                $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-            }
-        } else {
-            $errors = 0;
-            foreach ($results as $corpId => $result) {
-                $errors += $result['errcode'] ? 1 : 0;
-            }
-            if ($errors > 0) {
-                $message = '';
-                $this->response['statusCode'] = $errors < sizeof($results)
-                    ? HttpStatusCode::ACCEPTED
-                    : HttpStatusCode::INTERNAL_SERVER_ERROR;
-                foreach ($results as $corpId => $result) {
-                    $corpName = Corp::find($corpId)->name;
-                    $corpMsg = !$result['errcode']
-                        ? __('messages.synced') . '企业微信' . $corpName
-                        : $result['errmsg'];
-                    $message .= $corpName . ': ' .$corpMsg . "\n";
+        # 获取access_token
+        $token = Wechat::getAccessToken(
+            $corp->corpid,
+            $corp->contact_sync_secret,
+            true
+        );
+        if ($token['errcode']) return array_values($token);
+        $accessToken = $token['access_token'];
+        if ($action != 'delete') unset($params['corpIds']);
+        $api = $action . 'User';
+        $data = $api == 'deleteUser' ? $params['userid'] : $params;
+        $result = json_decode(
+            Wechat::$api($accessToken, $data), true
+        );
+        # 企业微信通讯录不存在指定的会员，则创建该会员
+        if ($result['errcode'] == 60111 && $api == 'updateUser') {
+            $result = json_decode(
+                Wechat::createUser($accessToken, $params), true
+            );
+        }
+        if (!$result['errcode'] && $api != 'deleteUser') {
+            User::whereUserid($params['userid'])->first()->update(['synced' => 1]);
+            if ($api == 'updateUser') {
+                $member = json_decode(
+                    Wechat::getUser($accessToken, $params['userid']), true
+                );
+                if (!$member['errcode'] && $member['status'] == 1) {
+                    User::whereUserid($params['userid'])->first()->update([
+                        'avatar_url' => $member['avatar'],
+                        'subscribed' => 1,
+                    ]);
                 }
-                $this->response['message'] = $message;
             }
         }
-        if ($this->userId) {
-            $this->broadcaster->broadcast($this->response);
-        }
+        $errmsg = !$result['errcode'] ? '' :
+            implode(':', [
+                $corp->name,
+                Constant::SYNC_ACTIONS[$action] . '会员',
+                Constant::WXERR[$result['errcode']],
+            ]);
+        
+        return [$result['errcode'], $errmsg];
         
     }
     

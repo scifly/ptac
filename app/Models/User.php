@@ -308,18 +308,14 @@ class User extends Authenticatable {
                         Department::find($school->department_id)->users->pluck('id')->toArray()
                     );
                 }
-                if (empty($userIds)) {
-                    $userIds = [0];
-                }
+                if (empty($userIds)) $userIds = [0];
                 $condition = sprintf($sql, implode(',', [$corpGId, $schoolGId])) .
                     ' AND User.id IN (' . implode(',', array_unique($userIds)) . ')';
                 break;
             case '学校':
                 $userIds = Department::find(School::whereMenuId($rootMenu->id)->first()->department_id)
                     ->users->pluck('id')->toArray();
-                if (empty($userIds)) {
-                    $userIds = [0];
-                }
+                if (empty($userIds)) $userIds = [0];
                 $condition = sprintf($sql, implode(',', [$schoolGId])) .
                     ' AND User.id IN (' . implode(',', $userIds) . ')';
                 break;
@@ -394,7 +390,9 @@ class User extends Authenticatable {
                 }
                 (new Mobile)->store($data['mobile'], $user->id);
                 (new DepartmentUser)->storeByUserId($user->id, [$this->departmentId($data)]);
-                $this->sync($user->id, 'create');
+                $this->sync([
+                    [$user->id, Group::find($data['group_id'])->name, 'create']
+                ]);
             });
         } catch (Exception $e) {
             throw $e;
@@ -456,15 +454,16 @@ class User extends Authenticatable {
                             ->update(['mobile' => $data['mobile']]);
                     }
                 } else {
-                    # 批量更新(启用或禁用)
                     $this->batch($this);
                 }
                 # 同步企业微信会员
-                $userIds = $id ? [$id] : array_values(Request::input('ids'));
-                $broadcast = sizeof($userIds) == 1;
-                foreach ($userIds as $userId) {
-                    $this->sync($userId, 'update', $broadcast);
-                }
+                $this->sync(
+                    array_map(
+                        function ($userId) {
+                            return [$userId, $this->role($userId), 'update'];
+                        }, $id ? [$id] : array_values(Request::input('ids'))
+                    )
+                );
             });
         } catch (Exception $e) {
             throw $e;
@@ -530,17 +529,20 @@ class User extends Authenticatable {
      * 删除用户
      *
      * @param $id
-     * @param bool $broadcast
      * @return bool
      * @throws Throwable
      */
-    function remove($id = null, $broadcast = null) {
+    function remove($id = null) {
         
         try {
-            DB::transaction(function () use ($id, $broadcast) {
+            DB::transaction(function () use ($id) {
                 $userIds = $id ? [$id] : array_values(Request::input('ids'));
-                $broadcast = $broadcast ?? sizeof($userIds) == 1;
-                foreach ($userIds as $userId) $this->purge($userId, $broadcast);
+                $this->sync(array_map(
+                    function ($userId) {
+                        return [$userId, $this->role($userId), 'delete'];
+                    }, $userIds
+                ));
+                foreach ($userIds as $userId) $this->purge($userId);
             });
         } catch (Exception $e) {
             throw $e;
@@ -554,16 +556,14 @@ class User extends Authenticatable {
      * 删除指定用户的所有数据
      *
      * @param $id
-     * @param bool $broadcast - 是否发送广播消息，默认情况下发送，如果是批量操作则不发送
      * @return bool
      * @throws Throwable
      */
-    function purge($id, $broadcast = true): bool {
+    function purge($id): bool {
         
         try {
-            DB::transaction(function () use ($id, $broadcast) {
+            DB::transaction(function () use ($id) {
                 $user = $this->find($id);
-                $this->sync($id, 'delete', $broadcast);
                 DepartmentUser::whereUserId($id)->delete();
                 TagUser::whereUserId($id)->delete();
                 Tag::whereUserId($id)->delete();
@@ -617,7 +617,7 @@ class User extends Authenticatable {
      * @throws Throwable
      */
     function pPurge($id) {
-    
+        
         try {
             DB::transaction(function () use ($id) {
                 $messageType = MessageType::whereUserId($id)->first();
@@ -629,7 +629,7 @@ class User extends Authenticatable {
         } catch (Exception $e) {
             throw $e;
         }
-    
+        
         return true;
         
     }
@@ -646,8 +646,7 @@ class User extends Authenticatable {
         
         try {
             DB::transaction(function () use ($contact, $id) {
-                $ids = $id ? [$id] : Request::input('ids');
-                $broadcast = sizeof($ids) == 1;
+                $ids = $id ? [$id] : array_values(Request::input('ids'));
                 $type = lcfirst((new ReflectionClass($contact))->getShortName());
                 abort_if(
                     !empty($ids) && empty(array_intersect(
@@ -657,7 +656,17 @@ class User extends Authenticatable {
                     HttpStatusCode::UNAUTHORIZED,
                     __('messages.unauthorized')
                 );
-                foreach ($ids as $id) $contact->{'purge'}($id, $broadcast);
+                # 删除企业微信会员
+                if ($type != 'student') {
+                    $this->sync(array_map(
+                        function ($userId) use ($type) {
+                            $role = $type == 'custodian' ? '监护人' : '';
+                            return [$userId, $role, 'delete'];
+                        }, $contact->{'whereIn'}('id', $ids)->pluck('user_id')->toArray()
+                    ));
+                }
+                # 删除本地联系人
+                foreach ($ids as $id) $contact->{'purge'}($id);
             });
         } catch (Exception $e) {
             throw $e;
@@ -671,87 +680,46 @@ class User extends Authenticatable {
     /**
      * 同步企业微信会员
      *
-     * @param $id
-     * @param $action
-     * @param bool $broadcast
+     * @param array $contacts
+     * @param null $id - 接收广播的用户id
+     * @param null $corpId
      * @return bool
      */
-    function sync($id, $action, $broadcast = true) {
-        
-        $user = $this->find($id);
-        $corpIds = $schoolIds = [];
-        $role = $this->role($id);
-        switch ($role) {
-            case '运营':
-                $corpIds = Corp::pluck('id')->toArray();
-                break;
-            case '企业':
-                $departmentIds = $user->departments->pluck('id')->toArray();
-                $corpIds = [Corp::whereDepartmentId(head($departmentIds))->first()->id];
-                break;
-            case '学生':
-                $school = $user->student->squad->grade->school;
-                $corpIds = [$school->corp_id];
-                $schoolIds = [$school->id];
-                break;
-            case '监护人':
-                $students = $user->custodian->students;
-                foreach ($students as $student) {
-                    $school = $student->squad->grade->school;
-                    $corpIds[] = $school->corp_id;
-                    $schoolIds[] = $school->id;
-                }
-                break;
-            default: # 学校、教职员工或其他角色:
-                $school = $user->educator->school;
-                $corpIds = [$school->corp_id];
-                $schoolIds = [$school->id];
-                break;
-        }
-        $data = [
-            'id'        => $user->id,
-            'userid'    => $user->userid,
-            'username'  => $user->username,
-            'position'  => $user->position ?? $role,
-            'corpIds'   => $corpIds,
-            'schoolIds' => $schoolIds,
-        ];
-        if ($action != 'delete') {
-            $remark = '';
-            if ($user->student) {
-                $remark = $user->student->oncampus;
-            } elseif ($user->custodian) {
-                $students = $user->custodian->students;
-                $remarks = [];
-                foreach ($students as $student) {
-                    $remarks[] = $student->user->realname . '.' . $student->student_number;
-                }
-                $remark = implode(',', $remarks);
-            }
-            $data = array_merge(
-                $data,
-                [
+    function sync(array $contacts, $id = null, $corpId = null) {
+
+        $corpId = $corpId ?? School::find($this->schoolId())->corp_id;
+        foreach ($contacts as $contact) {
+            list($userId, $role, $method) = $contact;
+            $user = $this->find($userId);
+            $params = [
+                'userid'    => $user->userid,
+                'username'  => $user->username,
+                'position'  => $user->position ?? $role,
+                'corpIds'   => $role == '运营' ? Corp::pluck('id')->toArray() : [$corpId],
+            ];
+            if ($method != 'delete') {
+                $departments = !in_array($role, ['运营', '企业'])
+                    ? $this->depts($userId)->pluck('id')->toArray() : [1];
+                $mobile = $user->mobiles->where('isdefault', 1)->first()->mobile;
+                $params = array_merge($params, [
                     'name'         => $user->realname,
                     'english_name' => $user->english_name,
-                    'mobile'       => head(
-                        $user->mobiles
-                            ->where('isdefault', 1)
-                            ->pluck('mobile')->toArray()
-                    ),
+                    'mobile'       => $mobile,
                     'email'        => $user->email,
-                    'department'   => in_array($role, ['运营', '企业'])
-                        ? [1] : $this->depts($id)->pluck('id')->toArray(),
+                    'department'   => $departments,
                     'gender'       => $user->gender,
-                    'remark'       => $remark,
+                    'remark'       => '',
                     'enable'       => $user->enabled,
-                ]
-            );
-            # 在创建会员时，默认情况下不向该会员发送邀请
-            if ($action == 'create') {
-                $data = array_merge($data, ['to_invite' => false]);
+                ]);
+                # 在创建会员时，默认情况下不向该会员发送邀请
+                $method != 'create' ?: $params = array_merge($params, ['to_invite' => false]);
             }
+            $members[] = [
+                'method' => $method,
+                'params' => $params
+            ];
         }
-        SyncMember::dispatch($data, $broadcast ? Auth::id() : null, $action);
+        SyncMember::dispatch($members ?? [], $id ?? Auth::id());
         
         return true;
         

@@ -106,10 +106,10 @@ class DepartmentUser extends Model {
                 }
                 if (!empty($records)) {
                     $this->insert($records);
-                    $user = new User;
                     foreach (array_pluck($records, 'user_id') as $userId) {
-                        $user->sync($userId, 'update');
+                        $contacts[] = [$userId, '', 'update'];
                     }
+                    (new User)->sync($contacts ?? []);
                 }
             });
         } catch (Exception $e) {

@@ -210,7 +210,7 @@ class SyncController extends Controller {
     protected function deleteUser() {
     
         $userId = User::whereUserid($this->event->{'UserID'})->first()->id;
-        (new User)->remove($userId, false);
+        (new User)->purge($userId);
         
     }
     

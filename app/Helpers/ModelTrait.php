@@ -61,12 +61,12 @@ trait ModelTrait {
      */
     function batchUpdateContact(Model $model) {
         
-        $this->batch($model);
+        $updated = $this->batch($model);
         $ids = Request::input('ids');
         $userIds = $model->{'whereIn'}('id', array_values($ids))->pluck('user_id')->toArray();
         Request::replace(['ids' => $userIds]);
         
-        return (new User)->modify(Request::all());
+        return $updated ? $this->batch(new User) : false;
         
     }
     
@@ -767,9 +767,7 @@ trait ModelTrait {
                             'school_id' => $input['school_id'],
                             'enabled'   => $input['user']['enabled'],
                         ];
-                        if (!isset($input['id'])) {
-                            $input += ['singular'  => 1];
-                        }
+                        isset($input['id']) ?: $input += ['singular'  => 1];
                     }
                 }
                 break;

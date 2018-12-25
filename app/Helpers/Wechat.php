@@ -4,6 +4,7 @@ namespace App\Helpers;
 use App\Models\App;
 use App\Models\Corp;
 use Exception;
+use Throwable;
 
 /**
  * Class Wechat
@@ -406,7 +407,7 @@ class Wechat {
      *
      * @param string $accessToken 接口调用凭证
      * @return mixed
-     * @throws Exception
+     * @throws Throwable
      */
     function getUserDetail($accessToken) {
         
@@ -423,7 +424,7 @@ class Wechat {
      * @param string $accessToken 接口调用凭证
      * @param string $userId 微信用户ID
      * @return mixed
-     * @throws Exception
+     * @throws Throwable
      */
     function convertToOpenid($accessToken, $userId/*, $agentId*/) {
         
@@ -440,7 +441,7 @@ class Wechat {
      * @param $accessToken
      * @param $openid
      * @return mixed
-     * @throws Exception
+     * @throws Throwable
      */
     function convertToUserId($accessToken, $openid) {
         
@@ -457,7 +458,7 @@ class Wechat {
      * @param string $accessToken
      * @param string $authCode oauth2.0授权企业号管理员登录产生的code，只能使用一次，10分钟未被使用自动过期
      * @return mixed
-     * @throws Exception
+     * @throws Throwable
      */
     function getLoginInfo($accessToken, $authCode) {
         
@@ -476,7 +477,7 @@ class Wechat {
      * @param string $target 登录跳转到企业号后台的目标页面，目前有：agent_setting、send_msg、contact
      * @param null $agentId 授权方应用id
      * @return mixed
-     * @throws Exception
+     * @throws Throwable
      */
     function getLoginUrl($accessToken, $loginTicket, $target, $agentId = null) {
         
@@ -511,7 +512,7 @@ class Wechat {
      * @internal param string $avatarMediaId 成员头像的mediaid，通过多媒体接口上传图片获得的mediaid
      * @internal param string $telephone 座机。长度0-64个字节。第三方暂不支持
      * @internal param array $extAttr 自定义字段。自定义字段需要先在WEB管理端“我的企业” — “通讯录管理”添加，否则忽略未知属性的赋值
-     * @throws Exception
+     * @throws Throwable
      */
     function createUser(
         $accessToken, array $data
@@ -557,7 +558,7 @@ class Wechat {
      * @internal param string $avatarMediaId 成员头像的mediaid，通过多媒体接口上传图片获得的mediaid
      * @internal param string $telephone 座机。长度0-64个字节。第三方暂不支持
      * @internal param array $extAttr 自定义字段。自定义字段需要先在WEB管理端“我的企业” — “通讯录管理”添加，否则忽略未知属性的赋值
-     * @throws Exception
+     * @throws Throwable
      */
     function updateUser(
         $accessToken, array $data
@@ -590,7 +591,7 @@ class Wechat {
      * @param string $accessToken 接口调用凭证
      * @param array $userIdList 成员UserID列表。对应管理端的帐号
      * @return mixed json格式
-     * @throws Exception
+     * @throws Throwable
      */
     function batchDelUser($accessToken, $userIdList) {
         
@@ -637,7 +638,7 @@ class Wechat {
      * @param string $accessToken 接口调用凭证
      * @param array $data
      * @return mixed
-     * @throws Exception
+     * @throws Throwable
      */
     function createDept($accessToken, array $data) {
         
@@ -653,7 +654,7 @@ class Wechat {
      * @param string $accessToken 接口调用凭证
      * @param array $data
      * @return mixed {"errcode": 0, "errmsg": "updated"}
-     * @throws Exception
+     * @throws Throwable
      */
     function updateDept($accessToken, array $data) {
         
@@ -701,7 +702,7 @@ class Wechat {
      * @param string $token 用于生成签名
      * @param string $encodingAesKey 用于消息体的加密，是AES密钥的Base64编码
      * @return mixed json格式
-     * @throws Exception
+     * @throws Throwable
      */
     function incrementalUpdateUser(
         $accessToken, $mediaId, $url = null,
@@ -731,7 +732,7 @@ class Wechat {
      * @param string $token 用于生成签名
      * @param string $encodingAesKey 用于消息体的加密，是AES密钥的Base64编码
      * @return mixed json格式
-     * @throws Exception
+     * @throws Throwable
      */
     function overrideUser(
         $accessToken, $mediaId, $url = null,
@@ -760,7 +761,7 @@ class Wechat {
      * @param string $token 用于生成签名
      * @param string $encodingAesKey 用于消息体的加密，是AES密钥的Base64编码
      * @return mixed json格式
-     * @throws Exception
+     * @throws Throwable
      */
     function overrideDept(
         $accessToken, $mediaId, $url = null,
@@ -805,7 +806,7 @@ class Wechat {
      *      tagname: 标签名称，长度限制为32个字（汉字或英文字母），标签不可与其他标签重名。
      *      tagid: 标签id
      * @return mixed
-     * @throws Exception
+     * @throws Throwable
      */
     function createTag($accessToken, array $data) {
         
@@ -824,7 +825,7 @@ class Wechat {
      *      tagname: 标签名称，长度限制为32个字（汉字或英文字母），标签不可与其他标签重名。
      *      tagid: 标签id
      * @return mixed json格式
-     * @throws Exception
+     * @throws Throwable
      */
     function updateTag($accessToken, array $data) {
         
@@ -872,7 +873,7 @@ class Wechat {
      *      userList 企业成员ID列表，注意：userlist、partylist不能同时为空，单次请求长度不超过1000
      *      partyList 企业部门ID列表，注意：userlist、partylist不能同时为空，单次请求长度不超过100
      * @return mixed json格式
-     * @throws Exception
+     * @throws Throwable
      */
     function addTagMember($accessToken, array $data) {
         
@@ -892,7 +893,7 @@ class Wechat {
      *      userList 企业成员ID列表，注意：userlist、partylist不能同时为空，单次请求长度不超过1000
      *      partyList 企业部门ID列表，注意：userlist、partylist不能同时为空，单次请求长度不超过100
      * @return mixed json格式
-     * @throws Exception
+     * @throws Throwable
      */
     function delTagMember($accessToken, array $data) {
         
@@ -922,7 +923,7 @@ class Wechat {
      * @param string $accessToken 接口调用凭证
      * @param array $message 文本、 图片、 语音、 视频、 文件、 文本卡片、 图文、 图文消息（mpnews）
      * @return mixed json格式
-     * @throws Exception
+     * @throws Throwable
      */
     function sendMessage($accessToken, $message) {
         
@@ -939,7 +940,7 @@ class Wechat {
      * @param string $accessToken 接口调用凭证
      * @param integer $agentId 企业应用id
      * @return mixed json格式 应用的基本信息
-     * @throws Exception
+     * @throws Throwable
      */
     function getApp($accessToken, $agentId) {
         
@@ -956,6 +957,7 @@ class Wechat {
      * @param string $accessToken 接口调用凭证 调用接口凭证
      * @param array $data
      * @return mixed json格式 {"errcode":0, "errmsg":"ok"}
+     * @throws Throwable
      * @internal param int $agentId 企业应用id
      * @internal param bool $reportLocationFlag 企业应用是否打开地理位置上报 0：不上报；1：进入会话上报
      * @internal param int $logoMediaId 企业应用头像的mediaid，通过多媒体接口上传图片获得mediaid，上传后会自动裁剪成方形和圆形两个头像
@@ -964,7 +966,6 @@ class Wechat {
      * @internal param string $redirectDomain 企业应用可信域名
      * @internal param bool $isReportEnter 是否上报用户进入应用事件。0：不接收；1：接收。
      * @internal param string $homeUrl 应用主页url。url必须以http或者https开头。
-     * @throws Exception
      */
     function configApp($accessToken, array $data) {
         return $this->curlPost(
@@ -993,7 +994,7 @@ class Wechat {
      * @param integer $agentId 企业应用ID
      * @param array $menu 应用菜单数组
      * @return mixed json格式 {"errcode":0, "errmsg":"ok"}
-     * @throws Exception
+     * @throws Throwable
      */
     function createMenu($accessToken, $agentId, $menu) {
         
@@ -1041,7 +1042,7 @@ class Wechat {
      * @param $type
      * @param $data
      * @return mixed|null
-     * @throws Exception
+     * @throws Throwable
      */
     function uploadMedia($accessToken, $type, $data) {
 
@@ -1128,8 +1129,8 @@ class Wechat {
      * -8、发送内容需在1到300个字之间；-9、发送号码为空；-10、
      * 定时时间不能小于系统当前时间；-100、IP黑名单；-102、账号黑名单；
      * -103、IP未导白
+     * @throws Throwable
      * @internal param string $SendTime 定时时间,可选填
-     * @throws Exception
      */
     function batchSend($corpId, $pwd, $mobiles, $content, $ext = null, $sendTime = null) {
         
@@ -1195,7 +1196,7 @@ class Wechat {
      * @param $url
      * @param mixed $formData
      * @return mixed|null
-     * @throws Exception
+     * @throws Throwable
      */
     private function curlPost($url, $formData) {
         
@@ -1213,9 +1214,7 @@ class Wechat {
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $result = curl_exec($ch);
             // Check the return value of curl_exec(), too
-            if (!$result) {
-                throw new Exception(curl_error($ch), curl_errno($ch));
-            }
+            throw_if(!$result, new Exception(curl_error($ch), curl_errno($ch)));
             curl_close($ch);
         } catch (Exception $e) {
             throw $e;

@@ -403,33 +403,38 @@ class Tab extends Model {
     }
     
     /**
-     * 根据角色返回可访问的卡片ids
+     * 根据角色返回可访问的卡片id
      *
      * @return array
      */
     function allowedTabIds() {
         
         $user = Auth::user();
-        switch ($user->role()) {
+        $role = $user->role();
+        list($corpGid, $schoolGid) = array_map(
+            function ($role) {
+                return Group::whereName($role)->first()->id;
+            }, ['企业', '学校']
+        );
+        switch ($role) {
             case '运营':
-                return self::whereEnabled(Constant::ENABLED)
-                    ->pluck('id')
-                    ->toArray();
+                $builder = $this->whereEnabled(1);
+                break;
             case '企业':
-                return self::whereEnabled(Constant::ENABLED)
-                    ->whereIn('group_id', [Constant::SHARED, Constant::CORP, Constant::SCHOOL])
-                    ->pluck('id')
-                    ->toArray();
+                $builder = $this->whereEnabled(1)
+                    ->whereIn('group_id', [0, $corpGid, $schoolGid]);
+                break;
             case '学校':
-                return self::whereEnabled(Constant::ENABLED)
-                    ->whereIn('group_id', [Constant::SHARED, Constant::SCHOOL])
-                    ->pluck('id')
-                    ->toArray();
+                $builder = $this->whereEnabled(1)
+                    ->whereIn('group_id', [0, $schoolGid]);
+                break;
             default:
-                return GroupTab::whereGroupId($user->group_id)
-                    ->pluck('tab_id')
-                    ->toArray();
+                $builder = GroupTab::whereGroupId($user->group_id);
+                $field = 'tab_id';
+                break;
         }
+        
+        return $builder->pluck($field ?? 'id')->toArray();
         
     }
     

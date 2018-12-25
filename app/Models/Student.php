@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
 use App\Jobs\ImportStudent;
 use Carbon\Carbon;
 use Eloquent;
@@ -243,8 +243,8 @@ class Student extends Model {
                 (new Mobile)->store($data['mobile'], $user->id);
                 # 保存用户所处部门
                 (new DepartmentUser)->store($student->user_id, $student->squad->department_id);
-                # 创建企业号成员
-                $user->sync($user->id, 'create');
+                # 创建企业微信会员
+                // $user->sync([[$user->id, '学生', 'create']]);
             });
         } catch (Exception $e) {
             throw $e;
@@ -268,17 +268,29 @@ class Student extends Model {
         if (!$id) { return $this->batchUpdateContact($this); }
         try {
             DB::transaction(function () use ($data, $id) {
-                $student = $this->find($id);
-                # 更新用户
-                User::find($student->user_id)->update($data['user']);
-                # 更新学籍
-                $student->update($data);
-                # 更新手机号码
-                (new Mobile)->store($data['mobile'], $student->user_id);
-                # 更新用户所在部门
-                (new DepartmentUser)->store($student->user_id, $student->squad->department_id);
-                # 更新企业号成员
-                $student->user->sync($student->user_id, 'update');
+                if ($id) {
+                    $student = $this->find($id);
+                    # 更新用户
+                    $student->user->update($data['user']);
+                    # 更新学籍
+                    $student->update($data);
+                    # 更新手机号码
+                    (new Mobile)->store($data['mobile'], $student->user_id);
+                    # 更新用户所在部门
+                    (new DepartmentUser)->store($student->user_id, $student->squad->department_id);
+                    # 更新企业号成员
+                    // $userIds = [$student->user_id];
+                } else {
+                    $this->batchUpdateContact($this);
+                    // $ids = array_values(Request::input('ids'));
+                    // $userIds = $this->whereIn('id', $ids)->pluck('user_id')->toArray();
+                }
+                # 同步企业微信
+                // (new User)->sync(array_map(
+                //     function ($userId) {
+                //         return [$userId, '学生', 'update'];
+                //     }, $userIds)
+                // );
             });
         } catch (Exception $e) {
             throw $e;
@@ -306,21 +318,20 @@ class Student extends Model {
      * 删除指定学生的所有数据
      *
      * @param $id
-     * @param bool $broadcast
      * @return bool
      * @throws Throwable
      */
-    function purge($id, $broadcast = true) {
+    function purge($id) {
         
         try {
-            DB::transaction(function () use ($id, $broadcast) {
+            DB::transaction(function () use ($id) {
                 $student = $this->find($id);
                 Consumption::whereStudentId($id)->delete();
                 CustodianStudent::whereStudentId($id)->delete();
                 ScoreTotal::whereStudentId($id)->delete();
                 Score::whereStudentId($id)->delete();
                 StudentAttendance::whereStudentId($id)->delete();
-                (new User)->remove($student->user_id);
+                (new User)->purge($student->user_id);
                 $student->delete();
             });
         } catch (Exception $e) {

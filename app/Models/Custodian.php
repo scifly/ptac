@@ -98,7 +98,7 @@ class Custodian extends Model {
                     );
                     $userIds = $students->isNotEmpty() ? $students->pluck('user_id')->toArray() : [0];
                     $realnames = User::whereIn('id', $userIds)->pluck('realname')->toArray();
-    
+                    
                     return implode(',', $realnames);
                 },
             ],
@@ -106,16 +106,16 @@ class Custodian extends Model {
             ['db' => 'Custodian.created_at', 'dt' => 6, 'dr' => true],
             ['db' => 'Custodian.updated_at', 'dt' => 7, 'dr' => true],
             [
-                'db' => 'User.synced', 'dt' => 8,
+                'db'        => 'User.synced', 'dt' => 8,
                 'formatter' => function ($d) {
                     return $this->synced($d);
-                }
+                },
             ],
             [
-                'db' => 'User.subscribed', 'dt' => 9,
+                'db'        => 'User.subscribed', 'dt' => 9,
                 'formatter' => function ($d) {
                     return $this->subscribed($d);
-                }
+                },
             ],
             [
                 'db'        => 'Custodian.enabled', 'dt' => 10,
@@ -134,14 +134,14 @@ class Custodian extends Model {
                 ],
             ],
             [
-                'table' => 'mobiles',
-                'alias' => 'Mobile',
-                'type' => 'INNER',
+                'table'      => 'mobiles',
+                'alias'      => 'Mobile',
+                'type'       => 'INNER',
                 'conditions' => [
                     'User.id = Mobile.user_id',
-                    'Mobile.isdefault = 1'
-                ]
-            ]
+                    'Mobile.isdefault = 1',
+                ],
+            ],
         ];
         
         return Datatable::simple(
@@ -175,18 +175,18 @@ class Custodian extends Model {
                     $schoolId = $this->schoolId();
                     $groupId = Group::where([
                         'school_id' => $schoolId,
-                        'name' => '教职员工'
+                        'name'      => '教职员工',
                     ])->first()->id;
                     $user->update(['group_id' => $groupId]);
                     # 创建教职员工(Educator)记录
-                    Educator::create([
-                        'user_id' => $user->id,
-                        'school_id' => $schoolId,
-                        'enabled' => Constant::DISABLED
-                    ]);
+                    Educator::create(
+                        array_combine(Constant::EDUCATOR_FIELDS, [
+                            $user->id, $schoolId, 0, 1,
+                        ])
+                    );
                 }
-                # 创建企业号成员
-                $user->sync($user->id, 'create');
+                # 创建企业微信成员
+                $user->sync([[$user->id, '监护人', 'create']]);
             });
         } catch (Exception $e) {
             throw $e;
@@ -212,7 +212,7 @@ class Custodian extends Model {
                 if ($id) {
                     $custodian = $this->find($id);
                     # 更新用户数据
-                    User::find($custodian->user_id)->update($data['user']);
+                    $custodian->user->update($data['user']);
                     # 更新监护人记录
                     $custodian->update($data);
                     # 更新监护人用户&部门绑定关系、监护关系、手机号码
@@ -220,19 +220,28 @@ class Custodian extends Model {
                     # 如果同时也是教职员工
                     $educator = $custodian->user->educator;
                     if (!$data['singular']) {
-                        $educator ?: Educator::create([
-                            'user_id' => $custodian->user_id,
-                            'school_id' => $this->schoolId(),
-                            'enabled' => Constant::DISABLED
-                        ]);
+                        $educator ?: Educator::create(
+                            array_combine(Constant::EDUCATOR_FIELDS, [
+                                $custodian->user_id, $this->schoolId(), 0, 1,
+                            ])
+                        );
                     } else {
                         !$educator ?: (new Educator)->purge($educator->id);
                     }
-                    # 更新企业号会员数据
-                    $custodian->user->sync($custodian->user_id, 'update');
+                    $userIds = [$custodian->user_id];
                 } else {
                     $this->batchUpdateContact($this);
+                    $ids = array_values(Request::input('ids'));
+                    $userIds = $this->whereIn('id', $ids)->pluck('user_id')->toArray();
                 }
+                # 同步企业微信
+                (new User)->sync(
+                    array_map(
+                        function ($userId) {
+                            return [$userId, '监护人', 'update'];
+                        }, $userIds
+                    )
+                );
             });
         } catch (Exception $e) {
             throw $e;
@@ -260,14 +269,13 @@ class Custodian extends Model {
      * 删除监护人
      *
      * @param null $id
-     * @param bool $broadcast
      * @return bool
      * @throws Throwable
      */
-    function purge($id, $broadcast = true) {
+    function purge($id) {
         
         try {
-            DB::transaction(function () use ($id, $broadcast) {
+            DB::transaction(function () use ($id) {
                 $custodian = $this->find($id);
                 $cses = CustodianStudent::whereCustodianId($id)->get();
                 $schoolId = $this->schoolId();
@@ -276,14 +284,11 @@ class Custodian extends Model {
                 });
                 if ($cses->count() <= 1 || $schoolCses->count() == $cses->count()) {
                     CustodianStudent::whereCustodianId($id)->delete();
-                    if (!$custodian->user->educator) {
-                        (new User)->remove($custodian->user_id);
-                    }
+                    $custodian->user->educator ?: (new User)->purge($custodian->user_id);
                     $custodian->delete();
                 } else {
-                    CustodianStudent::whereCustodianId($id)
-                        ->whereIn('student_id', $schoolCses->pluck('student_id')->toArray())
-                        ->delete();
+                    $studentIds = $schoolCses->pluck('student_id')->toArray();
+                    CustodianStudent::whereCustodianId($id)->whereIn('student_id', $studentIds)->delete();
                 }
             });
         } catch (Exception $e) {
@@ -380,10 +385,10 @@ class Custodian extends Model {
      * @return array
      */
     function myStudents($userId = null, $corpId = null) {
-    
+        
         $custodian = User::find($userId ?? Auth::id())->custodian;
         $corpId = $corpId ?? session('corpId');
-    
+        
         return $custodian->students->filter(
             function (Student $student) use ($corpId) {
                 return $student->squad->grade->school->corp_id == $corpId;
@@ -399,7 +404,7 @@ class Custodian extends Model {
      * @return array
      */
     function compose($id = null) {
-    
+        
         $grades = Grade::whereIn('id', $this->gradeIds())
             ->where('enabled', 1)
             ->pluck('name', 'id')
@@ -423,7 +428,7 @@ class Custodian extends Model {
         }
         
         return [
-            '新增监护关系', $grades, $classes, $students ?? [], $relations ?? [], $mobiles ?? []
+            '新增监护关系', $grades, $classes, $students ?? [], $relations ?? [], $mobiles ?? [],
         ];
         
     }
@@ -436,7 +441,7 @@ class Custodian extends Model {
      * @throws Throwable
      */
     function storeProperties(Custodian $custodian, array $data) {
-    
+        
         # 更新监护人&部门绑定关系
         (new DepartmentUser)->storeByUserId(
             $custodian->user_id,
@@ -453,6 +458,15 @@ class Custodian extends Model {
             $data['mobile'],
             $custodian->user->id
         );
+        
+    }
+    
+    private function exists($mobile) {
+        
+        $m = Mobile::whereMobile($mobile)->first();
+        if (!$m) return false;
+        
+        
         
     }
     

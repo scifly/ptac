@@ -31,7 +31,8 @@ return [
     'invalid_file_format'      => '数据格式错误',
     'invalid_data_format'      => '导入数据格式不正确',
     'token_mismatch'           => '页面已失效，请重试',
-    'synced'                   => '已同步到',
+    'synced'                   => '同步成功',
+    'sync_failed'              => '部分用户同步失败，请参考导出的excel文件',
     'operator'           => [
         'stored' => '保存超级管理员',
     ],
