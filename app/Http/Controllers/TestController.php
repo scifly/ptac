@@ -56,7 +56,7 @@ class TestController extends Controller {
                 return $user;
             }
         );
-        
+        dd($c);
         exit;
         
         
