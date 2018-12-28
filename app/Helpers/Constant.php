@@ -297,5 +297,8 @@ class Constant {
     const CS_FIELDS = ['custodian_id', 'student_id', 'relationship', 'enabled'];
     const DU_FIELDS = ['department_id', 'user_id', 'enabled'];
     const EC_FIELDS = ['educator_id', 'class_id', 'subject_id', 'enabled'];
-    const MEMBER_FIELDS = ['user_id', 'type', 'method'];
+    const MEMBER_FIELDS = [
+        'userid', 'username', 'position', 'name', 'english_name',
+        'mobile', 'email', 'department', 'gender', 'remark', 'enable'
+    ];
 }

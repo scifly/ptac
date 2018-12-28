@@ -13,9 +13,9 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsTo,
     Relations\BelongsToMany,
     Relations\HasMany};
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\{Auth, DB, Request, Storage};
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use ReflectionClass;
 use ReflectionException;
 use Throwable;
 
@@ -49,16 +49,10 @@ class Educator extends Model {
     
     use ModelTrait;
     
-    const IMPORT_TITLES = [
-        '姓名', '性别', '生日', '员工编号', '职务', '部门',
+    const EXCEL_TITLES = [
+        '姓名', '性别', '员工编号', '职务', '部门',
         '学校', '手机号码', '年级主任', '班级主任', '班级科目'
     ];
-    
-    const EXPORT_TITLES = [
-        '#', '姓名', '所属学校', '手机号码', '职务',
-        '创建于', '更新于', '状态',
-    ];
-    
     protected $fillable = [
         'user_id', 'team_ids', 'school_id', 'singular',
         'position', 'sms_quote', 'enabled',
@@ -244,28 +238,28 @@ class Educator extends Model {
         
         try {
             DB::transaction(function () use ($data) {
-                # 创建用户
+                # 用户
                 $data['user']['password'] = bcrypt($data['user']['password']);
                 $user = User::create($data['user']);
-                # 创建教职员工
+                # 教职员工
                 $data['user_id'] = $user->id;
                 $educator = $this->create($data);
-                # 保存班级科目绑定关系
+                # 班级科目绑定关系
                 (new EducatorClass)->storeByEducatorId($educator->id, $data['cs']);
-                # 保存部门用户绑定关系
+                # 部门用户绑定关系
                 (new DepartmentUser)->storeByUserId($user->id, $data['selectedDepartments']);
-                # 保存手机号码
+                # 手机号码
                 (new Mobile)->store($data['mobile'], $user->id);
                 # 如果同时也是监护人
                 if (!$educator->singular) {
-                    # 创建监护人(Custodian)记录
+                    # 监护人(Custodian)
                     $custodian = $this->create($data);
-                    # 更新监护人&部门绑定关系
+                    # 监护人&部门绑定关系
                     (new DepartmentUser)->storeByUserId($custodian->user_id, $data['departmentIds'], true);
-                    # 更新监护人&学生关系
+                    # 监护人&学生关系
                     (new CustodianStudent)->storeByCustodianId($custodian->id, $data['relationships']);
                 }
-                # 创建企业号成员
+                # 创建企业微信会员
                 $user->sync([[$user->id, '', 'create']]);
             });
         } catch (Exception $e) {
@@ -439,21 +433,6 @@ class Educator extends Model {
             HttpStatusCode::INTERNAL_SERVER_ERROR,
             __('messages.empty_file')
         );
-    
-        return $this->upload($file);
-        
-    }
-    
-    /**
-     * 上传教职员工excel文件
-     *
-     * @param UploadedFile $file
-     * @return bool
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
-     */
-    function upload(UploadedFile $file) {
-        
         $ext = $file->getClientOriginalExtension();
         $realPath = $file->getRealPath();
         $filename = date('His') . uniqid() . '.' . $ext;
@@ -474,22 +453,19 @@ class Educator extends Model {
         );
         abort_if(
             !$this->checkFileFormat(
-                self::IMPORT_TITLES,
+                self::EXCEL_TITLES,
                 array_values($educators[1])
             ),
             HttpStatusCode::NOT_ACCEPTABLE,
             __('messages.invalid_file_format')
         );
-        $educators = array_filter(
-            array_values(
-                array_shift($educators)
-            ), 'sizeof'
-        );
+        $educators = array_filter(array_values($educators), 'implode');
+        array_shift($educators);
         $mobiles = array_count_values(
-            array_map('strval', array_pluck($educators, 'H'))
+            array_map('strval', array_pluck($educators, 'G'))
         );
         foreach ($mobiles as $mobile => $count) {
-            if ($count > 1) { $duplicates[] = $mobile; }
+            $count <= 1 ?: $duplicates[] = $mobile;
         }
         abort_if(
             isset($duplicates),
@@ -498,7 +474,7 @@ class Educator extends Model {
         );
         ImportEducator::dispatch($educators, Auth::id());
         Storage::disk('uploads')->delete($filename);
-        
+    
         return true;
         
     }
@@ -512,12 +488,9 @@ class Educator extends Model {
      * @throws ReflectionException
      */
     function export() {
-        
-        $range = Request::query('range');
-        $departmentId = Request::query('id');
-        if ($range) {
-            $groupId = Group::where(['name' => '教职员工', 'school_id' => $this->schoolId()])->first()->id;
-            $userIds = $this->userIds($departmentId, $groupId);
+    
+        if (Request::query('range') == 0) {
+            $userIds = $this->userIds(Request::query('id'), 'educator');
             $educatorIds = User::whereIn('id', $userIds)->with('educator')
                 ->get()->pluck('educator.id')->toArray();
         } else {
@@ -525,22 +498,48 @@ class Educator extends Model {
         }
         $educators = $this->whereIn('id', $educatorIds)
             ->where('school_id', $this->schoolId())->get();
-        $records = [self::EXPORT_TITLES];
+        $records = [];
         foreach ($educators as $educator) {
-            if (!$educator->user) continue;
+            if (!($user = $educator->user)) continue;
+            list($grades, $squads) = array_map(
+                function ($name) use ($educator) {
+                    $className = 'App\\Models\\' . ucfirst($name);
+                    $model = (new ReflectionClass($className))->newInstance();
+                    /** @var Collection $collection */
+                    $collection = $model->whereRaw($educator->id . ' IN (educator_ids)')->get();
+                
+                    return $collection->isEmpty() ? ''
+                        : implode(',', $collection->pluck('name')->toArray());
+                }, ['squad', 'grade']
+            );
+            $eces = EducatorClass::whereEducatorId($educator->id)->get();
+            foreach ($eces as $ec) {
+                $squad = $ec->squad;
+                $subject = $ec->subject;
+                if (isset($squad, $subject)) {
+                    $cses[] = implode(':', [$squad->name, $subject->name]);
+                }
+            }
             $records[] = [
-                $educator->id,
-                $educator->user->realname,
+                $user->realname,
+                $user->gender ? '男' : '女',
+                strval($user->username),
+                $user->position,
+                $user->departments->first()->name,
                 $educator->school->name,
-                implode(', ', $educator->user->mobiles->pluck('mobile')->toArray()),
-                $educator->user->position,
-                $educator->created_at,
-                $educator->updated_at,
-                $educator->enabled ? '启用' : '禁用',
+                $user->mobiles->where('isdefault', 1)->first()->mobile,
+                $grades,
+                $squads,
+                implode(',', $cses ?? [])
             ];
         }
-        
-        return $this->excel($records);
+        usort($records, function ($a, $b) {
+            return strcmp($a[4], $b[4]);     # 按部门排序
+        });
+    
+        return $this->excel(
+            array_merge([self::EXCEL_TITLES], $records)
+        );
         
     }
     
@@ -554,7 +553,8 @@ class Educator extends Model {
     function compose($id = null) {
         
         $classes = Squad::whereIn('id', $this->classIds())->where('enabled', 1)->get();
-        $gradeIds = Grade::whereIn('id', array_unique($classes->pluck('grade_id')->toArray()))->pluck('id')->toArray();
+        $gradeIds = array_unique($classes->pluck('grade_id')->toArray());
+        // Grade::whereIn('id', )->pluck('id')->toArray();
         $subjects = Subject::where(['enabled' => 1, 'school_id' => $this->schoolId()])->get()->filter(
             function (Subject $subject) use ($gradeIds) {
                 return !empty(array_intersect($gradeIds, explode(',', $subject->grade_ids)));

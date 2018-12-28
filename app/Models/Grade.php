@@ -96,7 +96,7 @@ class Grade extends Model {
     /**
      * 根据学校ID返回年级列表(id, name)
      *
-     * @return Collection
+     * @return Collection|\Illuminate\Support\Collection
      */
     function gradeList() {
         

@@ -313,44 +313,7 @@ class Department extends Model {
     function remove($id) {
         
         $department = $this->find($id);
-        try {
-            DB::transaction(function () use ($id, $department) {
-                $du = new DepartmentUser;
-                $user = Auth::user();
-                $ids = array_merge([$id], $this->subIds($id));
-                $userIds = array_unique(
-                    $du->whereIn('department_id', $ids)->pluck('user_id')->toArray()
-                );
-                # 删除部门&用户绑定关系
-                $du->whereIn('department_id', $ids)->delete();
-                # 删除部门&标签绑定关系
-                (new DepartmentTag)->whereIn('department_id', $ids)->delete();
-                # 更新被删除部门所包含用户对应的企业微信会员信息 todo
-                $contacts = array_map(
-                    function ($userId) use ($user) {
-                        return [$userId, '', User::find($userId)->depts()->count() ? 'update' : 'delete'];
-                    }, $userIds
-                );
-                $user->sync($contacts);
-                # 删除指定企业微信部门及其子部门
-                $syncIds = [];
-                foreach ($ids as $id) {
-                    if ($this->needSync($this->find($id))) {
-                        $level = 0;
-                        $syncIds[$id] = $this->level($id, $level);
-                    }
-                }
-                arsort($syncIds);
-                array_map(
-                    function ($id) { $this->sync($id, 'delete'); },
-                    array_keys($syncIds)
-                );
-                # 删除指定部门及其子部门
-                $this->whereIn('id', $ids)->delete();
-            });
-        } catch (Exception $e) {
-            throw $e;
-        }
+        !$department ?: $this->sync($id, 'delete');
         
         return true;
         
@@ -434,8 +397,10 @@ class Department extends Model {
         $parent = $department->parent;
         while ($parent->departmentType->name != '企业') {
             $id = $parent->id;
+            
             return $this->corpId($id);
         }
+        
         return Corp::whereDepartmentId($parent->id)->first()->id;
         
     }
@@ -462,7 +427,7 @@ class Department extends Model {
         return $leaves;
         
     }
-
+    
     /**
      * 获取联系人树
      *
@@ -604,14 +569,11 @@ class Department extends Model {
      */
     function leafPath($id, array &$path) {
         
-        $department = self::find($id);
-        if (!isset($department)) {
-            return '';
-        }
+        if (!($department = $this->find($id))) return '';
         $path[] = $department->name;
-        if (isset($department->parent_id)) {
-            self::leafPath($department->parent_id, $path);
-        }
+        !isset($department->parent_id) ?: $this->leafPath(
+            $department->parent_id, $path
+        );
         krsort($path);
         
         return implode(' . ', $path);
@@ -625,17 +587,40 @@ class Department extends Model {
      * @param integer $level 部门所处级别
      * @return int|null
      */
-    private function level($id, &$level) {
+    function level($id, &$level) {
         
-        $department = $this->find($id);
-        if (!$department) return null;
-        $parent = $department->parent;
-        if ($parent) {
-            $level += 1;
-            $this->level($parent->id, $level);
+        if (!($department = $this->find($id))) return null;
+        if ($parent = $department->parent) {
+            $this->level($parent->id, ++$level);
         }
         
         return $level;
+        
+    }
+    
+    /**
+     * 判断指定部门是否需要同步到企业微信
+     *
+     * @param Department $department
+     * @return bool
+     */
+    function needSync(Department $department) {
+        
+        return !in_array(
+            $department->departmentType->name, ['根', '运营', '企业']
+        );
+        
+    }
+    
+    /**
+     * 同步企业微信部门
+     *
+     * @param $id
+     * @param $method
+     */
+    private function sync($id, $method) {
+        
+        SyncDepartment::dispatch($id, $method, Auth::id());
         
     }
     
@@ -654,7 +639,7 @@ class Department extends Model {
                 ->whereIn('educator.id', explode(',', $model->{'educator_ids'}))
                 ->get();
             if (!empty($users) && $department) {
-                (new DepartmentUser())->storeByDepartmentId(
+                (new DepartmentUser)->storeByDepartmentId(
                     $department->id, $users->pluck('user.id')->toArray()
                 );
             }
@@ -684,50 +669,6 @@ class Department extends Model {
         }
         
         return $nodes;
-        
-    }
-    
-    /**
-     * 判断指定部门是否需要同步到企业微信
-     *
-     * @param Department $department
-     * @return bool
-     */
-    private function needSync(Department $department) {
-        
-        return !in_array(
-            $department->departmentType->name, ['根', '运营', '企业']
-        );
-        
-    }
-    
-    /**
-     * 同步企业微信部门
-     *
-     * @param integer $id
-     * @param string $action
-     */
-    private function sync($id, $action) {
-        
-        $department = $this->find($id);
-        $data = [
-            'id' => $id,
-            'schoolIds' => [$this->schoolId()],
-            'corp_id' => $this->corpId($id)
-        ];
-        if ($action != 'delete') {
-            $data = array_merge(
-                $data,
-                [
-                    'name'     => $department->name,
-                    'parentid' => $department->departmentType->name == '学校'
-                        ? $department->school->corp->departmentid
-                        : $department->parent_id,
-                    'order'    => $department->order,
-                ]
-            );
-        }
-        SyncDepartment::dispatch($data, Auth::id(), $action);
         
     }
     

@@ -2,7 +2,7 @@
 namespace App\Models;
 
 use App\Facades\Datatable;
-use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
+use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
 use App\Jobs\ImportStudent;
 use Carbon\Carbon;
 use Eloquent;
@@ -58,17 +58,10 @@ class Student extends Model {
     
     use ModelTrait;
     
-    const IMPORT_TITLES = [
+    const EXCEL_TITLES = [
         '姓名', '性别', '生日', '学校',
-        '年级', '班级', '手机号码',
-        '学号', '卡号', '住校',
-        '备注', '监护关系',
-    ];
-    const EXPORT_TITLES = [
-        '姓名', '性别', '班级', '学号',
-        '卡号', '住校', '手机',
-        '生日', '创建于', '更新于',
-        '状态',
+        '年级', '班级', '学号', '卡号',
+        '住校', '备注', '监护关系',
     ];
     const EXPORT_RANGES = [
         'class' => 0,
@@ -162,10 +155,10 @@ class Student extends Model {
             ['db' => 'Student.id', 'dt' => 0],
             ['db' => 'User.realname as realname', 'dt' => 1],
             [
-                'db' => 'User.avatar_url', 'dt' => 2,
+                'db'        => 'User.avatar_url', 'dt' => 2,
                 'formatter' => function ($d) {
                     return Snippet::avatar($d);
-                }
+                },
             ],
             [
                 'db'        => 'User.gender as gender', 'dt' => 3,
@@ -212,9 +205,9 @@ class Student extends Model {
                 'conditions' => [
                     'User.id = Student.user_id',
                 ],
-            ]
+            ],
         ];
-
+        
         return Datatable::simple(
             $this->getModel(), $columns, $joins,
             'Student.user_id IN (' . $this->visibleUserIds() . ')'
@@ -265,7 +258,9 @@ class Student extends Model {
      */
     function modify(array $data, $id = null) {
         
-        if (!$id) { return $this->batchUpdateContact($this); }
+        if (!$id) {
+            return $this->batchUpdateContact($this);
+        }
         try {
             DB::transaction(function () use ($data, $id) {
                 if ($id) {
@@ -349,7 +344,7 @@ class Student extends Model {
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
     function import() {
-    
+        
         abort_if(
             Request::method() != 'POST',
             HttpStatusCode::INTERNAL_SERVER_ERROR,
@@ -363,7 +358,7 @@ class Student extends Model {
         );
         
         return $this->upload($file);
-    
+        
     }
     
     /**
@@ -376,9 +371,8 @@ class Student extends Model {
      */
     function upload(UploadedFile $file) {
         
-        $ext = $file->getClientOriginalExtension();     // 扩展名//xls
-        $realPath = $file->getRealPath();   // 临时文件的绝对路径
-        // 上传文件
+        $ext = $file->getClientOriginalExtension();
+        $realPath = $file->getRealPath();
         $filename = uniqid() . '.' . $ext;
         $stored = Storage::disk('uploads')->put(
             date('Y/m/d/') . $filename,
@@ -396,23 +390,26 @@ class Student extends Model {
             null, true, true, true
         );
         abort_if(
-            !empty(array_diff(self::IMPORT_TITLES, $students[1])),
+            !empty(array_diff(self::EXCEL_TITLES, $students[1])),
             HttpStatusCode::NOT_ACCEPTABLE,
             __('messages.invalid_file_format')
         );
-        $students = array_filter(
-            array_values(
-                array_shift($students)
-            ), 'sizeof'
-        );
+        $students = array_filter(array_values($students), 'implode');
+        array_shift($students);
+        # sns - 学号，cns - 卡号
         list($sns, $cns) = array_map(
             function ($ns) {
-                foreach ($ns as $n => $count) { if ($count > 1) { $ds[] = $n; } }
+                foreach ($ns as $n => $count) {
+                    if (!empty($n) && $count > 1) $ds[] = $n;
+                }
+                
                 return $ds ?? [];
             }, array_map(
                 function ($students, $col) {
-                    return array_count_values(array_pluck($students, $col));
-                }, [$students, $students], ['H', 'I']
+                    return array_count_values(
+                        array_map('strval', array_pluck($students, $col))
+                    );
+                }, [$students, $students], ['G', 'H']
             )
         );
         abort_if(
@@ -422,7 +419,6 @@ class Student extends Model {
             (!empty($cns) ? ('卡号: ' . implode(',', $cns)) : '') .
             '有重复，请检查后重试'
         );
-        
         ImportStudent::dispatch($students, Auth::id());
         Storage::disk('uploads')->delete($filename);
         
@@ -447,7 +443,7 @@ class Student extends Model {
             HttpstatusCode::NOT_ACCEPTABLE,
             __('messages.not_acceptable')
         );
-        $students = null;
+        $students = collect([]);
         switch ($range) {
             case self::EXPORT_RANGES['class']:
                 $students = Squad::find($id)->students;
@@ -461,25 +457,45 @@ class Student extends Model {
             default:
                 break;
         }
-        $records = [self::EXPORT_TITLES];
+        $records = [];
         foreach ($students as $student) {
             if (!$student->user) continue;
+            $cses = CustodianStudent::whereStudentId($student->id)->get();
+            $relationships = [];
+            foreach ($cses as $cs) {
+                if (!$cs->custodian) continue;
+                $cUser = $cs->custodian->user;
+                $relationships[] = implode(':', [
+                    $cs->relationship, $cUser->realname, $cUser->gender ? '男' : '女',
+                    $cUser->mobiles->where('isdefault', 1)->first()->mobile,
+                ]);
+            }
+            $sUser = $student->user;
+            $sMobile = $sUser->mobiles->where('isdefault', 1)->first();
             $records[] = [
-                $student->user->realname,
-                $student->user->gender ? '男' : '女',
+                $sUser->realname,
+                $sUser->gender ? '男' : '女',
+                date('Y-m-d', strtotime($student->birthday)),
+                $student->squad->grade->school->name,
+                $student->squad->grade->name,
                 $student->squad->name,
+                $sMobile ? $sMobile->mobile : '',
                 $student->student_number,
                 $student->card_number . "\t",
-                $student->oncampus ? '是' : '否',
-                implode(', ', $student->user->mobiles->pluck('mobile')->toArray()),
-                $student->birthday,
-                $student->created_at->toDateTimeString(),
-                $student->updated_at->toDateTimeString(),
-                $student->enabled ? '启用' : '禁用',
+                $student->oncampus ? '住读' : '走读',
+                $student->remark,
+                !empty($relationships) ? implode(',', $relationships) : '',
             ];
         }
+        usort($records, function ($a, $b) {
+            return strcmp($a[4], $b[4])     # 按年级排序
+                ?: strcmp($a[5], $b[5])     # 按班级排序
+                    ?: strcmp($a[7], $b[7]);    # 按学号排序
+        });
         
-        return $this->excel($records);
+        return $this->excel(
+            array_merge([self::EXCEL_TITLES], $records)
+        );
         
     }
     
@@ -496,32 +512,6 @@ class Student extends Model {
         $result['html']['classes'] = $classes;
         
         return response()->json($result);
-        
-    }
-    
-    /**
-     * 返回年级和班级列表
-     *
-     * @param int $gradeId
-     * @return array
-     */
-    function gcList($gradeId = 0): array {
-        
-        $grades = Grade::whereEnabled(1)
-            ->where('school_id', $this->schoolId())
-            ->pluck('name', 'id')
-            ->toArray();
-        if (empty($grades)) {
-            $classes = [];
-        } else {
-            $gradeId = $gradeId == 0 ? array_keys($grades)[0] : $gradeId;
-            $classes = Squad::whereEnabled(1)
-                ->where('grade_id', $gradeId)
-                ->pluck('name', 'id')
-                ->toArray();
-        }
-        
-        return [$grades, $classes];
         
     }
     
@@ -547,7 +537,7 @@ class Student extends Model {
      * @return array
      */
     function compose() {
-    
+        
         $grades = Grade::whereIn('id', $this->gradeIds())
             ->where('enabled', 1)
             ->pluck('name', 'id')
@@ -575,7 +565,7 @@ class Student extends Model {
         }
         
         return [
-            $grades, $classes, $user ?? null, $mobiles ?? null
+            $grades, $classes, $user ?? null, $mobiles ?? null,
         ];
         
     }

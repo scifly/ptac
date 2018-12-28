@@ -83,7 +83,7 @@ class ImportStudent implements ShouldQueue, MassImport {
     function validate(array $data): array {
         
         $fields = [
-            'name', 'gender', 'school', 'birthday', 'grade', 'class',
+            'name', 'gender', 'birthday', 'school', 'grade', 'class',
             'student_number', 'card_number', 'oncampus', 'remark',
             'relationship',
         ];
@@ -100,7 +100,7 @@ class ImportStudent implements ShouldQueue, MassImport {
             'nullable',
             'string',
         ]);
-        $fields += ['class_id', 'department_id'];
+        $fields = array_merge($fields, ['class_id', 'department_id']);
         for ($i = 0; $i < count($data); $i++) {
             $datum = $data[$i];
             $schoolName = $datum['C'];
@@ -172,6 +172,7 @@ class ImportStudent implements ShouldQueue, MassImport {
                             $insert['birthday'], $insert['remark'] ?? '导入', $user->enabled,
                         ])
                     );
+                    # 保存监护关系
                     $this->binding($student, $insert, $password);
                     # 保存部门 & 用户绑定关系
                     DepartmentUser::create(
@@ -221,7 +222,7 @@ class ImportStudent implements ShouldQueue, MassImport {
                         'realname' => $update['name'],
                         'gender'   => $update['gender'] == '男' ? 1 : 0,
                     ]);
-                    # 创建监护人 & 学生绑定关系
+                    # 保存监护关系
                     $this->binding($student, $update);
                     # 更新部门 & 用户绑定关系
                     DepartmentUser::updateOrCreate(

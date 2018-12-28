@@ -3,14 +3,16 @@ namespace App\Jobs;
 
 use App\Facades\Wechat;
 use App\Helpers\{Broadcaster, Constant, HttpStatusCode, JobTrait, ModelTrait};
-use App\Models\{Corp, Department};
+use App\Models\{Corp, Department, DepartmentTag, DepartmentUser, User};
 use Exception;
 use Illuminate\{Bus\Queueable,
     Contracts\Queue\ShouldQueue,
     Foundation\Bus\Dispatchable,
     Queue\InteractsWithQueue,
-    Queue\SerializesModels};
+    Queue\SerializesModels,
+    Support\Facades\DB};
 use Pusher\PusherException;
+use Throwable;
 
 /**
  * 企业号部门管理
@@ -23,49 +25,63 @@ class SyncDepartment implements ShouldQueue {
     use Dispatchable, InteractsWithQueue, Queueable,
         SerializesModels, ModelTrait, JobTrait;
     
-    protected $data, $userId, $action, $response, $broadcaster;
+    protected $departmentId, $action, $userId;
+    protected $corp, $dept, $bc, $response;
     
     /**
      * Create a new job instance.
      *
-     * @param array $data
-     * @param $userId
+     * @param $departmentId
      * @param $action
+     * @param $userId
      * @throws PusherException
      */
-    function __construct(array $data, $userId, $action) {
+    function __construct($departmentId, $action, $userId) {
         
-        $this->data = $data;
+        $this->departmentId = $departmentId;
         $this->action = $action;
         $this->userId = $userId;
+        $this->dept = new Department;
+        $this->bc = new Broadcaster;
         $this->response = array_combine(Constant::BROADCAST_FIELDS, [
-            $userId, Constant::SYNC_ACTIONS[$action],
+            $userId, Constant::SYNC_ACTIONS[$action] . '企业微信部门',
             HttpStatusCode::OK, __('messages.synced'),
         ]);
-        $this->broadcaster = new Broadcaster();
-        
+    
     }
     
     /**
      * Execute the job
      *
-     * @return bool
-     * @throws Exception
+     * @throws Throwable
      */
     function handle() {
         
-        # 同步至企业微信通讯录
-        $this->sync();
-        # 同步至第三方合作伙伴通讯录(部门)
-        $this->apiSync(
-            $this->action,
-            $this->data,
-            $this->response,
-            $this->data['id']
-        );
-        
-        return true;
-        
+        try {
+            DB::transaction(function () {
+                if ($this->action == 'delete') {
+                    # 同步企业微信通讯录并获取已删除的部门id
+                    $ids = $this->delete();
+                    # 删除部门&用户绑定关系 / 部门&标签绑定关系 / 指定部门及其子部门
+                    array_map(
+                        function ($obj, $field) use ($ids) {
+                            $obj->{'whereIn'}($field, $ids)->delete();
+                        },
+                        [new DepartmentUser, new DepartmentTag, $this->dept],
+                        ['department_id', 'department_id', 'id']
+                    );
+                } else {
+                    $this->corp = Corp::find($this->dept->corpId($this->departmentId));
+                    $this->createUpdate();
+                }
+            });
+        } catch (Exception $e) {
+            $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+            $this->response['message'] = $e->getMessage();
+        }
+
+        !$this->userId ?: $this->bc->broadcast($this->response);
+    
     }
     
     /**
@@ -79,42 +95,173 @@ class SyncDepartment implements ShouldQueue {
     }
     
     /**
+     * 删除企业微信部门(并更新/删除部门中的会员)
+     *
+     * @return array
+     * @throws Throwable
+     */
+    private function delete() {
+    
+        $ids = array_merge(
+            [$this->departmentId],
+            $this->dept->subIds($this->departmentId)
+        );
+        foreach ($ids as $id) {
+            if ($this->dept->needSync($this->dept->find($id))) {
+                $syncIds[$id] = $this->dept->level($id, $level = 0);
+            }
+        }
+        arsort($syncIds);
+        $deptIds = array_keys($syncIds);
+        $this->corp = Corp::find($this->dept->corpId($deptIds[0]));
+        foreach ($deptIds as $id) {
+            foreach ($this->dept->find($id)->users as $user) {
+                $depts = $user->depts($user->id);
+                if ($depts->count() > 1) {
+                    $mobile = $user->mobiles->where('isdefault', 1)->first()->mobile;
+                    $userDeptIds = array_map(
+                        function (Department $dept) {
+                            return in_array($dept->departmentType->name, ['运营', '企业'])
+                                ? $this->corp->departmentid : $dept->id;
+                        }, $depts);
+                    $updates[] = array_combine(Constant::MEMBER_FIELDS, [
+                        $user->userid, $user->username, $user->position, $user->realname,
+                        $user->english_name, $mobile, $user->email, array_diff($userDeptIds, [$id])
+                    ]);
+                } else {
+                    $deletes[] = $user->userid;
+                }
+            }
+            # 更新/删除指定部门中的企业微信会员
+            list($updated, $deleted) = array_map(
+                function ($members, $method) { return $this->updateDelMember($members, $method); },
+                [$updates ?? [], $deletes ?? []], ['update', 'delete']
+            );
+            array_map(
+                function ($userids, $method) use ($id) {
+                    $userIds = User::whereIn('userid', $userids)->pluck('id')->toArray();
+                    if ($method == 'update') {
+                        # 更新部门&用户绑定关系
+                        DepartmentUser::whereIn('user_id', $userIds)
+                            ->where('department_id', $id)->delete();
+                    } else {
+                        # 禁用已删除的企业微信会员对应的本地用户
+                        User::whereIn('id', $userIds)->update(['enabled' => 0]);
+                    }
+                }, [$updated, $deleted], ['update', 'delete']
+            );
+        }
+        # 删除企业微信部门并返回已删除的企业微信部门id
+        return $this->delDept($deptIds);
+        
+    }
+    
+    /**
+     * 批量删除/更新会员
+     *
+     * @param $members
+     * @param $method
+     * @return array
+     * @throws PusherException
+     * @throws Throwable
+     */
+    private function updateDelMember($members, $method) {
+    
+        $accessToken = $this->accessToken();
+        $data = $method == 'update' ? $members : array_chunk($members, 200);
+        $api = $method == 'update' ? 'updateUser' : 'batchDelUser';
+        $succeeded = [];
+        foreach ($data as $datum) {
+            $result = Wechat::$api($accessToken, $datum);
+            if (!$result['errcode']) {
+                if ($method == 'update') {
+                    $succeeded[] = $datum['userid'];
+                } else {
+                    $succeeded = array_merge($succeeded, $datum);
+                }
+            }
+        }
+        
+        return $succeeded;
+    
+    }
+    
+    /**
      * 同步企业微信部门
+     *
+     * @param array $deptIds
+     * @return array
+     * @throws Throwable
+     */
+    private function delDept(array $deptIds) {
+    
+        $accessToken = $this->accessToken();
+        foreach ($deptIds as $id) {
+            $result = Wechat::deleteDept($accessToken, $id);
+            if (($result['errcode'] && $result['errcode'] == 60003) || !$result['errcode']) {
+                $deleted[] = $id;
+            }
+        }
+        
+        return $deleted ?? [];
+        
+    }
+    
+    /**
+     * 创建或更新企业微信部门
      *
      * @throws PusherException
      */
-    private function sync() {
+    private function createUpdate() {
+    
+        $accessToken = $this->accessToken();
+        $action = $this->action == 'create' ? 'createDept' : 'updateDept';
+        $department = $this->dept->find($this->departmentId);
+        $parentid = $department->departmentType->name == '学校'
+            ? $department->school->corp->departmentid
+            : $department->parent_id;
+        $params = array_combine(
+            ['id', 'name', 'parentid', 'order'],
+            [$department->id, $department->name, $parentid, $department->order]
+        );
+        $result = json_decode(Wechat::$action($accessToken, $params), true);
+        $errcode = $result['errcode'];
+        if ($errcode) {
+            # 如果在更新部门时返回"部门ID不存在"
+            if ($errcode == 60003) {
+                $result = json_decode(Wechat::createDept($accessToken, $params), true);
+                $errcode = $result['errcode'];
+            }
+            if ($errcode) {
+                $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
+                $this->response['message'] = Constant::WXERR[$errcode];
+            }
+        }
+        $department->update(['synced' => !$errcode ? 1 : 0]);
         
-        $corp = Corp::find($this->data['corp_id']);
-        $token = Wechat::getAccessToken($corp->corpid, $corp->contact_sync_secret, true);
-        $this->response['title'] .= '企业微信部门';
-        $this->response['message'] .= '企业微信';
+    }
+    
+    /**
+     * 获取access_token
+     *
+     * @return mixed
+     * @throws PusherException
+     */
+    private function accessToken() {
+    
+        $token = Wechat::getAccessToken(
+            $this->corp->corpid,
+            $this->corp->contact_sync_secret,
+            true
+        );
         if ($token['errcode']) {
             $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
             $this->response['message'] = $token['errmsg'];
-        } else {
-            $action = $this->action . 'Dept';
-            $result = json_decode(
-                Wechat::$action(
-                    $token['access_token'],
-                    $action != 'deleteDept' ? $this->data : $this->data['id']
-                )
-            );
-            # 企业微信通讯录不存在需要更新的部门，则创建该部门
-            if ($result->{'errcode'} == 60003 && $action == 'updateDept') {
-                $result = json_decode(Wechat::createDept($token['access_token'], $this->data));
-            }
-            if (!$result->{'errcode'}) {
-                if ($action != 'deleteDept') {
-                    # 如果成功创建/更新企业微信通讯录部门，则将本地通讯录相应部门的同步状态置为“已同步”
-                    Department::find($this->data['id'])->update(['synced' => 1]);
-                }
-            } else {
-                $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-                $this->response['message'] = Constant::WXERR[$result->{'errcode'}];
-            }
+            $this->bc->broadcast($this->response);
+            exit;
         }
-        !$this->userId ?: $this->broadcaster->broadcast($this->response);
+        
+        return $token['access_token'];
         
     }
     
