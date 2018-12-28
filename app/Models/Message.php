@@ -1199,7 +1199,7 @@ class Message extends Model {
         
         if (Request::method() == 'POST') {
             return Request::has('file')
-                ? $this->upload()
+                ? $this->import()
                 : $this->search();
         }
         
@@ -1214,7 +1214,7 @@ class Message extends Model {
      * @return JsonResponse
      * @throws Exception
      */
-    function upload() {
+    function import() {
         
         # 上传到本地后台
         $media = new Media();
@@ -1225,7 +1225,7 @@ class Message extends Model {
             HttpStatusCode::NOT_ACCEPTABLE,
             __('messages.empty_file')
         );
-        $uploadedFile = $media->upload($file, __('messages.message.title'));
+        $uploadedFile = $media->import($file, __('messages.message.title'));
         abort_if(
             !$uploadedFile,
             HttpStatusCode::INTERNAL_SERVER_ERROR,
@@ -1281,7 +1281,7 @@ class Message extends Model {
         );
         if (Request::method() == 'POST') {
             return Request::has('file')
-                ? $this->upload()
+                ? $this->import()
                 : $this->search();
         }
         
@@ -1383,6 +1383,33 @@ class Message extends Model {
         }
         
         return $replyList;
+        
+    }
+    
+    /**
+     * 获取当前请求对应的企业号id和“通讯录同步”Secret
+     *
+     * @return array
+     */
+    private function tokenParams() {
+        
+        if (!session('corpId')) {
+            $menu = new Menu();
+            $corpMenuId = $menu->menuId(session('menuId'), '企业');
+            abort_if(
+                !$corpMenuId,
+                HttpStatusCode::BAD_REQUEST,
+                __('messages.bad_request')
+            );
+            $corp = Corp::whereMenuId($corpMenuId)->first();
+        } else {
+            $corp = Corp::find(session('corpId'));
+        }
+        
+        return [
+            $corp->corpid,
+            $corp->contact_sync_secret,
+        ];
         
     }
     

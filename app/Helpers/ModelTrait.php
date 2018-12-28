@@ -1,32 +1,32 @@
 <?php
 namespace App\Helpers;
 
-use App\Models\{CommType,
+use App\Models\{Action,
+    CommType,
     Corp,
+    Department,
+    DepartmentUser,
     Exam,
     Grade,
     Group,
     MediaType,
     Menu,
     MessageType,
+    School,
+    Squad,
     Student,
     Tab,
-    User,
-    Squad,
-    Action,
-    School,
-    Department,
-    DepartmentUser};
+    User};
+use App\Policies\Route;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
-use ReflectionClass;
-use App\Policies\Route;
-use ReflectionException;
-use Illuminate\Support\{Facades\DB, Facades\Auth, Facades\Request};
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\{Facades\Auth, Facades\DB, Facades\Request, Facades\Storage};
+use Illuminate\Validation\Rule;
 use PhpOffice\PhpSpreadsheet\{Exception, IOFactory, Spreadsheet};
+use ReflectionClass;
+use ReflectionException;
 use Throwable;
 
 /**
@@ -255,6 +255,7 @@ trait ModelTrait {
             $corpId, function (Collection $schools) use ($corpId) {
             return $schools->where('corp_id', $corpId);
         })->pluck('id')->toArray());
+        
         return $schools->when(
             $corpId, function (Collection $schools) use ($corpId) {
             return $schools->where('corp_id', $corpId);
@@ -374,7 +375,6 @@ trait ModelTrait {
         $departmentIds = [$departmentId] + (new Department)->subIds($departmentId);
         $userIds = DepartmentUser::whereIn('department_id', $departmentIds)
             ->pluck('user_id')->toArray();
-        
         if (!$type) return array_unique($userIds);
         $contact = (new ReflectionClass('App\\Models\\' . ucfirst($type)))->newInstance();
         
@@ -397,7 +397,6 @@ trait ModelTrait {
         $role = $user->role($userId ?? Auth::id());
         if (in_array($role, Constant::SUPER_ROLES)) {
             $schoolId = $schoolId ?? $this->schoolId();
-            
             $department = $schoolId
                 ? School::find($schoolId)->department
                 : Department::find($role == '运营' ? 1 : head($user->departments->pluck('id')->toArray()));
@@ -446,6 +445,57 @@ trait ModelTrait {
         }
         
         return $menuIds ?? [];
+        
+    }
+    
+    /**
+     * 从上传的excel文件中获取需要导入的数据
+     *
+     * @param bool $removeTitles
+     * @return array
+     * @throws Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     */
+    function upload($removeTitles = true) {
+        
+        $code = HttpStatusCode::INTERNAL_SERVER_ERROR;
+        abort_if(
+            Request::method() != 'POST', $code,
+            __('messages.file_upload_failed')
+        );
+        $file = Request::file('file');
+        abort_if(
+            empty($file) || !$file->isValid(), $code,
+            __('messages.empty_file')
+        );
+        $ext = $file->getClientOriginalExtension();
+        $realPath = $file->getRealPath();
+        $filename = date('His') . uniqid() . '.' . $ext;
+        $stored = Storage::disk('uploads')->put(
+            date('Y/m/d/', time()) . $filename,
+            file_get_contents($realPath)
+        );
+        abort_if(
+            !$stored, $code,
+            __('messages.file_upload_failed')
+        );
+        $spreadsheet = IOFactory::load(
+            $this->uploadedFilePath($filename)
+        );
+        $records = $spreadsheet->getActiveSheet()->toArray(
+            null, true, true, true
+        );
+        $records = array_filter(
+            array_values($records), 'implode'
+        );
+        abort_if(
+            !empty(array_diff(self::EXCEL_TITLES, array_values($records[0]))),
+            HttpStatusCode::NOT_ACCEPTABLE, __('messages.invalid_file_format')
+        );
+        Storage::disk('uploads')->delete($filename);
+        if ($removeTitles) array_shift($records);
+        
+        return $records;
         
     }
     
@@ -576,39 +626,12 @@ trait ModelTrait {
     }
     
     /**
-     * 获取当前请求对应的企业号id和“通讯录同步”Secret
-     *
-     * @return array
-     */
-    function tokenParams() {
-        
-        if (!session('corpId')) {
-            $menu = new Menu();
-            $corpMenuId = $menu->menuId(session('menuId'), '企业');
-            abort_if(
-                !$corpMenuId,
-                HttpStatusCode::BAD_REQUEST,
-                __('messages.bad_request')
-            );
-            $corp = Corp::whereMenuId($corpMenuId)->first();
-        } else {
-            $corp = Corp::find(session('corpId'));
-        }
-        
-        return [
-            $corp->corpid,
-            $corp->contact_sync_secret,
-        ];
-        
-    }
-    
-    /**
      * 返回对当前登录用户可见的所有用户id
      *
      * @return array
      */
     function visibleUserIds() {
-    
+        
         if (in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
             $school = School::find($this->schoolId());
             $departmentId = $school->department_id;
@@ -618,7 +641,7 @@ trait ModelTrait {
         } else {
             $departmentIds = $this->departmentIds();
         }
-    
+        
         return implode(',', array_unique(
                 DepartmentUser::whereIn('department_id', array_unique($departmentIds))
                     ->pluck('user_id')->toArray()
@@ -682,7 +705,7 @@ trait ModelTrait {
      * @throws ReflectionException
      */
     function contactInput(FormRequest $request, $role) {
-    
+        
         $input = $request->all();
         if (isset($input['mobile'])) {
             $isdefault = $input['mobile']['isdefault'];
@@ -754,7 +777,7 @@ trait ModelTrait {
                             'school_id' => $input['school_id'],
                             'enabled'   => $input['user']['enabled'],
                         ];
-                        isset($input['id']) ?: $input += ['singular'  => 1];
+                        isset($input['id']) ?: $input += ['singular' => 1];
                     }
                 }
                 break;
@@ -762,21 +785,8 @@ trait ModelTrait {
                 break;
         }
         Request::route('id') ?: $input['user']['userid'] = $userid;
-    
-        return $input;
-    
-    }
-    
-    /**
-     * 检查上传文件格式
-     *
-     * @param array $titles
-     * @param array $format
-     * @return bool
-     */
-    private function checkFileFormat(array $titles, array $format) {
         
-        return empty(array_diff($titles, $format));
+        return $input;
         
     }
     

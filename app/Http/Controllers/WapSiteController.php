@@ -54,7 +54,7 @@ class WapSiteController extends Controller {
     public function edit($id) {
         
         return Request::method() == 'POST'
-            ? $this->ws->upload()
+            ? $this->ws->import()
             : $this->output(['ws' => $this->ws->find($id)]);
         
     }

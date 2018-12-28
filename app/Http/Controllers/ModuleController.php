@@ -58,7 +58,7 @@ class ModuleController extends Controller {
                 ? response()->json(
                     $this->module->groupList(Request::input('school_id'), true)
                 )
-                : $this->module->upload()
+                : $this->module->import()
             )
             : $this->output();
         
@@ -95,7 +95,7 @@ class ModuleController extends Controller {
                 ? response()->json(
                     $this->module->groupList(Request::input('school_id'), true)
                 )
-                : $this->module->upload()
+                : $this->module->import()
             )
             : $this->output([
                 'module' => $this->module->find($id),

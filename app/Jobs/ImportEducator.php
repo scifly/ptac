@@ -276,15 +276,16 @@ class ImportEducator implements ShouldQueue, MassImport {
      */
     private function updateDu(School $school, User $user, array $record) {
         
-        $department = new Department;
-        $department->where(['user_id' => $user->id, 'enabled' => 1])->delete();
+        $d = new Department;
+        $du = new DepartmentUser;
+        $du->where(['user_id' => $user->id, 'enabled' => 1])->delete();
         $schoolDepartmentId = $school->department_id;
         $schoolDepartmentIds = array_merge(
             [$schoolDepartmentId],
-            $department->subIds($schoolDepartmentId)
+            $d->subIds($schoolDepartmentId)
         );
         $departmentIds = array_intersect(
-            $department->whereIn('name', $record['departments'])->pluck('id')->toArray(),
+            $d->whereIn('name', $record['departments'])->pluck('id')->toArray(),
             $schoolDepartmentIds
         );
         foreach ($departmentIds as $departmentId) {
@@ -292,7 +293,7 @@ class ImportEducator implements ShouldQueue, MassImport {
                 $departmentId, $user->id, 1,
             ]);
         }
-        DepartmentUser::insert($records ?? []);
+        $du->insert($records ?? []);
         
     }
     
@@ -309,10 +310,10 @@ class ImportEducator implements ShouldQueue, MassImport {
             DB::transaction(function () use ($data, $educator) {
                 $school = School::find($educator->school_id);
                 # 更新年级主任
-                $gradeNames = explode(',', str_replace(['，', '：'], [',', ':'], $data['grades']));
-                foreach ($gradeNames as $gradeName) {
-                    $grade = Grade::whereSchoolId($school->id)->where('name', $gradeName)->first();
-                    if (!$grade) continue;
+                $gNames = explode(',', str_replace(['，', '：'], [',', ':'], $data['grades']));
+                foreach ($gNames as $gName) {
+                    $condition = ['school_id' => $school->id, 'name' => $gName];
+                    if (!($grade = Grade::where($condition)->first())) continue;
                     $educatorIds = array_merge(
                         explode(',', $grade->educator_ids),
                         [$educator->id]
@@ -325,11 +326,10 @@ class ImportEducator implements ShouldQueue, MassImport {
                     );
                 }
                 # 更新班级主任
-                $classeNames = explode(',', str_replace(['，', '：'], [',', ':'], $data['classes']));
+                $cNames = explode(',', str_replace(['，', '：'], [',', ':'], $data['classes']));
                 $gradeIds = $school->grades->pluck('id')->toArray();
-                foreach ($classeNames as $classeName) {
-                    $class = Squad::whereName($classeName)->whereIn('grade_id', $gradeIds)->first();
-                    if (!$class) continue;
+                foreach ($cNames as $cName) {
+                    if (!($class = Squad::whereName($cName)->whereIn('grade_id', $gradeIds)->first())) continue;
                     $educatorIds = array_merge(explode(',', $class->educator_ids), [$educator->id]);
                     $class->update(['educator_ids' => implode(',', array_unique($educatorIds))]);
                     # 更新部门 & 用户绑定关系
@@ -338,10 +338,10 @@ class ImportEducator implements ShouldQueue, MassImport {
                     );
                 }
                 # 更新班级科目绑定关系
-                $classSubjects = explode(',', str_replace(['，', '：'], [',', ':'], $data['classes_subjects']));
-                foreach ($classSubjects as $classSubject) {
-                    if (empty($classSubject)) continue;
-                    $paths = explode(':', $classSubject);
+                $cses = explode(',', str_replace(['，', '：'], [',', ':'], $data['classes_subjects']));
+                foreach ($cses as $cs) {
+                    if (empty($cs)) continue;
+                    $paths = explode(':', $cs);
                     $class = Squad::whereName($paths[0])->whereIn('grade_id', $gradeIds)->first();
                     $subject = Subject::whereName($paths[1])->where('school_id', $school->id)->first();
                     if (!isset($class, $subject)) continue;

@@ -13,8 +13,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsTo,
     Relations\BelongsToMany,
     Relations\HasMany};
-use Illuminate\Support\Facades\{Auth, DB, Request, Storage};
-use PhpOffice\PhpSpreadsheet\IOFactory;
+use Illuminate\Support\Facades\{Auth, DB, Request};
 use ReflectionClass;
 use ReflectionException;
 use Throwable;
@@ -422,47 +421,9 @@ class Educator extends Model {
      */
     function import() {
     
-        abort_if(
-            Request::method() != 'POST',
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            __('messages.file_upload_failed')
-        );
-        $file = Request::file('file');
-        abort_if(
-            empty($file) || !$file->isValid(),
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            __('messages.empty_file')
-        );
-        $ext = $file->getClientOriginalExtension();
-        $realPath = $file->getRealPath();
-        $filename = date('His') . uniqid() . '.' . $ext;
-        $stored = Storage::disk('uploads')->put(
-            date('Y/m/d/', time()) . $filename,
-            file_get_contents($realPath)
-        );
-        abort_if(
-            !$stored,
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            __('messages.file_upload_failed')
-        );
-        $spreadsheet = IOFactory::load(
-            $this->uploadedFilePath($filename)
-        );
-        $educators = $spreadsheet->getActiveSheet()->toArray(
-            null, true, true, true
-        );
-        abort_if(
-            !$this->checkFileFormat(
-                self::EXCEL_TITLES,
-                array_values($educators[1])
-            ),
-            HttpStatusCode::NOT_ACCEPTABLE,
-            __('messages.invalid_file_format')
-        );
-        $educators = array_filter(array_values($educators), 'implode');
-        array_shift($educators);
+        $records = $this->upload();
         $mobiles = array_count_values(
-            array_map('strval', array_pluck($educators, 'G'))
+            array_map('strval', array_pluck($records, 'G'))
         );
         foreach ($mobiles as $mobile => $count) {
             $count <= 1 ?: $duplicates[] = $mobile;
@@ -470,10 +431,13 @@ class Educator extends Model {
         abort_if(
             isset($duplicates),
             HttpStatusCode::NOT_ACCEPTABLE,
-            '手机号码: ' . implode(',', $duplicates ?? []) . '有重复，请检查后重试。'
+            implode('', [
+                '手机号码',
+                implode(',', $duplicates ?? []),
+                '有重复，请检查后重试。'
+            ])
         );
-        ImportEducator::dispatch($educators, Auth::id());
-        Storage::disk('uploads')->delete($filename);
+        ImportEducator::dispatch($records, Auth::id());
     
         return true;
         
@@ -588,22 +552,19 @@ class Educator extends Model {
      */
     private function selectedNodes($departmentIds) {
         
-        $departments = Department::whereIn('id', $departmentIds)->get()->toArray();
-        $nodes = [];
+        $departments = Department::whereIn('id', $departmentIds)->get();
         foreach ($departments as $department) {
-            $parentId = isset($department['parent_id']) ? $department['parent_id'] : '#';
-            $text = $department['name'];
-            $departmentType = DepartmentType::find($department['department_type_id'])->name;
+            $dType = DepartmentType::find($department['department_type_id'])->name;
             $nodes[] = [
-                'id'     => $department['id'],
-                'parent' => $parentId,
-                'text'   => $text,
-                'icon'   => Constant::NODE_TYPES[$departmentType]['icon'],
-                'type'   => Constant::NODE_TYPES[$departmentType]['type'],
+                'id'     => $department->id,
+                'parent' => $department->parent_id ?? '#',
+                'text'   => $department->name,
+                'icon'   => Constant::NODE_TYPES[$dType]['icon'],
+                'type'   => Constant::NODE_TYPES[$dType]['type'],
             ];
         }
         
-        return $nodes;
+        return $nodes ?? [];
         
     }
     

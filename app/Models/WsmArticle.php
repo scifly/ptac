@@ -210,7 +210,7 @@ class WsmArticle extends Model {
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    function upload() {
+    function import() {
         
         $files = Request::allFiles();
         $media = new Media();
@@ -221,7 +221,7 @@ class WsmArticle extends Model {
                 HttpStatusCode::NOT_ACCEPTABLE,
                 __('messages.empty_file')
             );
-            $uploadedFile = $media->upload(
+            $uploadedFile = $media->import(
                 $image, __('messages.wsm_article.title')
             );
             abort_if(

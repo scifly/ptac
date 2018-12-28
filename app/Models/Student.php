@@ -14,9 +14,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsToMany,
     Relations\HasMany};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\{Facades\Auth, Facades\DB, Facades\Request, Facades\Storage};
-use PhpOffice\PhpSpreadsheet\IOFactory;
+use Illuminate\Support\{Facades\Auth, Facades\DB, Facades\Request};
 use ReflectionException;
 use Throwable;
 
@@ -344,84 +342,34 @@ class Student extends Model {
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
     function import() {
-        
-        abort_if(
-            Request::method() != 'POST',
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            __('messages.file_upload_failed')
-        );
-        $file = Request::file('file');
-        abort_if(
-            empty($file) || !$file->isValid(),
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            __('messages.empty_file')
-        );
-        
-        return $this->upload($file);
-        
-    }
     
-    /**
-     * 上传学籍excel文件
-     *
-     * @param UploadedFile $file
-     * @return bool
-     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     */
-    function upload(UploadedFile $file) {
-        
-        $ext = $file->getClientOriginalExtension();
-        $realPath = $file->getRealPath();
-        $filename = uniqid() . '.' . $ext;
-        $stored = Storage::disk('uploads')->put(
-            date('Y/m/d/') . $filename,
-            file_get_contents($realPath)
-        );
-        abort_if(
-            !$stored,
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            __('messages.file_upload_failed')
-        );
-        $spreadsheet = IOFactory::load(
-            $this->uploadedFilePath($filename)
-        );
-        $students = $spreadsheet->getActiveSheet()->toArray(
-            null, true, true, true
-        );
-        abort_if(
-            !empty(array_diff(self::EXCEL_TITLES, $students[1])),
-            HttpStatusCode::NOT_ACCEPTABLE,
-            __('messages.invalid_file_format')
-        );
-        $students = array_filter(array_values($students), 'implode');
-        array_shift($students);
-        # sns - 学号，cns - 卡号
+        $records = $this->upload();
         list($sns, $cns) = array_map(
             function ($ns) {
                 foreach ($ns as $n => $count) {
                     if (!empty($n) && $count > 1) $ds[] = $n;
                 }
-                
+            
                 return $ds ?? [];
             }, array_map(
                 function ($students, $col) {
                     return array_count_values(
                         array_map('strval', array_pluck($students, $col))
                     );
-                }, [$students, $students], ['G', 'H']
+                }, [$records, $records], ['G', 'H']
             )
         );
         abort_if(
             !empty($sns) || !empty($cns),
             HttpStatusCode::NOT_ACCEPTABLE,
-            (!empty($sns) ? ('学号: ' . implode(',', $sns)) : '') .
-            (!empty($cns) ? ('卡号: ' . implode(',', $cns)) : '') .
-            '有重复，请检查后重试'
+            implode('', [
+                (!empty($sns) ? ('学号: ' . implode(',', $sns)) : ''),
+                (!empty($cns) ? ('卡号: ' . implode(',', $cns)) : ''),
+                '有重复，请检查后重试'
+            ])
         );
-        ImportStudent::dispatch($students, Auth::id());
-        Storage::disk('uploads')->delete($filename);
-        
+        ImportStudent::dispatch($records, Auth::id());
+    
         return true;
         
     }

@@ -139,7 +139,7 @@ class WapSite extends Model {
      *
      * @return JsonResponse
      */
-    function upload() {
+    function import() {
         
         $files = Request::allFiles();
         $media = new Media();
@@ -150,7 +150,7 @@ class WapSite extends Model {
                 HttpStatusCode::NOT_ACCEPTABLE,
                 __('messages.empty_file')
             );
-            $uploadedFile = $media->upload(
+            $uploadedFile = $media->import(
                 $image, __('messages.wap_site.title')
             );
             abort_if(

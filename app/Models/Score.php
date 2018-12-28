@@ -20,9 +20,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use ReflectionException;
 use Throwable;
 
@@ -64,9 +62,7 @@ class Score extends Model {
     ];
     
     # 导入格式
-    const IMPORT_TITLES = [
-        '班级', '学号', '姓名',
-    ];
+    const EXCEL_TITLES = ['班级', '学号', '姓名'];
     
     protected $fillable = [
         'student_id', 'subject_id', 'exam_id',
@@ -101,7 +97,7 @@ class Score extends Model {
      * @return array
      */
     function index() {
-    
+        
         $columns = [
             ['db' => 'Score.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
@@ -119,16 +115,16 @@ class Score extends Model {
                 },
             ],
             [
-                'db' => 'Score.subject_id', 'dt' => 5,
+                'db'        => 'Score.subject_id', 'dt' => 5,
                 'formatter' => function ($d) {
                     return Subject::find($d)->name;
-                }
+                },
             ],
             [
-                'db' => 'Score.exam_id', 'dt' => 6,
+                'db'        => 'Score.exam_id', 'dt' => 6,
                 'formatter' => function ($d) {
                     return Exam::find($d)->name;
-                }
+                },
             ],
             ['db' => 'Score.score', 'dt' => 7],
             [
@@ -206,16 +202,14 @@ class Score extends Model {
                 'alias'      => 'School',
                 'type'       => 'INNER',
                 'conditions' => [
-                    'School.id = Grade.school_id'
-                ]
-            ]
+                    'School.id = Grade.school_id',
+                ],
+            ],
         ];
-        if (in_array(Auth::user()->role(), Constant::SUPER_ROLES)) {
-            $condition = 'School.id = ' . $this->schoolId();
-        } else {
-            $condition = 'Squad.id IN (' . implode(',', $this->classIds()) . ')';
-        }
-    
+        $condition = in_array(Auth::user()->role(), Constant::SUPER_ROLES)
+            ? 'School.id = ' . $this->schoolId()
+            : 'Squad.id IN (' . implode(',', $this->classIds()) . ')';
+        
         return Datatable::simple(
             $this->getModel(), $columns, $joins, $condition
         );
@@ -301,8 +295,8 @@ class Score extends Model {
         
         try {
             DB::transaction(function () use ($subjectId) {
-                $scoreIds = $this->where('subject_id', $subjectId)->pluck('id')->toArray();
-                array_map([$this, 'purge'], $scoreIds);
+                $scoreIds = $this->where('subject_id', $subjectId)->pluck('id');
+                array_map([$this, 'purge'], $scoreIds->toArray());
                 $this->where('subject_id', $subjectId)->delete();
             });
         } catch (Exception $e) {
@@ -321,23 +315,20 @@ class Score extends Model {
         
         $exam = Exam::find($examId);
         # 指定考试对应的班级
-        $classIds = Squad::whereEnabled(1)
-            ->whereIn('id', explode(',', $exam->class_ids))
-            ->pluck('id')->toArray();
+        $classIds = Squad::whereIn('id', explode(',', $exam->class_ids))
+            ->whereEnabled(1)->pluck('id')->toArray();
         # 指定考试对应的科目列表
-        $subjectList = Subject::whereEnabled(1)
-            ->whereIn('id', explode(',', $exam->subject_ids))
-            ->pluck('name', 'id')->toArray();
+        $subjectList = Subject::whereIn('id', explode(',', $exam->subject_ids))
+            ->whereEnabled(1)->pluck('name', 'id')->toArray();
         # 指定考试对应的且对当前用户可见的学生列表
-        $studentList = [];
-        $students = Student::whereEnabled(1)
-            ->whereIn('class_id', array_intersect($classIds, $this->classIds()))->get();
+        $students = Student::whereIn('class_id', array_intersect($classIds, $this->classIds()))
+            ->whereEnabled(1)->get();
         foreach ($students as $student) {
             $studentList[$student->id] = $student->student_number . ' - ' . $student->user->realname;
         }
         
         return response()->json([
-            'students' => $this->singleSelectList($studentList, 'student_id'),
+            'students' => $this->singleSelectList($studentList ?? [], 'student_id'),
             'subjects' => $this->singleSelectList($subjectList, 'subject_id'),
         ]);
         
@@ -684,7 +675,7 @@ class Score extends Model {
                 $result[] = [
                     'custodian' => $custodian->realname,
                     'name'      => $studentName,
-                    'mobile'    => Mobile::whereUserId($custodian->id)->where('isdefault', 1)->first()->mobile,
+                    'mobile'    => $custodian->user->mobiles->where('isdefault', 1)->mobile,
                     'content'   => $content,
                 ];
             }
@@ -731,12 +722,8 @@ class Score extends Model {
                                 'content' => $datum->content,
                             ],
                         ];
-                        $status = json_decode(Wechat::sendMessage($token['access_token'], $message));
-                        if ($status->errcode == 0) {
-                            $success[] = $mobile;
-                        } else {
-                            $failure[] = $mobile;
-                        }
+                        $result = json_decode(Wechat::sendMessage($token['access_token'], $message), true);
+                        $sent = !$result['errcode'];
                     } else {
                         $code = json_encode(
                             Wechat::batchSend(
@@ -746,12 +733,9 @@ class Score extends Model {
                                 $datum->content . $school->signature
                             )
                         );
-                        if ($code != '0' && $code != '-1') {
-                            $success[] = $mobile;
-                        } else {
-                            $failure[] = $mobile;
-                        }
+                        $sent = !in_array($code, ['0', '-1']);
                     }
+                    $sent ? $success[] = $mobile : $failure[] = $mobile;
                 }
             }
         }
@@ -771,46 +755,17 @@ class Score extends Model {
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
-    function upload() {
+    function import() {
         
-        $file = Request::file('file');
-        abort_if(
-            !$file || !$file->isValid(),
-            HttpStatusCode::BAD_REQUEST,
-            __('messages.bad_request')
-        );
-        $realPath = $file->getRealPath();   //临时文件的绝对路径
-        // 上传文件
-        $filename = uniqid() . '-' . $file->getClientOriginalName();
-        $stored = Storage::disk('uploads')->put(
-            date('Y/m/d/', time()) . $filename,
-            file_get_contents($realPath)
-        );
-        abort_if(
-            !$stored,
-            HttpStatusCode::INTERNAL_SERVER_ERROR,
-            __('messages.file_upload_failed')
-        );
-        $spreadsheet = IOFactory::load(
-            $this->uploadedFilePath($filename)
-        );
-        $scores = $spreadsheet->getActiveSheet()->toArray(
-            null, true, true, true
-        );
-        abort_if(
-            !empty(array_diff(self::IMPORT_TITLES, array_values($scores[1]))),
-            HttpStatusCode::NOT_ACCEPTABLE,
-            __('messages.invalid_file_format')
-        );
-        # 需要导入成绩的科目
-        $titles = $scores[1];
+        $records = $this->upload(false);
+        $titles = $records[1];
+        array_shift($records);
         $subjectNames = [];
         for ($i = ord('D'); $i < ord('D') + sizeof($titles) - 3; $i++) {
             $subjectNames[] = $titles[chr($i)];
         }
         $subjects = Subject::whereIn('name', $subjectNames)
             ->where('school_id', $this->schoolId())->get();
-        # 这次考试对应的科目id
         $exam = Exam::find(Request::input('examId'));
         abort_if(
             !$exam,
@@ -818,39 +773,27 @@ class Score extends Model {
             __('messages.score.exam_not_found')
         );
         $examSubjectIds = explode(',', $exam->subject_ids);
-        # 去除表头后的数据
-        array_shift($scores);
-        # 去除表格的空数据
-        foreach ($scores as $key => $value) {
-            if ((array_filter($value)) == null) {
-                unset($scores[$key]);
-            }
-        }
-        $data = [];
-        # 封装需要导入的数据
-        foreach ($scores as $score) {
+        foreach ($records as $record) {
             $basic = [
-                'class'          => $score['A'],
-                'student_number' => $score['B'],
-                'student_name'   => $score['C'],
+                'class'          => $record['A'],
+                'student_number' => $record['B'],
+                'student_name'   => $record['C'],
                 'exam_id'        => Request::input('examId'),
             ];
             $index = 'D';
             foreach ($subjects as $subject) {
-                if (!in_array($subject->id, $examSubjectIds)) {
-                    continue;
-                }
+                if (!in_array($subject->id, $examSubjectIds)) continue;
                 $data[] = array_merge(
                     $basic, [
                         'subject_id' => $subject->id,
-                        'score'      => $score[$index],
+                        'score'      => $record[$index],
                     ]
                 );
                 $index = chr(ord($index) + 1);
             }
         }
         ImportScore::dispatch(
-            $data, Auth::id(), Request::input('classId')
+            $data ?? [], Auth::id(), Request::input('classId')
         );
         
         return true;
@@ -872,9 +815,7 @@ class Score extends Model {
         $scores = $this->whereExamId($examId)->whereIn('student_id', $studentIds)->get();
         $records = [self::EXPORT_TITLES];
         foreach ($scores as $score) {
-            if (!$score->student) {
-                continue;
-            }
+            if (!$score->student) continue;
             $records[] = [
                 $score->student->user->realname,
                 $score->student->squad->name,
@@ -915,137 +856,109 @@ class Score extends Model {
      */
     private function classStat($wechat = false) {
         
+        /**
+         * 返回查询条件
+         *
+         * @param $examId
+         * @param $subjectId
+         * @param $score
+         * @return array
+         */
+        function condition($examId, $subjectId, $score) {
+            
+            return [
+                ['exam_id', '=', $examId],
+                ['subject_id', '=', $subjectId],
+                ['enabled', '=', 1],
+                ['score', '>=', $score],
+            ];
+            
+        }
+        
         #第一个表格数据
         $firstTableData = [];
         #存放满足当前科目的分数段设置和统计人数的数组（第二个表格数据--一个数据一个表格）
         $rangs = [];
         #存放总分分数段设置和统计人数的数组
         $scoreToRanges = [];
-        $exam = Exam::find(Request::input('examId'));
-        if (!$exam) {
+        if (
+            !($exam = Exam::find(Request::input('examId'))) ||
+            !($squad = Squad::find(Request::input('classId')))
+        ) {
             return false;
         }
-        $squad = Squad::find(Request::input('classId'));
-        if (!$squad) {
-            return false;
-        }
-        #找到考试对应的科目存到数组 ids
-        $examSub = explode(',', $exam->subject_ids);
-        #找到班级下面对应所有的学生 ids
-        $claStuIds = [];
-        foreach ($squad->students as $student) {
-            $claStuIds[] = $student->id;
-        }
-        #查出当前学校的所有分数段设置
-        $grade = $squad->grade;
-        $schoolId = $grade->school_id;
-        $rangAll = ScoreRange::whereSchoolId($schoolId)
-            ->whereEnabled(1)
-            ->get();
-        foreach ($examSub as $sub) {
-            #一次处理一个科目  查出这个科目下 班级下所有学生的成绩
-            $subject = Subject::find($sub);
+        # 找到班级下面对应所有的学生 ids
+        $studentIds = $squad->students->pluck('id')->toArray();
+        $builder = Score::whereIn('student_id', $studentIds);
+        # 查出当前学校的所有分数段设置
+        $srs = ScoreRange::where(['school_id' => $squad->grade->school_id, 'enabled' => 1])->get();
+        # 一次处理一个科目  查出这个科目下 班级下所有学生的成绩
+        foreach (explode(',', $exam->subject_ids) as $subjectId) {
+            $subject = Subject::find($subjectId);
             # 若该学生id没有对应的score则不会在结果数组中
-            $scores = Score::whereExamId($exam->id)
-                ->whereSubjectId($sub)
-                ->whereIn('student_id', $claStuIds)
-                ->whereEnabled(1)
-                ->get();
-            if (count($scores) == 0) {
-                $countAll = 0;
-                $max = 0;
-                $min = 0;
-                $avg = 0;
-                $bigNumber = 0;
-                $minNumber = 0;
-            } else {
-                #参与考试的总人数
-                $countAll = $scores->count();
-                #该科目的最高分
-                $max = $scores->max('score');
-                #该科目的最低分
-                $min = $scores->min('score');
-                #该科目的平均分
-                $avg = $scores->average('score');
-                #大于等于平均分的人数
-                $bigNumber = Score::whereExamId($exam->id)
-                    ->whereSubjectId($sub)
-                    ->whereIn('student_id', $claStuIds)
-                    ->whereEnabled(1)
-                    ->where('score', '>=', $avg)
-                    ->count();
-                #小于平均分的人数
-                $minNumber = $countAll - $bigNumber;
-            }
+            $condition = condition($exam->id, $subjectId, 0);
+            unset($condition[3]);
+            $scores = $builder->where($condition)->get();
+            $all = $scores->count();
+            $avg = $scores->average('score');
+            # 大于等于平均分的人数
+            $overAvg = $builder->where(condition($exam->id, $subjectId, $avg))->count();
             $firstTableData[] = [
                 'sub'        => $subject->name,
-                'count'      => $countAll,
-                'max'        => $max,
-                'min'        => $min,
+                'count'      => $all,
+                'max'        => $scores->max('score'),
+                'min'        => $scores->min('score'),
                 'avg'        => number_format($avg, 2),
-                'big_number' => $bigNumber,
-                'min_number' => $minNumber,
-                'subId'      => $sub,
+                'big_number' => $overAvg,
+                'min_number' => $all - $overAvg,
+                'subId'      => $subjectId,
             ];
-            if (count($rangAll) != 0) {
-                #处理单科分数段
-                foreach ($rangAll as $ran) {
-                    #筛选出针对于这一科的所有分数段设置
-                    if (in_array($sub, explode(',', $ran->subject_ids))) {
-                        $minRange = $ran->start_score;
-                        $maxRange = $ran->end_score;
-                        #需要判断科目满分是否与最大相等
-                        if ($subject->max_score == $maxRange) {
-                            $count = Score::whereEnabled(1)
-                                ->whereExamId($exam->id)
-                                ->whereIn('student_id', $claStuIds)
-                                ->whereSubjectId($sub)
-                                ->where('score', '>=', $minRange)
-                                ->where('score', '<=', $maxRange)
-                                ->count();
-                        } else {
-                            $count = Score::whereEnabled(1)
-                                ->whereExamId($exam->id)
-                                ->whereIn('student_id', $claStuIds)
-                                ->whereSubjectId($sub)
-                                ->where('score', '>=', $minRange)
-                                ->where('score', '<', $maxRange)
-                                ->count();
-                        }
-                        $rangs[$sub][] = [
-                            'range' =>
-                                [
-                                    'min' => $minRange,
-                                    'max' => $maxRange,
-                                ],
-                            'score' =>
-                                [
-                                    'sub'    => $subject->name,
-                                    'count'  => $countAll,
-                                    'number' => $count,
-                                ],
-                        ];
-                    }
+            #处理单科分数段
+            foreach ($srs as $sr) {
+                #筛选出针对于这一科的所有分数段设置
+                if (in_array($subjectId, explode(',', $sr->subject_ids))) {
+                    $start = $sr->start_score;
+                    $end = $sr->end_score;
+                    #需要判断科目满分是否与最大相等
+                    $condition = array_merge(
+                        condition($exam->id, $subjectId, $start),
+                        ['score', $subject->max_score == $end ? '<=' : '<', $end]
+                    );
+                    $count = Score::where($condition)->whereIn('student_id', $studentIds)->count();
+                    $rangs[$subjectId][] = [
+                        'range' => [
+                            'min' => $start,
+                            'max' => $end,
+                        ],
+                        'score' => [
+                            'sub'    => $subject->name,
+                            'count'  => $all,
+                            'number' => $count,
+                        ],
+                    ];
                 }
             }
         }
         if (!$wechat) {
+            $builder = ScoreTotal::whereIn('student_id', $studentIds);
             #总分分数段
-            $totalRanges = $rangAll->where('subject_ids', 0);
+            $trs = $srs->where('subject_ids', 0);
             #查询考试对应的总分 班级
-            $scoreTotal = ScoreTotal::whereExamId(Request::input('examId'))
-                ->whereIn('student_id', $claStuIds)
-                ->whereEnabled(1)
-                ->get();
+            $condition = [
+                ['exam_id', '=', Request::input('examId')],
+                ['enabled', '=', 1],
+            ];
             #总分总人数
-            $totalCount = $scoreTotal->count();
+            $totalCount = $builder->where($condition)->count();
             #处理每个总分分数段的人数
-            foreach ($totalRanges as $totalRange) {
-                $minTotalRange = $totalRange->start_score;
-                $maxTotalRange = $totalRange->end_score;
-                $totalNumber = $scoreTotal->where('score', '>=', $minTotalRange)
-                    ->where('score', '<', $maxTotalRange)
-                    ->count();
+            foreach ($trs as $tr) {
+                $minTotalRange = $tr->start_score;
+                $maxTotalRange = $tr->end_score;
+                $condition = array_merge($condition, [
+                    ['score', '>=', $minTotalRange],
+                    ['score', '<', $maxTotalRange],
+                ]);
+                $totalNumber = $builder->where($condition)->count();
                 $scoreToRanges[] = [
                     'totalRange' => [
                         'min' => $minTotalRange,
@@ -1080,11 +993,10 @@ class Score extends Model {
         
         $studentId = Request::input('studentId');
         $classId = Request::input('classId');
-        $allowedStudentIds = $this->contactIds('student');
-        $allowedClassIds = $this->classIds();
         $student = Student::find($studentId);
         abort_if(
-            !in_array($studentId, $allowedStudentIds) || !in_array($classId, $allowedClassIds) || !$student,
+            !in_array($studentId, $this->contactIds('student')) ||
+            !in_array($classId, $this->classIds()) || !$student,
             HttpStatusCode::UNAUTHORIZED,
             __('messages.score.unauthorized_stat')
         );
@@ -1092,9 +1004,7 @@ class Score extends Model {
         $exams = Exam::whereRaw('FIND_IN_SET(' . $classId . ', class_ids)')
             ->whereEnabled(1)->orderBy('start_date', 'desc')->take(10)->get();
         $subjectIds = array_unique(
-            explode(
-                ',', implode(',', $exams->pluck('subject_ids')->toArray())
-            )
+            explode(',', implode(',', $exams->pluck('subject_ids')->toArray()))
         );
         $subjects = Subject::whereEnabled(1)
             ->whereIn('id', $subjectIds)
@@ -1116,10 +1026,9 @@ class Score extends Model {
                     'grade_rank' => $score ? $score->grade_rank : '——',
                 ];
             }
-            #处理$studentScore 按照key值升序
+            # 处理$studentScore 按照key值升序
             ksort($scores);
-            $scoreTotal = ScoreTotal::whereStudentId($studentId)
-                ->where('exam_id', $exam->id)->first();
+            $scoreTotal = ScoreTotal::where(['student_id' => $studentId, 'exam_id' => $exam->id])->first();
             $examScores[] = [
                 'examId'    => $exam->id,
                 'examName'  => $exam->name,
@@ -1170,13 +1079,13 @@ class Score extends Model {
      */
     function template($examId, $classId = null) {
         
-        $rows = [];
         $exam = Exam::find($examId);
-        $subjects = Subject::whereIn('id', explode(',', $exam->subject_ids))->pluck('name')->toArray();
+        $subjects = Subject::whereIn('id', explode(',', $exam->subject_ids))
+            ->pluck('name')->toArray();
         $rows[] = array_merge(['班级', '学号', '姓名'], $subjects);
         if (!$classId) {
             $classIds = array_intersect(explode(',', $exam ? $exam->class_ids : ''), $this->classIds());
-            $classId = !empty($classIds) ? $classIds[0] : null;
+            $classId = $classIds[0] ?? null;
         }
         $class = Squad::find($classId);
         $students = $class ? $class->students : collect([]);
@@ -1215,10 +1124,8 @@ class Score extends Model {
             $classId = $user->role() == '监护人' ? Student::find($targetId)->class_id : $targetId;
             $keyword = Request::has('keyword') ? Request::input('keyword') : null;
             $exams = array_slice($exam->examsByClassId($classId, $keyword), $start, $pageSize);
-
-            return response()->json([
-                'exams' => $exams,
-            ]);
+            
+            return response()->json(['exams' => $exams]);
         }
         if ($user->role() == '监护人') {
             $targets = $user->custodian->myStudents();
@@ -1236,7 +1143,7 @@ class Score extends Model {
         return view('wechat.score_center.index', [
             'targets' => $targets,
             'exams'   => $exams,
-            'type' => $type
+            'type'    => $type,
         ]);
         
     }
@@ -1254,7 +1161,7 @@ class Score extends Model {
             HttpStatusCode::UNAUTHORIZED,
             __('messages.unauthorized')
         );
-
+        
         return Request::has('student')
             ? $this->studentDetail()
             : $this->classDetail();
@@ -1317,13 +1224,13 @@ class Score extends Model {
             'gradeAvg'     => number_format($gradeAvg, 2),
             'nGradeScores' => $nGradeScores,
         ];
-
+        
         return Request::method() == 'POST'
             ? response()->json([
                 'score' => $score,
                 'stat'  => $stat,
                 'total' => $total,
-                'exam'  => $exam->toArray()
+                'exam'  => $exam->toArray(),
             ])
             : view('wechat.score_center.student', [
                 'score'     => $score,
@@ -1354,8 +1261,8 @@ class Score extends Model {
         
         return $this->where($conditions)->get()->when(
             $examId, function (Collection $scores) use ($examId) {
-                return $scores->where('exam_id', $examId);
-            }
+            return $scores->where('exam_id', $examId);
+        }
         );
         
     }

@@ -51,7 +51,7 @@ class MessageController extends Controller {
         }
         if (Request::method() == 'POST') {
             return Request::has('file')
-                ? $this->message->upload()
+                ? $this->message->import()
                 : $this->department->contacts();
         }
         

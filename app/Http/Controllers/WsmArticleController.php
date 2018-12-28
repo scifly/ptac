@@ -57,7 +57,7 @@ class WsmArticleController extends Controller {
     public function create() {
         
         if (Request::method() == 'POST') {
-            return $this->wsma->upload();
+            return $this->wsma->import();
         }
         
         return $this->output();
@@ -92,7 +92,7 @@ class WsmArticleController extends Controller {
     public function edit($id) {
         
         if (Request::method() == 'POST') {
-            return $this->wsma->upload();
+            return $this->wsma->import();
         }
         
         return $this->output([

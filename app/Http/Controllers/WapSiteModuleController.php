@@ -52,7 +52,7 @@ class WapSiteModuleController extends Controller {
     public function create() {
         
         return Request::method() == 'POST'
-            ? $this->wsm->upload()
+            ? $this->wsm->import()
             : $this->output();
         
     }
@@ -85,7 +85,7 @@ class WapSiteModuleController extends Controller {
     public function edit($id) {
         
         return Request::method() == 'POST'
-            ? $this->wsm->upload()
+            ? $this->wsm->import()
             : $this->output([
                 'wsm' => $this->wsm->find($id)
             ]);

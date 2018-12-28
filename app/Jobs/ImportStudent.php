@@ -256,10 +256,8 @@ class ImportStudent implements ShouldQueue, MassImport {
         $relationships = explode(',', $relationship);
         $groupId = Group::whereName('监护人')->first()->id;
         foreach ($relationships as $r) {
-            $paths = explode(':', $r);
-            if (count($paths) != 4) continue;
-            $mobile = Mobile::whereMobile($paths[3])->first();
-            if (!$mobile) {
+            if (count($paths = explode(':', $r)) != 4) continue;
+            if (!($mobile = Mobile::whereMobile($paths[3])->first())) {
                 $userid = uniqid('ptac_');
                 $user = User::create(
                     array_combine(Constant::USER_FIELDS, [

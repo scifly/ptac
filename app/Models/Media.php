@@ -153,7 +153,7 @@ class Media extends Model {
      * @param string $remark
      * @return array|bool
      */
-    function upload($file, $remark = '') {
+    function import($file, $remark = '') {
         
         if ($file->isValid()) {
             $filename = uniqid() . '-' . $file->getClientOriginalName();

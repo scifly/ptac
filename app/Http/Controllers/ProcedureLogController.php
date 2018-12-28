@@ -186,7 +186,7 @@ class ProcedureLogController extends Controller {
             $result['data'] = [];
             $mes = [];
             foreach ($files as $file) {
-                $mes [] = $this->media->upload($file, '上传审批流程相关文件');
+                $mes [] = $this->media->import($file, '上传审批流程相关文件');
             }
             $result['statusCode'] = HttpStatusCode::OK;
             $result['message'] = '上传成功！';

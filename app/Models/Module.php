@@ -211,7 +211,7 @@ class Module extends Model {
      *
      * @return JsonResponse
      */
-    function upload() {
+    function import() {
         
         $file = Request::file('file');
         abort_if(
@@ -219,7 +219,7 @@ class Module extends Model {
             HttpStatusCode::NOT_ACCEPTABLE,
             __('messages.empty_file')
         );
-        $uploadedFile = (new Media())->upload(
+        $uploadedFile = (new Media())->import(
             $file, __('messages.wap_site_module.title')
         );
         abort_if(
