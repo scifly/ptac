@@ -52,7 +52,7 @@ class TestController extends Controller {
         $users = User::take(3)->get();
         
         $c = $users->flatMap(
-            function ($user) {
+            function ($user) use ($users) {
                 return $user;
             }
         );
