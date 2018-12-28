@@ -51,12 +51,12 @@ class TestController extends Controller {
     
         $users = User::take(3)->get();
         
-        $c = $users->flatMap(
-            function ($user) use ($users) {
-                return $user;
+        $users->each(
+            function ($user) {
+                return $user->realname;
             }
         );
-        dd($c);
+        dd($users);
         exit;
         
         
