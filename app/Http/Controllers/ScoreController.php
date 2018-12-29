@@ -94,13 +94,11 @@ class ScoreController extends Controller {
      */
     public function edit($id, $examId = null) {
         
-        if ($examId) {
-            return $this->score->ssList($examId);
-        }
-        
-        return $this->output([
-            'score' => Score::find($id),
-        ]);
+        return $examId
+            ? $this->score->ssList($examId)
+            : $this->output([
+                'score' => $this->score->find($id),
+            ]);
         
     }
     
@@ -145,15 +143,13 @@ class ScoreController extends Controller {
      */
     public function send() {
         
-        if (Request::has('examId')) {
-            return $this->score->preview();
-        }
-        
-        return response()->json(
-            $this->score->send(
-                json_decode(Request::input('data'))
-            )
-        );
+        return Request::has('examId')
+            ? $this->score->preview()
+            : response()->json(
+                $this->score->send(
+                    json_decode(Request::input('data'))
+                )
+            );
         
     }
     
@@ -162,6 +158,7 @@ class ScoreController extends Controller {
      *
      * @param $examId
      * @return mixed
+     * @throws Throwable
      */
     public function rank($examId) {
         
@@ -179,13 +176,13 @@ class ScoreController extends Controller {
      */
     public function stat() {
         
-        if (Request::method() === 'POST') {
-            return Request::has('type')
+        return Request::method() == 'POST'
+            ? (
+            Request::has('type')
                 ? $this->score->lists()
-                : $this->score->stat();
-        }
-        
-        return $this->output();
+                : $this->score->stat()
+            )
+            : $this->output();
         
     }
     
@@ -203,20 +200,21 @@ class ScoreController extends Controller {
         if ($examId) {
             if (Request::method() == 'POST') {
                 $this->score->template($examId);
-                
-                return $this->exam->classList($examId, 'import');
+                $response = $this->exam->classList($examId, 'import');
+            } else {
+                $this->score->template($examId, Request::input('classId'));
+                $response = response()->json();
             }
-            $this->score->template($examId, Request::input('classId'));
-            
-            return response()->json();
+        } else {
+            $response = $this->result(
+                $this->score->import(),
+                __('messages.import_started'),
+                __('messages.file_upload_failed')
+            );
         }
         
-        return $this->result(
-            $this->score->import(),
-            __('messages.import_started'),
-            __('messages.file_upload_failed')
-        );
-        
+        return $response;
+    
     }
     
     /**

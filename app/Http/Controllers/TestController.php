@@ -51,7 +51,7 @@ class TestController extends Controller {
     
         $users = User::take(3)->get();
         
-        $users->each(
+        $users->except(
             function ($user) {
                 return $user->realname;
             }
