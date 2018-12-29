@@ -214,7 +214,7 @@ class ScoreController extends Controller {
         }
         
         return $response;
-    
+        
     }
     
     /**
