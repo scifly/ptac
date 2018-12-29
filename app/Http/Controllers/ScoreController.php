@@ -2,8 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ScoreRequest;
-use App\Models\Exam;
-use App\Models\Score;
+use App\Models\{Exam, Score};
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
