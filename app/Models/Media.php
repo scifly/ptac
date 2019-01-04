@@ -29,6 +29,11 @@ use Throwable;
  * @property Carbon|null $updated_at
  * @property int $enabled
  * @property-read MediaType $mediaType
+ * @property-read WapSiteModule $wapsitemoudle
+ * @property-read WsmArticle $wasmarticle
+ * @property-read Collection|Menu[] $menus
+ * @property-read WapSiteModule $wapSiteModule
+ * @property-read WsmArticle $wsmArticle
  * @method static Builder|Media whereCreatedAt($value)
  * @method static Builder|Media whereEnabled($value)
  * @method static Builder|Media whereId($value)
@@ -36,11 +41,9 @@ use Throwable;
  * @method static Builder|Media wherePath($value)
  * @method static Builder|Media whereRemark($value)
  * @method static Builder|Media whereUpdatedAt($value)
- * @property-read WapSiteModule $wapsitemoudle
- * @property-read WsmArticle $wasmarticle
- * @property-read Collection|Menu[] $menus
- * @property-read WapSiteModule $wapSiteModule
- * @property-read WsmArticle $wsmArticle
+ * @method static Builder|Media newModelQuery()
+ * @method static Builder|Media newQuery()
+ * @method static Builder|Media query()
  */
 class Media extends Model {
     

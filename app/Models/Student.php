@@ -51,6 +51,9 @@ use Throwable;
  * @method static Builder|Student whereStudentNumber($value)
  * @method static Builder|Student whereUpdatedAt($value)
  * @method static Builder|Student whereUserId($value)
+ * @method static Builder|Student newModelQuery()
+ * @method static Builder|Student newQuery()
+ * @method static Builder|Student query()
  * @mixin Eloquent
  */
 class Student extends Model {

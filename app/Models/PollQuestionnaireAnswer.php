@@ -19,6 +19,11 @@ use Illuminate\Support\Facades\Request;
  * @property string $answer 问题答案
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read PollQuestionnaire $pollquestionnaire
+ * @property-read PollQuestionnaireSubjectChoice $pollquestionnaireChoice
+ * @property-read PollQuestionnaireSubject $pollquestionnaireSubject
+ * @property-read User $user
+ * @property-read \App\Models\PollQuestionnaireSubject $pqSubject
  * @method static Builder|PollQuestionnaireAnswer whereAnswer($value)
  * @method static Builder|PollQuestionnaireAnswer whereCreatedAt($value)
  * @method static Builder|PollQuestionnaireAnswer whereId($value)
@@ -26,12 +31,10 @@ use Illuminate\Support\Facades\Request;
  * @method static Builder|PollQuestionnaireAnswer wherePqsId($value)
  * @method static Builder|PollQuestionnaireAnswer whereUpdatedAt($value)
  * @method static Builder|PollQuestionnaireAnswer whereUserId($value)
+ * @method static Builder|PollQuestionnaireAnswer newModelQuery()
+ * @method static Builder|PollQuestionnaireAnswer newQuery()
+ * @method static Builder|PollQuestionnaireAnswer query()
  * @mixin Eloquent
- * @property-read PollQuestionnaire $pollquestionnaire
- * @property-read PollQuestionnaireSubjectChoice $pollquestionnaireChoice
- * @property-read PollQuestionnaireSubject $pollquestionnaireSubject
- * @property-read User $user
- * @property-read \App\Models\PollQuestionnaireSubject $pqSubject
  */
 class PollQuestionnaireAnswer extends Model {
     

@@ -48,6 +48,9 @@ use Throwable;
  * @method static Builder|Tab whereRemark($value)
  * @method static Builder|Tab whereUpdatedAt($value)
  * @method static Builder|Tab whereCategory($value)
+ * @method static Builder|Tab newModelQuery()
+ * @method static Builder|Tab newQuery()
+ * @method static Builder|Tab query()
  * @mixin Eloquent
  */
 class Tab extends Model {

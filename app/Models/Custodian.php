@@ -29,6 +29,9 @@ use Throwable;
  * @method static Builder|Custodian whereUserId($value)
  * @method static Builder|Custodian whereEnabled($value)
  * @method static Builder|Custodian whereSingular($value)
+ * @method static Builder|Custodian newModelQuery()
+ * @method static Builder|Custodian newQuery()
+ * @method static Builder|Custodian query()
  * @mixin Eloquent
  */
 class Custodian extends Model {

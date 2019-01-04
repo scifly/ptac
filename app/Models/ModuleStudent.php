@@ -19,6 +19,9 @@ use Illuminate\Database\Eloquent\{Builder, Model};
  * @method static Builder|ModuleStudent whereModuleId($value)
  * @method static Builder|ModuleStudent whereStudentId($value)
  * @method static Builder|ModuleStudent whereUpdatedAt($value)
+ * @method static Builder|ModuleStudent newModelQuery()
+ * @method static Builder|ModuleStudent newQuery()
+ * @method static Builder|ModuleStudent query()
  * @mixin Eloquent
  */
 class ModuleStudent extends Model {

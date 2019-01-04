@@ -72,8 +72,11 @@ use Throwable;
  * @method static Builder|School whereSmsMaxCnt($value)
  * @method static Builder|School whereSmsUsed($value)
  * @method static Builder|School whereUpdatedAt($value)
- * @mixin Eloquent
  * @method static Builder|School whereUserIds($value)
+ * @method static Builder|School newModelQuery()
+ * @method static Builder|School newQuery()
+ * @method static Builder|School query()
+ * @mixin Eloquent
  */
 class School extends Model {
     

@@ -22,14 +22,17 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read Collection|Procedure[] $procedures
  * @method static Builder|ProcedureType whereCreatedAt($value)
  * @method static Builder|ProcedureType whereEnabled($value)
  * @method static Builder|ProcedureType whereId($value)
  * @method static Builder|ProcedureType whereName($value)
  * @method static Builder|ProcedureType whereRemark($value)
  * @method static Builder|ProcedureType whereUpdatedAt($value)
+ * @method static Builder|ProcedureType newModelQuery()
+ * @method static Builder|ProcedureType newQuery()
+ * @method static Builder|ProcedureType query()
  * @mixin Eloquent
- * @property-read Collection|Procedure[] $procedures
  */
 class ProcedureType extends Model {
     

@@ -32,6 +32,9 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read ExamType $examType
+ * @property-read Collection|Score[] $score
+ * @property-read Collection|Score[] $scores
  * @method static Builder|Exam whereClassIds($value)
  * @method static Builder|Exam whereCreatedAt($value)
  * @method static Builder|Exam whereEnabled($value)
@@ -45,10 +48,10 @@ use Throwable;
  * @method static Builder|Exam whereStartDate($value)
  * @method static Builder|Exam whereSubjectIds($value)
  * @method static Builder|Exam whereUpdatedAt($value)
+ * @method static Builder|Exam newModelQuery()
+ * @method static Builder|Exam newQuery()
+ * @method static Builder|Exam query()
  * @mixin Eloquent
- * @property-read ExamType $examType
- * @property-read Collection|Score[] $score
- * @property-read Collection|Score[] $scores
  */
 class Exam extends Model {
     

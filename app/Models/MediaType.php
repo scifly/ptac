@@ -6,9 +6,7 @@ use App\Helpers\ModelTrait;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\{Builder, Model, Relations\HasMany};
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -21,14 +19,17 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read Media[] $medias
  * @method static Builder|MediaType whereCreatedAt($value)
  * @method static Builder|MediaType whereEnabled($value)
  * @method static Builder|MediaType whereId($value)
  * @method static Builder|MediaType whereName($value)
  * @method static Builder|MediaType whereRemark($value)
  * @method static Builder|MediaType whereUpdatedAt($value)
+ * @method static Builder|MediaType newModelQuery()
+ * @method static Builder|MediaType newQuery()
+ * @method static Builder|MediaType query()
  * @mixin Eloquent
- * @property-read Media[] $medias
  */
 class MediaType extends Model {
     

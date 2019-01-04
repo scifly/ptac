@@ -28,6 +28,9 @@ use Throwable;
  * @method static Builder|IconType whereName($value)
  * @method static Builder|IconType whereRemark($value)
  * @method static Builder|IconType whereUpdatedAt($value)
+ * @method static Builder|IconType newModelQuery()
+ * @method static Builder|IconType newQuery()
+ * @method static Builder|IconType query()
  * @mixin Eloquent
  */
 class IconType extends Model {

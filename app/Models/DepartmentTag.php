@@ -26,6 +26,9 @@ use Throwable;
  * @method static Builder|DepartmentTag whereId($value)
  * @method static Builder|DepartmentTag whereTagId($value)
  * @method static Builder|DepartmentTag whereUpdatedAt($value)
+ * @method static Builder|DepartmentTag newModelQuery()
+ * @method static Builder|DepartmentTag newQuery()
+ * @method static Builder|DepartmentTag query()
  * @mixin Eloquent
  */
 class DepartmentTag extends Model {

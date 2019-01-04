@@ -31,6 +31,9 @@ use Throwable;
  * @method static Builder|DepartmentType whereName($value)
  * @method static Builder|DepartmentType whereRemark($value)
  * @method static Builder|DepartmentType whereUpdatedAt($value)
+ * @method static Builder|DepartmentType newModelQuery()
+ * @method static Builder|DepartmentType newQuery()
+ * @method static Builder|DepartmentType query()
  * @mixin Eloquent
  */
 class DepartmentType extends Model {

@@ -32,6 +32,9 @@ use Throwable;
  * @method static Builder|CustodianStudent whereRelationship($value)
  * @method static Builder|CustodianStudent whereStudentId($value)
  * @method static Builder|CustodianStudent whereUpdatedAt($value)
+ * @method static Builder|CustodianStudent newModelQuery()
+ * @method static Builder|CustodianStudent newQuery()
+ * @method static Builder|CustodianStudent query()
  * @mixin Eloquent
  */
 class CustodianStudent extends Model {

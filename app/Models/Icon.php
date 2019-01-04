@@ -5,12 +5,9 @@ use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use App\Helpers\Snippet;
 use Carbon\Carbon;
+use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasMany};
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -34,7 +31,10 @@ use Throwable;
  * @method static Builder|Icon whereName($value)
  * @method static Builder|Icon whereRemark($value)
  * @method static Builder|Icon whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @method static Builder|Icon newModelQuery()
+ * @method static Builder|Icon newQuery()
+ * @method static Builder|Icon query()
+ * @mixin Eloquent
  */
 class Icon extends Model {
     

@@ -25,6 +25,10 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read ProcedureType $procedureType
+ * @property-read School $school
+ * @property-read Collection|ProcedureLog[] $procedureLogs
+ * @property-read Collection|ProcedureStep[] $procedureSteps
  * @method static Builder|Procedure whereCreatedAt($value)
  * @method static Builder|Procedure whereEnabled($value)
  * @method static Builder|Procedure whereId($value)
@@ -33,11 +37,10 @@ use Throwable;
  * @method static Builder|Procedure whereRemark($value)
  * @method static Builder|Procedure whereSchoolId($value)
  * @method static Builder|Procedure whereUpdatedAt($value)
+ * @method static Builder|Procedure newModelQuery()
+ * @method static Builder|Procedure newQuery()
+ * @method static Builder|Procedure query()
  * @mixin Eloquent
- * @property-read ProcedureType $procedureType
- * @property-read School $school
- * @property-read Collection|ProcedureLog[] $procedureLogs
- * @property-read Collection|ProcedureStep[] $procedureSteps
  */
 class Procedure extends Model {
     

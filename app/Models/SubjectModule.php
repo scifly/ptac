@@ -29,6 +29,9 @@ use Illuminate\Support\Facades\Request;
  * @method static Builder|SubjectModule whereSubjectId($value)
  * @method static Builder|SubjectModule whereUpdatedAt($value)
  * @method static Builder|SubjectModule whereWeight($value)
+ * @method static Builder|SubjectModule newModelQuery()
+ * @method static Builder|SubjectModule newQuery()
+ * @method static Builder|SubjectModule query()
  * @mixin Eloquent
  */
 class SubjectModule extends Model {

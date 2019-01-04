@@ -85,6 +85,9 @@ use Throwable;
  * @method static Builder|User whereSubscribed($value)
  * @method static Builder|User whereSynced($value)
  * @method static Builder|User whereUsername($value)
+ * @method static Builder|User newModelQuery()
+ * @method static Builder|User newQuery()
+ * @method static Builder|User query()
  * @mixin Eloquent
  */
 class User extends Authenticatable {

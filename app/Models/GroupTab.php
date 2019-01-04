@@ -25,6 +25,9 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|GroupTab whereId($value)
  * @method static Builder|GroupTab whereTabId($value)
  * @method static Builder|GroupTab whereUpdatedAt($value)
+ * @method static Builder|GroupTab newModelQuery()
+ * @method static Builder|GroupTab newQuery()
+ * @method static Builder|GroupTab query()
  */
 class GroupTab extends Model {
     

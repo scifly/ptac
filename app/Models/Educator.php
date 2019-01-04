@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsToMany,
     Relations\HasMany};
 use Illuminate\Support\Facades\{Auth, DB, Request};
-use ReflectionClass;
 use ReflectionException;
 use Throwable;
 
@@ -43,6 +42,9 @@ use Throwable;
  * @method static Builder|Educator whereUpdatedAt($value)
  * @method static Builder|Educator whereUserId($value)
  * @method static Builder|Educator whereSingular($value)
+ * @method static Builder|Educator newModelQuery()
+ * @method static Builder|Educator newQuery()
+ * @method static Builder|Educator query()
  * @mixin Eloquent
  */
 class Educator extends Model {

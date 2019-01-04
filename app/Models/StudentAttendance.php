@@ -46,6 +46,7 @@ use Validator;
  * @property-read Media $medias
  * @property-read Student $student
  * @property-read StudentAttendanceSetting $studentAttendanceSetting
+ * @property-read \App\Models\Media $media
  * @method static Builder|StudentAttendance whereAttendanceMachineId($value)
  * @method static Builder|StudentAttendance whereCreatedAt($value)
  * @method static Builder|StudentAttendance whereId($value)
@@ -58,8 +59,10 @@ use Validator;
  * @method static Builder|StudentAttendance whereStatus($value)
  * @method static Builder|StudentAttendance whereStudentId($value)
  * @method static Builder|StudentAttendance whereUpdatedAt($value)
+ * @method static Builder|StudentAttendance newModelQuery()
+ * @method static Builder|StudentAttendance newQuery()
+ * @method static Builder|StudentAttendance query()
  * @mixin Eloquent
- * @property-read \App\Models\Media $media
  */
 class StudentAttendance extends Model {
     

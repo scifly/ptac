@@ -66,6 +66,9 @@ use Throwable;
  * @method static Builder|Message whereTitle($value)
  * @method static Builder|Message whereUpdatedAt($value)
  * @method static Builder|Message whereUrl($value)
+ * @method static Builder|Message newModelQuery()
+ * @method static Builder|Message newQuery()
+ * @method static Builder|Message query()
  * @mixin Eloquent
  */
 class Message extends Model {

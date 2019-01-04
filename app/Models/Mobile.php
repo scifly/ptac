@@ -30,6 +30,9 @@ use Throwable;
  * @method static Builder|Mobile whereMobile($value)
  * @method static Builder|Mobile whereUpdatedAt($value)
  * @method static Builder|Mobile whereUserId($value)
+ * @method static Builder|Mobile newModelQuery()
+ * @method static Builder|Mobile newQuery()
+ * @method static Builder|Mobile query()
  * @mixin Eloquent
  */
 class Mobile extends Model {

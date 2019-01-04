@@ -50,6 +50,9 @@ use Throwable;
  * @method static Builder|Department whereRemark($value)
  * @method static Builder|Department whereUpdatedAt($value)
  * @method static Builder|Department whereSynced($value)
+ * @method static Builder|Department newModelQuery()
+ * @method static Builder|Department newQuery()
+ * @method static Builder|Department query()
  * @mixin Eloquent
  */
 class Department extends Model {

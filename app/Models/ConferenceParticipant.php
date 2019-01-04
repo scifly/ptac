@@ -24,6 +24,9 @@ use Illuminate\Support\Facades\Request;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $status 状态（0 - 签到已到 1 - 签到未到）
+ * @property-read ConferenceQueue $conferenceQueues
+ * @property-read Educator $educator
+ * @property-read ConferenceQueue $conferenceQueue
  * @method static Builder|ConferenceParticipant whereAttendanceTime($value)
  * @method static Builder|ConferenceParticipant whereConferenceQueueId($value)
  * @method static Builder|ConferenceParticipant whereCreatedAt($value)
@@ -31,10 +34,10 @@ use Illuminate\Support\Facades\Request;
  * @method static Builder|ConferenceParticipant whereId($value)
  * @method static Builder|ConferenceParticipant whereStatus($value)
  * @method static Builder|ConferenceParticipant whereUpdatedAt($value)
+ * @method static Builder|ConferenceParticipant newModelQuery()
+ * @method static Builder|ConferenceParticipant newQuery()
+ * @method static Builder|ConferenceParticipant query()
  * @mixin Eloquent
- * @property-read ConferenceQueue $conferenceQueues
- * @property-read Educator $educator
- * @property-read ConferenceQueue $conferenceQueue
  */
 class ConferenceParticipant extends Model {
     

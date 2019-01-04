@@ -24,6 +24,9 @@ use Illuminate\Support\Facades\DB;
  * @method static Builder|ActionGroup whereGroupId($value)
  * @method static Builder|ActionGroup whereId($value)
  * @method static Builder|ActionGroup whereUpdatedAt($value)
+ * @method static Builder|ActionGroup newModelQuery()
+ * @method static Builder|ActionGroup newQuery()
+ * @method static Builder|ActionGroup query()
  * @mixin Eloquent
  */
 class ActionGroup extends Model {

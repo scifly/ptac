@@ -38,6 +38,9 @@ use Throwable;
  * @method static Builder|EducatorAttendanceSetting whereSchoolId($value)
  * @method static Builder|EducatorAttendanceSetting whereStart($value)
  * @method static Builder|EducatorAttendanceSetting whereUpdatedAt($value)
+ * @method static Builder|EducatorAttendanceSetting newModelQuery()
+ * @method static Builder|EducatorAttendanceSetting newQuery()
+ * @method static Builder|EducatorAttendanceSetting query()
  * @mixin Eloquent
  */
 class EducatorAttendanceSetting extends Model {

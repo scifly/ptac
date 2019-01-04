@@ -32,6 +32,9 @@ use Validator;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $status 考勤状态
+ * @property-read EducatorAppeal $educatorAppeal
+ * @property-read EducatorAttendanceSetting $educatorAttendanceSetting
+ * @property-read Educator $educator
  * @method static Builder|EducatorAttendance whereCreatedAt($value)
  * @method static Builder|EducatorAttendance whereEasId($value)
  * @method static Builder|EducatorAttendance whereEducatorId($value)
@@ -42,10 +45,10 @@ use Validator;
  * @method static Builder|EducatorAttendance wherePunchTime($value)
  * @method static Builder|EducatorAttendance whereUpdatedAt($value)
  * @method static Builder|EducatorAttendance whereStatus($value)
+ * @method static Builder|EducatorAttendance newModelQuery()
+ * @method static Builder|EducatorAttendance newQuery()
+ * @method static Builder|EducatorAttendance query()
  * @mixin Eloquent
- * @property-read EducatorAppeal $educatorAppeal
- * @property-read EducatorAttendanceSetting $educatorAttendanceSetting
- * @property-read Educator $educator
  */
 class EducatorAttendance extends Model {
     

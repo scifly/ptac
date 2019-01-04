@@ -33,6 +33,8 @@ use Throwable;
  * @property-read User $operatorUser
  * @property-read Procedure $procedure
  * @property-read ProcedureStep $procedureStep
+ * @property-read User $initiator
+ * @property-read User $operator
  * @method static Builder|ProcedureLog whereCreatedAt($value)
  * @method static Builder|ProcedureLog whereFirstLogId($value)
  * @method static Builder|ProcedureLog whereId($value)
@@ -46,9 +48,10 @@ use Throwable;
  * @method static Builder|ProcedureLog whereProcedureStepId($value)
  * @method static Builder|ProcedureLog whereStepStatus($value)
  * @method static Builder|ProcedureLog whereUpdatedAt($value)
+ * @method static Builder|ProcedureLog newModelQuery()
+ * @method static Builder|ProcedureLog newQuery()
+ * @method static Builder|ProcedureLog query()
  * @mixin Eloquent
- * @property-read \App\Models\User $initiator
- * @property-read \App\Models\User $operator
  */
 class ProcedureLog extends Model {
     

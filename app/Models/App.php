@@ -42,6 +42,8 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read Corp $corp
+ * @property-read Collection|Message[] $messages
  * @method static Builder|App whereAccessToken($value)
  * @method static Builder|App whereAgentid($value)
  * @method static Builder|App whereAllowPartys($value)
@@ -62,9 +64,10 @@ use Throwable;
  * @method static Builder|App whereSecret($value)
  * @method static Builder|App whereSquareLogoUrl($value)
  * @method static Builder|App whereUpdatedAt($value)
+ * @method static Builder|App newModelQuery()
+ * @method static Builder|App newQuery()
+ * @method static Builder|App query()
  * @mixin Eloquent
- * @property-read Corp $corp
- * @property-read Collection|Message[] $messages
  */
 class App extends Model {
     

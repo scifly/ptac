@@ -12,6 +12,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $school_id 学校ID
  * @method static Builder|SmsSchool whereId($value)
  * @method static Builder|SmsSchool whereSchoolId($value)
+ * @method static Builder|SmsSchool newModelQuery()
+ * @method static Builder|SmsSchool newQuery()
+ * @method static Builder|SmsSchool query()
  * @mixin Eloquent
  */
 class SmsSchool extends Model {

@@ -39,6 +39,9 @@ use Throwable;
  * @method static Builder|Squad whereId($value)
  * @method static Builder|Squad whereName($value)
  * @method static Builder|Squad whereUpdatedAt($value)
+ * @method static Builder|Squad newModelQuery()
+ * @method static Builder|Squad newQuery()
+ * @method static Builder|Squad query()
  * @mixin Eloquent
  */
 class Squad extends Model {

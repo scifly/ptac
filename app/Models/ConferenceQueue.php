@@ -32,6 +32,11 @@ use Throwable;
  * @property int $event_id 相关日程ID
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int $educator_id 发起人教职员工ID
+ * @property int $status 会议状态
+ * @property-read Collection|ConferenceParticipant[] $conferenceParticipants
+ * @property-read ConferenceRoom $conferenceRoom
+ * @property-read \App\Models\User $user
  * @method static Builder|ConferenceQueue whereAttendanceQrcodeUrl($value)
  * @method static Builder|ConferenceQueue whereAttendedEducatorIds($value)
  * @method static Builder|ConferenceQueue whereConferenceRoomId($value)
@@ -45,14 +50,12 @@ use Throwable;
  * @method static Builder|ConferenceQueue whereRemark($value)
  * @method static Builder|ConferenceQueue whereStart($value)
  * @method static Builder|ConferenceQueue whereUpdatedAt($value)
- * @mixin \Eloquent
- * @property-read Collection|ConferenceParticipant[] $conferenceParticipants
- * @property-read ConferenceRoom $conferenceRoom
- * @property int $educator_id 发起人教职员工ID
- * @property-read \App\Models\User $user
  * @method static Builder|ConferenceQueue whereEducatorId($value)
- * @property int $status 会议状态
  * @method static Builder|ConferenceQueue whereStatus($value)
+ * @method static Builder|ConferenceQueue newModelQuery()
+ * @method static Builder|ConferenceQueue newQuery()
+ * @method static Builder|ConferenceQueue query()
+ * @mixin \Eloquent
  */
 class ConferenceQueue extends Model {
     

@@ -5,8 +5,7 @@ use App\Helpers\Constant;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\{Builder, Model};
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -28,6 +27,9 @@ use Throwable;
  * @method static Builder|MenuTab whereTabId($value)
  * @method static Builder|MenuTab whereTabOrder($value)
  * @method static Builder|MenuTab whereUpdatedAt($value)
+ * @method static Builder|MenuTab newModelQuery()
+ * @method static Builder|MenuTab newQuery()
+ * @method static Builder|MenuTab query()
  */
 class MenuTab extends Model {
     

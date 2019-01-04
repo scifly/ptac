@@ -25,6 +25,9 @@ use Throwable;
  * @method static Builder|TagUser whereTagId($value)
  * @method static Builder|TagUser whereUpdatedAt($value)
  * @method static Builder|TagUser whereUserId($value)
+ * @method static Builder|TagUser newModelQuery()
+ * @method static Builder|TagUser newQuery()
+ * @method static Builder|TagUser query()
  * @mixin Eloquent
  */
 class TagUser extends Model {

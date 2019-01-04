@@ -38,6 +38,9 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled 是否参加考试
+ * @property-read Exam $exam
+ * @property-read Student $student
+ * @property-read Subject $subject
  * @method static Builder|Score whereClassRank($value)
  * @method static Builder|Score whereCreatedAt($value)
  * @method static Builder|Score whereEnabled($value)
@@ -48,10 +51,10 @@ use Throwable;
  * @method static Builder|Score whereStudentId($value)
  * @method static Builder|Score whereSubjectId($value)
  * @method static Builder|Score whereUpdatedAt($value)
+ * @method static Builder|Score newModelQuery()
+ * @method static Builder|Score newQuery()
+ * @method static Builder|Score query()
  * @mixin Eloquent
- * @property-read Exam $exam
- * @property-read Student $student
- * @property-read Subject $subject
  */
 class Score extends Model {
     

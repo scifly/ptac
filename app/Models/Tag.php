@@ -42,6 +42,9 @@ use Throwable;
  * @method static Builder|Tag whereUserId($value)
  * @method static Builder|Tag whereUpdatedAt($value)
  * @method static Builder|Tag whereSynced($value)
+ * @method static Builder|Tag newModelQuery()
+ * @method static Builder|Tag newQuery()
+ * @method static Builder|Tag query()
  * @mixin Eloquent
  */
 class Tag extends Model {

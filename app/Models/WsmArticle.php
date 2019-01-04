@@ -25,6 +25,10 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read WapSiteModule $wapSiteModule
+ * @property-read WapSiteModule $wapsitemodule
+ * @property-read Media $thumbnailmedia
+ * @property-read Media $thumbnailMedia
  * @method static Builder|WsmArticle whereContent($value)
  * @method static Builder|WsmArticle whereCreatedAt($value)
  * @method static Builder|WsmArticle whereEnabled($value)
@@ -35,11 +39,10 @@ use Throwable;
  * @method static Builder|WsmArticle whereThumbnailMediaId($value)
  * @method static Builder|WsmArticle whereUpdatedAt($value)
  * @method static Builder|WsmArticle whereWsmId($value)
+ * @method static Builder|WsmArticle newModelQuery()
+ * @method static Builder|WsmArticle newQuery()
+ * @method static Builder|WsmArticle query()
  * @mixin Eloquent
- * @property-read WapSiteModule $wapSiteModule
- * @property-read WapSiteModule $wapsitemodule
- * @property-read Media $thumbnailmedia
- * @property-read Media $thumbnailMedia
  */
 class WsmArticle extends Model {
     
@@ -236,7 +239,6 @@ class WsmArticle extends Model {
         
     }
     
-    /** Helper functions -------------------------------------------------------------------------------------------- */
 
     /**
      * 返回指定栏目文章
@@ -256,5 +258,7 @@ class WsmArticle extends Model {
         ]);
         
     }
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+    
     
 }

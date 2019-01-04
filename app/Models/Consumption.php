@@ -42,6 +42,9 @@ use Validator;
  * @method static Builder|Consumption whereMerchant($value)
  * @method static Builder|Consumption whereStudentId($value)
  * @method static Builder|Consumption whereUpdatedAt($value)
+ * @method static Builder|Consumption newModelQuery()
+ * @method static Builder|Consumption newQuery()
+ * @method static Builder|Consumption query()
  * @mixin Eloquent
  */
 class Consumption extends Model {

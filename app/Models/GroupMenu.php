@@ -19,13 +19,16 @@ use Illuminate\Support\Facades\DB;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int|null $enabled
+ * @property-read \App\Models\Menu $menu
  * @method static Builder|GroupMenu whereCreatedAt($value)
  * @method static Builder|GroupMenu whereEnabled($value)
  * @method static Builder|GroupMenu whereGroupId($value)
  * @method static Builder|GroupMenu whereId($value)
  * @method static Builder|GroupMenu whereMenuId($value)
  * @method static Builder|GroupMenu whereUpdatedAt($value)
- * @property-read \App\Models\Menu $menu
+ * @method static Builder|GroupMenu newModelQuery()
+ * @method static Builder|GroupMenu newQuery()
+ * @method static Builder|GroupMenu query()
  */
 class GroupMenu extends Model {
     

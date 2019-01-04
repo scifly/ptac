@@ -36,6 +36,14 @@ use Throwable;
  * @property int $departmentid 企业微信后台通讯录的根部门id
  * @property string|null $mchid 微信支付商户号
  * @property string|null $apikey 微信支付商户支付密钥
+ * @property-read Company $company
+ * @property-read Collection|Department[] $departments
+ * @property-read Collection|Grade[] $grades
+ * @property-read Collection|School[] $schools
+ * @property-read Collection|Tag[] $tags
+ * @property-read Department $department
+ * @property-read Menu $menu
+ * @property-read Collection|App[] $apps
  * @method static Builder|Corp whereCorpid($value)
  * @method static Builder|Corp whereContactSyncSecret($value)
  * @method static Builder|Corp whereCreatedAt($value)
@@ -53,14 +61,9 @@ use Throwable;
  * @method static Builder|Corp whereApikey($value)
  * @method static Builder|Corp whereMchid($value)
  * @method static Builder|Corp whereAccessToken($value)
- * @property-read Company $company
- * @property-read Collection|Department[] $departments
- * @property-read Collection|Grade[] $grades
- * @property-read Collection|School[] $schools
- * @property-read Collection|Tag[] $tags
- * @property-read Department $department
- * @property-read Menu $menu
- * @property-read Collection|App[] $apps
+ * @method static Builder|Corp newModelQuery()
+ * @method static Builder|Corp newQuery()
+ * @method static Builder|Corp query()
  * @mixin Eloquent
  */
 class Corp extends Model {
@@ -285,9 +288,7 @@ class Corp extends Model {
      */
     function corpId() {
         
-        if (!Session::exists('menuId')) {
-            return null;
-        }
+        if (!Session::exists('menuId')) return null;
         $user = Auth::user();
         switch ($user->role()) {
             case '运营':

@@ -27,6 +27,10 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read Collection|Company[] $corps
+ * @property-read Collection|School[] $schools
+ * @property-read Department $department
+ * @property-read Menu $menu
  * @method static Builder|Company whereCorpid($value)
  * @method static Builder|Company whereId($value)
  * @method static Builder|Company whereName($value)
@@ -36,11 +40,10 @@ use Throwable;
  * @method static Builder|Company whereDepartmentId($value)
  * @method static Builder|Company whereMenuId($value)
  * @method static Builder|Company whereEnabled($value)
+ * @method static Builder|Company newModelQuery()
+ * @method static Builder|Company newQuery()
+ * @method static Builder|Company query()
  * @mixin Eloquent
- * @property-read Collection|Company[] $corps
- * @property-read Collection|School[] $schools
- * @property-read Department $department
- * @property-read Menu $menu
  */
 class Company extends Model {
     

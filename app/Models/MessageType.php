@@ -32,6 +32,9 @@ use Throwable;
  * @method static Builder|MessageType whereUserId($value)
  * @method static Builder|MessageType whereRemark($value)
  * @method static Builder|MessageType whereUpdatedAt($value)
+ * @method static Builder|MessageType newModelQuery()
+ * @method static Builder|MessageType newQuery()
+ * @method static Builder|MessageType query()
  * @mixin Eloquent
  */
 class MessageType extends Model {

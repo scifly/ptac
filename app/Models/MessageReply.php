@@ -26,6 +26,9 @@ use Illuminate\Support\Facades\Request;
  * @method static Builder|MessageReply whereMslId($value)
  * @method static Builder|MessageReply whereUpdatedAt($value)
  * @method static Builder|MessageReply whereUserId($value)
+ * @method static Builder|MessageReply newModelQuery()
+ * @method static Builder|MessageReply newQuery()
+ * @method static Builder|MessageReply query()
  */
 class MessageReply extends Model {
     

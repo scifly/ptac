@@ -25,6 +25,9 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $status 审批状态 0 - 通过 1 - 拒绝 2 - 待审
+ * @property-read Educator $educator
+ * @property-read Educator $educatorAttendance
+ * @property-read ProcedureLog $procedureLog
  * @method static Builder|EducatorAppeal whereAppealContent($value)
  * @method static Builder|EducatorAppeal whereApproverEducatorIds($value)
  * @method static Builder|EducatorAppeal whereCreatedAt($value)
@@ -35,10 +38,10 @@ use Throwable;
  * @method static Builder|EducatorAppeal whereRelatedEducatorIds($value)
  * @method static Builder|EducatorAppeal whereStatus($value)
  * @method static Builder|EducatorAppeal whereUpdatedAt($value)
+ * @method static Builder|EducatorAppeal newModelQuery()
+ * @method static Builder|EducatorAppeal newQuery()
+ * @method static Builder|EducatorAppeal query()
  * @mixin Eloquent
- * @property-read Educator $educator
- * @property-read Educator $educatorAttendance
- * @property-read ProcedureLog $procedureLog
  */
 class EducatorAppeal extends Model {
     

@@ -39,6 +39,9 @@ use Throwable;
  * @method static Builder|Grade whereName($value)
  * @method static Builder|Grade whereSchoolId($value)
  * @method static Builder|Grade whereUpdatedAt($value)
+ * @method static Builder|Grade newModelQuery()
+ * @method static Builder|Grade newQuery()
+ * @method static Builder|Grade query()
  * @mixin Eloquent
  */
 class Grade extends Model {

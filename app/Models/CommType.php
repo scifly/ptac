@@ -21,14 +21,17 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read Collection|Message[] $messages
  * @method static Builder|CommType whereCreatedAt($value)
  * @method static Builder|CommType whereEnabled($value)
  * @method static Builder|CommType whereId($value)
  * @method static Builder|CommType whereName($value)
  * @method static Builder|CommType whereRemark($value)
  * @method static Builder|CommType whereUpdatedAt($value)
+ * @method static Builder|CommType newModelQuery()
+ * @method static Builder|CommType newQuery()
+ * @method static Builder|CommType query()
  * @mixin Eloquent
- * @property-read Collection|Message[] $messages
  */
 class CommType extends Model {
     

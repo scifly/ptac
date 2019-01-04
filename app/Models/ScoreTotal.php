@@ -43,6 +43,9 @@ use ReflectionException;
  * @method static Builder|ScoreTotal whereStudentId($value)
  * @method static Builder|ScoreTotal whereSubjectIds($value)
  * @method static Builder|ScoreTotal whereUpdatedAt($value)
+ * @method static Builder|ScoreTotal newModelQuery()
+ * @method static Builder|ScoreTotal newQuery()
+ * @method static Builder|ScoreTotal query()
  * @mixin Eloquent
  */
 class ScoreTotal extends Model {

@@ -26,6 +26,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|SmsEducator whereStatisticTime($value)
  * @method static Builder|SmsEducator whereUpdatedAt($value)
  * @method static Builder|SmsEducator whereUserId($value)
+ * @method static Builder|SmsEducator newModelQuery()
+ * @method static Builder|SmsEducator newQuery()
+ * @method static Builder|SmsEducator query()
  * @mixin \Eloquent
  */
 class SmsEducator extends Model {

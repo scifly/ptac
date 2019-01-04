@@ -27,13 +27,6 @@ use Throwable;
  * @property int $subject_type 题目类型：0 - 单选，1 - 多选, 2 - 填空
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @method static Builder|PollQuestionnaireSubject whereCreatedAt($value)
- * @method static Builder|PollQuestionnaireSubject whereId($value)
- * @method static Builder|PollQuestionnaireSubject wherePqId($value)
- * @method static Builder|PollQuestionnaireSubject whereSubject($value)
- * @method static Builder|PollQuestionnaireSubject whereSubjectType($value)
- * @method static Builder|PollQuestionnaireSubject whereUpdatedAt($value)
- * @mixin Eloquent
  * @property-read PollQuestionnaireAnswer $pollquestionnaireAnswer
  * @property-read PollQuestionnaire $pollquestionnaire
  * @property-read Collection|PollQuestionnaireSubjectChoice[] $pollquestionnairechoice
@@ -45,6 +38,16 @@ use Throwable;
  * @property-read Collection|PollQuestionnaireSubjectChoice[] $pollQuestionnaireSubjectChoices
  * @property-read PollQuestionnaireAnswer $pqAnswer
  * @property-read Collection|PollQuestionnaireSubjectChoice[] $pqsChoices
+ * @method static Builder|PollQuestionnaireSubject whereCreatedAt($value)
+ * @method static Builder|PollQuestionnaireSubject whereId($value)
+ * @method static Builder|PollQuestionnaireSubject wherePqId($value)
+ * @method static Builder|PollQuestionnaireSubject whereSubject($value)
+ * @method static Builder|PollQuestionnaireSubject whereSubjectType($value)
+ * @method static Builder|PollQuestionnaireSubject whereUpdatedAt($value)
+ * @method static Builder|PollQuestionnaireSubject newModelQuery()
+ * @method static Builder|PollQuestionnaireSubject newQuery()
+ * @method static Builder|PollQuestionnaireSubject query()
+ * @mixin Eloquent
  */
 class PollQuestionnaireSubject extends Model {
     

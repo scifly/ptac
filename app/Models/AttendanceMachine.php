@@ -24,6 +24,8 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read School $school
+ * @property-read StudentAttendance[] $studentAttendances
  * @method static Builder|AttendanceMachine whereCreatedAt($value)
  * @method static Builder|AttendanceMachine whereEnabled($value)
  * @method static Builder|AttendanceMachine whereId($value)
@@ -32,9 +34,10 @@ use Throwable;
  * @method static Builder|AttendanceMachine whereName($value)
  * @method static Builder|AttendanceMachine whereSchoolId($value)
  * @method static Builder|AttendanceMachine whereUpdatedAt($value)
+ * @method static Builder|AttendanceMachine newModelQuery()
+ * @method static Builder|AttendanceMachine newQuery()
+ * @method static Builder|AttendanceMachine query()
  * @mixin Eloquent
- * @property-read School $school
- * @property-read StudentAttendance[] $studentAttendances
  */
 class AttendanceMachine extends Model {
     

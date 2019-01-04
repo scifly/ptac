@@ -35,6 +35,9 @@ use Throwable;
  * @method static Builder|ProcedureStep whereRelatedUserIds($value)
  * @method static Builder|ProcedureStep whereRemark($value)
  * @method static Builder|ProcedureStep whereUpdatedAt($value)
+ * @method static Builder|ProcedureStep newModelQuery()
+ * @method static Builder|ProcedureStep newQuery()
+ * @method static Builder|ProcedureStep query()
  * @mixin Eloquent
  */
 class ProcedureStep extends Model {

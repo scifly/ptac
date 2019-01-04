@@ -31,6 +31,10 @@ use Throwable;
  * @property string $msg_template 考勤消息模板
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read Grade $grade
+ * @property-read Semester $semester
+ * @property-read StudentAttendance $studentAttendance
+ * @property-read Collection|StudentAttendance[] $studentAttendances
  * @method static Builder|StudentAttendanceSetting whereCreatedAt($value)
  * @method static Builder|StudentAttendanceSetting whereDay($value)
  * @method static Builder|StudentAttendanceSetting whereEnd($value)
@@ -43,11 +47,10 @@ use Throwable;
  * @method static Builder|StudentAttendanceSetting whereSemesterId($value)
  * @method static Builder|StudentAttendanceSetting whereStart($value)
  * @method static Builder|StudentAttendanceSetting whereUpdatedAt($value)
+ * @method static Builder|StudentAttendanceSetting newModelQuery()
+ * @method static Builder|StudentAttendanceSetting newQuery()
+ * @method static Builder|StudentAttendanceSetting query()
  * @mixin Eloquent
- * @property-read Grade $grade
- * @property-read Semester $semester
- * @property-read StudentAttendance $studentAttendance
- * @property-read Collection|StudentAttendance[] $studentAttendances
  */
 class StudentAttendanceSetting extends Model {
     

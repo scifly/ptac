@@ -33,6 +33,9 @@ use Throwable;
  * @method static Builder|ExamType whereRemark($value)
  * @method static Builder|ExamType whereSchoolId($value)
  * @method static Builder|ExamType whereUpdatedAt($value)
+ * @method static Builder|ExamType newModelQuery()
+ * @method static Builder|ExamType newQuery()
+ * @method static Builder|ExamType query()
  * @mixin Eloquent
  */
 class ExamType extends Model {

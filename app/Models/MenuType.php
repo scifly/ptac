@@ -25,14 +25,17 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read Collection|Menu[] $menus
  * @method static Builder|MenuType whereCreatedAt($value)
  * @method static Builder|MenuType whereEnabled($value)
  * @method static Builder|MenuType whereId($value)
  * @method static Builder|MenuType whereName($value)
  * @method static Builder|MenuType whereRemark($value)
  * @method static Builder|MenuType whereUpdatedAt($value)
+ * @method static Builder|MenuType newModelQuery()
+ * @method static Builder|MenuType newQuery()
+ * @method static Builder|MenuType query()
  * @mixin Eloquent
- * @property-read Collection|Menu[] $menus
  */
 class MenuType extends Model {
     

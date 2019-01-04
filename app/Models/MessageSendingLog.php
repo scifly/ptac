@@ -22,14 +22,17 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection|Message[] $messages
+ * @property-read Collection|ApiMessage[] $apiMessages
  * @method static Builder|MessageSendingLog whereCreatedAt($value)
  * @method static Builder|MessageSendingLog whereId($value)
  * @method static Builder|MessageSendingLog whereReadCount($value)
  * @method static Builder|MessageSendingLog whereReceivedCount($value)
  * @method static Builder|MessageSendingLog whereRecipientCount($value)
  * @method static Builder|MessageSendingLog whereUpdatedAt($value)
+ * @method static Builder|MessageSendingLog newModelQuery()
+ * @method static Builder|MessageSendingLog newQuery()
+ * @method static Builder|MessageSendingLog query()
  * @mixin Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\ApiMessage[] $apiMessages
  */
 class MessageSendingLog extends Model {
     

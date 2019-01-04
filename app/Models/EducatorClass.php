@@ -18,18 +18,21 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled 是否启用
+ * @property-read Educator $educator
+ * @property-read Squad $squad
+ * @property-read Subject $subject
+ * @property-read Educator $classes
  * @method static Builder|EducatorClass whereClassId($value)
  * @method static Builder|EducatorClass whereCreatedAt($value)
  * @method static Builder|EducatorClass whereEducatorId($value)
  * @method static Builder|EducatorClass whereId($value)
  * @method static Builder|EducatorClass whereSubjectId($value)
  * @method static Builder|EducatorClass whereUpdatedAt($value)
- * @mixin Eloquent
- * @property-read Educator $educator
- * @property-read Squad $squad
- * @property-read Subject $subject
  * @method static Builder|EducatorClass whereEnabled($value)
- * @property-read Educator $classes
+ * @method static Builder|EducatorClass newModelQuery()
+ * @method static Builder|EducatorClass newQuery()
+ * @method static Builder|EducatorClass query()
+ * @mixin Eloquent
  */
 class EducatorClass extends Model {
     

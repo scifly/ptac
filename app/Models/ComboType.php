@@ -24,6 +24,8 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read School $schools
+ * @property-read School $school
  * @method static Builder|ComboType whereAmount($value)
  * @method static Builder|ComboType whereCreatedAt($value)
  * @method static Builder|ComboType whereDiscount($value)
@@ -33,9 +35,10 @@ use Throwable;
  * @method static Builder|ComboType whereName($value)
  * @method static Builder|ComboType whereSchoolId($value)
  * @method static Builder|ComboType whereUpdatedAt($value)
+ * @method static Builder|ComboType newModelQuery()
+ * @method static Builder|ComboType newQuery()
+ * @method static Builder|ComboType query()
  * @mixin Eloquent
- * @property-read School $schools
- * @property-read School $school
  */
 class ComboType extends Model {
     

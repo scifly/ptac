@@ -41,6 +41,9 @@ use Throwable;
  * @method static Builder|WapSite whereSchoolId($value)
  * @method static Builder|WapSite whereSiteTitle($value)
  * @method static Builder|WapSite whereUpdatedAt($value)
+ * @method static Builder|WapSite newModelQuery()
+ * @method static Builder|WapSite newQuery()
+ * @method static Builder|WapSite query()
  * @mixin Eloquent
  */
 class WapSite extends Model {

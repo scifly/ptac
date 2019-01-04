@@ -37,6 +37,9 @@ use Throwable;
  * @method static Builder|Semester whereSchoolId($value)
  * @method static Builder|Semester whereStartDate($value)
  * @method static Builder|Semester whereUpdatedAt($value)
+ * @method static Builder|Semester newModelQuery()
+ * @method static Builder|Semester newQuery()
+ * @method static Builder|Semester query()
  * @mixin Eloquent
  */
 class Semester extends Model {

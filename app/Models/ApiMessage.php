@@ -23,6 +23,7 @@ use Throwable;
  * @property int $sent 消息是否发送成功
  * @property Carbon|null $created_at 创建于
  * @property Carbon|null $updated_at 更新于
+ * @property int $s_user_id 发送者用户id
  * @property-read MessageSendingLog $messageSendingLog
  * @property-read MessageType $messageType
  * @method static Builder|ApiMessage whereContent($value)
@@ -34,9 +35,11 @@ use Throwable;
  * @method static Builder|ApiMessage whereRead($value)
  * @method static Builder|ApiMessage whereSent($value)
  * @method static Builder|ApiMessage whereUpdatedAt($value)
- * @mixin Eloquent
- * @property int $s_user_id 发送者用户id
  * @method static Builder|ApiMessage whereSUserId($value)
+ * @method static Builder|ApiMessage newModelQuery()
+ * @method static Builder|ApiMessage newQuery()
+ * @method static Builder|ApiMessage query()
+ * @mixin Eloquent
  */
 class ApiMessage extends Model {
 

@@ -54,6 +54,9 @@ use Illuminate\View\View;
  * @method static Builder|Module whereUpdatedAt($value)
  * @method static Builder|Module whereUri($value)
  * @method static Builder|Module whereGroupId($value)
+ * @method static Builder|Module newModelQuery()
+ * @method static Builder|Module newQuery()
+ * @method static Builder|Module query()
  * @mixin Eloquent
  */
 class Module extends Model {

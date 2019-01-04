@@ -49,6 +49,9 @@ use Throwable;
  * @method static Builder|Action whereRoute($value)
  * @method static Builder|Action whereUpdatedAt($value)
  * @method static Builder|Action whereView($value)
+ * @method static Builder|Action newModelQuery()
+ * @method static Builder|Action newQuery()
+ * @method static Builder|Action query()
  * @mixin Eloquent
  */
 class Action extends Model {

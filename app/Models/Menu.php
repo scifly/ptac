@@ -42,6 +42,7 @@ use Throwable;
  * @property-read Menu|null $parent
  * @property-read School $school
  * @property-read Collection|\App\Models\Tab[] $tabs
+ * @property-read Collection|GroupMenu[] $groupMenus
  * @method static Builder|Menu whereCreatedAt($value)
  * @method static Builder|Menu whereEnabled($value)
  * @method static Builder|Menu whereIconId($value)
@@ -54,8 +55,10 @@ use Throwable;
  * @method static Builder|Menu whereRemark($value)
  * @method static Builder|Menu whereUpdatedAt($value)
  * @method static Builder|Menu whereUri($value)
+ * @method static Builder|Menu newModelQuery()
+ * @method static Builder|Menu newQuery()
+ * @method static Builder|Menu query()
  * @mixin Eloquent
- * @property-read Collection|GroupMenu[] $groupMenus
  */
 class Menu extends Model {
     

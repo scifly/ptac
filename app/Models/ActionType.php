@@ -27,6 +27,9 @@ use Throwable;
  * @method static Builder|School whereName($value)
  * @method static Builder|School whereRemark($value)
  * @method static Builder|School whereUpdatedAt($value)
+ * @method static Builder|ActionType newModelQuery()
+ * @method static Builder|ActionType newQuery()
+ * @method static Builder|ActionType query()
  * @mixin Eloquent
  */
 class ActionType extends Model {

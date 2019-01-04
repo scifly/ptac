@@ -4,6 +4,7 @@ namespace App\Models;
 use App\Facades\Datatable;
 use App\Helpers\ModelTrait;
 use Carbon\Carbon;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -21,14 +22,17 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read Collection|School[] $schools
  * @method static Builder|SchoolType whereCreatedAt($value)
  * @method static Builder|SchoolType whereEnabled($value)
  * @method static Builder|SchoolType whereId($value)
  * @method static Builder|SchoolType whereName($value)
  * @method static Builder|SchoolType whereRemark($value)
  * @method static Builder|SchoolType whereUpdatedAt($value)
- * @mixin \Eloquent
- * @property-read Collection|School[] $schools
+ * @method static Builder|SchoolType newModelQuery()
+ * @method static Builder|SchoolType newQuery()
+ * @method static Builder|SchoolType query()
+ * @mixin Eloquent
  */
 class SchoolType extends Model {
     

@@ -24,14 +24,17 @@ use Illuminate\Support\Facades\Request;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read PollQuestionnaireSubject $pollQuestionnaireSubject
+ * @property-read \App\Models\PollQuestionnaireSubject $pqSubject
  * @method static Builder|PollQuestionnaireSubjectChoice whereChoice($value)
  * @method static Builder|PollQuestionnaireSubjectChoice whereCreatedAt($value)
  * @method static Builder|PollQuestionnaireSubjectChoice whereId($value)
  * @method static Builder|PollQuestionnaireSubjectChoice wherePqsId($value)
  * @method static Builder|PollQuestionnaireSubjectChoice whereSeqNo($value)
  * @method static Builder|PollQuestionnaireSubjectChoice whereUpdatedAt($value)
+ * @method static Builder|PollQuestionnaireSubjectChoice newModelQuery()
+ * @method static Builder|PollQuestionnaireSubjectChoice newQuery()
+ * @method static Builder|PollQuestionnaireSubjectChoice query()
  * @mixin Eloquent
- * @property-read \App\Models\PollQuestionnaireSubject $pqSubject
  */
 class PollQuestionnaireSubjectChoice extends Model {
     

@@ -20,6 +20,9 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string $enabled
+ * @property-read MajorSubject $majorSubject
+ * @property-read School $school
+ * @property-read Collection|Subject[] $subjects
  * @method static Builder|Major whereCreatedAt($value)
  * @method static Builder|Major whereEnabled($value)
  * @method static Builder|Major whereId($value)
@@ -27,10 +30,10 @@ use Throwable;
  * @method static Builder|Major whereRemark($value)
  * @method static Builder|Major whereSchoolId($value)
  * @method static Builder|Major whereUpdatedAt($value)
+ * @method static Builder|Major newModelQuery()
+ * @method static Builder|Major newQuery()
+ * @method static Builder|Major query()
  * @mixin Eloquent
- * @property-read MajorSubject $majorSubject
- * @property-read School $school
- * @property-read Collection|Subject[] $subjects
  */
 class Major extends Model {
     

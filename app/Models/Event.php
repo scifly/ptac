@@ -57,6 +57,9 @@ use Throwable;
  * @method static Builder|Event whereUpdatedAt($value)
  * @method static Builder|Event whereUrl($value)
  * @method static Builder|Event whereUserId($value)
+ * @method static Builder|Event newModelQuery()
+ * @method static Builder|Event newQuery()
+ * @method static Builder|Event query()
  * @mixin Eloquent
  */
 class Event extends Model {

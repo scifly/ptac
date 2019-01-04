@@ -16,15 +16,18 @@ use Illuminate\Support\Facades\Request;
  * @property int $user_id 参与者用户ID
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read PollQuestionnaire $pollquestionnaire
+ * @property-read User $user
+ * @property-read PollQuestionnaire $pollQuestionnaire
  * @method static Builder|PollQuestionnaireParticipant whereCreatedAt($value)
  * @method static Builder|PollQuestionnaireParticipant whereId($value)
  * @method static Builder|PollQuestionnaireParticipant wherePqId($value)
  * @method static Builder|PollQuestionnaireParticipant whereUpdatedAt($value)
  * @method static Builder|PollQuestionnaireParticipant whereUserId($value)
+ * @method static Builder|PollQuestionnaireParticipant newModelQuery()
+ * @method static Builder|PollQuestionnaireParticipant newQuery()
+ * @method static Builder|PollQuestionnaireParticipant query()
  * @mixin Eloquent
- * @property-read PollQuestionnaire $pollquestionnaire
- * @property-read User $user
- * @property-read \App\Models\PollQuestionnaire $pollQuestionnaire
  */
 class PollQuestionnaireParticipant extends Model {
     

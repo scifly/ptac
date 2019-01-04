@@ -25,6 +25,9 @@ use Throwable;
  * @method static Builder|Attachment whereId($value)
  * @method static Builder|Attachment whereUpdatedAt($value)
  * @method static Builder|Attachment whereUrl($value)
+ * @method static Builder|Attachment newModelQuery()
+ * @method static Builder|Attachment newQuery()
+ * @method static Builder|Attachment query()
  * @mixin Eloquent
  */
 class Attachment extends Model {

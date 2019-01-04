@@ -25,6 +25,9 @@ use Illuminate\View\View;
  * @method static Builder|WechatSms whereMessageId($value)
  * @method static Builder|WechatSms whereUpdatedAt($value)
  * @method static Builder|WechatSms whereUrlcode($value)
+ * @method static Builder|WechatSms newModelQuery()
+ * @method static Builder|WechatSms newQuery()
+ * @method static Builder|WechatSms query()
  * @mixin Eloquent
  */
 class WechatSms extends Model {

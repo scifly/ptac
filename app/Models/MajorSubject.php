@@ -17,14 +17,17 @@ use Throwable;
  * @property int $subject_id 科目ID
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read Major $major
+ * @property-read Subject $subject
  * @method static Builder|MajorSubject whereCreatedAt($value)
  * @method static Builder|MajorSubject whereId($value)
  * @method static Builder|MajorSubject whereMajorId($value)
  * @method static Builder|MajorSubject whereSubjectId($value)
  * @method static Builder|MajorSubject whereUpdatedAt($value)
+ * @method static Builder|MajorSubject newModelQuery()
+ * @method static Builder|MajorSubject newQuery()
+ * @method static Builder|MajorSubject query()
  * @mixin Eloquent
- * @property-read Major $major
- * @property-read Subject $subject
  */
 class MajorSubject extends Model {
     

@@ -48,6 +48,9 @@ use Throwable;
  * @method static Builder|PollQuestionnaire whereStart($value)
  * @method static Builder|PollQuestionnaire whereUpdatedAt($value)
  * @method static Builder|PollQuestionnaire whereUserId($value)
+ * @method static Builder|PollQuestionnaire newModelQuery()
+ * @method static Builder|PollQuestionnaire newQuery()
+ * @method static Builder|PollQuestionnaire query()
  * @mixin Eloquent
  */
 class PollQuestionnaire extends Model {

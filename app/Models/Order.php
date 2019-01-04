@@ -26,6 +26,8 @@ use Throwable;
  * @property string $transactionid 微信订单号
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read ComboType $comboType
+ * @property-read User $user
  * @method static Builder|Order whereComboTypeId($value)
  * @method static Builder|Order whereCreatedAt($value)
  * @method static Builder|Order whereId($value)
@@ -36,9 +38,10 @@ use Throwable;
  * @method static Builder|Order whereTransactionid($value)
  * @method static Builder|Order whereUpdatedAt($value)
  * @method static Builder|Order whereUserId($value)
+ * @method static Builder|Order newModelQuery()
+ * @method static Builder|Order newQuery()
+ * @method static Builder|Order query()
  * @mixin Eloquent
- * @property-read ComboType $comboType
- * @property-read User $user
  */
 class Order extends Model {
     

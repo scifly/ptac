@@ -36,6 +36,9 @@ use Throwable;
  * @method static Builder|WapSiteModule whereName($value)
  * @method static Builder|WapSiteModule whereUpdatedAt($value)
  * @method static Builder|WapSiteModule whereWapSiteId($value)
+ * @method static Builder|WapSiteModule newModelQuery()
+ * @method static Builder|WapSiteModule newQuery()
+ * @method static Builder|WapSiteModule query()
  * @mixin Eloquent
  */
 class WapSiteModule extends Model {

@@ -30,6 +30,15 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read Grade $grade
+ * @property-read School $school
+ * @property-read Collection|SubjectModule[] $subjectModules
+ * @property-read EducatorClass $educatorClass
+ * @property-read Collection|Major[] $majors
+ * @property-read Collection|Event[] $events
+ * @property-read Collection|Squad[] $classes
+ * @property-read Collection|Educator[] $educators
+ * @property-read Collection|Score[] $scores
  * @method static Builder|Subject whereCreatedAt($value)
  * @method static Builder|Subject whereEnabled($value)
  * @method static Builder|Subject whereGradeIds($value)
@@ -40,16 +49,10 @@ use Throwable;
  * @method static Builder|Subject wherePassScore($value)
  * @method static Builder|Subject whereSchoolId($value)
  * @method static Builder|Subject whereUpdatedAt($value)
+ * @method static Builder|Subject newModelQuery()
+ * @method static Builder|Subject newQuery()
+ * @method static Builder|Subject query()
  * @mixin Eloquent
- * @property-read Grade $grade
- * @property-read School $school
- * @property-read Collection|SubjectModule[] $subjectModules
- * @property-read EducatorClass $educatorClass
- * @property-read Collection|Major[] $majors
- * @property-read Collection|Event[] $events
- * @property-read Collection|Squad[] $classes
- * @property-read Collection|Educator[] $educators
- * @property-read Collection|Score[] $scores
  */
 class Subject extends Model {
     

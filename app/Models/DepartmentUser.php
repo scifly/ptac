@@ -25,6 +25,9 @@ use Throwable;
  * @method static Builder|DepartmentUser whereId($value)
  * @method static Builder|DepartmentUser whereUpdatedAt($value)
  * @method static Builder|DepartmentUser whereUserId($value)
+ * @method static Builder|DepartmentUser newModelQuery()
+ * @method static Builder|DepartmentUser newQuery()
+ * @method static Builder|DepartmentUser query()
  * @mixin Eloquent
  */
 class DepartmentUser extends Model {

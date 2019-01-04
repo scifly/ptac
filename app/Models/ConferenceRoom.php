@@ -24,6 +24,9 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read School $schools
+ * @property-read ConferenceQueue[] $conferenceQueues
+ * @property-read School $school
  * @method static Builder|ConferenceRoom whereCapacity($value)
  * @method static Builder|ConferenceRoom whereCreatedAt($value)
  * @method static Builder|ConferenceRoom whereEnabled($value)
@@ -32,10 +35,10 @@ use Throwable;
  * @method static Builder|ConferenceRoom whereRemark($value)
  * @method static Builder|ConferenceRoom whereSchoolId($value)
  * @method static Builder|ConferenceRoom whereUpdatedAt($value)
+ * @method static Builder|ConferenceRoom newModelQuery()
+ * @method static Builder|ConferenceRoom newQuery()
+ * @method static Builder|ConferenceRoom query()
  * @mixin Eloquent
- * @property-read School $schools
- * @property-read ConferenceQueue[] $conferenceQueues
- * @property-read School $school
  */
 class ConferenceRoom extends Model {
     

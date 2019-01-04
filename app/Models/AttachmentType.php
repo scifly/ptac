@@ -21,14 +21,17 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled
+ * @property-read Attachment[] $attachments
  * @method static Builder|AttachmentType whereCreatedAt($value)
  * @method static Builder|AttachmentType whereEnabled($value)
  * @method static Builder|AttachmentType whereId($value)
  * @method static Builder|AttachmentType whereName($value)
  * @method static Builder|AttachmentType whereRemark($value)
  * @method static Builder|AttachmentType whereUpdatedAt($value)
+ * @method static Builder|AttachmentType newModelQuery()
+ * @method static Builder|AttachmentType newQuery()
+ * @method static Builder|AttachmentType query()
  * @mixin Eloquent
- * @property-read Attachment[] $attachments
  */
 class AttachmentType extends Model {
     

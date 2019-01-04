@@ -26,6 +26,7 @@ use Throwable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $enabled 是否统计
+ * @property-read School $school
  * @method static Builder|ScoreRange whereCreatedAt($value)
  * @method static Builder|ScoreRange whereEnabled($value)
  * @method static Builder|ScoreRange whereEndScore($value)
@@ -35,8 +36,10 @@ use Throwable;
  * @method static Builder|ScoreRange whereStartScore($value)
  * @method static Builder|ScoreRange whereSubjectIds($value)
  * @method static Builder|ScoreRange whereUpdatedAt($value)
+ * @method static Builder|ScoreRange newModelQuery()
+ * @method static Builder|ScoreRange newQuery()
+ * @method static Builder|ScoreRange query()
  * @mixin Eloquent
- * @property-read School $school
  */
 class ScoreRange extends Model {
     

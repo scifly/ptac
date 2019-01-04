@@ -26,6 +26,9 @@ use Throwable;
  * @method static Builder|AlertType whereId($value)
  * @method static Builder|AlertType whereName($value)
  * @method static Builder|AlertType whereUpdatedAt($value)
+ * @method static Builder|AlertType newModelQuery()
+ * @method static Builder|AlertType newQuery()
+ * @method static Builder|AlertType query()
  * @mixin Eloquent
  */
 class AlertType extends Model {

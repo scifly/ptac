@@ -39,6 +39,9 @@ use Throwable;
  * @method static Builder|Group whereRemark($value)
  * @method static Builder|Group whereSchoolId($value)
  * @method static Builder|Group whereUpdatedAt($value)
+ * @method static Builder|Group newModelQuery()
+ * @method static Builder|Group newQuery()
+ * @method static Builder|Group query()
  * @mixin Eloquent
  */
 class Group extends Model {
