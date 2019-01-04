@@ -23,8 +23,8 @@
                                     <th>序号</th>
                                     <th>考试名称</th>
                                     <th>考试时间</th>
-                                    @foreach ($subjects as $id => $value)
-                                        <th class="subject-name">{{ $value }}</th>
+                                    @foreach ($subjects as $subject)
+                                        <th class="subject-name">{!! $subject !!} !!}</th>
                                         <th>班排</th>
                                         <th>年排</th>
                                     @endforeach
@@ -36,17 +36,17 @@
                                 <tbody>
                                 @foreach ($examScores as $examScore)
                                     <tr>
-                                        <td>{{ $examScore['examId'] }}</td>
-                                        <td class="exam-name">{{ $examScore['examName'] }}</td>
-                                        <td>{{ $examScore['examTime'] }}</td>
+                                        <td>{!! $examScore['examId'] !!}</td>
+                                        <td class="exam-name">{!! $examScore['examName'] !!}</td>
+                                        <td>{!! $examScore['examTime'] !!}</td>
                                         @foreach ($examScore['scores'] as $score)
-                                            <td>{{ $score['score'] }}</td>
-                                            <td class="class-rank">{{ $score['class_rank'] }}</td>
-                                            <td class="grade-rank">{{ $score['grade_rank'] }}</td>
+                                            <td>{!! $score['score'] !!}</td>
+                                            <td class="class-rank">{!! $score['class_rank'] !!}</td>
+                                            <td class="grade-rank">{!! $score['grade_rank'] !!}</td>
                                         @endforeach
-                                        <td>{{ $examScore['examTotal']['score'] }}</td>
-                                        <td class="class-rank">{{ $examScore['examTotal']['class_rank'] }}</td>
-                                        <td class="grade-rank">{{ $examScore['examTotal']['grade_rank'] }}</td>
+                                        <td>{!! $examScore['examTotal']['score'] !!}</td>
+                                        <td class="class-rank">{!! $examScore['examTotal']['class_rank'] !!}</td>
+                                        <td class="grade-rank">{!! $examScore['examTotal']['grade_rank'] !!}</td>
                                     </tr>
                                 @endforeach
                                 </tbody>

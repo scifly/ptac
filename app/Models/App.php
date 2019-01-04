@@ -64,7 +64,7 @@ use Throwable;
  * @method static Builder|App whereUpdatedAt($value)
  * @mixin Eloquent
  * @property-read Corp $corp
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Message[] $messages
+ * @property-read Collection|Message[] $messages
  */
 class App extends Model {
     
@@ -114,7 +114,7 @@ class App extends Model {
                 <td>%s</td>
                 <td class="text-center">%s</td>
                 <td class="text-center">%s</td>
-                <td class="text-center"><img class="img-circle" style="height: 16px;" src="%s"/></td>
+                <td class="text-center"><img class="img-circle" style="height: 16px;" src="%s" alt="" /></td>
                 <td class="text-center">%s</td>
                 <td class="text-center">%s</td>
                 <td class="text-center">%s</td>
@@ -230,20 +230,6 @@ class App extends Model {
         
     }
     
-    /** Helper functions -------------------------------------------------------------------------------------------- */
-
-    /**
-     * 保存新创建的app
-     *
-     * @param array $data
-     * @return $this|bool|Model
-     */
-    private function store(array $data) {
-        
-        return $this->create($data) ?? false;
-        
-    }
-    
     /**
      * 移除应用
      *
@@ -263,6 +249,19 @@ class App extends Model {
         }
         
         return true;
+        
+    }
+    
+    /** Helper functions -------------------------------------------------------------------------------------------- */
+    /**
+     * 保存新创建的app
+     *
+     * @param array $data
+     * @return $this|bool|Model
+     */
+    private function store(array $data) {
+        
+        return $this->create($data) ?? false;
         
     }
     

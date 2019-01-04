@@ -1,27 +1,18 @@
 <?php
 namespace App\Models;
 
-use App\Facades\Datatable;
-use App\Facades\Wechat;
-use App\Helpers\Constant;
-use App\Helpers\HttpStatusCode;
-use App\Helpers\ModelTrait;
-use App\Helpers\Snippet;
+use App\Facades\{Datatable, Wechat};
+use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
 use App\Jobs\SendMessage;
 use Carbon\Carbon;
 use Eloquent;
 use Exception;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasOne};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\{Auth, DB, Request};
 use Illuminate\View\View;
+use ReflectionClass;
 use ReflectionException;
 use Throwable;
 
@@ -164,25 +155,24 @@ class Message extends Model {
      * @throws ReflectionException
      */
     function index() {
-
+        
         $received = Request::query('extra');
         $columns = [
             ['db' => 'Message.id', 'dt' => 0],
             [
                 'db'        => 'Message.comm_type_id', 'dt' => 1,
                 'formatter' => function ($d, $row) {
-                    if ($row['sent'] != 1) {
+                    $row['sent'] == 1 ?:
                         $type = '(' . (!$row['event_id']
                                 ? sprintf(Snippet::BADGE_RED, '草稿')
                                 : sprintf(Snippet::BADGE_ORANGE, '定时')
                             ) . ')';
-                    }
                     
                     return CommType::find($d)->name . ($type ?? '');
                 },
             ],
             [
-                'db' => 'Message.media_type_id', 'dt' => 2,
+                'db'        => 'Message.media_type_id', 'dt' => 2,
                 'formatter' => function ($d) {
                     return MediaType::find($d)->remark;
                 },
@@ -196,14 +186,14 @@ class Message extends Model {
             [
                 'db'        => 'User.realname', 'dt' => 4,
                 'formatter' => function ($d, $row) {
-                    if ($d) { return $d; }
+                    if ($d) return $d;
                     $msl = $this->find($row['id'])->messageSendinglog;
                     
                     return sprintf(Snippet::BADGE_GRAY, ($msl ? $msl->recipient_count : '0') . ' 人');
                 },
             ],
             [
-                'db' => 'Message.message_type_id', 'dt' => 5,
+                'db'        => 'Message.message_type_id', 'dt' => 5,
                 'formatter' => function ($d) {
                     return MessageType::find($d)->name;
                 },
@@ -211,13 +201,11 @@ class Message extends Model {
             [
                 'db'        => 'Message.created_at', 'dt' => 6, 'dr' => true,
                 'formatter' => function ($d, $row) {
-                    if ($row['sent'] == 1) {
-                        return $d;
-                    } elseif ($row['sent'] == 2) {
-                        return $this->humanDate(Event::find($row['event_id'])->start);
-                    } else {
-                        return sprintf(Snippet::BADGE_GRAY, '(n/a)');
-                    }
+                    return $row['sent'] == 1 ? $d
+                        : ($row['sent'] == 2
+                            ? $this->humanDate(Event::find($row['event_id'])->start)
+                            : sprintf(Snippet::BADGE_GRAY, '(n/a)')
+                        );
                 },
             ],
             [
@@ -239,7 +227,7 @@ class Message extends Model {
                             ? sprintf($html, 'edit_' . $id, '编辑', 'fa-edit')
                             : sprintf($html, 'show_' . $id, '详情', 'fa-laptop');
                     }
-    
+                    
                     return $status . sprintf(Snippet::DT_LINK_DEL, $id);
                 },
             ],
@@ -314,12 +302,11 @@ class Message extends Model {
         try {
             $detail = $this->detail($id);
             $message = json_decode($detail[$detail['type']]);
-            $toparty = $message->{'toparty'};
-            $touser = $message->{'touser'};
-            $targetIds = !empty($toparty) ? explode('|', $toparty) : [];
-            $userids = !empty($touser) ? explode('|', $touser) : [];
+            $targetIds = empty($toparty = $message->{'toparty'}) ? []
+                : explode('|', $toparty);
+            $userids = empty($touser = $message->{'touser'}) ? []
+                : explode('|', $touser);
             $users = User::whereIn('userid', $userids)->get();
-            $targetsHtml = $this->targetsHtml($users, $targetIds);
             $timing = $this->find($id)->event_id ? true : false;
             $time = $timing ? date('Y-m-d H:i', strtotime($this->find($id)->event->start)) : null;
         } catch (Exception $e) {
@@ -328,7 +315,7 @@ class Message extends Model {
         
         return [
             'selectedTargetIds' => $targetIds,
-            'targets'           => $targetsHtml,
+            'targets'           => $this->targetsHtml($users, $targetIds),
             'messageTypeId'     => $this->find($id)->message_type_id,
             'messageFormat'     => $detail['type'],
             'message'           => $message,
@@ -346,7 +333,7 @@ class Message extends Model {
      * @return string
      */
     function targetsHtml($users, &$targetIds) {
-    
+        
         $allowedDeptIds = $this->departmentIds(Auth::id());
         /** @var User $user */
         foreach ($users as $user) {
@@ -380,7 +367,6 @@ class Message extends Model {
             }
         }
         
-        
         return $targetsHtml;
         
     }
@@ -396,9 +382,7 @@ class Message extends Model {
         $message = $this->find($id);
         $msl = $message->messageSendinglog;
         $type = MediaType::find($message->media_type_id)->name;
-        if (CommType::find($message->comm_type_id)->name == '短信') {
-            $type = 'sms';
-        }
+        if (CommType::find($message->comm_type_id)->name == '短信') $type = 'sms';
         
         return [
             'id'         => $message->id,
@@ -498,11 +482,9 @@ class Message extends Model {
         try {
             DB::transaction(function () use ($id) {
                 $wechatSms = WechatSms::whereMessageId($id)->first();
-                if ($wechatSms) { $wechatSms->delete(); }
+                !$wechatSms ?: $wechatSms->delete();
                 $message = $this->find($id);
-                if ($message->event_id) {
-                    Event::find($message->event_id)->delete();
-                }
+                !$message->event_id ?: Event::find($message->event_id)->delete();
                 $message->delete();
             });
         } catch (Exception $e) {
@@ -543,10 +525,8 @@ class Message extends Model {
         
         try {
             DB::transaction(function () use ($data) {
-                if (
-                    !isset($data['time']) ||
-                    (isset($data['time']) && $data['time'] < date('now'))
-                ) {
+                $time = $data['time'] ?? null;
+                if (!$time || ($time && $time < date('now'))) {
                     # 如果没有设置发送时间，或者设置了发送时间，
                     # 但发送时间早于当前时间, 则立即发送消息。
                     # 创建原始消息（被发送）记录
@@ -558,9 +538,7 @@ class Message extends Model {
                     $data['msl_id'] = $msl->id;
                     $data['read'] = 1;
                     $data['sent'] = 1;
-                    # 创建需要发送的消息
-                    $message = $this->create($data);
-                    SendMessage::dispatch($message);
+                    SendMessage::dispatch([$this->create($data)], Auth::id());
                 } else {
                     # 如果发送时间晚于当前时间，则创建/更新消息
                     if (!isset($data['id'])) {
@@ -595,35 +573,20 @@ class Message extends Model {
         
         try {
             DB::transaction(function () use ($data, $draft) {
-                $time = null;
-                if (isset($data['time'])) {
-                    $time = $data['time'];
-                    unset($data['time']);
-                }
                 $message = $this->create($data);
                 # 如果是定时消息，则创建对应的事件
-                if ($time) {
+                if ($time = $data['time'] ?? null) {
                     $user = Auth::user();
-                    $event = Event::create([
-                        'title'       => '定时消息',
-                        'remark'      => '定时消息',
-                        'location'    => 'n/a',
-                        'contact'     => 'n/a',
-                        'url'         => 'n/a',
-                        'start'       => $time,
-                        'end'         => $time,
-                        'ispublic'    => 0,
-                        'iscourse'    => 0,
-                        'educator_id' => $user->educator ? $user->educator->id : 0,
-                        'subject_id'  => 0,
-                        'alertable'   => 0,
-                        'alert_mins'  => 0,
-                        'user_id'     => $user->id,
-                        'enabled'     => isset($draft) ? 1 : 0,
-                    ]);
+                    $event = Event::create(
+                        array_combine(Constant::EVENT_FIELDS, [
+                            '定时消息', '定时消息', 'n/a', 'n/a', 'n/a', $time, $time, 0, 0,
+                            $user->educator ? $user->educator->id : 0, 0, 0, 0, $user->id,
+                            isset($draft) ? 1 : 0,
+                        ])
+                    );
                     $message->update([
                         'event_id' => $event->id,
-                        'sent' => 2 # 2 - 定时
+                        'sent'     => 2 # 2 - 定时
                     ]);
                 }
             });
@@ -648,17 +611,11 @@ class Message extends Model {
         if (!$id) {
             try {
                 DB::transaction(function () {
-                    $ids = Request::input('ids');
-                    $field = Request::input('field');
                     $status = Request::input('action') == 'enable' ? true : false;
-                    foreach ($ids as $id) {
-                        if ($field == 'read') {
-                            $this->read($id, $status);
-                        } else {
-                            $this->find($id)->update([
-                                'sent' => $status,
-                            ]);
-                        }
+                    foreach (array_values(Request::input('ids')) as $id) {
+                        Request::input('field') == 'read'
+                            ? $this->read($id, $status)
+                            : $this->find($id)->update(['sent' => $status]);
                     }
                 });
             } catch (Exception $e) {
@@ -668,46 +625,32 @@ class Message extends Model {
             try {
                 DB::transaction(function () use ($data, $id) {
                     $message = $this->find($id);
-                    if (isset($data['time'])) {
+                    if ($time = $data['time'] ?? null) {
                         # 如果设置了发送时间
                         if ($message->event_id) {
                             # 如果指定消息已有对应事件，则更新对应事件
                             Event::find($message->event_id)->update([
-                                'start'   => $data['time'],
-                                'end'     => $data['time'],
+                                'start'   => $time,
+                                'end'     => $time,
                                 'enabled' => isset($data['draft']) ? 1 : 0,
                             ]);
                         } else {
                             # 如果指定消息没有对应事件，则创建对应事件
                             $user = Auth::user();
-                            $time = $data['time'];
                             $draft = $data['draft'] ?? null;
-                            $event = Event::create([
-                                'title'       => '定时消息',
-                                'remark'      => '定时消息',
-                                'location'    => 'n/a',
-                                'contact'     => 'n/a',
-                                'url'         => 'n/a',
-                                'start'       => $time,
-                                'end'         => $time,
-                                'ispublic'    => 0,
-                                'iscourse'    => 0,
-                                'educator_id' => $user->educator ? $user->educator->id : 0,
-                                'subject_id'  => 0,
-                                'alertable'   => 0,
-                                'alert_mins'  => 0,
-                                'user_id'     => $user->id,
-                                'enabled'     => isset($draft) ? 1 : 0,
-                            ]);
+                            $event = Event::create(
+                                array_combine(Constant::EVENT_FIELDS, [
+                                    '定时消息', '定时消息', 'n/a', 'n/a', 'n/a', $time, $time, 0, 0,
+                                    $user->educator ? $user->educator->id : 0, 0, 0, 0, $user->id,
+                                    isset($draft) ? 1 : 0,
+                                ])
+                            );
                             $data['event_id'] = $event->id;
                         }
                         $data['sent'] = 2;
-                        unset($data['draft']);
-                        unset($data['time']);
                     } else {
                         # 如果没有设置发送时间
-                        $eventId = $message->event_id;
-                        if ($eventId) {
+                        if ($eventId = $message->event_id) {
                             # 如果指定消息已有对应事件，则删除该事件
                             Event::find($eventId)->delete();
                             $data['event_id'] = null;
@@ -736,16 +679,14 @@ class Message extends Model {
      */
     function read($id, $read = true) {
         
-        $message = $this->find($id);
         abort_if(
-            !$message,
+            !($message = $this->find($id)),
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
         try {
             DB::transaction(function () use ($message, $id, $read) {
-                $message->read = $read ? 1 : 0;
-                $message->save();
+                $message->update(['read' => $read ? 1 : 0]);
                 $msl = MessageSendingLog::find($message->msl_id);
                 $msl->read_count += $read ? 1 : -1;
                 $msl->save();
@@ -768,18 +709,16 @@ class Message extends Model {
     function sendWx(App $app, array $message) {
         
         $token = Wechat::getAccessToken($app->corp->corpid, $app['secret']);
-        if ($token['errcode']) {
-            return $token;
-        }
+        if ($token['errcode']) return $token;
         $result = json_decode(
-            Wechat::sendMessage($token['access_token'], $message)
+            Wechat::sendMessage($token['access_token'], $message), true
         );
-
+        
         return [
-            'errcode'      => $result->{'errcode'},
-            'errmsg'       => Constant::WXERR[$result->{'errcode'}],
-            'invaliduser'  => isset($result->{'invaliduser'}) ? $result->{'invaliduser'} : '',
-            'invalidparty' => isset($result->{'invalidparty'}) ? $result->{'invalidparty'} : '',
+            'errcode'      => ($errcode = $result['errcode']),
+            'errmsg'       => Constant::WXERR[$errcode],
+            'invaliduser'  => $result['invaliduser'] ?? '',
+            'invalidparty' => $result['invalidparty'] ?? '',
         ];
         
     }
@@ -819,13 +758,11 @@ class Message extends Model {
         
         try {
             DB::transaction(function () use ($users, $message, $result, $urlcode) {
-                if (isset($urlcode)) {
-                    WechatSms::create([
-                        'urlcode'    => $urlcode,
-                        'message_id' => $message->id,
-                        'enabled'    => 1,
-                    ]);
-                }
+                !$urlcode ?: WechatSms::create([
+                    'urlcode'    => $urlcode,
+                    'message_id' => $message->id,
+                    'enabled'    => 1,
+                ]);
                 /** 创建指定用户($users)收到的消息(应用内消息） */
                 $received = 0;
                 $data = $message->toArray();
@@ -843,8 +780,7 @@ class Message extends Model {
                             if (!$user->student) {
                                 $data['sent'] = !in_array($user->id, $failedUserIds);
                             } else {
-                                $custodianUserIds = $user->student->custodians
-                                    ->pluck('user_id')->toArray();
+                                $custodianUserIds = $user->student->custodians->pluck('user_id')->toArray();
                                 $data['sent'] = empty(array_intersect($custodianUserIds, $failedUserIds));
                             }
                         } else {
@@ -855,11 +791,11 @@ class Message extends Model {
                             $content['msgtype'] = 'sms';
                             $content['agentid'] = '0';
                             $data['title'] = MessageType::find($data['message_type_id'])->name . '(短信)';
-                            $data['content'] = json_encode($content);
-                            $data['sent'] = $result > 0 ? 0 : 1;
+                            $data['content'] = json_encode($content, JSON_UNESCAPED_UNICODE);
+                            $data['sent'] = $result > 0;
                         }
                     } else {
-                        $data['sent'] = $result > 0 ? 0 : 1;
+                        $data['sent'] = $result > 0;
                     }
                     $received += $data['sent'] ? 1 : 0;
                     $this->create($data);
@@ -880,7 +816,7 @@ class Message extends Model {
     }
     
     /**
-     * 获取未收到微信消息的会员(监护人、教职员工）数量
+     * 获取未收到微信消息的会员用户(监护人、教职员工）id
      *
      * @param $userids
      * @param $deptIds
@@ -888,15 +824,22 @@ class Message extends Model {
      */
     function failedUserIds($userids, $deptIds) {
         
-        $userIds = User::whereIn('userid', explode('|', $userids))
-            ->pluck('id')->toArray();
-        $departmentUserIds = DepartmentUser::whereIn('department_id', explode('|', $deptIds))
-            ->pluck('user_id')->toArray();
+        list($userIds, $departmentUserIds) = array_map(
+            function ($name, $ids) {
+                $model = (new ReflectionClass('App\\Models\\' . ucfirst($name)))->newInstance();
+                $field = $name == 'user' ? 'userid' : 'department_id';
+                $id = $name == 'user' ? 'id' : 'user_id';
+                
+                return array_unique(
+                    $model->whereIn($field, explode('|', $ids))->pluck($id)->toArray()
+                );
+            }, ['user', 'departmentUser'], [$userids, $deptIds]
+        );
         
         return array_unique(
             array_merge(
                 $userIds,
-                User::whereIn('id', array_unique($departmentUserIds))->get()->filter(
+                User::whereIn('id', $departmentUserIds)->get()->filter(
                     function (User $user) { return !$user->student; }
                 )->pluck('id')->toArray()
             )
@@ -916,12 +859,11 @@ class Message extends Model {
      */
     function smsTargets($userIds = [], $deptIds = []) {
         
-        list($realTargetUsers, $logUsers) = $this->realTargets($userIds, $deptIds);
-        $mobiles = Mobile::whereIn('user_id', $realTargetUsers->pluck('id')->toArray())
+        $userIds = $this->realTargets($userIds, $deptIds)->pluck('id');
+        
+        return Mobile::whereIn('user_id', $userIds)
             ->where(['enabled' => 1, 'isdefault' => 1])
             ->pluck('mobile')->toArray();
-        
-        return [$mobiles, $logUsers];
         
     }
     
@@ -930,28 +872,26 @@ class Message extends Model {
      *
      * @param array $userIds - 学生、教职员工的用户id列表
      * @param array $deptIds - 部门id列表
-     * @return array
+     * @return Collection
      */
     function realTargets(array $userIds, array $deptIds) {
         
         $departmentUserIds = DepartmentUser::whereIn('department_id', $deptIds)
             ->pluck('user_id')->toArray();
         $logUserIds = array_unique(array_merge($userIds, $departmentUserIds));
-        $logUsers = User::whereIn('id', $logUserIds)->get();
-        $targets = Collect([]);
-        foreach ($logUsers as $user) {
-            if ($user->student) {
-                $user->student->custodians->each(
-                    function (Custodian $custodian) use (&$targets) {
-                        $targets->push($custodian->user);
-                    }
-                );
-            } else {
-                $targets->push($user);
-            }
+        $users = User::whereIn('id', $logUserIds)->get();
+        $targets = collect([]);
+        foreach ($users as $user) {
+            $user->student
+                ? $user->student->custodians->each(
+                function (Custodian $custodian) use (&$targets) {
+                    $targets->push($custodian->user);
+                }
+            )
+                : $targets->push($user);
         }
         
-        return [$targets, $logUsers];
+        return $targets;
         
     }
     
@@ -964,9 +904,7 @@ class Message extends Model {
      *
      * @return array
      *      1. 需要发送短信的用户（监护人、教职员工）手机号码列表；
-     *      2. 需要记录短信发送日志的用户（学生、教职员工）列表；
-     *      3. 需要发送微信的用户（监护人、教职员工，不含隶属于指定部门的用户）列表；
-     *      4. 需要记录微信发送日志的用户（监护人、教职员工，包含隶属于指定部门的用户）列表
+     *      2. 需要发送微信的用户（监护人、教职员工，不含隶属于指定部门的用户）列表；
      */
     function wxTargets($userIds = [], $deptIds = []) {
         
@@ -974,10 +912,9 @@ class Message extends Model {
          * @var Collection|User[] $realTargetUsers - 实际接收消息的用户(
          * @var Collection|User[] $realTargets
          */
-        list($realTargetUsers, $logUsers) = $this->realTargets($userIds, $deptIds);
+        $realTargetUsers = $this->realTargets($userIds, $deptIds);
         $realTargets = $realTargetUsers->groupBy('subscribed');
-        $wxTargets = $smsTargets = $smsLogUsers = $wxLogUsers = Collect([]);
-        $logUserIds = $logUsers->pluck('id')->toArray();
+        $wxTargets = $smsTargets = collect([]);
         if ($realTargets->count() < 2) {
             if (array_key_exists(1, $realTargets->toArray())) {
                 # 如果发送对象仅包含已关注的用户
@@ -989,40 +926,11 @@ class Message extends Model {
         } else {
             list($smsTargets, $wxTargets) = $realTargets;
         }
-        $smsMobiles = Mobile::whereIn('user_id', $smsTargets->pluck('id')->toArray())
-            ->where(['enabled' => 1, 'isdefault' => 1])->pluck('mobile')->toArray();
-        list($smsLogUsers, $wxLogUsers) = array_map(
-            function ($targets, $userIds) { return $this->logUsers($targets, $userIds); },
-            [$smsTargets, $wxTargets], [$logUserIds, $logUserIds]
-        );
+        $smsMobiles = Mobile::whereIn('user_id', $smsTargets->pluck('id'))
+            ->where(['enabled' => 1, 'isdefault' => 1])
+            ->pluck('mobile')->toArray();
         
-        return [$smsMobiles, $smsLogUsers, $wxTargets, $wxLogUsers, $realTargetUsers];
-        
-    }
-    
-    /**
-     * 获取指定发送对象（监护人、教职员工）对应的
-     * 需要记录消息发送日志的用户列表
-     *
-     * @param $targets
-     * @param $allLogUserIds
-     * @return User[]|Collection
-     */
-    private function logUsers($targets, $allLogUserIds) {
-        
-        $logUserIds = [];
-        foreach ($targets as $user) {
-            if ($user->custodian) {
-                $studentUserIds = $user->custodian->students->pluck('user_id')->toArray();
-                if (!empty(array_intersect($studentUserIds, $allLogUserIds))) {
-                    $logUserIds[] = array_intersect($studentUserIds, $allLogUserIds)[0];
-                }
-            } else {
-                $logUserIds[] = $user->id;
-            }
-        }
-        
-        return User::whereIn('id', $logUserIds)->get();
+        return [$smsMobiles, $wxTargets, $realTargetUsers];
         
     }
     
@@ -1039,8 +947,8 @@ class Message extends Model {
         ]);
         switch (Request::method()) {
             case 'GET':
-                $response = Request::has('id')
-                    ? $this->read(Request::input('id')) ? response()->json() : false
+                $response = ($id = Request::input('id'))
+                    ? ($this->read($id) ? response()->json() : false)
                     : view('wechat.message_center.index');
                 break;
             case 'POST':
@@ -1077,23 +985,15 @@ class Message extends Model {
     private function searchMessage() {
         
         # 搜索已发或收到的消息
-        $user = Auth::user();
-        $userIds = [$user->id];
-        if ($user->role() == '监护人') {
-            $userIds = array_merge(
-                $userIds, $user->custodian->students->pluck('user_id')->toArray()
-            );
-        }
         $keyword = '%' . Request::input('keyword') . '%';
         $type = Request::input('type');
-        
         $messages = $this->where('content', 'like', $keyword)
             ->orWhere('title', 'like', $keyword)
             ->get()->filter(
-                function (Message &$message) use ($userIds, $type) {
+                function (Message &$message) use ($type) {
                     $message->{'created'} = $this->humanDate($message->created_at);
                     if ($type == 'sent') {
-                        if (!$message->sender) { return false; }
+                        if (!$message->sender) return false;
                         $userId = $message->sender->id;
                         $msl = $message->messageSendinglog;
                         $message->{'realname'} = $message->receiver
@@ -1103,7 +1003,7 @@ class Message extends Model {
                         $message->{'status'} = $message->sent ? '已发送' : ($message->event_id ? '定时' : '草稿');
                         $message->{'uri'} = 'mc/' . ($message->sent ? 'show' : 'edit') . '/' . $message->id;
                     } else {
-                        if (!$message->receiver) { return false; }
+                        if (!$message->receiver) return false;
                         $userId = $message->receiver->id;
                         $message->{'realname'} = $message->sender ? $message->sender->realname : '(未知)';
                         $message->{'uri'} = 'mc/show/' . $message->id;
@@ -1113,7 +1013,7 @@ class Message extends Model {
                         }
                     }
                     
-                    return in_array($userId, $userIds);
+                    return $userId == Auth::id();
                 }
             );
         
@@ -1134,24 +1034,23 @@ class Message extends Model {
         
         # 搜索发送对象
         $user = Auth::user();
-        $schoolId = $user->educator ? $user->educator->school_id : session('schoolId');
-        $targets = Collect([]);
-        if (Request::has('departmentId')) {
+        $schoolId = ($educator = $user->educator) ? $educator->school_id : session('schoolId');
+        $targets = collect([]);
+        $type = 'user';
+        if ($departmentId = Request::input('departmentId')) {
             # 返回指定部门下的所有学生及教职员工
-            $targets = Department::find(Request::input('departmentId'))->users->filter(
+            $targets = Department::find($departmentId)->users->filter(
                 function (User $user) { return $user->role() != '监护人'; }
             );
-            $type = 'user';
         } else {
             $keyword = Request::input('keyword');
-            $type = Request::input('target');
-            switch ($type) {
+            switch ($target = Request::input('target')) {
                 case 'list':        # 返回所有可见部门
                 case 'department':  # 搜索部门
                     $targets = Department::whereIn('id', $this->departmentIds($user->id, $schoolId))
                         ->get()->reject(
-                            function (Department $department) use ($type, $keyword) {
-                                return $type == 'department'
+                            function (Department $department) use ($target, $keyword) {
+                                return $target == 'department'
                                     ? mb_strpos($department->name, $keyword) === false ? true : false
                                     : false;
                             }
@@ -1159,9 +1058,10 @@ class Message extends Model {
                     $type = 'department';
                     break;
                 case 'user':        # 搜索用户（学生、教职员工）
-                    $userIds = Department::find(Request::input('deptId'))->users->pluck('id')->toArray();
-                    $targets = User::whereIn('id', $userIds)
-                        ->where('realname', 'like', '%' . $keyword . '%')->get()->filter(
+                    $userIds = Department::find(Request::input('deptId'))->users
+                        ->pluck('id')->toArray();
+                    $targets = User::where('realname', 'like', '%' . $keyword . '%')
+                        ->whereIn('id', $userIds)->get()->filter(
                             function (User $user) { return $user->role() != '监护人'; }
                         );
                     break;
@@ -1170,20 +1070,16 @@ class Message extends Model {
             }
         }
         # 已选定的发送对象（用户、部门）id
-        $selectedTargetIds = null;
-        if (Request::route('id')) {
-            $targetIds = json_decode($this->find(Request::route('id'))->content)
-                ->{$type == 'user' ? 'touser' : 'toparty'};
-            if (!empty($targetIds)) {
-                $selectedTargetIds = $type == 'user'
+        if ($id = Request::route('id')) {
+            empty($targetIds = json_decode($this->find($id)->content)->{$type == 'user' ? 'touser' : 'toparty'}) ?:
+                $selectedTargetIds = ($type == 'user')
                     ? User::whereIn('userid', explode('|', $targetIds))->pluck('id')->toArray()
                     : explode('|', $targetIds);
-            }
         }
         
         return view('wechat.message_center.targets', [
             'targets'           => $targets,
-            'selectedTargetIds' => $selectedTargetIds,
+            'selectedTargetIds' => $selectedTargetIds ?? null,
             'type'              => $type,
         ])->render();
         
@@ -1197,13 +1093,9 @@ class Message extends Model {
      */
     function wCreate() {
         
-        if (Request::method() == 'POST') {
-            return Request::has('file')
-                ? $this->import()
-                : $this->search();
-        }
-        
-        return view('wechat.message_center.create');
+        return Request::method() == 'POST'
+            ? (Request::has('file') ? $this->import() : $this->search())
+            : view('wechat.message_center.create');
         
     }
     
@@ -1217,40 +1109,32 @@ class Message extends Model {
     function import() {
         
         # 上传到本地后台
-        $media = new Media();
-        $file = Request::file('file');
-        $type = Request::input('type');
         abort_if(
-            empty($file),
+            empty($file = Request::file('file')),
             HttpStatusCode::NOT_ACCEPTABLE,
             __('messages.empty_file')
         );
-        $uploadedFile = $media->import($file, __('messages.message.title'));
         abort_if(
-            !$uploadedFile,
+            !($uploadedFile = (new Media)->import($file, __('messages.message.title'))),
             HttpStatusCode::INTERNAL_SERVER_ERROR,
             __('messages.file_upload_failed')
         );
         # 上传到企业号后台
         list($corpid, $secret) = $this->tokenParams();
         $token = Wechat::getAccessToken($corpid, $secret);
-        if ($token['errcode']) {
-            abort(
-                HttpStatusCode::INTERNAL_SERVER_ERROR,
-                $token['errmsg']
-            );
-        }
+        abort_if(
+            $token['errcode'],
+            HttpStatusCode::INTERNAL_SERVER_ERROR,
+            $token['errmsg']
+        );
+        $type = Request::input('type');
         $result = json_decode(
-            Wechat::uploadMedia(
-                $token['access_token'],
-                $type,
-                [
-                    'file-contents' => curl_file_create(public_path($uploadedFile['path'])),
-                    'filename'      => $uploadedFile['filename'],
-                    'content-type'  => Constant::CONTENT_TYPE[$type],
-                    'filelength'    => $file->getSize(),
-                ]
-            )
+            Wechat::uploadMedia($token['access_token'], $type, [
+                'file-contents' => curl_file_create(public_path($uploadedFile['path'])),
+                'filename'      => $uploadedFile['filename'],
+                'content-type'  => Constant::CONTENT_TYPE[$type],
+                'filelength'    => $file->getSize(),
+            ])
         );
         abort_if(
             $result->{'errcode'},
@@ -1273,21 +1157,15 @@ class Message extends Model {
      */
     function wEdit($id) {
         
-        $message = $this->find($id);
         abort_if(
-            !$message,
+            !($message = $this->find($id)),
             HttpStatusCode::NOT_FOUND,
             __('messages.not_found')
         );
-        if (Request::method() == 'POST') {
-            return Request::has('file')
-                ? $this->import()
-                : $this->search();
-        }
         
-        return view('wechat.message_center.edit', [
-            'message' => $message,
-        ]);
+        return Request::method() == 'POST'
+            ? Request::has('file') ? $this->import() : $this->search()
+            : view('wechat.message_center.edit', ['message' => $message]);
         
     }
     
@@ -1305,9 +1183,8 @@ class Message extends Model {
         ]);
         switch (Request::method()) {
             case 'GET':
-                $message = $this->find($id);
                 abort_if(
-                    !$message,
+                    !($message = $this->find($id)),
                     HttpStatusCode::NOT_FOUND,
                     __('messages.message.not_found')
                 );
@@ -1319,9 +1196,8 @@ class Message extends Model {
                 if (Request::has('content')) {
                     # 保存消息回复
                     Request::merge(['user_id' => Auth::id()]);
-                    $replied = (new MessageReply)->store(Request::all());
                     abort_if(
-                        !$replied,
+                        !((new MessageReply)->store(Request::all())),
                         HttpStatusCode::BAD_REQUEST,
                         __('messages.fail')
                     );
@@ -1336,14 +1212,12 @@ class Message extends Model {
                 }
                 break;
             case 'DELETE':
-                $mr = MessageReply::find(Request::input('id'));
                 abort_if(
-                    !$mr, HttpStatusCode::NOT_FOUND,
-                    __('messages.not_found')
+                    !($mr = MessageReply::find(Request::input('id'))),
+                    HttpStatusCode::NOT_FOUND, __('messages.not_found')
                 );
-                $deleted = $mr->delete();
                 abort_if(
-                    !$deleted,
+                    !($mr->delete()),
                     HttpStatusCode::BAD_REQUEST,
                     __('messages.del_fail')
                 );
@@ -1366,11 +1240,9 @@ class Message extends Model {
     function replies($id, $mslId) {
         
         $user = Auth::user();
-        $message = $this->find($id);
         $replies = MessageReply::whereMslId($mslId)->get();
-        if ($user->id != $message->s_user_id) {
-            $replies = MessageReply::whereMslId($mslId)->where('user_id', $user->id)->get();
-        }
+        $user->id == $this->find($id)->s_user_id
+            ?: $replies = MessageReply::where(['msl_id' => $mslId, 'user_id' => $user->id])->get();
         $replyList = [];
         foreach ($replies as $reply) {
             $replyList[] = [
@@ -1394,12 +1266,9 @@ class Message extends Model {
     private function tokenParams() {
         
         if (!session('corpId')) {
-            $menu = new Menu();
-            $corpMenuId = $menu->menuId(session('menuId'), '企业');
             abort_if(
-                !$corpMenuId,
-                HttpStatusCode::BAD_REQUEST,
-                __('messages.bad_request')
+                !($corpMenuId = (new Menu)->menuId(session('menuId'), '企业')),
+                HttpStatusCode::BAD_REQUEST, __('messages.bad_request')
             );
             $corp = Corp::whereMenuId($corpMenuId)->first();
         } else {

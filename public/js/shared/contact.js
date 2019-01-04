@@ -259,14 +259,25 @@
                 $(document).on('click', confirm, function () {
                     if (typeof relationship === 'undefined') {
                         var range = parseInt($($('.checked').children()[0]).val()),
-                            url = page.siteRoot() + table + '/export?range=' + range,
+                            url = page.siteRoot() + table + '/export',
                             $gradeId = $('#' + contact.options.gradeId),
                             $classId = $('#' + contact.options.classId),
                             $departmentId = $('#' + contact.options.departmentId),
                             departmentId = (table !== 'educators'
                                 ? (range === 0 ? $classId.val() : (range === 1 ? $gradeId.val() : ''))
                                 : (range === 0 ? $departmentId.val() : ''));
-                        window.location = url + (departmentId !== '' ? '&id=' + departmentId : '');
+                        $.ajax({
+                            type: 'POST',
+                            dataType: 'json',
+                            url: url,
+                            data: {range: range, id: departmentId},
+                            success: function (result) {
+                                page.inform(result['title'], result['message'], page.success);
+                            },
+                            error: function (e) {
+                                page.errorHandler(e);
+                            }
+                        });
                     } else {
                         contact.saveRelationship(0)
                     }

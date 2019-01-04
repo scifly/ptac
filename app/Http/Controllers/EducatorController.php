@@ -41,9 +41,7 @@ class EducatorController extends Controller {
         $this->department = $department;
         $this->school = $school;
         $this->custodian = $custodian;
-        if (!Request::has('ids')) {
-            $this->approve($educator);
-        }
+        Request::has('ids') ?: $this->approve($educator);
         
     }
     
@@ -56,9 +54,7 @@ class EducatorController extends Controller {
     public function index() {
         
         return Request::get('draw')
-            ? response()->json(
-                $this->educator->index()
-            )
+            ? response()->json($this->educator->index())
             : $this->output();
         
     }
@@ -189,13 +185,14 @@ class EducatorController extends Controller {
      * 导出教职员工
      *
      * @return mixed
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      * @throws ReflectionException
      */
     public function export() {
         
-        return $this->educator->export();
+        return $this->result(
+            $this->educator->export(),
+            __('messages.export_started')
+        );
         
     }
     

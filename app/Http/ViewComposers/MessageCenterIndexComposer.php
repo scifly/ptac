@@ -6,7 +6,6 @@ use App\Models\Message;
 use App\Models\MessageSendingLog;
 use App\Models\MessageType;
 use App\Models\School;
-use App\Models\Student;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -25,47 +24,28 @@ class MessageCenterIndexComposer {
     public function compose(View $view) {
         
         $user = Auth::user();
-        # 当前用户能否发送消息
-        $canSend = !$user->custodian && !$user->student;
-        # 当前用户发送的消息
         $sent = [];
-        if ($canSend) {
+        if ($canSend = !in_array($user->role(), ['监护人', '学生'])) {
             $sent = Message::whereSUserId($user->id)
                 ->where('r_user_id', 0)->get()
                 ->/*unique('msl_id')->*/sortByDesc('created_at')
                 ->groupBy('message_type_id')->toArray();
         }
-        # 消息接收者的用户id
-        $rUserIds = [$user->id];
-        $schoolId = session('schoolId');
-        if ($user->custodian) {
-            # 如果当前登录用户角色为监护人，则将其在当前学校
-            # 对应的学生用户id合并至消息接收者用户id数组
-            $students = $user->custodian->students->filter(
-                function (Student $student) use ($schoolId) {
-                    return $student->squad->grade->school_id == $schoolId;
-                }
-            );
-            $rUserIds = array_merge(
-                $rUserIds, $students->pluck('user_id')->toArray()
-            );
-        }
-        # 当前用户收到的消息
-        $received = Message::whereIn('r_user_id', $rUserIds)
-            ->get()->sortByDesc('created_at')
+        # 当前用户收到的消息/未读消息数量
+        $builder = Message::whereIn('r_user_id', [$user->id]);
+        $received = $builder->get()->sortByDesc('created_at')
             ->groupBy('message_type_id')->toArray();
+        $count = $builder->where('read', '0')->count();
         # 格式化已发送/已收到消息的日期时间
         $this->format($sent, 'sent');
         $this->format($received, 'received');
-        # 已收到消息的未读数量
-        $count = Message::whereIn('r_user_id', $rUserIds)->where('read', '0')->count();
         
         $view->with([
             'messageTypes' => MessageType::pluck('name', 'id'),
             'sent'         => $sent,
             'received'     => $received,
             'count'        => $count,
-            'acronym'      => School::find($schoolId)->corp->acronym,
+            'acronym'      => School::find(session('schoolId'))->corp->acronym,
             'canSend'      => $canSend
         ]);
         

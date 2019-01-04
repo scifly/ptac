@@ -38,13 +38,9 @@ class WsmArticleController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->wsma->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->wsma->index())
+            : $this->output();
         
     }
     
@@ -56,11 +52,9 @@ class WsmArticleController extends Controller {
      */
     public function create() {
         
-        if (Request::method() == 'POST') {
-            return $this->wsma->import();
-        }
-        
-        return $this->output();
+        return Request::method() == 'POST'
+            ? $this->wsma->import()
+            : $this->output();
         
     }
     
@@ -91,13 +85,11 @@ class WsmArticleController extends Controller {
      */
     public function edit($id) {
         
-        if (Request::method() == 'POST') {
-            return $this->wsma->import();
-        }
-        
-        return $this->output([
-            'article' => WsmArticle::find($id),
-        ]);
+        return Request::method() == 'POST'
+            ? $this->wsma->import()
+            : $this->output([
+                'article' => WsmArticle::find($id)
+            ]);
         
     }
     

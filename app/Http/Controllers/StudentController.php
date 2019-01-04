@@ -2,7 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StudentRequest;
-use App\Models\{Grade, Squad, Student};
+use App\Models\{Grade, Student};
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
@@ -29,9 +29,7 @@ class StudentController extends Controller {
         $this->middleware(['auth', 'checkrole']);
         $this->student = $student;
         $this->grade = $grade;
-        if (!Request::has('ids')) {
-            $this->approve($student);
-        }
+        Request::has('ids') ?: $this->approve($student);
         
     }
     
@@ -94,7 +92,7 @@ class StudentController extends Controller {
             return $this->student->classList();
         }
         $student = $this->student->find($id);
-        $student->{'grade_id'} = Squad::find($student->class_id)->grade_id;
+        $student->{'grade_id'} = $student->squad->grade_id;
         
         return $this->output([
             'student' => $student,
@@ -158,15 +156,16 @@ class StudentController extends Controller {
      * 导出学籍
      *
      * @return JsonResponse|mixed
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      * @throws ReflectionException
      */
     public function export() {
         
-        return Request::method() == 'POST'
-            ? $this->student->classList()
-            : $this->student->export();
+        return Request::has('range')
+            ? $this->result(
+                $this->student->export(),
+                __('messages.export_started')
+            )
+            : $this->student->classList();
         
     }
     

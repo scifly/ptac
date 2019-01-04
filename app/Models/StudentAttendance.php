@@ -201,6 +201,10 @@ class StudentAttendance extends Model {
                     HttpStatusCode::NOT_FOUND,
                     __('messages.school.not_found')
                 );
+                $commTypeId = CommType::whereName('微信')->first()->id;
+                $mediaTypeId = MediaType::whereName('text')->first()->id;
+                $app = $this->app($school->corp_id);
+                $message = new Message;
                 foreach ($data as &$datum) {
                     $datum['inorout'] = $datum['inorout'] ?? 2;
                     $datum['longitude'] = $datum['longitude'] ?? 0;
@@ -222,26 +226,31 @@ class StudentAttendance extends Model {
                     $dateTime = strtotime($datum['punch_time']);
                     $day = Constant::WEEK_DAYS[date('w', $dateTime)];
                     $strDateTime = date('Y-m-d', $dateTime);
-                    $semester = Semester::where('start_date', '<=', $strDateTime)
-                        ->where('end_date', '>=', $strDateTime)
-                        ->where('school_id', $school->id)
-                        ->where('enabled', 1)
-                        ->first();
+                    $semester = Semester::where([
+                        ['start_date', '<=', $strDateTime],
+                        ['end_date', '>=', $strDateTime],
+                        ['school_id', '=', 1],
+                        ['enabled', '=', 1],
+                    ])->first();
                     abort_if(
                         !$semester,
                         HttpStatusCode::NOT_FOUND,
                         __('messages.semester.not_found')
                     );
-                    $machine = AttendanceMachine::whereMachineid($datum['machineid'])
-                        ->where('school_id', $school->id)->first();
+                    $machine = AttendanceMachine::where([
+                        'machineid' => $datum['machineid'],
+                        'school_id' => $school->id,
+                    ])->first();
                     abort_if(
                         !$machine,
                         HttpStatusCode::NOT_FOUND,
                         __('messages.attendance_machine.not_found')
                     );
-                    $sases = StudentAttendanceSetting::whereGradeId($student->squad->grade_id)
-                        ->where('semester_id', $semester->id)
-                        ->where('day', $day)->get();
+                    $sases = StudentAttendanceSetting::where([
+                        'grade_id'    => $student->squad->grade_id,
+                        'semester_id' => $semester->id,
+                        'day'         => $day,
+                    ])->get();
                     abort_if(
                         empty($sases->toArray()),
                         HttpStatusCode::NOT_FOUND,
@@ -258,27 +267,23 @@ class StudentAttendance extends Model {
                         }
                     }
                     # 保存考勤记录
-                    $sa = $this->create([
-                        'student_id'            => $student->id,
-                        'sas_id'                => $sasId,
-                        'punch_time'            => $punchTime,
-                        'inorout'               => $datum['inorout'],
-                        'attendance_machine_id' => $machine->id,
-                        'status'                => $status,
-                        'longitude'             => $datum['longitude'],
-                        'latitude'              => $datum['latitude'],
-                        'media_id'              => $datum['media_id'],
-                    ]);
+                    $sa = $this->create(
+                        array_combine(Constant::SA_FIELDS, [
+                            $student->id, $sasId, $punchTime, $datum['inorout'],
+                            $machine->id, $datum['media_id'], $status,
+                            $datum['longitude'], $datum['latitude'],
+                        ])
+                    );
                     # 创建并发送消息
                     $msl = (new MessageSendingLog)->store([
                         'read_count'      => 0,
                         'received_count'  => 0,
                         'recipient_count' => 0,
                     ]);
-                    $app = App::whereCorpId($school->corp_id)->whereName('考勤中心')->first();
-                    $userIds = $student->custodians->pluck('user_id')->toArray();
+                    $userIds = $student->custodians->pluck('user_id');
+                    $userids = User::whereIn('id', $userIds)->pluck('userid')->toArray();
                     $content = [
-                        'touser'  => implode('|', User::whereIn('id', $userIds)->pluck('userid')->toArray()),
+                        'touser'  => implode('|', $userids),
                         'toparty' => '',
                         'agentid' => $app->agentid,
                         'msgtype' => 'text',
@@ -291,27 +296,18 @@ class StudentAttendance extends Model {
                                     '{rule}'   => $sa->studentAttendanceSetting->name,
                                     '{status}' => $sa->status == 1 ? '正常' : '异常',
                                 ]
-                            )
-                        ]
+                            ),
+                        ],
                     ];
-                    $message = (new Message)->create([
-                        'comm_type_id'    => CommType::whereName('微信')->first()->id,
-                        'app_id'          => App::whereCorpId($school->corp_id)->whereName('考勤中心')->first()->id,
-                        'msl_id'          => $msl->id,
-                        'title'           => '考勤消息(文本)',
-                        'content'         => json_encode($content),
-                        'serviceid'       => 0,
-                        'message_id'      => 0,
-                        'message_type_id' => 1,
-                        'url'             => 'http://',
-                        'media_ids'       => 0,
-                        's_user_id'       => 0,
-                        'r_user_id'       => 0,
-                        'read'            => 0,
-                        'sent'            => 1,
-                    ]);
-                    SendMessage::dispatch($message);
+                    $messages[] = $message->create(
+                        array_combine(Constant::MESSAGE_FIELDS, [
+                            $commTypeId, $mediaTypeId, $app->id, $msl->id, '考勤消息(文本)',
+                            json_encode($content, JSON_UNESCAPED_UNICODE),
+                            0, 0, 1, 'http://', 0, 0, 0, 0, 1,
+                        ])
+                    );
                 }
+                empty($messages) ?: SendMessage::dispatch($messages);
             });
         } catch (Exception $e) {
             throw $e;
@@ -358,9 +354,7 @@ class StudentAttendance extends Model {
             ) + 1;
         # 指定班级所有学生的id
         $studentIds = Student::whereClassId($classId)->get()->pluck('id')->toArray();
-        if (empty($studentIds)) {
-            return [];
-        }
+        if (empty($studentIds)) return [];
         $attendances = $this->latestAttendances(
             implode(',', $studentIds),
             $startDate,
@@ -370,19 +364,9 @@ class StudentAttendance extends Model {
         $abnormals = [];
         if (!empty($attendances)) {
             foreach ($attendances as $key => &$val) {
-                if ($val->lastest) {
-                    if (isset($normals[$val->day])) {
-                        $normals[$val->day] += 1;
-                    } else {
-                        $normals[$val->day] = 1;
-                    }
-                } else {
-                    if (isset($abnormals[$val->day])) {
-                        $abnormals[$val->day] += 1;
-                    } else {
-                        $abnormals[$val->day] = 1;
-                    }
-                }
+                $val->lastest
+                    ? (isset($normals[$val->day]) ? $normals[$val->day]++ : $normals[$val->day] = 1)
+                    : (isset($abnormals[$val->day]) ? $abnormals[$val->day]++ : $abnormals[$val->day] = 1);
             }
         }
         $results = [];
@@ -485,16 +469,10 @@ class StudentAttendance extends Model {
             if ($mStudents) {
                 foreach ($mStudents as $student) {
                     $userIds = array_column(json_decode($student->custodians), 'user_id');
-                    if ($student->custodians) {
-                        $custodians = User::whereIn('id', $userIds)->get()->pluck('realname')->toArray();
-                    } else {
-                        $custodians = [];
-                    }
-                    if (json_decode($student->user['mobiles'])) {
-                        $mobiles = array_column(json_decode($student->user['mobiles']), 'mobile');
-                    } else {
-                        $mobiles = [];
-                    }
+                    $custodians = !$student->custodians ? []
+                        : User::whereIn('id', $userIds)->pluck('realname')->toArray();
+                    $mobiles = !json_decode($student->user['mobiles']) ? []
+                        : array_column(json_decode($student->user['mobiles']), 'mobile');
                     $results[] = [
                         'name'       => $student->user['realname'],
                         'custodian'  => $custodians,

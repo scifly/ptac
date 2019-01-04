@@ -37,13 +37,9 @@ class ExamTypeController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->et->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->et->index())
+            : $this->output();
         
     }
     

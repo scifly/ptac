@@ -38,13 +38,9 @@ class OrderController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->order->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->order->index())
+            : $this->output();
         
     }
     
@@ -71,8 +67,11 @@ class OrderController extends Controller {
      */
     public function show($id) {
         
-        $order = $this->order->find($id);
-        abort_if(!$order, HttpStatusCode::NOT_FOUND);
+        abort_if(
+            !($order = $this->order->find($id)),
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
         
         return $this->output([
             'order' => $order,
@@ -89,8 +88,11 @@ class OrderController extends Controller {
      */
     public function update(OrderRequest $request, $id) {
         
-        $order = $this->order->find($id);
-        abort_if(!$order, HttpStatusCode::NOT_FOUND);
+        abort_if(
+            !($order = $this->order->find($id)),
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
         
         return $order->update(
             $request->all()
@@ -107,8 +109,11 @@ class OrderController extends Controller {
      */
     public function destroy($id) {
         
-        $order = $this->order->find($id);
-        abort_if(!$order, HttpStatusCode::NOT_FOUND);
+        abort_if(
+            !($order = $this->order->find($id)),
+            HttpStatusCode::NOT_FOUND,
+            __('messages.not_found')
+        );
         
         return $this->result(
             $order->delete()

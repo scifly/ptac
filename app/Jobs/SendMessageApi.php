@@ -1,12 +1,12 @@
 <?php
 namespace App\Jobs;
 
-use App\Helpers\{JobTrait, ModelTrait};
+use App\Helpers\{Constant, JobTrait, ModelTrait};
 use App\Models\{ApiMessage,
-    App,
     CommType,
     Department,
     DepartmentUser,
+    MediaType,
     Message,
     MessageSendingLog,
     MessageType,
@@ -20,6 +20,7 @@ use Illuminate\{Bus\Queueable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
     Support\Facades\DB};
+use Pusher\PusherException;
 use Throwable;
 
 /**
@@ -61,7 +62,6 @@ class SendMessageApi implements ShouldQueue {
                 $message = new Message;
                 $apiMessage = new ApiMessage;
                 $department = new Department;
-                
                 $messageType = MessageType::whereUserId($this->partner->id)->first();
                 $school = School::find($this->schoolId);
                 $departmentIds = array_merge(
@@ -78,57 +78,46 @@ class SendMessageApi implements ShouldQueue {
                     ->whereIn('user_id', $userIds)
                     ->pluck('user_id', 'mobile')
                     ->toArray();
-                
                 # 创建发送日志
                 $msl = (new MessageSendingLog)->store([
                     'read_count'     => 0,
                     'received_count' => 0,
                     'recipients'     => 0,
                 ]);
-                
                 # 发送短信
                 $mobiles = array_diff($targets, array_keys($contacts));
                 $result = $message->sendSms(
                     $mobiles, $this->content . $school->signature
                 );
                 $data = [
-                    'msl_id' => $msl->id,
+                    'msl_id'          => $msl->id,
                     'message_type_id' => $messageType->id,
-                    's_user_id' => 0,
-                    'content' => $this->content,
-                    'read' => 0,
-                    'sent' => $result > 0 ? 0 : 1
+                    's_user_id'       => 0,
+                    'content'         => $this->content,
+                    'read'            => 0,
+                    'sent'            => $result > 0 ? 0 : 1,
                 ];
                 $apiMessage->log($mobiles, $data);
-                
                 # 发送微信
-                $app = App::whereName('消息中心')->where('corp_id', $school->corp_id)->first();
+                $app = $this->app($school->corp_id);
                 $users = User::whereIn('id', array_values($contacts))->get();
                 $userids = $users->pluck('userid')->toArray();
                 $content = [
-                    'touser' => implode('|', $userids),
+                    'touser'  => implode('|', $userids),
                     'toparty' => '',
                     'agentid' => $app['agentid'],
                     'msgtype' => 'text',
-                    'text' => ['content' => $this->content]
+                    'text'    => ['content' => $this->content],
                 ];
-                $data = [
-                    'comm_type_id'    => CommType::whereName('微信')->first()->id,
-                    'app_id'          => $app->id,
-                    'msl_id'          => $msl->id,
-                    'title'           => $messageType->name . '(文本)',
-                    'content'         => json_encode($content),
-                    'serviceid'       => 0,
-                    'message_id'      => 0,
-                    'url'             => 'http://',
-                    'media_ids'       => 0,
-                    's_user_id'       => $this->partner->id,
-                    'r_user_id'       => 0,
-                    'message_type_id' => $messageType->id,
-                    'read'            => 0,
-                    'sent'            => $result,
-                ];
-                $this->send($message->create($data));
+                $this->send(
+                    $message->create(
+                        array_combine(Constant::MESSAGE_FIELDS, [
+                            CommType::whereName('微信')->first()->id, MediaType::whereName('text')->first()->id,
+                            $app->id, $msl->id, $messageType->name . '(文本)', json_encode($content), 0, 0,
+                            'http://', 0, $this->partner->id, 0, $messageType->id, 0, $result,
+                        ])
+                    )
+                );
             });
         } catch (Exception $e) {
             throw $e;
@@ -142,10 +131,12 @@ class SendMessageApi implements ShouldQueue {
      * 任务异常处理
      *
      * @param Exception $exception
+     * @throws PusherException
      */
     function failed(Exception $exception) {
-    
-    
+        
+        $this->eHandler($exception);
+        
     }
     
 }

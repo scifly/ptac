@@ -1,8 +1,8 @@
 <?php
 namespace App\Http\Middleware;
 
+use App\Helpers\ModelTrait;
 use Closure;
-use App\Models\App;
 use App\Models\User;
 use App\Models\Corp;
 use App\Facades\Wechat;
@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Request;
  * @package App\Http\Middleware
  */
 class CorpAuth {
+    
+    use ModelTrait;
     
     /**
      * Handle an incoming request.
@@ -33,7 +35,7 @@ class CorpAuth {
         if (!Auth::id()) {
             $acronym = $paths[0];
             $corp = Corp::whereAcronym($acronym)->first();
-            $app = App::whereCorpId($corp->id)->where('name', config('app.name'))->first();
+            $app = $this->app($corp->id);
             $agentid = $app->agentid;
             $secret = $app->secret;
             $code = Request::input('code');

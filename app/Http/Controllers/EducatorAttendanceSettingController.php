@@ -37,13 +37,9 @@ class EducatorAttendanceSettingController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->eas->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->eas->index())
+            : $this->output();
     }
     
     /**

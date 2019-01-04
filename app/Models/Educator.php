@@ -3,6 +3,7 @@ namespace App\Models;
 
 use App\Facades\Datatable;
 use App\Helpers\{Constant, HttpStatusCode, ModelTrait, Snippet};
+use App\Jobs\ExportEducator;
 use App\Jobs\ImportEducator;
 use Carbon\Carbon;
 use Eloquent;
@@ -447,14 +448,12 @@ class Educator extends Model {
      * 批量导出教职员工
      *
      * @return bool
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      * @throws ReflectionException
      */
     function export() {
     
-        if (Request::query('range') == 0) {
-            $userIds = $this->userIds(Request::query('id'), 'educator');
+        if (Request::input('range') == 0) {
+            $userIds = $this->userIds(Request::input('id'), 'educator');
             $educatorIds = User::whereIn('id', $userIds)->with('educator')
                 ->get()->pluck('educator.id')->toArray();
         } else {
@@ -462,48 +461,9 @@ class Educator extends Model {
         }
         $educators = $this->whereIn('id', $educatorIds)
             ->where('school_id', $this->schoolId())->get();
-        $records = [];
-        foreach ($educators as $educator) {
-            if (!($user = $educator->user)) continue;
-            list($grades, $squads) = array_map(
-                function ($name) use ($educator) {
-                    $className = 'App\\Models\\' . ucfirst($name);
-                    $model = (new ReflectionClass($className))->newInstance();
-                    /** @var Collection $collection */
-                    $collection = $model->whereRaw($educator->id . ' IN (educator_ids)')->get();
-                
-                    return $collection->isEmpty() ? ''
-                        : implode(',', $collection->pluck('name')->toArray());
-                }, ['squad', 'grade']
-            );
-            $eces = EducatorClass::whereEducatorId($educator->id)->get();
-            foreach ($eces as $ec) {
-                $squad = $ec->squad;
-                $subject = $ec->subject;
-                if (isset($squad, $subject)) {
-                    $cses[] = implode(':', [$squad->name, $subject->name]);
-                }
-            }
-            $records[] = [
-                $user->realname,
-                $user->gender ? '男' : '女',
-                strval($user->username),
-                $user->position,
-                $user->departments->first()->name,
-                $educator->school->name,
-                $user->mobiles->where('isdefault', 1)->first()->mobile,
-                $grades,
-                $squads,
-                implode(',', $cses ?? [])
-            ];
-        }
-        usort($records, function ($a, $b) {
-            return strcmp($a[4], $b[4]);     # 按部门排序
-        });
-    
-        return $this->excel(
-            array_merge([self::EXCEL_TITLES], $records)
-        );
+        ExportEducator::dispatch($educators, self::EXCEL_TITLES, Auth::id());
+        
+        return true;
         
     }
     

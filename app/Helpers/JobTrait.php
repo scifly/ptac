@@ -1,7 +1,7 @@
 <?php
 namespace App\Helpers;
 
-use App\Models\{Message, MessageSendingLog, School, User};
+use App\Models\{Message, Mobile, School, User};
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\{DB};
@@ -19,51 +19,56 @@ trait JobTrait {
      *
      * @param Message $message
      * @param array $response
-     * @return bool
+     * @return array
      * @throws Throwable
      */
     function send(Message $message, array $response = []) {
         
+        $results = [];
+        $fields = ['message', 'result', 'targets'];
         try {
-            DB::transaction(function () use ($message, $response) {
+            DB::transaction(function () use ($message, $results, $fields) {
                 $content = json_decode($message->content, true);
                 $userIds = User::whereIn('userid', explode('|', $content['touser']))
                     ->pluck('id')->toArray();
                 $departmentIds = explode('|', $content['toparty']);
                 $msgType = $content['msgtype'];
                 if ($msgType == 'sms') {
-                    list($logUsers, $mobiles) = $message->smsTargets($userIds, $departmentIds);
-                    $result = $message->sendSms($mobiles, $content['sms']);
-                    $message->log($logUsers, $message, $result);
-                    $this->inform($message, $result, $mobiles, $response);
+                    $mobiles = $message->smsTargets($userIds, $departmentIds);
+                    $sms = $content['sms'];
                 } else {
                     /**
                      * @var Collection|User[] $wxTargets
-                     * @var Collection|User[] $smsLogUsers
-                     * @var Collection|User[] $wxLogUsers
                      * @var Collection|User[] $realTargetUsers
                      */
-                    list($smsMobiles, $smsLogUsers, $wxTargets, $wxLogUsers, $realTargetUsers) =
-                        $message->wxTargets($userIds, $departmentIds);
+                    list($mobiles, $wxTargets, $realTargetUsers) = $message->wxTargets($userIds, $departmentIds);
                     # step 1: 向已关注的用户（监护人、教职员工）发送微信
-                    $subscribedTargets = $realTargetUsers->where('subscribed', 1);
-                    if ($subscribedTargets->count()) {
-                        $userids = $wxTargets->where('subscribed', 1)
-                            ->pluck('userid')->toArray();
-                        $content['touser'] = implode('|', $userids);
-                        $result = $message->sendWx($message->app, $content);
-                        $message->log($wxLogUsers, $message, $result);
-                        $this->inform($message, $result, $subscribedTargets, $response);
+                    if ($realTargetUsers->where('subscribed', 1)->count()) {
+                        $userids = $wxTargets->where('subscribed', 1)->pluck('userid')->toArray();
+                        # 微信消息发送的会员对象每次不得超过1000名
+                        $groups = array_chunk($userids, 1000);
+                        foreach ($groups as $group) {
+                            $content['touser'] = implode('|', $group);
+                            $result = $message->sendWx($message->app, $content);
+                            $message->log($users = User::whereIn('userid', $group)->get(), $message, $result);
+                            $results[] = array_combine($fields, [$message, $result, $users]);
+                        }
                     }
                     # step 2: 向未关注的用户（监护人、教职员工）发送短信
-                    if (!empty($smsMobiles)) {
+                    if (!empty($mobiles)) {
                         $urlcode = uniqid();
-                        $sms = $msgType == 'text'
-                            ? $content['text']['content']
+                        $sms = $msgType == 'text' ? $content['text']['content']
                             : config('app.url') . '/sms/' . $urlcode;
-                        $result = $message->sendSms($smsMobiles, $sms);
-                        $message->log($smsLogUsers, $message, $result, $urlcode);
-                        $this->inform($message, $result, $smsMobiles, $response);
+                    }
+                }
+                if (!empty($mobiles)) {
+                    $chunks = array_chunk($mobiles, 2000);
+                    foreach ($chunks as $chunk) {
+                        $result = $message->sendSms($chunk, $sms ?? '');
+                        $userIds = Mobile::whereIn('mobile', $chunk)->pluck('user_id');
+                        $users = User::whereIn('id', $userIds)->get();
+                        $message->log($users, $message, $result, $urlcode ?? null);
+                        $results[] = array_combine($fields, [$message, $result, $chunk]);
                     }
                 }
             });
@@ -72,7 +77,7 @@ trait JobTrait {
             throw $e;
         }
         
-        return true;
+        return $results;
         
     }
     
@@ -115,12 +120,12 @@ trait JobTrait {
                         (!$nIllegals ? '' : __('messages.import_illegals'));
                     $broadcaster->broadcast(array_combine(Constant::BROADCAST_FIELDS, [
                         $response['title'], $job->{'userId'}, HttpStatusCode::ACCEPTED,
-                        sprintf($tpl, $nInserts, $nUpdates, $nIllegals)
+                        sprintf($tpl, $nInserts, $nUpdates, $nIllegals),
                     ]));
                     # 插入、更新记录
                     list($inserts, $updates) = $records;
                     array_map(
-                        function ($records, $action) use($job) {
+                        function ($records, $action) use ($job) {
                             empty($records) ?: $job->{$action}($records);
                         }, [$inserts, $updates], ['insert', 'update']
                     );
@@ -161,24 +166,6 @@ trait JobTrait {
     }
     
     /**
-     * 创建消息发送日志并返回批次id
-     *
-     * @param $recipients
-     * @return int|mixed
-     */
-    function mslId($recipients) {
-        
-        $msl = [
-            'read_count'      => 0,
-            'received_count'  => 0,
-            'recipient_count' => $recipients,
-        ];
-        
-        return MessageSendingLog::create($msl)->id;
-        
-    }
-    
-    /**
      * 任务失败处理器
      *
      * @param array $response
@@ -196,45 +183,55 @@ trait JobTrait {
     }
     
     /**
-     * 生成并发送广播消息
+     * 返回消息发送结果
      *
-     * @param Message $message
-     * @param mixed $result
-     * @param mixed $targets - 发送对象数量
-     * @param array $response
-     * @throws PusherException
+     * @param array $results
+     * @return array
      */
-    private function inform(Message $message, $result, $targets, array $response = []) {
+    function inform(array $results) {
         
-        if ($message->s_user_id && !empty($response)) {
-            $msgTpl = 'messages.message.sent';
-            $response['title'] .= isset($result['errcode']) ? '(微信)' : '(短信)';
-            if (isset($result['errcode'])) {
-                if ($result['errcode']) {
-                    $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-                    $response['message'] = $result['errmsg'];
-                } else {
-                    $total = $targets->count();
-                    $failed = $message->failedUserIds($result['invaliduser'], $result['invalidparty']);
-                    $succeeded = $total - count($failed);
-                    if (!$succeeded) {
-                        $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-                    } else if ($succeeded > 0 && $succeeded < $total) {
-                        $response['statusCode'] = HttpStatusCode::ACCEPTED;
-                    }
-                    $response['message'] = sprintf(
-                        __($msgTpl), $total, $succeeded, count($failed));
-                }
-            } else {
-                $result == 0 ?: $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
-                $response['message'] = sprintf(
-                    __($msgTpl), count($targets),
-                    $result == 0 ? 0 : count($targets),
-                    $result > 0 ? count($targets) : 0
+        $total = $success = $failure = 0;
+        $sms = $wx = ['total' => 0, 'success' => 0, 'failure' => 0];
+        foreach ($results as $result) {
+            $targets = count($result['targets']);
+            $total += $targets;
+            if (is_array($result['result'])) {
+                $wx['total'] += $targets;
+                /** @var Message $message */
+                $message = $result['message'];
+                $failed = count(
+                    $message->failedUserIds(
+                        $result['result']['invaliduser'],
+                        $result['result']['invalidparty']
+                    )
                 );
+                $succeeded = $targets - $failed;
+                $wx['success'] += $succeeded;
+                $wx['failure'] += $failed;
+                $success += $succeeded;
+                $failure += $failed;
+            } else {
+                $sms['total'] += $targets;
+                if ($result['result'] > 0) {
+                    $sms['success'] += $targets;
+                    $success += $targets;
+                } else {
+                    $sms['failure'] += $targets;
+                    $failure += $targets;
+                }
             }
-            (new Broadcaster)->broadcast($response);
         }
+        !$failure ?: $code = $failure == $total
+            ? HttpStatusCode::INTERNAL_SERVER_ERROR
+            : HttpStatusCode::ACCEPTED;
+        $msg = sprintf(
+            __('messages.message.sent'),
+            $total, $success, $failure,
+            $wx['total'], $wx['success'], $wx['failure'],
+            $sms['total'], $sms['success'], $sms['failure']
+        );
+        
+        return [$code ?? HttpStatusCode::OK, $msg];
         
     }
     

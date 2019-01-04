@@ -346,6 +346,7 @@ class EducatorAttendance extends Model {
      * 获取考勤明细
      *
      * @return mixed
+     * @throws ReflectionException
      */
     function detail() {
         

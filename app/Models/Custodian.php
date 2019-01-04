@@ -461,13 +461,4 @@ class Custodian extends Model {
         
     }
     
-    private function exists($mobile) {
-        
-        $m = Mobile::whereMobile($mobile)->first();
-        if (!$m) return false;
-        
-        
-        
-    }
-    
 }

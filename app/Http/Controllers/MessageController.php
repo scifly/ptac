@@ -26,9 +26,7 @@ class MessageController extends Controller {
      * @param Message $message
      * @param Department $departement
      */
-    public function __construct(
-        Message $message, Department $departement
-    ) {
+    public function __construct(Message $message, Department $departement) {
         
         $this->middleware(['auth', 'checkrole']);
         $this->message = $message;
@@ -44,18 +42,13 @@ class MessageController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->message->index()
+        return Request::get('draw')
+            ? response()->json($this->message->index())
+            : (
+            Request::method() == 'POST'
+                ? (Request::has('file') ? $this->message->import() : $this->department->contacts())
+                : $this->output()
             );
-        }
-        if (Request::method() == 'POST') {
-            return Request::has('file')
-                ? $this->message->import()
-                : $this->department->contacts();
-        }
-        
-        return $this->output();
         
     }
     
@@ -84,11 +77,11 @@ class MessageController extends Controller {
      * @throws Exception
      */
     public function edit($id) {
-    
+        
         return response()->json(
             $this->message->edit($id)
         );
-    
+        
     }
     
     /**
@@ -117,7 +110,7 @@ class MessageController extends Controller {
      * @throws Throwable
      */
     public function show($id) {
-    
+        
         return $this->message->show($id);
         
     }
@@ -150,11 +143,11 @@ class MessageController extends Controller {
      * @throws Throwable
      */
     public function destroy($id = null) {
-    
+        
         return $this->result(
             $this->message->remove($id)
         );
-    
+        
     }
     
 }

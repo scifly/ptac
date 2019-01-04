@@ -40,13 +40,9 @@ class OperatorController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->user->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->user->index())
+            : $this->output();
         
     }
     
@@ -58,11 +54,9 @@ class OperatorController extends Controller {
      */
     public function create() {
         
-        if (Request::method() == 'POST') {
-            return $this->user->csList();
-        }
-        
-        return $this->output();
+        return Request::method() == 'POST'
+            ? $this->user->csList()
+            : $this->output();
         
     }
     
@@ -93,13 +87,9 @@ class OperatorController extends Controller {
      */
     public function edit($id) {
         
-        if (Request::method() == 'POST') {
-            return $this->user->csList();
-        }
-        
-        return $this->output([
-            'user' => $this->user->find($id),
-        ]);
+        return Request::method() == 'POST'
+            ? $this->user->csList()
+            : $this->output(['user' => $this->user->find($id)]);
         
     }
     

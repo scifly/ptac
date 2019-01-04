@@ -26,9 +26,7 @@ class AttendanceMachineController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->am = $am;
-        if (!Request::has('ids')) {
-            $this->approve($am);
-        }
+        Request::has('ids') ?: $this->approve($am);
         
     }
     
@@ -40,13 +38,9 @@ class AttendanceMachineController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->am->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->am->index())
+            : $this->output();
         
     }
     

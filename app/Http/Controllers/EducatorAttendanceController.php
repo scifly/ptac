@@ -36,13 +36,9 @@ class EducatorAttendanceController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->ea->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->ea->index())
+            : $this->output();
         
     }
     
@@ -53,11 +49,9 @@ class EducatorAttendanceController extends Controller {
      */
     public function stat() {
         
-        if (Request::method() === 'POST') {
-            return $this->ea->stat();
-        }
-        
-        return $this->output();
+        return Request::method() === 'POST'
+            ? $this->ea->stat()
+            : $this->output();
         
     }
     
@@ -69,13 +63,9 @@ class EducatorAttendanceController extends Controller {
      */
     public function detail() {
         
-        if (Request::method() === 'POST') {
-            return response()->json(
-                $this->ea->detail()
-            );
-        }
-        
-        return $this->output();
+        return Request::method() === 'POST'
+            ? response()->json($this->ea->detail())
+            : $this->output();
         
     }
     

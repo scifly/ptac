@@ -58,9 +58,7 @@ class CorpRequest extends FormRequest {
             $input['menu_id'] = 0;
         }
         if (!isset($input['company_id'])) {
-            $user = Auth::user();
-            $departmentId = $this->head($user);
-            $input['company_id'] = Corp::whereDepartmentId($departmentId)->first()->company_id;
+            $input['company_id'] = Corp::whereDepartmentId($this->topDeptId(Auth::user()))->first()->company_id;
         }
         if (empty($input['encoding_aes_key'])) {
             $input['encoding_aes_key'] = '0';

@@ -37,13 +37,9 @@ class StudentAttendanceSettingController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->sas->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->sas->index())
+            : $this->output();
         
     }
     

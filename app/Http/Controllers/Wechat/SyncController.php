@@ -393,12 +393,8 @@ class SyncController extends Controller {
                 $department->subIds($schoolDepartmentId)
             );
             $diffs = array_diff($departmentIds, $schoolDepartmentIds);
-            if (empty($diffs)) {
-                return in_array($schoolDepartmentId, $departmentIds) ? 'school' : 'educator';
-            }
-            if (sizeof($diffs) == sizeof($departmentIds)) {
-                continue;
-            }
+            if (empty($diffs)) return in_array($schoolDepartmentId, $departmentIds) ? 'school' : 'educator';
+            if (sizeof($diffs) == sizeof($departmentIds)) continue;
             
             return 'corp';
         }

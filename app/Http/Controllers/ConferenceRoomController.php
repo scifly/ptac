@@ -26,9 +26,7 @@ class ConferenceRoomController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->cr = $cr;
-        if (!Request::has('ids')) {
-            $this->approve($cr);
-        }
+        Request::has('ids') ?: $this->approve($cr);
         
     }
     
@@ -40,13 +38,9 @@ class ConferenceRoomController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->cr->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->cr->index())
+            : $this->output();
         
     }
     

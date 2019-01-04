@@ -40,13 +40,9 @@ class TagController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->tag->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->tag->index())
+            : $this->output();
         
     }
     

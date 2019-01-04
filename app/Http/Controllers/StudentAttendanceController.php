@@ -59,22 +59,17 @@ class StudentAttendanceController extends Controller {
         if (Request::method() === 'POST') {
             $field = Request::input('field');
             $id = Request::input('id');
-            if ($field && $id) {
-                list($classes) = $this->grade->classList(
-                    Request::input('id')
-                );
-                
-                return response()->json([
-                    'html' => ['classes' => $classes]
-                ]);
+            if (isset($field, $id)) {
+                list($classes) = $this->grade->classList(Request::input('id'));
+                $response = response()->json(['html' => ['classes' => $classes]]);
+            } else {
+                $response = response()->json($this->sa->stat());
             }
-            
-            return response()->json(
-                $this->sa->stat()
-            );
+        } else {
+            $response = $this->output();
         }
         
-        return $this->output();
+        return $response;
         
     }
     
@@ -86,13 +81,9 @@ class StudentAttendanceController extends Controller {
      */
     public function detail() {
         
-        if (Request::method() === 'POST') {
-            return response()->json(
-                $this->sa->detail()
-            );
-        }
-        
-        return $this->output();
+        return Request::method() === 'POST'
+            ? response()->json($this->sa->detail())
+            : $this->output();
         
     }
     

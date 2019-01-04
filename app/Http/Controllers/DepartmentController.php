@@ -38,11 +38,9 @@ class DepartmentController extends Controller {
      */
     public function index() {
         
-        if (Request::method() === 'POST') {
-            return $this->department->index();
-        }
-        
-        return $this->output();
+        return Request::method() === 'POST'
+            ? $this->department->index()
+            : $this->output();
         
     }
     

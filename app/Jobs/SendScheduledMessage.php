@@ -10,6 +10,7 @@ use Illuminate\{Bus\Queueable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
     Support\Facades\DB};
+use Pusher\PusherException;
 use Throwable;
 
 /**
@@ -46,7 +47,7 @@ class SendScheduledMessage implements ShouldQueue {
                 foreach ($events as $event) {
                     $message = Message::whereEventId($event->id)->first();
                     if (!$message) continue;
-                    $sent = $this->send($message, []);
+                    $sent = $this->send($message);
                     if ($sent) $event->update(['enabled' => 0]);
                 }
             });
@@ -60,9 +61,12 @@ class SendScheduledMessage implements ShouldQueue {
     
     /**
      * @param Exception $exception
+     * @throws PusherException
      */
     function failed(Exception $exception) {
     
+        $this->eHandler($exception);
+        
     }
     
 }

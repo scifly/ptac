@@ -37,13 +37,9 @@ class ConferenceParticipantController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->cp->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->cp->index())
+            : $this->output();
         
     }
     

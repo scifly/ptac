@@ -26,9 +26,7 @@ class SchoolController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->school = $school;
-        if (!Request::has('ids')) {
-            $this->approve($school);
-        }
+        Request::has('ids') ?: $this->approve($school);
         
     }
     
@@ -40,13 +38,9 @@ class SchoolController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->school->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->school->index())
+            : $this->output();
         
     }
     

@@ -38,13 +38,9 @@ class SubjectModuleController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->sm->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->sm->index())
+            : $this->output();
         
     }
     

@@ -3,6 +3,7 @@ namespace App\Models;
 
 use App\Facades\Datatable;
 use App\Helpers\{HttpStatusCode, ModelTrait, Snippet};
+use App\Jobs\ExportStudent;
 use App\Jobs\ImportStudent;
 use Carbon\Carbon;
 use Eloquent;
@@ -256,34 +257,18 @@ class Student extends Model {
      */
     function modify(array $data, $id = null) {
         
-        if (!$id) {
-            return $this->batchUpdateContact($this);
-        }
+        if (!$id) return $this->batchUpdateContact($this);
         try {
             DB::transaction(function () use ($data, $id) {
                 if ($id) {
                     $student = $this->find($id);
-                    # 更新用户
                     $student->user->update($data['user']);
-                    # 更新学籍
                     $student->update($data);
-                    # 更新手机号码
                     (new Mobile)->store($data['mobile'], $student->user_id);
-                    # 更新用户所在部门
                     (new DepartmentUser)->store($student->user_id, $student->squad->department_id);
-                    # 更新企业号成员
-                    // $userIds = [$student->user_id];
                 } else {
                     $this->batchUpdateContact($this);
-                    // $ids = array_values(Request::input('ids'));
-                    // $userIds = $this->whereIn('id', $ids)->pluck('user_id')->toArray();
                 }
-                # 同步企业微信
-                // (new User)->sync(array_map(
-                //     function ($userId) {
-                //         return [$userId, '学生', 'update'];
-                //     }, $userIds)
-                // );
             });
         } catch (Exception $e) {
             throw $e;
@@ -378,16 +363,16 @@ class Student extends Model {
      * 导出学籍
      *
      * @return mixed
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      * @throws ReflectionException
      */
     function export() {
         
-        $range = Request::query('range');
-        $id = Request::query('id');
+        $id = Request::input('id');
         abort_if(
-            !in_array($range, array_values(self::EXPORT_RANGES)),
+            !in_array(
+                $range = Request::input('range'),
+                array_values(self::EXPORT_RANGES)
+            ),
             HttpstatusCode::NOT_ACCEPTABLE,
             __('messages.not_acceptable')
         );
@@ -405,45 +390,9 @@ class Student extends Model {
             default:
                 break;
         }
-        $records = [];
-        foreach ($students as $student) {
-            if (!$student->user) continue;
-            $cses = CustodianStudent::whereStudentId($student->id)->get();
-            $relationships = [];
-            foreach ($cses as $cs) {
-                if (!$cs->custodian) continue;
-                $cUser = $cs->custodian->user;
-                $relationships[] = implode(':', [
-                    $cs->relationship, $cUser->realname, $cUser->gender ? '男' : '女',
-                    $cUser->mobiles->where('isdefault', 1)->first()->mobile,
-                ]);
-            }
-            $sUser = $student->user;
-            $sMobile = $sUser->mobiles->where('isdefault', 1)->first();
-            $records[] = [
-                $sUser->realname,
-                $sUser->gender ? '男' : '女',
-                date('Y-m-d', strtotime($student->birthday)),
-                $student->squad->grade->school->name,
-                $student->squad->grade->name,
-                $student->squad->name,
-                $sMobile ? $sMobile->mobile : '',
-                $student->student_number,
-                $student->card_number . "\t",
-                $student->oncampus ? '住读' : '走读',
-                $student->remark,
-                !empty($relationships) ? implode(',', $relationships) : '',
-            ];
-        }
-        usort($records, function ($a, $b) {
-            return strcmp($a[4], $b[4])     # 按年级排序
-                ?: strcmp($a[5], $b[5])     # 按班级排序
-                    ?: strcmp($a[7], $b[7]);    # 按学号排序
-        });
+        ExportStudent::dispatch($students, self::EXCEL_TITLES, Auth::id());
         
-        return $this->excel(
-            array_merge([self::EXCEL_TITLES], $records)
-        );
+        return true;
         
     }
     
@@ -470,13 +419,12 @@ class Student extends Model {
      * @return array
      */
     function exams($id) {
-        
-        $student = $this->find($id);
-        
-        return (new Exam())->where('enabled', 1)->orderBy('start_date', 'desc')
-            ->whereRaw('FIND_IN_SET(' . $student->class_id . ', class_ids)')
+    
+        return (new Exam)->whereRaw('FIND_IN_SET(' . $this->find($id)->class_id . ', class_ids)')
+            ->orderBy('start_date', 'desc')
+            ->where('enabled', 1)
             ->get()->toArray();
-        
+    
     }
     
     /**

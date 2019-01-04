@@ -19,6 +19,7 @@ return [
     'not_acceptable'           => '参数错误',
     'method_not_allowed'       => '不支持该请求方法',
     'import_started'           => '文件上传成功，导入开始...',
+    'export_started'           => '导出开始...',
     'import_succeeded'         => '导入成功',
     'import_request_submitted' => '已提交导入请求<br />需要新增的记录数：%s<br />需要更新的记录数：%s',
     'import_illegals'          => '<br />非法记录数: %s, 请参考导出文件',
@@ -38,7 +39,8 @@ return [
     ],
     'app'                => [
         'title'          => '企业应用管理',
-        'app_configured' => '应用设置成功',
+        'configured' => '应用设置成功',
+        'not_found'  => '找不到指定的应用'
     ],
     'attendance_machine' => [
         'title'     => '考勤机管理',
@@ -60,6 +62,7 @@ return [
         'not_found'         => '没有这个教职员工',
         'import_validation_error' => '学校/部门名称错误',
         'import_completed'  => '教职员工导入完毕',
+        'export_completed'  => '教职员工导出完毕，请打开下载的excel文件查看详情',
     ],
     'grade'              => [
         'title'     => '年级管理',
@@ -74,9 +77,9 @@ return [
         'has_children' => '请先删除子菜单',
     ],
     'message'            => [
-        'title'            => '消息中心',
+        'title'            => '消息',
         'not_found'        => '没有这条消息',
-        'sent'             => '已发消息数量：%s<br />发送成功：%s<br />发送失败：%s<br />请点击已发送卡片查看详情。',
+        'sent'             => '已发：%s (成功：%s, 失败：%s)<br />微信：%s (成功: %s, 失败: %s)<br />短信：%s (成功: %s, 失败: %s)<br />请点击“已发送”卡片查看详情',
         'failed'           => '消息发送失败',
         'uploaded'         => '文件上传成功',
         'sms_send_failed'  => '短信推送失败',
@@ -94,7 +97,7 @@ return [
     ],
     'score'              => [
         'title'                   => '成绩中心',
-        'not_found'               => '找不到指定学生、科目及考试对应的成绩',
+        'not_found'               => '找不到指定学生、科目及考试对应的成绩/总成绩',
         'zero_classes'            => '您尚未绑定任何班级',
         'unauthorized_stat'       => '您无权进行该成绩分析',
         'exam_not_found'          => '找不到需要导入成绩对应的考试',
@@ -103,6 +106,7 @@ return [
         'message_send_result'     => '成功: %s条; <br />失败: %s条',
         'total_score_unavailable' => '请先统计总分',
         'student_class_mismatch'  => '该学生不在此班级',
+        'send_request_submitted'  => '已提交成绩发送请求'
     ],
     'semester'           => [
         'title'     => '学期设置',
@@ -112,7 +116,8 @@ return [
         'title'             => '学籍管理',
         'not_found'         => '未找到该学生的相关信息',
         'import_validation_error' => '学校/年级/班级名称错误',
-        'import_completed'  => '学籍导入完毕'
+        'import_completed'  => '学籍导入完毕',
+        'export_completed'  => '学籍导出完毕，请打开下载的excel文件查看详情'
     ],
     'student_attendance' => [
         'title' => '学生考勤',

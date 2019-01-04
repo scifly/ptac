@@ -38,13 +38,9 @@ class ExamController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->exam->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->exam->index())
+            : $this->output();
         
     }
     

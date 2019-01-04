@@ -36,17 +36,13 @@ class GradeController extends Controller {
      * 年级列表
      *
      * @return bool|JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->grade->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->grade->index())
+            : $this->output();
         
     }
     
@@ -54,7 +50,7 @@ class GradeController extends Controller {
      * 创建年级
      *
      * @return bool|JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function create() {
         
@@ -84,7 +80,7 @@ class GradeController extends Controller {
      *
      * @param $id
      * @return bool|JsonResponse
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function edit($id) {
         

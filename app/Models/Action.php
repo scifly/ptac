@@ -591,7 +591,7 @@ class Action extends Model {
                     $route->action['controller'] ?? '',
                     '\\' . $controller . '@' . $action
                 );
-                if ($aPos === false) { continue; }
+                if ($aPos === false) continue;
                 $tableName = $this->tableName($controller);
                 $uris = explode('/', $route->uri);
                 $rPos = stripos($route->uri, $tableName . '/' . $action);

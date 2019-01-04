@@ -38,13 +38,9 @@ class SubjectController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->subject->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->subject->index())
+            : $this->output();
         
     }
     

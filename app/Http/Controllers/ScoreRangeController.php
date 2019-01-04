@@ -42,13 +42,9 @@ class ScoreRangeController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->sr->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->sr->index())
+            : $this->output();
         
     }
     
@@ -135,11 +131,9 @@ class ScoreRangeController extends Controller {
      */
     public function stat() {
         
-        if (Request::method() == 'POST') {
-            return $this->sr->stat();
-        }
-        
-        return $this->output();
+        return Request::method() == 'POST'
+            ? $this->sr->stat()
+            : $this->output();
         
     }
     

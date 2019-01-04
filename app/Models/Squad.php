@@ -289,11 +289,8 @@ class Squad extends Model {
         $students = $class ? $class->students : [];
         $items = [];
         foreach ($students as $student) {
-            if (!$student->user) {
-                continue;
-            }
-            $items[$student->id] = $student->user->realname .
-                '(' . $student->student_number . ')';
+            if (!$student->user) continue;
+            $items[$student->id] = $student->user->realname . '(' . $student->student_number . ')';
         }
         
         return response()->json([

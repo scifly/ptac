@@ -48,7 +48,11 @@ class TabController extends Controller {
         if (Request::get('draw')) {
             return response()->json($this->tab->index());
         }
-        abort_if(!$this->tab->scan(), HttpStatusCode::NOT_FOUND);
+        abort_if(
+            !$this->tab->scan(),
+            HttpStatusCode::NOT_ACCEPTABLE,
+            __('messages.bad_request')
+        );
         
         return $this->output();
         

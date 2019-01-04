@@ -26,9 +26,7 @@ class CustodianController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->custodian = $custodian;
-        if (!Request::has('ids')) {
-            $this->approve($custodian);
-        }
+        Request::has('ids') ?: $this->approve($custodian);
         
     }
     
@@ -41,9 +39,7 @@ class CustodianController extends Controller {
     public function index() {
         
         return Request::get('draw')
-            ? response()->json(
-                $this->custodian->index()
-            )
+            ? response()->json($this->custodian->index())
             : $this->output();
     }
     

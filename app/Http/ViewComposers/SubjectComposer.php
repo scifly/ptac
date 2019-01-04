@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\ViewComposers;
 
-use App\Models\Grade;
 use App\Models\Major;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;

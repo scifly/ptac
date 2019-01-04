@@ -41,13 +41,9 @@ class GroupController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->group->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->group->index())
+            : $this->output();
         
     }
     
@@ -59,11 +55,9 @@ class GroupController extends Controller {
      */
     public function create() {
         
-        if (Request::method() === 'POST') {
-            return $this->group->menuTree();
-        }
-        
-        return $this->output();
+        return Request::method() === 'POST'
+            ? $this->group->menuTree()
+            : $this->output();
         
     }
     
@@ -94,13 +88,9 @@ class GroupController extends Controller {
      */
     public function edit($id) {
         
-        if (Request::method() === 'POST') {
-            return $this->group->menuTree();
-        }
-        
-        return $this->output([
-            'group' => Group::find($id),
-        ]);
+        return Request::method() === 'POST'
+            ? $this->group->menuTree()
+            : $this->output(['group' => Group::find($id)]);
         
     }
     

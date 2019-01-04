@@ -36,12 +36,15 @@ class Controller extends BaseController {
     protected function output(array $params = []) {
         
         # 获取功能对象
-        $method = Request::route()->getActionMethod();
-        $controller = class_basename(Request::route()->controller);
-        $tabId = Tab::whereName($controller)->first()->id;
+        $tabId = Tab::whereName(
+            class_basename(Request::route()->controller)
+        )->first()->id;
         $params['uris'] = $this->uris($tabId);
         $params['user'] = Auth::user();
-        $action = Action::where(['method' => $method, 'tab_id' => $tabId])->first();
+        $action = Action::where([
+            'method' => Request::route()->getActionMethod(),
+            'tab_id' => $tabId
+        ])->first();
         abort_if(
             !$action, HttpStatusCode::NOT_FOUND,
             __('messages.nonexistent_action')

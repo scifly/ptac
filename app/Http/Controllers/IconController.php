@@ -37,13 +37,9 @@ class IconController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->icon->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->icon->index())
+            : $this->output();
         
     }
     

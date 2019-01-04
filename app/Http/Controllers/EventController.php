@@ -41,10 +41,8 @@ class EventController extends Controller {
     public function index() {
         
         $events = $this->event
-            ->whereUserId(Auth::id())
-            ->where('enabled', '0')
-            ->get()
-            ->toArray();
+            ->where(['user_id' => Auth::id(), 'enabled' => 1])
+            ->get()->toArray();
         
         return $this->output([
             'events'  => $events,

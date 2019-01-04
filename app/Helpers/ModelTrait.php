@@ -2,6 +2,7 @@
 namespace App\Helpers;
 
 use App\Models\{Action,
+    App,
     CommType,
     Corp,
     Department,
@@ -43,11 +44,8 @@ trait ModelTrait {
      */
     function batch(Model $model) {
         
-        $ids = array_values(Request::input('ids'));
-        $action = Request::input('action');
-        
-        return $model->{'whereIn'}('id', $ids)->update([
-            'enabled' => $action == 'enable' ? Constant::ENABLED : Constant::DISABLED,
+        return $model->{'whereIn'}('id', array_values(Request::input('ids')))->update([
+            'enabled' => Request::input('action') == 'enable' ? Constant::ENABLED : Constant::DISABLED,
         ]);
         
     }
@@ -233,8 +231,7 @@ trait ModelTrait {
                 $schools = School::all();
                 break;
             case '企业':
-                $departmentId = head($user->departments->pluck('id')->toArray());
-                $corp = Corp::whereDepartmentId($departmentId)->first();
+                $corp = Corp::whereDepartmentId($this->topDeptId($user))->first();
                 $schools = $corp->schools;
                 break;
             case '监护人':
@@ -399,7 +396,7 @@ trait ModelTrait {
             $schoolId = $schoolId ?? $this->schoolId();
             $department = $schoolId
                 ? School::find($schoolId)->department
-                : Department::find($role == '运营' ? 1 : head($user->departments->pluck('id')->toArray()));
+                : Department::find($role == '运营' ? 1 : $this->topDeptId($user));
             $departmentIds[] = $department->id;
             
             return array_unique(
@@ -438,9 +435,8 @@ trait ModelTrait {
         } elseif (in_array($role, ['企业', '学校'])) {
             $className = 'App\\Models\\' . ($role == '企业' ? 'Corp' : 'School');
             $model = (new ReflectionClass($className))->newInstance();
-            $departmentId = head($user->departments->pluck('id')->toArray());
             $menuIds = (new Menu)->subIds(
-                $model::whereDepartmentId($departmentId)->first()->menu_id
+                $model::whereDepartmentId($this->topDeptId($user))->first()->menu_id
             );
         }
         
@@ -787,6 +783,45 @@ trait ModelTrait {
         Request::route('id') ?: $input['user']['userid'] = $userid;
         
         return $input;
+        
+    }
+    
+    /**
+     * 返回企业微信应用对象
+     *
+     * @param $corpId
+     * @param null $name
+     * @return App|Model|object|null
+     */
+    function app($corpId, $name = null) {
+        
+        $app = App::where([
+            'corp_id' => $corpId,
+            'name' => $name ?? config('app.name')
+        ])->first();
+        abort_if(
+            !$app, HttpStatusCode::NOT_FOUND,
+            __('messages.app.not_found')
+        );
+        
+        return $app;
+        
+    }
+    
+    /**
+     * 返回指定用户所属的最顶级部门id
+     *
+     * @param User $user
+     * @return int|mixed
+     */
+    function topDeptId(User $user = null) {
+        
+        $user = $user ?? Auth::user();
+        $departmentIds = $user->departments->pluck('id')->toArray();
+        sort($departmentIds);
+        $topDeptId = head($departmentIds);
+        
+        return $topDeptId ? $topDeptId : 1;
         
     }
     

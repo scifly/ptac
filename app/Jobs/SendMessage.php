@@ -1,8 +1,7 @@
 <?php
 namespace App\Jobs;
 
-use App\Helpers\HttpStatusCode;
-use App\Helpers\JobTrait;
+use App\Helpers\{Broadcaster, HttpStatusCode, JobTrait};
 use App\Models\Message;
 use Exception;
 use Illuminate\{Bus\Queueable,
@@ -23,18 +22,20 @@ class SendMessage implements ShouldQueue {
     use Dispatchable, InteractsWithQueue, Queueable,
         SerializesModels, JobTrait;
     
-    protected $message, $response;
+    protected $messages, $userId, $response;
     
     /**
      * SendMessage constructor.
-     * @param Message $message
+     * @param array $messages
+     * @param $userId
      */
-    function __construct(Message $message) {
+    function __construct(array $messages, $userId) {
         
-        $this->message = $message;
+        $this->messages = $messages;
+        $this->userId = $userId;
         $this->response = [
-            'userId' => $message->s_user_id,
-            'title' => __('messages.message.title'),
+            'userId'     => $userId,
+            'title'      => __('messages.message.title'),
             'statusCode' => HttpStatusCode::OK,
         ];
         
@@ -50,8 +51,18 @@ class SendMessage implements ShouldQueue {
         
         try {
             DB::transaction(function () {
-                $this->send($this->message, $this->response);
+                $results = array_collapse(
+                    array_map(
+                        function (Message $message) {
+                            return $this->send($message, $this->response);
+                        }, $this->messages
+                    )
+                );
+                list($code, $msg) = $this->inform($results);
+                $this->response['statusCode'] = $code;
+                $this->response['message'] = $msg;
             });
+            (new Broadcaster)->broadcast($this->response);
         } catch (Exception $e) {
             $this->eHandler($e, $this->response);
             throw $e;

@@ -28,9 +28,7 @@ class ScoreController extends Controller {
         $this->middleware(['auth', 'checkrole']);
         $this->score = $score;
         $this->exam = $exam;
-        if (!Request::has('ids')) {
-            $this->approve($score);
-        }
+        Request::has('ids') ?: $this->approve($score);
         
     }
     
@@ -42,13 +40,9 @@ class ScoreController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->score->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->score->index())
+            : $this->output();
         
     }
     
@@ -138,16 +132,15 @@ class ScoreController extends Controller {
      * 发送成绩
      *
      * @return JsonResponse
-     * @throws Exception
+     * @throws Throwable
      */
     public function send() {
         
         return Request::has('examId')
             ? $this->score->preview()
-            : response()->json(
-                $this->score->send(
-                    json_decode(Request::input('data'))
-                )
+            : $this->result(
+                $this->score->send(json_decode(Request::input('data'))),
+                __('messages.score.send_request_submitted')
             );
         
     }

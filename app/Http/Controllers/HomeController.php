@@ -42,8 +42,7 @@ class HomeController extends Controller {
      */
     public function index() {
         
-        $menuId = Request::query('menuId');
-        if (!$menuId) {
+        if (!($menuId = Request::query('menuId'))) {
             $menuId = Menu::whereParentId($this->menu->rootId())
                 ->whereIn('uri', ['home', '/'])->first()->id;
             session(['menuId' => $menuId]);

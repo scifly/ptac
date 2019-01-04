@@ -113,7 +113,7 @@ HTML;
                 function ($ids, $type) {
                     /** @noinspection HtmlUnknownTarget */
                     $tpl = '<a id="%s" class="chosen-results-item" data-uid="%s" data-type="%s">' .
-                        '<img src="%s" style="%s" /></a>';
+                        '<img src="%s" style="%s" alt="" /></a>';
                     $html = '';
                     $imgName = $type == 'department' ? 'department.png' : 'personal.png';
                     $imgStyle = $type == 'department' ? '' : 'border-radius: 50%;';

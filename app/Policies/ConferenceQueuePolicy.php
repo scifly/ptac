@@ -80,7 +80,7 @@ class ConferenceQueuePolicy {
         # 会议室所属企业
         $crCorpId = ConferenceRoom::find($conferenceRoomId)->school->corp_id;
         # 发起者所属企业
-        $departmentId = $this->head($user);
+        $departmentId = $this->topDeptId($user);
         $corpId = Corp::whereDepartmentId($departmentId)->first()->id;
         # 发起者只能选取所属企业的会议室
         if ($corpId != $crCorpId) { return false; }
@@ -111,8 +111,7 @@ class ConferenceQueuePolicy {
         # 会议室所属学校
         $crSchoolId = ConferenceRoom::find($conferenceRoomId)->school_id;
         # 发起者所属学校
-        $departmentId = $this->head($user);
-        $schoolId = School::whereDepartmentId($departmentId)->first()->id;
+        $schoolId = School::whereDepartmentId($this->topDeptId($user))->first()->id;
         # 发起者只能选取所属学校的会议室
         if ($schoolId != $crSchoolId) { return false; }
         # 发起者只能选取所属学校的教职员工参加会议

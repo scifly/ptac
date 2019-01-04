@@ -391,7 +391,7 @@ class User extends Authenticatable {
                 (new Mobile)->store($data['mobile'], $user->id);
                 (new DepartmentUser)->storeByUserId($user->id, [$this->departmentId($data)]);
                 $this->sync([
-                    [$user->id, Group::find($data['group_id'])->name, 'create']
+                    [$user->id, Group::find($data['group_id'])->name, 'create'],
                 ]);
             });
         } catch (Exception $e) {
@@ -661,6 +661,7 @@ class User extends Authenticatable {
                     $this->sync(array_map(
                         function ($userId) use ($type) {
                             $role = $type == 'custodian' ? '监护人' : '';
+                            
                             return [$userId, $role, 'delete'];
                         }, $contact->{'whereIn'}('id', $ids)->pluck('user_id')->toArray()
                     ));
@@ -686,16 +687,16 @@ class User extends Authenticatable {
      * @return bool
      */
     function sync(array $contacts, $id = null, $corpId = null) {
-
+        
         $corpId = $corpId ?? School::find($this->schoolId())->corp_id;
         foreach ($contacts as $contact) {
             list($userId, $role, $method) = $contact;
             $user = $this->find($userId);
             $params = [
-                'userid'    => $user->userid,
-                'username'  => $user->username,
-                'position'  => $user->position ?? $role,
-                'corpIds'   => $role == '运营' ? Corp::pluck('id')->toArray() : [$corpId],
+                'userid'   => $user->userid,
+                'username' => $user->username,
+                'position' => $user->position ?? $role,
+                'corpIds'  => $role == '运营' ? Corp::pluck('id')->toArray() : [$corpId],
             ];
             if ($method != 'delete') {
                 $departments = !in_array($role, ['运营', '企业'])
@@ -716,7 +717,7 @@ class User extends Authenticatable {
             }
             $members[] = [
                 'method' => $method,
-                'params' => $params
+                'params' => $params,
             ];
         }
         SyncMember::dispatch($members ?? [], $id ?? Auth::id());
@@ -740,9 +741,7 @@ class User extends Authenticatable {
             HttpStatusCode::NOT_ACCEPTABLE,
             __('messages.not_acceptable')
         );
-        $result = [
-            'statusCode' => HttpStatusCode::OK,
-        ];
+        $result = ['statusCode' => HttpStatusCode::OK];
         # 获取企业和学校列表
         $corpId = 0;
         if ($field == 'group_id') {
@@ -756,10 +755,9 @@ class User extends Authenticatable {
         } else {
             $corpId = $value;
         }
-        $schools = $corpId
-            ? School::where(['corp_id' => $corpId, 'enabled' => 1])->pluck('name', 'id')->toArray()
-            : [];
-        $result['schoolList'] = $this->selectList($schools, 'school_id');
+        $condition = ['corp_id' => $corpId, 'enabled' => 1];
+        $schools = !$corpId ? [] : School::where($condition)->pluck('name', 'id');
+        $result['schoolList'] = $this->selectList($schools->toArray(), 'school_id');
         
         return response()->json($result);
         
@@ -817,7 +815,7 @@ class User extends Authenticatable {
         
         return $this->role($id) == '运营'
             ? Corp::pluck('id')->toArray()
-            : [(new Department)->corpId($this->head($user) ?? 1)];
+            : [(new Department)->corpId($this->topDeptId($user))];
         
     }
     
@@ -840,20 +838,16 @@ class User extends Authenticatable {
         $rootMenu = Menu::find((new Menu)->rootId(true));
         if (Request::route('id')) {
             $operator = $this->find(Request::route('id'));
-            $departmentId = $this->head($operator);
+            $departmentId = $this->topDeptId($operator);
         }
         switch ($rootMenu->menuType->name) {
             case '根':
                 $groups = groups(['运营', '企业', '学校']);
                 if (Request::route('id')) {
                     $role = $operator->role($operator->id);
-                    if ($role != '运营') {
-                        $corps = Corp::all()->pluck('name', 'id')->toArray();
-                    }
-                    if ($role == '学校') {
-                        $schools = School::whereCorpId($operator->educator->school->corp_id)
-                            ->pluck('name', 'id')->toArray();
-                    }
+                    $role == '运营' ?: $corps = Corp::all()->pluck('name', 'id')->toArray();
+                    $role != '学校' ?: $schools = School::whereCorpId($operator->educator->school->corp_id)
+                        ->pluck('name', 'id')->toArray();
                 }
                 break;
             case '企业':
@@ -867,8 +861,7 @@ class User extends Authenticatable {
                         case '学校':
                             $corpId = $operator->educator->school->corp_id;
                             $corp = Corp::find($corpId);
-                            $schools = School::whereCorpId($corpId)
-                                ->pluck('name', 'id')->toArray();
+                            $schools = School::whereCorpId($corpId)->pluck('name', 'id')->toArray();
                             break;
                         default:
                             break;
@@ -880,11 +873,9 @@ class User extends Authenticatable {
                 break;
             case '学校':
                 $groups = groups(['学校']);
-                if (Request::route('id')) {
-                    $school = School::whereDepartmentId($departmentId)->first();
-                } else {
-                    $school = School::whereMenuId($rootMenu->id)->first();
-                }
+                $school = Request::route('id')
+                    ? School::whereDepartmentId($departmentId)->first()
+                    : School::whereMenuId($rootMenu->id)->first();
                 $corp = Corp::find($school->corp_id);
                 $corps = [$corp->id => $corp->name];
                 $schools = [$school->id => $school->name];
@@ -944,13 +935,11 @@ class User extends Authenticatable {
      */
     private function corps() {
         
-        $user = Auth::user();
-        switch ($user->role()) {
+        switch (Auth::user()->role()) {
             case '运营':
                 return Corp::whereEnabled(1)->pluck('name', 'id')->toArray();
             case '企业':
-                $departmentId = $this->head($user);
-                $corp = Corp::whereDepartmentId($departmentId)->first();
+                $corp = Corp::whereDepartmentId($this->topDeptId())->first();
                 
                 return [$corp->id => $corp->name];
             default:

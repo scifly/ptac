@@ -38,13 +38,9 @@ class ConferenceQueueController extends Controller {
      */
     public function index() {
         
-        if (Request::get('draw')) {
-            return response()->json(
-                $this->cq->index()
-            );
-        }
-        
-        return $this->output();
+        return Request::get('draw')
+            ? response()->json($this->cq->index())
+            : $this->output();
         
     }
     

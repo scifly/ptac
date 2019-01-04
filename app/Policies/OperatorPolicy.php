@@ -57,8 +57,7 @@ class OperatorPolicy {
         $allowedOperatorIds = array_merge($allowedOperatorIds, $userIds);
     
         # 批量操作
-        if (Request::has('ids')) {
-            $operatorIds = Request::input('ids');
+        if ($operatorIds = Request::input('ids')) {
             $isOperatorAllowed = empty(array_diff($operatorIds, $allowedOperatorIds));
         } else {
             if (in_array($action, ['store', 'update'])) {
@@ -71,21 +70,16 @@ class OperatorPolicy {
                     ? in_array($groupId, [$corpGroupId, $schoolGroupId])
                     : $groupId == $schoolGroupId;
                 if ($corpId) {
-                    $departmentId = $this->head($user);
-                    if ($role == '企业') {
-                        $corp = Corp::whereDepartmentId($departmentId)->first();
-                    } else {
-                        $corp = School::whereDepartmentId($departmentId)->first()->corp;
-                    }
+                    $departmentId = $this->topDeptId($user);
+                    $corp = $role == '企业'
+                        ? Corp::whereDepartmentId($departmentId)->first()
+                        : School::whereDepartmentId($departmentId)->first()->corp;
                     $isCorpAllowed = $corpId == $corp->id;
                 }
-                if ($schoolId) {
-                    $isSchoolAllowed = in_array($schoolId, $this->schoolIds());
-                }
+                !$schoolId ?: $isSchoolAllowed = in_array($schoolId, $this->schoolIds());
             }
-            if (in_array($action, ['edit', 'update', 'delete'])) {
+            !in_array($action, ['edit', 'update', 'delete']) ?:
                 $isOperatorAllowed = in_array($operator->id, $allowedOperatorIds);
-            }
         }
         switch ($action) {
             case 'index':
@@ -97,13 +91,11 @@ class OperatorPolicy {
             case 'store':
                 return $isSuperRole && $isGroupAllowed && $isCorpAllowed && $isSchoolAllowed;
             case 'update':
-                if (Request::has('ids')) {
-                    return $isSuperRole && $isOperatorAllowed;
-                }
-                return $isSuperRole && $isGroupAllowed && $isCorpAllowed && $isSchoolAllowed;
+                return Request::has('ids')
+                    ? $isSuperRole && $isOperatorAllowed
+                    : $isSuperRole && $isGroupAllowed && $isCorpAllowed && $isSchoolAllowed;
             default:
                 return false;
-                
         }
         
     }
