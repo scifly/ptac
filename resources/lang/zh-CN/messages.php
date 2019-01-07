@@ -34,49 +34,50 @@ return [
     'token_mismatch'           => '页面已失效，请重试',
     'synced'                   => '同步成功',
     'sync_failed'              => '部分用户同步失败，请参考导出的excel文件',
-    'operator'           => [
+    'operator'                 => [
         'stored' => '保存超级管理员',
     ],
-    'app'                => [
-        'title'          => '企业应用管理',
+    'app'                      => [
+        'title'      => '企业应用管理',
         'configured' => '应用设置成功',
-        'not_found'  => '找不到指定的应用'
+        'not_found'  => '找不到指定的应用',
     ],
-    'attendance_machine' => [
+    'attendance_machine'       => [
         'title'     => '考勤机管理',
         'not_found' => '该考勤机没有注册',
     ],
-    'class'              => [
+    'class'                    => [
         'title'              => '班级管理',
         'not_found'          => '未找到该班级的相关信息',
         'no_related_classes' => '您尚未绑定任何班级',
     ],
-    'department'         => [
+    'department'               => [
         'title'           => '部门管理',
         'department_sync' => '%s部门',
         'has_children'    => '请先删除子部门',
-        'not_found'       => '没有这个部门'
+        'not_found'       => '没有这个部门',
     ],
-    'educator'           => [
-        'title'             => '教职员工',
-        'not_found'         => '没有这个教职员工',
+    'educator'                 => [
+        'title'                   => '教职员工',
+        'not_found'               => '没有这个教职员工',
         'import_validation_error' => '学校/部门名称错误',
-        'import_completed'  => '教职员工导入完毕',
-        'export_completed'  => '教职员工导出完毕，请打开下载的excel文件查看详情',
+        'import_completed'        => '教职员工导入完毕',
+        'export_completed'        => '教职员工导出完毕，请打开下载的excel文件查看详情',
     ],
-    'grade'              => [
+    'grade'                    => [
         'title'     => '年级管理',
         'not_found' => '未找到该年级的相关信息',
     ],
-    'group'              => [
-        'title'     => '角色/权限',
-        'not_found' => '没有这个角色',
+    'group'                    => [
+        'title'         => '角色/权限',
+        'not_found'     => '没有这个角色',
     ],
-    'menu'               => [
+    'menu'                     => [
         'title'        => '菜单管理',
         'has_children' => '请先删除子菜单',
+        'misconfigured' => '菜单配置错误',
     ],
-    'message'            => [
+    'message'                  => [
         'title'            => '消息',
         'not_found'        => '没有这条消息',
         'sent'             => '已发：%s (成功：%s, 失败：%s)<br />微信：%s (成功: %s, 失败: %s)<br />短信：%s (成功: %s, 失败: %s)<br />请点击“已发送”卡片查看详情',
@@ -87,15 +88,15 @@ return [
         'invalid_corp'     => '企业号不存在，请检查后重试',
         'empty_targets'    => '请选择发送对象',
         'submitted'        => '已提交消息发送请求',
-        'preview'          => '消息预览已发送至你的手机微信，请打开相关应用查看'
+        'preview'          => '消息预览已发送至你的手机微信，请打开相关应用查看',
     ],
-    'school'             => [
+    'school'                   => [
         'title'        => '学校管理',
         'not_found'    => '未找到该学校的相关信息',
         'corp_changed' => '请先删除此学校所有相关数据(部门、部门用户绑定关系、角色、微网站等)，并在新的企业微信下创建该学校',
         'menu_created' => '学校后台管理菜单创建成功',
     ],
-    'score'              => [
+    'score'                    => [
         'title'                   => '成绩中心',
         'not_found'               => '找不到指定学生、科目及考试对应的成绩/总成绩',
         'zero_classes'            => '您尚未绑定任何班级',
@@ -106,40 +107,40 @@ return [
         'message_send_result'     => '成功: %s条; <br />失败: %s条',
         'total_score_unavailable' => '请先统计总分',
         'student_class_mismatch'  => '该学生不在此班级',
-        'send_request_submitted'  => '已提交成绩发送请求'
+        'send_request_submitted'  => '已提交成绩发送请求',
     ],
-    'semester'           => [
+    'semester'                 => [
         'title'     => '学期设置',
         'not_found' => '学期信息有误',
     ],
-    'student'            => [
-        'title'             => '学籍管理',
-        'not_found'         => '未找到该学生的相关信息',
+    'student'                  => [
+        'title'                   => '学籍管理',
+        'not_found'               => '未找到该学生的相关信息',
         'import_validation_error' => '学校/年级/班级名称错误',
-        'import_completed'  => '学籍导入完毕',
-        'export_completed'  => '学籍导出完毕，请打开下载的excel文件查看详情'
+        'import_completed'        => '学籍导入完毕',
+        'export_completed'        => '学籍导出完毕，请打开下载的excel文件查看详情',
     ],
-    'student_attendance' => [
-        'title' => '学生考勤',
-        'not_found' => '未找到该学生的考勤记录',
-        'not_available' => '指定班级所属年级未设置考勤规则！',
-        'authenticated' => '验证成功',
-        'weekday_mismatched' => '请选择和规则对应的星期！'
+    'student_attendance'       => [
+        'title'              => '学生考勤',
+        'not_found'          => '未找到该学生的考勤记录',
+        'not_available'      => '指定班级所属年级未设置考勤规则！',
+        'authenticated'      => '验证成功',
+        'weekday_mismatched' => '请选择和规则对应的星期！',
     ],
-    'sas' => [
-        'title' => '学生考勤规则',
-        'not_found' => '没有找到相关的考勤规则'
+    'sas'                      => [
+        'title'     => '学生考勤规则',
+        'not_found' => '没有找到相关的考勤规则',
     ],
-    'user'               => [
+    'user'                     => [
         'not_found' => '没有这个用户',
     ],
-    'wap_site'           => [
+    'wap_site'                 => [
         'title' => '微网站',
     ],
-    'wap_site_module'    => [
+    'wap_site_module'          => [
         'title' => '微网站栏目',
     ],
-    'wsm_article'        => [
+    'wsm_article'              => [
         'title' => '微网站文章',
     ],
 ];

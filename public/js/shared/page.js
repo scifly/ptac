@@ -152,6 +152,7 @@ var page = {
         } else if (status === 498) {
             window.location.reload();
         } else if (status === 401) {
+            page.inform(obj['exception'] + ' : ' + status, message, page.failure);
             window.location = page.siteRoot() + 'login?returnUrl=' + page.getMenuUrl()
         } else {
             message = obj['message'] + '\n' + obj['file'] + ' : ' + obj['line'];
@@ -845,15 +846,11 @@ $(function () {
     var $activeTabPane = $('#tab_' + page.getActiveTabId());
     // 初始化浏览器历史相关的popstate事件
     window.onpopstate = function (e) {
-        if (!e.state) {
-            return false;
-        }
+        if (!e.state) return false;
         // 如果用户点击浏览器“前进”或“后退”按钮，则不需要更新浏览器历史
         updateHistory = false;
         // 如果目标页面链接地址中包含pages关键字，则停止重定向
-        if (e.state.url.indexOf('pages') > -1) {
-            return false;
-        }
+        if (e.state.url.indexOf('pages') > -1) return false;
         // 获取目标页面的卡片ID、菜单ID和菜单链接地址
         var paths = e.state.title.split(','),
             targetTabId = paths[0],

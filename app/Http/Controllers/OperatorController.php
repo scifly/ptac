@@ -26,9 +26,7 @@ class OperatorController extends Controller {
         
         $this->middleware(['auth', 'checkrole']);
         $this->user = $user;
-        if (!Request::has('ids')) {
-            $this->approve($user);
-        }
+        Request::has('ids') ?: $this->approve($user);
         
     }
     

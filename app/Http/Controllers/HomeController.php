@@ -52,7 +52,7 @@ class HomeController extends Controller {
                 : Session::forget('menuChanged');
         }
         $department = $this->menu->department($menuId);
-    
+        
         return Request::ajax()
             ? response()->json([
                 'title'      => '首页',
@@ -79,38 +79,35 @@ class HomeController extends Controller {
      * @throws Throwable
      */
     public function menu($id) {
-    
-        !session('menuId') || session('menuId') !== $id
-            ? session(['menuId' => $id, 'menuChanged' => true])
-            : Session::forget('menuChanged');
-    
-        # 获取卡片列表
+        
+        if (!session('menuId') || session('menuId') !== $id) {
+            session(['menuId' => $id, 'menuChanged' => true]);
+        } else {
+            Session::forget('menuChanged');
+        }
+        # 获取指定菜单包含的卡片列表
         $tabIds = $this->mt->tabIdsByMenuId($id);
-        $isTabLegit = !empty($tabIds) ?? false;
         # 获取当前用户可以访问的卡片（控制器）id
         $allowedTabIds = $this->tab->allowedTabIds();
         # 封装当前用户可以访问的卡片数组
-        $tabArray = [];
         foreach ($tabIds as $tabId) {
-            if (!in_array($tabId, $allowedTabIds)) continue;
             $tab = Tab::find($tabId);
             $action = Action::find($tab->action_id);
-            if (!empty($action->route)) {
-                $tabArray[] = [
-                    'id'     => 'tab_' . $tab->id,
-                    'name'   => $tab->comment,
-                    'icon'   => isset($tab->icon_id) ? $tab->icon->name : null,
-                    'active' => false,
-                    'url'    => $action->route,
-                ];
-            } else {
-                $isTabLegit = false;
-                break;
-            }
+            if (!in_array($tabId, $allowedTabIds) || !$action->route) continue;
+            $tabArray[] = [
+                'id'     => 'tab_' . $tab->id,
+                'name'   => $tab->comment,
+                'icon'   => $tab->icon_id ? $tab->icon->name : null,
+                'active' => false,
+                'url'    => $action->route,
+            ];
         }
-        abort_if(empty($tabArray), HttpStatusCode::UNAUTHORIZED, __('messages.unauthorized'));
-        abort_if(!$isTabLegit, HttpStatusCode::NOT_FOUND, __('messages.not_found'));
+        abort_if(
+            empty($tabArray ?? []), HttpStatusCode::NOT_FOUND,
+            __('messages.menu.misconfigured')
+        );
         # 刷新页面时打开当前卡片, 不一定是第一个卡片
+        $tabArray[0]['active'] = true;
         if (session('tabId')) {
             $key = array_search(
                 'tab_' . session('tabId'),
@@ -120,24 +117,20 @@ class HomeController extends Controller {
             if (!session('tabChanged') && !session('menuChanged')) {
                 $tabArray[$key]['url'] = session('tabUrl');
             }
-        } else {
-            $tabArray[0]['active'] = true;
-        }
-        # 获取并返回wrapper-content层中的html内容
-        if (Request::ajax()) {
-            return response()->json([
-                'html' => view('shared.site_content', ['tabs' => $tabArray])->render(),
-                'department' => $this->menu->department($id),
-                'title' => $this->menu->find(session('menuId'))->name
-            ]);
         }
         
-        return view('layouts.web', [
-            'menu'       => $this->menu->htmlTree($this->menu->rootId()),
-            'tabs'       => $tabArray,
-            'menuId'     => $id,
-            'department' => $this->menu->department($id),
-        ]);
+        return Request::ajax()
+            ? response()->json([
+                'html'       => view('shared.site_content', ['tabs' => $tabArray])->render(),
+                'department' => $this->menu->department($id),
+                'title'      => $this->menu->find(session('menuId'))->name,
+            ])
+            : view('layouts.web', [
+                'menu'       => $this->menu->htmlTree($this->menu->rootId()),
+                'tabs'       => $tabArray,
+                'menuId'     => $id,
+                'department' => $this->menu->department($id),
+            ]);
         
     }
     

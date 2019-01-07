@@ -114,8 +114,7 @@ class MenuTab extends Model {
         try {
             DB::transaction(function () use ($menuId, $ranks) {
                 foreach ($ranks as $id => $rank) {
-                    self::whereMenuId($menuId)
-                        ->where('tab_id', $id)
+                    $this->where(['menu_id' => $menuId, 'tab_id' => $id])
                         ->update(['tab_order' => $rank + 1]);
                 }
             });
@@ -135,7 +134,7 @@ class MenuTab extends Model {
      */
     function tabIdsByMenuId($menuId) {
         
-        return self::whereMenuId($menuId)
+        return $this->whereMenuId($menuId)
             ->orderBy('tab_order')
             ->pluck('tab_id')
             ->toArray();
