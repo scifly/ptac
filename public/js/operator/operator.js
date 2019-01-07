@@ -48,11 +48,9 @@
                             $school.slideUp();
                             break;
                         case 3:
-                            if ($schoolId.length === 0) {
-                                operator.lists(action);
-                            } else {
-                                operator.lists(action, operator.options.corpId);
-                            }
+                            $schoolId.length === 0
+                                ? operator.lists(action)
+                                : operator.lists(action, operator.options.corpId);
                             $corp.slideDown();
                             $school.slideDown();
                             break;
@@ -71,17 +69,7 @@
             loadJs: function (action) {
                 $.getMultiScripts(['js/shared/contact.js']).done(
                     function () {
-                        var cr = $.contact();
-                        switch (action) {
-                            case 'create':
-                                cr.create(operator.options.table);
-                                break;
-                            case 'edit':
-                                cr.edit(operator.options.table);
-                                break;
-                            default:
-                                return false;
-                        }
+                        $.contact().action(operator.options.table, action);
                     }
                 );
             },
@@ -104,15 +92,14 @@
                         field: field,
                         value: value
                     },
-                    url: page.siteRoot() + operator.options.table + '/' + action + (action === 'edit' ? '/' + $('#id').val() : ''),
+                    url: page.siteRoot() + operator.options.table + '/' + action +
+                        (action === 'edit' ? '/' + $('#id').val() : ''),
                     success: function (result) {
                         if (field === operator.options.groupId) {
                             var $corpId = $('#' + operator.options.corpId);
                             if ($corpId.length === 0) {
                                 $corp.find('.input-group').append(result['corpList']);
-                                if ($corpId.find('option').length <= 1) {
-                                    $corpId.prop('disabled', true);
-                                }
+                                if ($corpId.find('option').length <= 1) $corpId.prop('disabled', true);
                                 $corpId.select2();
                             }
                             $school.find('.input-group').append(result['schoolList']);
