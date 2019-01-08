@@ -2,23 +2,13 @@
 namespace App\Http\Controllers\Wechat;
 
 use App\Facades\Wechat;
-use App\Helpers\Wechat\WXBizMsgCrypt;
+use App\Helpers\{Constant, Wechat\WXBizMsgCrypt};
 use App\Http\Controllers\Controller;
-use App\Models\Corp;
-use App\Models\Department;
-use App\Models\DepartmentType;
-use App\Models\DepartmentUser;
-use App\Models\Educator;
-use App\Models\Group;
-use App\Models\Mobile;
-use App\Models\School;
-use App\Models\User;
+use App\Models\{Corp, Department, DepartmentType, DepartmentUser, Educator, Group, Mobile, School, User};
 use Doctrine\Common\Inflector\Inflector;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Database\Eloquent\{Builder, Model};
+use Illuminate\Support\Facades\{DB, Request};
 use Throwable;
 
 /**
@@ -49,8 +39,8 @@ class SyncController extends Controller {
         
         $paths = explode('/', Request::path());
         $this->corp = Corp::whereAcronym($paths[0])->first();
-        // $this->schools = $this->corp->schools;
-        // $this->schoolDepartmentIds = $this->schools->pluck('department_id')->toArray();
+        $this->schools = $this->corp->schools;
+        $this->schoolDepartmentIds = $this->schools->pluck('department_id')->toArray();
         
     }
     
@@ -68,24 +58,12 @@ class SyncController extends Controller {
             DB::transaction(function () {
                 $this->event = $this->event();
                 $type = $this->event->{'Event'};
-                switch ($type) {
-                    case 'subscribe':       # 关注
-                        User::whereUserid($this->event->{'FromUserName'})->first()->update([
-                            'avatar_url' => $this->member()->{'avatar'},
-                            'subscribed' => 1,
-                        ]);
-                        break;
-                    case 'unsubscribe':     # 取消关注
-                        User::whereUserid($this->event->{'FromUserName'})->first()->update([
-                            'subscribed' => 0,
-                        ]);
-                        break;
-                    case 'change_contact':  # 通讯录变更
-                        $changeType = $this->event->{'ChangeType'};
-                        $this->{Inflector::camelize($changeType)}();
-                        break;
-                    default:
-                        break;
+                if (in_array($type, ['subscribe', 'unsubscribe'])) {
+                    $data = ['subscribed' => $type == 'subscribe' ? 1 : 0];
+                    if ($type == 'subscribe') $data['avatar_url'] = $this->member()->{'avatar'};
+                    User::whereUserid($this->event->{'FromUserName'})->first()->update($data);
+                } elseif ($type == 'change_contact') {
+                    $this->{Inflector::camelize($this->event->{'ChangeType'})}();
                 }
             });
         } catch (Exception $e) {
@@ -102,54 +80,33 @@ class SyncController extends Controller {
      * @throws Throwable
      */
     protected function createUser() {
-    
-        # 创建用户(教职员工)
-        $data = $this->data();
-        $data['username'] = $data['userid'];
-        $data['password'] = bcrypt('12345678');
-        $data['synced'] = 1;
-        $data['enabled'] = 1;
-        $role = $this->role();
-        $school = null;
-        switch ($role) {
-            case 'educator':
-                $school = $this->school();
-                $data['group_id'] = Group::where([
-                    'name' => '教职员工',
-                    'school_id' => $school->id
-                ])->first()->id;
-                break;
-            case 'school':
-                $data['group_id'] = Group::whereName('学校')->first()->id;
-                break;
-            case 'corp':
-                $data['group_id'] = Group::whereName('企业')->first()->id;
-                break;
-            default:
-                break;
+        
+        try {
+            DB::transaction(function () {
+                $data = $this->data();
+                $groupId = $this->groupId();
+                $data['username'] = $data['userid'];
+                $data['group_id'] = $groupId;
+                $data['password'] = bcrypt('12345678');
+                $data['synced'] = $data['enabled'] = 1;
+                $user = User::create($data);
+                $departmentIds = [$this->corp->department_id];
+                if (Group::find($groupId)->name != '企业') {
+                    Educator::create(array_combine(
+                        Constant::EDUCATOR_FIELDS,
+                        [$user->id, $this->school()->id, 0, 1]
+                    ));
+                    $departmentIds = (array)$this->event->{'Department'};
+                }
+                (new DepartmentUser)->storeByUserId($user->id, $departmentIds);
+                Mobile::create(array_combine(
+                    Constant::MOBILE_FIELDS,
+                    [$user->id, $this->event->{'Mobile'}, 1, 1]
+                ));
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
-        $user = User::create($data);
-        if ($role != 'corp') {
-            # 创建教职员工
-            Educator::create([
-                'user_id'   => $user->id,
-                'school_id' => $school->id,
-                'sms_quote' => 0,
-                'enabled'   => 1
-            ]);
-            $departmentIds = (array) $this->event->{'Department'};
-        } else {
-            $departmentIds = [$this->corp->department_id];
-        }
-        # 创建部门&用户绑定关系
-        (new DepartmentUser)->storeByUserId($user->id, $departmentIds);
-        # 保存用户手机号码
-        Mobile::create([
-            'user_id' => $user->id,
-            'mobile' => $this->event->{'Mobile'},
-            'isdefault' => 1,
-            'enabled' => 1
-        ]);
         
     }
     
@@ -159,45 +116,33 @@ class SyncController extends Controller {
      * @throws Throwable
      */
     protected function updateUser() {
-    
-        # 更新用户
-        $user = User::whereUserid($this->event->{'UserID'})->first();
-        if (!$user) {
-            $this->createUser();
-        } else {
-            $user->update($this->data());
-            # 更新用户手机号码
-            if (property_exists($this->event, 'Mobile')) {
-                Mobile::where(['user_id' => $user->id, 'isdefault' => 1])
-                    ->first()->update(['mobile' => $this->event->{'Mobile'}]);
-            }
-            # 更新用户所属部门
-            if (property_exists($this->event, 'Department')) {
-                $du = new DepartmentUser;
-                $du->where('user_id', $user->id)->delete();
-                $role = $this->role();
-                $departmentIds = (array) $this->event->{'Department'};
-                switch ($role) {
-                    case 'educator':
-                        $user->update([
-                            'group_id' => Group::where([
-                                'name' => '教职员工',
-                                'school_id' => $this->school()->id
-                            ])
-                        ]);
-                        break;
-                    case 'school':
-                        $user->update(['group_id' => Group::whereName('学校')->first()->id]);
-                        break;
-                    case 'corp':
-                        $user->update(['group_id' => Group::whereName('企业')->first()->id]);
-                        $departmentIds = [$this->corp->department_id];
-                        break;
-                    default:
-                        break;
+        
+        try {
+            DB::transaction(function () {
+                # 更新用户
+                if (!($user = User::whereUserid($this->event->{'UserID'})->first())) {
+                    $this->createUser();
+                } else {
+                    $user->update($this->data());
+                    # 更新用户手机号码
+                    !property_exists($this->event, 'Mobile') ?:
+                        Mobile::where(['user_id' => $user->id, 'isdefault' => 1])->first()
+                            ->update(['mobile' => $this->event->{'Mobile'}]);
+                    # 更新用户所属部门
+                    if (property_exists($this->event, 'Department')) {
+                        $du = new DepartmentUser;
+                        $du->where(['user_id' => $user->id, 'enabled' => 1])->delete();
+                        $groupId = $this->groupId();
+                        $user->update(['group_id' => $groupId]);
+                        $departmentIds = Group::find($groupId)->first()->name == '企业'
+                            ? [$this->corp->department_id]
+                            : (array)$this->event->{'Department'};
+                        $du->storeByUserId($user->id, $departmentIds);
+                    }
                 }
-                $du->storeByUserId($user->id, $departmentIds);
-            }
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
         
     }
@@ -208,9 +153,9 @@ class SyncController extends Controller {
      * @throws Throwable
      */
     protected function deleteUser() {
-    
-        $userId = User::whereUserid($this->event->{'UserID'})->first()->id;
-        (new User)->purge($userId);
+        
+        !($user = User::whereUserid($this->event->{'UserID'})->first())
+            ?: (new User)->purge($user->id);
         
     }
     
@@ -218,15 +163,15 @@ class SyncController extends Controller {
      * 创建部门
      */
     protected function createParty() {
-    
-        $data = [
-            'id' => $this->event->{'Id'},
-            'name' => $this->event->{'Name'},
-            'parent_id' => $this->event->{'ParentId'},
+        
+        !Department::find($parentId = $this->event->{'ParentId'})
+            ?: Department::create([
+            'id'                 => $this->event->{'Id'},
+            'name'               => $this->event->{'Name'},
+            'parent_id'          => $parentId,
             'department_type_id' => DepartmentType::whereName('其他')->first()->id,
-            'enabled' => 1
-        ];
-        Department::create($data);
+            'enabled'            => 1,
+        ]);
         
     }
     
@@ -234,16 +179,18 @@ class SyncController extends Controller {
      * 更新部门
      */
     protected function updateParty() {
-    
-        $department = Department::find($this->event->{'Id'});
-        if (!$department) {
-            $this->createParty();
-        } else {
-            $department->update([
-                'name' => $this->event->{'Name'},
-                'parent_id' => $this->event->{'ParentId'}
-            ]);
-        }
+        
+        list($department, $parent) = array_map(
+            function ($name) {
+                return Department::find($this->event->{$name});
+            }, ['Id', 'ParentId']
+        );
+        !$department
+            ? $this->createParty()
+            : (!$parent ?: $department->{'update'}([
+            'name'      => $this->event->{'Name'},
+            'parent_id' => $parent->id,
+        ]));
         
     }
     
@@ -253,8 +200,9 @@ class SyncController extends Controller {
      * @throws Throwable
      */
     protected function deleteParty() {
-    
-        (new Department)->remove($this->event->{'Id'});
+        
+        $id = $this->event->{'Id'};
+        !($department = Department::find($id)) ?: $department->remove($id);
         
     }
     
@@ -262,8 +210,6 @@ class SyncController extends Controller {
      * 更新标签
      */
     protected function updateTag() {
-    
-    
     
     }
     
@@ -320,9 +266,7 @@ class SyncController extends Controller {
             $timestamp
         );
         
-        return $errcode
-            ? $errcode
-            : simplexml_load_string($content, 'SimpleXMLElement', LIBXML_NOCDATA);
+        return $errcode ?? simplexml_load_string($content, 'SimpleXMLElement', LIBXML_NOCDATA);
         
     }
     
@@ -333,18 +277,20 @@ class SyncController extends Controller {
      */
     private function member() {
         
-        $userid = $this->event->{'UserID'};
         $token = Wechat::getAccessToken(
             $this->corp->corpid,
             $this->corp->contact_sync_secret,
             true
         );
-        if ($token['errcode']) {
-            return $token['errcode'];
-        }
-        $member = json_decode(Wechat::getUser($token['access_token'], $userid));
+        if ($token['errcode']) return $token['errcode'];
+        $member = json_decode(
+            Wechat::getUser(
+                $token['access_token'],
+                $this->event->{'UserID'}
+            ), true
+        );
         
-        return $member->{'errcode'} ? $member->{'errcode'} : $member;
+        return $member['errcode'] ?? $member;
         
     }
     
@@ -355,21 +301,16 @@ class SyncController extends Controller {
      */
     private function data() {
         
-        $data = [];
         foreach (self::MEMBER_PROPERTIES as $property => $field) {
             if (property_exists($this->event, $property)) {
                 $value = $this->event->{$property};
-                if ($property == 'Gender') {
-                    $value = $value == 1 ? 0 : 1;
-                }
-                if ($property == 'Status') {
-                    $value = $value == 1 ? 1 : 0;
-                }
+                $property != 'Gender' ?: $value = $value == 1 ? 0 : 1;
+                $property != 'Status' ?: $value = $value == 1 ? 1 : 0;
                 $data[$field] = $value;
             }
         }
         
-        return $data;
+        return $data ?? [];
         
     }
     
@@ -378,28 +319,30 @@ class SyncController extends Controller {
      *
      * @return string
      */
-    private function role() {
+    private function groupId() {
         
         $department = new Department;
-        $departmentIds = $this->event->{'Department'};
-        $dIds = array_intersect(
-            $departmentIds,
-            array_unique(Corp::pluck('deparmtentid')->toArray())
+        list($cGId, $sGId) = array_map(
+            function ($name) {
+                return Group::whereName($name)->first()->id;
+            }, ['企业', '学校']
         );
-        if (!empty($dIds)) { return 'corp'; }
+        $departmentIds = $this->event->{'Department'};
         foreach ($this->schoolDepartmentIds as $schoolDepartmentId) {
             $schoolDepartmentIds = array_merge(
                 $schoolDepartmentId,
                 $department->subIds($schoolDepartmentId)
             );
             $diffs = array_diff($departmentIds, $schoolDepartmentIds);
-            if (empty($diffs)) return in_array($schoolDepartmentId, $departmentIds) ? 'school' : 'educator';
-            if (sizeof($diffs) == sizeof($departmentIds)) continue;
-            
-            return 'corp';
+            if (empty($diffs)) {
+                return in_array($schoolDepartmentId, $departmentIds) ? $sGId
+                    : Group::where([
+                        'name' => '教职员工', 'school_id' => $this->school()->id,
+                    ])->first()->id;
+            }
         }
         
-        return 'educator';
+        return $cGId;
         
     }
     
@@ -410,8 +353,9 @@ class SyncController extends Controller {
      */
     private function school() {
         
-        $departmentId = head((array)$this->event->{'Department'});
-        $schoolDepartmentId = (new Department)->departmentId($departmentId);
+        $schoolDepartmentId = (new Department)->departmentId(
+            head((array)$this->event->{'Department'})
+        );
         
         return School::whereDepartmentId($schoolDepartmentId)->first();
         

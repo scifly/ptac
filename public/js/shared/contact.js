@@ -218,8 +218,7 @@
                     $studentIds.push(this.value);
                 });
                 if ($studentIds.length !== 0) {
-                    var index = $.inArray(studentId, $studentIds);
-                    if (index >= 0) {
+                    if ($.inArray(studentId, $studentIds) >= 0) {
                         page.inform('保存监护关系', '已有该学生的监护关系！', page.failure);
                         return false;
                     }
