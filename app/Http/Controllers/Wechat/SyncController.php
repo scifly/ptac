@@ -329,7 +329,7 @@ class SyncController extends Controller {
             }, ['企业', '学校']
         );
         $departmentIds = $this->event->{'Department'};
-        Log::info('departmentIds', $departmentIds);
+        Log::debug(json_encode($departmentIds));
         foreach ($this->schoolDepartmentIds as $schoolDepartmentId) {
             $schoolDepartmentIds = array_merge(
                 [$schoolDepartmentId],
