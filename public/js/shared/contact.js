@@ -83,9 +83,7 @@
                             return false;
                         }
                     });
-                    if (!defaultChecked) {
-                        $($defaults[0]).iCheck('check');
-                    }
+                    if (!defaultChecked) $($defaults[0]).iCheck('check');
                     return false;
                 });
             },

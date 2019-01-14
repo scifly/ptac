@@ -8,7 +8,7 @@ use App\Models\{Corp, Department, DepartmentType, DepartmentUser, Educator, Grou
 use Doctrine\Common\Inflector\Inflector;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Model};
-use Illuminate\Support\Facades\{DB, Request};
+use Illuminate\Support\Facades\{DB, Log, Request};
 use Throwable;
 
 /**
@@ -57,6 +57,7 @@ class SyncController extends Controller {
         try {
             DB::transaction(function () {
                 $this->event = $this->event();
+                Log::debug(json_encode($this->event, JSON_UNESCAPED_UNICODE));
                 $type = $this->event->{'Event'};
                 if (in_array($type, ['subscribe', 'unsubscribe'])) {
                     $data = ['subscribed' => $type == 'subscribe' ? 1 : 0];
