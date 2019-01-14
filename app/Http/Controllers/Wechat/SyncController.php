@@ -303,6 +303,7 @@ class SyncController extends Controller {
      */
     private function data() {
         
+        Log::debug(json_encode($this->event));
         foreach (self::MEMBER_PROPERTIES as $property => $field) {
             if (property_exists($this->event, $property)) {
                 $value = $this->event->{$property};
