@@ -84,7 +84,6 @@ class SyncController extends Controller {
         try {
             DB::transaction(function () {
                 $data = $this->data();
-                Log::info('data: ', $data);
                 $groupId = $this->groupId();
                 $data['username'] = $data['userid'];
                 $data['group_id'] = $groupId;
@@ -156,7 +155,7 @@ class SyncController extends Controller {
     protected function deleteUser() {
         
         !($user = User::whereUserid($this->event->{'UserID'})->first())
-            ?: (new User)->purge($user->id);
+            ?: $user->purge($user->id);
         
     }
     
@@ -303,7 +302,6 @@ class SyncController extends Controller {
      */
     private function data() {
         
-        Log::debug(json_encode($this->event));
         foreach (self::MEMBER_PROPERTIES as $property => $field) {
             if (property_exists($this->event, $property)) {
                 $value = $this->event->{$property};
