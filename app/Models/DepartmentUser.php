@@ -51,8 +51,6 @@ class DepartmentUser extends Model {
         
         try {
             DB::transaction(function () use ($userId, $departmentIds, $custodian) {
-                $sDepartmentId = School::find($this->schoolId())->department_id;
-                $sGroupId = Group::whereName('学校')->first()->id;
                 $enabled = $custodian ? Constant::DISABLED : Constant::ENABLED;
                 $this->where(['user_id' => $userId, 'enabled' => $enabled])->delete();
                 $records = [];
@@ -62,12 +60,16 @@ class DepartmentUser extends Model {
                     $record['department_id'] = $departmentId;
                     $records[] = $record;
                 }
-                if (
-                    User::find($userId)->group_id == $sGroupId &&
-                    !in_array($sDepartmentId, $departmentIds)
-                ) {
-                    $record['department_id'] = $sDepartmentId;
-                    $records[] = $record;
+                if ($schoolId = $this->schoolId()) {
+                    $sDepartmentId = School::find($schoolId)->department_id;
+                    $sGroupId = Group::whereName('学校')->first()->id;
+                    if (
+                        User::find($userId)->group_id == $sGroupId &&
+                        !in_array($sDepartmentId, $departmentIds)
+                    ) {
+                        $record['department_id'] = $sDepartmentId;
+                        $records[] = $record;
+                    }
                 }
                 $this->insert($records);
             });
