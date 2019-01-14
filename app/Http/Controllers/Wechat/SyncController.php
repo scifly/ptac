@@ -267,7 +267,8 @@ class SyncController extends Controller {
             $timestamp
         );
         
-        return $errcode ?? simplexml_load_string($content, 'SimpleXMLElement', LIBXML_NOCDATA);
+        return $errcode ? $errcode
+            : simplexml_load_string($content, 'SimpleXMLElement', LIBXML_NOCDATA);
         
     }
     
