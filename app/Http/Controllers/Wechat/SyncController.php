@@ -305,8 +305,7 @@ class SyncController extends Controller {
         foreach (self::MEMBER_PROPERTIES as $property => $field) {
             if (property_exists($this->event, $property)) {
                 $value = $this->event->{$property};
-                $property != 'Gender' ?: $value = $value == 1 ? 0 : 1;
-                $property != 'Status' ?: $value = $value == 1 ? 1 : 0;
+                $property != 'Status' ?: ($value = $value == 1 ? 1 : 0);
                 $data[$field] = $value;
             }
         }
