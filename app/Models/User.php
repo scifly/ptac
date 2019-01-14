@@ -719,8 +719,8 @@ class User extends Authenticatable {
                 $method != 'create' ?: $params = array_merge($params, ['to_invite' => false]);
             }
             $members[] = [
-                'method' => $method,
                 'params' => $params,
+                'method' => $method,
             ];
         }
         SyncMember::dispatch($members ?? [], $id ?? Auth::id());
