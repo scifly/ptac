@@ -77,6 +77,8 @@ class SyncMember implements ShouldQueue {
         } catch (Throwable $e) {
             $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
             $this->response['message'] = $e->getMessage();
+            !$this->userId ?: $this->broadcaster->broadcast($this->response);
+            throw $e;
         }
         !$this->userId ?: $this->broadcaster->broadcast($this->response);
         
