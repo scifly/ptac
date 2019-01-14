@@ -107,9 +107,8 @@ class HomeController extends Controller {
             __('messages.menu.misconfigured')
         );
         # 刷新页面时打开当前卡片, 不一定是第一个卡片
-        $tabArray[0]['active'] = true;
+        $tabArray[0]['active'] = session('tabId') ? true : false;
         if (session('tabId')) {
-            $tabArray[0]['active'] = false;
             $key = array_search(
                 'tab_' . session('tabId'),
                 array_column($tabArray, 'id')
