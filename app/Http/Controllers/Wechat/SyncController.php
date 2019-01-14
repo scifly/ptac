@@ -22,7 +22,7 @@ class SyncController extends Controller {
     static $category = 1;
     
     const MEMBER_PROPERTIES = [
-        'NewUserID'   => 'userid',
+        'UserID'   => 'userid',
         'Name'        => 'realname',
         'Position'    => 'position',
         'Gender'      => 'gender',
