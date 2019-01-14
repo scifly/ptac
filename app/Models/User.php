@@ -718,10 +718,7 @@ class User extends Authenticatable {
                 # 在创建会员时，默认情况下不向该会员发送邀请
                 $method != 'create' ?: $params = array_merge($params, ['to_invite' => false]);
             }
-            $members[] = [
-                'params' => $params,
-                'method' => $method,
-            ];
+            $members[] = [$params, $method];
         }
         SyncMember::dispatch($members ?? [], $id ?? Auth::id());
         
