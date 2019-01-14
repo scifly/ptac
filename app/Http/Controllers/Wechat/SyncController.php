@@ -84,6 +84,7 @@ class SyncController extends Controller {
         try {
             DB::transaction(function () {
                 $data = $this->data();
+                Log::info('data: ', $data);
                 $groupId = $this->groupId();
                 $data['username'] = $data['userid'];
                 $data['group_id'] = $groupId;
