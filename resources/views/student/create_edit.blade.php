@@ -81,7 +81,7 @@
                         @include('shared.icon_addon', ['class' => 'fa-envelope-o'])
                         {{ Form::text('user[email]', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '(请输入电子邮件地址)',
+                            'placeholder' => '(可选)',
                             'type' => 'email',
                             'maxlength' => '255',
                             'data-parsley-type'=>"email"

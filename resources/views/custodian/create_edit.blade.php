@@ -37,7 +37,7 @@
                         @include('shared.icon_addon', ['class' => 'fa-language'])
                         {{ Form::text('user[english_name]', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '(请填写英文名, 可选)',
+                            'placeholder' => '(可选)',
                             'type' => 'string',
                             'data-parsley-length' => '[2, 255]'
                         ]) }}
@@ -63,7 +63,7 @@
                         @include('shared.icon_addon', ['class' => 'fa-phone'])
                         {{ Form::text('user[telephone]', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '(请输入座机号码, 可选)',
+                            'placeholder' => '(可选)',
                         ]) }}
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                         @include('shared.icon_addon', ['class' => 'fa-envelope-o'])
                         {{ Form::text('user[email]', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '(请输入电子邮件地址)',
+                            'placeholder' => '(可选)',
                             'maxlength' => '255',
                             'data-parsley-type'=>"email"
                         ]) }}
