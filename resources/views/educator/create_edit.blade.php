@@ -36,7 +36,7 @@
                         @include('shared.icon_addon', ['class' => 'fa-language'])
                         {{ Form::text('user[english_name]', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '(请填写英文名, 可选)',
+                            'placeholder' => '(可选)',
                             'data-parsley-length' => '[2, 255]'
                         ]) }}
                     </div>
@@ -66,7 +66,7 @@
                         @include('shared.icon_addon', ['class' => 'fa-user-o'])
                         {!! Form::text('user[username]', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '(请输入用户名)',
+                            'placeholder' => '(最少6个字符)',
                             'required' => 'true',
                             'data-parsley-length' => '[6,30]'
                         ]) !!}
@@ -84,7 +84,7 @@
                             @include('shared.icon_addon', ['class' => 'fa-lock'])
                             {!! Form::password('user[password]', [
                                 'class' => 'form-control text-blue',
-                                'placeholder' => '(请输入密码)',
+                                'placeholder' => '(最少8个字符)',
                                 'required' => 'true',
                                 'minlength' => '8'
                             ]) !!}
@@ -101,7 +101,7 @@
                             @include('shared.icon_addon', ['class' => 'fa-lock'])
                             {!! Form::password('user[password_confirmation]', [
                                 'class' => 'form-control text-blue',
-                                'placeholder' => '(请确认密码)',
+                                'placeholder' => '(最少8个字符)',
                                 'required' => 'true',
                                 'minlength' => '8'
                             ]) !!}
@@ -119,7 +119,7 @@
                         @include('shared.icon_addon', ['class' => 'fa-phone'])
                         {{ Form::text('user[telephone]', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '(请输入座机号码, 可选)',
+                            'placeholder' => '(可选)',
                         ]) }}
                     </div>
                 </div>
@@ -134,7 +134,7 @@
                         @include('shared.icon_addon', ['class' => 'fa-envelope-o'])
                         {!! Form::email('user[email]', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '(请输入电子邮件地址)',
+                            'placeholder' => '(可选)',
                         ]) !!}
                     </div>
                 </div>
@@ -149,7 +149,7 @@
                         @include('shared.icon_addon', ['class' => 'fa-briefcase'])
                         {!! Form::text('user[position]', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '(请输入职务)',
+                            'placeholder' => '(可选)',
                         ]) !!}
                     </div>
                 </div>
