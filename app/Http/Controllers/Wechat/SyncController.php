@@ -328,7 +328,7 @@ class SyncController extends Controller {
                 return Group::whereName($name)->first()->id;
             }, ['企业', '学校']
         );
-        $departmentIds = json_decode($this->event->{'Department'}, true);
+        $departmentIds = json_decode($this->event/*->{'Department'}*/, true);
         Log::info('deptIds: ', $departmentIds);
         foreach ($this->schoolDepartmentIds as $schoolDepartmentId) {
             $schoolDepartmentIds = array_merge(
