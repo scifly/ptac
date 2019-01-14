@@ -29,7 +29,7 @@ class EducatorRequest extends FormRequest {
         
         $rules = [
             'user.realname'              => 'required|string|between:2,255',
-            'user.english_name'          => 'required|string|between:2,64',
+            'user.english_name'          => 'nullable|string|between:2,64',
             'user.gender'                => 'required|boolean',
             'user.group_id'              => 'required|integer',
             'user.username'              => 'required|string|between:2,255',
