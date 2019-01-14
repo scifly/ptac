@@ -57,7 +57,6 @@ class SyncController extends Controller {
         try {
             DB::transaction(function () {
                 $this->event = $this->event();
-                Log::debug(json_encode($this->event, JSON_UNESCAPED_UNICODE));
                 $type = $this->event->{'Event'};
                 if (in_array($type, ['subscribe', 'unsubscribe'])) {
                     $data = ['subscribed' => $type == 'subscribe' ? 1 : 0];
@@ -332,7 +331,7 @@ class SyncController extends Controller {
         $departmentIds = $this->event->{'Department'};
         foreach ($this->schoolDepartmentIds as $schoolDepartmentId) {
             $schoolDepartmentIds = array_merge(
-                $schoolDepartmentId,
+                [$schoolDepartmentId],
                 $department->subIds($schoolDepartmentId)
             );
             $diffs = array_diff($departmentIds, $schoolDepartmentIds);
