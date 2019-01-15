@@ -3,12 +3,14 @@
 	<link rel="stylesheet" href="{!! asset('css/wechat/score_center/graph.css') !!}">
 @endsection
 @section('content')
-	<div class="header">
-		<div class="title">学生：{!! $student->user->realname !!}</div>
-		<div class="myclass">{!! $student->squad->name !!}</div>
+	<header class="wechat-header">
+		<h1 class="wechat-title">成绩中心</h1>
+		<p class="wechat-sub-title">
+			学生：{!! $student->user->realname . ' : ' . $student->squad->name !!}
+		</p>
 		{!! Form::hidden('student_id', $student->id, ['id' => 'student_id']) !!}
 		{!! Form::hidden('exam_id', $exam->id, ['id' => 'exam_id']) !!}
-	</div>
+	</header>
 	<div class="tab-bar">
 		<div class="tab-item active">
 			总分{!! Form::hidden('', -1) !!}

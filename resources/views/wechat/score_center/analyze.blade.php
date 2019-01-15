@@ -4,10 +4,12 @@
     <link rel="stylesheet" href="{!! asset('css/wechat/score_center/analyze.css') !!}">
 @endsection
 @section('content')
-    <div class="header">
-        <div class="title">{!! $data['examName'] !!}</div>
-        <div class="time">{!! $data['className'] !!}</div>
-    </div>
+    <header class="wechat-header">
+        <h1 class="wechat-title">成绩中心</h1>
+        <p class="wechat-sub-title">
+            {!! $data['examName'] . ' : ' . $data['className'] !!}
+        </p>
+    </header>
     <div class="main" style="width: 92%;padding: 0 4%;">
         @if(!empty($data['oneData']))
             @foreach($data['oneData'] as $one)

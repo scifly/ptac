@@ -6,7 +6,7 @@
 @section('content')
     <header class='wechat-header'>
         <h1 class="wechat-title">成绩中心</h1>
-        <p class='wechat-sub-title'>教职员工</p>
+        <p class='wechat-sub-title'>考试列表</p>
     </header>
     <div class="bd">
     <div class="weui-cells__title">请选择班级</div>

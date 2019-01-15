@@ -4,16 +4,16 @@
     <link rel="stylesheet" href="{!! asset('css/wechat/score_center/squad.css') !!}">
 @endsection
 @section('content')
-    <div class="header">
-        <div class="title">{!! $data['exam'] !!}</div>
-        <div class="myclass">{!! $data['exam'] !!}</div>
-    </div>
+    <header class="wechat-header">
+        <h1 class="wechat-title">成绩中心</h1>
+        <p class="wechat-sub-title">{!! $data['exam'] !!}</p>
+    </header>
     <div class="weui-search-bar" id="searchBar">
         <form class="weui-search-bar__form" action="">
             <div class="weui-search-bar__box">
                 <i class="weui-icon-search"></i>
-                <input type="search" class="weui-search-bar__input" name="student" id="searchInput" placeholder="搜索"
-                       required="">
+                <input type="search" class="weui-search-bar__input" name="student"
+                       id="searchInput" placeholder="搜索" required="">
                 <a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
             </div>
             <label class="weui-search-bar__label" id="searchText"

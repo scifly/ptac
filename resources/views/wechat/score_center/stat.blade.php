@@ -4,19 +4,12 @@
     <link rel="stylesheet" href="{!! asset('/css/wechat/score_center/stat.css') !!}">
 @endsection
 @section('content')
-    <div class="header">
-        <div class="info">
-            <div class="time">
-                <div class="subject-title">{!! date('Y-m', strtotime($examDate)) !!}</div>
-                <div class="days">{!! date('d', strtotime($examDate)) !!}日</div>
-            </div>
-            <div class="test">
-                <div class="subject-title">考试名</div>
-                <div class="testName">{!! $examName !!}</div>
-            </div>
-        </div>
-        <div class="score">{!! $data['total']['total_score'] !!}分</div>
-    </div>
+    <header class="wechat-header">
+        <h1 class="wechat-title">成绩中心</h1>
+        <p class="wechat-sub-title">
+            {!! $examName . ' : ' . $examDate . ' : ' . $data['total']['total_score'] !!}分
+        </p>
+    </header>
     <div class="otherinfo">
         <div class="average">
             <div class="byclass">
