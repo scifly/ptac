@@ -5,9 +5,7 @@
 @endsection
 @section('content')
 	<header class="wechat-header">
-		<h1 class="wechat-title">
-			{!! $module->name !!}
-		</h1>
+		<h1 class="wechat-title">{!! $module->name !!}</h1>
 		<p class="wechat-sub-title"></p>
 	</header>
 	<div id="main" style="width: 100%;height: auto;">
