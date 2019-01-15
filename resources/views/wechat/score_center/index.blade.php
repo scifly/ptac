@@ -51,7 +51,7 @@
             @endforeach
         </div>
     @endif
-    <div class="loadmore">
+    <div class="weui-loadmore weui-loadmore_line">
         <span class="weui-loadmore__tips">
             @if (!empty($exams))
                 <i class="icon iconfont icon-shuaxin"> 加载更多</i>
