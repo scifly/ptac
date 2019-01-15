@@ -1,8 +1,7 @@
 var $targetId = $('#target_id'),
-    $loadMore = $('.weui-loadmore'),
     $search = $('#search'),
     $examList = $('#exams'),
-    // $examLink = $('.exam-link'),
+    $loadMore = $('.weui-loadmore'),
     $tips = $('.weui-loadmore__tips'),
     start = 0;
 
@@ -10,7 +9,7 @@ $targetId.on('change', function () { examList(false); });
 $search.on('input', function () { examList(false) });
 $loadMore.click(function () { start++; examList(true); });
 $(document).on('click', '.exam-link', function () {
-    window.location = 'sc/detail?examId=' + $(this).data('value') +
+    window.location = 'score_centers/detail?examId=' + $(this).data('value') +
         '&targetId=' + $targetId.val() +
         ($(this).data('type') === 'student' ? '&student=1' : '');
 });
@@ -36,10 +35,14 @@ function examList(more) {
                             '<div class="weui-cell__ft time">' + exams[i]['start_date'] + '</div>' +
                         '</a>';
                 }
-                more ? $examList.append(html) : $examList.html(html);
+                if (more) {
+                    $examList.append(html);
+                    $tips.html('<i class="icon iconfont icon-shuaxin"> 加载更多</i>')
+                } else {
+                    $examList.html(html);
+                }
             } else {
-                // $loadMore.hide();
-                if (!more) $tips.html('暂无考试');
+                $tips.html('暂无考试');
             }
         },
         error: function (e) {
