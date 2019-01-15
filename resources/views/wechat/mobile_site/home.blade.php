@@ -13,11 +13,9 @@
     <div class="swiper-container swiper-container-horizontal" style="height: 230px;">
         <div class="swiper-wrapper" style="">
             @foreach($medias as $key => $media)
-                @if ($media)
-                    <div class="swiper-slide" data-swiper-slide-index="{!! $key !!}">
-                        <img src="../{!! $media->path !!}" alt="">
-                    </div>
-                @endif
+                <div class="swiper-slide" data-swiper-slide-index="{!! $key !!}">
+                    <img src="../{!! $media->path !!}" alt="">
+                </div>
             @endforeach
         </div>
         <div class="swiper-pagination swiper-pagination-bullets">
@@ -28,18 +26,16 @@
     </div>
     <!--九宫格图标-->
     <div class="weui-grids">
-        @if ($wapsite)
-            @foreach ($wapsite->wapSiteModules as $module)
-                @if ($module)
-                    <a href="{!! url(session('acronym') . '/mobile_sites/module?id=' . $module->id) !!}" class=" weui-grid js_grid">
-                        <div class=" weui-grid__icon">
-                            <img src="../{!! $module->media->path !!}" alt="">
-                        </div>
-                        <p class="weui-grid__label">{!! $module->name !!}</p>
-                    </a>
-                @endif
-            @endforeach
-        @endif
+        @foreach ($wapsite->wapSiteModules as $module)
+            <a href="{!! url(session('acronym') . '/mobile_sites/module?id=' . $module->id) !!}"
+               class="weui-grid js_grid"
+            >
+                <div class=" weui-grid__icon">
+                    <img src="../{!! $module->media->path !!}" alt="">
+                </div>
+                <p class="weui-grid__label">{!! $module->name !!}</p>
+            </a>
+        @endforeach
     </div>
 @endsection
 @section('script')
