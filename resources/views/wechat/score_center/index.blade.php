@@ -8,6 +8,7 @@
         <h1 class="wechat-title">成绩中心</h1>
         <p class='wechat-sub-title'>教职员工</p>
     </header>
+    <div class="bd">
     <div class="weui-cells__title">请选择班级</div>
     <div class="weui-cells">
         <div class="weui-cell weui-cell_select weui-cell_select-after">
@@ -56,9 +57,10 @@
             @if (!empty($exams))
                 <i class="icon iconfont icon-shuaxin"> 加载更多</i>
             @else
-                暂无数据
+                暂无考试
             @endif
         </span>
+    </div>
     </div>
 @endsection
 @section('script')
