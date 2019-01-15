@@ -38,7 +38,7 @@ function examList(more) {
                 }
                 more ? $examList.append(html) : $examList.html(html);
             } else {
-                $loadMore.hide();
+                // $loadMore.hide();
                 if (!more) $tips.html('暂无考试');
             }
         },
