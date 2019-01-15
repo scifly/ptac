@@ -4,17 +4,12 @@
 	<link rel="stylesheet" href="{!! asset('css/wechat/mobile_site/module.css') !!}">
 @endsection
 @section('content')
-<!--轮播图-->
-<div class="multi-role">
-	<div class="switchclass-item clearfix">
-		<div class="switchclass-head">
-			<div class="weui-cell">
-				<div class="weui-cell__bd title-name">
-					<div style="text-align: center;">{!! $module->name !!}</div>
-				</div>
-			</div>
-		</div>
-	</div>
+	<header class="wechat-header">
+		<h1 class="wechat-title">
+			{!! $module->name !!}
+		</h1>
+		<p class="wechat-sub-title"></p>
+	</header>
 	<div id="main" style="width: 100%;height: auto;">
 		<div class="weui-panel weui-panel_access">
 			<div class="weui-panel__bd">
@@ -38,7 +33,6 @@
 			</div>
 		</div>
 	</div>
-</div>
 @endsection
 @section('script')
 	<script>
