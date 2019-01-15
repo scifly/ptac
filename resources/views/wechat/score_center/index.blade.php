@@ -4,6 +4,10 @@
     <link rel="stylesheet" href="{!! asset('/css/wechat/score_center/index.css') !!}">
 @endsection
 @section('content')
+    <header class='wechat-header'>
+        <h1 class="wechat-title">成绩中心</h1>
+        <p class='wechat-sub-title'>教职员工</p>
+    </header>
     <div class="multi-role">
         <div class="header">
             <div class="switchclass-item clearfix">
