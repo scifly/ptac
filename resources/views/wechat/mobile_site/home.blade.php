@@ -4,16 +4,12 @@
     <link rel="stylesheet" href="{!! asset('/css/wechat/mobile_site/index.css') !!}">
 @endsection
 @section('content')
-    <!--轮播图-->
-    <div class="switchclass-item clearfix">
-        <div class="switchclass-head">
-            <div class="weui-cell">
-                <div class="weui-cell__bd title-name">
-                    <div>{!! $wapsite->site_title !!}</div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <header class="wechat-header">
+        <h1 class="wechat-title">
+            {!! $wapsite->school->name !!}
+        </h1>
+        <p class="wechat-sub-title">微网站</p>
+    </header>
     <div class="swiper-container swiper-container-horizontal" style="height: 230px;">
         <div class="swiper-wrapper" style="">
             @foreach($medias as $key => $media)
