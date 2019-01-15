@@ -18,7 +18,7 @@ function examList(more) {
     $.ajax({
         type: 'POST',
         dataType: 'json',
-        url: 'sc',
+        url: 'score_centers',
         data: {
             start: start,
             keyword: $search.val(),
