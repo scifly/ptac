@@ -1,23 +1,11 @@
 <?php
 namespace App\Helpers;
 
-use App\Models\{Action,
-    App,
-    CommType,
-    Corp,
-    Department,
-    DepartmentUser,
-    Exam,
-    Grade,
-    Group,
-    MediaType,
-    Menu,
-    MessageType,
-    School,
-    Squad,
-    Student,
-    Tab,
-    User};
+use App\Models\{
+    Action, App, CommType, Corp, Department, DepartmentUser,
+    Exam, Grade, Group, MediaType, Menu, MessageType, School,
+    Squad, Student, Tab, User
+};
 use App\Policies\Route;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -225,7 +213,7 @@ trait ModelTrait {
     function schoolIds($userId = null, $corpId = null) {
         
         $user = User::find($userId ?? Auth::id());
-        $schools = Collect([]);
+        $schools = new Collection;
         switch ($user->role($user->id)) {
             case '运营':
                 $schools = School::all();
@@ -248,15 +236,12 @@ trait ModelTrait {
                 $schools->push($user->educator->school);
                 break;
         }
-        dd($schools->when(
-            $corpId, function (Collection $schools) use ($corpId) {
-            return $schools->where('corp_id', $corpId);
-        })->pluck('id')->toArray());
-        
-        return $schools->when(
+        $schoolIds = $schools->when(
             $corpId, function (Collection $schools) use ($corpId) {
             return $schools->where('corp_id', $corpId);
         })->pluck('id')->toArray();
+        
+        return $schoolIds;
         
     }
     
