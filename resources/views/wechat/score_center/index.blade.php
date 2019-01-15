@@ -22,22 +22,21 @@
                 </div>
             </div>
             <div class="weui-search-bar" id="searchBar">
-                <form class="weui-search-bar__form" action="#">
-                    <div class="weui-search-bar__box">
-                        <i class="weui-icon-search"></i>
-                        {!! Form::search('search', null, [
-                            'id' => 'search',
-                            'class' => 'weui-search-bar__input',
-                            'placeholder' => '搜索',
-                        ]) !!}
-                        <a href="#" class="weui-icon-clear" id="searchClear"></a>
-                    </div>
-                    <label class="weui-search-bar__label" id="searchText"
-                           style="transform-origin: 0 0 0; opacity: 1; transform: scale(1, 1);">
-                        <i class="weui-icon-search"></i>
-                        <span>搜索</span>
-                    </label>
-                </form>
+                {!! Form::open(['method' => 'post', 'class' => 'weui-search-bar__form']) !!}
+                <div class="weui-search-bar__box">
+                    <i class="weui-icon-search"></i>
+                    {!! Form::search('search', null, [
+                        'id' => 'search',
+                        'class' => 'weui-search-bar__input',
+                        'placeholder' => '搜索',
+                    ]) !!}
+                    <a href="#" class="weui-icon-clear" id="searchClear"></a>
+                </div>
+                <label class="weui-search-bar__label" id="searchText">
+                    <i class="weui-icon-search"></i>
+                    <span>搜索</span>
+                </label>
+                {!! Form::close() !!}
                 <a href="#" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
             </div>
         </div>
