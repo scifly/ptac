@@ -8,39 +8,36 @@
         <h1 class="wechat-title">成绩中心</h1>
         <p class='wechat-sub-title'>教职员工</p>
     </header>
-    <div class="multi-role">
-        <div class="header">
-            <div class="switchclass-item clearfix">
-                <div class="switchclass-head">
-                    <div class="weui-cells__title">请选择班级</div>
-                    <div class="weui-cell weui-cell_select weui-cell_select-after">
-                        <div class="weui-cell__bd title-name">
-                            {!! Form::select('target_id', $targets, null, [
-                                'id' => 'target_id',
-                                'class' => 'weui-select'
-                            ] ) !!}
-                        </div>
+        <div class="switchclass-item clearfix">
+            <div class="switchclass-head">
+                <div class="weui-cells__title">请选择班级</div>
+                <div class="weui-cell weui-cell_select weui-cell_select-after">
+                    <div class="weui-cell__bd title-name">
+                        {!! Form::select('target_id', $targets, null, [
+                            'id' => 'target_id',
+                            'class' => 'weui-select'
+                        ] ) !!}
                     </div>
                 </div>
             </div>
-            <div class="weui-search-bar" id="searchBar">
-                {!! Form::open(['method' => 'post', 'class' => 'weui-search-bar__form']) !!}
-                <div class="weui-search-bar__box">
-                    <i class="weui-icon-search"></i>
-                    {!! Form::search('search', null, [
-                        'id' => 'search',
-                        'class' => 'weui-search-bar__input',
-                        'placeholder' => '搜索',
-                    ]) !!}
-                    <a href="#" class="weui-icon-clear" id="searchClear"></a>
-                </div>
-                <label class="weui-search-bar__label" id="searchText">
-                    <i class="weui-icon-search"></i>
-                    <span>搜索</span>
-                </label>
-                {!! Form::close() !!}
-                <a href="#" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
+        </div>
+        <div class="weui-search-bar" id="searchBar">
+            {!! Form::open(['method' => 'post', 'class' => 'weui-search-bar__form']) !!}
+            <div class="weui-search-bar__box">
+                <i class="weui-icon-search"></i>
+                {!! Form::search('search', null, [
+                    'id' => 'search',
+                    'class' => 'weui-search-bar__input',
+                    'placeholder' => '搜索',
+                ]) !!}
+                <a href="#" class="weui-icon-clear" id="searchClear"></a>
             </div>
+            <label class="weui-search-bar__label" id="searchText">
+                <i class="weui-icon-search"></i>
+                <span>搜索</span>
+            </label>
+            {!! Form::close() !!}
+            <a href="#" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
         </div>
         <!--考试列表-->
         @if (!empty($exams))
@@ -65,7 +62,6 @@
                 @endif
             </span>
         </div>
-    </div>
 @endsection
 @section('script')
     <script src="{!! asset('/js/wechat/score_center/index.js') !!}"></script>
