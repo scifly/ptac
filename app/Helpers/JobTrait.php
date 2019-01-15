@@ -26,8 +26,9 @@ trait JobTrait {
         
         $results = [];
         $fields = ['message', 'result', 'targets'];
+        $targetSize = ['wx' => 1000, 'sms' => 2000];
         try {
-            DB::transaction(function () use ($message, $results, $fields) {
+            DB::transaction(function () use ($message, $results, $fields, $targetSize) {
                 $content = json_decode($message->content, true);
                 $userIds = User::whereIn('userid', explode('|', $content['touser']))
                     ->pluck('id')->toArray();
@@ -46,7 +47,7 @@ trait JobTrait {
                     if ($realTargetUsers->where('subscribed', 1)->count()) {
                         $userids = $wxTargets->where('subscribed', 1)->pluck('userid')->toArray();
                         # 微信消息发送的会员对象每次不得超过1000名
-                        $groups = array_chunk($userids, 1000);
+                        $groups = array_chunk($userids, $targetSize['wx']);
                         foreach ($groups as $group) {
                             $content['touser'] = implode('|', $group);
                             $result = $message->sendWx($message->app, $content);
@@ -62,7 +63,7 @@ trait JobTrait {
                     }
                 }
                 if (!empty($mobiles)) {
-                    $chunks = array_chunk($mobiles, 2000);
+                    $chunks = array_chunk($mobiles, $targetSize['sms']);
                     foreach ($chunks as $chunk) {
                         $result = $message->sendSms($chunk, $sms ?? '');
                         $userIds = Mobile::whereIn('mobile', $chunk)->pluck('user_id');
@@ -98,7 +99,7 @@ trait JobTrait {
         if (!empty($illegals)) {
             try {
                 $job->{'excel'}($illegals, 'illegals', '错误数据', false);
-                $response['url'] = 'uploads/' . date('Y/m/d/') . 'illegals.xlsx';
+                $response['url'] = $this->filePath('illegals') . '.xlsx';
             } catch (Exception $e) {
                 $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
                 $response['message'] = $e->getMessage();
@@ -151,13 +152,14 @@ trait JobTrait {
      */
     function apiSync($action, $data, $response, $departmentId = null) {
         
-        $type = $departmentId ? '部门' : '人员';
         foreach ($data['schoolIds'] as $schoolId) {
-            $userIds = School::find($schoolId)->user_ids;
-            if ($userIds) {
+            if ($userIds = School::find($schoolId)->user_ids) {
                 foreach (explode(',', $userIds) as $userId) {
                     $className = 'App\\Apis\\' . ucfirst(User::find($userId)->position);
-                    $api = new $className($type, $action, $data, $response);
+                    $api = new $className(
+                        $departmentId ? '部门' : '人员',
+                        $action, $data, $response
+                    );
                     $api->{'sync'}();
                 }
             }

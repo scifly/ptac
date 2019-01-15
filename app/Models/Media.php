@@ -168,7 +168,7 @@ class Media extends Model {
                 file_get_contents($realPath)
             );
             if ($stored) {
-                $filePath = $this->uploadedFilePath($filename);
+                $filePath = $this->filePath($filename);
                 $media = $this->create([
                     'path'          => $filePath,
                     'remark'        => $remark,

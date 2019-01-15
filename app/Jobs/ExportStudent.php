@@ -87,7 +87,7 @@ class ExportStudent implements ShouldQueue {
         });
         $filename = 'student_exports';
         $this->excel(array_merge($this->titles, $records), $filename, '学籍', false);
-        $this->response['url'] = 'uploads/' . date('Y/m/d/') . $filename . '.xlsx';
+        $this->response['url'] = $this->filePath($filename) . '.xlsx';
         $this->broadcaster->broadcast($this->response);
         
     }

@@ -12,7 +12,7 @@
                         <div class="weui-cell__bd title-name">
                             {!! Form::select('target_id', $targets, null, [
                                 'id' => 'target_id',
-                                'class' => 'weui-input'
+                                'class' => 'weui-select'
                             ] ) !!}
                         </div>
                     </div>

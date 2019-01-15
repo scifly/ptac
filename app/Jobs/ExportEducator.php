@@ -93,7 +93,7 @@ class ExportEducator implements ShouldQueue {
     
         $filename = 'educator_exports';
         $this->excel(array_merge($this->titles, $records), $filename, '教职员工', false);
-        $this->response['url'] = 'uploads/' . date('Y/m/d/') . $filename . '.xlsx';
+        $this->response['url'] = $this->filePath($filename) . '.xlsx';
         $this->broadcaster->broadcast($this->response);
         
     }

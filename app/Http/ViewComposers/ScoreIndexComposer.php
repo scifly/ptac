@@ -129,7 +129,7 @@ class ScoreIndexComposer {
             'classes'        => $classList,
             'subjects'       => $subjectList,
             'items'          => $items,
-            'importTemplate' => 'uploads/' . date('Y/m/d/') . 'scores.xlsx',
+            'importTemplate' => $this->filePath('scores') . '.xlsx',
         ]);
         
     }

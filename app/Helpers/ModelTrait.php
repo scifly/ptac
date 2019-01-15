@@ -112,24 +112,14 @@ trait ModelTrait {
         $class = get_class($model);
         $reflectionClass = new ReflectionClass($class);
         foreach ($reflectionClass->getMethods() as $method) {
-            if ($method->isUserDefined() && $method->isPublic() && $method->class == $class) {
-                $doc = $method->getDocComment();
-                // if ($doc && stripos($doc, 'Relations\Has') !== false) {
-                if ($doc && stripos($doc, 'Has') !== false) {
-                    $relations[] = $method->getName();
-                }
-            }
+            if (!$method->isUserDefined() || !$method->isPublic() || $method->class != $class ) continue;
+            $doc = $method->getDocComment();
+            if ($doc && stripos($doc, 'Has') !== false) $relations[] = $method->getName();
         }
         foreach ($relations as $relation) {
-            if ($model->{$relation}) {
-                if (get_class($model->{$relation}) == 'Illuminate\Database\Eloquent\Collection') {
-                    if (count($model->{$relation})) {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            }
+            if (!$model->{$relation}) continue;
+            $isCollection = get_class($model->{$relation}) == 'Illuminate\Database\Eloquent\Collection';
+            if (!$isCollection || ($isCollection && $model->{$relation}->count())) return false;
         }
         
         return true;
@@ -173,14 +163,15 @@ trait ModelTrait {
      */
     function uris() {
         
-        if (!Request::route()) {
-            return null;
-        }
+        if (!Request::route()) return null;
         $controller = class_basename(Request::route()->controller);
-        $routes = Action::whereTabId(Tab::whereName($controller)->first()->id)
-            ->where('route', '<>', null)
-            ->pluck('route', 'method')
-            ->toArray();
+        $routes = [];
+        if ($tab = Tab::whereName($controller)->first()) {
+            $routes = Action::where([
+                ['tab_id', '=', $tab->id],
+                ['route', '<>', null]
+            ])->pluck('route', 'method')->toArray();
+        }
         $uris = [];
         foreach ($routes as $key => $value) {
             $uris[$key] = new Route($value);
@@ -236,12 +227,11 @@ trait ModelTrait {
                 $schools->push($user->educator->school);
                 break;
         }
-        $schoolIds = $schools->when(
+
+        return $schools->when(
             $corpId, function (Collection $schools) use ($corpId) {
             return $schools->where('corp_id', $corpId);
         })->pluck('id')->toArray();
-        
-        return $schoolIds;
         
     }
     
@@ -330,8 +320,7 @@ trait ModelTrait {
                 School::find($schoolId)->department_id, $type
             );
         } else {
-            $departments = $user->depts();
-            foreach ($departments as $d) {
+            foreach ($user->depts() as $d) {
                 $userIds = array_merge(
                     $this->userIds($d->id, $type), $userIds
                 );
@@ -340,7 +329,8 @@ trait ModelTrait {
         $userIds = array_unique($userIds);
         
         return (empty($userIds)) ? [0]
-            : User::whereIn('id', $userIds)->with($type)->get()->pluck($type . '.id')->toArray();
+            : User::whereIn('id', $userIds)->with($type)
+                ->get()->pluck($type . '.id')->toArray();
         
     }
     
@@ -461,7 +451,7 @@ trait ModelTrait {
             __('messages.file_upload_failed')
         );
         $spreadsheet = IOFactory::load(
-            $this->uploadedFilePath($filename)
+            $this->filePath($filename)
         );
         $records = $spreadsheet->getActiveSheet()->toArray(
             null, true, true, true
@@ -494,11 +484,11 @@ trait ModelTrait {
     function excel(array $records, $fileName = 'export', $sheetTitle = '导出数据', $download = true) {
         
         $user = Auth::user();
-        $spreadsheet = new Spreadsheet();
+        $spreadsheet = new Spreadsheet;
         $spreadsheet->getProperties()->setCreator($user ? $user->realname : 'ptac')
             ->setLastModifiedBy($user ? $user->realname : 'ptac')
-            ->setTitle('智校+')
-            ->setSubject('智校+')
+            ->setTitle(config('app.name'))
+            ->setSubject(config('app.name'))
             ->setDescription('-')
             ->setKeywords('导入导出')
             ->setCategory($fileName);
@@ -520,22 +510,20 @@ trait ModelTrait {
             
             return $writer->save('php://output');
         }
-        $dir = public_path() . '/uploads/' . date('Y/m/d/');
-        if (!file_exists($dir)) {
-            mkdir($dir, 0777, true);
-        }
+        $dir = public_path() . '/' . $this->filePath();
+        file_exists($dir) ?: mkdir($dir, 0777, true);
         
         return $writer->save($dir . '/' . $fileName . '.xlsx');
         
     }
     
     /**
-     * 返回上传文件路径
+     * 返回上传/下载文件路径
      *
      * @param $filename
      * @return string
      */
-    function uploadedFilePath($filename): string {
+    function filePath($filename = ''): string {
         
         return 'uploads/' . date('Y/m/d/') . $filename;
         
