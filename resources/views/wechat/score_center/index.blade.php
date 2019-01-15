@@ -10,7 +10,7 @@
                 <div class="switchclass-head">
                     <div class="weui-cell weui-cell_select weui-cell_select-after">
                         <div class="weui-cell__hd">
-                            <label class="weui-label">班级：</label>
+                            <label class="weui-label">班级</label>
                         </div>
                         <div class="weui-cell__bd title-name">
                             {!! Form::select('target_id', $targets, null, [
@@ -42,8 +42,8 @@
             </div>
         </div>
         <!--考试列表-->
-        <div class="weui-cells" style="margin-top: 0;">
-            @if (!empty($exams))
+        @if (!empty($exams))
+            <div class="weui-cells" style="margin-top: 0;">
                 @foreach ($exams as $exam)
                     <a class="weui-cell weui-cell_access exam-link"
                        href="#" data-type="{!! $type !!}"
@@ -53,12 +53,16 @@
                         <div class="weui-cell__ft time">{!! $exam['start_date'] !!}</div>
                     </a>
                 @endforeach
-            @else
-                暂无数据
-            @endif
-        </div>
+            </div>
+        @endif
         <div class="loadmore">
-            <span class="weui-loadmore__tips"><i class="icon iconfont icon-shuaxin"></i>加载更多 </span>
+            <span class="weui-loadmore__tips">
+                @if (!empty($exams))
+                    <i class="icon iconfont icon-shuaxin"> 加载更多</i>
+                @else
+                    暂无数据
+                @endif
+            </span>
         </div>
     </div>
 @endsection
