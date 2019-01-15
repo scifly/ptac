@@ -39,19 +39,17 @@
         <a href="#" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
     </div>
     <!--考试列表-->
-    @if (!empty($exams))
-        <div class="weui-cells" style="margin-top: 0;">
-            @foreach ($exams as $exam)
-                <a class="weui-cell weui-cell_access exam-link"
-                   href="#" data-type="{!! $type !!}"
-                   data-value="{!! $exam['id'] !!}"
-                >
-                    <div class="weui-cell__bd"><p>{!! $exam['name'] !!}</p></div>
-                    <div class="weui-cell__ft time">{!! $exam['start_date'] !!}</div>
-                </a>
-            @endforeach
-        </div>
-    @endif
+    <div id="exams" class="weui-cells" style="margin-top: 0;">
+        @foreach ($exams as $exam)
+            <a class="weui-cell weui-cell_access exam-link"
+               href="#" data-type="{!! $type !!}"
+               data-value="{!! $exam['id'] !!}"
+            >
+                <div class="weui-cell__bd"><p>{!! $exam['name'] !!}</p></div>
+                <div class="weui-cell__ft time">{!! $exam['start_date'] !!}</div>
+            </a>
+        @endforeach
+    </div>
     <div class="weui-loadmore weui-loadmore_line">
         <span class="weui-loadmore__tips">
             @if (!empty($exams))

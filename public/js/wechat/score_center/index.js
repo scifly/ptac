@@ -1,8 +1,9 @@
 var $targetId = $('#target_id'),
-    $loadMore = $('.loadmore'),
+    $loadMore = $('.weui-loadmore'),
     $search = $('#search'),
-    $examList = $('.weui-cells'),
+    $examList = $('#exams'),
     // $examLink = $('.exam-link'),
+    $tips = $('.weui-loadmore__tips'),
     start = 0;
 
 $targetId.on('change', function () { examList(false); });
@@ -38,7 +39,7 @@ function examList(more) {
                 more ? $examList.append(html) : $examList.html(html);
             } else {
                 $loadMore.hide();
-                if (!more) $examList.html('暂无数据');
+                if (!more) $tips.html('暂无考试');
             }
         },
         error: function (e) {
