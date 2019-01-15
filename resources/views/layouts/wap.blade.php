@@ -15,7 +15,9 @@
 </head>
 <body ontouchstart>
 {!! Form::hidden('member_id', Auth::user()->userid, ['id' => 'member_id']) !!}
-<div style="height: 100%;" id="app">@yield('content')</div>
+<div style="height: 100%;" id="app">
+    @yield('content')
+</div>
 @yield('search')
 <script src="{!! asset('/js/jquery.min.js') !!}"></script>
 <script src="{!! asset('/js/pusher.min.js') !!}"></script>

@@ -3,6 +3,7 @@
 @section('content')
     <header class="wechat-header">
         <h1 class="wechat-title">{!! config('app.name') !!}</h1>
+        <p class='wechat-sub-title'>智慧校园</p>
     </header>
     <div class="weui-grids">
         @foreach ($modules as $module)
