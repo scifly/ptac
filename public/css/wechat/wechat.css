@@ -1,7 +1,7 @@
-body, html {
-  height: 100%;
-  -webkit-tap-highlight-color: transparent;
-}
+/*body, html {*/
+  /*height: 100%;*/
+  /*-webkit-tap-highlight-color: transparent;*/
+/*}*/
 .wechat-title {
   text-align: center;
   font-size: 34px;
@@ -17,7 +17,7 @@ body, html {
 }
 
 .wechat-header {
-  padding: 35px 0;
+  padding: 12px 0;
 }
 
 .wechat-content-padded {
