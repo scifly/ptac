@@ -9,6 +9,9 @@
             <div class="switchclass-item clearfix">
                 <div class="switchclass-head">
                     <div class="weui-cell weui-cell_select weui-cell_select-after">
+                        <div class="weui-cell__hd">
+                            <label class="weui-label">班级：</label>
+                        </div>
                         <div class="weui-cell__bd title-name">
                             {!! Form::select('target_id', $targets, null, [
                                 'id' => 'target_id',
