@@ -5,6 +5,7 @@
         <h1 class="wechat-title">{!! config('app.name') !!}</h1>
         <p class='wechat-sub-title'>智慧校园</p>
     </header>
+    <div class="weui-cells">4333333</div>
     <div class="weui-grids">
         @foreach ($modules as $module)
             <a href="/{!! !empty($module->uri) ? $module->uri : '#' !!}" class="weui-grid js_grid">
