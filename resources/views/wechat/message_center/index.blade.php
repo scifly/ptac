@@ -42,15 +42,15 @@
                             {!! Form::label('message_type', '消息类型', ['class' => 'weui-label']) !!}
                         </div>
                         <div class="weui-cell__bd">
-                            {!! Form::select('message_type', $messageTypes, ['class' => 'weui-select']) !!}
+                            {!! Form::select('message_type', $messageTypes, null, ['class' => 'weui-select']) !!}
                         </div>
                     </div>
                     <div class="weui-cell weui-cell_select weui-cell_select-after">
                         <div class="weui-cell__hd">
-                            {!! Form::label('message_type', '消息格式', ['class' => 'weui-label']) !!}
+                            {!! Form::label('media_type', '消息格式', ['class' => 'weui-label']) !!}
                         </div>
                         <div class="weui-cell__bd">
-                            {!! Form::select('media_type', $mediaTypes, ['class' => 'weui-select']) !!}
+                            {!! Form::select('media_type', $mediaTypes, null, ['class' => 'weui-select']) !!}
                         </div>
                     </div>
                 </div>
