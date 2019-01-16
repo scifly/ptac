@@ -2,6 +2,7 @@
 namespace App\Http\ViewComposers;
 
 use App\Helpers\ModelTrait;
+use App\Models\MediaType;
 use App\Models\Message;
 use App\Models\MessageSendingLog;
 use App\Models\MessageType;
@@ -39,6 +40,7 @@ class MessageCenterIndexComposer {
         
         $view->with([
             'messageTypes' => MessageType::pluck('name', 'id'),
+            'mediaTypes'   => MediaType::pluck('name', 'id'),
             'sent'         => $sent,
             'received'     => $received,
             'count'        => $count,

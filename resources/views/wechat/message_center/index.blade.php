@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="{!! asset('/css/wechat/message_center/index.css') !!}">
 @endsection
 @section('content')
-    <div class="weui-cells weui-cells_form color-success" style="margin-top: 0;">
+    <div class="weui-cells weui-cells_form" style="margin-top: 0;">
         <div class="weui-cell">
             <div class="weui-cell__hd" style="text-align: left;">
                 <a href="#" id="show-actions">
@@ -29,7 +29,28 @@
     <div id="filters" class="weui-popup__container popup-bottom">
         <div class="weui-popup__overlay"></div>
         <div class="weui-popup__modal">
-            你的内容放在这里...
+            <div class="toolbar">
+                <div class="toolbar-inner">
+                    <a href="#" class="picker-button close-popup">关闭</a>
+                    <h1 class="title">消息过滤</h1>
+                </div>
+            </div>
+            <div class="modal-content">
+                <div class="weui-cells weui-cells_form">
+                    <div class="weui-cell weui-cell_select">
+                        <div class="weui-cell__hd">消息类型</div>
+                        <div class="weui-cell__bd">
+                            {!! Form::select('message_type', $messageTypes, ['class' => 'weui-select']) !!}
+                        </div>
+                    </div>
+                    <div class="weui-cell weui-cell_select">
+                        <div class="weui-cell__hd">消息格式</div>
+                        <div class="weui-cell__bd">
+                            {!! Form::select('media_type', $mediaTypes, ['class' => 'weui-select']) !!}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
