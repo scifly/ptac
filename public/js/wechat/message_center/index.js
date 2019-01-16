@@ -22,7 +22,6 @@ $(document).on('click', '#show-actions', function() {
                 className: 'color-primary',
                 onClick: function() {
                     document.title = '消息中心 - ' + this.text;
-                    console.log(document.title);
                 }
             },
             {

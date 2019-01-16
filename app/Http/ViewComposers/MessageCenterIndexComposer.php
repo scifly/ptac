@@ -19,15 +19,40 @@ class MessageCenterIndexComposer {
     
     use ModelTrait;
     
+    const TPL = '<div class="weui-panel">
+        <div class="weui-panel__bd">
+            <div class="weui-media-box weui-media-box_text">
+                <p class="weui-media-box__desc">%s</p>
+                <ul class="weui-media-box__info">
+                    <li class="weui-media-box__info__meta">%s</li>
+                    <li class="weui-media-box__info__meta">%s</li>
+                    <li class="weui-media-box__info__meta weui-media-box__info__meta_extra">%s</li>
+                </ul>
+            </div>
+        </div>
+    </div>';
+    
     /**
      * @param View $view
      */
     public function compose(View $view) {
         
         $user = Auth::user();
+        $messages = Message::orWhere(['s_user_id' => 1, 'r_user_id' => 1])->get()
+            ->sortByDesc('created_at');
+        $msgList = '';
+        /** @var Message $message */
+        foreach ($messages as $message) {
+            $msgList .= sprintf(
+                self::TPL,
+                $message->title,
+                $message->messageType->name,
+                $message->mediaType->remark,
+                $this->humanDate($message->created_at)
+            );
+        }
         $sent = !($canSend = !in_array($user->role(), ['监护人', '学生']))
             ? [] : $this->query(['s_user_id' => $user->id, 'r_user_id' => 0]);
-
         # 当前用户收到的消息/未读消息数量
         $where = ['r_user_id' => $user->id];
         $received = $this->query($where);
@@ -39,15 +64,15 @@ class MessageCenterIndexComposer {
         $count = Message::where($where)->count();
         $messageTypes = array_merge([0 => '全部'], MessageType::pluck('name', 'id')->toArray());
         $mediaTypes = array_merge([0 => '全部'], MediaType::pluck('remark', 'id')->toArray());
-        
         $view->with([
+            'messages'     => $msgList,
             'messageTypes' => $messageTypes,
             'mediaTypes'   => $mediaTypes,
             'sent'         => $sent,
             'received'     => $received,
             'count'        => $count,
             'acronym'      => School::find(session('schoolId'))->corp->acronym,
-            'canSend'      => $canSend
+            'canSend'      => $canSend,
         ]);
         
     }

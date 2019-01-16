@@ -26,12 +26,14 @@
             </div>
         </div>
     </div>
+    <div class="page_bd">
+        {!! $msgList !!}
+    </div>
     <div id="filters" class="weui-popup__container popup-bottom">
         <div class="weui-popup__overlay"></div>
         <div class="weui-popup__modal">
             <div class="toolbar">
                 <div class="toolbar-inner">
-                    {{--<a href="#" class="picker-button close-popup">关闭</a>--}}
                     <h1 class="title">消息过滤</h1>
                 </div>
             </div>
