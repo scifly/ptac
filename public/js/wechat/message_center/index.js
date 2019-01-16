@@ -1,4 +1,10 @@
 //# sourceURL=index.js
+var $start = $('#start'),
+    $end = $('#end');
+
+$start.calendar();
+$end.calendar();
+
 $.getScript(
     '/js/wechat/message_center/mc.js',
     function () { $.mc().index(); }
