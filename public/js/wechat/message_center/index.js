@@ -4,52 +4,47 @@ $.getScript(
     function () { $.mc().index(); }
 );
 
-$(document).on("click", "#show-actions", function() {
+$(document).on('click', '#show-actions', function() {
     $.actions({
-        title: "选择操作",
+        title: '请选择',
         onClose: function() {
-            console.log("close");
+            console.log('close');
         },
         actions: [
             {
-                text: "发布",
-                className: "color-primary",
+                text: '收件箱',
+                className: 'color-primary',
                 onClick: function() {
-                    $.alert("发布成功");
+                    $.alert('发布成功');
                 }
             },
             {
-                text: "编辑",
-                className: "color-warning",
+                text: '发件箱',
+                className: 'color-warning',
                 onClick: function() {
-                    $.alert("你选择了“编辑”");
+                    $.alert('你选择了“编辑”');
                 }
             },
             {
-                text: "删除",
+                text: '草稿箱',
+                className: 'color-warning',
+                onClick: function() {
+                    $.alert('你选择了“编辑”');
+                }
+            },
+            {
+                text: '按类型过滤',
+                className: 'color-warning',
+                onClick: function() {
+                    $.alert('你选择了“编辑”');
+                }
+            },
+            {
+                text: '按格式过滤',
                 className: 'color-danger',
                 onClick: function() {
-                    $.alert("你选择了“删除”");
+                    $.alert('你选择了“删除”');
                 }
-            }
-        ]
-    });
-});
-
-$(document).on("click", "#show-actions-bg", function() {
-    $.actions({
-        actions: [
-            {
-                text: "发布",
-                className: "bg-primary",
-            },
-            {
-                text: "编辑",
-                className: "bg-warning",
-            },
-            {
-                text: "删除",
-                className: 'bg-danger',
             }
         ]
     });
