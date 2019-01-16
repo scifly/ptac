@@ -9,7 +9,7 @@
             <div class="weui-cells weui-cells_form">
                 <div class="weui-cell">
                     <div class="weui-cell__hd">
-                        <img alt="" src="{!! asset("img/nav.png") !!}" />
+                        <img alt="" src="{!! asset("img/nav.png") !!}" style="width: 16px;"/>
                     </div>
                     <div class="weui-cell__bd">
                         {!! Form::text('search', null, [
@@ -28,7 +28,7 @@
         </div>
     </div>
     <div class="weui-tab">
-        
+
     </div>
 @endsection
 @section('script')
