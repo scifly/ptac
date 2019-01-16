@@ -31,7 +31,7 @@
         <div class="weui-popup__modal">
             <div class="toolbar">
                 <div class="toolbar-inner">
-                    <a href="#" class="picker-button close-popup">关闭</a>
+                    {{--<a href="#" class="picker-button close-popup">关闭</a>--}}
                     <h1 class="title">消息过滤</h1>
                 </div>
             </div>
@@ -75,6 +75,14 @@
                             ]) !!}
                         </div>
                     </div>
+                </div>
+                <div class="weui-btn-area">
+                    <a class="weui-btn weui-btn_primary picker-button close-popup" href="#" id="filter">
+                        确定
+                    </a>
+                    <a class="weui-btn weui-btn_warn picker-button close-popup" href="#" id="cancel" style="margin-bottom: 50px;">
+                        取消
+                    </a>
                 </div>
             </div>
         </div>
