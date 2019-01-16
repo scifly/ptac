@@ -39,7 +39,7 @@ $(document).on('click', '#show-actions', function() {
                 }
             },
             {
-                text: '按类型/格式过滤',
+                text: '消息过滤',
                 onClick: function() {
                     $('#filters').popup();
                 }

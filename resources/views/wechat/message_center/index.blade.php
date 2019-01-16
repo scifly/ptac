@@ -80,7 +80,7 @@
                     <a class="weui-btn weui-btn_primary picker-button close-popup" href="#" id="filter">
                         确定
                     </a>
-                    <a class="weui-btn weui-btn_warn picker-button close-popup" href="#" id="cancel" style="margin-bottom: 50px;">
+                    <a class="weui-btn weui-btn_warn picker-button close-popup" href="#" id="cancel">
                         取消
                     </a>
                 </div>
