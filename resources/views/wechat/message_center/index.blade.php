@@ -7,7 +7,9 @@
     <div class="weui-cells weui-cells_form" style="margin-top: 0;">
         <div class="weui-cell">
             <div class="weui-cell__hd" style="text-align: left;">
-                <img alt="" src="{!! asset("img/nav.png") !!}" style="width: 16px;"/>
+                <a href="#" id="show-actions">
+                    <img alt="" src="{!! asset("img/nav.png") !!}" style="width: 16px;"/>
+                </a>
             </div>
             <div class="weui-cell__bd">
                 {!! Form::text('search', null, [
