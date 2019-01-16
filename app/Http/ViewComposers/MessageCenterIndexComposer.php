@@ -37,10 +37,12 @@ class MessageCenterIndexComposer {
         # 未读消息数量
         $where['read'] = 0;
         $count = Message::where($where)->count();
+        $messageTypes = array_merge([0 => '全部'], MessageType::pluck('name', 'id')->toArray());
+        $mediaTypes = array_merge([0 => '全部'], MediaType::pluck('remark', 'id')->toArray());
         
         $view->with([
-            'messageTypes' => MessageType::pluck('name', 'id'),
-            'mediaTypes'   => MediaType::pluck('remark', 'id'),
+            'messageTypes' => $messageTypes,
+            'mediaTypes'   => $mediaTypes,
             'sent'         => $sent,
             'received'     => $received,
             'count'        => $count,
