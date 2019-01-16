@@ -21,21 +21,21 @@ $(document).on('click', '#show-actions', function() {
                 text: '收件箱',
                 className: 'color-primary',
                 onClick: function() {
-                    $.alert('发布成功');
+                    document.title = '消息中心 - ' + this.text;
                 }
             },
             {
                 text: '发件箱',
                 className: 'color-warning',
                 onClick: function() {
-                    $.alert('你选择了“编辑”');
+                    document.title = '消息中心 - ' + this.text;
                 }
             },
             {
                 text: '草稿箱',
                 className: 'color-danger',
                 onClick: function() {
-                    $.alert('你选择了“编辑”');
+                    document.title = '消息中心 - ' + this.text;
                 }
             },
             {
