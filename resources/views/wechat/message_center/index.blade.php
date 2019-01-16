@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="{!! asset('/css/wechat/message_center/index.css') !!}">
 @endsection
 @section('content')
-    <div class="weui-cells weui-cells_form" style="margin-top: 0;">
+    <div class="weui-cells weui-cells_form color-success" style="margin-top: 0;">
         <div class="weui-cell">
             <div class="weui-cell__hd" style="text-align: left;">
                 <a href="#" id="show-actions">

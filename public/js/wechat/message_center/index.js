@@ -27,21 +27,19 @@ $(document).on('click', '#show-actions', function() {
             },
             {
                 text: '草稿箱',
-                className: 'color-warning',
+                className: 'color-danger',
                 onClick: function() {
                     $.alert('你选择了“编辑”');
                 }
             },
             {
                 text: '按类型过滤',
-                className: 'color-warning',
                 onClick: function() {
                     $.alert('你选择了“编辑”');
                 }
             },
             {
                 text: '按格式过滤',
-                className: 'color-danger',
                 onClick: function() {
                     $.alert('你选择了“删除”');
                 }
