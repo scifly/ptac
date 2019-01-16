@@ -12,7 +12,7 @@
             <div class="weui-cell__bd">
                 {!! Form::text('search', null, [
                     'id' => 'search',
-                    'placeholder' => '搜索消息',
+                    'placeholder' => '请在此输入关键词搜索消息',
                     'class' => 'weui-input',
                     'style' => 'padding-left: 8px;'
                 ]) !!}
