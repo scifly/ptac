@@ -14,7 +14,7 @@
             <div class="weui-cell__bd">
                 {!! Form::text('search', null, [
                     'id' => 'search',
-                    'placeholder' => '请在此输入关键词搜索消息',
+                    'placeholder' => '搜索消息',
                     'class' => 'weui-input',
                     'style' => 'padding-left: 8px;'
                 ]) !!}
@@ -77,10 +77,10 @@
                     </div>
                 </div>
                 <div class="weui-btn-area">
-                    <a class="weui-btn weui-btn_primary picker-button close-popup" href="#" id="filter">
+                    <a class="weui-btn weui-btn_primary close-popup" href="#" id="filter">
                         确定
                     </a>
-                    <a class="weui-btn weui-btn_warn picker-button close-popup" href="#" id="cancel">
+                    <a class="weui-btn weui-btn_default close-popup" href="#" id="cancel">
                         取消
                     </a>
                 </div>
