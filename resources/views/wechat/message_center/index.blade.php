@@ -13,7 +13,8 @@
                 {!! Form::text('search', null, [
                     'id' => 'search',
                     'placeholder' => '搜索消息',
-                    'class' => 'weui-input'
+                    'class' => 'weui-input',
+                    'style' => 'padding-left: 8px;'
                 ]) !!}
             </div>
             <div class="weui-cell__ft">
