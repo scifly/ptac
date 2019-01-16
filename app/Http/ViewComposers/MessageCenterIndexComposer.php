@@ -40,7 +40,7 @@ class MessageCenterIndexComposer {
         
         $view->with([
             'messageTypes' => MessageType::pluck('name', 'id'),
-            'mediaTypes'   => MediaType::pluck('name', 'id'),
+            'mediaTypes'   => MediaType::pluck('remark', 'id'),
             'sent'         => $sent,
             'received'     => $received,
             'count'        => $count,
