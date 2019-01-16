@@ -24,21 +24,18 @@ class MessageCenterIndexComposer {
     public function compose(View $view) {
         
         $user = Auth::user();
-        $sent = [];
-        if ($canSend = !in_array($user->role(), ['监护人', '学生'])) {
-            $sent = Message::whereSUserId($user->id)
-                ->where('r_user_id', 0)->get()
-                ->/*unique('msl_id')->*/sortByDesc('created_at')
-                ->groupBy('message_type_id')->toArray();
-        }
+        $sent = !($canSend = !in_array($user->role(), ['监护人', '学生']))
+            ? [] : $this->query(['s_user_id' => $user->id, 'r_user_id' => 0]);
+
         # 当前用户收到的消息/未读消息数量
-        $builder = Message::whereIn('r_user_id', [$user->id]);
-        $received = $builder->get()->sortByDesc('created_at')
-            ->groupBy('message_type_id')->toArray();
-        $count = $builder->where('read', '0')->count();
+        $where = ['r_user_id' => $user->id];
+        $received = $this->query($where);
         # 格式化已发送/已收到消息的日期时间
         $this->format($sent, 'sent');
         $this->format($received, 'received');
+        # 未读消息数量
+        $where['read'] = 0;
+        $count = Message::where($where)->count();
         
         $view->with([
             'messageTypes' => MessageType::pluck('name', 'id'),
@@ -80,6 +77,19 @@ class MessageCenterIndexComposer {
                 }
             }
         }
+        
+    }
+    
+    /**
+     * 返回消息数组
+     *
+     * @param array $where
+     * @return array
+     */
+    private function query(array $where) {
+        
+        return Message::where($where)->get()->sortByDesc('created_at')
+            ->groupBy('message_type_id')->toArray();
         
     }
     
