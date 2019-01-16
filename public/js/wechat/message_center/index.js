@@ -33,15 +33,9 @@ $(document).on('click', '#show-actions', function() {
                 }
             },
             {
-                text: '按消息类型过滤',
+                text: '按类型/格式过滤',
                 onClick: function() {
-                    $.alert('你选择了“编辑”');
-                }
-            },
-            {
-                text: '按消息格式过滤',
-                onClick: function() {
-                    $.alert('你选择了“删除”');
+                    $('#filters').popup();
                 }
             }
         ]

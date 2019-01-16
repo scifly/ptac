@@ -26,6 +26,12 @@
             </div>
         </div>
     </div>
+    <div id="filters" class="weui-popup__container popup-bottom">
+        <div class="weui-popup__overlay"></div>
+        <div class="weui-popup__modal">
+            你的内容放在这里...
+        </div>
+    </div>
 @endsection
 @section('script')
     <script src="{!! asset('/js/wechat/message_center/index.js') !!}"></script>
