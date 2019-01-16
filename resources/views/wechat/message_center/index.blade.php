@@ -8,7 +8,7 @@
         <div class="weui-navbar__item weui_bar__item_on">
             <div class="weui-cells weui-cells_form">
                 <div class="weui-cell">
-                    <div class="weui-cell__hd">
+                    <div class="weui-cell__hd" style="text-align: left;">
                         <img alt="" src="{!! asset("img/nav.png") !!}" style="width: 16px;"/>
                     </div>
                     <div class="weui-cell__bd">
