@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div class="modal-content">
-                <div class="weui-cells weui-cells_form">
+                <div class="weui-cells">
                     <div class="weui-cell weui-cell_select weui-cell_select-after">
                         <div class="weui-cell__hd">
                             {!! Form::label('message_type', '消息类型', ['class' => 'weui-label']) !!}
