@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div class="modal-content">
-                <div class="weui-cells">
+                <div class="weui-cells weui-cells_form">
                     <div class="weui-cell weui-cell_select weui-cell_select-after">
                         <div class="weui-cell__hd">
                             {!! Form::label('message_type', '消息类型', ['class' => 'weui-label']) !!}
@@ -51,6 +51,28 @@
                         </div>
                         <div class="weui-cell__bd">
                             {!! Form::select('media_type', $mediaTypes, null, ['class' => 'weui-select']) !!}
+                        </div>
+                    </div>
+                    <div class="weui-cell">
+                        <div class="weui-cell__hd">
+                            {!! Form::label('start', '开始日期', ['class' => 'weui-label']) !!}
+                        </div>
+                        <div class="weui-cell__bd">
+                            {!! Form::text('start', null, [
+                                'class' => 'weui-input',
+                                'data-toggle' => 'date'
+                            ]) !!}
+                        </div>
+                    </div>
+                    <div class="weui-cell">
+                        <div class="weui-cell__hd">
+                            {!! Form::label('end', '截止日期', ['class' => 'weui-label']) !!}
+                        </div>
+                        <div class="weui-cell__bd">
+                            {!! Form::text('end', null, [
+                                'class' => 'weui-input',
+                                'data-toggle' => 'date'
+                            ]) !!}
                         </div>
                     </div>
                 </div>
