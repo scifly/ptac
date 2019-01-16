@@ -27,7 +27,7 @@
         </div>
     </div>
     <div class="page_bd">
-        {!! $msgList !!}
+        {!! $messages !!}
     </div>
     <div id="filters" class="weui-popup__container popup-bottom">
         <div class="weui-popup__overlay"></div>
