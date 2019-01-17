@@ -2,7 +2,7 @@
 namespace App\Http\Requests;
 
 use App\Helpers\{Constant, ModelTrait};
-use App\Models\{CommType, MediaType, MessageType, School, User};
+use App\Models\{CommType, MediaType, School, User};
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\{Auth, Request};
 
@@ -58,7 +58,7 @@ class MessageRequest extends FormRequest {
             $input = array_combine(Constant::MESSAGE_FIELDS, [
                 CommType::whereName($type == 'sms' ? '短信' : '微信')->first()->id,
                 MediaType::whereName($type == 'sms' ? 'text' : $type)->first()->id,
-                $app->id, 0, MessageType::find($msgTypeId)->name, '', '0', 0,
+                $app->id, 0, $this->title($type), '', '0', 0,
                 'http://', '0', Auth::id() ?? 0, 0, $msgTypeId, 0, 0,
             ]);
             $targetIds = $this->input('targetIds') ?? [];
@@ -83,11 +83,48 @@ class MessageRequest extends FormRequest {
                 'msgtype' => $type,
                 $type     => $this->input($type),
             ], JSON_UNESCAPED_UNICODE);
+            
             # 需要立即或定时发送的消息中对应的用户类发送对象，
             # 需在Message表中保存学生对应的监护人userid及教职员工的userid，
             # 学生userid转换成监护人userid的过程将在SendMessage队列任务中进行
             $this->replace($input);
         }
+        
+    }
+    
+    /**
+     * 生成消息title
+     *
+     * @param string $type
+     * @return string
+     */
+    private function title(string $type) : string {
+    
+        switch ($type) {
+            case 'text':
+                $str = $this->input($type)['content'];
+                break;
+            case 'image':
+            case 'voice':
+            case 'file':
+                $paths = explode('/', $this->input($type)['path']);
+                $str = $paths[sizeof($paths) - 1];
+                break;
+            case 'video':
+            case 'textcard':
+                $str = $this->input($type)['title'];
+                break;
+            case 'mpnews':
+                $str = $this->input($type)['articles'][0]['title'];
+                break;
+            case 'sms':
+                $str = $this->input($type);
+                break;
+            default:
+                break;
+        }
+        
+        return mb_substr($str ?? '', 0, 64);
         
     }
     

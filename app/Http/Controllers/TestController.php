@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Apis\Kinder;
 use App\Facades\Wechat;
 use App\Helpers\ModelTrait;
-use App\Models\{Corp, Department, User};
+use App\Models\{Corp, Department, Message, User};
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -49,16 +49,40 @@ class TestController extends Controller {
      */
     public function index() {
     
-        $users = User::take(3)->get();
+        try {
+            DB::transaction(function () {
+                $messages = Message::all();
+                /** @var Message $message */
+                foreach ($messages as $message) {
+                    $content = json_decode($message->content, true);
+                    switch ($type = $message->mediaType->name) {
+                        case 'text':
+                            $str = $message->commType->name == '短信' ? $content['sms'] : $content['text']['content'];
+                            break;
+                        case 'image':
+                        case 'voice':
+                        case 'file':
+                            $paths = explode('/', $content[$type]['path']);
+                            $str = $paths[sizeof($paths) - 1];
+                            break;
+                        case 'video':
+                        case 'textcard':
+                            $str = $content[$type]['title'];
+                            break;
+                        case 'mpnews':
+                            $str = $content[$type]['articles'][0]['title'];
+                            break;
+                        default:
+                            break;
+                    }
+                    $message->update(['title' => mb_substr($str ?? '', 0, 64)]);
+                }
+            });
+        } catch (Exception $e) {
+            throw $e;
+        }
         
-        $users->except(
-            function ($user) {
-                return $user->realname;
-            }
-        );
-        dd($users);
         exit;
-        
         
     }
     
