@@ -27,7 +27,10 @@
         </div>
     </div>
     <div class="page_bd">
-        {!! $messages !!}
+        <div class="weui-panel">
+            <div class="weui-panel__hd"></div>
+            <div class="weui-panel__bd">{!! $messages !!}</div>
+        </div>
     </div>
     <div id="filters" class="weui-popup__container popup-bottom">
         <div class="weui-popup__overlay"></div>
@@ -41,23 +44,33 @@
                 <div class="weui-cells weui-cells_form">
                     <div class="weui-cell weui-cell_select weui-cell_select-after">
                         <div class="weui-cell__hd">
-                            {!! Form::label('message_type', '消息类型', ['class' => 'weui-label']) !!}
+                            {!! Form::label('message_type', '消息类型', [
+                                'class' => 'weui-label'
+                            ]) !!}
                         </div>
                         <div class="weui-cell__bd">
-                            {!! Form::select('message_type', $messageTypes, null, ['class' => 'weui-select']) !!}
+                            {!! Form::select('message_type', $messageTypes, null, [
+                                'class' => 'weui-select'
+                            ]) !!}
                         </div>
                     </div>
                     <div class="weui-cell weui-cell_select weui-cell_select-after">
                         <div class="weui-cell__hd">
-                            {!! Form::label('media_type', '消息格式', ['class' => 'weui-label']) !!}
+                            {!! Form::label('media_type', '消息格式', [
+                                'class' => 'weui-label'
+                            ]) !!}
                         </div>
                         <div class="weui-cell__bd">
-                            {!! Form::select('media_type', $mediaTypes, null, ['class' => 'weui-select']) !!}
+                            {!! Form::select('media_type', $mediaTypes, null, [
+                                'class' => 'weui-select'
+                            ]) !!}
                         </div>
                     </div>
                     <div class="weui-cell">
                         <div class="weui-cell__hd">
-                            {!! Form::label('start', '开始日期', ['class' => 'weui-label']) !!}
+                            {!! Form::label('start', '开始日期', [
+                                'class' => 'weui-label'
+                            ]) !!}
                         </div>
                         <div class="weui-cell__bd">
                             {!! Form::text('start', null, [
