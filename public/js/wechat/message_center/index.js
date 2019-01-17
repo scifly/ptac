@@ -14,10 +14,10 @@ $.getScript(
     function () { $.mc().index(); }
 );
 
-$(document).scroll(function() {
+$(window).scroll(function() {
     alert('wtf');
-    // if ($(window).scrollTop() === ($(document).height() - $(window).height())) {
-    if ($(document).height() <= $(window).scrollTop() + $(window).height()) {
+    if ($(window).scrollTop() === ($(document).height() - $(window).height())) {
+    // if ($(document).height() <= $(window).scrollTop() + $(window).height()) {
         $loadmore.show();
         $.ajax({
             type: 'POST',
