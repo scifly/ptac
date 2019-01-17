@@ -966,7 +966,13 @@ class Message extends Model {
                     : view('wechat.message_center.index');
                 break;
             case 'POST':
-                $response = $this->search();
+                if ($page = Request::input('page')) {
+                    $response = $this->msgList(
+                        $this->skip($page * 6)->take(6)->get()
+                    );
+                } else {
+                    $response = $this->search();
+                }
                 break;
             default:
                 break;
@@ -1281,43 +1287,11 @@ class Message extends Model {
         $messages = Message::where(['s_user_id' => $user->id, 'r_user_id' => 0])
             ->orWhere('r_user_id', $user->id)
             ->get()->sortByDesc('created_at')->take(6);
-        $msgList = '';
-    
-        /** @var Message $message */
-        foreach ($messages as $message) {
-            if ($message->s_user_id == $user->id && !$message->r_user_id) {
-                $direction = '发件';
-                $color = $message->sent ? 'primary' : ($message->event_id ? 'warning' : 'error');
-                $status = $message->sent ? '已发' : ($message->event_id ? '定时' : '草稿');
-                $stat = '接收者';
-                $msl = $message->messageSendinglog;
-                $value = ($msl ? $msl->recipient_count : 0) . '人';
-            } else {
-                $direction = '收件';
-                $color = $message->read ? 'primary' : 'error';
-                $status = $message->read ? '已读' : '未读';
-                $stat = '发送者';
-                $value = $message->sender;
-            }
-            $msgList .= sprintf(
-                self::TPL,
-                $message->read ? 'normal' : 'bold',
-                '[' . $message->mediaType->remark . ']' . $message->title,
-                $message->messageType->name,
-                sprintf(
-                    '%s : <span class="color-%s">%s</span>, %s : %s',
-                    $direction, $color, $status, $stat, $value
-                ),
-                $this->humanDate($message->created_at)
-            );
-        }
-        $messageTypes = array_merge([0 => '全部'], MessageType::pluck('name', 'id')->toArray());
-        $mediaTypes = array_merge([0 => '全部'], MediaType::pluck('remark', 'id')->toArray());
         
         return [
-            $msgList,
-            $messageTypes,
-            $mediaTypes,
+            $this->msgList($messages),
+            array_merge([0 => '全部'], MessageType::pluck('name', 'id')->toArray()),
+            array_merge([0 => '全部'], MediaType::pluck('remark', 'id')->toArray()),
             School::find(session('schoolId'))->corp->acronym,
             !in_array($user->role(), ['监护人', '学生']),
         ];
@@ -1345,6 +1319,48 @@ class Message extends Model {
             $corp->corpid,
             $corp->contact_sync_secret,
         ];
+        
+    }
+    
+    /**
+     * 返回消息列表(微信端)
+     *
+     * @param $messages
+     * @return string
+     */
+    private function msgList($messages) {
+    
+        $msgList = '';
+        /** @var Message $message */
+        foreach ($messages as $message) {
+            if ($message->s_user_id == Auth::id() && !$message->r_user_id) {
+                $direction = '发件';
+                $color = $message->sent ? 'primary' : ($message->event_id ? 'warning' : 'error');
+                $status = $message->sent ? '已发' : ($message->event_id ? '定时' : '草稿');
+                $stat = '接收者';
+                $msl = $message->messageSendinglog;
+                $value = ($msl ? $msl->recipient_count : 0) . '人';
+            } else {
+                $direction = '收件';
+                $color = $message->read ? 'primary' : 'error';
+                $status = $message->read ? '已读' : '未读';
+                $stat = '发送者';
+                $value = $message->sender;
+            }
+            $msgList .= sprintf(
+                self::TPL,
+                $message->read ? 'normal' : 'bold',
+                '[' . $message->mediaType->remark . ']' . $message->title,
+                $message->messageType->name,
+                sprintf(
+                    '%s : <span class="color-%s">%s</span>, %s : %s',
+                    $direction, $color, $status, $stat, $value
+                ),
+                $this->humanDate($message->created_at)
+            );
+        }
+        
+        return $msgList;
         
     }
     

@@ -28,8 +28,13 @@
     </div>
     <div class="page_bd">
         <div class="weui-panel">
+            {!! Form::hidden('page', 1, ['id' => 'page']) !!}
             <div class="weui-panel__hd color-primary">所有消息</div>
-            <div class="weui-panel__bd">{!! $messages !!}</div>
+            <div class="weui-panel__bd" id="msg_list">{!! $messages !!}</div>
+            <div class="weui-loadmore" style="display: none;">
+                <i class="weui-loading"></i>
+                <span class="weui-loadmore__tips">正在加载</span>
+            </div>
         </div>
     </div>
     <div id="filters" class="weui-popup__container popup-bottom">

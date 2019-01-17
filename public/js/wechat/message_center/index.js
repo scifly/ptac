@@ -1,7 +1,10 @@
 //# sourceURL=index.js
 var $start = $('#start'),
     $end = $('#end'),
-    $title = $('.weui-panel__hd');
+    $title = $('.weui-panel__hd'),
+    $loadmore = $('.weui-loadmore'),
+    $page = $('#page'),
+    $msgList = $('#msg_list');
 
 $start.calendar();
 $end.calendar();
@@ -13,7 +16,24 @@ $.getScript(
 
 $(window).scroll(function() {
     if ($(window).scrollTop() === ($(document).height() - $(window).height())) {
-
+        $loadmore.show();
+        $.ajax({
+            type: 'POST',
+            dataType: 'html',
+            url: '../message_centers/index',
+            data: {
+                _token: wap.token(),
+                page: $page.val()
+            },
+            success: function (result) {
+                $loadmore.hide();
+                $msgList.append(result);
+                if (result !== '') $page.val($page.val() + 1);
+            },
+            error: function (e) {
+                wap.errorHandler(e);
+            }
+        });
     }
 });
 
