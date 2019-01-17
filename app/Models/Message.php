@@ -1280,7 +1280,7 @@ class Message extends Model {
         $user = Auth::user();
         $messages = Message::where(['s_user_id' => $user->id, 'r_user_id' => 0])
             ->orWhere('r_user_id', $user->id)
-            ->get()->sortByDesc('created_at');
+            ->get()->sortByDesc('created_at')->take(5);
         $msgList = '';
     
         /** @var Message $message */
