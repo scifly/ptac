@@ -4,8 +4,7 @@ var $start = $('#start'),
     $title = $('.weui-panel__hd'),
     $loadmore = $('.weui-loadmore'),
     $page = $('#page'),
-    $msgList = $('#msg_list'),
-    $list = $('.page_bd');
+    $msgList = $('#msg_list');
 
 $start.calendar();
 $end.calendar();
@@ -15,9 +14,10 @@ $.getScript(
     function () { $.mc().index(); }
 );
 
-$list.scroll(function() {
+$(window).scroll(function() {
+    alert('wtf');
     // if ($(window).scrollTop() === ($(document).height() - $(window).height())) {
-    if ($(document).height() <= $list.scrollTop() + $list.height()) {
+    if ($(document).height() <= $(window).scrollTop() + $(window).height()) {
         $loadmore.show();
         $.ajax({
             type: 'POST',
