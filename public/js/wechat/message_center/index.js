@@ -14,7 +14,7 @@ $.getScript(
     function () { $.mc().index(); }
 );
 
-$(window).scroll(function() {
+$(document).scroll(function() {
     alert('wtf');
     // if ($(window).scrollTop() === ($(document).height() - $(window).height())) {
     if ($(document).height() <= $(window).scrollTop() + $(window).height()) {
