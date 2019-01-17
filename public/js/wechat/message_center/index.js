@@ -22,21 +22,21 @@ $(document).on('click', '#show-actions', function() {
                 text: '收件箱',
                 className: 'color-primary',
                 onClick: function() {
-                    $title.html(this.text);
+                    switchTitle(this);
                 }
             },
             {
                 text: '发件箱',
                 className: 'color-warning',
                 onClick: function() {
-                    $title.html(this.text);
+                    switchTitle(this);
                 }
             },
             {
                 text: '草稿箱',
                 className: 'color-danger',
                 onClick: function() {
-                    $title.html(this.text);
+                    switchTitle(this);
                 }
             },
             {
@@ -48,3 +48,9 @@ $(document).on('click', '#show-actions', function() {
         ]
     });
 });
+
+function switchTitle(o) {
+    $title.html(o.text)
+        .removeClass($title.attr('class').split(' ')[1])
+        .addClass(o.className);
+}
