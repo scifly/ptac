@@ -48,7 +48,8 @@ class MessageCenterIndexComposer {
                 $color = $message->sent ? 'primary' : ($message->event_id ? 'warning' : 'error');
                 $status = $message->sent ? '已发' : ($message->event_id ? '定时' : '草稿');
                 $stat = '接收者';
-                $value = /*$message->messageSendinglog->recipient_count .*/ '人';
+                $msl = $message->messageSendinglog;
+                $value = ($msl ? $msl->recipient_count : 0) . '人';
             } else {
                 $direction = '收件';
                 $color = $message->read ? 'primary' : 'error';
