@@ -1,6 +1,7 @@
 //# sourceURL=index.js
 var $start = $('#start'),
-    $end = $('#end');
+    $end = $('#end'),
+    $title = $('.weui-panel__hd');
 
 $start.calendar();
 $end.calendar();
@@ -21,21 +22,21 @@ $(document).on('click', '#show-actions', function() {
                 text: '收件箱',
                 className: 'color-primary',
                 onClick: function() {
-                    document.title = '消息中心 - ' + this.text;
+                    $title.html(this.text);
                 }
             },
             {
                 text: '发件箱',
                 className: 'color-warning',
                 onClick: function() {
-                    document.title = '消息中心 - ' + this.text;
+                    $title.html(this.text);
                 }
             },
             {
                 text: '草稿箱',
                 className: 'color-danger',
                 onClick: function() {
-                    document.title = '消息中心 - ' + this.text;
+                    $title.html(this.text);
                 }
             },
             {
