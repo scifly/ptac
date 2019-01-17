@@ -60,7 +60,7 @@ class TestController extends Controller {
                             if ($message->commType->name == '短信') {
                                 $str = $content['sms'];
                             } else {
-                                $str = $content['text']['content'] ?? $content['text'];
+                                $str = $content['text']['content'] ?? ($content['text'] ?? '');
                             }
                             break;
                         case 'image':
