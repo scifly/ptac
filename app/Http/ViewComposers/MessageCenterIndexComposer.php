@@ -20,7 +20,9 @@ class MessageCenterIndexComposer {
     use ModelTrait;
     
     const TPL = '<div class="weui-media-box weui-media-box_text">
-        <a href="#"  class="weui-cell_access"><p>%s</p></a>
+        <a href="#" class="weui-cell_access">
+            <p style="font-weight: %s">%s</p>
+        </a>
         <ul class="weui-media-box__info">
             <li class="weui-media-box__info__meta">%s</li>
             <li class="weui-media-box__info__meta">%s</li>
@@ -41,6 +43,7 @@ class MessageCenterIndexComposer {
         foreach ($messages as $message) {
             $msgList .= sprintf(
                 self::TPL,
+                $message->read ? 'normal' : 'bold',
                 $message->title,
                 $message->messageType->name,
                 $message->mediaType->remark,
