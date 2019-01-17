@@ -28,7 +28,7 @@
     </div>
     <div class="page_bd">
         <div class="weui-panel">
-            <div class="weui-panel__hd">所有消息</div>
+            <div class="weui-panel__hd color-primary">所有消息</div>
             <div class="weui-panel__bd">{!! $messages !!}</div>
         </div>
     </div>
