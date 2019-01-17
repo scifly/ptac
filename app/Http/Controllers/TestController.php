@@ -57,8 +57,11 @@ class TestController extends Controller {
                     $content = json_decode($message->content, true);
                     switch ($type = $message->mediaType->name) {
                         case 'text':
-                            
-                            $str = $message->commType->name == '短信' ? $content['sms'] : $content['text']['content'] ?? '';
+                            if ($message->commType->name == '短信') {
+                                $str = $content['sms'];
+                            } else {
+                                $str = $content['text']['content'] ?? $content['text'];
+                            }
                             break;
                         case 'image':
                         case 'voice':
