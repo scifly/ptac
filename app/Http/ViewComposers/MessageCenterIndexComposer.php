@@ -24,7 +24,7 @@ class MessageCenterIndexComposer {
             <p style="font-weight: %s">%s</p>
         </a>
         <ul class="weui-media-box__info">
-            <li class="weui-media-box__info__meta">%s</li>
+            <li class="weui-media-box__info__meta" style="color: navy;">%s</li>
             <li class="weui-media-box__info__meta">%s</li>
             <li class="weui-media-box__info__meta weui-media-box__info__meta_extra">%s</li>
         </ul>
