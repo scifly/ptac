@@ -20,12 +20,15 @@ class MessageCenterIndexComposer {
     use ModelTrait;
     
     const TPL = '<div class="weui-media-box weui-media-box_text">
+        <div class="weui-cells">
         <a href="#"  class="weui-cell weui-cell_access"><p>%s</p></a>
-        <ul class="weui-media-box__info">
+        <ul class="weui-cell weui-media-box__info">
             <li class="weui-media-box__info__meta">%s</li>
             <li class="weui-media-box__info__meta">%s</li>
             <li class="weui-media-box__info__meta weui-media-box__info__meta_extra">%s</li>
         </ul>
+        
+        </div>
     </div>';
     
     /**
