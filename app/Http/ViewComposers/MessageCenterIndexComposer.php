@@ -36,17 +36,35 @@ class MessageCenterIndexComposer {
     public function compose(View $view) {
         
         $user = Auth::user();
-        $messages = Message::orWhere(['s_user_id' => 1, 'r_user_id' => 1])->get()
-            ->sortByDesc('created_at');
+        $messages = Message::where(['s_user_id' => $user->id, 'r_user_id' => 0])
+            ->orWhere('r_user_id', $user->id)
+            ->get()->sortByDesc('created_at');
         $msgList = '';
+        
         /** @var Message $message */
         foreach ($messages as $message) {
+            if ($message->s_user_id == $user->id && !$message->r_user_id) {
+                $direction = '发件';
+                $color = $message->sent ? 'primary' : ($message->event_id ? 'warning' : 'error');
+                $status = $message->sent ? '已发' : ($message->event_id ? '定时' : '草稿');
+                $stat = '接收者';
+                $value = $message->messageSendinglog->recipient_count . '人';
+            } else {
+                $direction = '收件';
+                $color = $message->read ? 'primary' : 'error';
+                $status = $message->read ? '已读' : '未读';
+                $stat = '发送者';
+                $value = $message->sender;
+            }
             $msgList .= sprintf(
                 self::TPL,
                 $message->read ? 'normal' : 'bold',
-                $message->title,
+                '[' . $message->mediaType->remark . ']' . $message->title,
                 $message->messageType->name,
-                $message->mediaType->remark,
+                sprintf(
+                    '%s : <span class="color-%s">%s</span>, %s : %s',
+                    $direction, $color, $status, $stat, $value
+                ),
                 $this->humanDate($message->created_at)
             );
         }
