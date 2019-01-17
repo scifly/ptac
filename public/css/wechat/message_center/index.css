@@ -297,4 +297,10 @@ div.weui_tab_bd {
     border-bottom: 1px solid #ebebeb;
 }
 
+.truncate {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 

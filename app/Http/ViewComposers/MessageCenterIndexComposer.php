@@ -21,7 +21,7 @@ class MessageCenterIndexComposer {
     
     const TPL = '<div class="weui-media-box weui-media-box_text">
         <a href="#" class="weui-cell_access">
-            <p style="font-weight: %s; display: inline-block; overflow: fragments">%s</p>
+            <p class="truncate" style="font-weight: %s;">%s</p>
         </a>
         <ul class="weui-media-box__info">
             <li class="weui-media-box__info__meta" style="color: gray;">%s</li>
