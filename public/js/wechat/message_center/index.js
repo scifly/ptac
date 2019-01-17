@@ -11,6 +11,12 @@ $.getScript(
     function () { $.mc().index(); }
 );
 
+$(window).scroll(function() {
+    if ($(window).scrollTop() === ($(document).height() - $(window).height())) {
+
+    }
+});
+
 $(document).on('click', '#show-actions', function() {
     $.actions({
         // title: '请选择',
