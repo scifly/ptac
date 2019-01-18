@@ -966,15 +966,8 @@ class Message extends Model {
                     : view('wechat.message_center.index');
                 break;
             case 'POST':
-                if ($page = Request::input('page')) {
-                    $response = $this->msgList(
-                        Message::where(['s_user_id' => Auth::id(), 'r_user_id' => 0])
-                            ->orWhere('r_user_id', Auth::id())->skip($page * 7)
-                            ->get()->sortByDesc('created_at')->take(7)
-                    );
-                } else {
-                    $response = $this->search();
-                }
+                $page = Request::input('page');
+                $response = $page ? $this->msgList($page) : $this->search();
                 break;
             default:
                 break;
@@ -1285,17 +1278,12 @@ class Message extends Model {
      */
     function compose() {
     
-        $user = Auth::user();
-        $messages = Message::where(['s_user_id' => $user->id, 'r_user_id' => 0])
-            ->orWhere('r_user_id', $user->id)
-            ->get()->sortByDesc('created_at')->take(7);
-        
         return [
-            $this->msgList($messages),
+            $this->msgList(),
             array_merge([0 => '全部'], MessageType::pluck('name', 'id')->toArray()),
             array_merge([0 => '全部'], MediaType::pluck('remark', 'id')->toArray()),
             School::find(session('schoolId'))->corp->acronym,
-            !in_array($user->role(), ['监护人', '学生']),
+            !in_array(Auth::user()->role(), ['监护人', '学生']),
         ];
         
     }
@@ -1327,11 +1315,17 @@ class Message extends Model {
     /**
      * 返回消息列表(微信端)
      *
-     * @param $messages
+     * @param int $page
      * @return string
      */
-    private function msgList($messages) {
+    private function msgList($page = 0) {
     
+        $user = Auth::user();
+        $messages = Message::where(['s_user_id' => $user->id, 'r_user_id' => 0])
+            ->orWhere('r_user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->skip($page * 7)->take(7)->get();
+        
         $msgList = '';
         /** @var Message $message */
         foreach ($messages as $message) {
