@@ -6,7 +6,7 @@ var $start = $('#start'),
     $page = $('#page'),
     $msgList = $('#msg_list');
 
-$('#app').on('scroll', function () {
+$(window).on('scroll', function () {
     console.log('scrolling...');
 });
 $start.calendar();
