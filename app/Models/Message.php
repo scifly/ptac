@@ -1329,7 +1329,7 @@ class Message extends Model {
     
         $this->where(['s_user_id' => Auth::id(), 'r_user_id' => 0])
             ->orWhere('r_user_id', Auth::id())->skip($page * 7)
-            ->get()->sortByDesc('created_at')->take(7);
+            ->take(7)->get()->sortByDesc('created_at');
         
     }
     
