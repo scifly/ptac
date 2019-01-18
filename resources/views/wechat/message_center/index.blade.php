@@ -31,7 +31,15 @@
         <div class="weui-panel">
             {!! Form::hidden('page', 1, ['id' => 'page']) !!}
             <div class="weui-panel__hd color-primary">所有消息</div>
-            <div class="weui-panel__bd" id="msg_list">{!! $messages !!}</div>
+            @if (!empty($messages))
+                <div class="weui-panel__bd" id="msg_list">
+                    {!! $messages !!}
+                </div>
+            @else
+                <div class="weui-loadmore weui-loadmore_line">
+                    <span class="weui-loadmore__tips">暂无记录</span>
+                </div>
+            @endif
             <div class="weui-loadmore" style="display: none;">
                 <i class="weui-loading"></i>
                 <span class="weui-loadmore__tips">正在加载</span>
