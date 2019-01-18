@@ -15,8 +15,10 @@ $.getScript(
 );
 
 $app.scroll(function() {
-
-    if ($app.scrollTop() + $(window).height() === $app[0].scrollHeight) {
+    alert($app.scrollTop());
+    alert($(window).height());
+    alert($app.prop('scrollHeight'));
+    if ($app.scrollTop() + $(window).height() === $app.prop('scrollHeight')) {
         alert('wtf');
         $loadmore.show();
         $.ajax({
