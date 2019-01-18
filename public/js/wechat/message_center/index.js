@@ -6,17 +6,17 @@ var $start = $('#start'),
     $page = $('#page'),
     $msgList = $('#msg_list');
 
+$('#app').on('scroll', function () {
+    console.log('scrolling...');
+});
 $start.calendar();
+
 $end.calendar();
 
 $.getScript(
     '/js/wechat/message_center/mc.js',
     function () { $.mc().index(); }
 );
-
-$('#app').on('scroll', function () {
-    console.log('scrolling...');
-});
 
 $(window).scroll(function() {
     if ($(window).scrollTop() === ($(document).height() - $(window).height())) {
