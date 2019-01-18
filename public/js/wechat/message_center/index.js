@@ -16,7 +16,8 @@ $.getScript(
     function () { $.mc().index(); }
 );
 
-$(window).scroll(function() {
+$('#app').scroll(function() {
+    console.log('scrolling');
     if ($(window).scrollTop() === ($(document).height() - $(window).height())) {
     // if ($(document).height() <= $(window).scrollTop() + $(window).height()) {
         $loadmore.show();
