@@ -14,8 +14,8 @@ $.getScript(
     function () { $.mc().index(); }
 );
 
-$app.scroll(function() {
-    if ($app.scrollTop() === ($(document).height() - $app.height())) {
+$(window).scroll(function() {
+    if ($(window).scrollTop() === ($(document).height() - $(window).height())) {
     // if ($(document).height() <= $(window).scrollTop() + $(window).height()) {
         $loadmore.show();
         $.ajax({
