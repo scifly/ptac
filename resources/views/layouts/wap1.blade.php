@@ -15,7 +15,7 @@
 </head>
 <body ontouchstart>
 {!! Form::hidden('member_id', Auth::user()->userid, ['id' => 'member_id']) !!}
-<div style="height: 500px; overflow: scroll" id="app">
+<div style="height: 100%; overflow: scroll;" id="app">
     @yield('content')
 </div>
 @yield('search')
