@@ -6,15 +6,15 @@ var $start = $('#start'),
     $page = $('#page'),
     $msgList = $('#msg_list');
 
-$(window).on('scroll', function () {
+$(document).on('scroll', '#app', function () {
     console.log('scrolling...');
 });
 $start.calendar();
 $end.calendar();
-// $.getScript(
-//     '/js/wechat/message_center/mc.js',
-//     function () { $.mc().index(); }
-// );
+$.getScript(
+    '/js/wechat/message_center/mc.js',
+    function () { $.mc().index(); }
+);
 
 $(window).scroll(function() {
     if ($(window).scrollTop() === ($(document).height() - $(window).height())) {
