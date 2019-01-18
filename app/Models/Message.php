@@ -1346,7 +1346,7 @@ class Message extends Model {
             $msgList .= sprintf(
                 self::TPL,
                 $message->read ? 'normal' : 'bold',
-                '[' . $message->mediaType->remark . ']' . $message->title . $message->id,
+                '[' . $message->mediaType->remark . $message->id . ']' . $message->title,
                 $message->messageType->name,
                 sprintf(
                     '%s : <span class="color-%s">%s</span>, %s : %s',
