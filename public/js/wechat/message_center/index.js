@@ -24,7 +24,7 @@ $('#app').scroll(function() {
         $.ajax({
             type: 'POST',
             dataType: 'html',
-            url: 'index',
+            url: 'message_centers/index',
             data: {
                 _token: wap.token(),
                 page: $page.val()
