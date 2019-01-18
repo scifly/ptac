@@ -968,7 +968,7 @@ class Message extends Model {
             case 'POST':
                 if ($page = Request::input('page')) {
                     $response = $this->msgList(
-                        $this->skip($page * 7)->take(7)->get()
+                        $this->messages($page)
                     );
                 } else {
                     $response = $this->search();
@@ -1284,9 +1284,7 @@ class Message extends Model {
     function compose() {
     
         $user = Auth::user();
-        $messages = Message::where(['s_user_id' => $user->id, 'r_user_id' => 0])
-            ->orWhere('r_user_id', $user->id)
-            ->get()->sortByDesc('created_at')->take(7);
+        $messages = $this->messages();
         
         return [
             $this->msgList($messages),
@@ -1319,6 +1317,19 @@ class Message extends Model {
             $corp->corpid,
             $corp->contact_sync_secret,
         ];
+        
+    }
+    
+    /**
+     * 读取消息列表
+     *
+     * @param int $page
+     */
+    private function messages($page = 0) {
+    
+        $this->where(['s_user_id' => Auth::id(), 'r_user_id' => 0])
+            ->orWhere('r_user_id', Auth::id())->skip($page * 7)
+            ->get()->sortByDesc('created_at')->take(7);
         
     }
     
