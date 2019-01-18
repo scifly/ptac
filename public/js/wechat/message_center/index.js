@@ -27,12 +27,13 @@ $app.scroll(function() {
             },
             success: function (result) {
                 var st = $app.scrollTop();
-                $loadmore.hide();
-                $app.scrollTop(st - 1);
+
                 if (result !== '') {
                     $msgList.append(result);
                     $page.val(parseInt($page.val()) + 1);
                 }
+                $loadmore.hide();
+                $app.scrollTop(st - 1);
             },
             error: function (e) {
                 wap.errorHandler(e);
