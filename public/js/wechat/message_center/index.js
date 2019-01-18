@@ -26,9 +26,8 @@ $app.scroll(function() {
                 page: $page.val()
             },
             success: function (result) {
-                console.log($app.scrollTop());
                 $loadmore.hide();
-                console.log($app.scrollTop());
+                $app.scrollTop($app.scrollTop() - 1)
                 if (result !== '') {
                     $msgList.append(result);
                     $page.val(parseInt($page.val()) + 1);
