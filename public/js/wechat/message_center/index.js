@@ -16,9 +16,7 @@ $.getScript(
 
 $app.scroll(function() {
     if ($app.scrollTop() + $(window).height() >= $app.prop('scrollHeight')) {
-        console.log($app.prop('scrollHeight'));
         $loadmore.show();
-        console.log($app.prop('scrollHeight'));
         $.ajax({
             type: 'POST',
             dataType: 'html',
@@ -28,9 +26,9 @@ $app.scroll(function() {
                 page: $page.val()
             },
             success: function (result) {
-                console.log($app.prop('scrollHeight'));
+                console.log($app.scrollTop());
                 $loadmore.hide();
-                console.log($app.prop('scrollHeight'));
+                console.log($app.scrollTop());
                 if (result !== '') {
                     $msgList.append(result);
                     $page.val(parseInt($page.val()) + 1);
