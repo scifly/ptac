@@ -26,11 +26,11 @@ $app.scroll(function() {
                 page: $page.val()
             },
             success: function (result) {
+                $loadmore.hide();
                 if (result !== '') {
                     $msgList.append(result);
                     $page.val(parseInt($page.val()) + 1);
                 }
-                $loadmore.hide();
             },
             error: function (e) {
                 wap.errorHandler(e);
