@@ -14,7 +14,7 @@ $.getScript(
     function () { $.mc().index(); }
 );
 
-$app.off('scroll').on('scroll', function() {
+$app.on('scroll', function() {
     if ($app.scrollTop() + $(window).height() >= $app.prop('scrollHeight')) {
         $loadmore.show();
         $.ajax({
@@ -33,7 +33,8 @@ $app.off('scroll').on('scroll', function() {
                     $page.val(parseInt($page.val()) + 1);
                 }
                 $loadmore.hide();
-                $app.scrollTop(st - 2);
+                $app.off('scroll');
+                $app.scrollTop(st - 1);
             },
             error: function (e) {
                 wap.errorHandler(e);
