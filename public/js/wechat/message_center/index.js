@@ -33,7 +33,6 @@ $app.on('scroll', function() {
                     $page.val(parseInt($page.val()) + 1);
                 }
                 $loadmore.hide();
-                $app.off('scroll');
                 $app.scrollTop(st - 1);
             },
             error: function (e) {
