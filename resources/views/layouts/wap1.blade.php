@@ -20,11 +20,6 @@
 </div>
 @yield('search')
 <script src="{!! asset('/js/jquery.min.js') !!}"></script>
-<script src="{!! asset('/js/pusher.min.js') !!}"></script>
-<script src="{!! asset('/js/wechat/fastclick.js') !!}"></script>
-<script src="{!! asset('/js/wechat/jquery-weui.min.js') !!}"></script>
-<script src="{!! asset('/js/wechat/swiper.js') !!}"></script>
-<script src="{!! asset('/js/wechat/wap.js') !!}"></script>
 @yield('script')
 </body>
 </html>
