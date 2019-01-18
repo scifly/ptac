@@ -16,6 +16,7 @@
                     'id' => 'search',
                     'placeholder' => '搜索消息',
                     'class' => 'weui-input',
+                    'type' => 'search',
                     'style' => 'padding-left: 8px;'
                 ]) !!}
             </div>
