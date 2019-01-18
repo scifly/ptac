@@ -15,7 +15,7 @@ $.getScript(
 );
 
 $app.on('scroll', function() {
-    if ($app.scrollTop() + $(window).height() >= $app.prop('scrollHeight')) {
+    if ($app.scrollTop() + $(window).height() >= $app.prop('scrollHeight') - 1) {
         $loadmore.show();
         $.ajax({
             type: 'POST',
@@ -26,14 +26,11 @@ $app.on('scroll', function() {
                 page: $page.val()
             },
             success: function (result) {
-                var st = $app.scrollTop();
-
+                $loadmore.hide();
                 if (result !== '') {
                     $msgList.append(result);
                     $page.val(parseInt($page.val()) + 1);
                 }
-                $loadmore.hide();
-                $app.scrollTop(st - 1);
             },
             error: function (e) {
                 wap.errorHandler(e);
