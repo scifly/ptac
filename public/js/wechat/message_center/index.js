@@ -26,8 +26,10 @@ $app.scroll(function() {
                 page: $page.val()
             },
             success: function (result) {
-                $msgList.append(result);
-                if (result !== '') $page.val(parseInt($page.val()) + 1);
+                if (result !== '') {
+                    $msgList.append(result);
+                    $page.val(parseInt($page.val()) + 1);
+                }
                 $loadmore.hide();
             },
             error: function (e) {
