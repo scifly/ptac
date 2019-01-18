@@ -14,7 +14,7 @@ $.getScript(
     function () { $.mc().index(); }
 );
 
-$app.scroll(function() {
+$app.off('scroll').on('scroll', function() {
     if ($app.scrollTop() + $(window).height() >= $app.prop('scrollHeight')) {
         $loadmore.show();
         $.ajax({
