@@ -1,14 +1,12 @@
 //# sourceURL=index.js
-var $start = $('#start'),
+var $app = $('#app'),
+    $start = $('#start'),
     $end = $('#end'),
     $title = $('.weui-panel__hd'),
     $loadmore = $('.weui-loadmore'),
     $page = $('#page'),
     $msgList = $('#msg_list');
 
-$(document).on('scroll', '#app', function () {
-    console.log('d scrolling...');
-});
 $start.calendar();
 $end.calendar();
 $.getScript(
@@ -16,9 +14,8 @@ $.getScript(
     function () { $.mc().index(); }
 );
 
-$('#app').scroll(function() {
-    console.log('scrolling');
-    if ($(window).scrollTop() === ($(document).height() - $(window).height())) {
+$app.scroll(function() {
+    if ($app.scrollTop() === ($(document).height() - $app.height())) {
     // if ($(document).height() <= $(window).scrollTop() + $(window).height()) {
         $loadmore.show();
         $.ajax({
