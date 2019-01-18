@@ -968,7 +968,9 @@ class Message extends Model {
             case 'POST':
                 if ($page = Request::input('page')) {
                     $response = $this->msgList(
-                        $this->skip($page * 7)->take(7)->get()
+                        Message::where(['s_user_id' => Auth::id(), 'r_user_id' => 0])
+                            ->orWhere('r_user_id', Auth::id())->skip($page * 7)
+                            ->get()->sortByDesc('created_at')->take(7)
                     );
                 } else {
                     $response = $this->search();
