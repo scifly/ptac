@@ -14,8 +14,11 @@ $.getScript(
     function () { $.mc().index(); }
 );
 
-$(window).scroll(function() {
+$('#app').on('scroll', function () {
     console.log('scrolling...');
+});
+
+$(window).scroll(function() {
     if ($(window).scrollTop() === ($(document).height() - $(window).height())) {
     // if ($(document).height() <= $(window).scrollTop() + $(window).height()) {
         $loadmore.show();
