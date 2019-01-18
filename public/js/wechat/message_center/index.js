@@ -16,7 +16,6 @@ $.getScript(
 
 $app.scroll(function() {
     if ($app.scrollTop() + $(window).height() === $app.prop('scrollHeight')) {
-    // if ($(document).height() <= $(window).scrollTop() + $(window).height()) {
         $loadmore.show();
         $.ajax({
             type: 'POST',
