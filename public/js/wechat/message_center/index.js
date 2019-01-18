@@ -29,7 +29,7 @@ $app.scroll(function() {
             success: function (result) {
                 $loadmore.hide();
                 $msgList.append(result);
-                if (result !== '') $page.val($page.val() + 1);
+                if (result !== '') $page.val(parseInt($page.val()) + 1);
             },
             error: function (e) {
                 wap.errorHandler(e);

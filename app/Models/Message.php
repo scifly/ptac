@@ -1345,7 +1345,7 @@ class Message extends Model {
                 $color = $message->read ? 'primary' : 'error';
                 $status = $message->read ? '已读' : '未读';
                 $stat = '发送者';
-                $value = $message->sender;
+                $value = $message->sender->realname;
             }
             $msgList .= sprintf(
                 self::TPL,
