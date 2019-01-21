@@ -37,11 +37,11 @@
             <div class="weui-panel__bd" id="msg_list">
                 {!! $messages !!}
             </div>
-            <div class="weui-loadmore weui-loadmore_line"
+            <div id="empty" class="weui-loadmore weui-loadmore_line"
                  style="display: {!! empty($messages) ? 'block' : 'none' !!}">
                 <span class="weui-loadmore__tips">暂无记录</span>
             </div>
-            <div class="weui-loadmore" style="display: none;">
+            <div id="loader" class="weui-loadmore" style="display: none;">
                 <i class="weui-loading"></i>
                 <span class="weui-loadmore__tips">正在加载</span>
             </div>
