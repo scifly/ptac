@@ -32,7 +32,7 @@
                                     <div class="wwbw js-wwbw mce-item-table article-message">
                                         @switch ($type)
                                             @case ('text')
-                                                <p>{!! $content['content'] ?? ($content['text'] ?? '') !!}</p>
+                                                <p>{!! $content[$type]['content'] ?? ($content[$type]['text'] ?? '') !!}</p>
                                                 @break
                                             @case ('image')
                                                 <p><img alt="" src="/{!! $content['path'] !!}" /></p>
