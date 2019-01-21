@@ -39,7 +39,6 @@
                     $empty = $('#empty'),
                     $loadmore = $('#loader'),
                     $page = $('#page'),
-                    $message = $('.weui-cell_access'),
                     $folder = $('#folder'),
                     $msgList = $('#msg_list'),
                     $filter = $('#filter'),
@@ -118,7 +117,7 @@
                     action('filter')
                 });
                 // 查看/编辑
-                $message.on('click', function (e) {
+                $(document).on('click', '.weui-cell_access', function (e) {
                     e.preventDefault(e);
                     var $this = $(this),
                         id = $this.attr('id'),
