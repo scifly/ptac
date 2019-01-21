@@ -1373,7 +1373,7 @@ class Message extends Model {
             if (in_array($folder, ['outbox', 'draft'])) {
                 $sent = $folder == 'outbox' ? 1 : 0;
                 $builder = $this->where([
-                    's_user_id' => $userId, 
+                    's_user_id' => $userId,
                     'r_user_id' => 0,
                     'sent' => $sent
                 ]);

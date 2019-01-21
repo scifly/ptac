@@ -118,10 +118,11 @@
                     action('filter')
                 });
                 // 查看/编辑
-                $message.on('click', function () {
+                $message.on('click', function (e) {
+                    e.preventDefault(e);
                     var $this = $(this),
                         id = $this.attr('id'),
-                        sent = $this.data('type'),
+                        sent = parseInt($this.data('type')),
                         url = 'message_centers/',
                         location = url + (sent ? 'show/' : 'edit/') + id;
 
