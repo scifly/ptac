@@ -49,7 +49,7 @@
                 $end.calendar();
                 // 搜索
                 $search.on("input propertychange change", function () {
-                    callback('search');
+                    action('search');
                 });
                 // 滚动
                 $app.on('scroll', function () {
@@ -115,7 +115,7 @@
                 });
                 // 过滤
                 $filter.on('click', function () {
-                    callback('filter')
+                    action('filter')
                 });
                 // 查看/编辑
                 $message.on('click', function () {
@@ -143,7 +143,7 @@
                         .removeClass($title.attr('class').split(' ')[1])
                         .addClass(o.className);
                     $folder.val(folder);
-                    callback('folder');
+                    action('folder');
                 }
                 function messages(action, callback) {
                     $loadmore.show();
@@ -175,7 +175,7 @@
                         }
                     }
                 }
-                function callback(action) {
+                function action(action) {
                     $msgList.hide();
                     messages(action, function (result) {
                         $loadmore.hide();
