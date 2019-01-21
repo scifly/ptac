@@ -34,10 +34,11 @@ class MessageCenterShowComposer {
         
         $id = Request::route('id');
         $detail = $id ? $this->message->detail($id) : null;
+        $type = $detail['type'];
+        $content = json_decode($detail[$type], true);
         $view->with([
-            'type'    => ($type = $detail['type']),
             'detail'  => $detail,
-            'content' => json_decode($detail[$type], true),
+            'content' => $content[$type],
             'replies' => $id ? $this->message->replies($id, $this->message->find($id)->msl_id) : null,
         ]);
         
