@@ -36,6 +36,7 @@
                     $start = $('#start'),
                     $end = $('#end'),
                     $title = $('.weui-panel__hd'),
+                    $empty = $('.weui-loadmore_line'),
                     $loadmore = $('.weui-loadmore'),
                     $page = $('#page'),
                     $message = $('.weui-cell_access'),
@@ -43,10 +44,7 @@
                     $msgList = $('#msg_list'),
                     $filter = $('#filter'),
                     $messasgeTypeId = $('#message_type_id'),
-                    $mediaTypeId = $('#media_type_id'),
-                    na = '<div class="weui-loadmore weui-loadmore_line">' +
-                        '<span class="weui-loadmore__tips">暂无记录</span>' +
-                    '</div>';
+                    $mediaTypeId = $('#media_type_id');
 
                 $start.calendar();
                 $end.calendar();
@@ -183,7 +181,7 @@
                     messages(action, function (result) {
                         $loadmore.hide();
                         $msgList.html(result).show();
-                        result === '' ? $msgList.after(na) : $loadmore.hide();
+                        $empty.toggle(result !== '');
                     });
                 }
             },
