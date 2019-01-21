@@ -30,9 +30,9 @@
                             <div class="artic-detail-module">
                                 <div class="writing-texts bg-fff">
                                     <div class="wwbw js-wwbw mce-item-table article-message">
-                                        @switch ($detail['type'])
+                                        @switch ($type)
                                             @case ('text')
-                                                <p>{!! $content['text']['content'] ?? ($content['text']['text'] ?? '') !!}</p>
+                                                <p>{!! $content['content'] ?? ($content['text'] ?? '') !!}</p>
                                                 @break
                                             @case ('image')
                                                 <p><img alt="" src="/{!! $content['path'] !!}" /></p>
