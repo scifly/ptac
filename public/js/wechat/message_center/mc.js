@@ -43,7 +43,10 @@
                     $msgList = $('#msg_list'),
                     $filter = $('#filter'),
                     $messasgeTypeId = $('#message_type_id'),
-                    $mediaTypeId = $('#media_type_id');
+                    $mediaTypeId = $('#media_type_id'),
+                    na = '<div class="weui-loadmore weui-loadmore_line">' +
+                        '<span class="weui-loadmore__tips">暂无记录</span>' +
+                    '</div>';
 
                 $start.calendar();
                 $end.calendar();
@@ -179,7 +182,8 @@
                     $msgList.hide();
                     messages(action, function (result) {
                         $loadmore.hide();
-                        $msgList.html(result);
+                        $msgList.html(result).show();
+                        if (result === '') $msgList.after(na);
                     });
                 }
             },
