@@ -1380,8 +1380,8 @@ class Message extends Model {
             $folder = $params['folder'];
             $messageTypeId = $params['message_type_id'];
             $mediaTypeId = $params['media_type_id'];
-            $start = $params['start'];
-            $end = $params['end'];
+            $start = $params['start'] . ' 00:00:00';
+            $end = $params['end'] . ' 23:59:59';
             abort_if(
                 $start > $end,
                 HttpStatusCode::NOT_ACCEPTABLE,
@@ -1404,7 +1404,7 @@ class Message extends Model {
             }
             $action == 'page' ?: $page = 0;
         }
-        
+        Log::debug($builder->toSql());
         return $builder->orderBy('created_at', 'desc')->skip($page * 7)->take(7)->get();
         
     }
