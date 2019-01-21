@@ -1203,7 +1203,7 @@ class Message extends Model {
                     __('messages.message.not_found')
                 );
                 $response = view('wechat.message_center.show', [
-                    'message' => $msg,
+                    'msg' => $msg,
                 ]);
                 break;
             case 'POST':
