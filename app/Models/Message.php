@@ -1394,7 +1394,7 @@ class Message extends Model {
             $folder != 'all' ?:
                 $builder = $builder->orWhere('r_user_id', $userId);
             !isset($keyword) ?:
-                $builder = $builder->whereRaw("title LIKE %{$keyword}% OR content LIKE %{$keyword}%");
+                $builder = $builder->whereRaw("(title LIKE '%{$keyword}%' OR content LIKE '%{$keyword}%')");
             if (isset($start, $end)) {
                 $builder = $builder->whereBetween('created_at', [$start, $end]);
             } elseif (isset($start) && !isset($end)) {
