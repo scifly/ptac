@@ -183,7 +183,7 @@
                     messages(action, function (result) {
                         $loadmore.hide();
                         $msgList.html(result).show();
-                        if (result === '') $msgList.after(na);
+                        result === '' ? $msgList.after(na) : $loadmore.hide();
                     });
                 }
             },
