@@ -1361,51 +1361,47 @@ class Message extends Model {
      */
     private function messages() {
     
+        $page = 0;
         $userId = Auth::id();
-        $all = ['s_user_id' => $userId, 'r_user_id' => 0];
-        if (Request::method() == 'GET') {
-            $builder = $this->where($all)->orWhere('r_user_id', $userId);
-            $page = 0;
-        } else {
+        $clause = '((s_user_id = ' . $userId . ' AND r_user_id = 0) OR r_user_id = ' . $userId . ')';
+        $builder = $this->whereRaw($clause);
+        if (Request::method() == 'POST') {
             $action = Request::input('action');
             $params = Request::input('params');
-            $wheres = [
-                'all'    => $all,
-                'inbox'  => ['r_user_id' => $userId],
-                'outbox' => array_merge($all, ['sent' => 1]),
-                'draft'  => array_merge($all, ['sent' => 0]),
-            ];
-            $keyword = $params['keyword'];
-            $page = $params['page'];
+            # 消息目录(所有、收件箱、发件箱、草稿箱)
             $folder = $params['folder'];
-            $messageTypeId = $params['message_type_id'];
-            $mediaTypeId = $params['media_type_id'];
-            $start = $params['start'] . ' 00:00:00';
-            $end = $params['end'] . ' 23:59:59';
-            abort_if(
-                $start > $end,
-                HttpStatusCode::NOT_ACCEPTABLE,
-                __('起始日期不得晚于截止日期')
-            );
-            $condition = $wheres[$folder];
-            $messageTypeId == 0 ?: $condition = array_merge($condition, ['message_type_id' => $messageTypeId]);
-            $mediaTypeId == 0 ?: $condition = array_merge($condition, ['media_type_id' => $mediaTypeId]);
-            $builder = $this->where($condition);
-            $folder != 'all' ?:
-                $builder = $builder->orWhere('r_user_id', $userId);
-            !isset($keyword) ?:
-                $builder = $builder->whereRaw("(title LIKE '%{$keyword}%' OR content LIKE '%{$keyword}%')");
-            if (isset($start, $end)) {
+            if (in_array($folder, ['outbox', 'draft'])) {
+                $sent = $folder == 'outbox' ? 1 : 0;
+                $builder = $this->where(['s_user_id' => $userId, 'sent' => $sent]);
+            } else {
+                $folder == 'all' ?: $builder = $this->where('r_user_id', $userId);
+            }
+            # 消息过滤（消息类型/格式、关键词、起止日期)
+            !($messageTypeId = $params['message_type_id'])
+                ?: $builder = $builder->where('message_type_id', $messageTypeId);
+            !($mediaTypeId = $params['media_type_id'])
+                ?: $builder = $builder->where('media_type_id', $mediaTypeId);
+            !($keyword = $params['keyword'])
+                ?: $builder = $builder->whereRaw("(title LIKE '%{$keyword}%' OR content LIKE '%{$keyword}%')");
+            $start = $params['start'] ? $params['start'] . ' 00:00:00' : null;
+            $end = $params['end'] ? $params['end'] . ' 23:59:59' : null;
+            if ($start && $end) {
+                abort_if(
+                    $start > $end, HttpStatusCode::NOT_ACCEPTABLE,
+                    __('messages.incorrect_data_range')
+                );
                 $builder = $builder->whereBetween('created_at', [$start, $end]);
-            } elseif (isset($start) && !isset($end)) {
+            } elseif ($start && !$end) {
                 $builder = $builder->where('created_at', '>=', $start);
-            } elseif (!isset($start) && isset($end)) {
+            } elseif (!$start && $end) {
                 $builder = $builder->where('created_at', '<=', $end);
             }
-            $action == 'page' ?: $page = 0;
+            # 分页加载
+            $page = $action == 'page' ? $params['page'] : 0;
         }
-        Log::debug($builder->toSql());
-        return $builder->orderBy('created_at', 'desc')->skip($page * 7)->take(7)->get();
+
+        return $builder->orderBy('created_at', 'desc')
+            ->skip($page * 7)->take(7)->get();
         
     }
     
