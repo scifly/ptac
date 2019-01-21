@@ -47,6 +47,7 @@
 
                 $start.calendar();
                 $end.calendar();
+                $page.val(1);
                 // 搜索
                 $search.on("input propertychange change", function () {
                     action('search');
