@@ -1361,44 +1361,49 @@ class Message extends Model {
      */
     private function messages() {
     
-        Log::info('params: ', Request::all());
-        $action = Request::input('action');
-        $params = Request::input('params');
         $userId = Auth::id();
-        $wheres = [
-            'all'    => ($all = ['s_user_id' => $userId, 'r_user_id' => 0]),
-            'inbox'  => ['r_user_id' => $userId],
-            'outbox' => array_merge($all, ['sent' => 1]),
-            'draft'  => array_merge($all, ['sent' => 0]),
-        ];
-        $keyword = $params['keyword'];
-        $page = $params['page'];
-        $folder = $params['folder'];
-        $messageTypeId = $params['message_type_id'];
-        $mediaTypeId = $params['media_type_id'];
-        $start = $params['start'];
-        $end = $params['end'];
-        abort_if(
-            $start > $end,
-            HttpStatusCode::NOT_ACCEPTABLE,
-            __('起始日期不得晚于截止日期')
-        );
-        $condition = $wheres[$folder];
-        $messageTypeId == 0 ?: $condition = array_merge($condition, ['message_type_id' => $messageTypeId]);
-        $mediaTypeId == 0 ?: $condition = array_merge($condition, ['media_type_id' => $mediaTypeId]);
-        $builder = $this->where($condition);
-        $folder != 'all' ?:
-            $builder = $builder->orWhere('r_user_id', $userId);
-        !isset($keyword) ?:
-            $builder = $builder->whereRaw("title LIKE %{$keyword}% OR content LIKE %{$keyword}%");
-        if (isset($start, $end)) {
-            $builder = $builder->whereBetween('created_at', [$start, $end]);
-        } elseif (isset($start) && !isset($end)) {
-            $builder = $builder->where('created_at', '>=', $start);
-        } elseif (!isset($start) && isset($end)) {
-            $builder = $builder->where('created_at', '<=', $end);
+        $all = ['s_user_id' => $userId, 'r_user_id' => 0];
+        if (Request::method() == 'GET') {
+            $builder = $this->where($all)->orWhere('r_user_id', $userId);
+            $page = 0;
+        } else {
+            $action = Request::input('action');
+            $params = Request::input('params');
+            $wheres = [
+                'all'    => $all,
+                'inbox'  => ['r_user_id' => $userId],
+                'outbox' => array_merge($all, ['sent' => 1]),
+                'draft'  => array_merge($all, ['sent' => 0]),
+            ];
+            $keyword = $params['keyword'];
+            $page = $params['page'];
+            $folder = $params['folder'];
+            $messageTypeId = $params['message_type_id'];
+            $mediaTypeId = $params['media_type_id'];
+            $start = $params['start'];
+            $end = $params['end'];
+            abort_if(
+                $start > $end,
+                HttpStatusCode::NOT_ACCEPTABLE,
+                __('起始日期不得晚于截止日期')
+            );
+            $condition = $wheres[$folder];
+            $messageTypeId == 0 ?: $condition = array_merge($condition, ['message_type_id' => $messageTypeId]);
+            $mediaTypeId == 0 ?: $condition = array_merge($condition, ['media_type_id' => $mediaTypeId]);
+            $builder = $this->where($condition);
+            $folder != 'all' ?:
+                $builder = $builder->orWhere('r_user_id', $userId);
+            !isset($keyword) ?:
+                $builder = $builder->whereRaw("title LIKE %{$keyword}% OR content LIKE %{$keyword}%");
+            if (isset($start, $end)) {
+                $builder = $builder->whereBetween('created_at', [$start, $end]);
+            } elseif (isset($start) && !isset($end)) {
+                $builder = $builder->where('created_at', '>=', $start);
+            } elseif (!isset($start) && isset($end)) {
+                $builder = $builder->where('created_at', '<=', $end);
+            }
+            $action == 'page' ?: $page = 0;
         }
-        $action == 'page' ?: $page = 0;
         
         return $builder->orderBy('created_at', 'desc')->skip($page * 7)->take(7)->get();
         
