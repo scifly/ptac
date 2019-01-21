@@ -35,7 +35,7 @@ class MessageCenterShowComposer {
         $detail = $id ? $this->message->detail($id) : null;
         $view->with([
             'detail'  => $detail,
-            'content' => json_decode($detail[$detail['type']]),
+            'content' => json_decode($detail[$detail['type']], true),
             'replies' => $id ? $this->message->replies($id, $this->message->find($id)->msl_id) : null,
         ]);
         
