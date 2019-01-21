@@ -181,7 +181,7 @@
                     messages(action, function (result) {
                         $loadmore.hide();
                         $msgList.html(result).show();
-                        $empty.toggle(result !== '');
+                        $empty.toggle(result === '');
                     });
                 }
             },
