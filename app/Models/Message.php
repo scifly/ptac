@@ -1372,7 +1372,11 @@ class Message extends Model {
             $folder = $params['folder'];
             if (in_array($folder, ['outbox', 'draft'])) {
                 $sent = $folder == 'outbox' ? 1 : 0;
-                $builder = $this->where(['s_user_id' => $userId, 'sent' => $sent]);
+                $builder = $this->where([
+                    's_user_id' => $userId, 
+                    'r_user_id' => 0,
+                    'sent' => $sent
+                ]);
             } else {
                 $folder == 'all' ?: $builder = $this->where('r_user_id', $userId);
             }
