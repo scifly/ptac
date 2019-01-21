@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="{!! asset('/css/wechat/message_center/index.css') !!}">
 @endsection
 @section('content')
+    <!-- 搜索 -->
     <div class="weui-cells weui-cells_form" style="margin-top: 0;">
         <div class="weui-cell">
             <div class="weui-cell__hd" style="text-align: left;">
@@ -27,15 +28,16 @@
             </div>
         </div>
     </div>
+    <!-- 消息列表 -->
     <div class="page_bd">
         <div class="weui-panel">
             {!! Form::hidden('page', 1, ['id' => 'page']) !!}
+            {!! Form::hidden('folder', 'all', ['id' => 'folder']) !!}
             <div class="weui-panel__hd color-primary">所有消息</div>
-            @if (!empty($messages))
-                <div class="weui-panel__bd" id="msg_list">
-                    {!! $messages !!}
-                </div>
-            @else
+            <div class="weui-panel__bd" id="msg_list">
+                {!! $messages !!}
+            </div>
+            @if (empty($messages))
                 <div class="weui-loadmore weui-loadmore_line">
                     <span class="weui-loadmore__tips">暂无记录</span>
                 </div>
@@ -46,6 +48,7 @@
             </div>
         </div>
     </div>
+    <!-- 过滤 -->
     <div id="filters" class="weui-popup__container popup-bottom">
         <div class="weui-popup__overlay"></div>
         <div class="weui-popup__modal">
@@ -58,24 +61,24 @@
                 <div class="weui-cells weui-cells_form">
                     <div class="weui-cell weui-cell_select weui-cell_select-after">
                         <div class="weui-cell__hd">
-                            {!! Form::label('message_type', '消息类型', [
+                            {!! Form::label('message_type_id', '消息类型', [
                                 'class' => 'weui-label'
                             ]) !!}
                         </div>
                         <div class="weui-cell__bd">
-                            {!! Form::select('message_type', $messageTypes, null, [
+                            {!! Form::select('message_type_id', $messageTypes, null, [
                                 'class' => 'weui-select'
                             ]) !!}
                         </div>
                     </div>
                     <div class="weui-cell weui-cell_select weui-cell_select-after">
                         <div class="weui-cell__hd">
-                            {!! Form::label('media_type', '消息格式', [
+                            {!! Form::label('media_type_id', '消息格式', [
                                 'class' => 'weui-label'
                             ]) !!}
                         </div>
                         <div class="weui-cell__bd">
-                            {!! Form::select('media_type', $mediaTypes, null, [
+                            {!! Form::select('media_type_id', $mediaTypes, null, [
                                 'class' => 'weui-select'
                             ]) !!}
                         </div>

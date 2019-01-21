@@ -9,6 +9,7 @@ return [
     'file_uploaded'            => '文件上传成功',
     'file_upload_failed'       => '文件上传失败',
     'empty_file'               => '文件为空或格式错误',
+    'incorrect_data_range'     => '起始日期不得晚于截止日期',
     'edit_fail'                => '保存失败',
     'del_fail'                 => '删除失败',
     'bad_request'              => '请求错误',

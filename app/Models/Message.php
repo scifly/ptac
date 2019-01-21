@@ -85,7 +85,7 @@ class Message extends Model {
     ];
     
     const TPL = '<div class="weui-media-box weui-media-box_text">
-        <a href="#" class="weui-cell_access">
+        <a id="%s" href="#" class="weui-cell_access" data-type="%s">
             <p class="truncate" style="font-weight: %s;">%s</p>
         </a>
         <ul class="weui-media-box__info">
@@ -966,8 +966,7 @@ class Message extends Model {
                     : view('wechat.message_center.index');
                 break;
             case 'POST':
-                $page = Request::input('page');
-                $response = $page ? $this->msgList($page) : $this->search();
+                $response = $this->msgList();
                 break;
             default:
                 break;
@@ -1277,7 +1276,7 @@ class Message extends Model {
      * @return array
      */
     function compose() {
-    
+        
         return [
             $this->msgList(),
             array_merge([0 => '全部'], MessageType::pluck('name', 'id')->toArray()),
@@ -1315,20 +1314,13 @@ class Message extends Model {
     /**
      * 返回消息列表(微信端)
      *
-     * @param int $page
      * @return string
      */
-    private function msgList($page = 0) {
-    
-        $user = Auth::user();
-        $messages = Message::where(['s_user_id' => $user->id, 'r_user_id' => 0])
-            ->orWhere('r_user_id', $user->id)
-            ->orderBy('created_at', 'desc')
-            ->skip($page * 7)->take(7)->get();
+    private function msgList() {
         
         $msgList = '';
         /** @var Message $message */
-        foreach ($messages as $message) {
+        foreach ($this->messages() as $message) {
             if ($message->s_user_id == Auth::id() && !$message->r_user_id) {
                 $direction = '发件';
                 $color = $message->sent ? 'primary' : ($message->event_id ? 'warning' : 'error');
@@ -1345,8 +1337,10 @@ class Message extends Model {
             }
             $msgList .= sprintf(
                 self::TPL,
+                $message->id,
+                $message->sent,
                 $message->read ? 'normal' : 'bold',
-                '[' . $message->mediaType->remark . $message->id . ']' . $message->title,
+                '[' . $message->mediaType->remark . ']' . $message->title,
                 $message->messageType->name,
                 sprintf(
                     '%s : <span class="color-%s">%s</span>, %s : %s',
@@ -1357,6 +1351,55 @@ class Message extends Model {
         }
         
         return $msgList;
+        
+    }
+    
+    /**
+     * 获取消息
+     *
+     * @return Message[]|Builder[]|Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection
+     */
+    private function messages() {
+    
+        $action = Request::input('action');
+        $params = Request::input('params');
+        $userId = Auth::id();
+        $wheres = [
+            'all'    => ($all = ['s_user_id' => $userId, 'r_user_id' => 0]),
+            'inbox'  => ['r_user_id' => $userId],
+            'outbox' => array_merge($all, ['sent' => 1]),
+            'draft'  => array_merge($all, ['sent' => 0]),
+        ];
+        $keyword = $params['keyword'];
+        $page = $params['page'];
+        $folder = $params['folder'];
+        $messageTypeId = $params['message_type_id'];
+        $mediaTypeId = $params['media_type_id'];
+        $start = $params['start'];
+        $end = $params['end'];
+        abort_if(
+            $start > $end,
+            HttpStatusCode::NOT_ACCEPTABLE,
+            __('起始日期不得晚于截止日期')
+        );
+        $condition = $wheres[$folder];
+        $messageTypeId == 0 ?: $condition = array_merge($condition, ['message_type_id' => $messageTypeId]);
+        $mediaTypeId == 0 ?: $condition = array_merge($condition, ['media_type_id' => $mediaTypeId]);
+        $builder = $this->where($condition);
+        $folder != 'all' ?:
+            $builder = $builder->orWhere('r_user_id', $userId);
+        !isset($keyword) ?:
+            $builder = $builder->whereRaw("title LIKE %{$keyword}% OR content LIKE %{$keyword}%");
+        if (isset($start, $end)) {
+            $builder = $builder->whereBetween('created_at', [$start, $end]);
+        } elseif (isset($start) && !isset($end)) {
+            $builder = $builder->where('created_at', '>=', $start);
+        } elseif (!isset($start) && isset($end)) {
+            $builder = $builder->where('created_at', '<=', $end);
+        }
+        $action == 'page' ?: $page = 0;
+        
+        return $builder->orderBy('created_at', 'desc')->skip($page * 7)->take(7)->get();
         
     }
     

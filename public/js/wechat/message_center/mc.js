@@ -31,85 +31,157 @@
             selectedDepartmentIds: [],
             selectedUserIds: [],
             index: function () {
-                var $types = $('.weui-navbar__item'),
-                    $messages = $('.teacher-list-box'),
-                    $messageTypeContainer = $('.selectlist-layout'),
-                    $selectBox = $('.select-box'),
-                    $messageTypes = $('.select-ul'),
-                    $messageType = $('.select-container'),
-                    $search = $('#searchInput');
+                var $app = $('#app'),
+                    $search = $('#search'),
+                    $start = $('#start'),
+                    $end = $('#end'),
+                    $title = $('.weui-panel__hd'),
+                    $loadmore = $('.weui-loadmore'),
+                    $page = $('#page'),
+                    $message = $('.weui-cell_access'),
+                    $folder = $('#folder'),
+                    $msgList = $('#msg_list'),
+                    $filter = $('#filter'),
+                    $messasgeTypeId = $('#message_type_id'),
+                    $mediaTypeId = $('#media_type_id');
 
-                // 选择消息类型
-                $messageTypeContainer.on('click', function () {
-                    $messageType.toggle();
-                    $messageTypes.slideToggle('fast');
+                $start.calendar();
+                $end.calendar();
+                // 搜索
+                $search.on("input propertychange change", function () {
+                    callback('search');
                 });
-                // 显示指定类型的消息列表
-                $messageTypes.find('li').on('click', function () {
-                    var html = '' + ($(this).text()) + ' <i class="icon iconfont icon-arrLeft-fill"></i>',
-                        typeId = $(this).attr('data-id');
+                // 滚动
+                $app.on('scroll', function () {
+                    if ($app.scrollTop() + $(window).height() >= $app.prop('scrollHeight')) {
+                        $loadmore.show();
+                        var callback = function (result) {
+                            var st = $app.scrollTop();
 
-                    $messageType.toggle();
-                    $messageTypes.slideToggle('fast');
-                    $messageTypes.find('li').removeClass('c-green');
-                    $(this).addClass('c-green');
-                    $selectBox.html(html);
-                    mc.messageFilter(typeId)
+                            if (result !== '') {
+                                $msgList.append(result);
+                                $page.val(parseInt($page.val()) + 1);
+                            }
+                            $loadmore.hide();
+                            $app.scrollTop(st - 1);
+                        };
+                        messages('page', callback);
+                    }
                 });
-                // 查看（已发送）或编辑（草稿/待发送）消息
-                $messages.on('click', function () {
+                // 目录
+                $(document).on('click', '#show-actions', function () {
+                    $.actions({
+                        // title: '请选择',
+                        onClose: function () {
+                            console.log('close');
+                        },
+                        actions: [
+                            {
+                                text: '所有消息',
+                                className: 'color-primary',
+                                onClick: function () {
+                                    switchFolder(this, 'all');
+                                }
+                            },
+                            {
+                                text: '收件箱',
+                                className: 'color-primary',
+                                onClick: function () {
+                                    switchFolder(this, 'inbox');
+                                }
+                            },
+                            {
+                                text: '发件箱',
+                                className: 'color-warning',
+                                onClick: function () {
+                                    switchFolder(this, 'outbox');
+                                }
+                            },
+                            {
+                                text: '草稿箱',
+                                className: 'color-danger',
+                                onClick: function () {
+                                    switchFolder(this, 'draft');
+                                }
+                            },
+                            {
+                                text: '消息过滤',
+                                onClick: function () {
+                                    $('#filters').popup();
+                                }
+                            }
+                        ]
+                    });
+                });
+                // 过滤
+                $filter.on('click', function () {
+                    callback('filter')
+                });
+                // 查看/编辑
+                $message.on('click', function () {
                     var $this = $(this),
                         id = $this.attr('id'),
-                        type = $this.data('type');
+                        sent = $this.data('type'),
+                        url = 'message_centers/',
+                        location = url + (sent ? 'show/' : 'edit/') + id;
 
-                    if (type === 'sent') {
-                        $.ajax({
-                            type: 'GET',
-                            dataType: 'json',
-                            url: 'mc',
-                            data: { _token: wap.token(), id: id},
-                            success: function () {
-                                window.location = 'mc/show/' + id;
-                            },
-                            error: function (e) {
-                                wap.errorHandler(e);
-                            }
-                        });
-                    } else {
-                        window.location = 'mc/edit/' + id;
-                    }
+                    sent ? $.ajax({
+                        type: 'GET',
+                        dataType: 'json',
+                        url: url,
+                        data: {_token: wap.token(), id: id},
+                        success: function () {
+                            window.location = location;
+                        },
+                        error: function (e) {
+                            wap.errorHandler(e);
+                        }
+                    }) : window.location = location;
                 });
-                // 显示发件箱/收件箱消息列表
-                $types.on('click', function() {
-                    $messageTypes.hide();
-                    $messageType.hide();
-                });
-                // 搜索消息
-                $search.on("input propertychange change",
-                    function() {
-                        var keyword = $(this).val(),
-                            type = $('.weui-bar__item--on').attr('data-type'),
-                            $messageList = $('.weui-popup__container .weui-tab__bd-item .list-layout');
-
-                        $messageList.html('');
-                        $.ajax({
-                            type: 'POST',
-                            dataType: 'html',
-                            url: 'mc',
-                            data: {
-                                _token: wap.token(),
-                                keyword: keyword,
-                                type: type
-                            },
-                            success: function (result) {
-                                $messageList.html(result);
-                            },
-                            error: function (e) {
-                                wap.errorHandler(e);
-                            }
-                        });
+                function switchFolder(o, folder) {
+                    $title.html(o.text)
+                        .removeClass($title.attr('class').split(' ')[1])
+                        .addClass(o.className);
+                    $folder.val(folder);
+                    callback('folder');
+                }
+                function messages(action, callback) {
+                    $loadmore.show();
+                    $.ajax({
+                        type: 'POST',
+                        dataType: 'html',
+                        url: 'message_centers',
+                        data: data(action),
+                        success: function (result) {
+                            callback(result);
+                        },
+                        error: function (e) {
+                            wap.errorHandler(e);
+                        }
+                    });
+                }
+                function data(action) {
+                    return {
+                        _token: wap.token(),
+                        action: action,
+                        params: {
+                            keyword: $search.val(),
+                            page: $page.val(),
+                            folder: $folder.val(),
+                            message_type_id: $messasgeTypeId.val(),
+                            media_type_id: $mediaTypeId.val(),
+                            start: $start.val(),
+                            end: $end.val()
+                        }
                     }
-                );
+                }
+                function callback(action) {
+                    $msgList.hide();
+                    messages(action, function (result) {
+                        $loadmore.hide();
+                        $msgList.html(result);
+                    });
+                }
             },
             ce: function () {
                 // 创建或编辑消息（草稿）
@@ -257,14 +329,6 @@
                         wap.errorHandler(e);
                     }
                 });
-            },
-            messageFilter: function (typeId) {
-                if (typeId === '0') {
-                    $('.table-list').show();
-                } else {
-                    $('.table-list').hide();
-                    $('.list-' + typeId).show();
-                }
             },
             targets: function () {
                 var $checkAll = $('#check-all'),
@@ -770,7 +834,7 @@
 
                 return '<a id="' + targetId + '" class="chosen-results-item" data-uid="' + id +
                     '" data-type="' + type + '">' +
-                    '<img src="' + src + '" style="' + style + '" />' +
+                    '<img src="' + src + '" style="' + style + '" alt="" />' +
                     '</a>';
             },
             addTarget: function (id, type) {
