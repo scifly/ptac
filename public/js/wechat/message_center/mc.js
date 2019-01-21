@@ -177,6 +177,7 @@
                 }
                 function action(action) {
                     $msgList.hide();
+                    $page.val(1);
                     messages(action, function (result) {
                         $loadmore.hide();
                         $msgList.html(result).show();
