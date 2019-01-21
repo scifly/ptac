@@ -10,7 +10,7 @@ use Exception;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\HasOne};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\{Auth, DB, Request};
+use Illuminate\Support\Facades\{Auth, DB, Log, Request};
 use Illuminate\View\View;
 use ReflectionClass;
 use ReflectionException;
@@ -1361,6 +1361,7 @@ class Message extends Model {
      */
     private function messages() {
     
+        Log::info('params: ', Request::all());
         $action = Request::input('action');
         $params = Request::input('params');
         $userId = Auth::id();
