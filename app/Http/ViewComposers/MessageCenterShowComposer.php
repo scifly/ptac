@@ -32,12 +32,11 @@ class MessageCenterShowComposer {
     public function compose(View $view) {
         
         $id = Request::route('id');
-        $message = Message::find($id);
         $detail = $id ? $this->message->detail($id) : null;
         $view->with([
             'detail'  => $detail,
             'content' => json_decode($detail[$detail['type']]),
-            'replies' => $id ? $this->message->replies($id, $message->msl_id) : null,
+            'replies' => $id ? $this->message->replies($id, $this->message->find($id)->msl_id) : null,
         ]);
         
     }
