@@ -56,17 +56,16 @@
                 $app.on('scroll', function () {
                     if ($app.scrollTop() + $(window).height() >= $app.prop('scrollHeight')) {
                         $loadmore.show();
-                        var callback = function (result) {
+                        messages('page', function (result) {
                             var st = $app.scrollTop();
-
                             if (result !== '') {
+                                $empty.hide();
                                 $msgList.append(result);
                                 $page.val(parseInt($page.val()) + 1);
                             }
                             $loadmore.hide();
                             $app.scrollTop(st - 1);
-                        };
-                        messages('page', callback);
+                        });
                     }
                 });
                 // 目录
