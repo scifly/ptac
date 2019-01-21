@@ -4,6 +4,7 @@ namespace App\Http\ViewComposers;
 use App\Helpers\ModelTrait;
 use App\Models\Message;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -33,6 +34,7 @@ class MessageCenterShowComposer {
         
         $id = Request::route('id');
         $detail = $id ? $this->message->detail($id) : null;
+        Log::info('content', json_decode($detail[$detail['type']], true));
         $view->with([
             'detail'  => $detail,
             'content' => json_decode($detail[$detail['type']], true),
