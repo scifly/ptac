@@ -1198,12 +1198,12 @@ class Message extends Model {
         switch (Request::method()) {
             case 'GET':
                 abort_if(
-                    !($message = $this->find($id)),
+                    !($msg = $this->find($id)),
                     HttpStatusCode::NOT_FOUND,
                     __('messages.message.not_found')
                 );
                 $response = view('wechat.message_center.show', [
-                    'message' => $message,
+                    'message' => $msg,
                 ]);
                 break;
             case 'POST':

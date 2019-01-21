@@ -12,8 +12,8 @@
                 <div class="content homework overflow-homework">
                     <div class="homework-wrap">
                         <div class="artic-head">
-                            {!! Form::hidden('id', $message->id, ['id' => 'id']) !!}
-                            <span class="artic-title word-warp">{!! $message->title !!}</span>
+                            {!! Form::hidden('id', $msg->id, ['id' => 'id']) !!}
+                            <span class="artic-title word-warp">{!! $msg->title !!}</span>
                             <span class="artic-time">时间：{!! $detail['updated_at'] !!}</span>
                         </div>
                         <div class="model-name-layout d-inline">
@@ -125,7 +125,7 @@
         <div id="mycomment" class="weui-popup__container popup-bottom">
             <div class="weui-popup__overlay"></div>
             <div class="weui-popup__modal comment-content">
-                {!! Form::hidden('msl_id', $message->msl_id, ['id' => 'msl_id']) !!}
+                {!! Form::hidden('msl_id', $msg->msl_id, ['id' => 'msl_id']) !!}
                 <div style="background-color: #fff;height: 100%;">
                     <div class="comment-edit-con">
                         <p class="close-btn close-popup">
