@@ -57,6 +57,16 @@ class Constant {
         '学校' => 'school',
         '其他' => 'other',
     ];
+    const MEDIA_TYPE_ICONS = [
+        'text' => '<i class="fa fa-file-text-o"></i>',
+        'image' => '<i class="fa fa-file-image-o"></i>',
+        'voice' => '<i class="fa fa-file-sound-o"></i>',
+        'video' => '<i class="fa fa-file-movie-o"></i>',
+        'file' => '<i class="fa fa-file-o"></i>',
+        'textcard' => '<i class="fa fa-folder-o"></i>',
+        'mpnews' => '<i class="fa fa-th-list"></i>',
+        'sms' => '<i class="fa fa-file-text"></i>'
+    ];
     const NODE_TYPES = [
         '根'  => ['color' => 'text-gray', 'type' => 'root', 'icon' => 'fa fa-sitemap'],
         '运营' => ['color' => 'text-blue', 'type' => 'company', 'icon' => 'fa fa-building'],

@@ -195,7 +195,8 @@ class Message extends Model {
             [
                 'db'        => 'Message.media_type_id', 'dt' => 4,
                 'formatter' => function ($d) {
-                    return MediaType::find($d)->remark;
+                    $mt = MediaType::find($d);
+                    return Constant::MEDIA_TYPE_ICONS[$mt->name] . '&nbsp;' . $mt->remark;
                 },
             ],
             [
