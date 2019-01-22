@@ -43,7 +43,13 @@
                     $msgList = $('#msg_list'),
                     $filter = $('#filter'),
                     $messasgeTypeId = $('#message_type_id'),
-                    $mediaTypeId = $('#media_type_id');
+                    $mediaTypeId = $('#media_type_id'),
+                    titles = {
+                        all: '所有消息',
+                        inbox: '收件箱',
+                        outbox: '发件箱',
+                        draft: '草稿箱'
+                    };
 
                 $start.calendar();
                 $end.calendar();
@@ -79,28 +85,28 @@
                         },
                         actions: [
                             {
-                                text: '所有消息',
+                                text: titles['all'],
                                 className: 'color-primary',
                                 onClick: function () {
                                     switchFolder(this, 'all');
                                 }
                             },
                             {
-                                text: '收件箱',
+                                text: titles['inbox'],
                                 className: 'color-primary',
                                 onClick: function () {
                                     switchFolder(this, 'inbox');
                                 }
                             },
                             {
-                                text: '发件箱',
+                                text: titles['outbox'],
                                 className: 'color-warning',
                                 onClick: function () {
                                     switchFolder(this, 'outbox');
                                 }
                             },
                             {
-                                text: '草稿箱',
+                                text: titles['draft'],
                                 className: 'color-danger',
                                 onClick: function () {
                                     switchFolder(this, 'draft');
@@ -181,17 +187,19 @@
                     }
                 }
                 function action(action) {
+
                     if ($page.val() === '') {
                         $page.val(1);
                         $folder.val('all');
                         $title.text('所有消息');
+                    } else {
+                        $title.val(titles[$folder.val()]);
                     }
                     $msgList.hide();
                     messages(action, function (result) {
                         $loadmore.hide();
                         $msgList.html(result).show();
                         $empty.toggle($msgList.html() === '');
-
                     });
                 }
             },
