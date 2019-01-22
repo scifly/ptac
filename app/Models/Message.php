@@ -173,8 +173,9 @@ class Message extends Model {
         $received = Request::query('extra');
         $columns = [
             ['db' => 'Message.id', 'dt' => 0],
+            ['db' => 'Message.title', 'dt' => 1],
             [
-                'db'        => 'Message.comm_type_id', 'dt' => 1,
+                'db'        => 'Message.comm_type_id', 'dt' => 2,
                 'formatter' => function ($d, $row) {
                     $row['sent'] == 1 ?:
                         $type = '(' . (!$row['event_id']
@@ -186,19 +187,19 @@ class Message extends Model {
                 },
             ],
             [
-                'db'        => 'Message.media_type_id', 'dt' => 2,
+                'db'        => 'Message.media_type_id', 'dt' => 3,
                 'formatter' => function ($d) {
                     return MediaType::find($d)->remark;
                 },
             ],
             [
-                'db'        => 'Message.msl_id', 'dt' => 3,
+                'db'        => 'Message.msl_id', 'dt' => 4,
                 'formatter' => function ($d) {
                     return $d ? $d : sprintf(Snippet::BADGE_GRAY, '(n/a)');
                 },
             ],
             [
-                'db'        => 'User.realname', 'dt' => 4,
+                'db'        => 'User.realname', 'dt' => 5,
                 'formatter' => function ($d, $row) {
                     if ($d) return $d;
                     $msl = $this->find($row['id'])->messageSendinglog;
@@ -207,13 +208,13 @@ class Message extends Model {
                 },
             ],
             [
-                'db'        => 'Message.message_type_id', 'dt' => 5,
+                'db'        => 'Message.message_type_id', 'dt' => 6,
                 'formatter' => function ($d) {
                     return MessageType::find($d)->name;
                 },
             ],
             [
-                'db'        => 'Message.created_at', 'dt' => 6, 'dr' => true,
+                'db'        => 'Message.created_at', 'dt' => 7, 'dr' => true,
                 'formatter' => function ($d, $row) {
                     return $row['sent'] == 1 ? $d
                         : ($row['sent'] == 2
@@ -223,7 +224,7 @@ class Message extends Model {
                 },
             ],
             [
-                'db'        => 'Message.' . ($received ? 'read' : 'sent'), 'dt' => 7,
+                'db'        => 'Message.' . ($received ? 'read' : 'sent'), 'dt' => 8,
                 'formatter' => function ($d, $row) use ($received) {
                     $id = $row['id'];
                     $html = '<a id="%s" title="%s" href="#"><i class="fa %s" style="margin-left: 15px;"></i></a>';
@@ -245,10 +246,10 @@ class Message extends Model {
                     return $status . sprintf(Snippet::DT_LINK_DEL, $id);
                 },
             ],
-            ['db' => 'Message.' . ($received ? 'sent' : 'read'), 'dt' => 8],
-            ['db' => 'Message.content', 'dt' => 9],
-            ['db' => 'Message.app_id', 'dt' => 10],
-            ['db' => 'Message.event_id', 'dt' => 11],
+            ['db' => 'Message.' . ($received ? 'sent' : 'read'), 'dt' => 9],
+            ['db' => 'Message.content', 'dt' => 10],
+            ['db' => 'Message.app_id', 'dt' => 11],
+            ['db' => 'Message.event_id', 'dt' => 12],
         ];
         $joins = [
             [

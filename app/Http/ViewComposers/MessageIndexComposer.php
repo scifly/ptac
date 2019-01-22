@@ -21,8 +21,7 @@ class MessageIndexComposer {
     public function compose(View $view) {
         
         $school = School::find($this->schoolId());
-        $data = App::whereEnabled(1)
-            ->where('corp_id', $school->corp_id)
+        $data = App::where(['corp_id' => $school->corp_id, 'enabled' => 1])
             ->whereIn('name', ['布置作业', '消息中心'])
             ->get(['id', 'name', 'square_logo_url']);
         $apps = [];
@@ -32,11 +31,11 @@ class MessageIndexComposer {
         list($optionAll, $htmlCommType, $htmlMediaType, $htmlMessageType) = $this->messageFilters();
         $view->with([
             'titles'       => [
-                '#',
+                '#', '标题',
                 ['title' => '通信方式', 'html' => $htmlCommType],
-                ['title' => '媒体类型', 'html' => $htmlMediaType],
+                ['title' => '消息格式', 'html' => $htmlMediaType],
                 '消息批次', '接收者',
-                ['title' => '类型', 'html' => $htmlMessageType],
+                ['title' => '消息类型', 'html' => $htmlMessageType],
                 ['title' => '发送于', 'html' => $this->inputDateTimeRange('发送于')],
                 [
                     'title' => '状态',
@@ -46,11 +45,11 @@ class MessageIndexComposer {
                 ],
             ],
             'rTitles'      => [
-                '#',
+                '#', '标题',
                 ['title' => '通信方式', 'html' => $htmlCommType],
-                ['title' => '媒体类型', 'html' => $htmlMediaType],
+                ['title' => '消息格式', 'html' => $htmlMediaType],
                 '消息批次', '发送者',
-                ['title' => '类型', 'html' => $htmlMessageType],
+                ['title' => '消息类型', 'html' => $htmlMessageType],
                 ['title' => '接收于', 'html' => $this->inputDateTimeRange('接收于')],
                 [
                     'title' => '状态',

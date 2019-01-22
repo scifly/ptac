@@ -18,7 +18,6 @@
                         'required' => 'true',
                         'maxlength' => '80'
                     ]) !!}
-
                 </div>
             </div>
             @include('shared.single_select', [
