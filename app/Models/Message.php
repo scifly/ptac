@@ -176,7 +176,7 @@ class Message extends Model {
             [
                 'db' => 'Message.title', 'dt' => 1,
                 'formatter' => function ($d, $row) {
-                    return '[' . MediaType::find($row['media_type_id'])->remark . ']' . '&nbsp;' . $d;
+                    return '[' . MediaType::find($row['media_type_id'])->remark . ']' . '&nbsp;' . mb_substr($d, 0, 10);
                 }
             ],
             [
