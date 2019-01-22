@@ -24,7 +24,7 @@ class UserMessageComposer {
                 ['title' => '通信方式', 'html' => $htmlCommType],
                 ['title' => '应用', 'html' => $htmlApp],
                 '消息批次', '发送者',
-                ['title' => '类型', 'html' => $htmlMessageType],
+                ['title' => '消息类型', 'html' => $htmlMessageType],
                 ['title' => '接收于', 'html' => $this->inputDateTimeRange('接收于')],
                 [
                     'title' => '状态',
