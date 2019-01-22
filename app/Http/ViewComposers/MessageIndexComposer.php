@@ -22,10 +22,10 @@ class MessageIndexComposer {
         
         list($optionAll, $htmlCommType, $htmlMediaType, $htmlMessageType) = $this->messageFilters();
         $titles = [
-            '#', '标题', '消息批次',
+            '#', '标题', '批次',
             ['title' => '通信方式', 'html' => $htmlCommType],
-            ['title' => '消息格式', 'html' => $htmlMediaType],
-            ['title' => '消息类型', 'html' => $htmlMessageType],
+            ['title' => '格式', 'html' => $htmlMediaType],
+            ['title' => '类型', 'html' => $htmlMessageType],
         ];
         $view->with([
             'titles'       => array_merge($titles, [
