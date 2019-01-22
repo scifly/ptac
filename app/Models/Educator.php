@@ -302,7 +302,11 @@ class Educator extends Model {
                     if (!$educator->singular) {
                         $custodian ? $custodian->update($data) : $custodian = Custodian::create($data);
                         # 更新监护人&部门绑定关系
-                        (new DepartmentUser)->storeByUserId($custodian->user_id, $data['departmentIds'], true);
+                        (new DepartmentUser)->storeByUserId(
+                            $custodian->user_id,
+                            $data['departmentIds'] ?? [],
+                            true
+                        );
                         # 更新监护人&学生关系
                         (new CustodianStudent)->storeByCustodianId($custodian->id, $data['relationships']);
                     } else {
