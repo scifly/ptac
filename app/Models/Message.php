@@ -173,7 +173,12 @@ class Message extends Model {
         $received = Request::query('extra');
         $columns = [
             ['db' => 'Message.id', 'dt' => 0],
-            ['db' => 'Message.title', 'dt' => 1],
+            [
+                'db' => 'Message.title', 'dt' => 1,
+                'formatter' => function ($d, $row) {
+                    return '[' . MediaType::find($row['media_type_id'])->remark . ']' . '&nbsp;' . $d;
+                }
+            ],
             [
                 'db'        => 'Message.msl_id', 'dt' => 2,
                 'formatter' => function ($d) {
