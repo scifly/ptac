@@ -181,12 +181,17 @@
                     }
                 }
                 function action(action) {
+                    if ($page.val() === '') {
+                        $page.val(1);
+                        $folder.val('all');
+                        $title.text('所有消息');
+                    }
                     $msgList.hide();
-                    // $page.val(1);
                     messages(action, function (result) {
                         $loadmore.hide();
                         $msgList.html(result).show();
                         $empty.toggle($msgList.html() === '');
+
                     });
                 }
             },

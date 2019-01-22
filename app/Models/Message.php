@@ -1366,7 +1366,7 @@ class Message extends Model {
         $action = Request::input('action');
         $params = Request::input('params');
         # 消息目录(所有、收件箱、发件箱、草稿箱)
-        $folder = $params['folder'];
+        $folder = $params['folder'] ?? 'all';
         if (in_array($folder, ['outbox', 'draft'])) {
             $sent = $folder == 'outbox' ? 1 : 0;
             $builder = $this->where([
@@ -1398,7 +1398,7 @@ class Message extends Model {
             $builder = $builder->where('created_at', '<=', $end);
         }
         # 分页加载
-        $page = $params['page'];
+        $page = $params['page'] ?? 1;
         $skip = $action == 'page' ? $page * 7 : 0;
         $records = $action == 'page' ? 7 : $page * 7;
 

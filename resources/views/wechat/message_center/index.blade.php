@@ -31,9 +31,9 @@
     <!-- 消息列表 -->
     <div class="page_bd">
         <div class="weui-panel">
-            {!! Form::hidden('page', 1, ['id' => 'page']) !!}
-            {!! Form::hidden('folder', 'all', ['id' => 'folder']) !!}
-            <div class="weui-panel__hd color-primary">所有消息</div>
+            {!! Form::hidden('page', null, ['id' => 'page']) !!}
+            {!! Form::hidden('folder', null, ['id' => 'folder']) !!}
+            <div class="weui-panel__hd color-primary"></div>
             <div class="weui-panel__bd" id="msg_list"></div>
             <div id="empty" class="weui-loadmore weui-loadmore_line"
                  style="display: {!! empty($messages) ? 'block' : 'none' !!}">
