@@ -308,7 +308,10 @@ class Educator extends Model {
                             true
                         );
                         # 更新监护人&学生关系
-                        (new CustodianStudent)->storeByCustodianId($custodian->id, $data['relationships']);
+                        (new CustodianStudent)->storeByCustodianId(
+                            $custodian->id,
+                            $data['relationships'] ?? []
+                        );
                     } else {
                         !$custodian ?: (new Custodian)->purge($custodian->id);
                     }
