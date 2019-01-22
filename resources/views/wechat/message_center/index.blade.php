@@ -34,9 +34,7 @@
             {!! Form::hidden('page', 1, ['id' => 'page']) !!}
             {!! Form::hidden('folder', 'all', ['id' => 'folder']) !!}
             <div class="weui-panel__hd color-primary">所有消息</div>
-            <div class="weui-panel__bd" id="msg_list">
-{{--                {!! $messages !!}--}}
-            </div>
+            <div class="weui-panel__bd" id="msg_list"></div>
             <div id="empty" class="weui-loadmore weui-loadmore_line"
                  style="display: {!! empty($messages) ? 'block' : 'none' !!}">
                 <span class="weui-loadmore__tips">暂无记录</span>

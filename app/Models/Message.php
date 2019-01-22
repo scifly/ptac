@@ -1278,7 +1278,6 @@ class Message extends Model {
     function compose() {
         
         return [
-            $this->msgList(),
             array_merge([0 => '全部'], MessageType::pluck('name', 'id')->toArray()),
             array_merge([0 => '全部'], MediaType::pluck('remark', 'id')->toArray()),
             School::find(session('schoolId'))->corp->acronym,
@@ -1361,51 +1360,50 @@ class Message extends Model {
      */
     private function messages() {
     
-        $page = 0;
         $userId = Auth::id();
         $clause = '((s_user_id = ' . $userId . ' AND r_user_id = 0) OR r_user_id = ' . $userId . ')';
         $builder = $this->whereRaw($clause);
-        if (Request::method() == 'POST') {
-            $action = Request::input('action');
-            $params = Request::input('params');
-            # 消息目录(所有、收件箱、发件箱、草稿箱)
-            $folder = $params['folder'];
-            if (in_array($folder, ['outbox', 'draft'])) {
-                $sent = $folder == 'outbox' ? 1 : 0;
-                $builder = $this->where([
-                    's_user_id' => $userId,
-                    'r_user_id' => 0,
-                    'sent' => $sent
-                ]);
-            } else {
-                $folder == 'all' ?: $builder = $this->where('r_user_id', $userId);
-            }
-            # 消息过滤（消息类型/格式、关键词、起止日期)
-            !($messageTypeId = $params['message_type_id'])
-                ?: $builder = $builder->where('message_type_id', $messageTypeId);
-            !($mediaTypeId = $params['media_type_id'])
-                ?: $builder = $builder->where('media_type_id', $mediaTypeId);
-            !($keyword = $params['keyword'])
-                ?: $builder = $builder->whereRaw("(title LIKE '%{$keyword}%' OR content LIKE '%{$keyword}%')");
-            $start = $params['start'] ? $params['start'] . ' 00:00:00' : null;
-            $end = $params['end'] ? $params['end'] . ' 23:59:59' : null;
-            if ($start && $end) {
-                abort_if(
-                    $start > $end, HttpStatusCode::NOT_ACCEPTABLE,
-                    __('messages.incorrect_data_range')
-                );
-                $builder = $builder->whereBetween('created_at', [$start, $end]);
-            } elseif ($start && !$end) {
-                $builder = $builder->where('created_at', '>=', $start);
-            } elseif (!$start && $end) {
-                $builder = $builder->where('created_at', '<=', $end);
-            }
-            # 分页加载
-            $page = $action == 'page' ? $params['page'] : 0;
+        $action = Request::input('action');
+        $params = Request::input('params');
+        # 消息目录(所有、收件箱、发件箱、草稿箱)
+        $folder = $params['folder'];
+        if (in_array($folder, ['outbox', 'draft'])) {
+            $sent = $folder == 'outbox' ? 1 : 0;
+            $builder = $this->where([
+                's_user_id' => $userId,
+                'r_user_id' => 0,
+                'sent' => $sent
+            ]);
+        } else {
+            $folder == 'all' ?: $builder = $this->where('r_user_id', $userId);
         }
+        # 消息过滤（消息类型/格式、关键词、起止日期)
+        !($messageTypeId = $params['message_type_id'])
+            ?: $builder = $builder->where('message_type_id', $messageTypeId);
+        !($mediaTypeId = $params['media_type_id'])
+            ?: $builder = $builder->where('media_type_id', $mediaTypeId);
+        !($keyword = $params['keyword'])
+            ?: $builder = $builder->whereRaw("(title LIKE '%{$keyword}%' OR content LIKE '%{$keyword}%')");
+        $start = $params['start'] ? $params['start'] . ' 00:00:00' : null;
+        $end = $params['end'] ? $params['end'] . ' 23:59:59' : null;
+        if ($start && $end) {
+            abort_if(
+                $start > $end, HttpStatusCode::NOT_ACCEPTABLE,
+                __('messages.incorrect_data_range')
+            );
+            $builder = $builder->whereBetween('created_at', [$start, $end]);
+        } elseif ($start && !$end) {
+            $builder = $builder->where('created_at', '>=', $start);
+        } elseif (!$start && $end) {
+            $builder = $builder->where('created_at', '<=', $end);
+        }
+        # 分页加载
+        $page = $params['page'];
+        $skip = $action == 'page' ? $page : 0;
+        $records = $action == 'page' ? 7 : $page * 7;
 
         return $builder->orderBy('created_at', 'desc')
-            ->skip($page * 7)->take(7)->get();
+            ->skip($skip)->take($records)->get();
         
     }
     

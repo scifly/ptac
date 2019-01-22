@@ -32,7 +32,7 @@ class MessageCenterIndexComposer {
         
         $view->with(
             array_combine(
-                ['messages', 'messageTypes', 'mediaTypes', 'acronym', 'canSend'],
+                ['messageTypes', 'mediaTypes', 'acronym', 'canSend'],
                 $this->message->compose()
             )
         );
