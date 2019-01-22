@@ -4,11 +4,11 @@
     </div>
     <div class="box-body">
         <div class="form-horizontal">
-            @if (!empty($icon['id']))
-                {{ Form::hidden('id', $icon['id'], ['id' => 'id']) }}
+            @if (!empty($ico['id']))
+                {{ Form::hidden('id', $ico['id'], ['id' => 'id']) }}
             @endif
             <div class="form-group">
-                {!! Form::label('name', '名称',[
+                {!! Form::label('name', '名称', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
@@ -29,7 +29,7 @@
             @include('shared.remark')
             @include('shared.switch', [
                 'id' => 'enabled',
-                'value' => $icon['enabled'] ?? null
+                'value' => $ico['enabled'] ?? null
             ])
         </div>
     </div>

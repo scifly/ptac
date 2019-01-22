@@ -81,7 +81,7 @@ class IconController extends Controller {
     public function edit($id) {
         
         return $this->output([
-            'icon' => Icon::find($id),
+            'ico' => Icon::find($id),
         ]);
         
     }
