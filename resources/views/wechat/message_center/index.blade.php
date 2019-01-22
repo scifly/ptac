@@ -33,7 +33,7 @@
         <div class="weui-panel">
             {!! Form::hidden('page', null, ['id' => 'page']) !!}
             {!! Form::hidden('folder', null, ['id' => 'folder']) !!}
-            <div class="weui-panel__hd color-primary"></div>
+            <div class="weui-panel__hd"></div>
             <div class="weui-panel__bd" id="msg_list"></div>
             <div id="empty" class="weui-loadmore weui-loadmore_line"
                  style="display: {!! empty($messages) ? 'block' : 'none' !!}">

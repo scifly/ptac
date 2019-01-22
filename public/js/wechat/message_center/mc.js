@@ -45,10 +45,10 @@
                     $messasgeTypeId = $('#message_type_id'),
                     $mediaTypeId = $('#media_type_id'),
                     titles = {
-                        all: '所有消息',
-                        inbox: '收件箱',
-                        outbox: '发件箱',
-                        draft: '草稿箱'
+                        all: { text: '所有消息', color: 'color-primary' },
+                        inbox: { text: '收件箱', color: 'color-primary' },
+                        outbox: { text: '发件箱', color: 'color-warning' },
+                        draft: { text: '草稿箱', color: 'color-danger' }
                     };
 
                 $start.calendar();
@@ -85,29 +85,29 @@
                         },
                         actions: [
                             {
-                                text: titles['all'],
-                                className: 'color-primary',
+                                text: titles['all']['text'],
+                                className: titles['all']['color'],
                                 onClick: function () {
                                     switchFolder(this, 'all');
                                 }
                             },
                             {
-                                text: titles['inbox'],
-                                className: 'color-primary',
+                                text: titles['inbox']['text'],
+                                className: titles['inbox']['color'],
                                 onClick: function () {
                                     switchFolder(this, 'inbox');
                                 }
                             },
                             {
-                                text: titles['outbox'],
-                                className: 'color-warning',
+                                text: titles['outbox']['text'],
+                                className: titles['outbox']['color'],
                                 onClick: function () {
                                     switchFolder(this, 'outbox');
                                 }
                             },
                             {
-                                text: titles['draft'],
-                                className: 'color-danger',
+                                text: titles['draft']['text'],
+                                className: titles['draft']['color'],
                                 onClick: function () {
                                     switchFolder(this, 'draft');
                                 }
@@ -191,8 +191,15 @@
                         $page.val(1);
                         $folder.val('all');
                         $title.text('所有消息');
+                        $title.addClass(titles['all']['color'])
                     } else {
-                        $title.text(titles[$folder.val()]);
+                        var folder= titles[$folder.val()],
+                            classes = $title.attr('class').split,
+                            color = classes.length > 1 ? classes[1] : '';
+
+                        $title.text(folder['text'])
+                            .removeClass(color)
+                            .addClass(folder['color']);
                     }
                     $msgList.hide();
                     messages(action, function (result) {
