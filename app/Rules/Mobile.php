@@ -35,7 +35,7 @@ class Mobile implements Rule {
         $mobiles = \App\Models\Mobile::whereMobile($this->mobile)->get();
         foreach ($mobiles as $mobile) {
             $corpIds = $user->corpIds($mobile->user_id);
-            
+            if (empty($corpIds)) continue;
             if (
                 $this->mobile == $mobile->mobile &&
                 !empty(array_intersect($_corpIds, $corpIds)) &&
