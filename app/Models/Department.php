@@ -392,7 +392,7 @@ class Department extends Model {
         
         $department = $this->find($id);
         $dtName = $department->departmentType->name;
-        if ($dtName == '运营') {
+        if (in_array($dtName,  ['运营', '部门'])) {
             return null;
         } elseif ($dtName == '企业') {
             return Corp::whereDepartmentId($id)->first()->id;

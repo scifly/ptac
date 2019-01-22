@@ -31,10 +31,11 @@ class Mobile implements Rule {
             : Auth::id();
         # 即将被添加的手机号码所属企业的corp_id
         $_corpIds = $action == 'POST' ? [$corp->corpId()] : $user->corpIds($userId);
-        # 已有的相同手机号码
+        # 相同的手机号码是否已经存在
         $mobiles = \App\Models\Mobile::whereMobile($this->mobile)->get();
         foreach ($mobiles as $mobile) {
             $corpIds = $user->corpIds($mobile->user_id);
+            
             if (
                 $this->mobile == $mobile->mobile &&
                 !empty(array_intersect($_corpIds, $corpIds)) &&
