@@ -47,9 +47,11 @@
 
                 $start.calendar();
                 $end.calendar();
-                $page.val(1);
+                // $page.val(1);
+                action($folder.val());
                 // 搜索
                 $search.on("input propertychange change", function () {
+                    $page.val(1);
                     action('search');
                 });
                 // 滚动
@@ -115,6 +117,7 @@
                 });
                 // 过滤
                 $filter.on('click', function () {
+                    $page.val(1);
                     action('filter')
                 });
                 // 查看/编辑
@@ -144,6 +147,7 @@
                         .removeClass($title.attr('class').split(' ')[1])
                         .addClass(o.className);
                     $folder.val(folder);
+                    $page.val(1);
                     action('folder');
                 }
                 function messages(action, callback) {
@@ -178,7 +182,7 @@
                 }
                 function action(action) {
                     $msgList.hide();
-                    $page.val(1);
+                    // $page.val(1);
                     messages(action, function (result) {
                         $loadmore.hide();
                         $msgList.html(result).show();
