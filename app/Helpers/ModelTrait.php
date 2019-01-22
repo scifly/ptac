@@ -597,7 +597,7 @@ trait ModelTrait {
     /**
      * 返回对当前登录用户可见的所有用户id
      *
-     * @return array
+     * @return string
      */
     function visibleUserIds() {
         
@@ -611,11 +611,13 @@ trait ModelTrait {
             $departmentIds = $this->departmentIds();
         }
         
-        return implode(',', array_unique(
+        $userIds = implode(',', array_unique(
                 DepartmentUser::whereIn('department_id', array_unique($departmentIds))
                     ->pluck('user_id')->toArray()
             )
         );
+        
+        return !empty($userIds) ? $userIds : '0';
         
     }
     
