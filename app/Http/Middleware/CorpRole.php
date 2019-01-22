@@ -34,7 +34,7 @@ class CorpRole {
             ) {
                 if (!session('is_educator')) {
                     $acronym = Corp::find(session('corpId'))->acronym;
-                    return redirect($acronym . '/roles');
+                    return redirect($acronym . '/wechat/roles');
                 }
             } else {
                 session(['is_educator' => Request::query('is_educator')]);
