@@ -48,7 +48,7 @@
                 $start.calendar();
                 $end.calendar();
                 // $page.val(1);
-                action($folder.val());
+                action('folder');
                 // 搜索
                 $search.on("input propertychange change", function () {
                     $page.val(1);
