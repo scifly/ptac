@@ -392,7 +392,7 @@ class Department extends Model {
         
         $department = $this->find($id);
         $dtName = $department->departmentType->name;
-        echo $dtName;
+        dd($dtName);
         if (in_array($dtName,  ['运营', '部门'])) {
             return null;
         } elseif ($dtName == '企业') {
