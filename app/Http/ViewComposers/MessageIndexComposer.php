@@ -34,8 +34,8 @@ class MessageIndexComposer {
                 '#', '标题',
                 ['title' => '通信方式', 'html' => $htmlCommType],
                 ['title' => '消息格式', 'html' => $htmlMediaType],
-                '消息批次', '接收者',
                 ['title' => '消息类型', 'html' => $htmlMessageType],
+                '消息批次', '接收者',
                 ['title' => '发送于', 'html' => $this->inputDateTimeRange('发送于')],
                 [
                     'title' => '状态',
@@ -48,8 +48,8 @@ class MessageIndexComposer {
                 '#', '标题',
                 ['title' => '通信方式', 'html' => $htmlCommType],
                 ['title' => '消息格式', 'html' => $htmlMediaType],
-                '消息批次', '发送者',
                 ['title' => '消息类型', 'html' => $htmlMessageType],
+                '消息批次', '发送者',
                 ['title' => '接收于', 'html' => $this->inputDateTimeRange('接收于')],
                 [
                     'title' => '状态',

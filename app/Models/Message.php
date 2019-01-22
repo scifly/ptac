@@ -193,24 +193,24 @@ class Message extends Model {
                 },
             ],
             [
-                'db'        => 'Message.msl_id', 'dt' => 4,
+                'db'        => 'Message.message_type_id', 'dt' => 4,
+                'formatter' => function ($d) {
+                    return MessageType::find($d)->name;
+                },
+            ],
+            [
+                'db'        => 'Message.msl_id', 'dt' => 5,
                 'formatter' => function ($d) {
                     return $d ? $d : sprintf(Snippet::BADGE_GRAY, '(n/a)');
                 },
             ],
             [
-                'db'        => 'User.realname', 'dt' => 5,
+                'db'        => 'User.realname', 'dt' => 6,
                 'formatter' => function ($d, $row) {
                     if ($d) return $d;
                     $msl = $this->find($row['id'])->messageSendinglog;
                     
                     return sprintf(Snippet::BADGE_GRAY, ($msl ? $msl->recipient_count : '0') . ' 人');
-                },
-            ],
-            [
-                'db'        => 'Message.message_type_id', 'dt' => 6,
-                'formatter' => function ($d) {
-                    return MessageType::find($d)->name;
                 },
             ],
             [
