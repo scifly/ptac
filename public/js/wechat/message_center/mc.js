@@ -187,13 +187,12 @@
                     }
                 }
                 function action(action) {
-
                     if ($page.val() === '') {
                         $page.val(1);
                         $folder.val('all');
                         $title.text('所有消息');
                     } else {
-                        $title.val(titles[$folder.val()]);
+                        $title.text(titles[$folder.val()]);
                     }
                     $msgList.hide();
                     messages(action, function (result) {
