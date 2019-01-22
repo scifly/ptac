@@ -1399,7 +1399,7 @@ class Message extends Model {
         }
         # 分页加载
         $page = $params['page'];
-        $skip = $action == 'page' ? $page : 0;
+        $skip = $action == 'page' ? $page * 7 : 0;
         $records = $action == 'page' ? 7 : $page * 7;
 
         return $builder->orderBy('created_at', 'desc')
