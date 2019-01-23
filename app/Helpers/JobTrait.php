@@ -4,7 +4,7 @@ namespace App\Helpers;
 use App\Models\{Message, Mobile, School, User};
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\{DB};
+use Illuminate\Support\Facades\{DB, Log};
 use Pusher\PusherException;
 use Throwable;
 
@@ -96,6 +96,7 @@ trait JobTrait {
         $broadcaster = new Broadcaster();
         list($inserts, $updates, $illegals) = $job->{'validate'}($job->data);
         # 生成错误数据excel文件
+        Log::info('illegals', $illegals);
         if (!empty($illegals)) {
             try {
                 $job->{'excel'}($illegals, 'illegals', '错误数据', false);
