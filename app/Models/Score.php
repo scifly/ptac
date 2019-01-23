@@ -435,7 +435,7 @@ class Score extends Model {
     function import() {
         
         $records = $this->upload(false);
-        $titles = $records[1];
+        $titles = $records[0];
         array_shift($records);
         $subjectNames = [];
         for ($i = ord('D'); $i < ord('D') + sizeof($titles) - 3; $i++) {
