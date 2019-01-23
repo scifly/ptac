@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 
@@ -255,6 +256,9 @@ class Module extends Model {
                 } elseif ($role == '监护人') {
                     return in_array($moduleGroupId, [0, $custodianGroupId]);
                 } else {
+                    Log::info('params', [
+                        'enabled' => 1, 'school_id' => $schoolId, 'name' => $role,
+                    ]);
                     $userGroupId = Group::where([
                         'enabled' => 1, 'school_id' => $schoolId, 'name' => $role,
                     ])->first()->id;
