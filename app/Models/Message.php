@@ -1150,6 +1150,12 @@ class Message extends Model {
             );
         }
         $type = Request::input('type');
+        Log::info('params', [
+            'file-contents' => curl_file_create(public_path($uploadedFile['path'])),
+            'filename'      => $uploadedFile['filename'],
+            'content-type'  => Constant::CONTENT_TYPE[$type],
+            'filelength'    => $file->getSize(),
+        ]);
         $result = json_decode(
             Wechat::uploadMedia($token['access_token'], $type, [
                 'file-contents' => curl_file_create(public_path($uploadedFile['path'])),
