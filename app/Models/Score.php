@@ -1410,7 +1410,7 @@ class Score extends Model {
                     ['exam_id', '=', $examId],
                     ['enabled', '=', 1],
                 ];
-                !$subjectId ?: $condition = array_merge($condition, ['subject_id', '=', $subjectId]);
+                !$subjectId ?: $condition = array_merge($condition, [['subject_id', '=', $subjectId]]);
                 foreach ($ids as $studentIds) {
                     $scores = $model->orderBy('score', 'desc')
                         ->whereIn('student_id', $studentIds)
