@@ -10,7 +10,8 @@ use Illuminate\{Bus\Queueable,
     Foundation\Bus\Dispatchable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
-    Support\Facades\DB};
+    Support\Facades\DB,
+    Support\Facades\Log};
 use Pusher\PusherException;
 use Throwable;
 use Validator;
@@ -75,6 +76,7 @@ class ImportScore implements ShouldQueue, MassImport {
      */
     function validate(array $data) {
         
+        Log::info('data', $data);
         $fields = ['student_number', 'subject_id', 'exam_id', 'score'];
         $rules = array_combine($fields, [
             'required', 'required|integer',
