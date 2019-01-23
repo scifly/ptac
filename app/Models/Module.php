@@ -276,7 +276,8 @@ class Module extends Model {
         }
     
         return view('wechat.wechat.index', [
-            'modules' => $modules
+            'modules' => $modules,
+            'school' => School::find($schoolId)->name
         ]);
         
     }
