@@ -14,7 +14,7 @@
     @endif
     <header class="wechat-header">
         <h1 class="wechat-title">{!! config('app.name') !!}</h1>
-        <p class='wechat-sub-title'>{!! $school . ($part ? ' - ' . $part : '') !!}</p>
+        <p class='wechat-sub-title'>{!! $school . ($role ? ' - ' . $role : '') !!}</p>
         {!! Form::hidden('choices', $choice, ['id' => 'choice']) !!}
     </header>
     <div class="weui-grids">
