@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 use ReflectionClass;
@@ -468,6 +469,7 @@ class Score extends Model {
                 $index = chr(ord($index) + 1);
             }
         }
+        Log::info('data', $data ?? []);
         ImportScore::dispatch(
             $data ?? [], Auth::id(), Request::input('classId')
         );
