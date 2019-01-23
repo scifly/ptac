@@ -1,6 +1,15 @@
 @extends('layouts.wap')
 @section('title') {!! config('app.name') !!} @endsection
 @section('content')
+    <div class="weui-cells weui-cells_form" style="margin-top: 0;">
+        <div class="weui-cell">
+            <div class="weui-cell__hd" style="text-align: left;">
+                <a href="#" id="show-actions">
+                    <img alt="" src="{!! asset("img/nav.png") !!}" style="width: 16px;"/>
+                </a>
+            </div>
+        </div>
+    </div>
     <header class="wechat-header">
         <h1 class="wechat-title">{!! config('app.name') !!}</h1>
         <p class='wechat-sub-title'>{!! $school !!}</p>
