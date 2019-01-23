@@ -1284,11 +1284,15 @@ class Message extends Model {
      */
     function compose() {
         
+        $role = Auth::user()->role();
+        $isEducator = session('is_educator');
+        if (isset($isEducator) && !$isEducator) $role = '监护人';
+        
         return [
             array_merge([0 => '全部'], MessageType::pluck('name', 'id')->toArray()),
             array_merge([0 => '全部'], MediaType::pluck('remark', 'id')->toArray()),
             School::find(session('schoolId'))->corp->acronym,
-            !in_array(Auth::user()->role(), ['监护人', '学生']),
+            !in_array($role, ['监护人', '学生']),
         ];
         
     }

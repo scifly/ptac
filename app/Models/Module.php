@@ -17,7 +17,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 
@@ -244,22 +243,23 @@ class Module extends Model {
     function wIndex() {
     
         $role = Auth::user()->role();
-        $custodianGroupId = Group::whereName('监护人')->first()->id;
+        $isEducator = session('is_educator');
+        $cGId = Group::whereName('监护人')->first()->id;
         $schoolId = session('schoolId');
         $modules = $this->orderBy('order')->where([
             'school_id' => $schoolId, 'enabled' => 1,
         ])->get()->filter(
-            function (Module $module) use ($role, $schoolId, $custodianGroupId) {
-                $moduleGroupId = $module->group_id;
+            function (Module $module) use ($role, $isEducator, $schoolId, $cGId) {
+                $mGId = $module->group_id;
                 if (in_array($role, Constant::SUPER_ROLES)) {
-                    return $moduleGroupId != $custodianGroupId;
-                } elseif ($role == '监护人') {
-                    return in_array($moduleGroupId, [0, $custodianGroupId]);
+                    return $mGId != $cGId;
+                } elseif ($role == '监护人' || (isset($isEducator) && !$isEducator)) {
+                    return in_array($mGId, [0, $cGId]);
                 } else {
-                    $userGroupId = Group::where([
+                    $gId = Group::where([
                         'enabled' => 1, 'school_id' => $schoolId, 'name' => $role,
                     ])->first()->id;
-                    return in_array($moduleGroupId, [0, $userGroupId]);
+                    return in_array($mGId, [0, $gId]);
                 }
             }
         );
