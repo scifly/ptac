@@ -19,7 +19,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\View\View;
 use ReflectionClass;
@@ -979,7 +978,7 @@ class Score extends Model {
                     #需要判断科目满分是否与最大相等
                     $condition = array_merge(
                         condition($exam->id, $subjectId, $start),
-                        ['score', $subject->max_score == $end ? '<=' : '<', $end]
+                        [['score', $subject->max_score == $end ? '<=' : '<', $end]]
                     );
                     $count = Score::where($condition)->whereIn('student_id', $studentIds)->count();
                     $rangs[$subjectId][] = [
@@ -1012,8 +1011,10 @@ class Score extends Model {
                 $minTotalRange = $tr->start_score;
                 $maxTotalRange = $tr->end_score;
                 $condition = array_merge($condition, [
-                    ['score', '>=', $minTotalRange],
-                    ['score', '<', $maxTotalRange],
+                    [
+                        ['score', '>=', $minTotalRange],
+                        ['score', '<', $maxTotalRange]
+                    ],
                 ]);
                 $totalNumber = $builder->where($condition)->count();
                 $scoreToRanges[] = [
