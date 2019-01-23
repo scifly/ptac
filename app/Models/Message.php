@@ -1157,7 +1157,7 @@ class Message extends Model {
             'filelength'    => $file->getSize(),
         ]);
         $result = json_decode(
-            Wechat::uploadMedia($token['access_token'], $type, [
+            Wechat::uploadMedia($token['access_token'], $type == 'audio' ? 'voice' : $type, [
                 'file-contents' => curl_file_create(public_path($uploadedFile['path'])),
                 'filename'      => $uploadedFile['filename'],
                 'content-type'  => Constant::CONTENT_TYPE[$type],
