@@ -3,11 +3,11 @@ var choice = $('#choice').val();
 $(document).on('click', '#show-choices', function () {
     var school = {
             text: '选择学校',
-            onClick: function () { window.location = '../schools'; }
+            onClick: function () { window.location = 'schools'; }
         },
         part = {
             text: '切换角色',
-            onClick: function () { window.location = '../roles'; }
+            onClick: function () { window.location = 'roles'; }
         },
         actions = [school, part];
 
