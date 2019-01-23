@@ -464,7 +464,7 @@ class Score extends Model {
                 $data[] = array_merge(
                     $basic, [
                         'subject_id' => $subject->id,
-                        'score'      => $record[$index],
+                        'score'      => intval($record[$index]),
                     ]
                 );
                 $index = chr(ord($index) + 1);
