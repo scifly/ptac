@@ -59,7 +59,6 @@ class SendMessage implements ShouldQueue {
                         }, $this->messages
                     )
                 );
-                Log::debug(json_encode($results));
                 list($code, $msg) = $this->inform($results);
                 $this->response['statusCode'] = $code;
                 $this->response['message'] = $msg;

@@ -96,7 +96,6 @@ trait JobTrait {
         $broadcaster = new Broadcaster();
         list($inserts, $updates, $illegals) = $job->{'validate'}($job->data);
         # 生成错误数据excel文件
-        Log::info('illegals', $illegals);
         if (!empty($illegals)) {
             try {
                 $job->{'excel'}($illegals, 'illegals', '错误数据', false);
@@ -121,7 +120,7 @@ trait JobTrait {
                     $tpl = __('messages.import_request_submitted') .
                         (!$nIllegals ? '' : __('messages.import_illegals'));
                     $broadcaster->broadcast(array_combine(Constant::BROADCAST_FIELDS, [
-                        $response['title'], $job->{'userId'}, HttpStatusCode::ACCEPTED,
+                        $job->{'userId'}, $response['title'], HttpStatusCode::ACCEPTED,
                         sprintf($tpl, $nInserts, $nUpdates, $nIllegals),
                     ]));
                     # 插入、更新记录
@@ -137,7 +136,6 @@ trait JobTrait {
                 throw $e;
             }
         }
-        Log::info('response', $response);
         $broadcaster->broadcast($response);
         
         return true;

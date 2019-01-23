@@ -441,7 +441,6 @@ class Score extends Model {
         for ($i = ord('D'); $i < ord('D') + sizeof($titles) - 3; $i++) {
             $subjectNames[] = $titles[chr($i)];
         }
-        Log::info('sss', $subjectNames);
         $subjects = Subject::whereIn('name', $subjectNames)
             ->where('school_id', $this->schoolId())->get();
         $exam = Exam::find(Request::input('examId'));
@@ -470,7 +469,6 @@ class Score extends Model {
                 $index = chr(ord($index) + 1);
             }
         }
-        Log::info('data', $data ?? []);
         ImportScore::dispatch(
             $data ?? [], Auth::id(), Request::input('classId')
         );
