@@ -29,15 +29,15 @@ class CorpRole {
             $user->educator->school_id == session('schoolId')
         ) {
             if (
-                !Request::query('is_educator') &&
+                !Request::query('part') &&
                 stripos(Request::path(), 'roles') === false
             ) {
-                if (!session('is_educator')) {
+                if (!session('part')) {
                     $acronym = Corp::find(session('corpId'))->acronym;
                     return redirect($acronym . '/wechat/roles');
                 }
             } else {
-                session(['is_educator' => Request::query('is_educator')]);
+                session(['part' => Request::query('part')]);
             }
         }
         

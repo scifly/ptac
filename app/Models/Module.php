@@ -243,17 +243,17 @@ class Module extends Model {
     function wIndex() {
     
         $role = Auth::user()->role();
-        $isEducator = session('is_educator');
+        $part = session('part');
         $cGId = Group::whereName('监护人')->first()->id;
         $schoolId = session('schoolId');
         $modules = $this->orderBy('order')->where([
             'school_id' => $schoolId, 'enabled' => 1,
         ])->get()->filter(
-            function (Module $module) use ($role, $isEducator, $schoolId, $cGId) {
+            function (Module $module) use ($role, $part, $schoolId, $cGId) {
                 $mGId = $module->group_id;
                 if (in_array($role, Constant::SUPER_ROLES)) {
                     return $mGId != $cGId;
-                } elseif ($role == '监护人' || (isset($isEducator) && !$isEducator)) {
+                } elseif ($role == '监护人' || (isset($part) && $part == 'custodian')) {
                     return in_array($mGId, [0, $cGId]);
                 } else {
                     $gId = Group::where([

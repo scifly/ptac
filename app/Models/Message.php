@@ -1285,8 +1285,8 @@ class Message extends Model {
     function compose() {
         
         $role = Auth::user()->role();
-        $isEducator = session('is_educator');
-        if (isset($isEducator) && !$isEducator) $role = '监护人';
+        $part = session('part');
+        if (isset($part) && $part == 'custodian') $role = '监护人';
         
         return [
             array_merge([0 => '全部'], MessageType::pluck('name', 'id')->toArray()),
