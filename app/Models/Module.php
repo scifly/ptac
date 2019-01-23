@@ -286,7 +286,8 @@ class Module extends Model {
         return view('wechat.wechat.index', [
             'modules' => $modules,
             'school' => School::find($schoolId)->name,
-            'choice' => $choice ?? null
+            'part' => $part,
+            'choice' => $choice ?? null,
         ]);
         
     }
