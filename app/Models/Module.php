@@ -244,6 +244,7 @@ class Module extends Model {
     
         $role = Auth::user()->role();
         $part = session('part');
+        $schools = session('schools');
         $cGId = Group::whereName('监护人')->first()->id;
         $schoolId = session('schoolId');
         $modules = $this->orderBy('order')->where([
@@ -274,10 +275,18 @@ class Module extends Model {
                 }
             }
         }
-    
+        if ($schools && $part) {
+            $choice = 'both';
+        } elseif ($schools && !$part) {
+            $choice = 'schools';
+        } elseif (!$schools && $part) {
+            $choice = 'part';
+        }
+        
         return view('wechat.wechat.index', [
             'modules' => $modules,
-            'school' => School::find($schoolId)->name
+            'school' => School::find($schoolId)->name,
+            'choice' => $choice ?? null
         ]);
         
     }
