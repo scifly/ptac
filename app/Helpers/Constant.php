@@ -89,6 +89,7 @@ class Constant {
     const CONTENT_TYPE = [
         'image' => 'image/*',
         'audio' => 'audio/*',
+        'voice' => 'audio/*',
         'video' => 'video/*',
         'file'  => '*',
     ];
