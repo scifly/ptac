@@ -9,7 +9,8 @@ use Illuminate\{Bus\Queueable,
     Foundation\Bus\Dispatchable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
-    Support\Facades\DB};
+    Support\Facades\DB,
+    Support\Facades\Log};
 use Pusher\PusherException;
 use Throwable;
 
@@ -58,6 +59,7 @@ class SendMessage implements ShouldQueue {
                         }, $this->messages
                     )
                 );
+                Log::debug(json_encode($results));
                 list($code, $msg) = $this->inform($results);
                 $this->response['statusCode'] = $code;
                 $this->response['message'] = $msg;
