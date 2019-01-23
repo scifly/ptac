@@ -701,7 +701,8 @@ trait ModelTrait {
                     $input['remark'] = 'student';
                 }
                 $position = $role == 'student' ? '学生' : '监护人';
-                $input['user']['position'] = $position;
+                $input['user']['position'] = $input['singular'] ? $position
+                    : User::find($input['user_id'])->group->name . '/' . $position;
                 $input['user']['group_id'] = $input['singular']
                     ? Group::whereName($position)->first()->id
                     : User::find($input['user_id'])->group_id;
