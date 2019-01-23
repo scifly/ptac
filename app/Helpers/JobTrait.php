@@ -137,6 +137,7 @@ trait JobTrait {
                 throw $e;
             }
         }
+        Log::info('response', $response);
         $broadcaster->broadcast($response);
         
         return true;
