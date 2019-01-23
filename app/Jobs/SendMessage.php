@@ -52,18 +52,13 @@ class SendMessage implements ShouldQueue {
         
         try {
             DB::transaction(function () {
-                $results = array_map(
-                    function (Message $message) {
-                        return $this->send($message, $this->response);
-                    }, $this->messages
+                $results = array_collapse(
+                    array_map(
+                        function (Message $message) {
+                            return $this->send($message, $this->response);
+                        }, $this->messages
+                    )
                 );
-                // $results = array_collapse(
-                //     array_map(
-                //         function (Message $message) {
-                //             return $this->send($message, $this->response);
-                //         }, $this->messages
-                //     )
-                // );
                 Log::debug(json_encode($results));
                 list($code, $msg) = $this->inform($results);
                 $this->response['statusCode'] = $code;
