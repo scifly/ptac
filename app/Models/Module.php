@@ -256,9 +256,6 @@ class Module extends Model {
                 } elseif ($role == '监护人') {
                     return in_array($moduleGroupId, [0, $custodianGroupId]);
                 } else {
-                    Log::info('params', [
-                        'enabled' => 1, 'school_id' => $schoolId, 'name' => $role,
-                    ]);
                     $userGroupId = Group::where([
                         'enabled' => 1, 'school_id' => $schoolId, 'name' => $role,
                     ])->first()->id;

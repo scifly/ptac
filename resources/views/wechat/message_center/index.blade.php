@@ -21,11 +21,13 @@
                     'style' => 'padding-left: 8px;'
                 ]) !!}
             </div>
-            <div class="weui-cell__ft">
-                <a class="icon iconfont icon-add c-green"
-                   href="{!! url($acronym . '/message_centers/create') !!}"
-                ></a>
-            </div>
+            @if ($canSend)
+                <div class="weui-cell__ft">
+                    <a class="icon iconfont icon-add c-green"
+                       href="{!! url($acronym . '/message_centers/create') !!}"
+                    ></a>
+                </div>
+            @endif
         </div>
     </div>
     <!-- 消息列表 -->
