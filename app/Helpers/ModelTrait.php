@@ -702,9 +702,9 @@ trait ModelTrait {
                 }
                 $position = $role == 'student' ? '学生' : '监护人';
                 $input['user']['position'] = $position;
-                if ($input['singular']) {
-                    $input['user']['group_id'] = Group::whereName($position)->first()->id;
-                }
+                $input['user']['group_id'] = $input['singular']
+                    ? Group::whereName($position)->first()->id
+                    : User::find($input['user_id'])->group_id;
                 $input['enabled'] = $input['user']['enabled'];
                 if (!empty($input['student_ids'])) {
                     foreach ($input['student_ids'] as $key => $studentId) {
