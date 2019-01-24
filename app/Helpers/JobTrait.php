@@ -176,7 +176,6 @@ trait JobTrait {
      */
     function eHandler(Exception $exception, array $response = []) {
 
-        Log::debug('busted');
         if (!empty($response)) {
             $response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
             $response['message'] = $exception->getMessage();

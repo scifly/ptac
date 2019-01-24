@@ -741,9 +741,7 @@ class Department extends Model {
      */
     private function movable($id, $parentId) {
         
-        if (!isset($id, $parentId)) {
-            return false;
-        }
+        if (!isset($id, $parentId)) return false;
         $allowedDepartmentIds = $this->departmentIds(Auth::id());
         # 如果部门(被移动的部门和目标部门）不在当前用户的可见范围内，则抛出401异常
         abort_if(

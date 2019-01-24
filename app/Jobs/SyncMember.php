@@ -11,8 +11,7 @@ use Illuminate\{Bus\Queueable,
     Foundation\Bus\Dispatchable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
-    Support\Facades\DB,
-    Support\Facades\Log};
+    Support\Facades\DB};
 use Pusher\PusherException;
 use Throwable;
 

@@ -58,6 +58,7 @@ class SyncDepartment implements ShouldQueue {
      */
     function handle() {
         
+        Log::debug('wtf');
         try {
             DB::transaction(function () {
                 if ($this->action == 'delete') {
@@ -107,58 +108,67 @@ class SyncDepartment implements ShouldQueue {
      */
     private function remove() {
     
-        $ids = array_merge(
-            [$this->departmentId],
-            $this->dept->subIds($this->departmentId)
-        );
-        foreach ($ids as $id) {
-            if ($this->dept->needSync($this->dept->find($id))) {
-                $syncIds[$id] = $this->dept->level($id, $level = 0);
-            }
-        }
-        Log::debug('syncIds', $syncIds ?? []);
-        arsort($syncIds);
-        $deptIds = array_keys($syncIds);
-        $this->corp = Corp::find($this->dept->corpId($deptIds[0]));
-        foreach ($deptIds as $id) {
-            foreach ($this->dept->find($id)->users as $user) {
-                $depts = $user->depts($user->id);
-                if ($depts->count() > 1) {
-                    $mobile = $user->mobiles->where('isdefault', 1)->first()->mobile;
-                    $userDeptIds = array_map(
-                        function (Department $dept) {
-                            return in_array($dept->departmentType->name, ['运营', '企业'])
-                                ? $this->corp->departmentid : $dept->id;
-                        }, $depts);
-                    $updates[] = array_combine(Constant::MEMBER_FIELDS, [
-                        $user->userid, $user->username, $user->position, $user->realname,
-                        $user->english_name, $mobile, $user->email, array_diff($userDeptIds, [$id])
-                    ]);
-                } else {
-                    $deletes[] = $user->userid;
-                }
-            }
-            # 更新/删除指定部门中的企业微信会员
-            list($updated, $deleted) = array_map(
-                function ($members, $method) { return $this->updateDelMember($members, $method); },
-                [$updates ?? [], $deletes ?? []], ['update', 'delete']
-            );
-            array_map(
-                function ($userids, $method) use ($id) {
-                    $userIds = User::whereIn('userid', $userids)->pluck('id')->toArray();
-                    if ($method == 'update') {
-                        # 更新部门&用户绑定关系
-                        DepartmentUser::whereIn('user_id', $userIds)
-                            ->where('department_id', $id)->delete();
-                    } else {
-                        # 禁用已删除的企业微信会员对应的本地用户
-                        User::whereIn('id', $userIds)->update(['enabled' => 0]);
+        $deletedIds = [];
+        try {
+            DB::transaction(function () use (&$deletedIds) {
+                $ids = array_merge(
+                    [$this->departmentId],
+                    $this->dept->subIds($this->departmentId)
+                );
+                foreach ($ids as $id) {
+                    if ($this->dept->needSync($this->dept->find($id))) {
+                        $syncIds[$id] = $this->dept->level($id, $level = 0);
                     }
-                }, [$updated, $deleted], ['update', 'delete']
-            );
+                }
+                Log::debug('syncIds', $syncIds ?? []);
+                arsort($syncIds);
+                $deptIds = array_keys($syncIds);
+                $this->corp = Corp::find($this->dept->corpId($deptIds[0]));
+                foreach ($deptIds as $id) {
+                    foreach ($this->dept->find($id)->users as $user) {
+                        $depts = $user->depts($user->id);
+                        if ($depts->count() > 1) {
+                            $mobile = $user->mobiles->where('isdefault', 1)->first()->mobile;
+                            $userDeptIds = array_map(
+                                function (Department $dept) {
+                                    return in_array($dept->departmentType->name, ['运营', '企业'])
+                                        ? $this->corp->departmentid : $dept->id;
+                                }, $depts);
+                            $updates[] = array_combine(Constant::MEMBER_FIELDS, [
+                                $user->userid, $user->username, $user->position, $user->realname,
+                                $user->english_name, $mobile, $user->email, array_diff($userDeptIds, [$id])
+                            ]);
+                        } else {
+                            $deletes[] = $user->userid;
+                        }
+                    }
+                    # 更新/删除指定部门中的企业微信会员
+                    list($updated, $deleted) = array_map(
+                        function ($members, $method) { return $this->updateDelMember($members, $method); },
+                        [$updates ?? [], $deletes ?? []], ['update', 'delete']
+                    );
+                    array_map(
+                        function ($userids, $method) use ($id) {
+                            $userIds = User::whereIn('userid', $userids)->pluck('id')->toArray();
+                            if ($method == 'update') {
+                                # 更新部门&用户绑定关系
+                                DepartmentUser::whereIn('user_id', $userIds)
+                                    ->where('department_id', $id)->delete();
+                            } else {
+                                # 禁用已删除的企业微信会员对应的本地用户
+                                User::whereIn('id', $userIds)->update(['enabled' => 0]);
+                            }
+                        }, [$updated, $deleted], ['update', 'delete']
+                    );
+                }
+                # 删除企业微信部门并返回已删除的企业微信部门id
+                $deletedIds = $this->delDept($deptIds);
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
-        # 删除企业微信部门并返回已删除的企业微信部门id
-        return $this->delDept($deptIds);
+        
+        return $deletedIds;
         
     }
     
