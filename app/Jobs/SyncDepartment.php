@@ -116,10 +116,10 @@ class SyncDepartment implements ShouldQueue {
                 );
                 foreach ($ids as $id) {
                     if ($d->needSync($d->find($id))) {
-                        $syncIds[$id] = $d->level($id, $level = 0);
+                        $level = 0;
+                        $syncIds[$id] = $d->level($id, $level);
                     }
                 }
-                Log::info('syncIds', $syncIds ?? []);
                 arsort($syncIds);
                 $deptIds = array_keys($syncIds);
                 $this->corp = Corp::find($d->corpId($deptIds[0]));
@@ -160,7 +160,6 @@ class SyncDepartment implements ShouldQueue {
                         }, [$updated, $deleted], ['update', 'delete']
                     );
                 }
-                Log::debug('hi there');
                 # 删除企业微信部门并返回已删除的企业微信部门id
                 $deletedIds = $this->delDept($deptIds);
             });
