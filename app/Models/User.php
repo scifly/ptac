@@ -394,7 +394,7 @@ class User extends Authenticatable {
                 (new Mobile)->store($data['mobile'], $user->id);
                 (new DepartmentUser)->storeByUserId($user->id, [$this->departmentId($data)]);
                 $this->sync([
-                    [$user->id, Group::find($data['group_id'])->name, 'create'],
+                    [$user->id, Group::find($data['user']['group_id'])->name, 'create'],
                 ]);
             });
         } catch (Exception $e) {
