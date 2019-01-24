@@ -5,7 +5,7 @@
  * Date: 2019-1-24
  * Time: 13:31
  */
-namespace App\Helpers;
+namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
