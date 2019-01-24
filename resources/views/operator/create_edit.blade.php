@@ -5,19 +5,19 @@
     <div class="box-body">
         <div class="form-horizontal">
             <!-- 用户id -->
-            @if (!empty($operator['id']))
-                {{ Form::hidden('id', $operator['id'], ['id' => 'id']) }}
+            @if (!empty($user['id']))
+                {{ Form::hidden('id', $user['id'], ['id' => 'id']) }}
                 @include('shared.avatar')
             @endif
             <!-- 用户名 -->
             <div class="form-group">
-                {!! Form::label('operator[username]', '用户名', [
+                {!! Form::label('user[username]', '用户名', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-user'])
-                        {!! Form::text('operator[username]', null, [
+                        {!! Form::text('user[username]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(用户名不能为空)',
                             'required' => 'true',
@@ -26,16 +26,16 @@
                     </div>
                 </div>
             </div>
-            @if (!isset($operator['id']))
+            @if (!isset($user['id']))
                 <!-- 密码 -->
                 <div class="form-group">
-                    {!! Form::label('operator[password]', '密码', [
+                    {!! Form::label('user[password]', '密码', [
                         'class' => 'col-sm-3 control-label'
                     ]) !!}
                     <div class="col-sm-6">
                         <div class="input-group">
                             @include('shared.icon_addon', ['class' => 'fa-lock'])
-                            {{ Form::password('operator[password]', [
+                            {{ Form::password('user[password]', [
                                 'id' => 'password',
                                 'class' => 'form-control text-blue',
                                 'required' => 'true'
@@ -45,13 +45,13 @@
                 </div>
                 <!-- 确认密码 -->
                 <div class="form-group">
-                    {!! Form::label('operator[password_confirmation]', '确认密码', [
+                    {!! Form::label('user[password_confirmation]', '确认密码', [
                         'class' => 'col-sm-3 control-label'
                     ]) !!}
                     <div class="col-sm-6">
                         <div class="input-group">
                             @include('shared.icon_addon', ['class' => 'fa-lock'])
-                            {{ Form::password('operator[password_confirmation]', [
+                            {{ Form::password('user[password_confirmation]', [
                                 'id' => 'password_confirm',
                                 'class' => 'form-control text-blue',
                                 'required' => 'true',
@@ -64,7 +64,7 @@
             <!-- 角色 -->
             @include('shared.single_select', [
                 'label' => '角色',
-                'id' => 'operator[group_id]',
+                'id' => 'user[group_id]',
                 'items' => $groups,
                 'icon' => 'fa fa-meh-o'
             ])
@@ -116,13 +116,13 @@
             @endif
             <!-- 真实姓名 -->
             <div class="form-group">
-                {!! Form::label('operator[realname]', '真实姓名', [
+                {!! Form::label('user[realname]', '真实姓名', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-user-o'])
-                        {!! Form::text('operator[realname]', null, [
+                        {!! Form::text('user[realname]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(不超过60个汉字)',
                             'required' => 'true',
@@ -133,13 +133,13 @@
             </div>
             <!-- 英文名 -->
             <div class="form-group">
-                {!! Form::label('operator[english_name]', '英文名', [
+                {!! Form::label('user[english_name]', '英文名', [
                     'class' => 'col-sm-3 control-label'
                 ]) !!}
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-language'])
-                        {!! Form::text('operator[english_name]', null, [
+                        {!! Form::text('user[english_name]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(可选)',
                             'data-parsley-length' => '[2, 64]',
@@ -149,22 +149,22 @@
             </div>
             <!-- 性别 -->
             @include('shared.switch', [
-                'id' => 'operator[gender]',
+                'id' => 'user[gender]',
                 'label' => '性别',
-                'value' => $operator['gender'] ?? null,
+                'value' => $user['gender'] ?? null,
                 'options' => ['男', '女']
             ])
             <!-- 手机号码 -->
             @include('shared.mobile')
             <!-- 电子邮箱 -->
             <div class="form-group">
-                {{ Form::label('operator[email]', '邮箱', [
+                {{ Form::label('user[email]', '邮箱', [
                     'class' => 'col-sm-3 control-label'
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-envelope-o'])
-                        {{ Form::text('operator[email]', null, [
+                        {{ Form::text('user[email]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请输入电子邮件地址, 可选)',
                             'type' => 'email',
@@ -176,13 +176,13 @@
             </div>
             <!-- 座机号码 -->
             <div class="form-group">
-                {{ Form::label('operator[telephone]', '座机', [
+                {{ Form::label('user[telephone]', '座机', [
                     'class' => 'col-sm-3 control-label'
                 ]) }}
                 <div class="col-sm-6">
                     <div class="input-group">
                         @include('shared.icon_addon', ['class' => 'fa-phone'])
-                        {{ Form::text('operator[telephone]', null, [
+                        {{ Form::text('user[telephone]', null, [
                             'class' => 'form-control text-blue',
                             'placeholder' => '(请输入座机号码, 可选)',
                         ]) }}
@@ -191,8 +191,8 @@
             </div>
             <!-- 状态 -->
             @include('shared.switch', [
-                'id' => 'operator[enabled]',
-                'value' => $operator['enabled'] ?? null
+                'id' => 'user[enabled]',
+                'value' => $user['enabled'] ?? null
             ])
         </div>
     </div>

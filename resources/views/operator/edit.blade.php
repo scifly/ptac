@@ -1,4 +1,4 @@
-{!! Form::model($operator, [
+{!! Form::model($user, [
     'method' => 'put',
     'id' => 'formOperator',
     'data-parsley-validate' => 'true'
