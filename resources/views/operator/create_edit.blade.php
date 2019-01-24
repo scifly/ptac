@@ -21,7 +21,7 @@
                             'class' => 'form-control text-blue',
                             'placeholder' => '(用户名不能为空)',
                             'required' => 'true',
-                            'data-parsley-length' => '[6, 255]'
+                            'data-parsley-length' => '[5, 255]'
                         ]) !!}
                     </div>
                 </div>
