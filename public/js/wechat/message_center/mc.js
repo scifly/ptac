@@ -49,22 +49,8 @@
                         inbox: { text: '收件箱', color: 'color-primary' },
                         outbox: { text: '发件箱', color: 'color-warning' },
                         draft: { text: '草稿箱', color: 'color-danger' }
-                    },
-                    actions = [];
+                    };
 
-                $.each(titles, function (key, value) {
-                    actions.push({
-                        text: value['text'],
-                        className: value['color'],
-                        onClick: function() { switchFolder(this, key); }
-                    });
-                });
-                actions.push({
-                    text: '消息过滤',
-                    onClick: function () {
-                        $('#filters').popup();
-                    }
-                });
                 $start.calendar();
                 $end.calendar();
                 // $page.val(1);
@@ -92,6 +78,18 @@
                 });
                 // 目录
                 $(document).on('click', '#show-actions', function () {
+                    var actions = [];
+                    $.each(titles, function (key, value) {
+                        actions.push({
+                            text: value['text'],
+                            className: value['color'],
+                            onClick: function() { switchFolder(this, key); }
+                        });
+                    });
+                    actions.push({
+                        text: '消息过滤',
+                        onClick: function () { $('#filters').popup(); }
+                    });
                     $.actions({
                         // title: '请选择',
                         onClose: function () { console.log('close'); },
@@ -209,7 +207,6 @@
                             type === 'user' ? mc.selectedUserIds.push(id) : mc.selectedDepartmentIds.push(id);
                         }
                     );
-
                     $checkAll.prop('checked', mc.allChecked());
                 }
                 mc.targets();
