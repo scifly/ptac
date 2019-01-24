@@ -451,6 +451,7 @@ class User extends Authenticatable {
                 if ($id) {
                     $user = $this->find($id);
                     $data = $data['user'] ?? $data;
+                    unset($data['mobile']);
                     $user->update($data);
                     $role = isset($data['group_id']) ? Group::find($data['group_id'])->name : null;
                     !($role && $role == '学校') ?: $user->educator->update($data['educator']);
