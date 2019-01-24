@@ -1,15 +1,12 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Helpers\Operator;
 use App\Http\Requests\OperatorRequest;
 use App\Models\User;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Request;
 use Throwable;
-use Way\Generators\Commands\ModelGeneratorCommand;
 
 /**
  * 超级用户
@@ -88,13 +85,9 @@ class OperatorController extends Controller {
      */
     public function edit($id) {
         
-        if (Request::method() == 'POST') {
-            return $this->user->csList();
-        }
-        $operator = new Operator();
-        $operator->{'user'} = $this->user->find($id);
-
-        return $this->output(['operator' => $operator]);
+        return Request::method() == 'POST'
+            ? $this->user->csList()
+            : $this->output(['user' => $this->user->find($id)]);
         
     }
     
