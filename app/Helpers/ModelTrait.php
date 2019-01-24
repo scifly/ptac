@@ -746,7 +746,7 @@ trait ModelTrait {
                         $input['selectedDepartments'] += $classDeptIds ?? [];
                     }
                 } else {
-                    if (Group::find($input['group_id'])->name == '学校') {
+                    if (Group::find($input['user']['group_id'])->name == '学校') {
                         $input += [
                             'school_id' => $input['school_id'],
                             'enabled'   => $input['user']['enabled'],
