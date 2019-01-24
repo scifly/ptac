@@ -50,7 +50,7 @@ class OperatorRequest extends FormRequest {
     public function rules() {
         
         $rules = [
-            'user.username'              => 'required|string|between:6,255|unique:users,username,' .
+            'user.username'              => 'required|string|between:5,255|unique:users,username,' .
                 $this->input('id') . ',id',
             'user.password'              => 'string|min:6|confirmed',
             'user.password_confirmation' => 'string|min:6',
