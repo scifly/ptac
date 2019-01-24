@@ -594,7 +594,8 @@ class Department extends Model {
         
         if (!($department = $this->find($id))) return null;
         if ($parent = $department->parent) {
-            $this->level($parent->id, ++$level);
+            ++$level;
+            $this->level($parent->id, $level);
         }
         
         return $level;
