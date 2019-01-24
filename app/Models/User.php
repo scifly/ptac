@@ -451,16 +451,17 @@ class User extends Authenticatable {
                 if ($id) {
                     $user = $this->find($id);
                     $data = $data['user'] ?? $data;
+                    $mobile = $data['mobile'];
                     unset($data['mobile']);
                     $user->update($data);
                     $role = isset($data['group_id']) ? Group::find($data['group_id'])->name : null;
                     !($role && $role == '学校') ?: $user->educator->update($data['educator']);
                     if (isset($data['enabled'])) {
-                        (new Mobile)->store($data['mobile'], $user->id);
+                        (new Mobile)->store($mobile, $user->id);
                         (new DepartmentUser)->store($user->id, $this->departmentId($data));
                     } else {
                         Mobile::where(['user_id' => $user->id, 'isdefault' => 1])
-                            ->update(['mobile' => $data['mobile']]);
+                            ->update(['mobile' => $mobile]);
                     }
                 } else {
                     $this->batch($this);
