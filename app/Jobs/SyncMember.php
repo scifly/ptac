@@ -70,12 +70,11 @@ class SyncMember implements ShouldQueue {
                         );
                     }
                 }
-                Log::info('results', $results);
                 if (sizeof($results) > 0) {
                     $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
                     $this->response['message'] = __('messages.sync_failed');
                     $this->response['url'] = $this->filePath('failed_syncs') . '.xlsx';
-                    $this->excel($results, 'failed_syncs', '同步失败记录', false);
+                    $this->excel(array_flatten($results), 'failed_syncs', '同步失败记录', false);
                 }
             });
         } catch (Throwable $e) {
