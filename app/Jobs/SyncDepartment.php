@@ -115,6 +115,7 @@ class SyncDepartment implements ShouldQueue {
                 $syncIds[$id] = $this->dept->level($id, $level = 0);
             }
         }
+        Log::debug('syncIds', $syncIds ?? []);
         arsort($syncIds);
         $deptIds = array_keys($syncIds);
         $this->corp = Corp::find($this->dept->corpId($deptIds[0]));
