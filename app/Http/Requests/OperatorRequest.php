@@ -58,7 +58,7 @@ class OperatorRequest extends FormRequest {
             'user.realname'              => 'required|string|between:2,60',
             'user.english_name'          => 'nullable|string|between:2,64',
             'user.gender'                => 'required|boolean',
-            'user.email'                 => ['nullable|email', new Email],
+            'user.email'                 => ['email', new Email],
             'user.telephone'             => 'nullabel|string|between:2,64',
             'user.enabled'               => 'required|boolean',
             'corp_id'                    => 'nullable|integer',
