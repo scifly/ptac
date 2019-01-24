@@ -447,12 +447,10 @@ class User extends Authenticatable {
         
         try {
             DB::transaction(function () use ($data, $id) {
-                Log::info('data', $data);
                 if ($id) {
                     $user = $this->find($id);
-                    $data = $data['user'] ?? $data;
                     $mobile = $data['mobile'];
-                    unset($data['mobile']);
+                    if (isset($data['enabled'])) unset($data['mobile']);
                     $user->update($data);
                     $role = isset($data['group_id']) ? Group::find($data['group_id'])->name : null;
                     !($role && $role == '学校') ?: $user->educator->update($data['educator']);
