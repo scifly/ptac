@@ -61,6 +61,7 @@ class SyncDepartment implements ShouldQueue {
         try {
             DB::transaction(function () {
                 if ($this->action == 'delete') {
+                    Log::debug('wtf');
                     # 同步企业微信通讯录并获取已删除的部门id
                     $ids = $this->remove();
                     Log::info('ids', $ids);
