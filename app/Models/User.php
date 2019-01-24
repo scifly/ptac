@@ -695,15 +695,15 @@ class User extends Authenticatable {
      */
     function sync(array $contacts, $id = null, $corpId = null) {
         
-        $corpId = $corpId ?? School::find($this->schoolId())->corp_id;
         foreach ($contacts as $contact) {
             list($userId, $role, $method) = $contact;
             $user = $this->find($userId);
+            
             $params = [
                 'userid'   => $user->userid,
                 'username' => $user->username,
                 'position' => $user->position ?? $role,
-                'corpIds'  => $role == '运营' ? Corp::pluck('id')->toArray() : [$corpId],
+                'corpIds'  => $this->corpIds($userId),
             ];
             if ($method != 'delete') {
                 $departments = !in_array($role, ['运营', '企业'])
