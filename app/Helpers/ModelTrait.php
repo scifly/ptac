@@ -724,6 +724,7 @@ trait ModelTrait {
                 break;
             case 'educator':
             case 'operator':
+                $role == 'educator' ?: $input['user'] = $input;
                 $input['user']['position'] = Group::find($input['user']['group_id'])->name;
                 if ($role == 'educator') {
                     $input['enabled'] = $input['user']['enabled'];
