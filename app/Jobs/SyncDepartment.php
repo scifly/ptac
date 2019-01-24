@@ -61,7 +61,6 @@ class SyncDepartment implements ShouldQueue {
             DB::transaction(function () {
                 $d = new Department();
                 if ($this->action == 'delete') {
-                    Log::debug('wtf');
                     # 同步企业微信通讯录并获取已删除的部门id
                     $ids = $this->remove();
                     Log::info('ids', $ids);
@@ -110,7 +109,10 @@ class SyncDepartment implements ShouldQueue {
         $deletedIds = [];
         try {
             DB::transaction(function () use (&$deletedIds) {
+                Log::debug('wtf_begin');
+    
                 $d = new Department;
+                Log::debug('wtf_end');
                 $ids = array_merge(
                     [$this->departmentId],
                     $d->subIds($this->departmentId)
