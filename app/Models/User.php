@@ -395,11 +395,9 @@ class User extends Authenticatable {
                 (new DepartmentUser)->storeByUserId($user->id, [$this->departmentId($data)]);
                 $group = Group::find($data['user']['group_id']);
                 
-                $this->sync(
-                    [[$user->id, $group->name, 'create']],
-                    Auth::id(),
-                    $group->name == '企业' ? $data['corp_id'] : null
-                );
+                $this->sync([
+                    [$user->id, $group->name, 'create']
+                ]);
             });
         } catch (Exception $e) {
             throw $e;
@@ -690,10 +688,9 @@ class User extends Authenticatable {
      *
      * @param array $contacts
      * @param null $id - 接收广播的用户id
-     * @param null $corpId
      * @return bool
      */
-    function sync(array $contacts, $id = null, $corpId = null) {
+    function sync(array $contacts, $id = null) {
         
         foreach ($contacts as $contact) {
             list($userId, $role, $method) = $contact;

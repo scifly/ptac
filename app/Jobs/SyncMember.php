@@ -64,7 +64,9 @@ class SyncMember implements ShouldQueue {
                         !in_array($params['position'], ['运营', '企业'])
                             ?: $params['department'] = [$corp->departmentid];
                         list($errcode, $errmsg) = $this->sync($corp, $params, $action);
-                        !$errcode ?: $results[] = array_merge($params, ['result' => $errmsg]);
+                        !$errcode ?: $results[] = array_values(
+                            array_merge($params, ['result' => $errmsg])
+                        );
                     }
                 }
                 if (sizeof($results) > 0) {
