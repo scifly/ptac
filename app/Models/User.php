@@ -863,7 +863,7 @@ class User extends Authenticatable {
                             $corp = Corp::whereDepartmentId($departmentId)->first();
                             break;
                         case '学校':
-                            $corpId = $operator->educator->school->corp_id;
+                            $corpId = head($this->corpIds($operator->id)); // $operator->educator->school->corp_id;
                             $corp = Corp::find($corpId);
                             $schools = School::whereCorpId($corpId)->pluck('name', 'id')->toArray();
                             break;
