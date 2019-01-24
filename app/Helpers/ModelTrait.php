@@ -694,7 +694,7 @@ trait ModelTrait {
                 if (!Request::route('id')) {
                     $input['user'] += [
                         'username' => $userid,
-                        'password' => bcrypt('12345678'),
+                        'password' => '12345678',
                     ];
                 }
                 if ($role == 'student' && !isset($input['remark'])) {
@@ -725,7 +725,6 @@ trait ModelTrait {
             case 'educator':
             case 'operator':
                 $input['user']['position'] = Group::find($input['user']['group_id'])->name;
-                $input['user']['password'] = bcrypt($input['user']['password']);
                 if ($role == 'educator') {
                     $input['enabled'] = $input['user']['enabled'];
                     $input['school_id'] = $this->schoolId();

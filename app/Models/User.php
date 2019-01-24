@@ -385,6 +385,7 @@ class User extends Authenticatable {
         
         try {
             DB::transaction(function () use ($data) {
+                $data['user']['password'] = bcrypt($data['user']['password']);
                 $user = $this->create($data['user']);
                 # 如果角色为校级管理员，则同时创建教职员工记录
                 if (!in_array($this->role($user->id), Constant::NON_EDUCATOR)) {
