@@ -49,8 +49,22 @@
                         inbox: { text: '收件箱', color: 'color-primary' },
                         outbox: { text: '发件箱', color: 'color-warning' },
                         draft: { text: '草稿箱', color: 'color-danger' }
-                    };
+                    },
+                    actions = [];
 
+                $.each(titles, function (key, value) {
+                    actions.push({
+                        text: value['text'],
+                        className: value['color'],
+                        onClick: function() { switchFolder(this, key); }
+                    });
+                });
+                actions.push({
+                    text: '消息过滤',
+                    onClick: function () {
+                        $('#filters').popup();
+                    }
+                });
                 $start.calendar();
                 $end.calendar();
                 // $page.val(1);
@@ -80,45 +94,8 @@
                 $(document).on('click', '#show-actions', function () {
                     $.actions({
                         // title: '请选择',
-                        onClose: function () {
-                            console.log('close');
-                        },
-                        actions: [
-                            {
-                                text: titles['all']['text'],
-                                className: titles['all']['color'],
-                                onClick: function () {
-                                    switchFolder(this, 'all');
-                                }
-                            },
-                            {
-                                text: titles['inbox']['text'],
-                                className: titles['inbox']['color'],
-                                onClick: function () {
-                                    switchFolder(this, 'inbox');
-                                }
-                            },
-                            {
-                                text: titles['outbox']['text'],
-                                className: titles['outbox']['color'],
-                                onClick: function () {
-                                    switchFolder(this, 'outbox');
-                                }
-                            },
-                            {
-                                text: titles['draft']['text'],
-                                className: titles['draft']['color'],
-                                onClick: function () {
-                                    switchFolder(this, 'draft');
-                                }
-                            },
-                            {
-                                text: '消息过滤',
-                                onClick: function () {
-                                    $('#filters').popup();
-                                }
-                            }
-                        ]
+                        onClose: function () { console.log('close'); },
+                        actions: actions
                     });
                 });
                 // 过滤
