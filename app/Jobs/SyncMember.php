@@ -11,7 +11,8 @@ use Illuminate\{Bus\Queueable,
     Foundation\Bus\Dispatchable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
-    Support\Facades\DB};
+    Support\Facades\DB,
+    Support\Facades\Log};
 use Pusher\PusherException;
 use Throwable;
 
@@ -69,6 +70,7 @@ class SyncMember implements ShouldQueue {
                         );
                     }
                 }
+                Log::info('results', $results);
                 if (sizeof($results) > 0) {
                     $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
                     $this->response['message'] = __('messages.sync_failed');
