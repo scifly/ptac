@@ -447,6 +447,7 @@ class User extends Authenticatable {
         
         try {
             DB::transaction(function () use ($data, $id) {
+                Log::info('data', $data);
                 if ($id) {
                     $user = $this->find($id);
                     $data = $data['user'] ?? $data;
