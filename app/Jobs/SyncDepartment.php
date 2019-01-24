@@ -27,7 +27,7 @@ class SyncDepartment implements ShouldQueue {
         SerializesModels, ModelTrait, JobTrait;
     
     protected $departmentId, $action, $userId;
-    protected $corp, $dept, $bc, $response;
+    protected $corp, $bc, $response;
     
     /**
      * Create a new job instance.
@@ -42,7 +42,6 @@ class SyncDepartment implements ShouldQueue {
         $this->departmentId = $departmentId;
         $this->action = $action;
         $this->userId = $userId;
-        $this->dept = new Department;
         $this->bc = new Broadcaster;
         $this->response = array_combine(Constant::BROADCAST_FIELDS, [
             $userId, Constant::SYNC_ACTIONS[$action] . '企业微信部门',
@@ -58,9 +57,9 @@ class SyncDepartment implements ShouldQueue {
      */
     function handle() {
         
-        Log::debug('wtf');
         try {
             DB::transaction(function () {
+                $d = new Department();
                 if ($this->action == 'delete') {
                     Log::debug('wtf');
                     # 同步企业微信通讯录并获取已删除的部门id
@@ -71,11 +70,11 @@ class SyncDepartment implements ShouldQueue {
                         function ($obj, $field) use ($ids) {
                             $obj->{'whereIn'}($field, $ids)->delete();
                         },
-                        [new DepartmentUser, new DepartmentTag, $this->dept],
+                        [new DepartmentUser, new DepartmentTag, $d],
                         ['department_id', 'department_id', 'id']
                     );
                 } else {
-                    $this->corp = Corp::find($this->dept->corpId($this->departmentId));
+                    $this->corp = Corp::find($d->corpId($this->departmentId));
                     $this->createUpdate();
                 }
             });
@@ -111,21 +110,21 @@ class SyncDepartment implements ShouldQueue {
         $deletedIds = [];
         try {
             DB::transaction(function () use (&$deletedIds) {
+                $d = new Department;
                 $ids = array_merge(
                     [$this->departmentId],
-                    $this->dept->subIds($this->departmentId)
+                    $d->subIds($this->departmentId)
                 );
                 foreach ($ids as $id) {
-                    if ($this->dept->needSync($this->dept->find($id))) {
-                        $syncIds[$id] = $this->dept->level($id, $level = 0);
+                    if ($d->needSync($d->find($id))) {
+                        $syncIds[$id] = $d->level($id, $level = 0);
                     }
                 }
-                Log::debug('syncIds', $syncIds ?? []);
                 arsort($syncIds);
                 $deptIds = array_keys($syncIds);
-                $this->corp = Corp::find($this->dept->corpId($deptIds[0]));
+                $this->corp = Corp::find($d->corpId($deptIds[0]));
                 foreach ($deptIds as $id) {
-                    foreach ($this->dept->find($id)->users as $user) {
+                    foreach ($d->find($id)->users as $user) {
                         $depts = $user->depts($user->id);
                         if ($depts->count() > 1) {
                             $mobile = $user->mobiles->where('isdefault', 1)->first()->mobile;
@@ -230,9 +229,10 @@ class SyncDepartment implements ShouldQueue {
      */
     private function createUpdate() {
     
+        $d = new Department;
         $accessToken = $this->accessToken();
         $action = $this->action == 'create' ? 'createDept' : 'updateDept';
-        $department = $this->dept->find($this->departmentId);
+        $department = $d->find($this->departmentId);
         $parentid = $department->departmentType->name == '学校'
             ? $department->school->corp->departmentid
             : $department->parent_id;
