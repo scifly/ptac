@@ -64,6 +64,7 @@ return [
         'import_validation_error' => '学校/部门名称错误',
         'import_completed'        => '教职员工导入完毕',
         'export_completed'        => '教职员工导出完毕，请打开下载的excel文件查看详情',
+        'switch_school_not_allowed' => '不得切换学校'
     ],
     'grade'                    => [
         'title'     => '年级管理',

@@ -7,7 +7,7 @@
             <!-- 用户id -->
             @if (!empty($operator['id']))
                 {{ Form::hidden('id', $operator['id'], ['id' => 'id']) }}
-                @include('shared.avatar')
+                @include('shared.avatar', ['user' => $operator])
             @endif
             <!-- 用户名 -->
             <div class="form-group">
@@ -102,7 +102,7 @@
                 ])
             @else
                 <div id="school" class="form-group" style="display: none;">
-                    {!! Form::label('corp_id', '所属学校', [
+                    {!! Form::label('school_id', '所属学校', [
                         'class' => 'col-sm-3 control-label'
                     ]) !!}
                     <div class="col-sm-6">
@@ -166,7 +166,7 @@
                         @include('shared.icon_addon', ['class' => 'fa-envelope-o'])
                         {{ Form::text('email', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '(请输入电子邮件地址, 可选)',
+                            'placeholder' => '(可选)',
                             'type' => 'email',
                             'maxlength' => '255',
                             'data-parsley-type'=>"email"
@@ -184,7 +184,7 @@
                         @include('shared.icon_addon', ['class' => 'fa-phone'])
                         {{ Form::text('telephone', null, [
                             'class' => 'form-control text-blue',
-                            'placeholder' => '(请输入座机号码, 可选)',
+                            'placeholder' => '(可选)',
                         ]) }}
                     </div>
                 </div>
