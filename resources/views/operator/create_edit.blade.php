@@ -5,8 +5,8 @@
     <div class="box-body">
         <div class="form-horizontal">
             <!-- 用户id -->
-            @if (!empty($user['id']))
-                {{ Form::hidden('id', $user['id'], ['id' => 'id']) }}
+            @if (!empty($operator['id']))
+                {{ Form::hidden('id', $operator['id'], ['id' => 'id']) }}
                 @include('shared.avatar')
             @endif
             <!-- 用户名 -->
@@ -26,7 +26,7 @@
                     </div>
                 </div>
             </div>
-            @if (!isset($user['id']))
+            @if (!isset($operator['id']))
                 <!-- 密码 -->
                 <div class="form-group">
                     {!! Form::label('user[password]', '密码', [
@@ -151,7 +151,7 @@
             @include('shared.switch', [
                 'id' => 'user[gender]',
                 'label' => '性别',
-                'value' => $user['gender'] ?? null,
+                'value' => $operator['gender'] ?? null,
                 'options' => ['男', '女']
             ])
             <!-- 手机号码 -->
@@ -192,7 +192,7 @@
             <!-- 状态 -->
             @include('shared.switch', [
                 'id' => 'user[enabled]',
-                'value' => $user['enabled'] ?? null
+                'value' => $operator['enabled'] ?? null
             ])
         </div>
     </div>

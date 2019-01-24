@@ -651,8 +651,6 @@ class User extends Authenticatable {
             DB::transaction(function () use ($contact, $id) {
                 $ids = $id ? [$id] : array_values(Request::input('ids'));
                 $type = lcfirst((new ReflectionClass($contact))->getShortName());
-                Log::info('del', array_values($ids));
-                Log::info('con', array_map('strval', $this->contactIds($type)));
                 abort_if(
                     !empty($ids) && empty(array_intersect(
                         array_values($ids),
