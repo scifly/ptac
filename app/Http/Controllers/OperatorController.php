@@ -87,7 +87,7 @@ class OperatorController extends Controller {
         
         return Request::method() == 'POST'
             ? $this->user->csList()
-            : $this->output(['user' => $this->user->find($id)]);
+            : $this->output(['operator' => $this->user->find($id)]);
         
     }
     
