@@ -80,6 +80,8 @@ class SyncDepartment implements ShouldQueue {
         } catch (Exception $e) {
             $this->response['statusCode'] = HttpStatusCode::INTERNAL_SERVER_ERROR;
             $this->response['message'] = $e->getMessage();
+            !$this->userId ?: $this->bc->broadcast($this->response);
+            throw $e;
         }
 
         !$this->userId ?: $this->bc->broadcast($this->response);
