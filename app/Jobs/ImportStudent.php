@@ -111,7 +111,8 @@ class ImportStudent implements ShouldQueue, MassImport {
                 trim($datum['A']), trim($datum['B']), $schoolName,
                 trim($datum['D']), $gradeName, $className,
                 $studentNumber, trim($datum['H']), trim($datum['I']),
-                strval($datum['J']), trim($datum['K']), 0, 0,
+                trim(strval($datum['J'])), trim($datum['K']),
+                trim($datum['L']), 0, 0,
             ]);
             $result = Validator::make($user, $rules);
             $failed = $result->fails();
@@ -123,7 +124,7 @@ class ImportStudent implements ShouldQueue, MassImport {
             $class = $grade ? Squad::whereName($className)->where('grade_id', $grade->id)->first() : null;
             $isClassValid = $class ? in_array($class->id, $this->classIds($school->id, $this->userId)) : false;
             if (!(!$failed && $isSchoolValid && $isGradeValid && $isClassValid)) {
-                $datum['L'] = $failed
+                $datum['M'] = $failed
                     ? json_encode($result->errors(), JSON_UNESCAPED_UNICODE)
                     : __('messages.student.import_validation_error');
                 $illegals[] = $datum;
