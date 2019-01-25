@@ -57,6 +57,8 @@ return [
         'department_sync' => '%s部门',
         'has_children'    => '请先删除子部门',
         'not_found'       => '没有这个部门',
+        'request_submitted' => '已提交部门删除请求',
+        'deleted' => '部门已删除，请重新加载部门树查看操作结果'
     ],
     'educator'                 => [
         'title'                   => '教职员工',

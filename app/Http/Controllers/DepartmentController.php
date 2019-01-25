@@ -119,7 +119,7 @@ class DepartmentController extends Controller {
         
         return $this->result(
             $this->department->remove($id),
-            __('messages.ok'),
+            __('messages.department.request_submitted'),
             __('messages.department.has_children')
         );
         

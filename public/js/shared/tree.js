@@ -373,11 +373,11 @@
                         data: {_token: page.token()},
                         success: function (result) {
                             page.inform('删除节点', result.message, page.success);
-                            $.when(
-                                tree.sort(table)
-                            ).done(
-                                $tree.jstree().refresh()
-                            );
+                            // $.when(
+                            //     tree.sort(table)
+                            // ).done(
+                            //     $tree.jstree().refresh()
+                            // );
                         },
                         error: function (e) {
                             page.errorHandler(e);

@@ -10,8 +10,7 @@ use Illuminate\{Bus\Queueable,
     Foundation\Bus\Dispatchable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
-    Support\Facades\DB,
-    Support\Facades\Log};
+    Support\Facades\DB};
 use Pusher\PusherException;
 use Throwable;
 
@@ -45,7 +44,7 @@ class SyncDepartment implements ShouldQueue {
         $this->bc = new Broadcaster;
         $this->response = array_combine(Constant::BROADCAST_FIELDS, [
             $userId, Constant::SYNC_ACTIONS[$action] . '企业微信部门',
-            HttpStatusCode::OK, __('messages.synced'),
+            HttpStatusCode::OK, __('messages.ok'),
         ]);
     
     }
@@ -71,6 +70,7 @@ class SyncDepartment implements ShouldQueue {
                         [new DepartmentUser, new DepartmentTag, $d],
                         ['department_id', 'department_id', 'id']
                     );
+                    $this->response['message'] = __('messages.department.deleted');
                 } else {
                     $this->corp = Corp::find($d->corpId($this->departmentId));
                     $this->createUpdate();
