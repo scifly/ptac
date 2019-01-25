@@ -224,7 +224,7 @@ class Educator extends Model {
         
         return Datatable::simple(
             $this->getModel(), $columns, $joins,
-            'Educator.user_id IN (' . $this->visibleUserIds() . ')'
+            'Educator.user_id IN (' . $this->visibleUserIds() . ') AND Educator.school_id = ' . $this->schoolId()
         );
         
     }

@@ -787,10 +787,10 @@ class User extends Authenticatable {
         
         $user = $this->find($id ?? Auth::id());
         $role = $user->group->name;
-        $isEducator = session('is_educator');
+        $part = session('part');
         
-        return (!$user->educator || !isset($isEducator))
-            ? $role : ($isEducator ? $role : '监护人');
+        return !isset($user->educator, $part) ? $role
+            : ($part == 'educator' ? $role : '监护人');
         
     }
     
