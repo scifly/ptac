@@ -676,11 +676,26 @@ class User extends Authenticatable {
                 );
                 # 删除企业微信会员
                 if ($type != 'student') {
+                    $user = $this->find($id);
                     $this->sync(array_map(
-                        function ($userId) use ($type) {
-                            $role = $type == 'custodian' ? '监护人' : '';
-                            
-                            return [$userId, $role, 'delete'];
+                        function ($userId) use ($type, $user) {
+                            if ($type == 'custodian' && $user->educator) {
+                                $method = 'update';
+                                $user->update([
+                                    'position' => $user->group->name
+                                ]);
+                            } elseif ($type == 'educator' && $user->custodian) {
+                                $method = 'update';
+                                $user->update([
+                                    'position' => '监护人',
+                                    'group_id' => Group::whereName('监护人')->first()->id
+                                ]);
+                            }
+                            return [
+                                $userId,
+                                $type == 'custodian' ? '监护人' : '',
+                                $method ?? 'delete'
+                            ];
                         }, $contact->{'whereIn'}('id', $ids)->pluck('user_id')->toArray()
                     ));
                 }

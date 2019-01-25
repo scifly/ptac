@@ -405,13 +405,7 @@ class Educator extends Model {
                 Event::whereEducatorId($id)->delete();
                 (new Grade)->removeEducator($id);
                 (new Squad)->removeEducator($id);
-                if (!$educator->user->custodian) {
-                    $educator->user->purge($educator->user_id);
-                } else {
-                    $educator->user->find($educator->user_id)->update([
-                        'group_id' => Group::whereName('监护人')->first()->id
-                    ]);
-                }
+                $educator->user->custodian ?: $educator->user->purge($educator->user_id);
                 $educator->delete();
             });
         } catch (Exception $e) {
