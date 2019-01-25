@@ -24,9 +24,15 @@ class CorpRole {
     public function handle($request, Closure $next) {
         
         $user = Auth::user();
+        if ($user->custodian) {
+            foreach ($user->custodian->students as $student) {
+                $schoolIds[] = $student->squad->grade->school_id;
+            }
+        }
         if (
             $user->custodian && $user->educator &&
-            $user->educator->school_id == session('schoolId')
+            $user->educator->school_id == session('schoolId') &&
+            in_array(session('schoolId'), array_unique($schoolIds ?? []))
         ) {
             if (
                 !Request::query('part') &&

@@ -213,18 +213,17 @@ trait ModelTrait {
                 $corp = Corp::whereDepartmentId($this->topDeptId($user))->first();
                 $schools = $corp->schools;
                 break;
-            case '监护人':
-                foreach ($user->custodian->students as $student) {
-                    $schoolIds[] = $student->squad->grade->school_id;
-                }
-                $schoolIds = array_unique($schoolIds ?? []);
-                $schools = School::whereIn('id', $schoolIds)->get();
-                break;
             case '学生':
                 $schools->push($user->student->squad->grade->school);
                 break;
-            default: # 学校、教职员工或其他校级角色
-                $schools->push($user->educator->school);
+            default:
+                if ($user->custodian) {
+                    foreach ($user->custodian->students as $student) {
+                        $schoolIds[] = $student->squad->grade->school_id;
+                    }
+                }
+                !$user->educator ?: $schoolIds[] = $user->educator->school_id;
+                $schools = School::whereIn('id', array_unique($schoolIds ?? []))->get();
                 break;
         }
 
