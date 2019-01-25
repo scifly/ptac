@@ -55,7 +55,7 @@
                 'options' => ['男', '女']
             ])
             <!-- 手机号码 -->
-            @include('shared.mobile')
+            {{--@include('shared.mobile')--}}
             <!-- 座机号码 -->
             <div class="form-group">
                 {{ Form::label('user[telephone]', '座机', [
