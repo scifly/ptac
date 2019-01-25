@@ -257,9 +257,15 @@ class Educator extends Model {
                     # 监护人(Custodian)
                     $custodian = $this->create($data);
                     # 监护人&部门绑定关系
-                    (new DepartmentUser)->storeByUserId($custodian->user_id, $data['departmentIds'], true);
+                    (new DepartmentUser)->storeByUserId(
+                        $custodian->user_id,
+                        $data['departmentIds'] ?? [],
+                        true
+                    );
                     # 监护人&学生关系
-                    (new CustodianStudent)->storeByCustodianId($custodian->id, $data['relationships']);
+                    (new CustodianStudent)->storeByCustodianId(
+                        $custodian->id, $data['relationships'] ?? []
+                    );
                 }
                 # 创建企业微信会员
                 $user->sync([[$user->id, '', 'create']]);
