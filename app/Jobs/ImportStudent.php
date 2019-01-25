@@ -212,6 +212,7 @@ class ImportStudent implements ShouldQueue, MassImport {
                         array_combine(Constant::STUDENT_FIELDS, [
                             $student->user_id,
                             $update['class_id'],
+                            $update['student_number'],
                             $update['card_number'],
                             $update['oncampus'] == '住读' ? 1 : 0,
                             $update['birthday'],
