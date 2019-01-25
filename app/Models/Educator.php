@@ -56,7 +56,7 @@ class Educator extends Model {
         '学校', '手机号码', '年级主任', '班级主任', '班级科目'
     ];
     protected $fillable = [
-        'user_id', 'team_ids', 'school_id', 'singular',
+        'user_id', 'team_ids', 'school_id',
         'position', 'sms_quote', 'enabled',
     ];
     
