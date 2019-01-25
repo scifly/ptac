@@ -47,7 +47,6 @@ class StudentRequest extends FormRequest {
                 $this->input('user_id') . ',user_id',
             'oncampus'          => 'required|boolean',
             'birthday'          => 'required',
-            'remark'            => 'required|string',
             'enabled'           => 'required|boolean',
         ];
         $this->batchRules($rules);

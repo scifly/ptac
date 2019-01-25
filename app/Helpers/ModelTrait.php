@@ -697,15 +697,17 @@ trait ModelTrait {
                         'password' => '12345678',
                     ];
                 }
-                if ($role == 'student' && !isset($input['remark'])) {
-                    $input['remark'] = 'student';
-                }
                 $position = $role == 'student' ? '学生' : '监护人';
-                $input['user']['position'] = $input['singular'] ? $position
-                    : User::find($input['user_id'])->group->name . '/' . $position;
-                $input['user']['group_id'] = $input['singular']
-                    ? Group::whereName($position)->first()->id
-                    : User::find($input['user_id'])->group_id;
+                $groupId = Group::whereName($position)->first()->id;
+                if (isset($input['singular']) && !$input['singular']) {
+                    $group = isset($input['user_id'])
+                        ? User::find($input['user_id'])->group
+                        : Group::where(['school_id' => $this->schoolId(), 'name' => '教职员工'])->first();
+                    $position = $group->name . '/监护人';
+                    $groupId = $group->id;
+                }
+                $input['user']['position'] = $position;
+                $input['user']['group_id'] = $groupId;
                 $input['enabled'] = $input['user']['enabled'];
                 if (!empty($input['student_ids'])) {
                     foreach ($input['student_ids'] as $key => $studentId) {
