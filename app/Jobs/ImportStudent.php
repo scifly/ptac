@@ -55,7 +55,7 @@ class ImportStudent implements ShouldQueue, MassImport {
     
         $imported = $this->import($this, $this->response);
         !$imported ?: (new User)->sync(
-            $this->members, $this->userId, $this->corpId
+            $this->members, $this->userId
         );
         
         return true;
