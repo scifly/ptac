@@ -9,7 +9,8 @@ use Illuminate\{Bus\Queueable,
     Foundation\Bus\Dispatchable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
-    Support\Facades\DB};
+    Support\Facades\DB,
+    Support\Facades\Log};
 use Pusher\PusherException;
 use Throwable;
 
@@ -317,7 +318,9 @@ class CreateSchool implements ShouldQueue {
                     # 创建菜单卡片绑定关系
                     if ($data['tabs']) {
                         foreach ($data['tabs'] as $name) {
+                            Log::debug($name);
                             $tab = Tab::whereComment($name)->first();
+                            Log::debug(json_encode($tab));
                             MenuTab::create([
                                 'menu_id' => $menu->id,
                                 'tab_id'  => $tab->id,
