@@ -83,15 +83,15 @@ class ImportStudent implements ShouldQueue, MassImport {
     function validate(array $data): array {
         
         $fields = [
-            'name', 'gender', 'birthday', 'school', 'grade', 'class',
+            'name', 'gender', 'school', 'birthday', 'grade', 'class',
             'student_number', 'card_number', 'oncampus', 'remark',
             'relationship',
         ];
         $rules = array_combine($fields, [
             'required|string|between:2,60',
             ['required', Rule::in(['男', '女'])],
-            'required|date',
             'required|string|between:4,20',
+            'required|date',
             'required|string|between:3,20',
             'required|string|between:2,20',
             'required|alphanum|between:2,32',
