@@ -212,7 +212,9 @@ class SyncDepartment implements ShouldQueue {
     
         $accessToken = $this->accessToken();
         foreach ($deptIds as $id) {
-            $result = Wechat::deleteDept($accessToken, $id);
+            $result = json_decode(
+                Wechat::deleteDept($accessToken, $id), true
+            );
             if (($result['errcode'] && $result['errcode'] == 60003) || !$result['errcode']) {
                 $deleted[] = $id;
             }
