@@ -159,7 +159,6 @@ class SyncDepartment implements ShouldQueue {
                         }, [$updated, $deleted], ['update', 'delete']
                     );
                 }
-                Log::info('depts', $deptIds);
                 # 删除企业微信部门并返回已删除的企业微信部门id
                 $deletedIds = $this->delDept($deptIds);
             });
@@ -215,6 +214,7 @@ class SyncDepartment implements ShouldQueue {
             $result = json_decode(
                 Wechat::deleteDept($accessToken, $id), true
             );
+            Log::info('result', $result);
             if (($result['errcode'] && $result['errcode'] == 60003) || !$result['errcode']) {
                 $deleted[] = $id;
             }
