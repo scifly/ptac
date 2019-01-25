@@ -62,8 +62,8 @@ class Custodian extends Model {
         return $this->belongsToMany(
             'App\Models\Student',
             'custodians_students',
-            'custodian_id',
-            'student_id'
+            'student_id',
+            'custodian_id'
         );
         
     }
