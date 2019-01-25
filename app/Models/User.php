@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\{Builder,
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Notifications\{DatabaseNotification, DatabaseNotificationCollection, Notifiable};
-use Illuminate\Support\Facades\{Auth, DB, Hash, Log, Request};
+use Illuminate\Support\Facades\{Auth, DB, Hash, Request};
 use Laravel\Passport\{Client, HasApiTokens, Token};
 use ReflectionClass;
 use Throwable;
@@ -676,17 +676,17 @@ class User extends Authenticatable {
                 );
                 # 删除企业微信会员
                 if ($type != 'student') {
-                    $user = $this->find($id);
+                    $user = $contact->{'find'}($id)->user;
                     $this->sync(array_map(
                         function ($userId) use ($type, $user) {
                             if ($type == 'custodian' && $user->educator) {
                                 $method = 'update';
-                                $user->update([
+                                $user->{$method}([
                                     'position' => $user->group->name
                                 ]);
                             } elseif ($type == 'educator' && $user->custodian) {
                                 $method = 'update';
-                                $user->update([
+                                $user->{$method}([
                                     'position' => '监护人',
                                     'group_id' => Group::whereName('监护人')->first()->id
                                 ]);
