@@ -53,7 +53,7 @@ class Educator extends Model {
     
     const EXCEL_TITLES = [
         '姓名', '性别', '员工编号', '职务', '部门',
-        '学校', '手机号码', '年级主任', '班级主任', '班级科目'
+        '学校', '手机号码', '年级主任', '班级主任', '班级科目',
     ];
     protected $fillable = [
         'user_id', 'team_ids', 'school_id',
@@ -128,7 +128,7 @@ class Educator extends Model {
      * @return Collection|static[]
      */
     function classDeans($classId) {
-    
+        
         $conditions = ['id' => $classId, 'enabled' => 1];
         $educatorIds = Squad::where($conditions)->first()->educator_ids;
         
@@ -163,32 +163,32 @@ class Educator extends Model {
             ['db' => 'Educator.id', 'dt' => 0],
             ['db' => 'User.realname', 'dt' => 1],
             [
-                'db' => 'User.avatar_url', 'dt' => 2,
+                'db'        => 'User.avatar_url', 'dt' => 2,
                 'formatter' => function ($d) {
                     return Snippet::avatar($d);
-                }
+                },
             ],
             [
-                'db' => 'User.gender', 'dt' => 3,
+                'db'        => 'User.gender', 'dt' => 3,
                 'formatter' => function ($d) {
                     return Snippet::gender($d);
-                }
+                },
             ],
             ['db' => 'User.position', 'dt' => 4],
             ['db' => 'Mobile.mobile', 'dt' => 5],
             ['db' => 'Educator.created_at', 'dt' => 6, 'dr' => true],
             ['db' => 'Educator.updated_at', 'dt' => 7, 'dr' => true],
             [
-                'db' => 'User.synced', 'dt' => 8,
+                'db'        => 'User.synced', 'dt' => 8,
                 'formatter' => function ($d) {
                     return $this->synced($d);
-                }
+                },
             ],
             [
-                'db' => 'User.subscribed', 'dt' => 9,
+                'db'        => 'User.subscribed', 'dt' => 9,
                 'formatter' => function ($d) {
                     return $this->subscribed($d);
-                }
+                },
             ],
             [
                 'db'        => 'Educator.enabled', 'dt' => 10,
@@ -212,14 +212,14 @@ class Educator extends Model {
                 ],
             ],
             [
-                'table' => 'mobiles',
-                'alias' => 'Mobile',
-                'type' => 'LEFT',
+                'table'      => 'mobiles',
+                'alias'      => 'Mobile',
+                'type'       => 'LEFT',
                 'conditions' => [
                     'User.id = Mobile.user_id',
-                    'Mobile.isdefault = 1'
-                ]
-            ]
+                    'Mobile.isdefault = 1',
+                ],
+            ],
         ];
         
         return Datatable::simple(
@@ -253,20 +253,10 @@ class Educator extends Model {
                 # 手机号码
                 (new Mobile)->store($data['mobile'], $user->id);
                 # 如果同时也是监护人
-                if (!$data['singular']) {
-                    # 监护人(Custodian)
-                    $custodian = $this->create($data);
-                    # 监护人&部门绑定关系
-                    (new DepartmentUser)->storeByUserId(
-                        $custodian->user_id,
-                        $data['departmentIds'] ?? [],
-                        true
-                    );
-                    # 监护人&学生关系
-                    (new CustodianStudent)->storeByCustodianId(
-                        $custodian->id, $data['relationships'] ?? []
-                    );
-                }
+                $data['singular'] ?: $custodian = Custodian::create([
+                    'user_id' => $user->id,
+                    'enabled' => Constant::ENABLED,
+                ]);
                 # 创建企业微信会员
                 $user->sync([[$user->id, '', 'create']]);
             });
@@ -288,7 +278,7 @@ class Educator extends Model {
      */
     function modify(array $data, $id = null) {
         
-        if (!$id) { return $this->batchUpdateContact($this); }
+        if (!$id) return $this->batchUpdateContact($this);
         try {
             DB::transaction(function () use ($data, $id) {
                 if ($id) {
@@ -306,18 +296,10 @@ class Educator extends Model {
                     # 如果同时也是监护人
                     $custodian = $educator->user->custodian;
                     if (!$data['singular']) {
-                        $custodian ? $custodian->update($data) : $custodian = Custodian::create($data);
-                        # 更新监护人&部门绑定关系
-                        (new DepartmentUser)->storeByUserId(
-                            $custodian->user_id,
-                            $data['departmentIds'] ?? [],
-                            true
-                        );
-                        # 更新监护人&学生关系
-                        (new CustodianStudent)->storeByCustodianId(
-                            $custodian->id,
-                            $data['relationships'] ?? []
-                        );
+                        $custodian ?: $custodian = Custodian::create([
+                            'user_id' => $educator->user_id,
+                            'enabled' => $educator->enabled
+                        ]);
                     } else {
                         !$custodian ?: (new Custodian)->purge($custodian->id);
                     }
@@ -430,7 +412,7 @@ class Educator extends Model {
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      */
     function import() {
-    
+        
         $records = $this->upload();
         $mobiles = array_count_values(
             array_map('strval', array_pluck($records, 'G'))
@@ -444,11 +426,11 @@ class Educator extends Model {
             implode('', [
                 '手机号码',
                 implode(',', $duplicates ?? []),
-                '有重复，请检查后重试。'
+                '有重复，请检查后重试。',
             ])
         );
         ImportEducator::dispatch($records, Auth::id());
-    
+        
         return true;
         
     }
@@ -460,7 +442,7 @@ class Educator extends Model {
      * @throws ReflectionException
      */
     function export() {
-    
+        
         if (Request::input('range') == 0) {
             $userIds = $this->userIds(Request::input('id'), 'educator');
             $educatorIds = User::whereIn('id', $userIds)->with('educator')
@@ -502,14 +484,14 @@ class Educator extends Model {
             $selectedDepartments = $this->selectedNodes($selectedDepartmentIds);
         }
         $firstOption = [0 => '(请选择)'];
-    
+        
         return [
             $firstOption + $classes->pluck('name', 'id')->toArray(),
             $firstOption + $subjects->pluck('name', 'id')->toArray(),
             (new Group)->groupList(),
             implode(',', $selectedDepartmentIds ?? []),
             $selectedDepartments ?? [],
-            $mobiles ?? []
+            $mobiles ?? [],
         ];
     }
     
