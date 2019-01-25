@@ -427,11 +427,15 @@ class Custodian extends Model {
         if ($custodianId && Request::method() == 'GET') {
             $custodian = $this->find($custodianId);
             $mobiles = $custodian ? $custodian->user->mobiles : null;
-            $relations = CustodianStudent::whereCustodianId($custodianId)->get();
+            $relations = CustodianStudent::whereCustodianId($custodianId)->get()->filter(
+                function (CustodianStudent $cs) {
+                    return $this->schoolId() == Student::find($cs->student_id)->squad->grade->school_id;
+                }
+            );
         }
         
         return [
-            '新增监护关系', $grades, $classes, $students ?? [], $relations ?? [], $mobiles ?? [],
+            '新增监护关系', $grades, $classes, $students ?? [], $relations ?? collect([]), $mobiles ?? [],
         ];
         
     }
