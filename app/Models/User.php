@@ -671,7 +671,7 @@ class User extends Authenticatable {
                         array_values($ids),
                         array_map('strval', $this->contactIds($type))
                     )),
-                    HttpStatusCode::UNAUTHORIZED,
+                    HttpStatusCode::NOT_ACCEPTABLE,
                     __('messages.unauthorized')
                 );
                 # 删除企业微信会员

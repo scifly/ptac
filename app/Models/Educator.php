@@ -253,7 +253,7 @@ class Educator extends Model {
                 # 手机号码
                 (new Mobile)->store($data['mobile'], $user->id);
                 # 如果同时也是监护人
-                if (!$educator->singular) {
+                if (!$data['singular']) {
                     # 监护人(Custodian)
                     $custodian = $this->create($data);
                     # 监护人&部门绑定关系
@@ -305,7 +305,7 @@ class Educator extends Model {
                     (new Mobile)->store($data['mobile'], $educator->user_id);
                     # 如果同时也是监护人
                     $custodian = $educator->user->custodian;
-                    if (!$educator->singular) {
+                    if (!$data['singular']) {
                         $custodian ? $custodian->update($data) : $custodian = Custodian::create($data);
                         # 更新监护人&部门绑定关系
                         (new DepartmentUser)->storeByUserId(
