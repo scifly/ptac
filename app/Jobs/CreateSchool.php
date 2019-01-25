@@ -9,8 +9,7 @@ use Illuminate\{Bus\Queueable,
     Foundation\Bus\Dispatchable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
-    Support\Facades\DB,
-    Support\Facades\Log};
+    Support\Facades\DB};
 use Pusher\PusherException;
 use Throwable;
 
@@ -58,7 +57,7 @@ class CreateSchool implements ShouldQueue {
             'parent_id' => '通讯录',
             'uri'       => null,
             'icon'      => 'fa fa-user',
-            'tabs'      => ['教职员工', '教职员工组'],
+            'tabs'      => ['教职员工'],
         ],
         '监护人'      => [
             'id'        => 0,
@@ -299,9 +298,7 @@ class CreateSchool implements ShouldQueue {
                 # 创建学校基础菜单
                 $menuTypeId = MenuType::whereName('其他')->first()->id;
                 foreach ($this->menus as $name => &$data) {
-                    if ($data['uri'] == 'schools/edit/') {
-                        $data['uri'] .= $this->school->id;
-                    }
+                    $data['uri'] != 'schools/edit/' ?: $data['uri'] .= $this->school->id;
                     # 创建菜单
                     $menu = Menu::create([
                         'parent_id'    => !$data['parent_id']
@@ -318,9 +315,7 @@ class CreateSchool implements ShouldQueue {
                     # 创建菜单卡片绑定关系
                     if ($data['tabs']) {
                         foreach ($data['tabs'] as $name) {
-                            Log::debug($name);
                             $tab = Tab::whereComment($name)->first();
-                            Log::debug(json_encode($tab));
                             MenuTab::create([
                                 'menu_id' => $menu->id,
                                 'tab_id'  => $tab->id,
@@ -344,15 +339,12 @@ class CreateSchool implements ShouldQueue {
                     'tab_ids'    => $tabIds,
                     'action_ids' => $actionIds,
                 ]);
-                if ($this->userId) {
-                    $this->broadcaster->broadcast($this->response);
-                }
+                !$this->userId ?: $this->broadcaster->broadcast($this->response);
             });
         } catch (Exception $e) {
             $this->eHandler($e, $this->response);
             throw $e;
         }
-        
         
     }
     
