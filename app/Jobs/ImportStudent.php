@@ -272,11 +272,12 @@ class ImportStudent implements ShouldQueue, MassImport {
                     ])
                 );
             } else {
-                $user = User::find($mobile->user_id);
-                !$user ?: $user->update([
-                    'realname' => $paths[1],
-                    'gender'   => $paths[2] == '男' ? 1 : 0,
-                ]);
+                !($user = User::find($mobile->user_id))
+                    ?: $user->update(
+                        $user->educator
+                            ? ['position' => $user->group->name . '/' . '监护人']
+                            : ['realname' => $paths[1], 'gender' => $paths[2] == '男' ? 1 : 0]
+                    );
             }
             # 更新/创建监护人
             $custodian = Custodian::updateOrCreate(
