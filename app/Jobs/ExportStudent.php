@@ -66,15 +66,13 @@ class ExportStudent implements ShouldQueue {
                 ]);
             }
             $sUser = $student->user;
-            $sMobile = $sUser->mobiles->where('isdefault', 1)->first();
             $records[] = [
-                $sUser->realcname,
+                $sUser->realname,
                 $sUser->gender ? '男' : '女',
                 date('Y-m-d', strtotime($student->birthday)),
                 $student->squad->grade->school->name,
                 $student->squad->grade->name,
                 $student->squad->name,
-                $sMobile ? $sMobile->mobile : '',
                 $student->student_number,
                 $student->card_number . "\t",
                 $student->oncampus ? '住读' : '走读',
