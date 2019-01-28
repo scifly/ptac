@@ -265,7 +265,6 @@ class Student extends Model {
      */
     function modify(array $data, $id = null) {
         
-        if (!$id) return $this->batchUpdateContact($this);
         try {
             DB::transaction(function () use ($data, $id) {
                 if ($id) {
