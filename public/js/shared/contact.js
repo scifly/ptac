@@ -267,7 +267,11 @@
                             type: 'POST',
                             dataType: 'json',
                             url: url,
-                            data: {range: range, id: departmentId},
+                            data: {
+                                _token: page.token(),
+                                range: range,
+                                id: departmentId
+                            },
                             success: function (result) {
                                 page.inform(result['title'], result['message'], page.success);
                             },
