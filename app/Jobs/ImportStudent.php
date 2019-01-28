@@ -55,7 +55,6 @@ class ImportStudent implements ShouldQueue, MassImport {
     function handle() {
     
         $imported = $this->import($this, $this->response);
-        Log::info('members', $this->members);
         !$imported ?: (new User)->sync(
             $this->members, $this->userId
         );
@@ -183,7 +182,7 @@ class ImportStudent implements ShouldQueue, MassImport {
                             $insert['department_id'], $user->id, $user->enabled,
                         ])
                     );
-                    $this->members[] = [$user->id, '学生', 'create'];
+                    // $this->members[] = [$user->id, '学生', 'create'];
                 }
             });
         } catch (Exception $e) {
@@ -233,7 +232,7 @@ class ImportStudent implements ShouldQueue, MassImport {
                         ['user_id' => $student->user_id, 'enabled' => 1],
                         ['department_id' => $update['department_id']]
                     );
-                    $this->members[] = [$student->user_id, '学生', 'update'];
+                    // $this->members[] = [$student->user_id, '学生', 'update'];
                 }
             });
         } catch (Exception $e) {
