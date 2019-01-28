@@ -86,9 +86,9 @@ class LoginController extends Controller {
         }
         # 角色为监护人/学生/api的用户不得登录后台
         abort_if(
-            ($user->custodian && !$user->educator) || $user->student || $user->role($user->id) == 'api',
-            HttpStatusCode::NOT_ACCEPTABLE,
-            __('4327891')
+            ($user->custodian && (!$user->educator || !in_array($user->group->name, ['运营', '企业']))) ||
+            $user->student || $user->role($user->id) == 'api',
+            HttpStatusCode::NOT_ACCEPTABLE, __('messages.unauthorized')
         );
         
         # 登录(用户名或邮箱)

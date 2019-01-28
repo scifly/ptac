@@ -253,49 +253,56 @@ class ImportStudent implements ShouldQueue, MassImport {
      */
     private function binding(Student $student, $record, $password = null) {
         
-        $password = $password ?? bcrypt('12345678');
-        $relationship = str_replace(['，', '：'], [',', ':'], $record['relationship']);
-        $relationships = explode(',', $relationship);
-        $groupId = Group::whereName('监护人')->first()->id;
-        foreach ($relationships as $r) {
-            if (count($paths = explode(':', $r)) != 4) continue;
-            if (!($mobile = Mobile::whereMobile($paths[3])->first())) {
-                $userid = uniqid('ptac_');
-                $user = User::create(
-                    array_combine(Constant::USER_FIELDS, [
-                        $userid, $groupId, $password, $paths[1],
-                        $paths[2] == '男' ? 1 : 0, $userid, '监护人', 1,
-                    ])
-                );
-                Mobile::create(
-                    array_combine(Constant::MOBILE_FIELDS, [
-                        $user->id, $paths[3], 1, $user->enabled,
-                    ])
-                );
-            } else {
-                !($user = User::find($mobile->user_id))
-                    ?: $user->update(
-                        $user->educator
-                            ? ['position' => $user->group->name . '/' . '监护人']
-                            : ['realname' => $paths[1], 'gender' => $paths[2] == '男' ? 1 : 0]
+        try {
+            DB::transaction(function () use ($student, $record, $password) {
+                $password = $password ?? bcrypt('12345678');
+                $relationship = str_replace(['，', '：'], [',', ':'], $record['relationship']);
+                $relationships = explode(',', $relationship);
+                $groupId = Group::whereName('监护人')->first()->id;
+                foreach ($relationships as $r) {
+                    if (count($paths = explode(':', $r)) != 4) continue;
+                    if (!($mobile = Mobile::whereMobile($paths[3])->first())) {
+                        $userid = uniqid('ptac_');
+                        $user = User::create(
+                            array_combine(Constant::USER_FIELDS, [
+                                $userid, $groupId, $password, $paths[1],
+                                $paths[2] == '男' ? 1 : 0, $userid, '监护人', 1,
+                            ])
+                        );
+                        Mobile::create(
+                            array_combine(Constant::MOBILE_FIELDS, [
+                                $user->id, $paths[3], 1, $user->enabled,
+                            ])
+                        );
+                    } else {
+                        !($user = User::find($mobile->user_id))
+                            ?: $user->update(
+                            $user->educator
+                                ? ['position' => $user->group->name . '/' . '监护人']
+                                : ['realname' => $paths[1], 'gender' => $paths[2] == '男' ? 1 : 0]
+                        );
+                    }
+                    # 更新/创建监护人
+                    $custodian = Custodian::updateOrCreate(
+                        ['user_id' => $user->id], ['enabled' => $user->enabled]
                     );
-            }
-            # 更新/创建监护人
-            $custodian = Custodian::updateOrCreate(
-                ['user_id' => $user->id], ['enabled' => $user->enabled]
-            );
-            # 更新/创建监护人 & 学生绑定关系
-            CustodianStudent::updateOrCreate(
-                ['custodian_id' => $custodian->id, 'student_id' => $student->id],
-                ['relationship' => $paths[0], 'enabled' => $user->enabled]
-            );
-            # 更新/创建部门 & 用户绑定关系
-            DepartmentUser::updateOrCreate(
-                ['user_id' => $user->id, 'enabled' => 0],
-                ['department_id' => $record['department_id']]
-            );
-            # 需要同步至企业微信的监护人
-            $this->members[] = [$user->id, '监护人', !$mobile ? 'create' : 'update'];
+                    # 更新/创建监护人 & 学生绑定关系
+                    CustodianStudent::updateOrCreate(
+                        ['custodian_id' => $custodian->id, 'student_id' => $student->id],
+                        ['relationship' => $paths[0], 'enabled' => $user->enabled]
+                    );
+                    # 更新/创建部门 & 用户绑定关系
+                    DepartmentUser::updateOrCreate(
+                        ['user_id' => $user->id, 'enabled' => 0],
+                        ['department_id' => $record['department_id']]
+                    );
+                    # 需要同步至企业微信的监护人
+                    $this->members[] = [$user->id, '监护人', !$mobile ? 'create' : 'update'];
+                }
+                
+            });
+        } catch (Exception $e) {
+            throw $e;
         }
         
     }

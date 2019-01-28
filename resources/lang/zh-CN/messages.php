@@ -52,6 +52,9 @@ return [
         'not_found'          => '未找到该班级的相关信息',
         'no_related_classes' => '您尚未绑定任何班级',
     ],
+    'custodian' => [
+        'incompatible' => '运营/企业级用户不得兼任监护人'
+    ],
     'department'               => [
         'title'           => '部门管理',
         'department_sync' => '%s部门',
