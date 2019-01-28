@@ -185,7 +185,7 @@ class ImportEducator implements ShouldQueue, MassImport {
                         array_combine(Constant::USER_FIELDS, [
                             $insert['username'], $group->id, bcrypt('12345678'), $insert['name'],
                             $insert['gender'] == '男' ? '1' : '0', uniqid('ptac_'),
-                            $insert['position'], 0, 1,
+                            $insert['position'], 1,
                         ])
                     );
                     # 创建教职员工
