@@ -552,7 +552,7 @@ class Department extends Model {
      */
     function subIds($id) {
         
-        static $subIds;
+        static $subIds = [];
         $childrenIds = Department::whereParentId($id)->pluck('id')->toArray();
         foreach ($childrenIds as $childId) {
             $subIds[] = $childId;
