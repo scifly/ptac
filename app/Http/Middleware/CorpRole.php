@@ -24,26 +24,34 @@ class CorpRole {
     public function handle($request, Closure $next) {
         
         $user = Auth::user();
+        $schoolIds = [];
         if ($user->custodian) {
             foreach ($user->custodian->students as $student) {
                 $schoolIds[] = $student->squad->grade->school_id;
             }
         }
-        if (
-            $user->custodian && $user->educator &&
-            $user->educator->school_id == session('schoolId') &&
-            in_array(session('schoolId'), array_unique($schoolIds ?? []))
-        ) {
+        !$user->educator ?: $schoolIds[] = $user->educator->school_id;
+        # 如果当前用户既是教职员工亦是监护人
+        if ($user->custodian && $user->educator) {
+            # 如果当前用户在当前学校既是监护人也是教职员工
             if (
-                !Request::query('part') &&
-                stripos(Request::path(), 'roles') === false
+                $user->educator->school_id == session('schoolId') &&
+                in_array(session('schoolId'), array_unique($schoolIds ?? []))
             ) {
-                if (!session('part')) {
-                    $acronym = Corp::find(session('corpId'))->acronym;
-                    return redirect($acronym . '/wechat/roles');
+                if (
+                    !Request::query('part') &&
+                    stripos(Request::path(), 'roles') === false
+                ) {
+                    if (!session('part')) {
+                        $acronym = Corp::find(session('corpId'))->acronym;
+                        return redirect($acronym . '/wechat/roles');
+                    }
+                } else {
+                    session(['part' => Request::query('part')]);
                 }
             } else {
-                session(['part' => Request::query('part')]);
+                $isEducator = $user->educator->school_id == session('schoolId');
+                session(['part' =>  $isEducator ? 'educator' : 'custodian']);
             }
         }
         
