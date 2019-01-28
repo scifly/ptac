@@ -87,9 +87,7 @@ class ExportStudent implements ShouldQueue {
             return strcmp($a[4], $b[4]) ?: strcmp($a[5], $b[5]) ?: strcmp($a[7], $b[7]);
         });
         $filename = 'student_exports';
-        Log::info('titles', $this->titles);
-        Log::info('records', $records);
-        $this->excel(array_merge($this->titles, $records), $filename, '学籍', false);
+        $this->excel(array_merge([$this->titles], $records), $filename, '学籍', false);
         $this->response['url'] = $this->filePath($filename) . '.xlsx';
         $this->broadcaster->broadcast($this->response);
         
