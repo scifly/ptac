@@ -842,11 +842,10 @@ class User extends Authenticatable {
         
         $user = $this->find($id);
         $topDeptId = $this->topDeptId($user);
-        Log::debug($id);
-        Log::debug($this->role($id) == '运营');
+
         return $this->role($id) == '运营'
             ? Corp::pluck('id')->toArray()
-            : $topDeptId != 1 ? [(new Department)->corpId($topDeptId)] : [];
+            : ($topDeptId != 1 ? [(new Department)->corpId($topDeptId)] : []);
         
     }
     
