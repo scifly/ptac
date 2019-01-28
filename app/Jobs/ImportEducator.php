@@ -65,8 +65,7 @@ class ImportEducator implements ShouldQueue, MassImport {
         
         $imported = $this->import($this, $this->response);
         !$imported ?: (new User)->sync(
-            $this->members, $this->userId,
-            User::find($this->members[0][0])->educator->school->corp_id
+            $this->members, $this->userId
         );
         
         return true;
