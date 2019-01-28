@@ -109,10 +109,9 @@ class SyncDepartment implements ShouldQueue {
         try {
             DB::transaction(function () use (&$deletedIds) {
                 $d = new Department;
-                $subIds = [];
                 $ids = array_merge(
                     [$this->departmentId],
-                    $d->subIds($this->departmentId, $subIds)
+                    $d->subIds($this->departmentId)
                 );
                 foreach ($ids as $id) {
                     if ($d->needSync($d->find($id))) {

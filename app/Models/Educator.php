@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsTo,
     Relations\BelongsToMany,
     Relations\HasMany};
-use Illuminate\Support\Facades\{Auth, DB, Log, Request};
+use Illuminate\Support\Facades\{Auth, DB, Request};
 use ReflectionException;
 use Throwable;
 

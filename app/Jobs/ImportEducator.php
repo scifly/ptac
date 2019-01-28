@@ -124,10 +124,9 @@ class ImportEducator implements ShouldQueue, MassImport {
             $schoolDepartmentId = $school ? $school->department_id : 0;
             $isSchoolValid = $school ? in_array($school->id, $this->schoolIds($this->userId)) : false;
             $departments = explode(',', $user['departments']);
-            $subIds = [];
             $schoolDepartmentIds = array_merge(
                 [$schoolDepartmentId],
-                (new Department)->subIds($schoolDepartmentId, $subIds)
+                (new Department)->subIds($schoolDepartmentId)
             );
             $isDepartmentValid = true;
             foreach ($departments as $d) {
@@ -281,10 +280,9 @@ class ImportEducator implements ShouldQueue, MassImport {
         $du = new DepartmentUser;
         $du->where(['user_id' => $user->id, 'enabled' => 1])->delete();
         $schoolDepartmentId = $school->department_id;
-        $subIds = [];
         $schoolDepartmentIds = array_merge(
             [$schoolDepartmentId],
-            $d->subIds($schoolDepartmentId, $subIds)
+            $d->subIds($schoolDepartmentId)
         );
         $departmentIds = array_intersect(
             $d->whereIn('name', $record['departments'])->pluck('id')->toArray(),

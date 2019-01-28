@@ -505,9 +505,8 @@ class Department extends Model {
         
         $departmentIds = [];
         foreach ($ids as $id) {
-            $subIds = [];
             $departmentIds = array_merge(
-                $departmentIds, $this->subIds($id, $subIds)
+                $departmentIds, $this->subIds($id)
             );
         }
         $ids = array_unique($departmentIds);
@@ -549,18 +548,18 @@ class Department extends Model {
      * 返回指定部门所有子部门的id
      *
      * @param $id
-     * @param $subIds
      * @return array
      */
-    function subIds($id, array &$subIds) {
+    function subIds($id) {
         
+        static $subIds;
         $childrenIds = Department::whereParentId($id)->pluck('id')->toArray();
         foreach ($childrenIds as $childId) {
             $subIds[] = $childId;
-            $this->subIds($childId, $subIds);
+            $this->subIds($childId);
         }
         
-        return $subIds;
+        return $subIds ?? [];
         
     }
     
