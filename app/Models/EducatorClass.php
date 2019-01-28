@@ -59,7 +59,7 @@ class EducatorClass extends Model {
      *
      * @return BelongsTo
      */
-    function subject() { return $this->belongsTo('App\Models\subject'); }
+    function subject() { return $this->belongsTo('App\Models\Subject'); }
     
     /**
      * 保存教职员工班级绑定关系
