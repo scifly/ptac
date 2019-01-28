@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\{Builder,
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Notifications\{DatabaseNotification, DatabaseNotificationCollection, Notifiable};
-use Illuminate\Support\Facades\{Auth, DB, Hash, Request};
+use Illuminate\Support\Facades\{Auth, DB, Hash, Log, Request};
 use Laravel\Passport\{Client, HasApiTokens, Token};
 use ReflectionClass;
 use Throwable;
@@ -842,6 +842,8 @@ class User extends Authenticatable {
         
         $user = $this->find($id);
         $topDeptId = $this->topDeptId($user);
+        Log::debug($id);
+        Log::debug($this->role($id) == '运营');
         return $this->role($id) == '运营'
             ? Corp::pluck('id')->toArray()
             : $topDeptId != 1 ? [(new Department)->corpId($topDeptId)] : [];
