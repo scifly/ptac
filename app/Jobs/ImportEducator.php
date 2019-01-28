@@ -321,7 +321,7 @@ class ImportEducator implements ShouldQueue, MassImport {
                     $grade->save();
                     # 更新部门&用户绑定关系
                     DepartmentUser::firstOrCreate(
-                        array_combine(Constant::DU_FIELDS, [$educator->user_id, $grade->department_id])
+                        array_combine(Constant::DU_FIELDS, [$grade->department_id, $educator->user_id, 1])
                     );
                 }
                 # 更新班级主任
@@ -333,7 +333,7 @@ class ImportEducator implements ShouldQueue, MassImport {
                     $class->update(['educator_ids' => implode(',', array_unique($educatorIds))]);
                     # 更新部门 & 用户绑定关系
                     DepartmentUser::firstOrCreate(
-                        array_combine(Constant::DU_FIELDS, [$educator->user_id, $class->department_id])
+                        array_combine(Constant::DU_FIELDS, [$class->department_id, $educator->user_id, 1])
                     );
                 }
                 # 更新班级科目绑定关系
@@ -349,7 +349,7 @@ class ImportEducator implements ShouldQueue, MassImport {
                     );
                     # 更新部门&用户绑定关系
                     DepartmentUser::firstOrCreate(
-                        array_combine(Constant::DU_FIELDS, [$educator->user_id, $class->department_id])
+                        array_combine(Constant::DU_FIELDS, [$class->department_id, $educator->user_id, 1])
                     );
                 }
             });
