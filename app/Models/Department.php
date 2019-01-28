@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\HasMany,
     Relations\HasOne};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\{Auth, DB, Request};
+use Illuminate\Support\Facades\{Auth, DB, Log, Request};
 use Throwable;
 
 /**
@@ -554,6 +554,7 @@ class Department extends Model {
         
         static $subIds;
         $childrenIds = Department::whereParentId($id)->pluck('id')->toArray();
+        Log::info('ids', $childrenIds);
         foreach ($childrenIds as $childId) {
             $subIds[] = $childId;
             $this->subIds($childId);
