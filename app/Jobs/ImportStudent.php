@@ -11,6 +11,7 @@ use Illuminate\{Bus\Queueable,
     Queue\InteractsWithQueue,
     Queue\SerializesModels,
     Support\Facades\DB,
+    Support\Facades\Log,
     Validation\Rule};
 use Pusher\PusherException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -54,6 +55,7 @@ class ImportStudent implements ShouldQueue, MassImport {
     function handle() {
     
         $imported = $this->import($this, $this->response);
+        Log::info('members', $this->members);
         !$imported ?: (new User)->sync(
             $this->members, $this->userId
         );
