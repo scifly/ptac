@@ -9,7 +9,7 @@ use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\{Builder, Collection, Model, Relations\BelongsTo, Relations\BelongsToMany};
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\{Auth, DB, Request};
+use Illuminate\Support\Facades\{Auth, DB, Log, Request};
 use ReflectionException;
 use Throwable;
 
@@ -287,6 +287,7 @@ class Custodian extends Model {
                     return $cs->student->squad->grade->school_id == $schoolId;
                 });
                 if ($cses->count() <= 1 || $schoolCses->count() == $cses->count()) {
+                    Log::debug('wtf');
                     CustodianStudent::whereCustodianId($id)->delete();
                     $custodian->user->educator ?: (new User)->purge($custodian->user_id);
                     $custodian->delete();
