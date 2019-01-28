@@ -344,7 +344,9 @@ trait ModelTrait {
      */
     function userIds($departmentId, $type = null): array {
         
+        Log::debug($departmentId);
         $departmentIds = [$departmentId] + (new Department)->subIds($departmentId);
+        Log::info('dids', $departmentIds);
         $userIds = DepartmentUser::whereIn('department_id', $departmentIds)
             ->pluck('user_id')->toArray();
         Log::info('uuids', array_unique($userIds));
