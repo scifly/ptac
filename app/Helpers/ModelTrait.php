@@ -11,7 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\{Facades\Auth, Facades\DB, Facades\Request, Facades\Storage};
+use Illuminate\Support\{Facades\Auth, Facades\DB, Facades\Log, Facades\Request, Facades\Storage};
 use Illuminate\Validation\Rule;
 use PhpOffice\PhpSpreadsheet\{Exception, IOFactory, Spreadsheet};
 use ReflectionClass;
@@ -318,6 +318,7 @@ trait ModelTrait {
             $userIds = $this->userIds(
                 School::find($schoolId)->department_id, $type
             );
+            Log::info('uids', $userIds);
         } else {
             foreach ($user->depts() as $d) {
                 $userIds = array_merge(
@@ -326,7 +327,7 @@ trait ModelTrait {
             }
         }
         $userIds = array_unique($userIds);
-        
+        Log::info('uids', $userIds);
         return (empty($userIds)) ? [0]
             : User::whereIn('id', $userIds)->with($type)
                 ->get()->pluck($type . '.id')->toArray();

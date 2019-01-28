@@ -449,10 +449,10 @@ class Educator extends Model {
                 ->get()->pluck('educator.id')->toArray();
         } else {
             $educatorIds = $this->contactIds('educator');
+            Log::info('eids', $educatorIds);
         }
         $educators = $this->whereIn('id', $educatorIds)
             ->where('school_id', $this->schoolId())->get();
-        Log::debug($educators->count());
         ExportEducator::dispatch($educators, self::EXCEL_TITLES, Auth::id());
         
         return true;
