@@ -34,14 +34,10 @@ class CorpRole {
         # 如果当前用户既是教职员工亦是监护人
         if ($user->custodian && $user->educator) {
             # 如果当前用户在当前学校既是监护人也是教职员工
-            if (
-                $user->educator->school_id == session('schoolId') &&
-                in_array(session('schoolId'), array_unique($schoolIds ?? []))
-            ) {
-                if (
-                    !Request::query('part') &&
-                    stripos(Request::path(), 'roles') === false
-                ) {
+            $isEducator = $user->educator->school_id == session('schoolId');
+            $isCustodian = in_array(session('schoolId'), array_unique($schoolIds ?? []));
+            if ($isEducator && $isCustodian) {
+                if (!Request::query('part') && stripos(Request::path(), 'roles') === false) {
                     if (!session('part')) {
                         $acronym = Corp::find(session('corpId'))->acronym;
                         return redirect($acronym . '/wechat/roles');
@@ -50,7 +46,6 @@ class CorpRole {
                     session(['part' => Request::query('part')]);
                 }
             } else {
-                $isEducator = $user->educator->school_id == session('schoolId');
                 session(['part' =>  $isEducator ? 'educator' : 'custodian']);
             }
         }
