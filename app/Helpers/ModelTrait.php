@@ -347,6 +347,7 @@ trait ModelTrait {
         $departmentIds = [$departmentId] + (new Department)->subIds($departmentId);
         $userIds = DepartmentUser::whereIn('department_id', $departmentIds)
             ->pluck('user_id')->toArray();
+        Log::info('uuids', array_unique($userIds));
         if (!$type) return array_unique($userIds);
         $contact = (new ReflectionClass('App\\Models\\' . ucfirst($type)))->newInstance();
         
