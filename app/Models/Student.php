@@ -61,7 +61,7 @@ class Student extends Model {
     use ModelTrait;
     
     const EXCEL_TITLES = [
-        '姓名', '性别', '生日', '学校',
+        '姓名', '性别', '学校', '生日',
         '年级', '班级', '学号', '卡号',
         '住校', '备注', '监护关系',
     ];

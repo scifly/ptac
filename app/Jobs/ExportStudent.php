@@ -69,8 +69,8 @@ class ExportStudent implements ShouldQueue {
             $records[] = [
                 $sUser->realname,
                 $sUser->gender ? '男' : '女',
-                date('Y-m-d', strtotime($student->birthday)),
                 $student->squad->grade->school->name,
+                date('Y-m-d', strtotime($student->birthday)),
                 $student->squad->grade->name,
                 $student->squad->name,
                 $student->student_number,
