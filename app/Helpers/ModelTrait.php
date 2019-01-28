@@ -318,7 +318,6 @@ trait ModelTrait {
             $userIds = $this->userIds(
                 School::find($schoolId)->department_id, $type
             );
-            Log::info('uids', $userIds);
         } else {
             foreach ($user->depts() as $d) {
                 $userIds = array_merge(
@@ -327,7 +326,7 @@ trait ModelTrait {
             }
         }
         $userIds = array_unique($userIds);
-        Log::info('uids', $userIds);
+
         return (empty($userIds)) ? [0]
             : User::whereIn('id', $userIds)->with($type)
                 ->get()->pluck($type . '.id')->toArray();
