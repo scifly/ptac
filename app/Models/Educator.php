@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\{Builder,
     Relations\BelongsTo,
     Relations\BelongsToMany,
     Relations\HasMany};
-use Illuminate\Support\Facades\{Auth, DB, Request};
+use Illuminate\Support\Facades\{Auth, DB, Log, Request};
 use ReflectionException;
 use Throwable;
 
@@ -452,6 +452,7 @@ class Educator extends Model {
         }
         $educators = $this->whereIn('id', $educatorIds)
             ->where('school_id', $this->schoolId())->get();
+        Log::debug($educators->count());
         ExportEducator::dispatch($educators, self::EXCEL_TITLES, Auth::id());
         
         return true;
