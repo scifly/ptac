@@ -65,7 +65,7 @@ class ExportEducator implements ShouldQueue {
                 
                     return $collection->isEmpty() ? ''
                         : implode(',', $collection->pluck('name')->toArray());
-                }, ['squad', 'grade']
+                }, ['grade', 'squad']
             );
             $eces = EducatorClass::whereEducatorId($educator->id)->get();
             $cses = [];
